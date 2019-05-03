@@ -31,7 +31,7 @@ namespace VSS.TRex.Webtools.Controllers
         Mode = (DisplayMode) displayMode,
         CoordsAreGrid = true,
         Point = new XYZ(x, y),
-        ReferenceDesignUID = designUid ?? Guid.Empty
+        ReferenceDesign.DesignID = designUid ?? Guid.Empty
       });
 
       var result = new

@@ -18,8 +18,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
       var argument = new DesignSubGridRequestArgumentBase
       {
         ProjectID = Guid.NewGuid(),
-        ReferenceDesignUID = Guid.Empty,
-        ReferenceOffset = 123.4,
+        ReferenceDesign.DesignID = Guid.Empty,
+        ReferenceDesign.Offset = 123.4,
         TRexNodeID = "NodeID",
         Filters = null
       };

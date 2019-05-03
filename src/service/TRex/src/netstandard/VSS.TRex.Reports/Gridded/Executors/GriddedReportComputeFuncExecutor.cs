@@ -74,12 +74,12 @@ namespace VSS.TRex.Reports.Gridded.Executors
         gridDataType: GridDataType.CellProfile,
         response: GriddedReportRequestResponse,
         filters: _griddedReportRequestArgument.Filters,
-        cutFillDesignID: _griddedReportRequestArgument.ReferenceDesignUID,
+        cutFillDesignID: _griddedReportRequestArgument.ReferenceDesign.DesignID,
         task: task,
         pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
         requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
         requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
-        requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty,
+        requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty,
         overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
       );
 
@@ -140,15 +140,15 @@ namespace VSS.TRex.Reports.Gridded.Executors
       var result = new List<GriddedReportDataRow>();
       IClientHeightLeafSubGrid designHeights = null;
 
-      if (_griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty)
+      if (_griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
-        IDesign cutFillDesign = _siteModel.Designs.Locate(_griddedReportRequestArgument.ReferenceDesignUID);
+        IDesign cutFillDesign = _siteModel.Designs.Locate(_griddedReportRequestArgument.ReferenceDesign.DesignID);
         if (cutFillDesign == null)
         {
-          throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignUID} not a recognized design in project {_griddedReportRequestArgument.ProjectID}");
+          throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesign.DesignID} not a recognized design in project {_griddedReportRequestArgument.ProjectID}");
         }
 
-        cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, _griddedReportRequestArgument.ReferenceOffset, 
+        cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, _griddedReportRequestArgument.ReferenceDesign.Offset, 
           subGrid.OriginAsCellAddress(), subGrid.CellSize, out designHeights, out var errorCode);
 
         if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)

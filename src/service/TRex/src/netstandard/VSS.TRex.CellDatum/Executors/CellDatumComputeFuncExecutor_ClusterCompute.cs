@@ -48,12 +48,12 @@ namespace VSS.TRex.CellDatum.Executors
       }
 
       IDesign cutFillDesign = null;
-      if (arg.ReferenceDesignUID != Guid.Empty)
+      if (arg.ReferenceDesign.DesignID != Guid.Empty)
       {
-        cutFillDesign = siteModel.Designs.Locate(arg.ReferenceDesignUID);
+        cutFillDesign = siteModel.Designs.Locate(arg.ReferenceDesign.DesignID);
         if (cutFillDesign == null)
         {
-          throw new ArgumentException($"Design {arg.ReferenceDesignUID} not a recognized design in project {arg.ProjectID}");
+          throw new ArgumentException($"Design {arg.ReferenceDesign.DesignID} not a recognized design in project {arg.ProjectID}");
         }
       }
 
@@ -158,9 +158,9 @@ namespace VSS.TRex.CellDatum.Executors
           break;
         case DisplayMode.CutFill:
           result.Value = cell.Height;
-          if (arg.ReferenceDesignUID != Guid.Empty)
+          if (arg.ReferenceDesign.DesignID != Guid.Empty)
           {
-            cutFillDesign.GetDesignSpotHeight(arg.ProjectID, arg.ReferenceOffset, arg.NEECoords.X, arg.NEECoords.Y, out var spotHeight, out var errorCode);
+            cutFillDesign.GetDesignSpotHeight(arg.ProjectID, arg.ReferenceDesign.Offset, arg.NEECoords.X, arg.NEECoords.Y, out var spotHeight, out var errorCode);
 
             if (errorCode == DesignProfilerRequestResult.OK && spotHeight != CellPassConsts.NullHeight)
             {

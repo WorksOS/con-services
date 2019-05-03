@@ -41,8 +41,8 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var response = request.Execute(new CalculateDesignElevationSpotArgument
       {
         ProjectID = siteModel.ID,
-        ReferenceDesignUID = designUid,
-        ReferenceOffset = offset,
+        ReferenceDesign.DesignID = designUid,
+        ReferenceDesign.Offset = offset,
         SpotX = spotX,
         SpotY = spotY,
       });

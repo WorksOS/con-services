@@ -31,8 +31,7 @@ namespace VSS.TRex.Designs.Models
 
     public void Init(Guid designID,
                      string folder,
-                     string fileName,
-                     double offset)
+                     string fileName)
     {
       DesignID = designID;
       Folder = folder;
@@ -56,7 +55,7 @@ namespace VSS.TRex.Designs.Models
              FileName == other.FileName;
     }
 
-    public void Clear() => Init(Guid.Empty, "", "", 0.0);
+    public void Clear() => Init(Guid.Empty, "", "");
 
     public static DesignDescriptor Null() => new DesignDescriptor();
 

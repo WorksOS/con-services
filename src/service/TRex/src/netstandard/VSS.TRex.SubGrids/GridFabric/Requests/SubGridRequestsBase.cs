@@ -149,7 +149,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 Filters = Filters,
                 MessageTopic = $"SubGridRequest:{RequestID}",
                 TRexNodeID = TRexNodeId,
-                ReferenceDesignUID = ReferenceDesignID,
+                ReferenceDesign.DesignID = ReferenceDesignID,
                 AreaControlSet = AreaControlSet
             };
         }

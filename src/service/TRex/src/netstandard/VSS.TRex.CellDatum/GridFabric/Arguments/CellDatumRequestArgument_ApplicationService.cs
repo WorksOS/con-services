@@ -48,8 +48,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       CoordsAreGrid = coordsAreGrid;
       Point = point;
       Filters = filters;
-      ReferenceDesignUID = referenceDesignUid;
-      ReferenceOffset = referenceOffset;
+      ReferenceDesign.DesignID = referenceDesignUid;
+      ReferenceDesign.Offset = referenceOffset;
     }
 
     /// <summary>

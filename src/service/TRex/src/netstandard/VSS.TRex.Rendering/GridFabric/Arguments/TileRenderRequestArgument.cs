@@ -48,7 +48,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       PixelsX = pixelsX;
       PixelsY = pixelsY;
       Filters = filters;
-      ReferenceDesignUID = referenceDesignUid;
+      ReferenceDesign.DesignID = referenceDesignUid;
     }
 
     /// <summary>

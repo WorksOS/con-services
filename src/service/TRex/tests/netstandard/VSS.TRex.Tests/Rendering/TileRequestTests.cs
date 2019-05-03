@@ -305,7 +305,7 @@ namespace VSS.TRex.Tests.Rendering
 
       // Add the cut/fill design reference to the request, and set the rendering extents to the cell in question,
       // with an additional 1 meter border around the cell
-      arg.ReferenceDesignUID = designUid;
+      arg.ReferenceDesign.DesignID = designUid;
       arg.Extents = siteModel.Grid.GetCellExtents(cellX, cellY);
       arg.Extents.Expand(1.0, 1.0);
 

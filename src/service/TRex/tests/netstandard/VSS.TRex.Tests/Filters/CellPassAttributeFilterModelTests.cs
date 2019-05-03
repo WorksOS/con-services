@@ -2,6 +2,7 @@
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.BinarizableSerialization;
 using VSS.TRex.Types;
@@ -31,8 +32,7 @@ namespace VSS.TRex.Tests.Filters
         HasDesignFilter = true,
         DesignNameID = 3,
         ElevationMappingMode = ElevationMappingMode.LatestElevation,
-        ElevationRangeDesignUID = Guid.NewGuid(),
-        ElevationRangeDesignOffset = 1.5,
+        ElevationRangeDesign = new DesignOffset(Guid.NewGuid(), 1.5),
         ElevationRangeLevel = 4.0,
         ElevationRangeOffset = 5.0,
         ElevationRangeThickness = 6.0,

@@ -23,8 +23,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
                                      double offset) : this()
     {
       ProjectID = siteModelID;
-      ReferenceDesignUID = referenceDesignUID;
-      ReferenceOffset = offset;
+      ReferenceDesign.DesignID = referenceDesignUID;
+      ReferenceDesign.Offset = offset;
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> SiteModel:{ProjectID}, Design:{ReferenceDesignUID}, Offset:{ReferenceOffset}";
+      return base.ToString() + $" -> SiteModel:{ProjectID}, Design:{ReferenceDesign.DesignID}, Offset:{ReferenceDesign.Offset}";
     }
 
   }

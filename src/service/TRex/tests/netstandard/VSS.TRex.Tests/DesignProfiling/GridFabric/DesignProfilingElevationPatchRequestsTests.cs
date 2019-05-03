@@ -51,8 +51,8 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var argument = new CalculateDesignElevationPatchArgument
       {
         ProjectID = siteModel.ID,
-        ReferenceDesignUID = designUid,
-        ReferenceOffset = 0,
+        ReferenceDesign.DesignID = designUid,
+        ReferenceDesign.Offset = 0,
         CellSize = siteModel.CellSize,
         Filters = new FilterSet(new CombinedFilter()),
         OriginX = cellX,
@@ -83,7 +83,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       if (patchExists)
       {
         // Check a request with an offset provides the expected answer
-        argument.ReferenceOffset = offset;
+        argument.ReferenceDesign.Offset = offset;
 
         var response2 = request.Execute(argument);
 

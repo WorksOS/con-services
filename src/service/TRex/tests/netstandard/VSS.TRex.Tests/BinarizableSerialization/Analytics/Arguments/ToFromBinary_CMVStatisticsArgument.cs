@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign.DesignID = Guid.NewGuid(),
         CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
         OverrideMachineCMV = false,
         OverridingMachineCMV = 50,

@@ -23,7 +23,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
                 CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch();
 
-                var heightsResult = Executor.Execute(args.ProjectID, args.ReferenceDesignUID, args.CellSize, args.OriginX, args.OriginY, args.ReferenceOffset, out var calcResult);
+                var heightsResult = Executor.Execute(args.ProjectID, args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
 
                 return new CalculateDesignElevationPatchResponse
                 {

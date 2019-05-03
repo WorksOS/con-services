@@ -21,8 +21,8 @@ namespace VSS.TRex.Designs.GridFabric.Requests
 
       return request.Execute(new AlignmentDesignFilterBoundaryArgument
       {
-        ReferenceDesignUID = referenceDesignUID,
-        ReferenceOffset = offset,
+        ReferenceDesign.DesignID = referenceDesignUID,
+        ReferenceDesign.Offset = offset,
         StartStation = startStation,
         EndStation = endStation,
         LeftOffset = leftOffset,

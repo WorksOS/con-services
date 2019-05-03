@@ -93,8 +93,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
         NEECoords = coords,
         OTGCellX = OTGCellX,
         OTGCellY = OTGCellY,
-        ReferenceDesignUID = designUid,
-        ReferenceOffset = offset
+        ReferenceDesign.DesignID = designUid,
+        ReferenceDesign.Offset = offset
       };
     }
 
@@ -245,8 +245,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
         Filters = new FilterSet(new CombinedFilter()),
         Mode = mode,
         Point = coords,
-        ReferenceDesignUID = designUid,
-        ReferenceOffset = offset,
+        ReferenceDesign.DesignID = designUid,
+        ReferenceDesign.Offset = offset,
         CoordsAreGrid = true
       };
     }

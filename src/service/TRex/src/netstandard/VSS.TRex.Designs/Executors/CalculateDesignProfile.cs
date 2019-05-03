@@ -32,11 +32,11 @@ namespace VSS.TRex.Designs.Executors
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
 
-      IDesignBase Design = Designs.Lock(arg.ReferenceDesignUID, arg.ProjectID, arg.CellSize, out DesignLoadResult LockResult);
+      IDesignBase Design = Designs.Lock(arg.ReferenceDesign.DesignID, arg.ProjectID, arg.CellSize, out DesignLoadResult LockResult);
 
       if (Design == null)
       {
-        Log.LogWarning($"Failed to read file for design {arg.ReferenceDesignUID}");
+        Log.LogWarning($"Failed to read file for design {arg.ReferenceDesign.DesignID}");
         calcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
         return null;
       }
@@ -45,11 +45,11 @@ namespace VSS.TRex.Designs.Executors
       {
         var result = Design.ComputeProfile(arg.ProfilePath, arg.CellSize);
         //Apply any offset to the profile
-        if (arg.ReferenceOffset != 0)
+        if (arg.ReferenceDesign.Offset != 0)
         {
           for (var i=0; i<result.Count; i++)
           {
-            result[i] = new XYZS(result[i].X, result[i].Y, result[i].Z + arg.ReferenceOffset, result[i].Station, result[i].TriIndex);
+            result[i] = new XYZS(result[i].X, result[i].Y, result[i].Z + arg.ReferenceDesign.Offset, result[i].Station, result[i].TriIndex);
           }
         }
         calcResult = DesignProfilerRequestResult.OK;
@@ -58,7 +58,7 @@ namespace VSS.TRex.Designs.Executors
       }
       finally
       {
-        Designs.UnLock(arg.ReferenceDesignUID, Design);
+        Designs.UnLock(arg.ReferenceDesign.DesignID, Design);
       }
     }
 

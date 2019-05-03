@@ -51,7 +51,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> SiteModel:{ProjectID}, Origin:{OriginX}/{OriginY}, CellSize:{CellSize}, Design:{ReferenceDesignUID}";
+      return base.ToString() + $" -> SiteModel:{ProjectID}, Origin:{OriginX}/{OriginY}, CellSize:{CellSize}, Design:{ReferenceDesign.DesignID}";
     }
 
     /// <summary>

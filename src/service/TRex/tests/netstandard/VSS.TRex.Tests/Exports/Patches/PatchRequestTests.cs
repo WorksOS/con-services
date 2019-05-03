@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.Exports.Patches
         Filters = new FilterSet(new CombinedFilter()),
         Mode = DisplayMode.Height,
         ProjectID = projectUid,
-        ReferenceDesignUID = Guid.Empty,
+        ReferenceDesign.DesignID = Guid.Empty,
         TRexNodeID = "'Test_PatchRequest_Execute_EmptySiteModel"
       };
     }

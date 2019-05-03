@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign.DesignID = Guid.NewGuid(),
         RequestID = Guid.NewGuid(),
         GridDataType = GridDataType.CCV,
         ProdDataMaskBytes = new byte[]{ 1, 5, 3, 7 },

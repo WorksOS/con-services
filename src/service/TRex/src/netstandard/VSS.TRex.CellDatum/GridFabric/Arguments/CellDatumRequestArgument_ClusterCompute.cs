@@ -51,8 +51,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       OTGCellX = otgCellX;
       OTGCellY = otgCellY;
       Filters = filters;
-      ReferenceDesignUID = referenceDesignUid;
-      ReferenceOffset = referenceOffset;
+      ReferenceDesign.DesignID = referenceDesignUid;
+      ReferenceDesign.Offset = referenceOffset;
     }
 
     /// <summary>

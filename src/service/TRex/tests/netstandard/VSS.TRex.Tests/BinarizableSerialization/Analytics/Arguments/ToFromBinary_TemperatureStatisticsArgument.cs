@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign.DesignID = Guid.NewGuid(),
         OverrideTemperatureWarningLevels = false,
         OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(100, 200),
         TemperatureDetailValues = new[] { 0, 120, 140, 160, 4000 }

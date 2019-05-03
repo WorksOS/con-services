@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign.DesignID = Guid.NewGuid(),
         MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
         OverrideMachineMDP = false,
         OverridingMachineMDP = 1000

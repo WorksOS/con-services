@@ -83,8 +83,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
 
       Assert.Equal(request.ProjectUid, result.ProjectID);
       Assert.Null(result.Filters);
-      Assert.Equal(request.CutFillDesignUid ?? Guid.Empty, result.ReferenceDesignUID);
-      Assert.Equal(request.CutFillDesignOffset ?? 0, result.ReferenceOffset);
+      Assert.Equal(request.CutFillDesignUid ?? Guid.Empty, result.ReferenceDesign.DesignID);
+      Assert.Equal(request.CutFillDesignOffset ?? 0, result.ReferenceDesign.Offset);
       Assert.Equal(request.ReportElevation, result.ReportElevation);
       Assert.Equal(request.ReportCutFill, result.ReportCutFill);
       Assert.Equal(request.ReportCmv, result.ReportCmv);

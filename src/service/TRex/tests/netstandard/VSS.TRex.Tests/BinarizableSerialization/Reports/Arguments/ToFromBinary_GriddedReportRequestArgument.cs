@@ -31,7 +31,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Arguments
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign.DesignID = Guid.NewGuid(),
         ReportElevation = true,
         ReportCmv = true,
         ReportMdp = true,

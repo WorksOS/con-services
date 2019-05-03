@@ -60,7 +60,6 @@ namespace VSS.TRex.SubGrids
         private ITRexSpatialMemoryCacheContext SubGridCacheContext;
 
         private IDesign ElevationRangeDesign;
-        private double ElevationRangeDesignOffset;
         private IDesign SurfaceDesignMaskDesign;
 
         private IClientHeightLeafSubGrid DesignElevations;
@@ -121,11 +120,8 @@ namespace VSS.TRex.SubGrids
         
             FilteredSurveyedSurfaces = filteredSurveyedSurfaces;
 
-            if (Filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
-            {
-              ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignUID);
-              ElevationRangeDesignOffset = Filter.AttributeFilter.ElevationRangeDesignOffset;
-            }
+            if (Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty)
+              ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesign.DesignID);
 
             if (Filter.SpatialFilter.IsDesignMask)
               SurfaceDesignMaskDesign = SiteModel.Designs.Locate(Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
@@ -147,10 +143,10 @@ namespace VSS.TRex.SubGrids
                 // If the elevation range filter uses a design then the design elevations
                 // for the sub grid need to be calculated and supplied to the filter
 
-                if (Filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
+                if (Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty)
                 {
                   // Query the design get the patch of elevations calculated
-                  ElevationRangeDesign.GetDesignHeights(SiteModel.ID, ElevationRangeDesignOffset,
+                  ElevationRangeDesign.GetDesignHeights(SiteModel.ID, Filter.AttributeFilter.ElevationRangeDesign.Offset,
                     ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize,
                     out DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
 

@@ -50,7 +50,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> SiteModel:{ProjectID}, Location:{SpotX}/{SpotY}, Design:{ReferenceDesignUID}, Offset:{ReferenceOffset}";
+      return base.ToString() + $" -> SiteModel:{ProjectID}, Location:{SpotX}/{SpotY}, Design:{ReferenceDesign.DesignID}, Offset:{ReferenceDesign.Offset}";
     }
 
     /// <summary>

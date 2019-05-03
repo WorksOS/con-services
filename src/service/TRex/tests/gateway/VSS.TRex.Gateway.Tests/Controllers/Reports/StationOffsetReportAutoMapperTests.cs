@@ -77,8 +77,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       Assert.Equal(request.ReportMdp, result.ReportMdp);
       Assert.Equal(request.ReportPassCount, result.ReportPassCount);
       Assert.Equal(request.ReportTemperature, result.ReportTemperature);
-      Assert.Equal(request.CutFillDesignUid ?? Guid.Empty, result.ReferenceDesignUID);
-      Assert.Equal(request.CutFillDesignOffset ?? 0, result.ReferenceOffset);
+      Assert.Equal(request.CutFillDesignUid ?? Guid.Empty, result.ReferenceDesign.DesignID);
+      Assert.Equal(request.CutFillDesignOffset ?? 0, result.ReferenceDesign.Offset);
       Assert.Equal(request.AlignmentDesignUid, result.AlignmentDesignUid);
       Assert.Equal(request.CrossSectionInterval, result.CrossSectionInterval);
       Assert.Equal(request.StartStation, result.StartStation);

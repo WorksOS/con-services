@@ -56,8 +56,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = request.PositionsAreGrid,
         Filters = new FilterSet(baseFilter),
-        ReferenceDesignUID = request.ReferenceDesignUid ?? Guid.Empty,
-        ReferenceOffset = request.ReferenceDesignOffset ?? 0,
+        ReferenceDesign.DesignID = request.ReferenceDesignUid ?? Guid.Empty,
+        ReferenceDesign.Offset = request.ReferenceDesignOffset ?? 0,
         StartPoint = new WGS84Point(request.StartX, request.StartY),
         EndPoint = new WGS84Point(request.EndX, request.EndY),
         ReturnAllPassesAndLayers = true

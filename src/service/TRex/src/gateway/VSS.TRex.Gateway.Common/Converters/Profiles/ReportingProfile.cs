@@ -26,9 +26,9 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
-        .ForMember(x => x.ReferenceOffset,
+        .ForMember(x => x.ReferenceDesign.Offset,
           opt => opt.MapFrom(f => f.CutFillDesignOffset ?? 0))
-        .ForMember(x => x.ReferenceDesignUID,
+        .ForMember(x => x.ReferenceDesign.DesignID,
           opt => opt.MapFrom(f => f.CutFillDesignUid ?? Guid.Empty));
 
       CreateMap<CompactionReportGridTRexRequest, GriddedReportData>()
@@ -46,9 +46,9 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
-        .ForMember(x => x.ReferenceOffset,
+        .ForMember(x => x.ReferenceDesign.Offset,
           opt => opt.MapFrom(f => f.CutFillDesignOffset))
-        .ForMember(x => x.ReferenceDesignUID,
+        .ForMember(x => x.ReferenceDesign.DesignID,
           opt => opt.MapFrom(f => f.CutFillDesignUid ?? Guid.Empty));
     }
   }

@@ -28,7 +28,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign.DesignID = Guid.NewGuid(),
         ProfileTypeRequired = GridDataType.Height,
         NEECoords = coords,
         ReturnAllPassesAndLayers = false,

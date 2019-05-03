@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
@@ -452,8 +453,7 @@ namespace VSS.TRex.Tests.Caching
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasElevationRangeFilter = true;
-        x.AttributeFilter.ElevationRangeDesignUID = designGuid;
-        x.AttributeFilter.ElevationRangeDesignOffset = 0.39;
+        x.AttributeFilter.ElevationRangeDesign = new DesignOffset(designGuid, 0.39);
         x.AttributeFilter.ElevationRangeOffset = 123.456;
         x.AttributeFilter.ElevationRangeThickness = 1.234;
       });

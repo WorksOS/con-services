@@ -57,7 +57,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       {
         ProjectID = siteModel.ID,
         CellSize = SubGridTreeConsts.DefaultCellSize,
-        ReferenceDesignUID = designUid,
+        ReferenceDesign.DesignID = designUid,
         Filters = new FilterSet(new CombinedFilter()),
         ProfilePath = new [] { new XYZ(startX, startY), new XYZ(endX, endY) },
         TRexNodeID = "UnitTest_TRexNodeID"

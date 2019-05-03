@@ -34,8 +34,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(coordsAreGrid, arg.CoordsAreGrid);
       Assert.Equal(latLngPoint, arg.Point);
       Assert.Equal(filters, arg.Filters);
-      Assert.Equal(referenceDesignUid, arg.ReferenceDesignUID);
-      Assert.Equal(referenceOffset, arg.ReferenceOffset);
+      Assert.Equal(referenceDesignUid, arg.ReferenceDesign.DesignID);
+      Assert.Equal(referenceOffset, arg.ReferenceDesign.Offset);
     }
 
     [Fact]
@@ -64,8 +64,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(otgCellX, arg.OTGCellX);
       Assert.Equal(otgCellY, arg.OTGCellY);
       Assert.Equal(filters, arg.Filters);
-      Assert.Equal(referenceDesignUid, arg.ReferenceDesignUID);
-      Assert.Equal(referenceOffset, arg.ReferenceOffset);
+      Assert.Equal(referenceDesignUid, arg.ReferenceDesign.DesignID);
+      Assert.Equal(referenceOffset, arg.ReferenceDesign.Offset);
     }
   }
 }

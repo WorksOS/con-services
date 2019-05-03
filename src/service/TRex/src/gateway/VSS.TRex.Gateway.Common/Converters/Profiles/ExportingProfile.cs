@@ -32,9 +32,9 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
-        .ForMember(x => x.ReferenceDesignUID,
+        .ForMember(x => x.ReferenceDesign.DesignID,
           opt => opt.Ignore())
-        .ForMember(x => x.ReferenceOffset,
+        .ForMember(x => x.ReferenceDesign.Offset,
           opt => opt.Ignore())
         // MappedMachines are mapped separately using CSVExportHelper.MapRequestedMachines()
         .ForMember(x => x.MappedMachines,

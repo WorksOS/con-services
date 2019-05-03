@@ -26,8 +26,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.CellDatum.Arguments
         CoordsAreGrid = false,
         Point = new XYZ(1.234, 5.678),
         Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
-        ReferenceDesignUID = Guid.Empty,
-        ReferenceOffset = 0
+        ReferenceDesign.DesignID = Guid.Empty,
+        ReferenceDesign.Offset = 0
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom CellDatumRequestArgument_ApplicationService not same after round trip serialisation");

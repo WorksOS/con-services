@@ -231,8 +231,8 @@ namespace VSS.TRex.Designs.Storage
       var response = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
       {
         CellSize = cellSize,
-        ReferenceDesignUID = DesignDescriptor.DesignID,
-        ReferenceOffset = offset,
+        ReferenceDesign.DesignID = DesignDescriptor.DesignID,
+        ReferenceDesign.Offset = offset,
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
         // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
@@ -266,7 +266,7 @@ namespace VSS.TRex.Designs.Storage
       var maskResponse = filterMaskRequest.Execute(new DesignSubGridFilterMaskArgument
       {
         CellSize = cellSize,
-        ReferenceDesignUID = DesignDescriptor.DesignID,
+        ReferenceDesign.DesignID = DesignDescriptor.DesignID,
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
         ProjectID = siteModelID

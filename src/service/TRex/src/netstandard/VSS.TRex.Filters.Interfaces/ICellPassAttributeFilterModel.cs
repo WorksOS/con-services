@@ -2,6 +2,7 @@
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters.Interfaces
@@ -91,14 +92,9 @@ namespace VSS.TRex.Filters.Interfaces
     double ElevationRangeThickness { get; set; }
 
     /// <summary>
-    /// The design to be used as the benchmark for a surface based elevation range filter
+    /// The design to be used as the benchmark for a surface based elevation range filter together with its offset for a reference surface.
     /// </summary>
-    Guid ElevationRangeDesignUID { get; set; }
-
-    /// <summary>
-    /// The offset from the benchmark design for a reference surface
-    /// </summary>
-    double ElevationRangeDesignOffset { get; set; }
+    DesignOffset ElevationRangeDesign { get; set; }
 
     /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
