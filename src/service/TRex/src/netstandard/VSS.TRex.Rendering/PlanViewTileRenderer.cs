@@ -138,7 +138,10 @@ namespace VSS.TRex.Rendering
       Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
 
       if (Displayer == null)
-        return RequestErrorStatus.UnsupportedDisplayType;
+      {
+        processor.Response.ResultStatus = RequestErrorStatus.UnsupportedDisplayType;
+        return processor.Response.ResultStatus;
+      }
 
       // Create and assign the colour pallete logic for this mode to the displayer
       if (colourPalette == null)
@@ -148,7 +151,10 @@ namespace VSS.TRex.Rendering
           Displayer.Palette = ComputeCCAPalette(processor.SiteModel, filters.Filters[0].AttributeFilter, mode);
 
           if (Displayer.Palette == null)
-            return RequestErrorStatus.FailedToGetCCAMinimumPassesValue;
+          {
+            processor.Response.ResultStatus = RequestErrorStatus.FailedToGetCCAMinimumPassesValue;
+            return processor.Response.ResultStatus;
+          }
         }
         else
           Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
