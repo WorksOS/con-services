@@ -159,24 +159,5 @@ namespace VSS.TRex.Rendering.Palettes.CCAColorScale
 
       return tempColor;
     }
-
-    /// <summary>
-    /// Gets the min and max values for the segment at the specified index.
-    /// </summary>
-    /// <param name="segmentIndex"></param>
-    /// <param name="min"></param>
-    /// <param name="max"></param>
-    public void GetSegmentMinMax(int segmentIndex, out int min, out int max)
-    {
-      min = 0;
-      max = int.MaxValue;
-
-      if (segmentIndex >= 0 && segmentIndex < ColorSegments.Count)
-      {
-        min = ColorSegments[segmentIndex].MinValue;
-        max = ColorSegments[segmentIndex].MaxValue;
-      }
-    }
-
   }
 }
