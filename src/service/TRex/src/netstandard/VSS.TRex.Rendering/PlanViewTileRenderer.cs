@@ -4,6 +4,7 @@ using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
@@ -229,7 +230,7 @@ namespace VSS.TRex.Rendering
       NPixelsY = ANPixelsY;
     }
 
-    private IPlanViewPalette ComputeCCAPalette(ISiteModel siteModel,  ICellPassAttributeFilter filter, DisplayMode mode)
+    public IPlanViewPalette ComputeCCAPalette(ISiteModel siteModel,  ICellPassAttributeFilter filter, DisplayMode mode)
     {
       var machineUID = filter.MachinesList.Length > 0 ? filter.MachinesList[0] : Guid.Empty;
       
@@ -243,7 +244,7 @@ namespace VSS.TRex.Rendering
       var transitions = new Transition[ccaColorScale.TotalColors];
 
       for (var i = 0; i < transitions.Length; i++)
-        transitions[i] = new Transition(i + 1, Color.FromArgb((int)ccaColorScale.ColorSegments[i].Color));
+        transitions[i] = new Transition(i + 1, ColorUtility.UIntToColor(ccaColorScale.ColorSegments[transitions.Length - i - 1].Color));
 
       if (mode == DisplayMode.CCA)
       {

@@ -109,17 +109,20 @@ namespace VSS.TRex.Rendering.Palettes.CCAColorScale
 
       for (var i = ColorSegments.Count - 1; i >= 0; i--)
       {
-        isHatched = ColorSegments[i].IsHatched;
-
-        if (!IsSolidColors)
+        if (ColorSegments[i].IsValueWithinRange(value))
         {
-          minValue = ColorSegments[i].MinValue;
-          maxValue = ColorSegments[i].MaxValue;
+          isHatched = ColorSegments[i].IsHatched;
 
-          return  ScaleColor(value, minValue, maxValue, ColorSegments[i].Color);
+          if (!IsSolidColors)
+          {
+            minValue = ColorSegments[i].MinValue;
+            maxValue = ColorSegments[i].MaxValue;
+
+            return ScaleColor(value, minValue, maxValue, ColorSegments[i].Color);
+          }
+
+          return ColorSegments[i].Color;
         }
-
-        return ColorSegments[i].Color;
       }
 
       // Off the top, scaled to max...

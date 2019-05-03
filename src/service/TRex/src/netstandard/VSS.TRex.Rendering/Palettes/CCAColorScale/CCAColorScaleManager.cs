@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Rendering.Palettes.CCAColorScale
 {
@@ -19,7 +20,7 @@ namespace VSS.TRex.Rendering.Palettes.CCAColorScale
 
       var requiredColors = (ccaRequiredMinimumPasses * 2) - 1;
 
-      var colorsArray = new Color [CCV_COLOR_SCALE_COUNT];
+      var colorsArray = new Color [CCV_COLOR_SCALE_COUNT + 1];
 
       colorsArray[0] = Color.DarkGray;
       colorsArray[1] = Color.Green;
@@ -39,20 +40,20 @@ namespace VSS.TRex.Rendering.Palettes.CCAColorScale
       var colorSegments = ccaColorScale.ColorSegments;
 
       for (var i = 1; i <= numberOfColorPoints; i++)
-        colorSegments.Add(new CCAColorScaleSegment { Color = (uint)colorsArray[i].ToArgb()});
+        colorSegments.Add(new CCAColorScaleSegment { Color =  ColorUtility.ColorToUInt(colorsArray[i].R, colorsArray[i].G, colorsArray[i].B) });
 
       // Max value of this is always the required passes...
       colorSegments[0].SetValueRange(ccaRequiredMinimumPasses, ccaRequiredMinimumPasses);
 
-      var passesLeft = ccaRequiredMinimumPasses - 1;
+      float passesLeft = ccaRequiredMinimumPasses - 1;
       var step = passesLeft / (colorSegments.Count - 1);
 
       // Scale rest of colors evenly over passes left...
-      for (var i = 0; i <= colorSegments.Count - 1; i++)
+      for (var i = 1; i <= colorSegments.Count - 1; i++)
       {
-        var value1 = passesLeft + 1;
+        var value1 = (short)(passesLeft + 1);
         passesLeft -= step;
-        var value2 = passesLeft;
+        var value2 = (short)passesLeft;
 
         if (value2 != 0 || i == colorSegments.Count - 2)
           value2++;
