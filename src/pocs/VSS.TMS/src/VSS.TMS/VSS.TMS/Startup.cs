@@ -33,8 +33,14 @@ namespace VSS.TMS
 
       services.AddCors(options =>
       {
-        options.AddPolicy("AllowSpecificOrigin",
-          builder => builder.WithOrigins("http://localhost:8080"));
+        //   options.AddPolicy("AllowSpecificOrigin",builder => builder.WithOrigins("http://localhost:8080"));
+
+        options.AddPolicy("AllowAllOrigins",
+          builder =>
+          {
+            builder.AllowAnyOrigin().AllowAnyMethod();
+          });
+
       });
 
     }
@@ -47,7 +53,8 @@ namespace VSS.TMS
         app.UseDeveloperExceptionPage();
       }
       // Shows UseCors with named policy.
-      app.UseCors("AllowSpecificOrigin");
+      //app.UseCors("AllowSpecificOrigin");
+      app.UseCors("AllowAllOrigins");
       app.UseStaticFiles();
       app.UseMvc();
     }

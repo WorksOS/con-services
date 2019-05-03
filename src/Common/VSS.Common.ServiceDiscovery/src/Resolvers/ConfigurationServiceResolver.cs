@@ -27,6 +27,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
     public Task<string> ResolveService(string serviceName)
     {
       var configValue = configuration.GetValueString(serviceName, null);
+      configValue = configValue ?? configuration.GetValueString(serviceName.Replace('-','_'), null);
 
       if (!string.IsNullOrEmpty(configValue))
       {

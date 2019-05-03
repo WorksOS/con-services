@@ -22,7 +22,7 @@ data:
   KAFKA_PORT: "9092"
   KAFKA_TOPIC_NAME_SUFFIX: -Alpha
   KAFKA_OFFSET: latest
-  PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
+  PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V1
 #Service references  
   ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/associateprojectsubscription
   DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/dissociateprojectsubscription
@@ -131,4 +131,3 @@ data:
   SLACK_URL: https://hooks.slack.com/services/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
   SLACK_CHANNEL: "#notifications-alpha"
   SLACK_USERNAME: vss-jobs-alpha
-  ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "false"
