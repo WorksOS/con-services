@@ -23,6 +23,8 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ $configName }}
+        - secretRef:
+            name: {{ .Values.globalConfig }}-secret              
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-webapi:{{ .Values.image.tag }}
         name: {{ $name }}     
