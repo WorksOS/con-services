@@ -11,7 +11,7 @@ SET @s = (SELECT IF(
         AND table_schema = DATABASE()
 		AND column_name = 'GeometryWKT'
     ) > 0,
-    "UPDATE `Geofence` SET `PolygonST` = ST_GeomFromText(`GeometryWKT`) WHERE `GeometryWKT` IS NOT NULL AND CHAR_LENGTH(`GeometryWKT`) < 4000 AND  CHAR_LENGTH(`GeometryWKT`) > 0",
+    "UPDATE `Geofence` SET `PolygonST` = ST_GeomFromText(`GeometryWKT`) WHERE `GeometryWKT` IS NOT NULL AND CHAR_LENGTH(`GeometryWKT`) < 4000 AND  CHAR_LENGTH(`GeometryWKT`) > 0 AND PolygonST IS NULL AND GeometryWKT LIKE 'POLYGON%'",
 	"SELECT 1"
 ));  
 
@@ -25,6 +25,7 @@ SET @s = (SELECT IF(
         WHERE table_name = 'Geofence'
         AND table_schema = DATABASE()
         AND column_name = 'GeometryWKT'
+		AND IS_NULLABLE = 'NO'
     ) > 0,
     "ALTER TABLE `Geofence` MODIFY `GeometryWKT` varchar(4000) DEFAULT NULL",
 	"SELECT 1"
