@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Rendering.Palettes.CCAColorScale
@@ -146,18 +147,5 @@ namespace VSS.TRex.Rendering.Palettes.CCAColorScale
     ///  value whether a scale uses solid colors or a gradient.
     /// </summary>
     public int TotalColors => ColorSegments.Count;
-
-    public uint GetColorAtIndex(int index, ref bool isHatched)
-    {
-      var tempColor = ColorUtility.ColorToUInt(COLOR_RED_VALUE, COLOR_GREEN_VALUE, COLOR_BLUE_VALUE);
-
-      if (index >= 0 && index < ColorSegments.Count)
-      {
-        tempColor = ColorSegments[index].Color;
-        isHatched = ColorSegments[index].IsHatched;
-      }
-
-      return tempColor;
-    }
   }
 }

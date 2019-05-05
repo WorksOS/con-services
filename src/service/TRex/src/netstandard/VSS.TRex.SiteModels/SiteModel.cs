@@ -845,7 +845,7 @@ namespace VSS.TRex.SiteModels
 
       if (machine == null)
       {
-        Log.LogWarning($"Getting CCA minimum pass values. No Machine found. Machine UID: {machineUID}");
+        Log.LogWarning($"{nameof(GetCCAMinimumPassesValue)}. No Machine found. Machine UID: {machineUID}");
         return ccaMinimumPassesValue;
       }
 
@@ -853,7 +853,7 @@ namespace VSS.TRex.SiteModels
 
       if (targetvalues == null)
       {
-        Log.LogWarning("Getting CCA minimum pass values. No Machine Targets found");
+        Log.LogWarning($"{nameof(GetCCAMinimumPassesValue)}. No Machine Targets found");
         return ccaMinimumPassesValue;
       }
 
