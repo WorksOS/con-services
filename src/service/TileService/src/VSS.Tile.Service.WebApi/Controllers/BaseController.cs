@@ -81,6 +81,10 @@ namespace VSS.Tile.Service.WebApi.Controllers
       this.authn = authn;
     }
 
+    public BaseController()
+    {
+    }
+
     /// <summary>
     /// Executes the request with exception handling.
     /// </summary>

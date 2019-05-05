@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -21,9 +22,6 @@ namespace VSS.TMS.TileSources
       this.configuration = configuration;
       this.contentType = Utils.GetContentType(this.configuration.Format);
     }
-
-
-
 
 
 
@@ -86,12 +84,19 @@ namespace VSS.TMS.TileSources
       }
     }
 
-
-
+    /// <summary>
+    /// Get Terrain Height tile
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <returns></returns>
     async Task<byte[]> ITileSource.GetTerrainTileAsync(int x, int y, int z)
     {
 
       //var path = String.Format(@"C:\map\terrain\myset\{0}\{1}\{2}.terrain",z, x,y);
+
+
       var path = String.Format(@"C:\map\terrain\dummy\0.terrain");
 
       var fileInfo = new FileInfo(path);
@@ -109,6 +114,44 @@ namespace VSS.TMS.TileSources
         return null;
       }
     }
+
+    async Task<byte[]> ITileSource.GetTerrainQMTileAsync(int x, int y, int z, string path, int mode)
+    {
+
+    //  var path2 = String.Format(@"C:\map\data\mydata\tiles\{0}\{1}\{2}.terrain", z, x,y);
+    string path2; 
+      if (z > 10)
+        path2 = Path.Combine(path, "fake.terrain");
+      else
+        path2 = Path.Combine(path, string.Format(@"{0}\{1}\{2}.terrain", z, x, y));
+
+      //   var path = String.Format(@"C:\map\data\TestData\{0}\{1}\{2}.terrain", z, x, y);
+
+      //  var path = String.Format(@"C:\map\qmtiles\1111.terrain");
+      var fileInfo = new FileInfo(path2);
+      if (!fileInfo.Exists && mode == 1)
+      {
+        path2 = Path.Combine(path, String.Format(@"{0}\{1}\{2}.terrain", 99, 0, 0));
+        fileInfo = new FileInfo(path2);
+      }
+
+      if (fileInfo.Exists)
+      {
+        var buffer = new byte[fileInfo.Length];
+        using (var fileStream = fileInfo.OpenRead())
+        {
+          await fileStream.ReadAsync(buffer, 0, buffer.Length);
+          Console.WriteLine("Tile {0} sent",fileInfo);
+          return buffer;
+        }
+      }
+      else
+      {
+        Console.WriteLine("*** Tile {0} was NOT sent ***", fileInfo);
+        return null;
+      }
+    }
+
 
     async Task<byte[]> ITileSource.GetImageTileAsync(int x, int y, int z)
     {

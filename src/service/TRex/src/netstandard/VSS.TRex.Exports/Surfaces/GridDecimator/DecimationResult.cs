@@ -6,7 +6,7 @@
     Unknown = 1,
     NoDataStore = 2,
     NoData = 3,
-    TrianglesExceeded = 4,
+    VerticesExceeded = 4,
     DestinationTINNotEmpty
   }
 }

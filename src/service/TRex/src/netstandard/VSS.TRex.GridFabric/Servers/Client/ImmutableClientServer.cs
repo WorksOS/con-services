@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
+using VSS.ConfigurationStore;
 using VSS.TRex.Logging;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
@@ -30,7 +30,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
     /// </summary>
     public class ImmutableClientServer : IgniteServer, IImmutableClientServer
   {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<ImmutableClientServer>();
 
     /// <summary>
     /// Constructor that creates a new server instance with a single role
@@ -98,7 +98,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
             // Set an Ignite metrics heartbeat of 10 seconds
             MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
 
-            PublicThreadPoolSize = 50,
+            PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE),
 
             PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled,
 

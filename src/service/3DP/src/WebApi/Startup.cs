@@ -7,13 +7,18 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.ServiceDiscovery;
 using VSS.Log4NetExtensions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.WebApi.Common;
@@ -59,7 +64,7 @@ namespace VSS.Productivity3D.WebApi
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-      services.AddMvcCore(options =>
+      services.AddMvc(options =>
       {
         options.OutputFormatters.Add(new ProtobufOutputFormatter(new ProtobufFormatterOptions()));
       });
@@ -71,19 +76,21 @@ namespace VSS.Productivity3D.WebApi
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
 
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
+      services.AddServiceDiscovery();
+
       /*services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>
         {
           options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-          options.Hosting.IgnorePatterns.Add(request => request.Request.GetUri().ToString().Contains("newrelic.com"));
         });
       });
 
       services.AddJaeger(SERVICE_TITLE);
 
       services.AddOpenTracing();*/
- 
+
       ConfigureApplicationServices(services);
     }
 
@@ -91,13 +98,7 @@ namespace VSS.Productivity3D.WebApi
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<RaptorAuthentication>();
-
-      //Add stats
-      if (Configuration["newrelic"] == "true")
-      {
-        app.UseFilterMiddleware<NewRelicMiddleware>();
-      }
-
+  
       app.UseRewriter(new RewriteOptions().Add(RewriteMalformedPath));
       app.UseResponseCaching();
       app.UseResponseCompression();
@@ -138,7 +139,10 @@ namespace VSS.Productivity3D.WebApi
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CS") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PATCHES") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CELL_DATUM") != "true" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS") != "true")
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MACHINES") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MACHINEDESIGNS") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_LAYERS") != "true" )
         ConfigureRaptor();
     }
 

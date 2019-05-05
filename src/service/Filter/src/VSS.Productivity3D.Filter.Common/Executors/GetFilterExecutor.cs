@@ -8,6 +8,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Models;
@@ -24,9 +25,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IFileListProxy fileListProxy,
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileListProxy fileListProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy,fileListProxy, repository, producer, kafkaTopicName, null)
+      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy, fileListProxy, repository, producer, kafkaTopicName, null)
     { }
 
     /// <summary>
@@ -78,7 +79,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
 
-      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filter, raptorProxy, filterRequest.CustomHeaders);
+      await FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filter, raptorProxy, assetResolverProxy, filterRequest.CustomHeaders);
 
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
     }

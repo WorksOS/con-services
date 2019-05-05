@@ -1,13 +1,13 @@
 ﻿using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
-using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class ClientCellProfileLeafSubgridTests
+  public class ClientCellProfileLeafSubgridTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_NullCells()
@@ -26,6 +26,13 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       clientGrid.Cells[0, 0] = clientGrid.NullCell();
       Assert.False(clientGrid.CellHasValue(0, 0), "Cell not set to correct null value");
+    }
+
+    [Fact]
+    public void DumpToLog()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellProfile) as ClientCellProfileLeafSubgrid;
+      clientGrid.DumpToLog(clientGrid.ToString());
     }
   }
 }

@@ -1,8 +1,8 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Profiling.Models;
 
 
@@ -25,7 +25,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
     public bool ReturnAllPassesAndLayers { get; set; }
 
-
     /// <summary>
     /// The volume computation method to use when calculating summary volume information
     /// </summary>
@@ -37,30 +36,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// </summary>
     public ProfileRequestArgument_ApplicationService()
     {
-    }
-
-
-    /// <summary>
-    /// Creates a new profile request argument initialized with the supplied parameters
-    /// </summary>
-    /// <param name="profileTypeRequired"></param>
-    /// <param name="profileStyle"></param>
-    /// <param name="startPoint"></param>
-    /// <param name="endPoint"></param>
-    /// <param name="positionsAreGrid"></param>
-    /// <param name="referenceDesignUid"></param>
-    /// <param name="returnAllPassesAndLayers"></param>
-    /// <param name="volumeType"></param>
-    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, ProfileStyle profileStyle, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
-    {
-      ProfileTypeRequired = profileTypeRequired;
-      ProfileStyle = profileStyle;
-      StartPoint = startPoint;
-      EndPoint = endPoint;
-      PositionsAreGrid = positionsAreGrid;
-      ReferenceDesignUID = referenceDesignUid;
-      ReturnAllPassesAndLayers = returnAllPassesAndLayers;
-      VolumeType = volumeType;
     }
 
     /// <summary>
@@ -78,11 +53,9 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       writer.WriteInt((int)ProfileStyle);
 
       writer.WriteBoolean(StartPoint != null);
-
       StartPoint?.ToBinary(writer);
 
       writer.WriteBoolean(EndPoint != null);
-
       EndPoint?.ToBinary(writer);
 
       writer.WriteBoolean(PositionsAreGrid);

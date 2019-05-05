@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Cells;
@@ -14,6 +15,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <summary>
     /// This is a static, immutable, version of the cell and cell passes that make up a sub grid segment
     /// </summary>
+    [ExcludeFromCodeCoverage] // This class is no longer actively used,
     public class SubGridCellSegmentPassesDataWrapper_Static : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
         /// <summary>
@@ -340,7 +342,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Note that this information is immutable
         /// </summary>
         /// <returns></returns>
-        public override bool IsImmutable() => true;
+        public bool IsImmutable() => true;
 
         public bool HasPassData() => PassData != null;
     }

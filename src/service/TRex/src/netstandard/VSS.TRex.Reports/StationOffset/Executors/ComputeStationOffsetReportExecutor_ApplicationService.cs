@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -73,14 +74,17 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         Log.LogInformation($"{nameof(StationOffsetReportRequestResponse_ApplicationService)}: pointCount: {argClusterCompute.Points.Count}");
         if (argClusterCompute.Points.Count == 0)
         {
-          return new StationOffsetReportRequestResponse_ApplicationService() {ReturnCode = ReportReturnCode.NoData};
+          return new StationOffsetReportRequestResponse_ApplicationService() {ReturnCode = ReportReturnCode.NoData, ResultStatus = RequestErrorStatus.NoProductionDataFound};
         }
 
         var request = new StationOffsetReportRequest_ClusterCompute();
-        var applicationResponse = new StationOffsetReportRequestResponse_ApplicationService();
         var clusterComputeResponse = request.Execute(argClusterCompute);
 
         // Return the core package to the caller
+        var applicationResponse = new StationOffsetReportRequestResponse_ApplicationService()
+          { ReturnCode = clusterComputeResponse.ReturnCode,
+            ResultStatus = clusterComputeResponse.ResultStatus
+          };
         applicationResponse.LoadStationOffsets(clusterComputeResponse.StationOffsetRows);
         Log.LogInformation($"End {nameof(ComputeStationOffsetReportExecutor_ApplicationService)}: ReturnCode {applicationResponse.ReturnCode}.");
         return applicationResponse;
@@ -107,8 +111,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           return;
 
         var subGrid = SubGridUtilities.LocateSubGridContaining
-        (DIContext.Obtain<ISiteModels>().StorageProxy,
-          siteModel.Grid, address.X, address.Y, siteModel.Grid.NumLevels, false, false);
+        (siteModel.PrimaryStorageProxy, siteModel.Grid, address.X, address.Y, siteModel.Grid.NumLevels, false, false);
 
         if (subGrid != null)
         {
@@ -124,17 +127,6 @@ namespace VSS.TRex.Reports.StationOffset.Executors
             });
         }
       });
-
-      if (points.Count == 0)
-      {
-        // uses data locations from tagFileSubmission for Project6 siteModel "f13f2458-6666-424f-a995-4426a00771ae"
-        return new List<StationOffsetPoint>()
-        {
-          new StationOffsetPoint(1, -1, 804645, 388062),
-          new StationOffsetPoint(1, -0, 804650, 388050),
-          new StationOffsetPoint(1, 1, 804664, 388048)
-        };
-      }
 
       return points;
     }

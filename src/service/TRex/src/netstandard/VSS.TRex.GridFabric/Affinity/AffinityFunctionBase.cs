@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -16,15 +15,15 @@ namespace VSS.TRex.GridFabric.Affinity
   /// </summary>
   public class AffinityFunctionBase : IAffinityFunction
   {
-    protected static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    protected static readonly ILogger Log = Logging.Logger.CreateLogger<AffinityFunctionBase>();
 
     // Set NumPartitions to the default number of partitions
-    protected readonly int NumPartitions = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.NUMPARTITIONS_PERDATACACHE);
+    protected readonly uint NumPartitions = DIContext.Obtain<IConfigurationStore>().GetValueUint("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
 
     /// <summary>
     /// Return the number of partitions to use for affinity. 
     /// </summary>
-    public int Partitions => NumPartitions;
+    public int Partitions => (int)NumPartitions;
     
     /// <summary>
     /// Determine how the nodes in the grid are to be assigned into the partitions configured in the cache
@@ -34,7 +33,7 @@ namespace VSS.TRex.GridFabric.Affinity
     public IEnumerable<IEnumerable<IClusterNode>> AssignPartitions(AffinityFunctionContext context)
     {
       // Create the (empty) list of node mappings for the affinity partition assignment
-      List<List<IClusterNode>> result = Enumerable.Range(0, NumPartitions).Select(x => new List<IClusterNode>()).ToList();
+      List<List<IClusterNode>> result = Enumerable.Range(0, (int)NumPartitions).Select(x => new List<IClusterNode>()).ToList();
 
       try
       {
@@ -61,9 +60,9 @@ namespace VSS.TRex.GridFabric.Affinity
           Log.LogInformation("Assigning partitions to nodes");
           for (int partitionIndex = 0; partitionIndex < NumPartitions; partitionIndex++)
           {
-            result[partitionIndex].Add(Nodes[NumPartitions % Nodes.Count]);
+            result[partitionIndex].Add(Nodes[(int)NumPartitions % Nodes.Count]);
 
-            Log.LogDebug($"--> Assigned node:{Nodes[NumPartitions % Nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
+            Log.LogDebug($"--> Assigned node:{Nodes[(int)NumPartitions % Nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
           }
         }
       }

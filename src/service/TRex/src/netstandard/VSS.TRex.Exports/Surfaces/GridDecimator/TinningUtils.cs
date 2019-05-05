@@ -8,7 +8,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
   /// </summary>
     public static class TinningUtils
     {
-      private static double noCotangent = -1E20;
+      private const double noCotangent = -1E20;
 
       public static double XProduct(TriVertex thePoint, TriVertex basePt1, TriVertex basePt2)
       {
@@ -25,7 +25,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         double Eps = 0.000001;
         double crossProduct = XProduct(thePoint, basePt1, basePt2);
 
-        return (Math.Abs(crossProduct) < Eps) ? noCotangent : DotProduct(thePoint, basePt1, basePt2) / crossProduct;
+        return Math.Abs(crossProduct) < Eps ? noCotangent : DotProduct(thePoint, basePt1, basePt2) / crossProduct;
       }
 
       public static bool DefinitelyLeftOfBaseLine(TriVertex thePoint, TriVertex basePt1, TriVertex basePt2)

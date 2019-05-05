@@ -13,6 +13,7 @@
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\VSS.TRex.Events.Interfaces\VSS.TRex.Events.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

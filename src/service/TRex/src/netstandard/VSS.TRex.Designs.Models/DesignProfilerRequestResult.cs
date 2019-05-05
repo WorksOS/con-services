@@ -26,6 +26,7 @@
         FailedToUpdateCache,
         FailedGetDataModelSpatialExtents,
         NoAlignmentsFound,
-        InvalidResponseCode
+        InvalidResponseCode,
+        DesignDoesNotExist
     }
 }

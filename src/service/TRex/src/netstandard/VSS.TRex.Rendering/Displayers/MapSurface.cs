@@ -1,5 +1,5 @@
 ﻿using System;
-using Draw = System.Drawing;
+using System.Drawing;
 using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -82,7 +82,7 @@ namespace VSS.TRex.Rendering.Displayers
         //    FPrintingDisplay        :Boolean;
         //    FPrintTextReportSection :Boolean;
 
-        private Draw.Color DrawCanvasPenColor = Draw.Color.Black; // Cached pen color for the DrawCanvas
+        private Color DrawCanvasPenColor = Color.Black; // Cached pen color for the DrawCanvas
         private IPen DrawCanvasPen;
         private IBrush DrawCanvasBrush;
 
@@ -124,7 +124,7 @@ namespace VSS.TRex.Rendering.Displayers
             return inside;
         }
 
-        public void Clip_and_draw_line(double from_x, double from_y, double to_x, double to_y, Draw.Color PenColor)
+        public void Clip_and_draw_line(double from_x, double from_y, double to_x, double to_y, Color PenColor)
         {
             bool inside;     // Reset if all the line segment is outside the window.
             
@@ -297,7 +297,7 @@ namespace VSS.TRex.Rendering.Displayers
 
         public void _rectangle(int x1, int y1, int x2, int y2)
         {
-            DrawCanvas.DrawRectangle(DrawCanvasPen, new Draw.Rectangle(x1, x2, x2 - x1, y2 - y1));
+            DrawCanvas.DrawRectangle(DrawCanvasPen, new Rectangle(x1, x2, x2 - x1, y2 - y1));
         }
 
         //procedure Repaint; override;
@@ -350,13 +350,13 @@ namespace VSS.TRex.Rendering.Displayers
             DrawNonSquareAspectScale = true;
             DrawNonSquareAspectScaleAsVerticalDistanceBar = false;
 
-            DrawCanvasPen = RenderingFactory.CreatePen(Draw.Color.Black);
-            DrawCanvasBrush = RenderingFactory.CreateBrush(Draw.Color.Black);
+            DrawCanvasPen = RenderingFactory.CreatePen(Color.Black);
+            DrawCanvasBrush = RenderingFactory.CreateBrush(Color.Black);
 
             BitmapCanvas = RenderingFactory.CreateBitmap(100, 100);
             DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
 
-            DrawCanvasPenColor = Draw.Color.Black;
+            DrawCanvasPenColor = Color.Black;
 
             Rotation = 0.0;
 
@@ -365,11 +365,8 @@ namespace VSS.TRex.Rendering.Displayers
 
         public void CalculateXYOffsets()
         {
-            if (DrawCanvas == null)
-            {
-                return;
-            }
-
+          if (DrawCanvas != null)
+          {
             // DotSymbolSize = Math.Round(GetDeviceCaps(DrawCanvas.Handle, LOGPIXELSX) / DotSymbolsPerInch) + 2;
             // HalfDotSymbolSize1 = DotSymbolSize / 2;
             // HalfDotSymbolSize2 = DotSymbolSize - DotSymbolSize / 2;
@@ -381,6 +378,7 @@ namespace VSS.TRex.Rendering.Displayers
             YOffset = 0;
             XAxisAdjust = XAxesDirection == 1 ? 0 : ClipWidth;
             YAxisAdjust = YAxesDirection == 1 ? ClipHeight : 0;
+          }
         }
 
         //        procedure DisplaySurfacePaint(Sender : TObject);
@@ -647,8 +645,8 @@ double BorderSize)
         }
 
 
-        public void SetPenColor(Draw.Color PenColor) => DrawCanvasPen.Color = PenColor;
-        public void SetBrushColor(Draw.Color BrushColor) => DrawCanvasBrush.Color = BrushColor;
+        public void SetPenColor(Color PenColor) => DrawCanvasPen.Color = PenColor;
+        public void SetBrushColor(Color BrushColor) => DrawCanvasBrush.Color = BrushColor;
         //procedure SetBrushStyle(const BrushStyle : TBrushStyle);
         //procedure SetFontColor(FontColor : TColor);
 
@@ -681,7 +679,7 @@ double BorderSize)
         //                                         const Fill : Boolean;
         //                                         const ReferenceAxis : TMapRelativeReferenceAxis);
 
-        public void DrawLine(double x1, double y1, double x2, double y2, Draw.Color PenColor)
+        public void DrawLine(double x1, double y1, double x2, double y2, Color PenColor)
         {
             // We are given the start and end coordinates of a line to be drawn.The
             // coordinates are in World units. We must first transform them to pixel
@@ -709,7 +707,7 @@ double BorderSize)
         //    procedure DrawArrowHead(x1, y1, x2, y2, HeadSize : FLOAT; PenColor : TColor);
         //    procedure DrawArrow(x1, y1, x2, y2, HeadSize : FLOAT; PenColor : TColor);
         //        procedure DrawLineEx(x1, y1, x2, y2 : FLOAT; PenColor : TColor; First : Boolean);
-        public void DrawLineNoClip(double x1, double y1, double x2, double y2, Draw.Color PenColor)
+        public void DrawLineNoClip(double x1, double y1, double x2, double y2, Color PenColor)
         {
             // We are given the start and end coordinates of a line to be drawn.The
             // coordinates are in World units. We must first transform them to pixel
@@ -740,7 +738,7 @@ double BorderSize)
             DrawCanvas.DrawLine(DrawCanvasPen, px1, py1, px2, py2);
         }
 
-        public void DrawLineNoOrigin(double x1, double y1, double x2, double y2, Draw.Color PenColor)
+        public void DrawLineNoOrigin(double x1, double y1, double x2, double y2, Color PenColor)
         {
             if (Rotating)
             {
@@ -752,7 +750,7 @@ double BorderSize)
                                x2 * DQMScaleX, y2 * DQMScaleY, PenColor);
         }
 
-        public void DrawLineNoOriginNoClip(double x1, double y1, double x2, double y2, Draw.Color PenColor)
+        public void DrawLineNoOriginNoClip(double x1, double y1, double x2, double y2, Color PenColor)
         {
             // We are given the start and end coordinates of a line to be drawn.The
             // coordinates are in World units with their origin adjusted to the world
@@ -807,7 +805,7 @@ double BorderSize)
                 py2++;
         }
 
-        public void DrawNonRotatedRect(double x, double y, double w, double h, bool Fill, Draw.Color PenColor)
+        public void DrawNonRotatedRect(double x, double y, double w, double h, bool Fill, Color PenColor)
         {
             //int px1, py1, px2, py2;
 
@@ -830,7 +828,7 @@ double BorderSize)
                 else
                 {
                     FinaliseViewPortCoords(true, ref px1, ref py1, ref px2, ref py2);
-                    SetBrushColor(Draw.Color.Empty);
+                    SetBrushColor(Color.Empty);
                     DrawCanvasPen.Brush = DrawCanvasBrush;
                     DrawCanvas.DrawRectangle(DrawCanvasPen, px1, py1, px2 - px1 + 1, Math.Abs(py2 - py1) + 1);
                 }
@@ -844,9 +842,9 @@ double BorderSize)
         /// Contains a local store of Point structures to be used by the DrawRect function to remove the overhead 
         /// of 5 memory allocations for each DrawRect invocation
         /// </summary>
-        private Draw.Point[] DrawRectPoints = Enumerable.Range(0, 4).Select(x => new Draw.Point()).ToArray();
+        private Point[] DrawRectPoints = Enumerable.Range(0, 4).Select(x => new Point()).ToArray();
 
-        public void DrawRect(double x, double y, double w, double h, bool Fill, Draw.Color PenColor)
+        public void DrawRect(double x, double y, double w, double h, bool Fill, Color PenColor)
         {
             // const double Epsilon = 0;
 
@@ -901,7 +899,7 @@ double BorderSize)
                 }
                 else
                 {
-                    DrawCanvasBrush.Color = Draw.Color.Empty;
+                    DrawCanvasBrush.Color = Color.Empty;
                     DrawCanvasPen.Color = PenColor;
                     DrawCanvasPen.Brush = DrawCanvasBrush;
                     DrawCanvas.DrawPolygon(DrawCanvasPen, DrawRectPoints);

@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -15,12 +16,12 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// The project for which this cache context stores items
     /// </summary>
-    public Guid ProjectUID { get; private set; }
+    public Guid ProjectUID { get; }
 
     /// <summary>
     /// THe fingerprint used to distinguish this cache context from others stored in the overall cache
     /// </summary>
-    public string FingerPrint { get; private set; }
+    public string FingerPrint { get; }
 
     /// <summary>
     /// Notes if this context has been marked for removal, for instance as a result of the last element within it
@@ -30,7 +31,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     public bool MarkedForRemoval { get; set; }
 
-    public DateTime MarkedForRemovalAtUtc { get; set; } = DateTime.MinValue;
+    public DateTime MarkedForRemovalAtUtc { get; set; } = Consts.MIN_DATETIME_AS_UTC;
 
     public ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
@@ -52,7 +53,7 @@ namespace VSS.TRex.Caching
     /// Determine what external stimuli elements in this cache are sensitive to with respect to
     /// invalidation and eviction of elements contained in the cache.
     /// </summary>
-    public TRexSpatialMemoryCacheInvalidationSensitivity Sensitivity { get; set; } = TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest;
+    public TRexSpatialMemoryCacheInvalidationSensitivity Sensitivity { get; } = TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest;
 
     /// <summary>
     /// Constructs a new cache context for the given owning cache and MRU list. Time base expiry is defaulted to 'never'.
@@ -72,6 +73,7 @@ namespace VSS.TRex.Caching
     /// <param name="mruList"></param>
     /// <param name="cacheDurationTime"></param>
     /// <param name="fingerPrint"></param>
+    /// <param name="projectUID"></param>
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
       ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList,
       TimeSpan cacheDurationTime, string fingerPrint, Guid projectUID)
@@ -99,7 +101,7 @@ namespace VSS.TRex.Caching
 
         // Add the element to storage and obtain its index in that storage, inserting it into the context
         // Note: The index is added as a 1-based index to the ContextTokens to differentiate iot from the null value
-        // of 0 used as the null value in integer based subgrid trees
+        // of 0 used as the null value in integer based sub grid trees
         if (ContextTokens[x, y] != 0)
         {
           // This cache element in the context already contains an item.
@@ -170,7 +172,7 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Removes the index for an item from the context token subgrid tree only. This is intended to be used by the MRU list to communicate
+    /// Removes the index for an item from the context token sub grid tree only. This is intended to be used by the MRU list to communicate
     /// elements that are being removed from the MRUList in response to adding new items to the cache.
     /// </summary>
     /// <param name="item"></param>
@@ -190,23 +192,21 @@ namespace VSS.TRex.Caching
     /// <param name="originX"></param>
     /// <param name="originY"></param>
     /// <param name="subGridPresentForInvalidation"></param>
-    public void InvalidateSubgridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation)
+    public void InvalidateSubGridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation)
     {
+      subGridPresentForInvalidation = false;
+
       uint x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       uint y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       var contextToken = ContextTokens[x, y];
 
-      if (contextToken == 0)
+      if (contextToken != 0)
       {
-        // Nothing to do
-        subGridPresentForInvalidation = false;
-        return;
+        // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
+        MRUList.Invalidate(contextToken - 1);
+        subGridPresentForInvalidation = true;
       }
-
-      // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
-      MRUList.Invalidate(contextToken - 1);
-      subGridPresentForInvalidation = true;
     }
 
     /// <summary>
@@ -214,7 +214,8 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void MarkForRemoval(DateTime markedForRemovalAtUtc)
     {
-      Debug.Assert(markedForRemovalAtUtc.Kind == DateTimeKind.Utc, "MarkForRemoval is not a UTC date");
+      if (markedForRemovalAtUtc.Kind != DateTimeKind.Utc)
+        throw new TRexException("MarkForRemoval is not a UTC date");
 
       MarkedForRemovalAtUtc = markedForRemovalAtUtc;
       MarkedForRemoval = true;
@@ -225,7 +226,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void Reanimate()
     {
-      MarkedForRemovalAtUtc = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+      MarkedForRemovalAtUtc = Consts.MIN_DATETIME_AS_UTC;
       MarkedForRemoval = false;
     }
   }

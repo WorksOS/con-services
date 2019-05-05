@@ -1,32 +1,26 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Extensions;
+using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     /// Defines the header written at the start of a stream containing sub grid information, either sub grid directory or sub grid segment.
     /// </summary>
-    public class SubGridStreamHeader
-    {
+    public class SubGridStreamHeader : INonBinaryReaderWriterMimicable
+  {
+        public const byte VERSION_NUMBER = 1;
+
         public const int kSubGridHeaderFlag_IsSubGridDirectoryFile = 0x1;
         public const int kSubGridHeaderFlag_IsSubGridSegmentFile = 0x2;
 
-        public const int kSubGridMajorVersion = 2;
-        public const int kSubGridMinorVersion_Latest = 0;
-
         public static readonly byte[] kICServerSubGridLeafFileMoniker = new byte[] { 73, 67, 83, 71, 76, 69, 65, 70 }; // 'ICSGLEAF' 
-
         public static readonly byte[] kICServerSubGridDirectoryFileMoniker = new byte[] { 73, 67, 83, 71, 68, 73, 82, 76 }; // 'ICSGDIRL';
-
 
         public byte[] Identifier = new byte[8];
 
-        public byte MajorVersion;
-        public byte MinorVersion;
+        public byte Version;
 
         public int Flags;
         public DateTime StartTime;
@@ -41,9 +35,9 @@ namespace VSS.TRex.SubGridTrees
 
         public void Read(BinaryReader reader)
         {
+          Version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
             Identifier = reader.ReadBytes(8);
-            MajorVersion = reader.ReadByte();
-            MinorVersion = reader.ReadByte();
 
             Flags = reader.ReadInt32();
 
@@ -54,9 +48,9 @@ namespace VSS.TRex.SubGridTrees
 
         public void Write(BinaryWriter writer)
         {
+            VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
             writer.Write(Identifier);
-            writer.Write(MajorVersion);
-            writer.Write(MinorVersion);
 
             writer.Write(Flags);
 

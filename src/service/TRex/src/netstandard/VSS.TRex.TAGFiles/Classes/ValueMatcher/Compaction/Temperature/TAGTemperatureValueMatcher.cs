@@ -29,43 +29,37 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
 
         public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
         {
-            if (!state.HaveSeenAnAbsoluteTemperature)
+            bool result = false;
+
+            if (state.HaveSeenAnAbsoluteTemperature)
             {
-                return false;
+              if (valueType.Type == TAGDataType.t4bitInt || valueType.Type == TAGDataType.t8bitInt)
+              {
+                if ((ushort) valueSink.ICTemperatureValues.GetLatest() + value >= 0)
+                {
+                  valueSink.SetICTemperatureValue((ushort) ((ushort) valueSink.ICTemperatureValues.GetLatest() + value));
+                  result = true;
+                }
+              }
             }
 
-            switch (valueType.Type)
-            {
-                case TAGDataType.t4bitInt:
-                case TAGDataType.t8bitInt:
-                    if ((ushort)valueSink.ICTemperatureValues.GetLatest() + value < 0)
-                    {
-                        return false;
-                    }
-
-                    valueSink.SetICTemperatureValue((ushort)((ushort)valueSink.ICTemperatureValues.GetLatest() + value));
-
-                    break;
-                default:
-                    return false;
-            }
-
-            return true;
+            return result;
         }
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            // Value is absolute temperature value
-            state.HaveSeenAnAbsoluteTemperature = true;
+          // Value is absolute temperature value
+          state.HaveSeenAnAbsoluteTemperature = true;
 
-            if (valueType.Type != TAGDataType.t12bitUInt)
-            {
-                return false;
-            }
+          bool result = false;
 
-            valueSink.SetICTemperatureValue((ushort)value);
+          if (valueType.Type == TAGDataType.t12bitUInt)
+          {
+            valueSink.SetICTemperatureValue((ushort) value);
+            result = true;
+          }
 
-            return true;
+          return result;
         }
     }
 }

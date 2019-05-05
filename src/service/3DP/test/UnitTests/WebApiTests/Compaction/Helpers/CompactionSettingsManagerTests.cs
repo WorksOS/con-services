@@ -3,6 +3,7 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
@@ -27,8 +28,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(DisplayMode.Height)]
     public void CompactionPalette_Should_return_default_Evelvation_palette(DisplayMode displayMode)
     {
-      var elevExtents = ElevationStatisticsResult.CreateElevationStatisticsResult(
-        BoundingBox3DGrid.CreatBoundingBox3DGrid(100.0, 100.0, 100.0, 100.0, 100.0, 100.0),
+      var elevExtents = new ElevationStatisticsResult(
+        new BoundingBox3DGrid(100.0, 100.0, 100.0, 100.0, 100.0, 100.0),
         100.0,
         100.0,
         1000.0);

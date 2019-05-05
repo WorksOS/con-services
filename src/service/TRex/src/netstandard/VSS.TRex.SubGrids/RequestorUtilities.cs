@@ -4,6 +4,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -25,7 +26,7 @@ namespace VSS.TRex.SubGrids
   /// </summary>
   public class RequestorUtilities : IRequestorUtilities
   {
-    private static readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
+    private readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
     private ITRexSpatialMemoryCache _subGridCache;
 
@@ -146,7 +147,7 @@ namespace VSS.TRex.SubGrids
         var requestor = SubGridRequestorFactory();
         requestor.Initialize(siteModel,
           x.GridDataType,
-          siteModels.StorageProxy,
+          siteModel.PrimaryStorageProxy,
           x.Filter,
           false, // Override cell restriction
           BoundingIntegerExtent2D.Inverted(),

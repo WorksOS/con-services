@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
+using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Webtools.Controllers
 {
@@ -42,8 +48,9 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] ushort pixelsY)
     {
       var request = new TileRenderRequest();
-      TileRenderResponse_Core2 response = await request.ExecuteAsync(new TileRenderRequestArgument(
-        siteModelID: Guid.Parse(siteModelID),
+      var response = await request.ExecuteAsync(new TileRenderRequestArgument(
+        siteModelID: Guid.Parse(siteModelID), 
+        palette: null,
         coordsAreGrid: true,
         pixelsX: pixelsX,
         pixelsY: pixelsY,
@@ -67,7 +74,10 @@ namespace VSS.TRex.Webtools.Controllers
       {
         (DisplayMode.Height, "Height"),
         (DisplayMode.CCV, "CCV"),
-        (DisplayMode.MDP, "MDP"),
+        (DisplayMode.CCVPercentSummary, "CCV Summary"),
+        (DisplayMode.PassCount, "Pass Count"),
+        (DisplayMode.PassCountSummary, "Pass Count Summary"),
+        (DisplayMode.MDPPercentSummary, "MDP Summary"),
         (DisplayMode.CutFill, "Cut/Fill"),
         (DisplayMode.MachineSpeed, "Speed"),
         (DisplayMode.TargetSpeedSummary, "Speed Summary"),

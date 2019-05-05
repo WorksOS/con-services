@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
-using VSS.TRex.DI;
 using VSS.TRex.Machines.Interfaces;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Machines
 {
@@ -44,7 +42,7 @@ namespace VSS.TRex.Machines
 
     public IMachine CreateNew(string name, string machineHardwareID,
       MachineType machineType,
-      DeviceType deviceType,
+      DeviceTypeEnum deviceType,
       bool isJohnDoeMachine,
       Guid machineID)
     {
@@ -162,9 +160,9 @@ namespace VSS.TRex.Machines
     /// Loads the content of the machines list from the persistent store. If there is no item in the persistent store containing
     /// machines for this site model them return an empty list.
     /// </summary>
-    public void LoadFromPersistentStore()
+    public void LoadFromPersistentStore(IStorageProxy storageProxy)
     {
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, out MemoryStream MS);
+      storageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, out MemoryStream MS);
       if (MS == null)
         return;
 

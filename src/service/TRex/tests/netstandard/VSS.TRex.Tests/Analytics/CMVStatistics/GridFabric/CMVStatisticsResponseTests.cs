@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Common;
@@ -58,6 +59,8 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       Assert.True(result.Counts.Length == _response.Counts.Length, "Invalid value for Counts.");
       for (int i = 0; i < result.Counts.Length; i++)
         Assert.True(result.Counts[i] == _response.Counts[i], $"Invalid value for Counts[{i}].");
+
+      result.ReturnCode.Should().Be(MissingTargetDataResultType.NoProblems);
     }
 
     [Fact]

@@ -154,10 +154,8 @@ namespace VSS.TRex.SubGridTrees
                 return new BoundingWorldExtent3D(MinCX - CellSizeOver2, MinCY - CellSizeOver2,
                                                  MaxCX + CellSizeOver2, MaxCY + CellSizeOver2);
             }
-            else
-            {
-                return BoundingWorldExtent3D.Inverted();
-            }
+
+            return BoundingWorldExtent3D.Inverted();
         }
 
         /// <summary>
@@ -175,11 +173,9 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="Source"></param>
         public void SetOp_OR(ISubGridTreeBitMask Source)
         {
-            SubGridTreeLeafBitmapSubGrid bitMapSubGrid;
-
-            Source.ScanAllSubGrids(x =>
+            Source?.ScanAllSubGrids(x =>
             {
-                bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf);
+                var bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf);
 
                 // In this instance, x is a sub grid from the tree we are OR-ing with this
                 // one, and BitMapSubGrid is a grid retrieved from this tree
@@ -196,11 +192,9 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="Source"></param>
         public void SetOp_XOR(ISubGridTreeBitMask Source)
         {
-          SubGridTreeLeafBitmapSubGrid bitMapSubGrid;
-
-          Source.ScanAllSubGrids(x =>
+          Source?.ScanAllSubGrids(x =>
           {
-            bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf);
+            var bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf);
 
             // In this instance, x is a sub grid from the tree we are OR-ing with this
             // one, and BitMapSubGrid is a grid retrieved from this tree
@@ -240,7 +234,7 @@ namespace VSS.TRex.SubGridTrees
             {
                 if (x != null)
                 {
-                    var bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)Source.LocateSubGridContaining(x.OriginX, x.OriginY);
+                    var bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)Source?.LocateSubGridContaining(x.OriginX, x.OriginY);
                     if (bitMapSubGrid == null)
                         ((SubGridTreeLeafBitmapSubGrid)x).Bits.Clear(); // No sub grid in source, clear sub grid in 'this'
                     else

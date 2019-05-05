@@ -1,28 +1,60 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Helpers
 {
-  public class GatewayHelper
+  public static class GatewayHelper
   {
-    public static ISiteModel EnsureSiteModelExists(Guid projectUid)
+    private static readonly ILogger Log = Logging.Logger.CreateLogger("GatewayHelper");
+
+    public static ISiteModel ValidateAndGetSiteModel(string method, Guid projectUid, bool createIfNotExists = false)
     {
-      var sm = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, false);
-      if (sm == null)
+      if (projectUid == Guid.Empty)
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, $"siteModel ID: {projectUid} format is invalid."));
+
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, createIfNotExists);
+      if (siteModel == null)
       {
-        sm = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, true);
-        if (!sm.SaveMetadataToPersistentStore(DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage()))
+        var message = $"{method}: SiteModel: {projectUid} not found {(createIfNotExists ? " and unable to be created" : "")}";
+        Log.LogError(message);
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, message));
+      }
+
+      return siteModel;
+    }
+
+    public static ISiteModel ValidateAndGetSiteModel(string method, string projectUid, bool createIfNotExists = false)
+    {
+      if (string.IsNullOrEmpty(projectUid))
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "siteModel ID format is invalid"));
+
+      return ValidateAndGetSiteModel(method, Guid.Parse(projectUid), createIfNotExists);
+    }
+    
+    public static bool ValidateMachines(List<Guid?> machineUids, ISiteModel siteModel)
+    {
+      if (machineUids.Count > 0)
+      {
+        var machines = siteModel.Machines.Select(x => x.ID).ToList();
+        foreach (var machineUid in machineUids)
         {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Unable to create siteMode in tRex"));
+          if (machineUid == null || machineUid == Guid.Empty || !machines.Contains(machineUid.Value))
+          {
+            var message = $"{nameof(ValidateMachines)}: SiteModel: {siteModel.ID} machineUid not found: {machineUid}";
+            Log.LogError(message);
+            throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, message));
+          }
         }
       }
 
-      return sm;
+      return true;
     }
   }
 }

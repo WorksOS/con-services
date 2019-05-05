@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -38,6 +42,15 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostSummaryVolumes)}: {Request.QueryString}");
 
       summaryVolumesRequest.Validate();
+      if (summaryVolumesRequest.ProjectUid == null || summaryVolumesRequest.ProjectUid == Guid.Empty)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid project UID."));
+      }
+      ValidateFilterMachines(nameof(PostSummaryVolumes), summaryVolumesRequest.ProjectUid, summaryVolumesRequest.BaseFilter);
+      ValidateFilterMachines(nameof(PostSummaryVolumes), summaryVolumesRequest.ProjectUid, summaryVolumesRequest.TopFilter);
+      ValidateFilterMachines(nameof(PostSummaryVolumes), summaryVolumesRequest.ProjectUid, summaryVolumesRequest.AdditionalSpatialFilter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -57,7 +70,15 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {Request.QueryString}");
       
       summaryVolumesProfileRequest.Validate();
-
+      if (summaryVolumesProfileRequest.ProjectUid == null || summaryVolumesProfileRequest.ProjectUid == Guid.Empty)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid project UID."));
+      }
+      ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.BaseFilter);
+      ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.TopFilter);
+      
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<SummaryVolumesProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)

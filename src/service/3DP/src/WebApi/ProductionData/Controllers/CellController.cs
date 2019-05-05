@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -78,15 +79,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/productiondata/cells/datum")]
     [HttpPost]
-    public async Task<CellDatumResponse> Post([FromBody]CellDatumRequest request)
+    public async Task<CellDatumResult> Post([FromBody]CellDatumRequest request)
     {
       request.Validate();
+      return await RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger,
 #if RAPTOR
-      return await RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResponse;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
 #endif
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResult;
     }
 
     /// <summary>

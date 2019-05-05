@@ -97,7 +97,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <param name="import"></param>
     public void Insert(GridToTINTriangle tri, double import)
     {
-      if (tri.Vertices[0] == null && tri.Vertices[1] == null && tri.Vertices[2] == null)
+      if (tri.Vertices[0] == null || tri.Vertices[1] == null || tri.Vertices[2] == null)
         throw new TRexException("One or more vertices in triangle is null");
 
       tri.HeapIndex = Count;

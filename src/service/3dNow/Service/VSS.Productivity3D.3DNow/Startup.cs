@@ -15,7 +15,9 @@ using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 
@@ -23,9 +25,12 @@ namespace VSS.Productivity3D.Now3D
 {
   public class Startup : BaseStartup
   {
-    public Startup(IHostingEnvironment env) : base(env, "3d-Now")
+    public const string LoggerRepoName = "3d-now";
+
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
     {
     }
+
 
     public override string ServiceName => "3D Now Composite API";
 
@@ -46,13 +51,14 @@ namespace VSS.Productivity3D.Now3D
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
 
+      services.AddServiceDiscovery();
+
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, Now3DExecutionStates>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
 
-      services.AddServiceDiscovery();
 
       services.AddOpenTracing(builder =>
       {

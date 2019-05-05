@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Analytics.ElevationStatistics;
 using VSS.TRex.Analytics.ElevationStatistics.GridFabric;
 using VSS.TRex.Common;
@@ -19,7 +20,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics
 
     private ElevationStatisticsCoordinator _getCoordinator()
     {
-      return new ElevationStatisticsCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
+      return new ElevationStatisticsCoordinator { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
     private ElevationStatisticsAggregator _getElevationAggregator()
@@ -87,6 +88,8 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics
       Assert.True(!response.BoundingExtents.IsValidPlanExtent, "Response BoundingExtents should be inverted.");
       Assert.True(!aggregator.BoundingExtents.IsValidPlanExtent, "Aggregator BoundingExtents should be inverted.");
       Assert.True(response.BoundingExtents.Equals(aggregator.BoundingExtents), "Aggregator and response BoundingExtents are not equal.");
+
+      response.TotalArea.Should().Be(0);
     }
   }
 }

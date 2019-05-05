@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.DI;
@@ -56,7 +58,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         return new CombinedFilter(); //TRex doesn't like null filter
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<FilterResult, CombinedFilter>(filter);
-
+      combinedFilter.AttributeFilter.SiteModel = siteModel;
       bool includeSurveyedSurfaces = (filter.SurveyedSurfaceExclusionList?.Count ?? 0) == 0;
       var excludedIds = siteModel.SurveyedSurfaces == null || !includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList = excludedIds;
@@ -242,7 +244,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       ContractExecutionStates.DynamicAddwithOffset(
         "Invalid page size or number for patch request. Try reducing the area being requested.",
         (int)RequestErrorStatus.InvalidArgument);
-      ContractExecutionStates.DynamicAddwithOffset("Failed to create coordinate transformer.",
+      ContractExecutionStates.DynamicAddwithOffset("Failed to configure internal pipeline.",
         (int)RequestErrorStatus.FailedToConfigureInternalPipeline);
       ContractExecutionStates.DynamicAddwithOffset("Failed to retrieve design file from storage.",
         (int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3);
@@ -252,6 +254,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.DesignImportUnableToUpdateDesign);
       ContractExecutionStates.DynamicAddwithOffset("Failed to delete design from project.",
         (int)RequestErrorStatus.DesignImportUnableToDeleteDesign);
+      ContractExecutionStates.DynamicAddwithOffset("Failed to prepare filter.",
+        (int)RequestErrorStatus.FailedToPrepareFilter);
+      ContractExecutionStates.DynamicAddwithOffset("Failed to get CCA minimum passes value.",
+        (int)RequestErrorStatus.FailedToGetCCAMinimumPassesValue);
     }
 
     protected ServiceException CreateServiceException<T>(RequestErrorStatus resultStatus = RequestErrorStatus.OK)

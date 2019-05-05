@@ -37,8 +37,8 @@ namespace TAGFiles.Tests
             lineSplit[j].Should().Be(logSplit[j], because);
 
           // Compare the date with a 1 millisecond tolerance
-          DateTime logDate = DateTime.ParseExact(logSplit.Last(), "yyyy-MM-dd-HH-mm-ss.fff", CultureInfo.InvariantCulture);
-          DateTime lineDate = DateTime.ParseExact(lineSplit.Last(), "yyyy-MM-dd-HH-mm-ss.fff", CultureInfo.InvariantCulture);
+          DateTime logDate = DateTime.SpecifyKind(DateTime.ParseExact(logSplit.Last(), "yyyy-MM-dd-HH-mm-ss.fff", CultureInfo.InvariantCulture), DateTimeKind.Utc);
+          DateTime lineDate = DateTime.SpecifyKind(DateTime.ParseExact(lineSplit.Last(), "yyyy-MM-dd-HH-mm-ss.fff", CultureInfo.InvariantCulture), DateTimeKind.Utc);
 
           var span = logDate - lineDate;
           Math.Abs(span.TotalMilliseconds).Should().BeLessThan(2.0, because + $" Line={Lines[i]}, mutationLog={mutationLog[i]}");

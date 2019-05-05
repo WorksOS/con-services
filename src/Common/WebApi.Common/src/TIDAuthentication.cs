@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -23,10 +24,12 @@ namespace VSS.WebApi.Common
     private readonly ICustomerProxy customerProxy;
     private readonly IConfigurationStore store;
 
-    /// <summary>
-    /// Service exception handler.
-    /// </summary>
-    protected IServiceExceptionHandler ServiceExceptionHandler;
+    protected virtual List<string> IgnoredPaths => new List<string> { "/swagger/", "/cache/" };
+
+  /// <summary>
+  /// Service exception handler.
+  /// </summary>
+  protected IServiceExceptionHandler ServiceExceptionHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TIDAuthentication"/> class.
@@ -56,7 +59,7 @@ namespace VSS.WebApi.Common
     /// <returns></returns>
     public async Task Invoke(HttpContext context)
     {
-      if (context.Request.Path.Value.Contains("/swagger/") || context.Request.Path.Value.Contains("/cache/"))
+      if (IgnoredPaths.Select(s=>context.Request.Path.Value.Contains(s)).Contains(true))
       {
         await _next(context);
         return;

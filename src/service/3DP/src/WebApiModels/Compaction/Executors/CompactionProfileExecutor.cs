@@ -166,8 +166,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.VolumeDesignDescriptor?.FileUid,
         request.GridPoints != null,
         request.GridPoints?.x1 ?? (request.WGS84Points?.lon1 ?? 0.0),
-        request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
         request.GridPoints?.y1 ?? (request.WGS84Points?.lat1 ?? 0.0),
+        request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
         request.GridPoints?.y2 ?? (request.WGS84Points?.lat2 ?? 0.0),
         request.ReturnAllPassesAndLayers
       );
@@ -183,7 +183,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       MemoryStream memoryStream;
 
-      var filter = RaptorConverters.ConvertFilter(request.Filter);
+      var filter = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.CutFillDesignDescriptor);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentDesign);
       var liftBuildSettings =
@@ -539,8 +539,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentDesign);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
-      var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilter);
-      var topFilter = RaptorConverters.ConvertFilter(request.TopFilter);
+      var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilter, request.ProjectId, raptorClient);
+      var topFilter = RaptorConverters.ConvertFilter(request.TopFilter, request.ProjectId, raptorClient);
       var volumeDesignDescriptor = RaptorConverters.DesignDescriptor(request.VolumeDesignDescriptor);
       ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out var startPt, out var endPt,
         out var positionsAreGrid);

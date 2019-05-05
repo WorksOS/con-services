@@ -45,35 +45,39 @@ namespace VSS.Productivity3D.WebApi
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 
       var libuvConfigured = int.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out var libuvThreads);
-      var host = new WebHostBuilder()
-        .UseConfiguration(config)
-        .UseKestrel(opts =>
-        {
-          opts.Limits.MaxResponseBufferSize = 131072;//128K for large exports (default is 64K)
-        })
-        //.UseUrls("http://127.0.0.1:5002") //DO NOT REMOVE (used for local debugging of long running veta exports)
-        .UseLibuv(opts =>
-        {
-          if (libuvConfigured)
-          {
-            opts.ThreadCount = libuvThreads;
-          }
 
-        })
-        .UseContentRoot(pathToContentRoot)
-        .ConfigureLogging(builder =>
-        {
-          Log4NetProvider.RepoName = Startup.LoggerRepoName;
-          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          builder.SetMinimumLevel(LogLevel.Debug);
-          builder.AddConfiguration(config);
-        })
-        .UsePrometheus()
-        .UseStartup<Startup>()
-        .Build();
+
+      var host = new WebHostBuilder().BuildHostWithReflectionException(builder =>
+      {
+          return builder.UseConfiguration(config)
+          .UseKestrel(opts =>
+          {
+            opts.Limits.MaxResponseBufferSize = 131072; //128K for large exports (default is 64K)
+          })
+          //.UseUrls("http://127.0.0.1:5002") //DO NOT REMOVE (used for local debugging of long running veta exports)
+          .UseLibuv(opts =>
+          {
+            if (libuvConfigured)
+            {
+              opts.ThreadCount = libuvThreads;
+            }
+
+          })
+          .UseContentRoot(pathToContentRoot)
+          .ConfigureLogging(builderConf =>
+          {
+            Log4NetProvider.RepoName = Startup.LoggerRepoName;
+            builderConf.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+            builderConf.SetMinimumLevel(LogLevel.Debug);
+            builderConf.AddConfiguration(config);
+          })
+          .UsePrometheus()
+          .UseStartup<Startup>()
+          .Build();
+      });
 
       var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-      Console.WriteLine("Productivity3D service starting");
+
       log.LogInformation("Productivity3D service starting");
       log.LogInformation($"Num Libuv Threads = {(libuvConfigured ? libuvThreads.ToString() : "Default")}");
       

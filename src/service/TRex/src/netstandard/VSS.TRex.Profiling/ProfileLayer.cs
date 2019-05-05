@@ -2,7 +2,10 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
@@ -14,9 +17,9 @@ namespace VSS.TRex.Profiling
   /// or may represent a lift over a cell, in which case the Passes collection
   /// for the layer will contain the passes making up that lift.
   /// </summary>
-  public class ProfileLayer : IProfileLayer
+  public class ProfileLayer : IProfileLayer, IFromToBinary
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ProfileLayer>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProfileLayer>();
 
     /// <summary>
     /// Owner is the profile cell that owns this layer. This is important as the
@@ -126,7 +129,7 @@ namespace VSS.TRex.Profiling
       EndCellPassIdx = -1;
 
       MachineID = -1;
-      LastLayerPassTime = DateTime.MinValue;
+      LastLayerPassTime = Consts.MIN_DATETIME_AS_UTC;
 
       CCV = CellPassConsts.NullCCV;
       TargetCCV = CellPassConsts.NullCCV;
@@ -162,10 +165,7 @@ namespace VSS.TRex.Profiling
       Clear();
 
       if (Owner.Layers.Count() != 0)
-      {
-        Log.LogCritical("Cannot add a layer via FilteredPassValues if there are already layers in the cell");
-        return;
-      }
+        throw new TRexSubGridProcessingException("Cannot assign layers if there are already layers in the cell");
 
       if (cellPassValues.PassCount > 0)
       {

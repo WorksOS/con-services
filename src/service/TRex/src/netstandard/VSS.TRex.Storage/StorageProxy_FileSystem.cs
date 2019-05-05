@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -10,6 +11,7 @@ namespace VSS.TRex.Storage
   /// <summary>
   /// Implementation of the IStorageProxy interface that allows to read/write operations against TRex IO Service
   /// </summary>
+  [ExcludeFromCodeCoverage] // Not currently used...
   public class StorageProxy_FileSystem : IStorageProxy
   {
     public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache { get; } = null; // Not implemented

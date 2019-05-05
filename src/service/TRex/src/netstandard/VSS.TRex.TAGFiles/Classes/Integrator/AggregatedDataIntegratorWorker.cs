@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -13,6 +13,7 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -108,7 +109,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
         // and also explicitly provides the transactional storage proxy being used for processing the
         // data from TAG files into the model
-        ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(storageProxy_Mutable, Task.PersistedTargetSiteModelID, true);
+        ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(Task.PersistedTargetSiteModelID, true);
 
         if (SiteModelFromDM == null)
         {
@@ -116,7 +117,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           return false;
         }
 
-        Task.StartProcessingTime = DateTime.Now;
+        SiteModelFromDM.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
+        Task.StartProcessingTime = Consts.MIN_DATETIME_AS_UTC;
 
         ProcessedTasks.Add(Task); // Seed task is always a part of the processed tasks
 
@@ -219,6 +222,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               Task.IntermediaryTargetMachine.DeviceType,
               Task.IntermediaryTargetMachine.IsJohnDoeMachine,
               Task.PersistedTargetMachineID);
+            Task.PersistedTargetMachineID = MachineFromDM.ID;
+            Task.IntermediaryTargetMachine.ID = MachineFromDM.ID;
+            Task.IntermediaryTargetMachine.InternalSiteModelMachineIndex = MachineFromDM.InternalSiteModelMachineIndex;
             MachineFromDM.Assign(Task.IntermediaryTargetMachine);
           }
 
@@ -320,10 +326,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // All operations within the transaction to integrate the changes into the live model have completed successfully.
           // Now commit those changes as a block.
 
-          var startTime = DateTime.Now;
+          var startTime = DateTime.UtcNow;
           Log.LogInformation("Starting storage proxy Commit()");
           storageProxy_Mutable.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
-          Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.Now - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
+          Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
 
           // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
 
@@ -339,8 +345,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
               if (retirementQueue == null)
               {
-                Log.LogCritical("No registered segment retirement queue in DI context");
-                Debug.Assert(false, "No registered segment retirement queue in DI context");
+                throw new TRexTAGFileProcessingException("No registered segment retirement queue in DI context");
               }
 
               DateTime insertUTC = DateTime.UtcNow;
@@ -398,7 +403,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       finally
       {
-        Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for machine {Task?.PersistedTargetMachineID} in project {Task?.PersistedTargetSiteModelID}");
+        Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for PersistedMachine: {Task?.PersistedTargetMachineID} FinalMachine: {Task?.IntermediaryTargetMachine.ID} in project {Task?.PersistedTargetSiteModelID}");
       }
 
       return true;

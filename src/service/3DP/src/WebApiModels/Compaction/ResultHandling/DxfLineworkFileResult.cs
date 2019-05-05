@@ -3,6 +3,7 @@ using System.Linq;
 using ASNodeDecls;
 using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common.Algorithms;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
@@ -27,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       Code = (int)code;
     }
 
-    public GeoJson ConvertToGeoJson()
+    public GeoJson ConvertToGeoJson(bool convertLineStringCoordsToPolygon, int maxVerticiesToApproximateTo)
     {
       if (LineworkBoundaries == null) return null;
 
@@ -39,29 +40,40 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 
       foreach (var boundary in LineworkBoundaries)
       {
+        var fencePoints = DouglasPeucker.DouglasPeuckerByCount(boundary.Boundary.FencePoints, maxVerticiesToApproximateTo);
+
         geoJson.Features.Add(new Feature
         {
           Type = GeoJson.FeatureType.FEATURE,
           Properties = new Properties { Name = boundary.BoundaryName },
-          Geometry = new Geometry
-          {
-            Type = Geometry.Types.POLYGON,
-            Coordinates = GetCoordinatesFromFencePoints(boundary)
-          }
+          Geometry = GetCoordinatesFromFencePoints(fencePoints, convertLineStringCoordsToPolygon)
         });
       }
 
       return geoJson;
     }
 
-    private static List<List<double[]>> GetCoordinatesFromFencePoints(TWGS84LineworkBoundary boundary)
+    private static Geometry GetCoordinatesFromFencePoints(List<double[]> fencePoints, bool convertLineStringCoordsToPolygon)
     {
-      var result = new List<List<double[]>>();
-      var boundaries = boundary.Boundary.FencePoints.Select(point => new[] {point.Lon, point.Lat}).ToList(); // GeoJSON is lon/lat.
+      var boundaryType = Geometry.Types.POLYGON;
 
-      result.Add(boundaries);
+      if (fencePoints.First()[0] != fencePoints.Last()[0] && fencePoints.First()[1] != fencePoints.Last()[1])
+      {
+        if (convertLineStringCoordsToPolygon)
+        {
+          fencePoints.Add(fencePoints.First());
+        }
+        else
+        {
+          boundaryType = Geometry.Types.LINESTRING;
+        }
+      }
 
-      return result;
+      return new Geometry
+      {
+        Type = boundaryType,
+        Coordinates = new List<List<double[]>> { fencePoints }
+      };
     }
   }
 }

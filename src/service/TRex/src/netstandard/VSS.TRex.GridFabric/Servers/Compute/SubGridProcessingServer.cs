@@ -1,5 +1,4 @@
 ﻿using Apache.Ignite.Core;
-using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric.Servers.Compute
@@ -32,9 +31,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         /// </summary>
         public void SetupServerSpecificConfiguration()
         {
-            // Enable use of immutable data pools when processing requests
-            TRexServerConfig.Instance().UseMutableSpatialData = false;
-            TRexServerConfig.Instance().UseMutableNonSpatialData = false;
         }
     }
 }

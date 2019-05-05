@@ -1,7 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
@@ -105,15 +104,15 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Existence map of where we know Prod Data exists 
     /// </summary>
-    public SubGridTreeBitmapSubGridBits ProdDataMap { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    public SubGridTreeBitmapSubGridBits ProdDataMap { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
     /// Existence map of cells matching current filter settings
     /// </summary>
-    public SubGridTreeBitmapSubGridBits FilterMap { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    public SubGridTreeBitmapSubGridBits FilterMap { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
-    /// World extent of the client leaf subgrid map of cells
+    /// World extent of the client leaf sub grid map of cells
     /// </summary>
     /// <returns></returns>
     public BoundingWorldExtent3D WorldExtents()
@@ -187,22 +186,6 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Calculate the world coordinate extents for this client leaf sub grid.
-    /// This uses the local cell size and index origin offset information to perform the 
-    /// calculation locally without the need for a reference sub grid tree.
-    /// </summary>
-    /// <returns></returns>
-    public BoundingWorldExtent3D CalculateWorldExtent()
-    {
-      double WOx = (OriginX - IndexOriginOffset) * CellSize;
-      double WOy = (OriginY - IndexOriginOffset) * CellSize;
-
-      return new BoundingWorldExtent3D(WOx, WOy,
-                                       WOx + SubGridTreeConsts.SubGridTreeDimension * CellSize,
-                                       WOy + SubGridTreeConsts.SubGridTreeDimension * CellSize);
-    }
-
-    /// <summary>
     /// Assign cell information from a previously cached result held in the general sub grid result cache
     /// using the supplied map to control which cells from the caches sub grid should be copied into this
     /// client leaf sub grid
@@ -243,10 +226,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Dumps the contents of this client leaf sub grid into the log in a human readable form
     /// </summary>
     /// <param name="title"></param>
-    public virtual void DumpToLog(string title)
-    {
-      throw new NotImplementedException("TICSubGridTreeLeafSubGridBase.DumpToLog not implemented in " + GetType().Name);
-    }
+    public abstract void DumpToLog(string title);
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
@@ -275,9 +255,7 @@ namespace VSS.TRex.SubGridTrees.Client
       base.Read(reader, buffer);
 
       if ((GridDataType)reader.ReadInt32() != GridDataType)
-      {
-        Debug.Assert(false, "GridDataType in stream does not match GridDataType of local sub grid instance");
-      }
+        throw new TRexSubGridIOException("GridDataType in stream does not match GridDataType of local sub grid instance");
 
       CellSize = reader.ReadDouble();
       IndexOriginOffset = reader.ReadUInt32();
@@ -308,5 +286,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Facades the OriginY property of this sub grid for use in the spatial caching implementation
     /// </summary>
     public uint CacheOriginY => OriginY;
+
+    public void DumpToLog()
+    {
+    }
   }
 }

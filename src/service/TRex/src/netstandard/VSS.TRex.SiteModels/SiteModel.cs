@@ -1,8 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -13,17 +21,13 @@ using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.SiteModels
 {
@@ -63,6 +67,26 @@ namespace VSS.TRex.SiteModels
 
     private const byte VERSION_NUMBER = 1;
 
+    /// <summary>
+    /// Governs which TRex storage representation (mutable or immutable) the Grid member within the site model instance will supply
+    /// By default this is assigned to Immutable. Actors responsible for mutating information in the site model (ie: TAG file ingest
+    /// processors should ensure they obtain the mutable representation).
+    /// </summary>
+    public StorageMutability StorageRepresentationToSupply { get; private set; } = StorageMutability.Immutable;
+
+    public void SetStorageRepresentationToSupply(StorageMutability mutability)
+    {
+      if (mutability != StorageRepresentationToSupply)
+      {
+        // Dump the Grid reference as this will need to be re-created
+        grid = null;
+        StorageRepresentationToSupply = mutability;
+        PrimaryStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(mutability);
+      }
+    }
+
+    public IStorageProxy PrimaryStorageProxy { get; private set; }
+
     public Guid ID { get; set; } = Guid.Empty;
 
     public DateTime CreationDate { get; private set; }
@@ -86,7 +110,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// The grid data for this site model
     /// </summary>
-    public IServerSubGridTree Grid => grid ?? (grid = new ServerSubGridTree(ID) {CellSize = this.CellSize});
+    public IServerSubGridTree Grid => grid ?? (grid = new ServerSubGridTree(ID, StorageRepresentationToSupply) { CellSize = this.CellSize });
 
     public bool GridLoaded => grid != null;
 
@@ -94,9 +118,11 @@ namespace VSS.TRex.SiteModels
 
     /// <summary>
     /// Returns a reference to the existence map for the site model. If the existence map is not yet present
-    /// load it from storage/cache
+    /// load it from storage/cache.
+    /// This will never return a null reference. In the case of a site model that does not have any spatial data within it
+    /// this will return an empty existence map rather than null.
     /// </summary>
-    public ISubGridTreeBitMask ExistenceMap => existenceMap ?? GetProductionDataExistenceMap();
+    public ISubGridTreeBitMask ExistenceMap => existenceMap ?? (existenceMap = LoadProductionDataExistenceMapFromStorage());
 
     /// <summary>
     /// Gets the loaded state of the existence map. This permits testing if an existence map is loaded without forcing
@@ -125,22 +151,15 @@ namespace VSS.TRex.SiteModels
         return csib;
 
       if (IsTransient)
-      {
-        csib = string.Empty;
-        return csib;
-      }
+        return csib = string.Empty;
 
-      FileSystemErrorStatus readResult =
-        DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID,
+      FileSystemErrorStatus readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID,
           CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
           FileSystemStreamType.CoordinateSystemCSIB,
           out MemoryStream csibStream);
 
       if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
-      {
-        csib = string.Empty;
-        return csib;
-      }
+        return csib = string.Empty;
 
       using (csibStream)
       {
@@ -148,7 +167,6 @@ namespace VSS.TRex.SiteModels
         return csib;
       }
     }
-
 
     /// <summary>
     /// Gets the loaded state of the CSIB. This permits testing if a CSIB is loaded without forcing
@@ -191,13 +209,15 @@ namespace VSS.TRex.SiteModels
         {
           lock (siteModelDesignsLockObject)
           {
-            if (_siteModelDesigns != null)
-              return _siteModelDesigns;
+            if (_siteModelDesigns == null)
+            {
+              var newSiteModelDesigns = new SiteModelDesignList();
 
-            _siteModelDesigns = new SiteModelDesignList();
+              if (!IsTransient)
+                newSiteModelDesigns.LoadFromPersistentStore(ID, PrimaryStorageProxy);
 
-            if (!IsTransient)
-              _siteModelDesigns.LoadFromPersistentStore(ID);
+              _siteModelDesigns = newSiteModelDesigns;
+            }
           }
         }
 
@@ -252,13 +272,15 @@ namespace VSS.TRex.SiteModels
         {
           lock (siteProofingRunLockObject)
           {
-            if (siteProofingRuns != null)
-              return siteProofingRuns;
+            if (siteProofingRuns == null)
+            {
+              var newSiteProofingRuns = new SiteProofingRunList { DataModelID = ID };
 
-            siteProofingRuns = new SiteProofingRunList { DataModelID = ID };
+              if (!IsTransient)
+                newSiteProofingRuns.LoadFromPersistentStore(PrimaryStorageProxy);
 
-            if (!IsTransient)
-              siteProofingRuns.LoadFromPersistentStore();
+              siteProofingRuns = newSiteProofingRuns;
+            }
           }
         }
 
@@ -281,16 +303,18 @@ namespace VSS.TRex.SiteModels
         {
           lock (siteModelMachineDesignsLockObject)
           {
-            if (siteModelMachineDesigns != null)
-              return siteModelMachineDesigns;
-
-            siteModelMachineDesigns = new SiteModelMachineDesignList
+            if (siteModelMachineDesigns == null)
             {
-              DataModelID = ID
-            };
+              var newSiteModelMachineDesigns = new SiteModelMachineDesignList
+              {
+                DataModelID = ID
+              };
 
-            if (!IsTransient)
-              siteModelMachineDesigns.LoadFromPersistentStore();
+              if (!IsTransient)
+                newSiteModelMachineDesigns.LoadFromPersistentStore(PrimaryStorageProxy);
+
+              siteModelMachineDesigns = newSiteModelMachineDesigns;
+            }
           }
         }
 
@@ -314,17 +338,19 @@ namespace VSS.TRex.SiteModels
         {
           lock (machineLoadLockObject)
           {
-            if (machines != null)
-              return machines;
-
-            machines = new MachinesList
+            if (machines == null)
             {
-              DataModelID = ID
-            };
+              var newMachines = new MachinesList
+              {
+                DataModelID = ID
+              };
 
-            if (!IsTransient)
-            {
-              machines.LoadFromPersistentStore();
+              if (!IsTransient)
+              {
+                newMachines.LoadFromPersistentStore(PrimaryStorageProxy);
+              }
+
+              machines = newMachines;
             }
           }
         }
@@ -346,6 +372,7 @@ namespace VSS.TRex.SiteModels
       CreationDate = DateTime.UtcNow;
       LastModifiedDate = CreationDate;
 
+      PrimaryStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(StorageRepresentationToSupply);
     }
 
     /// <summary>
@@ -364,6 +391,8 @@ namespace VSS.TRex.SiteModels
 
       CreationDate = originModel.CreationDate;
       LastModifiedDate = originModel.LastModifiedDate;
+
+      SetStorageRepresentationToSupply(originModel.StorageRepresentationToSupply);
 
       grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
         ? originModel.Grid
@@ -452,7 +481,7 @@ namespace VSS.TRex.SiteModels
           }
         }
 
-        LastModifiedDate = Source.LastModifiedDate;
+      LastModifiedDate = Source.LastModifiedDate;
     }
 
     public void Write(BinaryWriter writer)
@@ -560,26 +589,12 @@ namespace VSS.TRex.SiteModels
 
     public FileSystemErrorStatus LoadFromPersistentStore()
     {
-      Guid SavedID = ID;
-      FileSystemErrorStatus Result = DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+      var Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
       if (Result == FileSystemErrorStatus.OK && MS != null)
       {
         using (MS)
         {
-          if (SavedID != ID)
-          {
-            // The SiteModelID read from the FS file does not match the ID expected.
-
-            // RPW 31/1/11: This used to be an error with it's own error code. This is now
-            // changed to a warning, but loading of the site model is allowed. This
-            // is particularly useful for testing purposes where copying around projects
-            // is much quicker than reprocessing large sets of TAG files
-
-            Log.LogWarning($"Site model ID read ({ID}) does not match expected ID ({SavedID}), setting to expected");
-            ID = SavedID;
-          }
-
           MS.Position = 0;
           using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
           {
@@ -600,56 +615,37 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Returns a reference to the existence map for the site model. If the existence map is not yet present
-    /// load it from storage/cache
-    /// </summary>
-    /// <returns></returns>
-    private ISubGridTreeBitMask GetProductionDataExistenceMap()
-    {
-      if (existenceMap == null)
-        return LoadProductionDataExistenceMapFromStorage() == FileSystemErrorStatus.OK ? existenceMap : null;
-
-      return existenceMap;
-    }
-
-    /// <summary>
     /// Saves the content of the existence map to storage
     /// </summary>
     /// <returns></returns>
     private FileSystemErrorStatus SaveProductionDataExistenceMapToStorage(IStorageProxy storageProxy)
     {
-      if (existenceMap == null)
-        return FileSystemErrorStatus.OK;
+      var result = FileSystemErrorStatus.OK;
 
-      storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream(), existenceMap);
+      if (existenceMap != null)
+        result = storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream(), existenceMap);
 
-      return FileSystemErrorStatus.OK;
+      return result;
     }
 
     /// <summary>
     /// Retrieves the content of the existence map from storage
     /// </summary>
     /// <returns></returns>
-    private FileSystemErrorStatus LoadProductionDataExistenceMapFromStorage()
+    private SubGridTreeSubGridExistenceBitMask LoadProductionDataExistenceMapFromStorage()
     {
-      ISubGridTreeBitMask localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
+      var localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
       // Read its content from storage 
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+      var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
       if (MS == null)
-      {
-        Log.LogInformation($"Attempt to read existence map for site model {ID} failed as the map does not exist, creating new existence map");
-        existenceMap = new SubGridTreeSubGridExistenceBitMask();
-        return FileSystemErrorStatus.OK;
-      }
-
-      localExistenceMap.FromStream(MS);
+        Log.LogInformation($"Attempt to read existence map for site model {ID} failed [with result {readResult}] as the map does not exist, creating new existence map");
+      else
+        localExistenceMap.FromStream(MS);
 
       // Replace existence map with the newly read map
-      existenceMap = localExistenceMap;
-
-      return FileSystemErrorStatus.OK;
+      return localExistenceMap;
     }
 
     /// <summary>
@@ -691,8 +687,8 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     public (DateTime startUtc, DateTime endUtc) GetDateRange()
     {
-      DateTime minDate = DateTime.MaxValue;
-      DateTime maxDate = DateTime.MinValue;
+      DateTime minDate = Consts.MAX_DATETIME_AS_UTC;
+      DateTime maxDate = Consts.MIN_DATETIME_AS_UTC;
 
       foreach (var machine in Machines)
       {
@@ -715,6 +711,212 @@ namespace VSS.TRex.SiteModels
       }
 
       return (minDate, maxDate);
+    }
+
+    /// <summary>
+    /// GetAssetOnDesignPeriods returns design changes for each machine.
+    ///    We remove any duplicates (occurs at start, where a period of time is missing between tag files)
+    /// C:\VSS\Gen3\NonMerinoApps\VSS.Velociraptor\Velociraptor\VLPD\PS\PSNode.MachineDesigns.RPC.Execute.pas
+    /// </summary>
+    /// <returns></returns>
+    public List<AssetOnDesignPeriod> GetAssetOnDesignPeriods()
+    {
+      var assetOnDesignPeriods = new List<AssetOnDesignPeriod>();
+
+      foreach (var machine in Machines)
+      {
+        var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents;
+
+        var priorMachineDesignId = int.MinValue;
+        var priorDateTime = Consts.MIN_DATETIME_AS_UTC;
+        for (var i = 0; i < events.Count(); i++)
+        {
+          events.GetStateAtIndex(i, out var dateTime, out var machineDesignId);
+          if (machineDesignId < 0)
+          {
+            Log.LogError($"{nameof(GetAssetOnDesignPeriods)}: Invalid machineDesignId in DesignNameChange event. machineID: {machine.ID} eventDate: {dateTime} ");
+            continue;
+          }
+
+          if (priorMachineDesignId != int.MinValue && machineDesignId != priorMachineDesignId)
+          {
+            var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+            assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? Consts.kNoDesignName,
+              Consts.kNoDesignNameID, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
+          }
+
+          // where multi events for same design -  want to retain startDate of first
+          if (priorMachineDesignId != machineDesignId)
+          {
+            priorMachineDesignId = machineDesignId;
+            priorDateTime = dateTime;
+          }
+        }
+
+        if (priorMachineDesignId != int.MinValue)
+        {
+          var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+          assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? Consts.kNoDesignName,
+            Consts.kNoDesignNameID, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
+        }
+      }
+
+      return assetOnDesignPeriods;
+    }
+
+    /// <summary>
+    /// GetAssetOnDesignLayerPeriods returns the designs and layers used by specific machines.
+    /// C:\VSS\Gen3\NonMerinoApps\VSS.Velociraptor\Velociraptor\SVO\ProductionServer\SVOICSiteModels.pas
+    /// As per Raymond: it is guaranteed that start/stop will occur as pairs to form a reportingPeriod,
+    ///                 AND there will be NO events outside of these pairs
+    ///                 AND at startEnd, status of all event types will be recited e.g. last on layer1 and designA
+    /// </summary>
+    /// <returns></returns>
+    public List<AssetOnDesignLayerPeriod> GetAssetOnDesignLayerPeriods()
+    {
+      var assetOnDesignLayerPeriods = new List<AssetOnDesignLayerPeriod>();
+      foreach (var machine in Machines)
+      {
+        var startStopEvents = MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
+        var layerEventCount = MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.Count();
+        if (layerEventCount == 0 || MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents.Count() == 0)
+          continue;
+
+        for (int startStopEventIndex = 1; startStopEventIndex < startStopEvents.Count(); startStopEventIndex += 2)
+        {
+          startStopEvents.GetStateAtIndex(startStopEventIndex - 1, out var startReportingPeriod, out _);
+          startStopEvents.GetStateAtIndex(startStopEventIndex, out var endReportingPeriod, out _);
+
+          // identify layer changes within a report period which will likely overlap reporting periods.
+          var priorLayerId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents
+            .GetValueAtDate(startReportingPeriod, out var layerStateChangeIndex, ushort.MaxValue);
+          var priorMachineDesignId = MachinesTargetValues[machine.InternalSiteModelMachineIndex]
+            .MachineDesignNameIDStateEvents.GetValueAtDate(startReportingPeriod, out int _, Consts.kNoDesignNameID);
+          if (priorLayerId == ushort.MaxValue || layerStateChangeIndex < 0)
+            layerStateChangeIndex = 0; // no layer events found at or before startReportingPeriod
+          else
+            layerStateChangeIndex += 1;
+
+          var priorLayerChangeTime = startReportingPeriod;
+          var thisLayerChangeTime = startReportingPeriod;
+          for (; thisLayerChangeTime < endReportingPeriod && layerStateChangeIndex < layerEventCount; layerStateChangeIndex++)
+          {
+            MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents
+              .GetStateAtIndex(layerStateChangeIndex, out thisLayerChangeTime, out ushort nextLayerId);
+
+            if (priorLayerId != ushort.MaxValue)
+            {
+              var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+              assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.NULL_LEGACY_ASSETID,
+                Consts.kNoDesignNameID,
+                priorLayerId, priorLayerChangeTime,
+                thisLayerChangeTime <= endReportingPeriod ? thisLayerChangeTime : endReportingPeriod, machine.ID,
+                machineDesign?.Name ?? Consts.kNoDesignName));
+            }
+
+            priorMachineDesignId = MachinesTargetValues[machine.InternalSiteModelMachineIndex]
+              .MachineDesignNameIDStateEvents.GetValueAtDate(thisLayerChangeTime, out int _, Consts.kNoDesignNameID);
+            priorLayerChangeTime = thisLayerChangeTime;
+            priorLayerId = nextLayerId;
+          }
+
+          // event earlier in report period, this covers to end of period
+          if (layerStateChangeIndex == layerEventCount && thisLayerChangeTime < endReportingPeriod)
+          {
+            var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+            assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.NULL_LEGACY_ASSETID,
+              Consts.kNoDesignNameID, priorLayerId, priorLayerChangeTime,
+              endReportingPeriod, machine.ID, machineDesign?.Name ?? Consts.kNoDesignName));
+          }
+        }
+      }
+
+      return new List<AssetOnDesignLayerPeriod>(assetOnDesignLayerPeriods);
+    }
+
+    public byte GetCCAMinimumPassesValue(Guid machineUID, DateTime startDate, DateTime endDate, int layerID)
+    {
+      var ccaMinimumPassesValue = byte.MinValue;
+
+      if (!MachineTargetValuesLoaded)
+        return ccaMinimumPassesValue;
+
+      var machine = Machines.Locate(machineUID);
+
+      if (machine == null)
+      {
+        Log.LogWarning($"{nameof(GetCCAMinimumPassesValue)}. No Machine found. Machine UID: {machineUID}");
+        return ccaMinimumPassesValue;
+      }
+
+      var targetvalues = machinesTargetValues[machine.InternalSiteModelMachineIndex];
+
+      if (targetvalues == null)
+      {
+        Log.LogWarning($"{nameof(GetCCAMinimumPassesValue)}. No Machine Targets found");
+        return ccaMinimumPassesValue;
+      }
+
+      var layerStartTime = DateTime.MinValue;
+      var layerEndTime = DateTime.MinValue;
+      var endTime = DateTime.MinValue;
+
+      var latestCCATime = targetvalues.StartEndRecordedDataEvents.LastStateDate();
+
+      if (layerID != 0)
+      {
+        var layerFound = false;
+
+        for (var i = 0; i < targetvalues.LayerIDStateEvents.Count(); i++)
+        {
+          targetvalues.LayerIDStateEvents.GetStateAtIndex(i, out var thisLayerChangeTime, out var thisLayerID);
+
+          if (thisLayerID == layerID)
+          {
+            if (!layerFound)
+            {
+              layerStartTime = thisLayerChangeTime;
+              layerFound = true;
+            }
+          }
+          else
+          {
+            if (layerFound)
+            {
+              layerEndTime = thisLayerChangeTime;
+              layerFound = false;
+            }
+          }
+        }
+
+        if (layerFound)
+          layerEndTime = latestCCATime;
+
+        endTime = layerEndTime;
+      }
+
+      if (layerStartTime == DateTime.MinValue && layerID != 0)
+        return ccaMinimumPassesValue;
+
+      if (startDate != DateTime.MinValue && endTime != DateTime.MinValue)
+      {
+        if (layerID != 0)
+          endTime = layerEndTime >= startDate && layerEndTime <= endTime ? layerEndTime : endDate;
+        else
+          endTime = endDate;
+      }
+      else
+      {
+        if (layerID == 0)
+          endTime = latestCCATime;
+      }
+
+      ccaMinimumPassesValue = targetvalues.TargetCCAStateEvents.GetValueAtDate(endTime, out _, CellPassConsts.NullCCATarget);
+
+      if (ccaMinimumPassesValue == CellPassConsts.NullCCATarget)
+        return byte.MinValue;
+
+      return ccaMinimumPassesValue;
     }
 
     /// <summary>

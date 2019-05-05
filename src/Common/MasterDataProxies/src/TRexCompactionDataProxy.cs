@@ -64,13 +64,13 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Sends a request to get site model data from the TRex immutable database.
     /// </summary>
-    /// <param name="sitModelId"></param>
+    /// <param name="siteModelId"></param>
     /// <param name="route"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public Task<TResponse> SendDataGetRequest<TResponse>(string sitModelId, string route, IDictionary<string, string> customHeaders = null)
+    public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(TResponse)}: Sending the get data request for site model ID: {sitModelId}");
+      log.LogDebug($"{nameof(TResponse)}: Sending the get data request for site model ID: {siteModelId}");
 
       return SendRequestGet<TResponse>(customHeaders, route);
     }

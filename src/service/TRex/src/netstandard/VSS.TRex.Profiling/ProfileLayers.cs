@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 
@@ -129,8 +130,7 @@ namespace VSS.TRex.Profiling
       /// <param name="value"></param>
       public new void Insert(int index, IProfileLayer value)
       {
-        Log.LogCritical("Layers should be added in consistent order - insert inconsistent with this work flow");
-        Debug.Assert(false, "Layers should be added in consistent order - insert inconsistent with this work flow");
+        throw new TRexException("Layers should be added in consistent order - insert inconsistent with this work flow");
 
         //  base.Insert(Index, Value);
         //  InternalCount++;

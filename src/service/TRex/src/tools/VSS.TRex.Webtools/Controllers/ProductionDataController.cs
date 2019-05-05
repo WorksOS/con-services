@@ -22,6 +22,7 @@ using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
+using VSS.TRex.Common.Records;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -723,9 +724,9 @@ namespace VSS.TRex.Webtools.Controllers
       return new JsonResult(new List<(DisplayMode id, string name)>
         {
           (DisplayMode.CCV, "CMV Details"),
-          (DisplayMode.CCVSummary, "CMV Summary"),
+          (DisplayMode.CCVPercentSummary, "CMV Summary"),
           (DisplayMode.CMVChange, "CMV Change"),
-          (DisplayMode.MDPSummary, "MDP Summary"),
+          (DisplayMode.MDPPercentSummary, "MDP Summary"),
           (DisplayMode.PassCount, "Pass Count Details"),
           (DisplayMode.PassCountSummary, "Pass Count Summary"),
           (DisplayMode.CCASummary, "CCA Summary"),

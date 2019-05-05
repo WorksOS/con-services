@@ -7,5 +7,7 @@
     void AddContext(object context);
 
     void RemoveContext(object context);
+
+    void Stop();
   }
 }

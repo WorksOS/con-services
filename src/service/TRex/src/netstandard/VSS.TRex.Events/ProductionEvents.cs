@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
@@ -20,10 +20,10 @@ namespace VSS.TRex.Events
   public class ProductionEvents<T> : IProductionEvents<T>
   {
     // ReSharper disable once StaticMemberInGenericType
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProductionEvents<T>>();
 
-    private const int MajorVersion = 1;
-    private const int MinorVersion = 0;
+    private byte VERSION_NUMBER = 1;
+
     private const int MinStreamLength = 16;
 
     public bool EventsChanged { get; set; }
@@ -120,6 +120,9 @@ namespace VSS.TRex.Events
     // by <Item> and the date held in <Value>
     public bool Find(DateTime findDate, out int index)
     {
+      if (findDate.Kind != DateTimeKind.Utc)
+        throw new ArgumentException("FindDate must be a UTC date time", nameof(findDate));
+
       int L = 0;
       int H = Events.Count - 1;
 
@@ -194,6 +197,9 @@ namespace VSS.TRex.Events
     /// <returns>The event instance that was added to the list</returns>
     public virtual void PutValueAtDate(DateTime dateTime, T value)
     {
+      if (dateTime.Kind != DateTimeKind.Utc)
+        throw new TRexException("dateTime must be a UTC date time");
+
       PutValueAtDate(new Event
       {
         Date = dateTime,
@@ -228,6 +234,9 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn)
     {
+      if (startDate.Kind != DateTimeKind.Utc || startDate.Kind != DateTimeKind.Utc)
+        throw new TRexException("Start and end dates must be a UTC date times");
+
       // Get the index of the first value
       GetValueAtDate(startDate, out int index);
 
@@ -261,7 +270,8 @@ namespace VSS.TRex.Events
 
       if (ExistingEventFound)
       {
-        Debug.Assert(Events[EventIndex].Date == Event.Date, "Have determined two events are the same but that they have different dates!!!");
+        if (Events[EventIndex].Date != Event.Date)
+          throw new TRexException($"Two events are the same but that they have different dates in {nameof(PutValueAtDate)}");
 
         // If we find an event with the same date then delete the existing one and replace it with the new one.
         bool CorrectInsertLocationIdentified;
@@ -289,10 +299,8 @@ namespace VSS.TRex.Events
                   // 'Delete' the duplicate by not adding it
                   return;
                 }
-                else
-                {
-                  Debug.Assert(false, "Start/End recorded events should not be managed by the generic event PutValueAtDate()");
-                }
+
+                throw new TRexException("Start/End recorded events should not be managed by the generic event PutValueAtDate()");
               }
             }
             else if (Event.IsCustomEvent)
@@ -323,8 +331,8 @@ namespace VSS.TRex.Events
     {
       bool HaveStartEndEventPair = false;
 
-      DateTime StartEvent = new DateTime();
-      DateTime EndEvent = new DateTime();
+      DateTime StartEvent = Consts.MIN_DATETIME_AS_UTC; 
+      DateTime EndEvent = Consts.MAX_DATETIME_AS_UTC;
 
       int FirstIdx = 0;
       int SecondIdx = 1;
@@ -341,7 +349,7 @@ namespace VSS.TRex.Events
       while (SecondIdx < Events.Count)
       {
         if (!HaveStartEndEventPair ||
-            !Range.InRange(Events[FirstIdx].Date, StartEvent.Date, EndEvent.Date))
+            !Range.InRange(Events[FirstIdx].Date, StartEvent, EndEvent))
         {
           if (!container.GetStartEndRecordedDataEvents().FindStartEventPairAtTime(Events[FirstIdx].Date, out StartEvent, out EndEvent))
           {
@@ -355,8 +363,8 @@ namespace VSS.TRex.Events
         }
 
         if (Events[FirstIdx].EquivalentTo(Events[SecondIdx]) &&
-            Range.InRange(Events[FirstIdx].Date, StartEvent.Date, EndEvent.Date) &&
-            Range.InRange(Events[SecondIdx].Date, StartEvent.Date, EndEvent.Date))
+            Range.InRange(Events[FirstIdx].Date, StartEvent, EndEvent) &&
+            Range.InRange(Events[SecondIdx].Date, StartEvent, EndEvent))
         {
           EventsChanged = true;
           Events.RemoveAt(SecondIdx);
@@ -392,7 +400,7 @@ namespace VSS.TRex.Events
       // If we didn't find an exact match for requested date, then
       // LastIndex will be the event subsequent to the requested date,
       // so subtract one from LastIndex to give us the event prior
-      if ((!FindResult) && (LastIndex > 0))
+      if (!FindResult && LastIndex > 0)
         LastIndex--;
 
       return LastIndex;
@@ -426,8 +434,9 @@ namespace VSS.TRex.Events
     {
       var mutablestream = new MemoryStream();
       var writer = new BinaryWriter(mutablestream);
-      writer.Write(MajorVersion);
-      writer.Write(MinorVersion);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.Write((int)EventListType);
       writer.Write(Events.Count);
       foreach (var e in Events)
@@ -448,8 +457,9 @@ namespace VSS.TRex.Events
     {
       var immutableStream = new MemoryStream();
       var immutableWriter = new BinaryWriter(immutableStream);
-      immutableWriter.Write(MajorVersion);
-      immutableWriter.Write(MinorVersion);
+
+      VersionSerializationHelper.EmitVersionByte(immutableWriter, VERSION_NUMBER);
+
       immutableWriter.Write((int)EventListType);
 
       T lastState = Events[0].State;
@@ -487,7 +497,6 @@ namespace VSS.TRex.Events
       EventsChanged = false;
     }
 
-
     /// <summary>
     /// Loads the event list by requesting its serialized representation from the persistent store and 
     /// deserializing it into the event list
@@ -509,23 +518,19 @@ namespace VSS.TRex.Events
       }
     }
 
-
     public void ReadEvents(BinaryReader reader)
     {
       if (reader.BaseStream.Length < MinStreamLength)
       {
-        throw new ArgumentException($"ProductionEvent mutable stream length is too short. Expected greater than: {MinStreamLength} retrieved {reader.BaseStream.Length}.");
+        throw new TRexException($"ProductionEvent mutable stream length is too short. Expected greater than: {MinStreamLength} retrieved {reader.BaseStream.Length}.");
       }
 
-      int majorVer = reader.ReadInt32();
-      int minorVer = reader.ReadInt32();
-      if (majorVer != 1 && minorVer != 0)
-        throw new ArgumentException($"Unknown major/minor version numbers: {majorVer}/{minorVer}");
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       var eventType = reader.ReadInt32();
       if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
       {
-        throw new ArgumentException("ProductionEvent eventType is not recognized. Invalid stream.");
+        throw new TRexException("ProductionEvent eventType is not recognized. Invalid stream.");
       }
 
       int count = reader.ReadInt32();
@@ -559,24 +564,27 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public virtual T GetValueAtDate(DateTime eventDate, out int stateChangeIndex, T defaultValue = default)
     {
+      T result = defaultValue;
+
       if (Events.Count == 0)
       {
         stateChangeIndex = -1;
-        return defaultValue;
       }
-
-      if (!Find(eventDate, out stateChangeIndex))
-        stateChangeIndex--;
-
-      if (stateChangeIndex >= 0)
+      else
       {
-        Event StateChange = Events[stateChangeIndex];
+        if (!Find(eventDate, out stateChangeIndex))
+          stateChangeIndex--;
 
-        if (StateChange.Date <= eventDate)
-          return StateChange.State;
+        if (stateChangeIndex >= 0)
+        {
+          Event StateChange = Events[stateChangeIndex];
+
+          if (StateChange.Date <= eventDate)
+            result = StateChange.State;
+        }
       }
 
-      return defaultValue;
+      return result;
     }
 
     /// <summary>

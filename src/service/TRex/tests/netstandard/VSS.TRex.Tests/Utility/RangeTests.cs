@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using Xunit;
 
@@ -279,16 +280,16 @@ namespace VSS.TRex.Tests.Utility
         [Fact]
         public void Test_Range_InRange_datetime()
         {
-            DateTime value = new DateTime(2000, 1, 1);
-            DateTime lowerConstraint = new DateTime(1990, 1, 1);
-            DateTime upperConstraint = new DateTime(2010, 1, 1);
+            DateTime value = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc);
+            DateTime lowerConstraint = DateTime.SpecifyKind(new DateTime(1990, 1, 1), DateTimeKind.Utc);
+            DateTime upperConstraint = DateTime.SpecifyKind(new DateTime(2010, 1, 1), DateTimeKind.Utc);
 
             // Test in range
-            Assert.True(Range.InRange(value, DateTime.MinValue, DateTime.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(Range.InRange(value, Consts.MIN_DATETIME_AS_UTC, Consts.MAX_DATETIME_AS_UTC), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, DateTime.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, DateTime.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(Range.InRange(value, Consts.MIN_DATETIME_AS_UTC, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(Range.InRange(value, upperConstraint, Consts.MAX_DATETIME_AS_UTC), "InRange failed on partial underlying type value range");
         }
     }
 }

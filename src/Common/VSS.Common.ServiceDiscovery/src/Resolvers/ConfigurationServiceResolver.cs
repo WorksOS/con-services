@@ -12,7 +12,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
   /// </summary>
   public class ConfigurationServiceResolver : IServiceResolver
   {
-    private const int DEFAULT_PRIORITY = 10;
+    private const int DEFAULT_PRIORITY = 100;
 
     private readonly ILogger<ConfigurationServiceResolver> logger;
     private readonly IConfigurationStore configuration;
@@ -27,6 +27,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
     public Task<string> ResolveService(string serviceName)
     {
       var configValue = configuration.GetValueString(serviceName, null);
+      configValue = configValue ?? configuration.GetValueString(serviceName.Replace('-','_'), null);
 
       if (!string.IsNullOrEmpty(configValue))
       {
@@ -41,5 +42,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
 
     public ServiceResultType ServiceType => ServiceResultType.Configuration;
     public int Priority { get; }
+
+    public bool IsEnabled => true;
   }
 }

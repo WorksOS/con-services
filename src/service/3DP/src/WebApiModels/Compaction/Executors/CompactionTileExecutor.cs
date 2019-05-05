@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using SVOICVolumeCalculationsDecls;
@@ -35,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// <summary>
     /// Processes the request for type of T.
     /// </summary>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -44,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
 #endif
-          var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/tile", customHeaders).Result;
+          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/tile", customHeaders);
 
           using (var ms = new MemoryStream())
           {
@@ -68,8 +69,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
         out bool coordsAreGrid);
 
-      var baseFilter = RaptorConverters.ConvertFilter(request.Filter1);
-      var topFilter = RaptorConverters.ConvertFilter(request.Filter2);
+      var baseFilter = RaptorConverters.ConvertFilter(request.Filter1, request.ProjectId, raptorClient);
+      var topFilter = RaptorConverters.ConvertFilter(request.Filter2, request.ProjectId, raptorClient);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
 
       var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
@@ -153,6 +154,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
 #endif
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

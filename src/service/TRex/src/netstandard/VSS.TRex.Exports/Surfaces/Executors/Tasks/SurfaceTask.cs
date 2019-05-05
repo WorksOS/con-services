@@ -26,16 +26,6 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     { }
 
     /// <summary>
-    /// Constructs the patch task
-    /// </summary>
-    /// <param name="requestDescriptor"></param>
-    /// <param name="tRexNodeId"></param>
-    /// <param name="gridDataType"></param>
-    public SurfaceTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
-    {
-    }
-
-    /// <summary>
     /// Accept a sub grid response from the processing engine and incorporate into the result for the request.
     /// </summary>
     /// <param name="response"></param>
@@ -43,40 +33,40 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     public override bool TransferResponse(object response)
     {
       // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
+      bool result = false;
 
-      if (!base.TransferResponse(response))
+      if (base.TransferResponse(response))
       {
-        Log.LogWarning($"Base {nameof(TransferResponse)} returned false");
-        return false;
-      }
-
-      if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
-      {
-        Log.LogWarning("No sub grid responses returned");
-        return false;
-      }
-
-      // Convert the ClientHeightLeafSubGrid into a GenericLeafSubGrid_Float...
-
-      foreach (var subGrid in subGridResponses)
-      {
-        if (subGrid == null)
-          continue;
-
-        ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) subGrid;
-
-        GenericLeafSubGrid_Float leaf = new GenericLeafSubGrid_Float
+        if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
         {
-          OriginX = originSubGrid.OriginX,
-          OriginY = originSubGrid.OriginY,
-          Items = originSubGrid.Clone2DArray(),
-          Level = originSubGrid.Level
-        };
+          Log.LogWarning("No sub grid responses returned");
+        }
+        else
+        {
+          // Convert the ClientHeightLeafSubGrid into a GenericLeafSubGrid_Float...
+          foreach (var subGrid in subGridResponses)
+          {
+            if (subGrid != null)
+            {
+              ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) subGrid;
 
-        SurfaceSubgrids.Add(leaf);
+              GenericLeafSubGrid_Float leaf = new GenericLeafSubGrid_Float
+              {
+                OriginX = originSubGrid.OriginX,
+                OriginY = originSubGrid.OriginY,
+                Items = originSubGrid.Clone2DArray(),
+                Level = originSubGrid.Level
+              };
+
+              SurfaceSubgrids.Add(leaf);
+            }
+          }
+
+          result = true;
+        }
       }
 
-      return true;
+      return result;
     }
   }
 }

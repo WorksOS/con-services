@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -61,11 +62,6 @@ namespace VSS.TRex.Pipelines.Interfaces
         /// Date model the pipeline is operating on
         /// </summary>
         Guid DataModelID { get; set; }
-
-        /// <summary>
-        /// Advise the client of the pipeline that a single sub grid has been processed
-        /// </summary>
-        void SubGridProcessed();
 
         /// <summary>
         /// Advise the client of the pipeline that a group of numProcessed sub grids has been processed

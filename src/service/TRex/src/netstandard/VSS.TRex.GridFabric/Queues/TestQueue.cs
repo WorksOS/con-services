@@ -4,6 +4,7 @@ using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
@@ -11,6 +12,7 @@ using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.GridFabric.Queues
 {
+    [ExcludeFromCodeCoverage]
     public class TestQueueItem
     {
         /// <summary>
@@ -28,6 +30,7 @@ namespace VSS.TRex.GridFabric.Queues
         }
     }
 
+    [ExcludeFromCodeCoverage]
     public class TestQueueHolder
     {
         private ICache<long, TestQueueItem> QueueCache;
@@ -52,11 +55,11 @@ namespace VSS.TRex.GridFabric.Queues
                     KeepBinaryInStore = true
                 });
 
-            Add(DateTime.Now, "First");
-            Add(DateTime.Now, "Second");
-            Add(DateTime.Now, "Third");
-            Add(DateTime.Now, "Fourth");
-            Add(DateTime.Now, "Fifth");
+            Add(DateTime.UtcNow, "First");
+            Add(DateTime.UtcNow, "Second");
+            Add(DateTime.UtcNow, "Third");
+            Add(DateTime.UtcNow, "Fourth");
+            Add(DateTime.UtcNow, "Fifth");
         }
 
         public IEnumerable<TestQueueItem> Query(DateTime earlierThan)

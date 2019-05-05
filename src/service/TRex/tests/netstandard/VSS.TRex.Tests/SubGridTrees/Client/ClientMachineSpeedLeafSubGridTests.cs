@@ -1,4 +1,8 @@
-﻿using VSS.TRex.Common;
+﻿using FluentAssertions;
+using VSS.TRex.Cells;
+using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.TestFixtures;
@@ -37,6 +41,32 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       int actualSize = clientGrid.IndicativeSizeInBytes();
 
       Assert.True(actualSize == expectedSize, $"IndicativeSize() incorrect, = {clientGrid.IndicativeSizeInBytes()}, expected = {expectedSize}");
-    }    
+    }
+
+    [Fact]
+    public void DumpToLog()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
+      clientGrid.DumpToLog(clientGrid.ToString());
+    }
+
+    [Fact]
+    public void AssignableFilteredValueIsNull()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
+      var passData = new FilteredPassData
+      {
+        FilteredPass = new CellPass
+        {
+          MachineSpeed = CellPassConsts.NullMachineSpeed
+        }
+      };
+
+      clientGrid.AssignableFilteredValueIsNull(ref passData).Should().BeTrue();
+
+      passData.FilteredPass.MachineSpeed = 100;
+
+      clientGrid.AssignableFilteredValueIsNull(ref passData).Should().BeFalse();
+    }
   }
 }

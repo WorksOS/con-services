@@ -55,6 +55,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{3398F978-8993-4CDD-BC96-CDB016AFAC25}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gateway.Abstractions", "..\TRex\src\interfaces\VSS.TRex.ConnectedSite.Gateway.Abstractions\VSS.TRex.ConnectedSite.Gateway.Abstractions.csproj", "{D79DD4D3-D034-4D4E-9F6A-BABBCBB4D9EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\TRex\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj", "{2321A0C2-3177-4814-ABE9-84E9D07A5ECD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "..\..\Common\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj", "{6F518E30-B771-4CAB-A503-EA43EA4A1EA4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\..\Common\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{BEC12534-EC2F-4436-B05C-FDE9679CFC80}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11338CA0-860E-45C5-89C2-0E91EEC0629A}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\.editorconfig = ..\..\..\.editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +150,22 @@ Global
 		{3398F978-8993-4CDD-BC96-CDB016AFAC25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3398F978-8993-4CDD-BC96-CDB016AFAC25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3398F978-8993-4CDD-BC96-CDB016AFAC25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D79DD4D3-D034-4D4E-9F6A-BABBCBB4D9EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D79DD4D3-D034-4D4E-9F6A-BABBCBB4D9EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D79DD4D3-D034-4D4E-9F6A-BABBCBB4D9EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D79DD4D3-D034-4D4E-9F6A-BABBCBB4D9EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2321A0C2-3177-4814-ABE9-84E9D07A5ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2321A0C2-3177-4814-ABE9-84E9D07A5ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2321A0C2-3177-4814-ABE9-84E9D07A5ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2321A0C2-3177-4814-ABE9-84E9D07A5ECD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F518E30-B771-4CAB-A503-EA43EA4A1EA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F518E30-B771-4CAB-A503-EA43EA4A1EA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F518E30-B771-4CAB-A503-EA43EA4A1EA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F518E30-B771-4CAB-A503-EA43EA4A1EA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEC12534-EC2F-4436-B05C-FDE9679CFC80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEC12534-EC2F-4436-B05C-FDE9679CFC80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEC12534-EC2F-4436-B05C-FDE9679CFC80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEC12534-EC2F-4436-B05C-FDE9679CFC80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -161,6 +190,10 @@ Global
 		{F077C52D-518D-41BE-9D38-B5917FE472F7} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
 		{F08C4E11-85E5-4D67-83A2-163DFC6B337B} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
 		{3398F978-8993-4CDD-BC96-CDB016AFAC25} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
+		{D79DD4D3-D034-4D4E-9F6A-BABBCBB4D9EA} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
+		{2321A0C2-3177-4814-ABE9-84E9D07A5ECD} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
+		{6F518E30-B771-4CAB-A503-EA43EA4A1EA4} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
+		{BEC12534-EC2F-4436-B05C-FDE9679CFC80} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BFE4CFD0-6FE9-49B2-9465-9D9778699F4A}

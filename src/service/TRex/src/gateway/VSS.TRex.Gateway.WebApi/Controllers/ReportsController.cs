@@ -44,8 +44,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostStationOffsetReport)}: {Request.QueryString}");
 
       reportStationOffsetRequest.Validate();
-      reportDataValidationUtility.ValidateData((object) reportStationOffsetRequest);
-    
+      reportDataValidationUtility.ValidateData(nameof(PostStationOffsetReport), reportStationOffsetRequest.ProjectUid, (object)reportStationOffsetRequest);
+      ValidateFilterMachines(nameof(PostStationOffsetReport), reportStationOffsetRequest.ProjectUid, reportStationOffsetRequest.Filter);
+
       var stationOffsetReportDataResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<StationOffsetReportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
@@ -77,7 +78,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostGriddedReport)}: {Request.QueryString}");
 
       reportGridRequest.Validate();
-      reportDataValidationUtility.ValidateData((object)reportGridRequest);
+      reportDataValidationUtility.ValidateData(nameof(PostGriddedReport), reportGridRequest.ProjectUid, (object)reportGridRequest);
+      ValidateFilterMachines(nameof(PostGriddedReport), reportGridRequest.ProjectUid, reportGridRequest.Filter);
 
       var griddedReportDataResult =  WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -94,35 +96,5 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       return new FileStreamResult(new MemoryStream(griddedReportDataResult?.GriddedData), "application/octet-stream");
     }
-
-    //private void ValidateDataAvailable(object compactionReportTRexRequest)
-    //{
-    //  var request = compactionReportTRexRequest as CompactionReportTRexRequest;
-    //  if (DIContext.Obtain<ISiteModels>().GetSiteModel(request.ProjectUid, false) == null)
-    //  {
-    //    throw new ServiceException(HttpStatusCode.BadRequest,
-    //      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-    //        $"Project: {request.ProjectUid} is not found."));
-    //  }
-
-    //  if (request.CutFillDesignUid.HasValue &&
-    //      DIContext.Obtain<IDesignManager>().List(request.ProjectUid).Locate(request.CutFillDesignUid.Value) == null)
-    //  {
-    //    throw new ServiceException(HttpStatusCode.BadRequest,
-    //      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-    //        $"CutFill design {request.CutFillDesignUid.Value} is not found."));
-    //  }
-
-    //  if (compactionReportTRexRequest.GetType() == typeof(CompactionReportStationOffsetTRexRequest))
-    //  {
-    //    var alignmentUid = (compactionReportTRexRequest as CompactionReportStationOffsetTRexRequest).AlignmentDesignUid;
-    //    if (DIContext.Obtain<IAlignmentManager>().List(request.ProjectUid).Locate(alignmentUid) == null)
-    //    {
-    //      throw new ServiceException(HttpStatusCode.BadRequest,
-    //        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-    //          $"Alignment design {alignmentUid} is not found."));
-    //    }
-    //  }
-    //}
   }
 }

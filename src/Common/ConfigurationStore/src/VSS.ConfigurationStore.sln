@@ -10,6 +10,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.UnitTests", "..\test\UnitTests\VSS.ConfigurationStore.UnitTests.csproj", "{66FB1064-DEF4-45B9-9BD0-F95C378E556D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2315FCA8-B674-40EF-B6AF-01CB0E5E1E2D}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\.editorconfig = ..\..\..\..\.editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

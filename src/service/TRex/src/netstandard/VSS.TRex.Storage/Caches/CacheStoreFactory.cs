@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Cache.Store;
+﻿using System.Diagnostics.CodeAnalysis;
+using Apache.Ignite.Core.Cache.Store;
 using Apache.Ignite.Core.Common;
 
 namespace VSS.TRex.Storage.Caches
@@ -7,6 +8,7 @@ namespace VSS.TRex.Storage.Caches
     /// The cache store factory responsible for creating a cache store tailored for storing immutable representations
     /// of information in data models
     /// </summary>
+    [ExcludeFromCodeCoverage] // Not currently used...
     public class CacheStoreFactory : IFactory<ICacheStore>
     {
         private bool IsMutable { get; set; }

@@ -10,6 +10,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
   /// </summary>
   public class CSVExportRequestResponse : SubGridsPipelinedResponseBase
   {
+    private static byte VERSION_NUMBER = 1;
+
     public string fileName = string.Empty;
 
     public CSVExportRequestResponse()
@@ -23,6 +25,9 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteString(fileName);
     }
 
@@ -33,6 +38,9 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       fileName = reader.ReadString();
     }
   }

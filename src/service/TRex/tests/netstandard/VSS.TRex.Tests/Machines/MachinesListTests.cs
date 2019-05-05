@@ -1,12 +1,12 @@
 ﻿using System;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.BinaryReaderWriter;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Machines
@@ -26,14 +26,14 @@ namespace VSS.TRex.Tests.Machines
     {
       var newGuid = Guid.NewGuid();
       var l = new MachinesList();
-      var m = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceType.SNM940, false, newGuid);
+      var m = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newGuid);
 
       m.Should().NotBeNull();
       m.ID.Should().Be(newGuid);
       m.Name.Should().Be("Machine");
       m.MachineHardwareID.Should().Be("HardwareID");
       m.MachineType.Should().Be(MachineType.Dozer);
-      m.DeviceType.Should().Be((int)DeviceType.SNM940);
+      m.DeviceType.Should().Be((int)DeviceTypeEnum.SNM940);
       m.InternalSiteModelMachineIndex.Should().Be(0);
       m.IsJohnDoeMachine.Should().BeFalse();
     }
@@ -43,10 +43,10 @@ namespace VSS.TRex.Tests.Machines
     {
       var newGuid = Guid.NewGuid();
       var l = new MachinesList();
-      var m = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceType.SNM940, false, newGuid);
+      var m = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newGuid);
 
       // Create an identical machine - should return the first machine created
-      var m2 = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceType.SNM940, false, newGuid);
+      var m2 = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newGuid);
 
       m.Should().BeSameAs(m2);
     }
@@ -76,11 +76,11 @@ namespace VSS.TRex.Tests.Machines
     {
       var newGuid1 = Guid.NewGuid();
       var l = new MachinesList();
-      var m = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceType.SNM940, false, newGuid1);
+      var m = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newGuid1);
 
       l.Locate("Machine", false).Should().BeSameAs(m);
 
-      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceType.SNM940, true, Guid.Empty); // John Doe machines don;t have known guids at this point
+      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.Empty); // John Doe machines don;t have known guids at this point
 
       l.Locate("Machine2", true).Should().BeSameAs(m2);
     }
@@ -90,22 +90,23 @@ namespace VSS.TRex.Tests.Machines
     {
       var newGuid1 = Guid.NewGuid();
       var l = new MachinesList();
-      var m = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceType.SNM940, false, newGuid1);
+      var m = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newGuid1);
 
       l.Locate(newGuid1, false).Should().BeSameAs(m);
 
       var newGuid2 = Guid.NewGuid();
-      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceType.SNM940, true, Guid.Empty); // John Doe machines don;t have known guids at this point
+      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.Empty); // John Doe machines don;t have known guids at this point
 
       l.Locate(m2.ID, true).Should().BeSameAs(m2);
+      m2.ID.Should().NotBe(Guid.Empty);
     }
 
     [Fact]
     public void LocateByMachineHardwareID()
     {
       var l = new MachinesList();
-      var m = l.CreateNew("Machine1", "HardwareID1", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
-      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      var m = l.CreateNew("Machine1", "HardwareID1", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       l.LocateByMachineHardwareID("HardwareID1").Should().BeSameAs(m);
       l.LocateByMachineHardwareID("HardwareID2").Should().BeSameAs(m2);
@@ -116,8 +117,8 @@ namespace VSS.TRex.Tests.Machines
     public void Test_ReadWriteBinary()
     {
       var l = new MachinesList();
-      var m = l.CreateNew("Machine1", "HardwareID1", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
-      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceType.SNM940, true, Guid.Empty);
+      var m = l.CreateNew("Machine1", "HardwareID1", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.Empty);
 
       TestBinary_ReaderWriterHelper.RoundTripSerialise(l);
     }
@@ -126,15 +127,15 @@ namespace VSS.TRex.Tests.Machines
     public void ReadWritePersistentStore()
     {
       var l = new MachinesList();
-      var m = l.CreateNew("Machine1", "HardwareID1", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
-      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceType.SNM940, true, Guid.Empty);
+      var m = l.CreateNew("Machine1", "HardwareID1", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.Empty);
 
-      // Save it them read it back
-      l.SaveToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+      // Save it then read it back
+      l.SaveToPersistentStore(DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy);
 
       // read it back
       var l2 = new MachinesList();
-      l2.LoadFromPersistentStore();
+      l2.LoadFromPersistentStore(DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy);
 
       l.Should().BeEquivalentTo(l2);
     }

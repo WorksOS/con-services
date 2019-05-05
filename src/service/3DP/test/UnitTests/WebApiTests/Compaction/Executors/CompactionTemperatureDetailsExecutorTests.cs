@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var request = new TemperatureDetailsRequest(0, null, new double[0], null, null);
 
-      TTemperatureDetails details = new TTemperatureDetails();
+      var details = new TTemperatureDetails();
 
       var raptorClient = new Mock<IASNodeClient>();
       var logger = new Mock<ILoggerFactory>();
@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var request = new TemperatureDetailsRequest(0, null, new double[0], null, null);
 
-      TTemperatureDetails details = new TTemperatureDetails { Percents = new[] { 5.0, 40.0, 13.0, 10.0, 22.0, 5.0, 6.0 } };
+      var details = new TTemperatureDetails { Percents = new[] { 5.0, 40.0, 13.0, 10.0, 22.0, 5.0, 6.0 } };
 
       var raptorClient = new Mock<IASNodeClient>();
       var logger = new Mock<ILoggerFactory>();

@@ -1,4 +1,6 @@
 ﻿using System;
+using FluentAssertions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
@@ -25,15 +27,43 @@ namespace TAGFiles.Tests
         {
             var siteModel = new SiteModel();
             var machine = new Machine();
-            var grid = new ServerSubGridTree(siteModel.ID);
+            var grid = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
             var fence = new Fence();
-            var SiteModelGridAggregator = new ServerSubGridTree(siteModel.ID);
+            var SiteModelGridAggregator = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
-            TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, fence);
+            var swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, fence);
 
             Assert.True(swather != null, "TerrainSwather not created as expected");
+        }
+
+        private void CreateSwathContext(double V00x, double V00y, double V00z,
+          double V01x, double V01y, double V01z,
+          double V10x, double V10y, double V10z,
+          double V11x, double V11y, double V11z,
+          out SimpleTriangle HeightInterpolator1,
+        out SimpleTriangle HeightInterpolator2,
+        out SimpleTriangle TimeInterpolator1,
+        out SimpleTriangle TimeInterpolator2)
+        {
+          // Create four corner vertices for location of the processing context
+          var V00 = new XYZ(V00x, V00y, V00z);
+          var V01 = new XYZ(V01x, V01y, V01z);
+          var V10 = new XYZ(V10x, V10y, V10z);
+          var V11 = new XYZ(V11x, V11y, V11z);
+
+          // Create four corner vertices for time of the processing context (with two epochs three seconds apart
+          var T00 = new XYZ(V00x, V00y, new DateTime(2000, 1, 1, 1, 1, 0, 0, DateTimeKind.Utc).ToOADate());
+          var T01 = new XYZ(V01x, V01y, new DateTime(2000, 1, 1, 1, 1, 0, 0, DateTimeKind.Utc).ToOADate());
+          var T10 = new XYZ(V10x, V10y, new DateTime(2000, 1, 1, 1, 1, 3, 0, DateTimeKind.Utc).ToOADate());
+          var T11 = new XYZ(V11x, V11y, new DateTime(2000, 1, 1, 1, 1, 3, 0, DateTimeKind.Utc).ToOADate());
+
+          // Create the height and time interpolation triangles
+          HeightInterpolator1 = new SimpleTriangle(V00, V01, V10);
+          HeightInterpolator2 = new SimpleTriangle(V01, V11, V10);
+          TimeInterpolator1 = new SimpleTriangle(T00, T01, T10);
+          TimeInterpolator2 = new SimpleTriangle(T01, T11, T10);
         }
 
         [Fact]
@@ -41,8 +71,8 @@ namespace TAGFiles.Tests
         {
             var siteModel = new SiteModel();
             var machine = new VSS.TRex.Machines.Machine();
-            var grid = new ServerSubGridTree(siteModel.ID);
-            var SiteModelGridAggregator = new ServerSubGridTree(siteModel.ID);
+            var grid = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
+            var SiteModelGridAggregator = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
@@ -51,23 +81,14 @@ namespace TAGFiles.Tests
 
             TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, fence);
 
-            // Create four corner vertices for location of the processing context
-            var V00 = new XYZ(0, 0, 0);
-            var V01 = new XYZ(0, 2, 0);
-            var V10 = new XYZ(10, 0, 0);
-            var V11 = new XYZ(10, 2, 0);
-
-            // Create four corner vertices for time of the processing context (with two epochs three seconds apart
-            var T00 = new XYZ(0, 0, new DateTime(2000, 1, 1, 1, 1, 0).ToOADate());
-            var T01 = new XYZ(0, 2, new DateTime(2000, 1, 1, 1, 1, 0).ToOADate());
-            var T10 = new XYZ(10, 0, new DateTime(2000, 1, 1, 1, 1, 3).ToOADate());
-            var T11 = new XYZ(10, 2, new DateTime(2000, 1, 1, 1, 1, 3).ToOADate());
-
-            // Create the height and time interpolation triangles
-            var HeightInterpolator1 = new SimpleTriangle(V00, V01, V10);
-            var HeightInterpolator2 = new SimpleTriangle(V01, V11, V10);
-            var TimeInterpolator1 = new SimpleTriangle(T00, T01, T10);
-            var TimeInterpolator2 = new SimpleTriangle(T01, T11, T10);
+            CreateSwathContext(0, 0, 0,
+                               10, 0, 0,
+                               0, 2, 0,
+                               10, 2, 0,
+                               out SimpleTriangle HeightInterpolator1,
+                               out SimpleTriangle HeightInterpolator2,
+                               out SimpleTriangle TimeInterpolator1,
+                               out SimpleTriangle TimeInterpolator2);
 
             // Compute swath with full cell pass on the front (blade) measurement location
             bool swathResult = swather.PerformSwathing(HeightInterpolator1, HeightInterpolator2, TimeInterpolator1, TimeInterpolator2, false, PassType.Front, MachineSide.None);
@@ -111,9 +132,37 @@ namespace TAGFiles.Tests
 
             Assert.Equal(174, nonNullCellCount);
 
-            // Iterate over the cells and confirm their content is as expected
+            // Todo: Iterate over the cells and confirm their content is as expected
 
             
+        }
+
+        [Fact]
+        public void Test_TerrainSwather_SwathExtentTooLarge()
+        {
+          var siteModel = new SiteModel();
+          var machine = new Machine();
+          var grid = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
+          var SiteModelGridAggregator = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
+          var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
+          var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+
+          var fence = new Fence(new BoundingWorldExtent3D(0, 0, 10000, 2));
+          var swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, fence);
+
+          CreateSwathContext(0, 0, 0,
+            10000, 0, 0,
+            0, 2, 0,
+            10000, 2, 0,
+            out SimpleTriangle HeightInterpolator1,
+            out SimpleTriangle HeightInterpolator2,
+            out SimpleTriangle TimeInterpolator1,
+            out SimpleTriangle TimeInterpolator2);
+
+          bool swathResult = swather.PerformSwathing(HeightInterpolator1, HeightInterpolator2, TimeInterpolator1, TimeInterpolator2, false, PassType.Front, MachineSide.None);
+          swathResult.Should().BeTrue();
+          processor.ProcessedEpochCount.Should().Be(0);
+          processor.ProcessedCellPassesCount.Should().Be(0);
         }
     }
 }

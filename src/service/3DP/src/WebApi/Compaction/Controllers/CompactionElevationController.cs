@@ -75,12 +75,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         await Task.WhenAll(projectSettingsTask, filterTask, projectIdTask);
 
-        var result = elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders);
+        var result = await elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders);
 
         if (result == null)
         {
           //Ideally want to return an error code and message only here
-          result = ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
+          result = new ElevationStatisticsResult(null, 0, 0, 0);
         }
 
         Log.LogInformation($"{nameof(GetElevationRange)} result: {JsonConvert.SerializeObject(result)}");

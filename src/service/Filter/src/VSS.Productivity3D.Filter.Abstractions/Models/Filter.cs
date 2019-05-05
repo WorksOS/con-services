@@ -44,16 +44,19 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public string DateRangeName => DateRangeType != null ? Enum.GetName(typeof(DateRangeType), DateRangeType) : string.Empty;
 
     /// <summary>
-    /// A design file unique identifier. Used as a spatial filter.
+    /// A VSS design file (ImportedFileUid) unique identifier. Used as a spatial filter.
     /// </summary>
     [JsonProperty(PropertyName = "designUid", Required = Required.Default)]
     public string DesignUid { get; protected set; }
 
     /// <summary>
-    /// A design filename.
+    /// A VSS design file filename (from an ImportedFile).
+    ///     This is only used internally and a filter object is passed around.
+    ///     It is not sent from UI to FilterSvc (blank)
+    ///     It is not returned from the FilterSvc anywhere 
     /// </summary>
-    [JsonProperty(PropertyName = "designName", Required = Required.Default)]
-    public string DesignName { get; protected set; }
+    [JsonProperty(PropertyName = "designName", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+    public string DesignFileName { get; protected set; }
 
     /// <summary>
     /// A comma-separated list of contributing machines.
@@ -63,11 +66,26 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public List<MachineDetails> ContributingMachines { get; private set; }
 
     /// <summary>
-    /// A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction. 
+    /// A machine reported design.
+    /// This filter is used to select Cell passes recorded when a machine had this design loaded.
+    /// May be null, which indicates no restriction.
+    ///   This is obtained by Trex/Raptor from tagFiles.
+    ///   There is no direct relationship to VSS designs i.e. ImportedFile 
+    ///
+    /// TRex sets this to 0 (kNoMachineDesign) so we can tell where it was sourced.
+    ///       if these were obtained from TRex,
+    ///             then to send to Raptor, we need to obtain the correct Ids from the OnMachineDesignName,
     /// </summary>
     [JsonProperty(PropertyName = "onMachineDesignId", Required = Required.Default)]
-    public long? OnMachineDesignId { get; private set; } //PDS not VL ID
+    public long? OnMachineDesignId { get; private set; } // Raptor/Trex not VSS ID
+
+    /// <summary>
+    /// A machine reported design.
+    ///    the onMachine name, potentially related to "onMachineDesignId"
+    /// May be null/empty, which indicates no restriction. 
+    /// </summary>
+    [JsonProperty(PropertyName = "onMachineDesignName", Required = Required.Default)]
+    public string OnMachineDesignName { get; private set; } // Raptor/Trex not VSS Design
 
     /// <summary>
     /// Controls the cell pass from which to determine data based on its elevation.
@@ -125,8 +143,8 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// <summary>
     /// The alignmentFile filename.
     /// </summary>
-    [JsonProperty(PropertyName = "alignmentName", Required = Required.Default)]
-    public string AlignmentName { get; protected set; }
+    [JsonProperty(PropertyName = "alignmentName", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+    public string AlignmentFileName { get; protected set; }
 
     /// <summary>
     /// The starting Station along the alignment in meters.
@@ -224,9 +242,9 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     {
       return !string.IsNullOrEmpty(DesignUid);
     }
-    public bool ShouldSerializeDesignName()
+    public bool ShouldSerializeDesignFileName()
     {
-      return !string.IsNullOrEmpty(DesignName);
+      return !string.IsNullOrEmpty(DesignFileName);
     }
     public bool ShouldSerializeContributingMachines()
     {
@@ -235,6 +253,10 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public bool ShouldSerializeOnMachineDesignId()
     {
       return OnMachineDesignId != null;
+    }
+    public bool ShouldSerializeOnMachineDesignName()
+    {
+      return !string.IsNullOrEmpty(OnMachineDesignName);
     }
     public bool ShouldSerializeElevationType()
     {
@@ -268,9 +290,9 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     {
       return !string.IsNullOrEmpty(AlignmentUid);
     }
-    public bool ShouldSerializeAlignmentName()
+    public bool ShouldSerializeAlignmentFileName()
     {
-      return !string.IsNullOrEmpty(AlignmentName);
+      return !string.IsNullOrEmpty(AlignmentFileName);
     }
     public bool ShouldSerializeStartStation()
     {
@@ -319,6 +341,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
       EndUtc.HasValue ||
       DateRangeType.HasValue ||
       OnMachineDesignId.HasValue ||
+      !string.IsNullOrEmpty(OnMachineDesignName) ||
       VibeStateOn.HasValue ||
       ElevationType.HasValue ||
       LayerNumber.HasValue ||
@@ -326,7 +349,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
       (ContributingMachines != null && ContributingMachines.Count > 0) ||
       (PolygonLL != null && PolygonLL.Count > 0) ||
       !string.IsNullOrEmpty(AlignmentUid) ||
-      !string.IsNullOrEmpty(AlignmentName) ||
+      !string.IsNullOrEmpty(AlignmentFileName) ||
       StartStation.HasValue ||
       EndStation.HasValue ||
       LeftOffset.HasValue ||
@@ -346,26 +369,28 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     }
 
     /// <summary>
-    /// Sets names for file UIDs. Is used by dependant services, e.g. Filter service to hydrate filenames from a UID.
+    /// Sets names for file UIDs. Is used by dependent services, e.g. Filter service to hydrate filenames from a UID.
     /// </summary>
     /// <remarks>
     /// Do not pass empty strings unless you want to null the name.
     /// </remarks>
     public void SetFilenames(string designName = null, string alignmentName = null, string boundaryName = null)
     {
-      if (designName != null) DesignName = designName;
-      if (alignmentName != null) AlignmentName = alignmentName;
+      if (designName != null) DesignFileName = designName;
+      if (alignmentName != null) AlignmentFileName = alignmentName;
       if (boundaryName != null) PolygonName = boundaryName;
     }
+
+    public Filter() {}
 
     /// <summary>
     /// Create instance of Filter
     /// </summary>
-    public static Filter CreateFilter(
+    public Filter(
       DateTime? startUtc,
       DateTime? endUtc,
       string designUid,
-      string designName,
+      string designFileName,
       List<MachineDetails> contributingMachines,
       long? onMachineDesignId,
       ElevationType? elevationType,
@@ -376,7 +401,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
       string polygonUid = null,
       string polygonName = null,
       string alignmentUid = null,
-      string alignmentName = null,
+      string alignmentFileName = null,
       double? startStation = null,
       double? endStation = null,
       double? leftOffset = null,
@@ -386,36 +411,35 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
       double? temperatureRangeMin = null,
       double? temperatureRangeMax = null,
       int? passCountRangeMin = null,
-      int? passCountRangeMax = null)
+      int? passCountRangeMax = null,
+      string onMachineDesignName = null)
     {
-      return new Filter
-      {
-        StartUtc = startUtc,
-        EndUtc = endUtc,
-        DesignUid = designUid,
-        DesignName = designName,
-        ContributingMachines = contributingMachines,
-        OnMachineDesignId = onMachineDesignId,
-        ElevationType = elevationType,
-        VibeStateOn = vibeStateOn,
-        PolygonLL = polygonLL,
-        ForwardDirection = forwardDirection,
-        LayerNumber = layerNumber,
-        PolygonUid = polygonUid,
-        PolygonName = polygonName,
-        AlignmentUid = alignmentUid,
-        AlignmentName = alignmentName,
-        StartStation = startStation,
-        EndStation = endStation,
-        LeftOffset = leftOffset,
-        RightOffset = rightOffset,
-        AsAtDate = asAtDate,
-        AutomaticsType = automaticsType,
-        TemperatureRangeMin = temperatureRangeMin,
-        TemperatureRangeMax = temperatureRangeMax,
-        PassCountRangeMin = passCountRangeMin,
-        PassCountRangeMax = passCountRangeMax
-      };
+      StartUtc = startUtc;
+      EndUtc = endUtc;
+      DesignUid = designUid;
+      DesignFileName = designFileName;
+      ContributingMachines = contributingMachines;
+      OnMachineDesignId = onMachineDesignId;
+      OnMachineDesignName = onMachineDesignName;
+      ElevationType = elevationType;
+      VibeStateOn = vibeStateOn;
+      PolygonLL = polygonLL;
+      ForwardDirection = forwardDirection;
+      LayerNumber = layerNumber;
+      PolygonUid = polygonUid;
+      PolygonName = polygonName;
+      AlignmentUid = alignmentUid;
+      AlignmentFileName = alignmentFileName;
+      StartStation = startStation;
+      EndStation = endStation;
+      LeftOffset = leftOffset;
+      RightOffset = rightOffset;
+      AsAtDate = asAtDate;
+      AutomaticsType = automaticsType;
+      TemperatureRangeMin = temperatureRangeMin;
+      TemperatureRangeMax = temperatureRangeMax;
+      PassCountRangeMin = passCountRangeMin;
+      PassCountRangeMax = passCountRangeMax;
     }
 
     public void Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
@@ -551,14 +575,15 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
 
       return StartUtc.Equals(other.StartUtc) && EndUtc.Equals(other.EndUtc) && DateRangeType == other.DateRangeType &&
              string.Equals(DesignUid, other.DesignUid) &&
-             string.Equals(DesignName, other.DesignName) &&
+             string.Equals(DesignFileName, other.DesignFileName) &&
              ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
-             OnMachineDesignId == other.OnMachineDesignId && ElevationType == other.ElevationType &&
+             OnMachineDesignId == other.OnMachineDesignId && string.Equals(OnMachineDesignName, other.OnMachineDesignName) &&
+             ElevationType == other.ElevationType &&
              VibeStateOn == other.VibeStateOn && string.Equals(PolygonUid, other.PolygonUid) &&
              string.Equals(PolygonName, other.PolygonName) && PolygonLL.ScrambledEquals(other.PolygonLL) &&
              ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber &&
              string.Equals(AlignmentUid, other.AlignmentUid) &&
-             string.Equals(AlignmentName, other.AlignmentName) &&
+             string.Equals(AlignmentFileName, other.AlignmentFileName) &&
              StartStation.Equals(other.StartStation) && EndStation.Equals(other.EndStation) &&
              LeftOffset.Equals(other.LeftOffset) && RightOffset.Equals(other.RightOffset) &&
              AutomaticsType == other.AutomaticsType &&
@@ -582,9 +607,10 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
         hashCode = (hashCode * 397) ^ EndUtc.GetHashCode();
         hashCode = (hashCode * 397) ^ (DateRangeType != null ? DateRangeType.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (DesignUid != null ? DesignUid.GetHashCode() : 397);
-        hashCode = (hashCode * 397) ^ (DesignName != null ? DesignName.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (DesignFileName != null ? DesignFileName.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (ContributingMachines != null ? ContributingMachines.GetListHashCode() : 397);
         hashCode = (hashCode * 397) ^ (OnMachineDesignId != null ? OnMachineDesignId.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (OnMachineDesignName != null ? OnMachineDesignName.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (ElevationType != null ? ElevationType.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (VibeStateOn != null ? VibeStateOn.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (PolygonUid != null ? PolygonUid.GetHashCode() : 397);
@@ -593,7 +619,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
         hashCode = (hashCode * 397) ^ (ForwardDirection != null ? ForwardDirection.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (LayerNumber != null ? LayerNumber.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (AlignmentUid != null ? AlignmentUid.GetHashCode() : 397);
-        hashCode = (hashCode * 397) ^ (AlignmentName != null ? AlignmentName.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (AlignmentFileName != null ? AlignmentFileName.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (StartStation != null ? StartStation.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (EndStation != null ? EndStation.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (LeftOffset != null ? LeftOffset.GetHashCode() : 397);

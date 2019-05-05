@@ -13,16 +13,9 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
-using VSS.TRex.Events;
-using VSS.TRex.Machines;
-using VSS.TRex.Machines.Interfaces;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees.Server;
-using VSS.TRex.TAGFiles.Classes.Processors;
-using VSS.TRex.TAGFiles.Classes.Sinks;
-using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Common.Utilities;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.TRex.TAGFiles.Executors;
+using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -63,7 +56,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       string EC520Serial = String.Empty;
       if (!string.IsNullOrEmpty(sValue))
       {
-        if ((sValue.Length > 2) && (sValue.Substring(sValue.Length - 2, 2) == EC520_SUFFIX))
+        if (sValue.Length > 2 && sValue.Substring(sValue.Length - 2, 2) == EC520_SUFFIX)
           EC520Serial = sValue;
       }
       return EC520Serial;
@@ -76,9 +69,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <param name="tagDetail"></param>
     /// <param name="processor"></param>
     /// <returns></returns>
-    public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessible(TagFileDetail tagDetail, TAGProcessor processor)
+    public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessible(TagFileDetail tagDetail, TAGFilePreScan preScanState)
     {
-
       /*
       Three different types of tagfile submission
       Type A: Automatic submission.
@@ -91,21 +83,19 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       Type C: Override submission.
       This is where the ProjectId and AssetId is both supplied. It bypasses TFA service and providing the tagfile is valid, is processed straight into the project.
       This is not a typical submission but is handy for testing and in a situation where a known third party source other than NG could determine the AssetId and Project. Typical NG users could not submit via this method thus avoiding our license check. 
+      */
 
-       */
+      string EC520SerialID = GetEC520SerialID(preScanState.HardwareID);
 
-
-      string EC520SerialID = GetEC520SerialID(processor.HardwareID);
-
-      // Type C. Do we have what we need already (Most likley test tool submission)
+      // Type C. Do we have what we need already (Most likely test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
         if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty)
           return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 0, "success");
 
       // Business rule for device type conversion
-      DeviceType radioType = processor.RadioType == "torch" ? DeviceType.SNM940 : DeviceType.MANUALDEVICE; // torch device set to type 6
+      var radioType = preScanState.RadioType == "torch" ? DeviceTypeEnum.SNM940 : DeviceTypeEnum.MANUALDEVICE; // torch device set to type 6
 
-      if (processor.RadioSerial == string.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty && EC520SerialID == string.Empty)
+      if (preScanState.RadioSerial == string.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty && EC520SerialID == string.Empty)
       {
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
         var message = "Must have either a valid TCCOrgID or RadioSerialNo or EC520SerialNo or ProjectUID";
@@ -115,10 +105,10 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
       var tfaRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
-        (int)radioType, processor.RadioSerial, EC520SerialID, tagDetail.tccOrgId,
-        MathUtilities.RadiansToDegrees(processor.LLHLat),
-        MathUtilities.RadiansToDegrees(processor.LLHLon),
-        processor.DataTime);
+        (int)radioType, preScanState.RadioSerial, EC520SerialID, tagDetail.tccOrgId,
+        MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0),
+        MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0),
+        preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC);
 
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
@@ -142,14 +132,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       return tfaResult;
     }
 
-
-    public static TRexTagFileResultCode GetValidationResultName(TRexTagFileResultCode en, ref string message, ref int code)
-    {
-      message = Enum.GetName(typeof(TRexTagFileResultCode), (int) en);
-      code = (int) en;
-      return en;
-    }
-
     /// <summary>
     /// Inputs a tagfile for validation and asset licensing checks
     /// </summary>
@@ -168,6 +150,16 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return new ContractExecutionResult((int) TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());
       }
 
+      TAGFilePreScan tagFilePresScan = new TAGFilePreScan();
+      tagFilePresScan.Execute(new MemoryStream(tagDetail.tagFileContent));
+
+      if (tagFilePresScan.ReadResult != TAGReadResult.NoError)
+      {
+        return new ContractExecutionResult((int)TRexTagFileResultCode.TrexTagFileReaderError, tagFilePresScan.ReadResult.ToString());
+      }
+
+      /*
+      Old process of pre-scanning...
       // Now open tagfile and validate contents
       ISiteModel siteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel();
       var machine = new Machine();
@@ -183,6 +175,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       {
         return new ContractExecutionResult((int)TRexTagFileResultCode.TrexTagFileReaderError, readResult.ToString());
       }
+       */
 
       // Tagfile contents are OK so proceed
       if (!tfaServiceEnabled) // allows us to bypass a TFA service
@@ -200,7 +193,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
 
       // Contact TFA service to validate tagfile details
-      var tfaResult = await CheckFileIsProcessible(tagDetail, processor).ConfigureAwait(false);
+      var tfaResult = await CheckFileIsProcessible(tagDetail, tagFilePresScan).ConfigureAwait(false);
       return new ContractExecutionResult((int)tfaResult.Code, tfaResult.Message);
     }
   }

@@ -51,8 +51,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(CreateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
-
+      GatewayHelper.ValidateAndGetSiteModel(nameof(CreateDesign), designRequest.ProjectUid, true);
+     
       if (DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
@@ -88,8 +88,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(UpdateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
-
+      GatewayHelper.ValidateAndGetSiteModel(nameof(UpdateDesign), designRequest.ProjectUid, true);
+      
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
@@ -115,7 +115,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 
 
     /// <summary>
-    /// Deletes a design from a sitemodel.
+    /// Deletes a design from a site model.
     ///    Files are left on S3 (as per Dmitry)
     ///    Local copies in temp are removed
     /// </summary>
@@ -126,8 +126,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(DeleteDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
-
+      GatewayHelper.ValidateAndGetSiteModel(nameof(DeleteDesign), designRequest.ProjectUid, true);
+     
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot delete.");

@@ -415,6 +415,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as SummaryVolumesResult;
 
+        if (result == null) return Ok(new CompactionVolumesSummaryResult(0, "No production data found"));
+
         volumesSummaryResult = CompactionVolumesSummaryResult.Create(result, await GetProjectSettingsTargets(projectUid));
       }
 #if RAPTOR

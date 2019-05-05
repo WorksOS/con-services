@@ -24,10 +24,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Provides a map of primary partitions that this node is responsible for
     /// </summary>
-    public bool[] PrimaryPartitions()
-    {
-      return primaryPartitions ?? (primaryPartitions = GetPrimaryPartitions());
-    }
+    public bool[] PrimaryPartitions() =>  primaryPartitions ?? (primaryPartitions = GetPrimaryPartitions());
 
     /// <summary>
     /// Backing variable for BackupPartitions
@@ -37,10 +34,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Provides a map of backup partitions that this node is responsible for
     /// </summary>
-    public Dictionary<int, bool> BackupPartitions
-    {
-      get => backupPartitions ?? (backupPartitions = GetBackupPartitions());
-    }
+    public Dictionary<int, bool> BackupPartitions => backupPartitions ?? (backupPartitions = GetBackupPartitions());
 
     /// <summary>
     /// The reference to the Ignite cache the partition map relates
@@ -50,7 +44,7 @@ namespace VSS.TRex.GridFabric.Affinity
     private ICacheAffinity Affinity { get; set; }
     private IClusterNode LocalNode { get; set; }
 
-    protected int NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.NUMPARTITIONS_PERDATACACHE);
+    protected uint NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueUint("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
 
     /// <summary>
     /// Constructor accepting a cache reference to obtain the partition map information for

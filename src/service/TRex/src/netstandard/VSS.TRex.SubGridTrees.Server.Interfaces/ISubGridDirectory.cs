@@ -5,6 +5,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
   public interface ISubGridDirectory
   {
+    bool IsMutable { get; set; }
+
     bool ExistsInPersistentStore { get; }
 
     List<ISubGridCellPassesDataSegmentInfo> SegmentDirectory { get; set; }
@@ -12,10 +14,9 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set;  }
 
     void AllocateGlobalLatestCells();
-    void DeAllocateGlobalLatestCells();
     void CreateDefaultSegment();
     void Clear();
     void Write(BinaryWriter writer);
-    void Read_2p0(BinaryReader reader);
+    void Read(BinaryReader reader);
   }
 }

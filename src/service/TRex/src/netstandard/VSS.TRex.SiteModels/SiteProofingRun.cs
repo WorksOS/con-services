@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Cells;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Compression;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 
@@ -13,15 +15,35 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteProofingRun : IEquatable<string>, ISiteProofingRun
   {
-    private const int VERSION_NUMBER = 1;
+    private const byte VERSION_NUMBER = 1;
 
-    public short MachineID { get; set; }
+    public short MachineID { get; set; } = CellPassConsts.NullInternalSiteModelMachineIndex;
 
     public string Name { get; set; } = string.Empty;
 
-    public DateTime StartTime { get; set; }
+    private DateTime _startTime = Consts.MIN_DATETIME_AS_UTC;
 
-    public DateTime EndTime { get; set; }
+    public DateTime StartTime { get => _startTime;
+      set
+      {
+        if (value.Kind != DateTimeKind.Utc)
+          throw new ArgumentException("Proofing run start time must be a UTC date time", nameof(StartTime));
+        _startTime = value;
+      }
+    }
+
+    private DateTime _endTime = Consts.MIN_DATETIME_AS_UTC;
+
+    public DateTime EndTime
+    {
+      get => _endTime;
+      set
+      {
+        if (value.Kind != DateTimeKind.Utc)
+          throw new ArgumentException("Proofing run end time must be a UTC date time", nameof(EndTime));
+        _endTime = value;
+      }
+    }
 
     public BoundingWorldExtent3D Extents { get; set; } = new BoundingWorldExtent3D();
 
@@ -57,13 +79,11 @@ namespace VSS.TRex.SiteModels
       return MachineID == machineID && DateTime.Compare(StartTime, time) <= 0 && DateTime.Compare(EndTime, time) >= 0;
     }
 
-    public bool Equals(string other) => (other != null) && Name.Equals(other);
+    public bool Equals(string other) => other != null && Name.Equals(other);
 
     public void Read(BinaryReader reader)
     {
-      byte version = reader.ReadByte();
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Name = reader.ReadString();
       MachineID = reader.ReadInt16();
@@ -84,7 +104,7 @@ namespace VSS.TRex.SiteModels
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.Write(Name);
       writer.Write(MachineID);

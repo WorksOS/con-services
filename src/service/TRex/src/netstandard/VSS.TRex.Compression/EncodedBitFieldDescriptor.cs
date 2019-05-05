@@ -5,9 +5,9 @@ namespace VSS.TRex.Compression
 {
     public struct EncodedBitFieldDescriptor
     {
-        public int NativeNullValue;
-        public int EncodedNullValue;
-        public int MinValue, MaxValue;
+        public long NativeNullValue;
+        public long EncodedNullValue;
+        public long MinValue, MaxValue;
 
         public bool Nullable;
         public bool AllValuesAreNull;
@@ -16,7 +16,7 @@ namespace VSS.TRex.Compression
         public ushort OffsetBits;
         public byte RequiredBits;
 
-        public int NumValues => MaxValue - MinValue + 1;
+        public long NumValues => MaxValue - MinValue + 1;
 
         public void Init()
         {
@@ -32,10 +32,10 @@ namespace VSS.TRex.Compression
 
         public void Write(BinaryWriter writer)
         {
-            writer.Write((long)NativeNullValue);
-            writer.Write((long)EncodedNullValue);
-            writer.Write((long)MinValue);
-            writer.Write((long)MaxValue);
+            writer.Write(NativeNullValue);
+            writer.Write(EncodedNullValue);
+            writer.Write(MinValue);
+            writer.Write(MaxValue);
 
             writer.Write(Nullable);
             writer.Write(AllValuesAreNull);
@@ -46,10 +46,10 @@ namespace VSS.TRex.Compression
 
         public void Read(BinaryReader reader)
         {
-            NativeNullValue = (int)reader.ReadInt64();
-            EncodedNullValue = (int)reader.ReadInt64();
-            MinValue = (int)reader.ReadInt64();
-            MaxValue = (int)reader.ReadInt64();
+            NativeNullValue = reader.ReadInt64();
+            EncodedNullValue = reader.ReadInt64();
+            MinValue = reader.ReadInt64();
+            MaxValue = reader.ReadInt64();
 
             Nullable = reader.ReadBoolean();
             AllValuesAreNull = reader.ReadBoolean();
@@ -68,7 +68,7 @@ namespace VSS.TRex.Compression
 
             AllValuesAreNull = RequiredBits == 0 && Nullable && MinValue == NativeNullValue;
 
-            int ValueRange = MaxValue - MinValue; // Represented by 0-based indices so no need to add 1. See Bug 24559.
+            long ValueRange = MaxValue - MinValue; // Represented by 0-based indices so no need to add 1. See Bug 24559.
 
             // Calculate the ceiling of the base 2 log of the numeric range from MinValue to MaxValue
             RequiredBits = (byte)(1 + (int)Math.Floor(Math.Log(ValueRange, 2)));

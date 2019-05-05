@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   {
     private BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
-      return BoundingBox3DGrid.CreatBoundingBox3DGrid(
+      return new BoundingBox3DGrid(
           extents.MinX,
           extents.MinY,
           extents.MinZ,
@@ -49,9 +49,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       bool success = raptorClient.GetSummaryThickness(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtVolumeSummary),
-        RaptorConverters.ConvertFilter(request.BaseFilter),
-        RaptorConverters.ConvertFilter(request.TopFilter),
-        RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter),
+        RaptorConverters.ConvertFilter(request.BaseFilter, request.ProjectId, raptorClient),
+        RaptorConverters.ConvertFilter(request.TopFilter, request.ProjectId, raptorClient),
+        RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter, request.ProjectId, raptorClient),
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
         out var result);
 

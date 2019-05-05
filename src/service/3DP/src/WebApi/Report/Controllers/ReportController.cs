@@ -302,8 +302,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       return await projectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(
         request.ProjectUid ?? Guid.Empty, 
-        request.ProjectId ?? -1, 
-        request.ExcludedSurveyedSurfaceIds.ToList(), GetUserId(), CustomHeaders);
+        request.ProjectId ?? -1,
+        request.ExcludedSurveyedSurfaceIds?.ToList() ?? new List<long>(0), 
+        GetUserId(), CustomHeaders);
     }
 
     /// <summary>
@@ -416,19 +417,19 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/statistics/elevation")]
     [HttpPost]
-    public ElevationStatisticsResult PostExportElevationStatistics([FromBody] ElevationStatisticsRequest request)
+    public async Task<ElevationStatisticsResult> PostExportElevationStatistics([FromBody] ElevationStatisticsRequest request)
     {
       log.LogDebug($"{nameof(PostExportElevationStatistics)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-#if RAPTOR
+
       return
-        RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient).Process(request)
-          as ElevationStatisticsResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
+#if RAPTOR
+            raptorClient,
 #endif
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request)
+          as ElevationStatisticsResult;
     }
 
     /// <summary>
@@ -458,7 +459,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
+          configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
           CCASummaryResult;
     }
   }

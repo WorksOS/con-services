@@ -42,7 +42,7 @@ namespace VSS.TRex.Events.Interfaces
   {
     void CopyEventsFrom(IProductionEvents<T> eventsList);
 
-    T GetValueAtDate(DateTime eventDate, out int stateChangeIndex, T defaultValue = default(T));
+    T GetValueAtDate(DateTime eventDate, out int stateChangeIndex, T defaultValue);
 
     T LastStateValue(T defaultValue = default(T));
     DateTime LastStateDate();
@@ -54,5 +54,19 @@ namespace VSS.TRex.Events.Interfaces
     void PutValueAtDate(DateTime dateTime, T state);
 
     void PutValuesAtDates(IEnumerable<(DateTime, T)> events);
+
+    /// <summary>
+    /// Determines the index of the event whose date immediately precedes the given eventData
+    /// </summary>
+    /// <param name="eventDate"></param>
+    /// <returns></returns>
+    int IndexOfClosestEventPriorToDate(DateTime eventDate);
+
+    /// <summary>
+    /// Determines the index of the event whose date immediately follows the given eventData
+    /// </summary>
+    /// <param name="eventDate"></param>
+    /// <returns></returns>
+    int IndexOfClosestEventSubsequentToDate(DateTime eventDate);
   }
 }

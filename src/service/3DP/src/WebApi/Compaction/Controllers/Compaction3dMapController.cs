@@ -182,7 +182,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
-      var tileResult = WithServiceExceptionTryExecute(() =>
+      var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
         tileService.GetProductionDataTile(projectSettings,
           projectSettingsColors,
           filter,
@@ -505,7 +505,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       
-      var tileResult = WithServiceExceptionTryExecute(() =>
+      var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
         tileService.GetProductionDataTile(projectSettings,
           projectSettingsColors,
           filter,

@@ -6,6 +6,7 @@ using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -25,44 +26,35 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     private readonly Dictionary<Guid, ISiteModel> CachedModels = new Dictionary<Guid, ISiteModel>();
 
-    private IStorageProxy _StorageProxy;
-    private readonly Func<IStorageProxy> StorageProxyFactory;
+    private IStorageProxy _PrimaryMutableStorageProxy;
+    private IStorageProxy _PrimaryImmutableStorageProxy;
+    private IStorageProxyFactory _StorageProxyFactory;
 
-    /// <summary>
-    /// The default storage proxy to be used for requests
-    /// </summary>
-    public IStorageProxy StorageProxy => _StorageProxy ?? (_StorageProxy = StorageProxyFactory());
+    private IStorageProxyFactory StorageProxyFactory => _StorageProxyFactory ?? (_StorageProxyFactory = DIContext.Obtain<IStorageProxyFactory>());
+
+    public IStorageProxy PrimaryMutableStorageProxy => _PrimaryMutableStorageProxy ?? (_PrimaryMutableStorageProxy = StorageProxyFactory.MutableGridStorage());
+    public IStorageProxy PrimaryImmutableStorageProxy => _PrimaryImmutableStorageProxy ?? (_PrimaryImmutableStorageProxy = StorageProxyFactory.ImmutableGridStorage());
+
+    public IStorageProxy PrimaryStorageProxy(StorageMutability mutability)
+    {
+      return mutability == StorageMutability.Immutable ? PrimaryImmutableStorageProxy : PrimaryMutableStorageProxy;
+    }
 
     /// <summary>
     /// Default no-arg constructor. Made private to enforce provision of storage proxy
     /// </summary>
-    private SiteModels() { }
+    public SiteModels() { }
 
-    /// <summary>
-    /// Constructs a SiteModels instance taking a storageProxyFactory delegate that will create the
-    /// appropriate primary storage proxy
-    /// </summary>
-    /// <param name="storageProxyFactory"></param>
-    public SiteModels(Func<IStorageProxy> storageProxyFactory) : this()
-    {
-      StorageProxyFactory = storageProxyFactory;
-    }
-
-    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(StorageProxy, ID, false);
-
-    public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(StorageProxy, ID, CreateIfNotExist);
-
-    public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
+    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ID, false);
 
     /// <summary>
     /// Retrieves a site model from the persistent store ready for use. If the site model does not
     /// exist it will be created if CreateIfNotExist is true.
     /// </summary>
-    /// <param name="storageProxy"></param>
     /// <param name="id"></param>
     /// <param name="createIfNotExist"></param>
     /// <returns></returns>
-    public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid id, bool createIfNotExist)
+    public ISiteModel GetSiteModel(Guid id, bool createIfNotExist)
     {
       ISiteModel result;
 
@@ -116,12 +108,25 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
+    /// Drops a site model from the site models cache.
+    /// Note: This may be performed safely at any time irrespective of the concurrently executing requests
+    /// referencing that site model
+    /// </summary>
+    /// <param name="ID">The UID identifying the site model to be dropped from the cache</param>
+    public void DropSiteModel(Guid ID)
+    {
+      lock (CachedModels)
+      {
+        CachedModels.Remove(ID);
+      }
+    }
+
+    /// <summary>
     /// Handles the situation when TAG file processing or some other activity has modified the attributes of a site model
     /// requiring the site model to be reloaded
     /// </summary>
-    /// <param name="SiteModelID"></param>
     /// <param name="message"></param>
-    public void SiteModelAttributesHaveChanged(Guid SiteModelID, ISiteModelAttributesChangedEvent message)
+    public void SiteModelAttributesHaveChanged(ISiteModelAttributesChangedEvent message)
     {
       // Site models have immutable characteristics in TRex. Multiple requests may reference the same site model
       // concurrently, with no interlocks enforcing access serialization. Any attempt to replace or modify an already loaded
@@ -149,7 +154,7 @@ namespace VSS.TRex.SiteModels
       // site model reference with it.
       lock (CachedModels)
       {
-        CachedModels.TryGetValue(SiteModelID, out siteModel);
+        CachedModels.TryGetValue(message.SiteModelID, out siteModel);
 
         if (siteModel == null)
           return;
@@ -168,14 +173,14 @@ namespace VSS.TRex.SiteModels
           | (!message.AlignmentsModified ? SiteModelOriginConstructionFlags.PreserveAlignments : 0)
           ;
 
-        Log.LogInformation($"Processing attribute change notification for site model {SiteModelID}. Preserved elements are {originFlags}");
+        Log.LogInformation($"Processing attribute change notification for site model {message.SiteModelID}. Preserved elements are {originFlags}");
 
         // First create a new site model to replace the site model with, requesting certain elements of the existing site model
         // to be preserved in the new site model instance.
         siteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(siteModel, originFlags);
 
         // Replace the site model reference in the cache with the new site model
-        CachedModels[SiteModelID] = siteModel;
+        CachedModels[message.SiteModelID] = siteModel;
       }
 
       // If the notification contains an existence map change mask then all cached sub grid based elements that match the masked sub grids
@@ -208,7 +213,7 @@ namespace VSS.TRex.SiteModels
         });
 
         // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
-        DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(SiteModelID, mask);
+        DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(message.SiteModelID, mask);
       }
     }
   }

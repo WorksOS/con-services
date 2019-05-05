@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using Xunit;
@@ -138,6 +142,17 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
     [Theory]
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_Read_FailWithCorruptData(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      byte[] bytes = new byte[100]; // 100 zeros, which will cause the FromBytes call to fail with a TRexSubGridIOException on the grid data type
+      Action act = () => clientGrid.FromBytes(bytes);
+      act.Should().Throw<TRexSubGridIOException>().WithMessage("GridDataType in stream does not match GridDataType of local sub grid instance");
+    }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
     public void Test_GenericClientLeafSubgrid_CellHasValue_True_Ex(GridDataType gridDataType)
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
@@ -171,11 +186,35 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
     [Theory]
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
-    public void Test_GenericClientLeafSubgrid_Implements_AssignFromCachedPreProcessedClientSubgrid(GridDataType gridDataType)
+    public void Test_GenericClientLeafSubgrid_Implements_AssignFromCachedPreProcessedClientSubgrid_FullMap(GridDataType gridDataType)
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
 
-      clientGrid.AssignFromCachedPreProcessedClientSubgrid(clientGrid, clientGrid.FilterMap);
+      clientGrid.FillWithTestPattern();
+
+      var clientGrid2 = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      clientGrid2.AssignFromCachedPreProcessedClientSubgrid(clientGrid, new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled));
+
+      clientGrid.Should().BeEquivalentTo(clientGrid2);
+    }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_Implements_AssignFromCachedPreProcessedClientSubgrid_PartialMap(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      clientGrid.FillWithTestPattern();
+
+      var clientGrid2 = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      var filterMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled)
+      {
+        [0, 0] = true
+      };
+
+      clientGrid2.AssignFromCachedPreProcessedClientSubgrid(clientGrid, filterMap);
 
       // If we get here it's all good!
       Assert.True(true, "");
@@ -191,6 +230,75 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       // If we get here it's all good!
       Assert.True(true, "");
+    }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_Implements_DumpToLog(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      clientGrid.DumpToLog();
+
+      // If we get here it's all good!
+      Assert.True(true, "");
+    }
+
+    [Fact]
+    public void Clone2DArray()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+
+      clientGrid.ForEach((x, y) => clientGrid.Cells[x, y] = (float)(x + y));
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => clientGrid.Cells[x, y] = (float) (x + y));
+
+      var clone = clientGrid.Clone2DArray();
+
+      clientGrid.Cells.Should().BeEquivalentTo(clone);
+      clientGrid.Cells.Should().NotBeSameAs(clone);
+    }
+
+    [Fact]
+    public void ForEach_Action()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      clientGrid.ForEach((x, y, value) => clientGrid.Cells[x, y] = value + (float)(x + y));
+
+      var clientGrid2 = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => clientGrid2.Cells[x, y] = (float)(x + y));
+    }
+
+    [Fact]
+    public void ForEach_Func()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+
+      double sum1 = 0;
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        clientGrid.Cells[x, y] = (float) (x + y);
+        sum1 += x + y;
+      });
+
+      double sum2 = 0;
+
+      // Iterate over all elements
+      clientGrid.ForEach(value =>
+      {
+        sum2 += value;
+        return true;
+      });
+
+      sum1.Should().Be(sum2);
+
+      // Iterate ove only the first
+      clientGrid.ForEach(value =>
+      {
+        sum2 = value;
+        return false;
+      });
+
+      sum2.Should().Be(clientGrid.Cells[0, 0]);
     }
   }
 }

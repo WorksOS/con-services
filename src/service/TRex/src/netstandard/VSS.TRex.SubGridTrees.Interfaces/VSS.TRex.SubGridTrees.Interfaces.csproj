@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

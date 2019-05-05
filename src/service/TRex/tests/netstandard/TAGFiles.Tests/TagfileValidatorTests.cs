@@ -51,7 +51,7 @@ namespace TAGFiles.Tests
     {
       SetupDITfa(false);
 
-      TagFileDetail td = new TagFileDetail()
+      TagFileDetail td = new TagFileDetail
       {
         assetId = Guid.NewGuid(),
         projectId = Guid.NewGuid(),
@@ -125,7 +125,7 @@ namespace TAGFiles.Tests
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
       var moqRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 0, 0, timeOfPosition);
-      var moqResult = GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, 0, "success");
+      var moqResult = GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int) DeviceTypeEnum.MANUALDEVICE, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
@@ -228,12 +228,10 @@ namespace TAGFiles.Tests
       var moqSurveyedSurfaces = new Mock<ISurveyedSurfaces>();
 
       var moqSiteModels = new Mock<ISiteModels>();
-      moqSiteModels.Setup(mk => mk.StorageProxy).Returns(moqStorageProxy.Object);
+      moqSiteModels.Setup(mk => mk.PrimaryMutableStorageProxy).Returns(moqStorageProxy.Object);
 
       DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Continue()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
         .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
 
@@ -242,18 +240,18 @@ namespace TAGFiles.Tests
         .Build();
 
       ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuidTfa);
+      mockedSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       var moqSiteModelFactory = new Mock<ISiteModelFactory>();
-      moqSiteModelFactory.Setup(mk => mk.NewSiteModel()).Returns(mockedSiteModel);
-      moqSiteModelFactory.Setup(mk => mk.NewSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
+      moqSiteModelFactory.Setup(mk => mk.NewSiteModel(StorageMutability.Mutable)).Returns(mockedSiteModel);
 
       moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
 
-      // Mock the new sitemodel creation API to return just a new sitemodel
-      moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
+      // Mock the new site model creation API to return just a new site model
+      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
 
-      //Moq doesn't support extention methods in IConfiguration/Root.
-      var moqConfiguration = new Mock<IConfigurationStore>();
+      //Moq doesn't support extension methods in IConfiguration/Root.
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
       var moqMinTagFileLength = 100;
       string moqTfaServiceUrl = "http://localhost:5001/api/v2/project";
       moqConfiguration.Setup(x => x.GetValueBool("ENABLE_TFA_SERVICE", It.IsAny<bool>())).Returns(enableTfaService);
@@ -268,8 +266,8 @@ namespace TAGFiles.Tests
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IConfigurationStore>(moqConfiguration.Object))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<ITagFileAuthProjectProxy>(moqTfaProxy.Object))
         .Complete();
     }

@@ -1,9 +1,13 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageComparisonNetcore", "ImageComparisonNetcore\ImageComparisonNetcore.csproj", "{DB0735E9-1559-4421-99B5-61F43B4BCE09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageComparisonNetcore", "ImageComparisonNetcore\ImageComparisonNetcore.csproj", "{DB0735E9-1559-4421-99B5-61F43B4BCE09}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCF892F6-5095-4839-8585-16900F228B47}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\.editorconfig = ..\..\..\.editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

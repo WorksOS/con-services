@@ -36,6 +36,27 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
     }
 
     [Fact]
+    public void TINHeapTests_Insert_FailWithNullVertices()
+    {
+      TINHeap heap = new TINHeap(1234);
+
+      var tri = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), null);
+
+      Action act = () => heap.Insert(tri, 12.34);
+      act.Should().Throw<TRexException>().WithMessage("One or more vertices in triangle is null");
+
+      tri = new GridToTINTriangle(new TriVertex(1, 2, 0), null, new TriVertex(2, 2, 0));
+
+      act = () => heap.Insert(tri, 12.34);
+      act.Should().Throw<TRexException>().WithMessage("One or more vertices in triangle is null");
+
+      tri = new GridToTINTriangle(null, new TriVertex(1, 2, 0), new TriVertex(2, 2, 0));
+
+      act = () => heap.Insert(tri, 12.34);
+      act.Should().Throw<TRexException>().WithMessage("One or more vertices in triangle is null");
+    }
+
+    [Fact]
     public void TINHeapTests_Update()
     {
       TINHeap heap = new TINHeap(1234);
@@ -55,6 +76,29 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 
       Assert.True(heap[0].Tri == tri1);
       Assert.True(heap[1].Tri == tri2);
+    }
+
+    [Fact]
+    public void TINHeapTests_Update_FailureModes()
+    {
+      TINHeap heap = new TINHeap(1234);
+
+      GridToTINTriangle tri1 = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), new TriVertex(2, 1, 0));
+      GridToTINTriangle tri2 = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), new TriVertex(2, 1, 0));
+
+      heap.Insert(tri1, 12.34);
+
+      tri2.HeapIndex = tri1.HeapIndex;
+      Action act = () => heap.Update(tri2, 56.78);
+      act.Should().Throw<TRexException>().WithMessage("*Inconsistent triangle references*");
+
+      tri1.HeapIndex = 100;
+      act = () => heap.Update(tri1, 56.78);
+      act.Should().Throw<TRexException>().WithMessage("*Attempting to update past end of heap*");
+
+      tri1.HeapIndex = GridToTINHeapNode.NOT_IN_HEAP;
+      act = () => heap.Update(tri1, 56.78);
+      act.Should().Throw<TRexException>().WithMessage("*Attempting to update object not in heap*");
     }
 
     [Fact]

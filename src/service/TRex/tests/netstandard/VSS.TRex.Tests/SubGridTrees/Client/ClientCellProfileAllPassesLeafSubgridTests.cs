@@ -1,13 +1,18 @@
-﻿using VSS.TRex.SubGridTrees.Client;
+﻿using System;
+using FluentAssertions;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Filters.Models;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.BinaryReaderWriter;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class ClientCellProfileAllPassesLeafSubgridTests
+  public class ClientCellProfileAllPassesLeafSubgridTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_NullCells()
@@ -50,6 +55,23 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       };
 
       TestBinary_ReaderWriterBufferedHelper.RoundTripSerialise(clientGrid);
+    }
+
+    [Fact]
+    public void DumpToLog()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellPasses) as ClientCellProfileAllPassesLeafSubgrid;
+      clientGrid.DumpToLog(clientGrid.ToString());
+    }
+
+    [Fact]
+    public void AssignFilteredValue_NoCellProfile_FailWithException()
+    {
+      var context = new FilteredValueAssignmentContext();
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellPasses) as ClientCellProfileAllPassesLeafSubgrid;
+
+      Action act = () => clientGrid.AssignFilteredValue(0, 0, context);
+      act.Should().Throw<TRexSubGridProcessingException>().WithMessage("*CellProfile not assigned*");
     }
   }
 }

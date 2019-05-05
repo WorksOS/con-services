@@ -10,6 +10,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(TinningEngine));
 
+    public const int MAX_TRIANGLE_LOCATION_STEPS = 10_000;
+
     public TrimbleTINModel TIN { get; set; }
 
     /// <summary>
@@ -44,13 +46,16 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
     private long surfaceWalkOverflowCount;
 
+    public uint MaxTriangleLocationSteps { get; set; } = MAX_TRIANGLE_LOCATION_STEPS;
+
     public TinningEngine()
     {
       TIN = new TrimbleTINModel();
 
-      affSideList = new AffSideNode[1000];
-      candidateList = new TriListNode[1000];
-      affectedList = new TriListNode[1000];
+      // Set sizes of all lists to be 1 to force list lengthening logic to be exercised as a matter of course.
+      affSideList = new AffSideNode[1];
+      candidateList = new TriListNode[1];
+      affectedList = new TriListNode[1];
     }
 
     /// <summary>
@@ -70,7 +75,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
           TIN.Triangles.RemoveTriangle(Tri);
       }
 
-      //TIN.Triangles.Pack;
+      TIN.Triangles.Pack();
       TIN.Triangles.NumberTriangles();
 
       // Remove the four MBR vertices from the TIN
@@ -125,7 +130,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       Triangle thirdSide)
     {
       if (tri == firstSide || tri == secondSide || tri == thirdSide)
-        throw new TRexTINException($"Triangle cannot be its own neighbour: Tri={tri}, versus neighbours={string.Concat(new object[] { firstSide, secondSide, thirdSide })}");
+        throw new TRexTINException($"Triangle cannot be its own neighbour: Tri={tri}, versus neighbours={string.Concat(new object[] {firstSide, secondSide, thirdSide})}");
 
       tri.Vertices[0] = firstCoord;
       tri.Vertices[1] = secondCoord;
@@ -159,9 +164,9 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             coord2.X == coord3.X && coord2.Y == coord3.Y ||
             coord3.X == coord1.X && coord3.Y == coord1.Y)
         {
-          TIN.SaveToFile(@"C:\Temp\TINStateBeforeCoordNonUniquenessException.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINStateBeforeCoordNonUniquenessException({DateTime.Now.Ticks}).ttm", false);
 
-          throw new TRexTINException($"Coordinates for new triangle are not unique {string.Concat(new object[]{coord1, coord2, coord3})}");
+          throw new TRexTINException($"Coordinates for new triangle are not unique {string.Concat(new object[] {coord1, coord2, coord3})}");
         }
 
         result.Vertices[0] = coord1;
@@ -180,7 +185,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       }
 
       if (result == side1 || result == side2 || result == side3)
-        throw new TRexTINException($"Triangle cannot be its own neighbour: Tri={result}, versus neighbours={string.Concat(new object[]{side1, side2, side3})}");
+        throw new TRexTINException($"Triangle cannot be its own neighbour: Tri={result}, versus neighbours={string.Concat(new object[] {side1, side2, side3})}");
 
       result.Neighbours[0] = side1;
       result.Neighbours[1] = side2;
@@ -382,6 +387,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <returns></returns>
     protected bool Influenced(Triangle theTri, TriVertex theCoord)
     {
+      var result = false;
+
       double cotan = TinningUtils.Cotangent(theTri.Vertices[2], theTri.Vertices[0], theTri.Vertices[1]);
       if (cotan > -1E20)
       {
@@ -393,10 +400,10 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
                        cotan;
         double radSq = Math.Pow(cNorth - theTri.Vertices[0].Y, 2) + Math.Pow(cEast - theTri.Vertices[0].X, 2);
 
-        return Math.Pow(theCoord.X - cEast, 2) + Math.Pow(theCoord.Y - cNorth, 2) < radSq;
+        result = Math.Pow(theCoord.X - cEast, 2) + Math.Pow(theCoord.Y - cNorth, 2) < radSq;
       }
 
-      return false;
+      return result;
     }
 
     /// <summary>
@@ -427,6 +434,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       candidateList[numCandidates - 1].NotAffected = unAffected;
     }
 
+    /* Re-include if required, and add unit tests for them at that time.
     /// <summary>
     /// Ensure lastTri is not discarded (ie invalid). If so, return a valid triangle
     /// </summary>
@@ -435,8 +443,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     {
       if (lastTri == null)
         lastTri = TIN.Triangles[0];
-
-      /* Re-include if required, and add unit tests for them at that time.
+      
       if (lastTri.IsDiscardedFlag)
         for (int i = 0; i < TIN.Triangles.Count; i++)
           if (!TIN.Triangles[i].IsDiscardedFlag)
@@ -444,11 +451,11 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             lastTri = TIN.Triangles[i];
             return;
           }
-
+      
       if (lastTri.IsDiscardedFlag)
         lastTri = null;
-      */
     }
+  */
 
     /// <summary>
     /// NOTE - if aPoint is possibly a point currently in the model, it is
@@ -469,8 +476,10 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       if (lastTri == null)
         lastTri = TIN.Triangles[0];
 
+      /* Re-include if required, and add unit tests for them at that time.
       if (checkIt)
         CheckLastTri(ref lastTri);
+      */
 
       if (lastTri == null) // No undiscarded triangles left 
         return null;
@@ -479,7 +488,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       Triangle currentTri = lastTri;
       while (!outsideModel && !found)
       {
-        if (++nSteps > 10000)
+        if (++nSteps > MaxTriangleLocationSteps)
         {
           surfaceWalkOverflowCount++;
           nSteps = 0;
@@ -549,7 +558,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       TIN.Triangles.NumberTriangles();
     }
 
-    //private static int IndexCount = 0;
+    // private static int IndexCount;
 
     /// <summary>
     /// The triangles in the affected list form a polygon about the coord being
@@ -584,7 +593,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
         if (AffectedIdx >= numAffected)
         {
-          //TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeAddingTriangle.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeAddingTriangle.ttm", false);
 
           // the last one or two triangles will be new, rather than updated 
           if (succLastTriangle == null)
@@ -597,14 +606,14 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             lastSide,
             affSideList[sidePtr].side);
 
-          //TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterAddingTriangle.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-AfterAddingTriangle.ttm", false);
 
           succLastTriangle = succSuccLastTriangle;
           succSuccLastTriangle = null;
         }
         else
         {
-          //TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeModifyingTriangle.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeModifyingTriangle.ttm", false);
 
           //  update affectedPtr^.tri triangle 
           makeUpdatedTriangle(affectedList[AffectedIdx].Tri,
@@ -615,7 +624,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             lastSide,
             affSideList[sidePtr].side);
 
-          //TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterModifyingTriangle.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-AfterModifyingTriangle.ttm", false);
 
           lastSide = affectedList[AffectedIdx].Tri;
           AffectedIdx++;
@@ -628,15 +637,15 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       }
 
       /*// Some debugging code useful for tracking down issues when the 1 or 2 empty triangles     
-        //that may get created as a part of resolving affected triangles to not get used as expected
-       if (Assigned(SUCCSuccLastTriangle))
-      Assert(Not Assigned(SUCCSuccLastTriangle.Vertex[1]), 'SUCCSuccLastTriangle appears to point to non-null vertices');
-
-      if (Assigned(succLastTriangle))
-      Assert(Not Assigned(succLastTriangle.Vertex[1]), 'succLastTriangle appears to point to non-null vertices');
-
-      Assert(not assigned(succLastTriangle) and not assigned(SUCCSuccLastTriangle));
-      */
+          //that may get created as a part of resolving affected triangles to not get used as expected
+         if (Assigned(SUCCSuccLastTriangle))
+        Assert(Not Assigned(SUCCSuccLastTriangle.Vertex[1]), 'SUCCSuccLastTriangle appears to point to non-null vertices');
+  
+        if (Assigned(succLastTriangle))
+        Assert(Not Assigned(succLastTriangle.Vertex[1]), 'succLastTriangle appears to point to non-null vertices');
+  
+        Assert(not assigned(succLastTriangle) and not assigned(SUCCSuccLastTriangle));
+        */
     }
 
     protected void InitLists(Triangle firstTri)
@@ -720,45 +729,21 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <returns></returns>
     protected bool IncorporateCoord(TriVertex theCoord, ref Triangle currentTri)
     {
+      bool result = false;
+
       currentTri = LocateTriangle2(theCoord, currentTri, false);
-      if (currentTri == null)
+      if (currentTri != null)
       {
-        TIN.SaveToFile(@"c:\TinProgress.ttm", true);
-        return false;
+        AddCoordToModel(theCoord, currentTri);
+
+        if (succLastTriangle != null)
+          throw new TRexTINException("Not all created triangles used.");
+
+        result = true;
       }
 
-      AddCoordToModel(theCoord, currentTri);
-
-      if (succLastTriangle != null)
-        throw new TRexTINException("Not all created triangles used.");
-
-      return true;
-    }
-
-    public void InitialiseInitialTriangles(double MinX, double MinY,
-      double MaxX, double MaxY,
-      double VertexHeight,
-      out Triangle TLTri, out Triangle BRTri)
-    {
-      // Create the four corner vertices
-      TriVertex TL = AddVertex(MinX, MaxY, VertexHeight);
-      TriVertex TR = AddVertex(MaxX, MaxY, VertexHeight);
-      TriVertex BL = AddVertex(MinX, MinY, VertexHeight);
-      TriVertex BR = AddVertex(MaxX, MinY, VertexHeight);
-
-      // Add the two starting triangles.
-      AddTriangle(TL, TR, BL);
-      AddTriangle(BL, TR, BR);
-
-      TLTri = TIN.Triangles[0];
-      BRTri = TIN.Triangles[1];
-
-      // Ensure their neighbours are correct
-      TLTri.Neighbours[1] = BRTri;
-      BRTri.Neighbours[0] = TLTri;
-
-      TIN.Triangles.NumberTriangles();
-    }
+      return result;
+  }
 
     /// <summary>
     /// IncorporateCoordIntoTriangle adds a vertex into the given triangle
@@ -769,6 +754,9 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <returns></returns>
     public bool IncorporateCoordIntoTriangle(TriVertex theCoord, Triangle tri)
     {
+      // Noisy logging - reinclude as necessary
+      //Log.LogDebug($"Incorporating vertex {theCoord} into triangle {tri}");
+
       AddCoordToModel(theCoord, tri);
 
       if (succLastTriangle != null)
@@ -818,7 +806,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       }
 
       // Iterate through all the vertices adding them to the surface
-      DateTime StartTime = DateTime.Now;
+      DateTime StartTime = DateTime.UtcNow;
       surfaceWalkOverflowCount = 0;
 
       // Don't read the 4 vertices we added for the bounding rectangle tris
@@ -827,19 +815,13 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         if (!IncorporateCoord(TIN.Vertices[I], ref CurrentTri))
           return false;
 
-      DateTime FinishTime = DateTime.Now;
-      try
-      {
-        Log.LogInformation($"Coordinate incorporation took {FinishTime - StartTime} to process {TIN.Vertices.Count} vertices into {TIN.Triangles.Count} triangles " +
-                           $"at a rate of {TIN.Vertices.Count / ((FinishTime - StartTime).TotalSeconds)} vertices/sec, encountering {surfaceWalkOverflowCount} surface walk overflows");
-      }
-      catch
-      {
-        // swallow exception due to logging...
-      }
+      DateTime FinishTime = DateTime.UtcNow;
 
-    // Add the origin back to the vertex positions to re-translate than back to their correct positions
-    for (int I = 0; I < TIN.Vertices.Count; I++)
+      Log.LogInformation($"Coordinate incorporation took {FinishTime - StartTime} to process {TIN.Vertices.Count} vertices into {TIN.Triangles.Count} triangles " +
+                         $"at a rate of {TIN.Vertices.Count / ((FinishTime - StartTime).TotalSeconds)} vertices/sec, encountering {surfaceWalkOverflowCount} surface walk overflows");
+
+      // Add the origin back to the vertex positions to re-translate than back to their correct positions
+      for (int I = 0; I < TIN.Vertices.Count; I++)
       {
         TIN.Vertices[I].X += TIN.Header.MinimumEasting;
         TIN.Vertices[I].Y += TIN.Header.MinimumNorthing;

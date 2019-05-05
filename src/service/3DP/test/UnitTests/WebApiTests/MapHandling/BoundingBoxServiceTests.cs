@@ -51,8 +51,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(27, 27)
       };
 
-      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
+        polygonPoints, null, null, null, null, null, null, null, null,  null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , new Mock<IConfigurationStore>().Object
         , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
       );
-      var bbox = service.GetBoundingBox(project, filter, new[] { TileOverlayType.BaseMap }, null, null, null);
+      var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, null);
       Assert.AreEqual(polygonPoints.Min(p => p.Lat), bbox.minLat);
       Assert.AreEqual(polygonPoints.Min(p => p.Lon), bbox.minLng);
       Assert.AreEqual(polygonPoints.Max(p => p.Lat), bbox.maxLat);
@@ -84,8 +84,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(36.15.LatDegreesToRadians(), -115.74.LonDegreesToRadians()),
         new WGSPoint(36.10.LatDegreesToRadians(), -115.39.LonDegreesToRadians())
       };
-      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
+        polygonPoints, null, null, null, null, null, null, null, null,  null, null, null, null,
         null, null, null, null, null, null, null, null, design, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           , new Mock<IConfigurationStore>().Object
           , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
         );
-        var bbox = service.GetBoundingBox(project, filter, new[] { TileOverlayType.BaseMap }, null, null, null);
+        var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, null);
         //bbox is a mixture of polgon and design boundary (see GeoJson)
         Assert.AreEqual(-115.74.LonDegreesToRadians(), bbox.minLng);
         Assert.AreEqual(35.98.LatDegreesToRadians(), bbox.minLat);
@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public void GetBoundingBoxDesignBoundaryFilter()
     {
       DesignDescriptor design = new DesignDescriptor(-1, null, 0);
-      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null,
+      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, design, null, null, null, null, null);
 
@@ -151,7 +151,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           , new Mock<IConfigurationStore>().Object
           , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
         );
-        var bbox = service.GetBoundingBox(project, filter, new[] { TileOverlayType.BaseMap }, null, null, null);
+        var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, null);
         //Values are from GeoJson below
         Assert.AreEqual(-115.123.LonDegreesToRadians(), bbox.minLng);
         Assert.AreEqual(36.175.LatDegreesToRadians(), bbox.minLat);
@@ -209,8 +209,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(27, 27)
       };
 
-      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
+        polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       DesignDescriptor design = new DesignDescriptor(-1, null, 0);
@@ -238,7 +238,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           , new Mock<IConfigurationStore>().Object
           , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
         );
-        var bbox = service.GetBoundingBox(project, filter, new[] { TileOverlayType.BaseMap }, null, null, design);
+        var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, design);
         Assert.AreEqual(polygonPoints.Min(p => p.Lat), bbox.minLat);
         Assert.AreEqual(polygonPoints.Min(p => p.Lon), bbox.minLng);
         Assert.AreEqual(polygonPoints.Max(p => p.Lat), bbox.maxLat);
@@ -250,8 +250,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public void GetBoundingBoxAlignmentFilter()
     {
       DesignDescriptor alignment = new DesignDescriptor(-1, null, 0);
-      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, alignment, 0, 3, 0.5, 0.5, null, null, null, null, null, null, null, null, null,
+      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null, null,
+        null, null, alignment, 0, 3, 0.5, 0.5, null,  null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
@@ -281,7 +281,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , new Mock<IConfigurationStore>().Object
         , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
       );
-      var bbox = service.GetBoundingBox(project, filter, new[] { TileOverlayType.BaseMap }, null, null, null);
+      var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, null);
       Assert.AreEqual(-115.3.LonDegreesToRadians(), bbox.minLng);
       Assert.AreEqual(36.1.LatDegreesToRadians(), bbox.minLat);
       Assert.AreEqual(-115.1.LonDegreesToRadians(), bbox.maxLng);
@@ -300,8 +300,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(27, 27)
       };
 
-      var baseFilter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints1, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var baseFilterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
+        polygonPoints1, null, null, null, null, null, null, null, null,  null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       List<WGSPoint> polygonPoints2 = new List<WGSPoint>
@@ -313,8 +313,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(32, 16)
       };
 
-      var topFilter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints2, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var topFilterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
+        polygonPoints2, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
@@ -328,7 +328,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , new Mock<IConfigurationStore>().Object
         , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
       );
-      var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.BaseMap }, baseFilter, topFilter, null);
+      var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.BaseMap }, baseFilterResult, topFilterResult, null);
 
       var expectedMinLat = Math.Min(polygonPoints1.Min(p => p.Lat), polygonPoints2.Min(p => p.Lat));
       var expectedMinLng = Math.Min(polygonPoints1.Min(p => p.Lon), polygonPoints2.Min(p => p.Lon));

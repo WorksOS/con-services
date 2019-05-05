@@ -86,8 +86,8 @@ namespace VSS.TRex.Profiling
       out ushort minWarning,
       out ushort maxWarning)
     {
-      minWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _);
-      maxWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _);
+      minWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _, CellPassConsts.NullMaterialTemperatureValue);
+      maxWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _, CellPassConsts.NullMaterialTemperatureValue);
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ namespace VSS.TRex.Profiling
     /// <param name="time"></param>
     /// <returns></returns>
     private short GetTargetCCV(short machineID, DateTime time) =>
-      SiteModel.MachinesTargetValues[machineID].TargetCCVStateEvents.GetValueAtDate(time, out int _);
+      SiteModel.MachinesTargetValues[machineID].TargetCCVStateEvents.GetValueAtDate(time, out int _, CellPassConsts.NullCCV);
 
     /// <summary>
     /// Gets the target MDP for a machine at a given time
@@ -106,7 +106,7 @@ namespace VSS.TRex.Profiling
     /// <param name="time"></param>
     /// <returns></returns>
     private short GetTargetMDP(short machineID, DateTime time) =>
-      SiteModel.MachinesTargetValues[machineID].TargetMDPStateEvents.GetValueAtDate(time, out int _);
+      SiteModel.MachinesTargetValues[machineID].TargetMDPStateEvents.GetValueAtDate(time, out int _, CellPassConsts.NullMDP);
 
     /// <summary>
     /// Gets the target CCA for a machine at a given time
@@ -115,7 +115,7 @@ namespace VSS.TRex.Profiling
     /// <param name="time"></param>
     /// <returns></returns>
     private short GetTargetCCA(short machineID, DateTime time) =>
-      SiteModel.MachinesTargetValues[machineID].TargetCCAStateEvents.GetValueAtDate(time, out int _);
+      SiteModel.MachinesTargetValues[machineID].TargetCCAStateEvents.GetValueAtDate(time, out int _, CellPassConsts.NullCCA);
 
     /// <summary>
     /// Gets the target pass count for a machine at a given time
@@ -124,7 +124,7 @@ namespace VSS.TRex.Profiling
     /// <param name="time"></param>
     /// <returns></returns>
     private ushort GetTargetPassCount(short machineID, DateTime time) =>
-      SiteModel.MachinesTargetValues[machineID].TargetPassCountStateEvents.GetValueAtDate(time, out int _);
+      SiteModel.MachinesTargetValues[machineID].TargetPassCountStateEvents.GetValueAtDate(time, out int _, CellPassConsts.NullPassCountValue);
 
     /// <summary>
     /// Determines a set of summary attributes for the cell being analyzed
@@ -438,7 +438,7 @@ namespace VSS.TRex.Profiling
           // Does the sub grid tree contain this node in it's existence map?
           if (PDExistenceMap[CurrentSubGridOrigin.X, CurrentSubGridOrigin.Y])
             SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining
-              (StorageProxy, SiteModel.Grid, ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
+              (SiteModel.PrimaryStorageProxy, SiteModel.Grid, ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
 
           _SubGridAsLeaf = SubGrid as ServerSubGridTreeLeaf;
           if (_SubGridAsLeaf == null)
@@ -460,7 +460,7 @@ namespace VSS.TRex.Profiling
           if (FilteredSurveyedSurfaces != null)
           {
             // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
-            SurfaceElevationPatchArg.SetOTGBottomLeFtLocation(_SubGridAsLeaf.OriginX, _SubGridAsLeaf.OriginY);
+            SurfaceElevationPatchArg.SetOTGBottomLeftLocation(_SubGridAsLeaf.OriginX, _SubGridAsLeaf.OriginY);
             SurfaceElevationPatchArg.ProcessingMap.Assign(FilterMask);
 
             CompositeHeightsGridIntf = SurfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);

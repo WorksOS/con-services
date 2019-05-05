@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,8 @@ using VSS.ConfigurationStore;
 using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Gateway.Common.Helpers;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -102,6 +105,40 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         Log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
       }
       return result;
+    }
+
+    /// <summary>
+    /// Filter validation common to APIs passing 3dp Filter/s
+    /// </summary>
+    /// <param name="method"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="filterResult"></param>
+    /// <exception cref="ServiceException"></exception>
+    protected void ValidateFilterMachines(string method, Guid? projectUid, FilterResult filterResult)
+    {
+      if (projectUid == null || projectUid == Guid.Empty)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Invalid project UID {projectUid}"));
+      }
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(method, projectUid.Value);
+
+      if (filterResult != null && filterResult.ContributingMachines != null)
+        GatewayHelper.ValidateMachines(filterResult.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
+
+      if (filterResult != null && !string.IsNullOrEmpty(filterResult.OnMachineDesignName))
+      {
+        var machineDesign = siteModel.SiteModelMachineDesigns.Locate(filterResult.OnMachineDesignName);
+        if (machineDesign == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"Unknown DesignName: {filterResult.OnMachineDesignName}."));
+        }
+
+        filterResult.OnMachineDesignId = machineDesign.Id;
+      }
     }
   }
 }

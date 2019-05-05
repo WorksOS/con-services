@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -16,7 +16,7 @@ namespace VSS.TRex.SiteModels
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelDesignList>();
 
-    private const int VERSION_NUMBER = 1;
+    private const byte VERSION_NUMBER = 1;
     private const string LIST_STREAM_NAME = "SiteModelDesigns";
 
     /// <summary>
@@ -65,9 +65,9 @@ namespace VSS.TRex.SiteModels
     /// Loads the content of the proofing run list from the persistent store. If there is no item in the persistent store containing
     /// proofing runs for this site model them return an empty list.
     /// </summary>
-    public void LoadFromPersistentStore(Guid projectUid)
+    public void LoadFromPersistentStore(Guid projectUid, IStorageProxy storageProxy)
     {
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, out MemoryStream ms);
+      storageProxy.ReadStreamFromPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, out MemoryStream ms);
       if (ms == null)
         return;
 
@@ -84,9 +84,7 @@ namespace VSS.TRex.SiteModels
 
     public void Read(BinaryReader reader)
     {
-      byte version = reader.ReadByte();
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -103,7 +101,7 @@ namespace VSS.TRex.SiteModels
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.Write((int)Count);
 

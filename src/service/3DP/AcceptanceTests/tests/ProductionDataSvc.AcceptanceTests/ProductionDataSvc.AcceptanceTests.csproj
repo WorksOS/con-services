@@ -22,12 +22,14 @@
     <None Remove="TestData\LineworkFiles\0_boundaries.dxf" />
     <None Remove="TestData\LineworkFiles\Dimensions_2012.dc" />
     <None Remove="TestData\LineworkFiles\Dimensions_2012.dxf" />
+    <None Remove="TestData\LineworkFiles\Dimensions_2012_LineString.dxf" />
     <None Remove="TestData\LineworkFiles\Null.dc" />
     <None Remove="TestData\LineworkFiles\Null.dxf" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="TestData\LineworkFiles\0_boundaries.dxf" />
+    <EmbeddedResource Include="TestData\LineworkFiles\Dimensions_2012_LineString.dxf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,7 +45,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="1.1.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="XnaFan.ImageComparison.netcore" Version="2.0.5" />
     <PackageReference Include="Xunit.Gherkin.Quick" Version="3.3.0" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
@@ -117,7 +119,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="CompactionProfile.feature">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="CompactionSpeed.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -177,6 +179,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="GetLifts.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None> 
+    <None Update="GeoJson.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="GetMachineDesigns.feature">

@@ -80,10 +80,32 @@ namespace TAGFiles.Tests
       TAGFileConverter converter = DITagFileFixture.ReadTAGFile("Dimensions2018-CaseMachine", "2652J085SW--CASE CX160C--121101215100.tag");
       converter.Processor.OnGroundFlagSet.Should().Be(true);
 
-      DateTime theTime = new DateTime(2012, 11, 1, 20, 53, 23, 841, DateTimeKind.Unspecified);
+      DateTime theTime = new DateTime(2012, 11, 1, 20, 53, 23, 841, DateTimeKind.Utc);
       converter.Processor.OnGrounds.GetOnGroundAtDateTime(theTime).Should().Be(OnGroundState.YesMachineSoftware);
     }
 
+    /// <summary>
+    /// This test ensures a TAG file that produces a 'Sink Finishing Failure', is correctly processed in terms of the cell and cell
+    /// passes in the TAG file.
+    /// </summary>
+    [Fact()]
+    public void Test_TAGFileConverter_Execute_SinkError()
+    {
+      TAGFileConverter converter = DITagFileFixture.ReadTAGFile("DimensionsSinkError.tag");
 
+      converter.ReadResult.Should().Be(TAGReadResult.SinkFinishingFailure);
+      converter.ProcessedCellPassCount.Should().Be(52);
+      converter.ProcessedEpochCount.Should().Be(65);
+
+      //Assert.True(converter.Machine != null, "converter.Machine == null");
+      //Assert.True(converter.MachineTargetValueChangesAggregator != null,
+      //  "converter.MachineTargetValueChangesAggregator");
+      //Assert.True(converter.ReadResult == TAGReadResult.NoError,
+      //  $"converter.ReadResult == TAGReadResult.NoError [= {converter.ReadResult}");
+      //Assert.True(converter.ProcessedCellPassCount == 16525,
+      //  $"converter.ProcessedCellPassCount != 16525 [={converter.ProcessedCellPassCount}]");
+      //Assert.True(converter.ProcessedEpochCount == 1478, $"converter.ProcessedEpochCount != 1478, [= {converter.ProcessedEpochCount}]");
+      //Assert.True(converter.SiteModelGridAggregator != null, "converter.SiteModelGridAggregator == null");
+    }
   }
 }

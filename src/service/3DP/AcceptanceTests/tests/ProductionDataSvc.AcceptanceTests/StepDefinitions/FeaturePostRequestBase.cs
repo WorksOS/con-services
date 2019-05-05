@@ -56,6 +56,18 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       PostRequestHandler.DoRequest(parameterValue, expectedHttpCode: httpCode);
     }
 
+    [Then(@"the response should match ""(.*)"" from the repository with rounding to (\d+)")]
+    public void ThenTheProductionDataCellDatumResponseShouldMatchResultFromTheRepositoryWithRoundingTo(string resultName, int precision)
+    {
+      var expectedJObject = JObject.FromObject(PostRequestHandler.ResponseRepo[resultName]);
+      var actualJObject = JObject.FromObject(PostRequestHandler.CurrentResponse);
+
+      ObjectComparer.RoundAllDoubleProperties(actualJObject, precision);
+      ObjectComparer.RoundAllDoubleProperties(expectedJObject, precision);
+
+      ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject);
+    }
+
     [Then(@"the response should match ""(.*)"" from the repository")]
     public void ThenTheProductionDataCellDatumResponseShouldMatchResultFromTheRepository(string resultName)
     {

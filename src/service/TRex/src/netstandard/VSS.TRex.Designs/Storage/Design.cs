@@ -22,25 +22,25 @@ namespace VSS.TRex.Designs.Storage
     /// Singleton request used by all designs. This request encapsulates the Ignite reference which
     /// is relatively slow to initialise when making many calls.
     /// </summary>
-    private static readonly DesignElevationSpotRequest elevSpotRequest = new DesignElevationSpotRequest();
+    private DesignElevationSpotRequest elevSpotRequest;
 
     /// <summary>
     /// Singleton request used by all designs. This request encapsulates the Ignite reference which
     /// is relatively slow to initialise when making many calls.
     /// </summary>
-    private static readonly DesignElevationPatchRequest elevPatchRequest = new DesignElevationPatchRequest();
+    private DesignElevationPatchRequest elevPatchRequest;
 
     /// <summary>
     /// Singleton request used by all designs. This request encapsulates the Ignite reference which
     /// is relatively slow to initialise when making many calls.
     /// </summary>
-    private static readonly DesignProfileRequest profileRequest = new DesignProfileRequest();
+    private DesignProfileRequest profileRequest;
 
     /// <summary>
     /// Singleton request used by all designs. This request encapsulates the Ignite reference which
     /// is relatively slow to initialise when making many calls.
     /// </summary>
-    private static readonly DesignFilterSubGridMaskRequest filterMaskRequest = new DesignFilterSubGridMaskRequest(); 
+    private DesignFilterSubGridMaskRequest filterMaskRequest; 
 
     /// <summary>
     /// Binary serialization logic
@@ -79,10 +79,7 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// The full design descriptor representing the design
     /// </summary>
-    public DesignDescriptor DesignDescriptor;
-
-    // Public accessor method for design descriptor struct
-    public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;
+    public DesignDescriptor DesignDescriptor { get; private set; }
 
     /// <summary>
     /// Computes a geometric profile across the design given a series of vertices describing the path to be profiled.
@@ -99,6 +96,9 @@ namespace VSS.TRex.Designs.Storage
 
       try
       {
+        if (profileRequest == null)
+          profileRequest = new DesignProfileRequest();
+
         var profile = profileRequest.Execute(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor.DesignID, profilePath));
 
         return profile.Profile;
@@ -178,10 +178,10 @@ namespace VSS.TRex.Designs.Storage
     /// <returns></returns>
     public bool Equals(IDesign other)
     {
-      return (other != null) &&
-             (ID == other.ID) &&
-             DesignDescriptor.Equals(other.Get_DesignDescriptor()) &&
-             (Extents.Equals(other.Extents));
+      return other != null &&
+             ID == other.ID &&
+             DesignDescriptor.Equals(other.DesignDescriptor) &&
+             Extents.Equals(other.Extents);
     }
 
     /// <summary>
@@ -199,6 +199,9 @@ namespace VSS.TRex.Designs.Storage
     {
       // Query the DesignProfiler service to get the spot elevation calculated
       errorCode = DesignProfilerRequestResult.OK;
+
+      if (elevSpotRequest == null)
+        elevSpotRequest = new DesignElevationSpotRequest();
 
       spotHeight = elevSpotRequest.Execute(new CalculateDesignElevationSpotArgument
         (siteModelID, spotX, spotY, DesignDescriptor.DesignID, DesignDescriptor.Offset));
@@ -221,6 +224,9 @@ namespace VSS.TRex.Designs.Storage
       // Query the DesignProfiler service to get the patch of elevations calculated
       errorCode = DesignProfilerRequestResult.OK;
       designHeights = null;
+
+      if (elevPatchRequest == null)
+        elevPatchRequest = new DesignElevationPatchRequest();
 
       var response = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
       {
@@ -252,6 +258,9 @@ namespace VSS.TRex.Designs.Storage
     {
       // Query the DesignProfiler service to get the requested filter mask
       errorCode = DesignProfilerRequestResult.OK;
+
+      if (filterMaskRequest == null)
+        filterMaskRequest = new DesignFilterSubGridMaskRequest(); 
 
       var maskResponse = filterMaskRequest.Execute(new DesignSubGridFilterMaskArgument
       {

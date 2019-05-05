@@ -23,7 +23,6 @@ namespace VSS.TRex.Tests.Cells
                 gpsMode = GPSMode.AutonomousPosition,
                 HalfPass = false,
                 Height = 5,
-                //MachineID = 6,
                 InternalSiteModelMachineIndex = 6,
                 MachineSpeed = 7,
                 MaterialTemperature = 8,
@@ -31,7 +30,7 @@ namespace VSS.TRex.Tests.Cells
                 PassType = PassType.Front,
                 RadioLatency = 10,
                 RMV = 11,
-                Time = new DateTime(2017, 1, 1, 12, 30, 0)
+                Time = DateTime.SpecifyKind(new DateTime(2017, 1, 1, 12, 30, 0), DateTimeKind.Utc)
             };
         }
 
@@ -46,7 +45,6 @@ namespace VSS.TRex.Tests.Cells
                 gpsMode = GPSMode.DGPS,
                 HalfPass = true,
                 Height = 50,
-                //MachineID = 60,
                 InternalSiteModelMachineIndex = 60,
                 MachineSpeed = 70,
                 MaterialTemperature = 80,
@@ -54,7 +52,7 @@ namespace VSS.TRex.Tests.Cells
                 PassType = PassType.Rear,
                 RadioLatency = 100,
                 RMV = 110,
-                Time = new DateTime(2017, 1, 1, 12, 45, 0)
+                Time = DateTime.SpecifyKind(new DateTime(2017, 1, 1, 12, 45, 0), DateTimeKind.Utc)
             };
         }
 
@@ -75,7 +73,6 @@ namespace VSS.TRex.Tests.Cells
                 cp.gpsMode == CellPassConsts.NullGPSMode &&
                 cp.HalfPass == false &&
                 cp.Height == CellPassConsts.NullHeight &&
-                //cp.MachineID == CellPass.NullMachineID &&
                 cp.InternalSiteModelMachineIndex == CellPassConsts.NullInternalSiteModelMachineIndex &&
                 cp.MachineSpeed == CellPassConsts.NullMachineSpeed &&
                 cp.MaterialTemperature == CellPassConsts.NullMaterialTemperatureValue &&
@@ -96,12 +93,11 @@ namespace VSS.TRex.Tests.Cells
             CellPass cp = ATestCellPass();
 
             DateTime testTime = DateTime.Now;
-            //cp.MachineID = 100;
             cp.InternalSiteModelMachineIndex = 100;
             cp.Time = testTime;
 
-            //cp.MachineIDAndTime(out long MachineID, out DateTime Time);
-            // Assert.True(MachineID == 100 && Time == testTime, "Machine ID and time are not the expected values");
+            //cp.MachineIDAndTime(out long InternalSiteModelMachineIndex, out DateTime Time);
+            // Assert.True(InternalSiteModelMachineIndex == 100 && Time == testTime, "Machine ID and time are not the expected values");
 
             cp.MachineIDAndTime(out short internalSiteModelMachineIndex, out DateTime Time);
             Assert.True(internalSiteModelMachineIndex == 100 && Time == testTime, "Machine ID and time are not the expected values");

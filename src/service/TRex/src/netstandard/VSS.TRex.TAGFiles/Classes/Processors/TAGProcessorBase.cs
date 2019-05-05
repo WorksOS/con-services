@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.States;
@@ -253,8 +254,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             StartProofingWeek = 0;
             EndProofingName = "";
 
-            StartProofingDataTime = DateTime.MinValue;
-            HaveSeenAProofingStart = false;
+            StartProofingDataTime = Consts.MIN_DATETIME_AS_UTC;
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         public SimpleTriangle WheelTimeInterpolator1 { get; set; }
         public SimpleTriangle WheelTimeInterpolator2 { get; set; }
 
-        private DateTime PrevEpochTime { get; set; } = DateTime.MinValue;
+        private DateTime PrevEpochTime { get; set; } = Consts.MIN_DATETIME_AS_UTC;
 
         XYZ[] FrontHeights = new XYZ[4];  // First and second Epoch points for front axle
         XYZ[] FrontTimes = new XYZ[4];  // First and second Epoch points for front axle

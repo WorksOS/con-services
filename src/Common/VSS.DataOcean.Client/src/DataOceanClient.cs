@@ -241,7 +241,7 @@ namespace VSS.DataOcean.Client
       catch (HttpRequestException ex)
       {
         //If tile does not exist DataOcean returns 403
-        if (!result.Multifile || !(string.Compare(ex.Message, "403 access denied", true) == 0 || string.Compare(ex.Message, "Forbidden access denied", true) == 0))
+        if (!result.Multifile || !(string.Compare(ex.Message.Substring(0,3), "403", true) == 0 || string.Compare(ex.Message.Substring(0,9), "Forbidden", true) == 0))
         {
           throw;
         }

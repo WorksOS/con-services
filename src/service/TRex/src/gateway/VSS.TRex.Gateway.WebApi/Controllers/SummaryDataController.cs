@@ -37,12 +37,14 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostCmvSummary)}: {Request.QueryString}");
 
       cmvSummaryRequest.Validate();
+      ValidateFilterMachines(nameof(PostCmvSummary), cmvSummaryRequest.ProjectUid, cmvSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<SummaryCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvSummaryRequest) as CMVSummaryResult);
     }
+
 
     /// <summary>
     /// Get MDP summary from production data for the specified project and date range.
@@ -53,9 +55,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public MDPSummaryResult PostMdpSummary([FromBody] MDPSummaryRequest mdpSummaryRequest)
     {
-      Log.LogInformation("PostMdpSummary: " + Request.QueryString);
+      Log.LogInformation($"{nameof(PostMdpSummary)}: " + Request.QueryString);
 
       mdpSummaryRequest.Validate();
+      ValidateFilterMachines(nameof(PostMdpSummary), mdpSummaryRequest.ProjectUid, mdpSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -72,14 +75,23 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public PassCountSummaryResult PostPassCountSummary([FromBody] PassCountSummaryRequest passCountSummaryRequest)
     {
-      Log.LogInformation($"{nameof(PostPassCountSummary)}: {Request.QueryString}");
+      Log.LogInformation($"#In# {nameof(PostPassCountSummary)}: {Request.QueryString}");
 
-      passCountSummaryRequest.Validate();
+      try
+      {
+        passCountSummaryRequest.Validate();
+        ValidateFilterMachines(nameof(PostPassCountSummary), passCountSummaryRequest.ProjectUid,
+          passCountSummaryRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(passCountSummaryRequest) as PassCountSummaryResult);
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(passCountSummaryRequest) as PassCountSummaryResult);
+      }
+      finally
+      {
+        Log.LogInformation($"#Out# {nameof(PostPassCountSummary)}: {Request.QueryString}");
+      }
     }
 
     /// <summary>
@@ -94,6 +106,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostSpeedSummary)}: {Request.QueryString}");
 
       speedSummaryRequest.Validate();
+      ValidateFilterMachines(nameof(PostSpeedSummary), speedSummaryRequest.ProjectUid, speedSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -111,6 +124,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostTemperatureSummary)}: {Request.QueryString}");
 
       temperatureSummaryRequest.Validate();
+      ValidateFilterMachines(nameof(PostTemperatureSummary), temperatureSummaryRequest.ProjectUid, temperatureSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -130,11 +144,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostCcaSummary)}: {Request.QueryString}");
 
       ccaSummaryRequest.Validate();
+      ValidateFilterMachines(nameof(PostCcaSummary), ccaSummaryRequest.ProjectUid, ccaSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<SummaryCCAExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(ccaSummaryRequest) as CCASummaryResult);
     }
+   
   }
 }

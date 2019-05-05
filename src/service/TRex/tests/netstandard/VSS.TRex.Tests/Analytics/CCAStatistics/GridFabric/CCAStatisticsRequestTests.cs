@@ -4,15 +4,13 @@ using FluentAssertions;
 using VSS.TRex.Analytics.CCAStatistics;
 using VSS.TRex.Analytics.CCAStatistics.GridFabric;
 using VSS.TRex.Cells;
-using VSS.TRex.DI;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
@@ -21,13 +19,6 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CCAStatisticsRequest_ClusterCompute))]
   public class CCAStatisticsRequestTests : BaseTests<CCAStatisticsArgument, CCAStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private CCAStatisticsArgument SimpleCCAStatisticsArgument(ISiteModel siteModel)
     {
       return new CCAStatisticsArgument
@@ -35,16 +26,18 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter())
       };
-
     }
 
-    private void BuildModelForSingleCellCCA(out ISiteModel siteModel, byte ccaIncrement)
+    private void BuildModelForSingleCellCCA(out ISiteModel siteModel, byte ccaIncrement, byte targetCCA = CellPassConsts.NullCCATarget)
     {
       var baseTime = DateTime.UtcNow;
       byte baseCCA = 1;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+
+      if (targetCCA != CellPassConsts.NullCCATarget)
+        siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCAStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, targetCCA);
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
         new CellPass
@@ -57,6 +50,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
     [Fact]
@@ -73,7 +67,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new CCAStatisticsOperation();
 
       var ccaStatisticsResult = operation.Execute(SimpleCCAStatisticsArgument(siteModel));
@@ -83,7 +77,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryCCAStatistics_SiteModelWithSingleCell_FullExtents()
+    public void Test_SummaryCCAStatistics_SiteModelWithSingleCell_FullExtents_NoTarget()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -95,12 +89,38 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
 
       ccaStatisticsResult.Should().NotBeNull();
       ccaStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      ccaStatisticsResult.ReturnCode.Should().Be(MissingTargetDataResultType.NoResult);
+      ccaStatisticsResult.BelowTargetPercent.Should().Be(0);
+      ccaStatisticsResult.AboveTargetPercent.Should().Be(0);
+      ccaStatisticsResult.WithinTargetPercent.Should().Be(0);
+      ccaStatisticsResult.TotalAreaCoveredSqMeters.Should().Be(0);
+      ccaStatisticsResult.ConstantTargetCCA.Should().Be(CellPassConsts.NullCCATarget);
+      ccaStatisticsResult.IsTargetCCAConstant.Should().BeTrue();
+      ccaStatisticsResult.Counts.Should().BeNull();
+      ccaStatisticsResult.Percents.Should().BeNull();
+    }
+
+    [Fact]
+    public void Test_SummaryCCAStatistics_SiteModelWithSingleCell_FullExtents()
+    {
+      const byte TARGET_CCA = 5;
+
+      AddClusterComputeGridRouting();
+      AddApplicationGridRouting();
+
+      BuildModelForSingleCellCCA(out var siteModel, 1, TARGET_CCA);
+      var operation = new CCAStatisticsOperation();
+
+      var ccaStatisticsResult = operation.Execute(SimpleCCAStatisticsArgument(siteModel));
+
+      ccaStatisticsResult.Should().NotBeNull();
+      ccaStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
       ccaStatisticsResult.ReturnCode.Should().Be(MissingTargetDataResultType.NoProblems);
       ccaStatisticsResult.BelowTargetPercent.Should().Be(0);
       ccaStatisticsResult.AboveTargetPercent.Should().Be(0);
       ccaStatisticsResult.WithinTargetPercent.Should().Be(100);
       ccaStatisticsResult.TotalAreaCoveredSqMeters.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
-      ccaStatisticsResult.ConstantTargetCCA.Should().Be(0);
+      ccaStatisticsResult.ConstantTargetCCA.Should().Be(TARGET_CCA);
       ccaStatisticsResult.IsTargetCCAConstant.Should().BeTrue();
       ccaStatisticsResult.Counts.Should().BeNull();
       ccaStatisticsResult.Percents.Should().BeNull();

@@ -160,5 +160,10 @@ namespace VSS.TRex.SubGridTrees.Client
       return base.IndicativeSizeInBytes() +
              SubGridTreeConsts.SubGridTreeCellsPerSubGrid * SubGridCellPassDataPassCountEntryRecord.IndicativeSizeInBytes();
     }
+
+    public void DumpToLog()
+    {
+      base.DumpToLog();
+    }
   }
 }

@@ -13,7 +13,7 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
   /// </summary>
   public class ProfileRequestComputeFunc_ClusterCompute<T> : BaseComputeFunc, IComputeFunc<ProfileRequestArgument_ClusterCompute, ProfileRequestResponse<T>> where T: class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ProfileRequestComputeFunc_ClusterCompute<T>>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProfileRequestComputeFunc_ClusterCompute<T>>();
 
     public ProfileRequestResponse<T> Invoke(ProfileRequestArgument_ClusterCompute arg)
     {

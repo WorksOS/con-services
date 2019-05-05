@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -24,6 +25,7 @@ using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -65,7 +67,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
       .Build()
-      .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+      .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
       .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
       .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
       .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
@@ -75,8 +77,8 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
       .Build()
       .Add(x => x.AddSingleton(new TINSurfaceExportRequestServer()))
-      .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
-      .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+      .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
+      .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
 
         // Register the listener for site model attribute change notifications
       .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))

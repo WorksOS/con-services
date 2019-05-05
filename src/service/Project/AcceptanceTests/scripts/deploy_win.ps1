@@ -13,6 +13,6 @@ Copy-Item ./scripts/rm_cr.sh ./Deploy
 Set-Location ./Tests
 
 Write-Host "Publishing acceptance test projects" -ForegroundColor DarkGray
-Invoke-Expression "dotnet publish IntegrationTests\IntegrationTests.csproj -o ..\..\deploy\IntegrationTests -f netcoreapp2.1"
-Invoke-Expression "dotnet publish WebApiTests\WebApiTests.csproj -o ..\..\deploy\WebApiTests -f netcoreapp2.1"
 Invoke-Expression "dotnet publish ExecutorTests\ExecutorTests.csproj -o ..\..\deploy\ExecutorTests -f netcoreapp2.1"
+Invoke-Expression "dotnet publish WebApiTests\WebApiTests.csproj -o ..\..\deploy\WebApiTests -f netcoreapp2.1"
+Invoke-Expression "dotnet publish IntegrationTests\IntegrationTests.csproj -o ..\..\deploy\IntegrationTests -f netcoreapp2.1"

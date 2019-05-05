@@ -36,20 +36,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Creates a new profile request argument initialized with the supplied parameters
-    /// </summary>
-    /// <param name="profileTypeRequired"></param>
-    /// <param name="nEECoords"></param>
-    /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ClusterCompute(GridDataType profileTypeRequired, XYZ[] nEECoords, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
-    {
-      ProfileTypeRequired = profileTypeRequired;
-      NEECoords = nEECoords;
-      ReturnAllPassesAndLayers = returnAllPassesAndLayers;
-      VolumeType = volumeType;
-    }
-
-    /// <summary>
     /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>

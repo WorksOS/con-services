@@ -26,6 +26,7 @@ data:
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
   IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/mock/importedfiles
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
+  assetmgmt3d_service: http://localhost:5001
   FILTERSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IFilterEvent
   WEBAPI_DEBUG_URI: http://localhost:80/
   WEBAPI_URI: http://localhost:80/

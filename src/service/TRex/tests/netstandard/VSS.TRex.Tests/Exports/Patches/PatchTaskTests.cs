@@ -1,20 +1,20 @@
-﻿using System;
+﻿using FluentAssertions;
 using Moq;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.Types;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Patches
 {
-  public class PatchTaskTests //: IClassFixture<DILoggingFixture>
+  public class PatchTaskTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_PatchTask_Creation()
     {
-      PatchTask task = new PatchTask(Guid.Empty, "", GridDataType.All);
+      PatchTask task = new PatchTask();
 
       Assert.NotNull(task);
       Assert.NotNull(task.PatchSubGrids);
@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       var pipeLine = new Mock<ISubGridPipelineBase>();
       pipeLine.Setup(mk => mk.Aborted).Returns(false);
 
-      PatchTask task = new PatchTask(Guid.Empty, "", GridDataType.All)
+      PatchTask task = new PatchTask
       {
         PipeLine = pipeLine.Object
       };
@@ -40,6 +40,34 @@ namespace VSS.TRex.Tests.Exports.Patches
         $"Count of transferred subgrids not 1 as expected (= {task.PatchSubGrids.Count}");
       Assert.True(task.PatchSubGrids[0] == transferSubgrid,
         $"Transferred subgrid is not the same as the one passed into the task.");
+    }
+
+    [Fact]
+    public void Test_PatchTask_TransferResponse_FailWithNoSubgrids()
+    {
+      var pipeLine = new Mock<ISubGridPipelineBase>();
+      pipeLine.Setup(mk => mk.Aborted).Returns(false);
+
+      PatchTask task = new PatchTask
+      {
+        PipeLine = pipeLine.Object
+      };
+
+      task.TransferResponse(new IClientLeafSubGrid[] { }).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Test_PatchTask_TransferResponse_FailWithAbortSignal()
+    {
+      var pipeLine = new Mock<ISubGridPipelineBase>();
+      pipeLine.Setup(mk => mk.Aborted).Returns(true);
+
+      PatchTask task = new PatchTask
+      {
+        PipeLine = pipeLine.Object
+      };
+
+      task.TransferResponse(new IClientLeafSubGrid[] { }).Should().BeFalse();
     }
   }
 }

@@ -8,7 +8,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.SubGridTrees.Client.Interfaces
 {
   /// <summary>
-  /// Interface for ClientLeafSubgrid derivations based on ClientLeafSubGrid
+  /// Interface for ClientLeafSubGrid derivations based on ClientLeafSubGrid
   /// </summary>
   public interface IClientLeafSubGrid : ILeafSubGrid, ITRexMemoryCacheItem
   {
@@ -31,12 +31,12 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     bool TopLayerOnly { get; set; }
 
     /// <summary>
-    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// Fills the contents of the client leaf sub grid with a known, non-null test pattern of values
     /// </summary>
     void FillWithTestPattern();
 
     /// <summary>
-    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// Determines if the leaf content of this sub grid is equal to 'other'
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -46,17 +46,19 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
 
     void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
 
-    SubGridTreeBitmapSubGridBits ProdDataMap { get; set; }
+    SubGridTreeBitmapSubGridBits ProdDataMap { get; }
 
     /// <summary>
     /// Existence map of cells matching current filter settings
     /// </summary>
-    SubGridTreeBitmapSubGridBits FilterMap { get; set; }
+    SubGridTreeBitmapSubGridBits FilterMap { get; }
 
     /// <summary>
-    /// World extent of the client leaf subgrid map of cells
+    /// World extent of the client leaf sub grid map of cells
     /// </summary>
     /// <returns></returns>
     BoundingWorldExtent3D WorldExtents();
+
+    void DumpToLog();
   }
 }

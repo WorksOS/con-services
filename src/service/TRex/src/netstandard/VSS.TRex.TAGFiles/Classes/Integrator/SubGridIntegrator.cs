@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -72,7 +73,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             // then create and select the default segment
             if (TargetSubGrid.Directory.SegmentDirectory.Count == 0)
             {
-                TargetSubGrid.Cells.SelectSegment(DateTime.MinValue);
+                TargetSubGrid.Cells.SelectSegment(Consts.MIN_DATETIME_AS_UTC);
                 TargetSubGrid.Cells.PassesData[0].AllocateFullPassStacks();
             }
 
@@ -226,7 +227,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 Result.AllocateLeafFullPassStacks();
                 if (Result.Directory.SegmentDirectory.Count == 0)
                 {
-                    Result.Cells.SelectSegment(DateTime.MinValue);
+                    Result.Cells.SelectSegment(Consts.MIN_DATETIME_AS_UTC);
                 }
 
                 if (Result.Cells == null)

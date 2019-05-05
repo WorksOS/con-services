@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 #if RAPTOR
 using SVOICDecls;
@@ -13,17 +12,16 @@ using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models.Coords;
-using VSS.Productivity3D.Models.ResultHandling.Coords;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
   public class CompactionCellDatumExecutor : CellDatumExecutor
   {
+#if RAPTOR
     private double _northing;
     private double _easting;
+#endif
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -42,38 +40,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
     }
 
-    protected override async Task<object> GetTRexCellDatumData(CellDatumRequest request)
+    protected override async Task<CellDatumResult> GetTRexCellDatumData(CellDatumRequest request)
     {
       CheckForCoordinate(request.LLPoint);
 
-      // Gett TRex grid coordinates...
-      var coordinate = await GetTRexGridCoordinates(request.ProjectUid ?? Guid.Empty, request.LLPoint);
-
-      _northing = coordinate.Y;
-      _easting = coordinate.X;
-
-      return base.GetTRexCellDatumData(request);
-    }
-
-    private async Task<TwoDConversionCoordinate> GetTRexGridCoordinates(Guid projectUid, WGSPoint latLon)
-    {
-      var conversionCoordinates = new[] { new TwoDConversionCoordinate(latLon.Lon, latLon.Lat) };
-
-      var conversionRequest = new CoordinateConversionRequest(projectUid, TwoDCoordinateConversionType.NorthEastToLatLon, conversionCoordinates);
-      var conversionResult = await trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(conversionRequest, "/coordinateconversion", customHeaders);
-
-      if (conversionResult.Code != 0 || conversionResult.ConversionCoordinates.Length == 0)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to retrieve long lat for the passed coordinate."));
-
-      return conversionResult.ConversionCoordinates[0];
-    }
-
-    protected override CellDatumResponse ConvertTRexCellDatumResult(object trexResult)
-    {
-      // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
-      return null;
+      return await base.GetTRexCellDatumData(request);
     }
 
 #if RAPTOR
@@ -81,7 +52,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       CheckForCoordinate(request.LLPoint);
       
-      // Gett grid coordinates...
       var pointList = GetGridCoordinates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.LLPoint);
       
       _northing = pointList.Points.Coords[0].Y;
@@ -90,11 +60,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return base.GetCellDatumData(request, out data);
     }
 
-    protected override CellDatumResponse ConvertCellDatumResult(TCellProductionData result)
+    protected override CellDatumResult ConvertCellDatumResult(TCellProductionData result)
     {
       return new CompactionCellDatumResult(
         RaptorConverters.convertDisplayMode((TICDisplayMode)result.DisplayMode),
-        result.ReturnCode,
+        (CellDatumReturnCode)result.ReturnCode,
         result.ReturnCode == 0 ? result.Value : (double?)null,
         result.TimeStampUTC,
         _northing,
@@ -126,6 +96,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       RaptorResult.AddCoordinateResultErrorMessages(ContractExecutionStates);
 #endif
     }
+
   }
 }
 

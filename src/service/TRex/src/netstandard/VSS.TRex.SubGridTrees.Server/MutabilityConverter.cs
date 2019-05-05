@@ -6,6 +6,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
@@ -19,21 +20,25 @@ namespace VSS.TRex.SubGridTrees.Server
   /// </summary>
   public class MutabilityConverter : IMutabilityConverter
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(MutabilityConverter));
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<MutabilityConverter>();
+
     private const int MinEventStreamLength = 16;
+
+    private readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
+    private readonly ISubGridCellSegmentPassesDataWrapperFactory subGridCellSegmentPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>();
 
     /// <summary>
     /// Converts the structure of the global latest cells structure into an immutable form
     /// </summary>
     /// <returns></returns>
-    public ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper latestPasses)
+    public ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper latestPasses, SegmentLatestPassesContext context)
     {
       if (latestPasses.IsImmutable())
       {
         return latestPasses; // It is already immutable
       }
 
-      SubGridCellLatestPassDataWrapper_NonStatic oldItem = latestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
+      var oldItem = latestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
 
       if (oldItem == null)
       {
@@ -41,10 +46,18 @@ namespace VSS.TRex.SubGridTrees.Server
         return null;
       }
 
-      latestPasses = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
-      latestPasses.Assign(oldItem);
+      latestPasses = context == SegmentLatestPassesContext.Global
+        ? subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper_Global()
+        : subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper_Segment();
 
-      (latestPasses as SubGridCellLatestPassDataWrapper_StaticCompressed)?.PerformEncodingForInternalCache(oldItem.PassData);
+      // Immutable segments do not concern themselves with latest cell pass information so the factory will return null in this case
+      if (latestPasses != null)
+      {
+        latestPasses.Assign(oldItem);
+
+        (latestPasses as SubGridCellLatestPassDataWrapper_StaticCompressed)?.PerformEncodingForInternalCache(
+          oldItem.PassData);
+      }
 
       return latestPasses;
     }
@@ -111,14 +124,14 @@ namespace VSS.TRex.SubGridTrees.Server
         var originSource = (IServerLeafSubGrid) source;
 
         // create a copy and compress the latestPasses(and ensure the global latest cells is the mutable variety)
-        IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels)
+        IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Immutable)
         {
           LeafStartTime = originSource.LeafStartTime,
           LeafEndTime = originSource.LeafEndTime,
           Directory =
           {
             SegmentDirectory = originSource.Directory.SegmentDirectory,
-            GlobalLatestCells = ConvertLatestPassesToImmutable(originSource.Directory.GlobalLatestCells)
+            GlobalLatestCells = ConvertLatestPassesToImmutable(originSource.Directory.GlobalLatestCells, SegmentLatestPassesContext.Global)
           }
         };
 
@@ -147,11 +160,11 @@ namespace VSS.TRex.SubGridTrees.Server
       try
       {
         // create a leaf to contain the mutable directory (and ensure the global latest cells is the mutable variety)
-        IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels)
+        IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Immutable)
         {
           Directory =
           {
-            GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false)
+            GlobalLatestCells = subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Global()
           }
         };
 
@@ -159,7 +172,7 @@ namespace VSS.TRex.SubGridTrees.Server
         mutableStream.Position = 0;
         leaf.LoadDirectoryFromStream(mutableStream);
 
-        leaf.Directory.GlobalLatestCells = ConvertLatestPassesToImmutable(leaf.Directory.GlobalLatestCells);
+        leaf.Directory.GlobalLatestCells = ConvertLatestPassesToImmutable(leaf.Directory.GlobalLatestCells, SegmentLatestPassesContext.Global);
 
         immutableStream = new MemoryStream();
         leaf.SaveDirectoryToStream(immutableStream);
@@ -189,8 +202,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
         // create a copy and compress the latestPasses(and ensure the global latest cells is the mutable variety)
         SubGridCellPassesDataSegment segment = new SubGridCellPassesDataSegment
-        (ConvertLatestPassesToImmutable(originSource.LatestPasses),
-          SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(false, true))
+        (ConvertLatestPassesToImmutable(originSource.LatestPasses, SegmentLatestPassesContext.Segment),
+          subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper())
         {
           StartTime = originSource.SegmentInfo.StartTime,
           EndTime = originSource.SegmentInfo.EndTime
@@ -228,8 +241,8 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         // Read in the sub grid segment from the mutable stream
         SubGridCellPassesDataSegment segment = new SubGridCellPassesDataSegment
-        (SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false),
-          SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(true, false));
+        (subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Segment(),
+          subGridCellSegmentPassesDataWrapperFactory.NewMutableWrapper());
 
         mutableStream.Position = 0;
         using (var reader = new BinaryReader(mutableStream, Encoding.UTF8, true))
@@ -238,11 +251,11 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         // Convert to the immutable form
-        segment.LatestPasses = ConvertLatestPassesToImmutable(segment.LatestPasses);
+        segment.LatestPasses = ConvertLatestPassesToImmutable(segment.LatestPasses, SegmentLatestPassesContext.Segment);
 
-        ISubGridCellSegmentPassesDataWrapper mutablePassesData = segment.PassesData;
+        var mutablePassesData = segment.PassesData;
 
-        segment.PassesData = SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(false, true);
+        segment.PassesData = subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
         segment.PassesData.SetState(mutablePassesData.GetState());
 
         // Write out the segment to the immutable stream
@@ -296,7 +309,8 @@ namespace VSS.TRex.SubGridTrees.Server
             Log.LogError($"ProductionEvent mutable stream length is too short. Expected greater than: {MinEventStreamLength} retrieved {mutableStream.Length}");
             return false;
           }
-          mutableStream.Position = 8;
+
+          mutableStream.Position = 1; // Skip the version to get the event list type
 
           var eventType = reader.ReadInt32();
           if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
@@ -310,7 +324,7 @@ namespace VSS.TRex.SubGridTrees.Server
           mutableStream.Position = 0;
           events.ReadEvents(reader);
 
-          mutableStream.Position = 8;
+          mutableStream.Position = 1; // Skip the version to get the event list type
           immutableStream = events.GetImmutableStream();
         }
 

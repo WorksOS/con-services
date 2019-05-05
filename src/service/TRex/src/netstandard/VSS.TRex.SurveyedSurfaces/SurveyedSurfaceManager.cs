@@ -12,6 +12,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.SurveyedSurfaces
 {
@@ -30,45 +31,32 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Constructs an instance using the supplied storage proxy
     /// </summary>
-    public SurveyedSurfaceManager()
+    public SurveyedSurfaceManager(StorageMutability mutability)
     {
-      _writeStorageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
-      _readStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
+      _writeStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy;
+      _readStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(mutability);
     }
 
     /// <summary>
-    /// Loads the set of surveyed surfaces for a sitemodel. If none exist and empty list is returned.
+    /// Loads the set of surveyed surfaces for a site model. If none exist and empty list is returned.
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <returns></returns>
     private ISurveyedSurfaces Load(Guid siteModelUid)
     {
-      try
+      _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
+
+      ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
+
+      if (ms != null)
       {
-        _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
-
-        ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
-
-        if (ms != null)
-        { 
-          using (ms)
-          {
-            ss.FromStream(ms);
-          }
+        using (ms)
+        {
+          ss.FromStream(ms);
         }
-
-        return ss;
-      }
-      catch (KeyNotFoundException)
-      {
-        /* This is OK, the element is not present in the cache yet */
-      }
-      catch (Exception e)
-      {
-        throw new TRexException("Exception reading surveyed surfaces cache element from Ignite", e);
       }
 
-      return null;
+      return ss;
     }
 
     /// <summary>
@@ -78,23 +66,16 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <param name="surveyedSurfaces"></param>
     private void Store(Guid siteModelUid, ISurveyedSurfaces surveyedSurfaces)
     {
-      try
-      {
-        _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, surveyedSurfaces.ToStream(), this);
-        _writeStorageProxy.Commit();
+      _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, surveyedSurfaces.ToStream(), this);
+      _writeStorageProxy.Commit();
 
-        // Notify the  grid listeners that attributes of this sitemodel have changed.
-        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelUid, surveyedSurfacesChanged: true);
-      }
-      catch (Exception e)
-      {
-        throw new TRexException("Exception writing updated surveyed surfaces cache element to Ignite", e);
-      }
+      // Notify the  grid listeners that attributes of this site model have changed.
+      var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+      sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelUid, surveyedSurfacesChanged: true);
     }
-    
+
     /// <summary>
-    /// Add a new surveyed surface to a sitemodel
+    /// Add a new surveyed surface to a site model
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <param name="designDescriptor"></param>
@@ -102,6 +83,9 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <param name="extents"></param>
     public ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
     {
+      if (asAtDate.Kind != DateTimeKind.Utc)
+        throw new ArgumentException("AsAtDate must be a UTC date time");
+
       ISurveyedSurfaces ss = Load(siteModelUid);
       ISurveyedSurface newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);
       Store(siteModelUid, ss);

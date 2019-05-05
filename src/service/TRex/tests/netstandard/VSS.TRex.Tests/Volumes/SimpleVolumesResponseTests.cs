@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Volumes.GridFabric.Responses;
+﻿using FluentAssertions;
+using VSS.TRex.Volumes.GridFabric.Responses;
 using Xunit;
 
 namespace VSS.TRex.Tests.Volumes
@@ -36,6 +37,13 @@ namespace VSS.TRex.Tests.Volumes
             Assert.Equal(30.0, response1.CutArea);
             Assert.Equal(40.0, response1.FillArea);
             Assert.Equal(100.0, response1.TotalCoverageArea);
+        }
+
+        [Fact]
+        public void Test_ToString()
+        {
+          var response = new SimpleVolumesResponse();
+          response.ToString().Should().Match("Cut:*, Fill*, Cut Area:*, FillArea:*, Total Area:*, BoundingGrid:*, BoundingLLH:*");
         }
     }
 }

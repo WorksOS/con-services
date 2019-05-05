@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           request.StartStation ?? ValidationConstants3D.MIN_STATION,
           request.EndStation ?? ValidationConstants3D.MIN_STATION,
           RaptorConverters.DesignDescriptor(request.AlignmentDesign),
-          RaptorConverters.ConvertFilter(request.Filter),
+          RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient),
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
           RaptorConverters.DesignDescriptor(request.AlignmentDesign),
           request.ReturnAllPassesAndLayers);
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           positionsAreGrid,
           startPt,
           endPt,
-          RaptorConverters.ConvertFilter(request.Filter),
+          RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient),
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
           RaptorConverters.DesignDescriptor(request.AlignmentDesign),
           request.ReturnAllPassesAndLayers);

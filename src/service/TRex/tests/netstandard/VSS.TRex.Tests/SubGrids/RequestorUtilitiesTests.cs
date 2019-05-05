@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Factories;
@@ -13,7 +12,8 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using Xunit;
 using Moq;
-using VSS.TRex.Common.Types;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -22,11 +22,12 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.SubGrids
 {
-  public class RequestorUtilitiesTestsLoggingFixture : IDisposable
+  public class RequestorUtilitiesTestsLoggingFixture : DILoggingFixture, IDisposable
   {
     public static ISurfaceElevationPatchRequest SurfaceElevationPatchRequest;
     public static ITRexSpatialMemoryCacheContext TRexSpatialMemoryCacheContext;
@@ -47,9 +48,7 @@ namespace VSS.TRex.Tests.SubGrids
       tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(TRexSpatialMemoryCacheContext);
 
       DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Continue()
         .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
 
@@ -58,9 +57,9 @@ namespace VSS.TRex.Tests.SubGrids
 
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
 
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new TRex.SurveyedSurfaces.SurveyedSurfaces()))
 
-        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(() => null)))
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
 
         .Complete();
@@ -68,7 +67,6 @@ namespace VSS.TRex.Tests.SubGrids
 
     public void Dispose()
     {
-      DIBuilder.Eject();
       SurfaceElevationPatchRequest = null;
       TRexSpatialMemoryCacheContext = null;
     }
@@ -113,7 +111,7 @@ namespace VSS.TRex.Tests.SubGrids
 
       Guid ssGuid = Guid.NewGuid();
       ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-      surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
+      surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), TRex.Common.Consts.MIN_DATETIME_AS_UTC, BoundingWorldExtent3D.Null());
 
       var mockGrid = new Mock<IServerSubGridTree>();
       mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
@@ -175,7 +173,7 @@ namespace VSS.TRex.Tests.SubGrids
 
       Guid ssGuid = Guid.NewGuid();
       ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-      surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
+      surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), Consts.MIN_DATETIME_AS_UTC, BoundingWorldExtent3D.Null());
 
       var mockGrid = new Mock<IServerSubGridTree>();
       mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
@@ -212,7 +210,7 @@ namespace VSS.TRex.Tests.SubGrids
 
       Guid ssGuid = Guid.NewGuid();
       ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-      surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
+      surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), Consts.MIN_DATETIME_AS_UTC, BoundingWorldExtent3D.Null());
 
       var mockGrid = new Mock<IServerSubGridTree>();
       mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
@@ -257,10 +255,10 @@ namespace VSS.TRex.Tests.SubGrids
       // Create two surveyed surfaces that bracket current time by one day either side and set the filter end time to be current time
       // which will cause only one surveyed surface to be filtered
       Guid ssGuid1 = Guid.NewGuid();
-      var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), DateTime.Now.AddDays(-1), BoundingWorldExtent3D.Null());
+      var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), DateTime.UtcNow.AddDays(-1), BoundingWorldExtent3D.Null());
 
       Guid ssGuid2 = Guid.NewGuid();
-      var ss2 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid2, DesignDescriptor.Null(), DateTime.Now.AddDays(+1), BoundingWorldExtent3D.Null());
+      var ss2 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid2, DesignDescriptor.Null(), DateTime.UtcNow.AddDays(+1), BoundingWorldExtent3D.Null());
 
       var mockGrid = new Mock<IServerSubGridTree>();
       mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
@@ -305,10 +303,10 @@ namespace VSS.TRex.Tests.SubGrids
       // Create two surveyed surfaces that bracket current time by one day either side and set the filter end time to be current time
       // which will cause only one surveyed surface to be filtered
       Guid ssGuid1 = Guid.NewGuid();
-      var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), DateTime.Now.AddDays(-1), BoundingWorldExtent3D.Null());
+      var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), DateTime.UtcNow.AddDays(-1), BoundingWorldExtent3D.Null());
 
       Guid ssGuid2 = Guid.NewGuid();
-      var ss2 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid2, DesignDescriptor.Null(), DateTime.Now.AddDays(+1), BoundingWorldExtent3D.Null());
+      var ss2 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid2, DesignDescriptor.Null(), DateTime.UtcNow.AddDays(+1), BoundingWorldExtent3D.Null());
 
       var mockGrid = new Mock<IServerSubGridTree>();
       mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
@@ -325,8 +323,8 @@ namespace VSS.TRex.Tests.SubGrids
           AttributeFilter =
           {
             HasTimeFilter = true,
-            StartTime = DateTime.MinValue,
-            EndTime = DateTime.Now
+            StartTime = Consts.MIN_DATETIME_AS_UTC,
+            EndTime = DateTime.UtcNow
           }
         };
         return filter;
@@ -360,7 +358,7 @@ namespace VSS.TRex.Tests.SubGrids
       // Create two surveyed surfaces that bracket current time by one day either side and set the filter end time to be current time
       // which will cause only one surveyed surface to be filtered
       Guid ssGuid1 = Guid.NewGuid();
-      var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
+      var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), Consts.MIN_DATETIME_AS_UTC, BoundingWorldExtent3D.Null());
 
       var mockGrid = new Mock<IServerSubGridTree>();
       mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);

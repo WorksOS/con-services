@@ -13,39 +13,39 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   public class CSVExportFormatter
   {
     // these are public for unit tests
-    public readonly CSVExportUserPreferences userPreference;
-    public readonly OutputTypes outputType;
-    public readonly bool isRawDataAsDBaseRequired;
-    public readonly string nullString;
+    public readonly CSVExportUserPreferences UserPreference;
+    public readonly OutputTypes OutputType;
+    public readonly bool IsRawDataAsDBaseRequired;
+    public readonly string NullString;
 
-    private const int defaultDecimalPlaces = 3;
+    private const int DefaultDecimalPlaces = 3;
     public const double USFeetToMeters = 0.304800609601;
     public const double ImperialFeetToMeters = 0.3048;
 
-    public double distanceConversionFactor { get; private set; }
-    public string speedUnitString = "mph";
-    public double speedConversionFactor;
-    public string distanceUnitString = "FT";
-    public string exportDateTimeFormatString;
+    public double DistanceConversionFactor { get; private set; }
+    public string SpeedUnitString = "mph";
+    public double SpeedConversionFactor;
+    public string DistanceUnitString = "FT";
+    public string ExportDateTimeFormatString;
 
-    private readonly NumberFormatInfo nfiDefault;
-    private readonly NumberFormatInfo nfiUser;
+    private readonly NumberFormatInfo _nfiDefault;
+    private readonly NumberFormatInfo _nfiUser;
 
 
     public CSVExportFormatter(CSVExportUserPreferences userPreference, OutputTypes outputType, bool isRawDataAsDBaseRequired = false)
     {
-      this.userPreference = userPreference;
-      this.outputType = outputType;
-      this.isRawDataAsDBaseRequired = isRawDataAsDBaseRequired;
-      nullString = isRawDataAsDBaseRequired ? string.Empty : "?";
+      UserPreference = userPreference;
+      OutputType = outputType;
+      IsRawDataAsDBaseRequired = isRawDataAsDBaseRequired;
+      NullString = isRawDataAsDBaseRequired ? string.Empty : "?";
 
       SetupUserPreferences(userPreference);
 
-      nfiUser = NumberFormatInfo.GetInstance(CultureInfo.InvariantCulture).Clone() as NumberFormatInfo;
-      nfiUser.NumberDecimalSeparator = userPreference.DecimalSeparator;
-      nfiUser.NumberGroupSeparator = userPreference.ThousandsSeparator;
-      nfiUser.NumberDecimalDigits = defaultDecimalPlaces;
-      nfiDefault = nfiUser.Clone() as NumberFormatInfo; // the dp will be altered on this
+      _nfiUser = NumberFormatInfo.GetInstance(CultureInfo.InvariantCulture).Clone() as NumberFormatInfo;
+      _nfiUser.NumberDecimalSeparator = userPreference.DecimalSeparator ?? _nfiUser.NumberDecimalSeparator;
+      _nfiUser.NumberGroupSeparator = userPreference.ThousandsSeparator ?? _nfiUser.NumberGroupSeparator;
+      _nfiUser.NumberDecimalDigits = DefaultDecimalPlaces;
+      _nfiDefault = _nfiUser.Clone() as NumberFormatInfo; // the dp will be altered on this
     }
 
     /// <summary>
@@ -57,63 +57,49 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     {
       switch (newUserPreference.Units)
       {
-        case UnitsTypeEnum.US: // USSurveyFeet
-        {
-          distanceConversionFactor = USFeetToMeters;
-          speedUnitString = "mph";
-          speedConversionFactor = USFeetToMeters * 5280;
-          distanceUnitString = "FT";
-          break;
-        }
         case UnitsTypeEnum.Metric:
         {
-          distanceConversionFactor = 1.0;
-          speedUnitString = "km/h";
-          speedConversionFactor = 1000;
-          distanceUnitString = "m";
+          DistanceConversionFactor = 1.0;
+          SpeedUnitString = "km/h";
+          SpeedConversionFactor = 1000;
+          DistanceUnitString = "m";
           break;
         }
         case UnitsTypeEnum.Imperial:
         {
-          distanceConversionFactor = ImperialFeetToMeters;
-          speedUnitString = "mph";
-          speedConversionFactor = ImperialFeetToMeters * 5280;
-          distanceUnitString = "ft";
+          DistanceConversionFactor = ImperialFeetToMeters;
+          SpeedUnitString = "mph";
+          SpeedConversionFactor = ImperialFeetToMeters * 5280;
+          DistanceUnitString = "ft";
+          break;
+        }
+        default:   // case UnitsTypeEnum.US: // USSurveyFeet
+        {
+          DistanceConversionFactor = USFeetToMeters;
+          SpeedUnitString = "mph";
+          SpeedConversionFactor = USFeetToMeters * 5280;
+          DistanceUnitString = "FT";
           break;
         }
       }
 
-      if (outputType == OutputTypes.VedaAllPasses || outputType == OutputTypes.VedaFinalPass)
-      {
-        exportDateTimeFormatString = "yyyy-MMM-dd HH:mm:ss.fff";
-      }
-      else if (!string.IsNullOrEmpty(userPreference.DateSeparator) && !string.IsNullOrEmpty(userPreference.TimeSeparator) && !string.IsNullOrEmpty(userPreference.DecimalSeparator))
-      {
-        exportDateTimeFormatString = $"yyyy{userPreference.DateSeparator}MMM{userPreference.DateSeparator}dd HH{userPreference.TimeSeparator}mm{userPreference.TimeSeparator}ss{userPreference.DecimalSeparator}fff";
-      }
+      if (OutputType == OutputTypes.VedaAllPasses || OutputType == OutputTypes.VedaFinalPass ||
+          string.IsNullOrEmpty(UserPreference.DateSeparator) || string.IsNullOrEmpty(UserPreference.TimeSeparator) || string.IsNullOrEmpty(UserPreference.DecimalSeparator))
+        ExportDateTimeFormatString = "yyyy-MMM-dd HH:mm:ss.fff";
       else
-      {
-        exportDateTimeFormatString = "yyyy-MMM-dd HH:mm:ss.fff";
-      }
+        ExportDateTimeFormatString = $"yyyy{UserPreference.DateSeparator}MMM{UserPreference.DateSeparator}dd HH{UserPreference.TimeSeparator}mm{UserPreference.TimeSeparator}ss{UserPreference.DecimalSeparator}fff";
     }
 
 
     public string FormatCellPassTime(DateTime value)
     {
-      value = value.AddHours(userPreference.ProjectTimeZoneOffset);
-      return value.ToString(exportDateTimeFormatString);
+      value = value.AddHours(UserPreference.ProjectTimeZoneOffset);
+      return value.ToString(ExportDateTimeFormatString);
     }
 
-    public string FormatCellPos(double value)
-    {
-      string result;
-
-      if (isRawDataAsDBaseRequired)
-        result =  FormatDisplayDistanceUnitless(value, false);
-      else
-        result = FormatDisplayDistance(value, false);
-      return result;
-    }
+    public string FormatCellPos(double value) 
+      => IsRawDataAsDBaseRequired ? FormatDisplayDistanceUnitless(value, false) 
+                                  : FormatDisplayDistance(value, false);
 
     public string RadiansToLatLongString(double latLong, int dp)
     {
@@ -124,31 +110,25 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     public string FormatElevation(double value)
     {
       if (value.Equals(Consts.NullHeight))
-        return nullString;
+        return NullString;
 
-      if (isRawDataAsDBaseRequired)
+      if (IsRawDataAsDBaseRequired)
         return FormatDisplayDistanceUnitless(value, false);
 
       return FormatDisplayDistance(value, false);
     }
 
-    public string FormatRadioLatency(int value)
-    {
-      if (value == CellPassConsts.NullRadioLatency)
-        return nullString;
-      return value.ToString();
-    }
+    public string FormatRadioLatency(int value) 
+      => value == CellPassConsts.NullRadioLatency ? NullString : value.ToString();
 
-    public string FormatSpeed(int value)
-    {
-      if (value == Consts.NullMachineSpeed)
-        return nullString;
-      return FormatDisplayVelocity(value/100.00, -1);
-    }
+    public string FormatSpeed(int value) 
+      => value == Consts.NullMachineSpeed 
+        ? NullString 
+        : FormatDisplayVelocity(value/100.00, -1);
 
     public string FormatGPSMode(GPSMode value)
     {
-      var result = string.Empty;
+      string result;
       switch (value)
       {
         case GPSMode.Old: result = "Old Position"; break;
@@ -168,61 +148,44 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     public string FormatGPSAccuracy(GPSAccuracy gpsAccuracy, int gpsTolerance)
     {
       if (gpsTolerance == CellPassConsts.NullGPSTolerance)
-        return nullString;
+        return NullString;
 
-      string toleranceString;
-      if (isRawDataAsDBaseRequired)
-        toleranceString = FormatDisplayDistanceUnitless(gpsTolerance / 1000.000, false);
-      else
-        toleranceString = FormatDisplayDistance(gpsTolerance / 1000.000, false);
+      var toleranceString = IsRawDataAsDBaseRequired 
+        ? FormatDisplayDistanceUnitless(gpsTolerance / 1000.000, false) 
+        : FormatDisplayDistance(gpsTolerance / 1000.000, false);
 
       return $"{FormatGPSAccuracyValue(gpsAccuracy)} ({toleranceString})";
     }
 
-    public string FormatPassCount(int value) => value == CellPassConsts.NullPassCountValue ? nullString : $"{value.ToString()}";
+    public string FormatPassCount(int value) => value == CellPassConsts.NullPassCountValue ? NullString : $"{value.ToString()}";
 
     // As CCV/MDP/RMV are reported in 10th, no units...
-    public string FormatCompactionCCVTypes(short value)
-    {
-      if (value == CellPassConsts.NullCCV)
-        return nullString;
-      return $"{DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1)}"; 
-    }
+    public string FormatCompactionCCVTypes(short value) 
+      => value == CellPassConsts.NullCCV ? NullString
+        : $"{DoubleToStrF(value * 1.0 / CellPassConsts.CCVvalueRatio, 18, true, 1)}";
 
     public string FormatFrequency(ushort value)
     {
       if (value == CellPassConsts.NullFrequency)
-        return nullString;
-      if (isRawDataAsDBaseRequired)
-        return DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1);
+        return NullString;
 
-      return DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1) + "Hz";
+      return IsRawDataAsDBaseRequired ? DoubleToStrF(value * 1.0 / CellPassConsts.CCVvalueRatio, 18, true, 1) 
+        : DoubleToStrF(value * 1.0 / CellPassConsts.CCVvalueRatio, 18, true, 1) + "Hz";
     }
 
-    public string FormatAmplitude(ushort value)
-    {
-      if (value == CellPassConsts.NullAmplitude)
-        return nullString;
-      if (isRawDataAsDBaseRequired)
-        return DoubleToStrF(value / CellPassConsts.AmplitudeRatio, 18, true, 2);
-
-      return DoubleToStrF(value / CellPassConsts.AmplitudeRatio, 18, true, 2) + "mm";
-    }
+    public string FormatAmplitude(ushort value) 
+      => value == CellPassConsts.NullAmplitude ? NullString 
+        : IsRawDataAsDBaseRequired ? DoubleToStrF(value * 1.00 / CellPassConsts.AmplitudeRatio, 18, true, 2) 
+                                   : DoubleToStrF(value * 1.00 / CellPassConsts.AmplitudeRatio, 18, true, 2) + "mm";
 
     public string FormatTargetThickness(double value)
-    {
-      if (value.Equals(CellPassConsts.NullOverridingTargetLiftThicknessValue))
-        return nullString;
-
-      if (isRawDataAsDBaseRequired)
-        return FormatDisplayDistanceUnitless(value, false);
-
-      return FormatDisplayDistance(value, false);
-    }
+      => value.Equals(CellPassConsts.NullOverridingTargetLiftThicknessValue) ? NullString 
+        : IsRawDataAsDBaseRequired ? FormatDisplayDistanceUnitless(value, false) 
+                                   : FormatDisplayDistance(value, false);
 
     public string FormatMachineGearValue(MachineGear value)
     {
-      var result = string.Empty;
+      string result;
       switch (value)
       {
         case MachineGear.Neutral: result = "Neutral"; break;
@@ -237,7 +200,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         case MachineGear.Reverse4: result = "Reverse_4"; break;
         case MachineGear.Reverse5: result = "Reverse_5"; break;
         case MachineGear.Park: result = "Park"; break;
-        default: result = "Sensor_Failed"; break;
+        case MachineGear.SensorFailed: result = "Sensor_Failed"; break;
+        case MachineGear.Null: result = NullString; break;
+        default: result = $"unknown: {value}"; break;
       }
 
       return result;
@@ -245,7 +210,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
     public string FormatEventVibrationState(VibrationState value)
     {
-      var result = string.Empty;
+      string result;
       switch (value)
       {
         case VibrationState.Off: result = "Off"; break;
@@ -262,11 +227,11 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     public string FormatLastPassValidTemperature(ushort value)
     {
       if (value.Equals(CellPassConsts.NullMaterialTemperatureValue))
-        return nullString;
+        return NullString;
 
-      string tempSymbol = "C";
-      var tempValue = value / CellPassConsts.CCVvalueRatio;
-      if (userPreference.TemperatureUnits == TemperatureUnitEnum.Fahrenheit)
+      var tempSymbol = "C";
+      var tempValue = value * 1.00 / CellPassConsts.CCVvalueRatio;
+      if (UserPreference.TemperatureUnits == TemperatureUnitEnum.Fahrenheit)
       {
         tempSymbol = "F";
         tempValue = tempValue * 9 / 5 + 32;
@@ -276,7 +241,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
     private string FormatGPSAccuracyValue(GPSAccuracy value)
     {
-      var result = string.Empty;
+      string result;
       switch (value)
       {
         case GPSAccuracy.Fine: result = "Fine"; break;
@@ -290,56 +255,47 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
     private string FormatDisplayVelocity(double value, int dp)
     {
-      if (value == Consts.NullMachineSpeed)
-        return nullString;
-
       if (dp < 0)
         dp = 1;
 
-      var result = DoubleToStrF((value * 3600) / speedConversionFactor, 20, true, dp);
-      if (!isRawDataAsDBaseRequired)
-        result += speedUnitString;
+      var result = DoubleToStrF((value * 3600) / SpeedConversionFactor, 20, true, dp);
+      if (!IsRawDataAsDBaseRequired)
+        result += SpeedUnitString;
       return result;
     }
 
     private string FormatDisplayDistanceUnitless(double value, bool isFormattingRequired, int dp = -1)
     {
       if (dp < 0)
-        dp = defaultDecimalPlaces;
+        dp = DefaultDecimalPlaces;
 
       return DistanceDoubleToStrF(value, 20, isFormattingRequired, dp);
     }
 
     private string FormatDisplayDistance(double value, bool isFormattingRequired, int dp = -1)
     {
-      string result = FormatDisplayDistanceUnitless(value, isFormattingRequired, dp);
+      var result = FormatDisplayDistanceUnitless(value, isFormattingRequired, dp);
 
       if (!value.Equals(Consts.NullHeight))
-        result += distanceUnitString;
+        result += DistanceUnitString;
       return result;
     }
 
     // Converts a value(in meters) to a string in the current distance units 
-    private string DistanceDoubleToStrF(double value, int precision, bool isFormattingRequired, int dp )
-    {
-      if (value.Equals(Consts.NullHeight))
-        return nullString;
-
-      return (DoubleToStrF(value / distanceConversionFactor, precision, isFormattingRequired, dp));
-    }
+    private string DistanceDoubleToStrF(double value, int precision, bool isFormattingRequired, int dp ) 
+      => value.Equals(Consts.NullHeight) ? NullString 
+                                             : DoubleToStrF(value / DistanceConversionFactor, precision, isFormattingRequired, dp);
 
     private string DoubleToStrF(double value, int precision, bool isFormattingRequired, int dp)
     {
       if (isFormattingRequired)
       {
-        nfiUser.NumberDecimalDigits = dp;
-        return value.ToString("N", nfiUser);
+        _nfiUser.NumberDecimalDigits = dp;
+        return value.ToString("N", _nfiUser);
       }
-      else
-      {
-        nfiDefault.NumberDecimalDigits = dp;
-        return value.ToString("F", nfiDefault);
-      }
+
+      _nfiDefault.NumberDecimalDigits = dp;
+      return value.ToString("F", _nfiDefault);
     }
 
   }

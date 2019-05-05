@@ -1,0 +1,21 @@
+MYSQL_SERVER_NAME_VSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
+MYSQL_SERVER_NAME_ReadVSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
+MYSQL_DATABASE_NAME: VSS-AssetMgmt3D
+MYSQL_PORT: "3306"
+MYSQL_USERNAME: vssAssetMgmt3DUsr
+MYSQL_ROOT_PASSWORD: E1f5nUdCMcQv
+MYSQL_USERNAME_BUILD: "vssBuildUsr"
+MYSQL_PASSWORD_BUILD: "V$$8u1ld45er"
+KAFKA_URI: 10.211.16.11
+KAFKA_PORT: "9092"
+KAFKA_GROUP_NAME: AssetMgmt3D-Consumer-Prod
+KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.IAssetEvent.V1,VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1
+KAFKA_TOPIC_NAME_SUFFIX: 
+KAFKA_OFFSET: latest
+JAEGER_AGENT_HOST: jaeger-agent.jaeger
+JAEGER_AGENT_PORT: "6831"
+JAEGER_SAMPLER_TYPE: const
+JAEGER_SERVICE_NAME: AssetMgmt3D Service
+NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7
+NEW_RELIC_APP_NAME: k8s-assetmgmt3d-service
+newrelic: "true"

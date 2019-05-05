@@ -7,7 +7,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 
@@ -51,9 +50,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         log.LogInformation($"#In# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUid}, TCCOrgID:{request.OrgId}");
 
         SubmitTAGFileRequest submitRequest = new SubmitTAGFileRequest();
-        SubmitTAGFileRequestArgument arg = null;
 
-        arg = new SubmitTAGFileRequestArgument()
+        var arg = new SubmitTAGFileRequestArgument
         {
           ProjectID = request.ProjectUid,
           AssetID = null, // not available via TagFileController APIs
@@ -84,7 +82,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
 
     /// <summary>
-    /// Processes the tagfile request asynchronously.
+    /// Processes the tag file request asynchronously.
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {

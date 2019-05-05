@@ -4,6 +4,8 @@ metadata:
   name: 3dapp-dev
   namespace: dev
 data: 
+# Kubernetes Cluster Info - This must match the namespace (including case) that the pods will run in
+  kubernetesNamespace: dev
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
@@ -24,7 +26,7 @@ data:
 #Service references
   ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/associateprojectsubscription
   DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/dissociateprojectsubscription
-  CONNECTED_SITE_GATEWAY_URL: http://connectedsite.alpha.k8s.vspengg.com/api/position
+  CONNECTED_SITE_GATEWAY_URL: http://connectedsite.alpha.eks.vspengg.com/api/position
   COORDSYSPOST_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem
   COORDSYSVALIDATE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem/validation
   CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
@@ -43,9 +45,12 @@ data:
   SCHEDULER_INTERNAL_BASE_URL: http://scheduler.dev.eks.vspengg.com/internal/v1
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.dev.eks.vspengg.com/internal/v1/export
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
-  TREX_TAGFILE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
-  TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v1/design
+  TREX_TAGFILE_API_URL: http://trex.mutable.dev.eks.vspengg.com/api/v2/tagfiles
+  TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.dev.eks.vspengg.com/api/v1/design
   TILE_INTERNAL_BASE_URL: http://tile.dev.eks.vspengg.com/internal/v1
+#SERVICE DISCOVERY REFERENCES
+  assetdetails-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
+  assetsummary-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
 #TPaaS
   TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2/token  
@@ -71,19 +76,26 @@ data:
 #Raptor configuration
   ASNODEIP: 10.97.96.134
   ENABLE_CONNECTED_SITE_GATEWAY: "true"
-  ENABLE_RAPTOR_GATEWAY_TAGFILE: "true"
-  ENABLE_TREX_GATEWAY_LINEWORKFILE: "false"
-  ENABLE_TREX_GATEWAY_TAGFILE: "true"
   ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
+  ENABLE_RAPTOR_GATEWAY_TAGFILE: "true"
+  ENABLE_TREX_GATEWAY_CELL_DATUM: "false"
   ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false"
-  ENABLE_TREX_GATEWAY_STATIONOFFSET: "false"
-  ENABLE_TREX_GATEWAY_GRIDREPORT: "false"
-  ENABLE_TREX_GATEWAY_SURFACE: "false"
-  ENABLE_TREX_GATEWAY_VETA: "false"
+  ENABLE_TREX_GATEWAY_ELEVATION: "false"
   ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT: "false"
+  ENABLE_TREX_GATEWAY_GRIDREPORT: "false"
+  ENABLE_TREX_GATEWAY_LAYERS: "false"
+  ENABLE_TREX_GATEWAY_LINEWORKFILE: "false"
+  ENABLE_TREX_GATEWAY_MACHINEDESIGNS: "false"
+  ENABLE_TREX_GATEWAY_MACHINES: "false"
+  ENABLE_TREX_GATEWAY_PROJECTSTATISTICS: "true"
+  ENABLE_TREX_GATEWAY_STATIONOFFSET: "false"
+  ENABLE_TREX_GATEWAY_SURFACE: "false"
+  ENABLE_TREX_GATEWAY_TAGFILE: "true"
+  ENABLE_TREX_GATEWAY_TILES: "false"
+  ENABLE_TREX_GATEWAY_VETA: "false"
   IONODEIP: 10.97.96.92
-  SHAREUNC: \\dev-iolv01.vssengg.com\ProductionData
   RAPTORUSERNAME: svcRaptor
+  SHAREUNC: \\dev-iolv01.vssengg.com\ProductionData
   TCCSynchOtherIssueFolder: Other... (Issue)
   TCCSynchProductionDataArchivedFolder: Production-Data (Archived)
   TCCSynchProjectBoundaryIssueFolder: Project Boundary (Issue)
@@ -97,6 +109,7 @@ data:
   GEOFENCE_CACHE_LIFE: 00:15:00
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
+  ASSETMGMT_CACHE_LIFE: 00:30:00
   PROJECT_SETTINGS_CACHE_LIFE: 00:15:00
   TILE_RENDER_JOB_TIMEOUT: 00:00:10
   DEFAULT_CONNECTION_LIMIT: "64"

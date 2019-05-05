@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -23,7 +24,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
   /// </summary>
   public class ElevationSubGridRequests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
   {
-    private readonly DateTime BASE_TIME = DateTime.Now;
+    private readonly DateTime BASE_TIME = DateTime.UtcNow;
 
     private const int TIME_INCREMENT_SECONDS = 10; // seconds
     private const float BASE_HEIGHT = 100.0f;

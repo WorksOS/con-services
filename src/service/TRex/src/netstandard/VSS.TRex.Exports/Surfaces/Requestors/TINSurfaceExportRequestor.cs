@@ -14,7 +14,7 @@ namespace VSS.TRex.Exports.Surfaces.Requestors
 
   /// <summary>
     /// Provides a requestor to manage making TIN surface export requests.
-    /// This class assume a running, activated Immutable Grid Client to be present in the local process
+    /// This class assumes a running, activated Immutable Grid Client to be present in the local process
     /// </summary>
     public class TINSurfaceExportRequestor : ITINSurfaceExportRequestor
   {

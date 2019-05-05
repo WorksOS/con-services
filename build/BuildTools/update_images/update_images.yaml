@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: update-baseimages
+spec:
+  template:
+    spec:
+      containers:
+      - name: update-baseimages
+        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:updateimages-dind 
+      restartPolicy: Never
+  backoffLimit: 4

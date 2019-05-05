@@ -78,7 +78,6 @@ namespace VSS.TRex.DI
       //Now set actual logging name and configure logger.
       Log4NetProvider.RepoName = loggerRepoName;
       Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName);
-
       // Create the LoggerFactory instance for the service collection
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddProvider(new Log4NetProvider());

@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Records;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Types;
 
@@ -13,6 +14,8 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
   public class PassCountStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<PassCountStatisticsResponse>, 
     IAnalyticsOperationResponseResultConversion<PassCountStatisticsResult>
   {
+    private static byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// Holds last known good target Pass Count range values.
     /// </summary>
@@ -26,6 +29,8 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       LastPassCountTargetRange.ToBinary(writer);
     }
 
@@ -36,6 +41,8 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       LastPassCountTargetRange.FromBinary(reader);
     }

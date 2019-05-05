@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
@@ -18,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// remove the need to resize the attributes list frequently when all but the latest attributes are
         /// discarded.
         /// </summary>
-        private List<AccumulatedAttribute> list = new List<AccumulatedAttribute>();
+        private readonly List<AccumulatedAttribute> list = new List<AccumulatedAttribute>();
 
         public AccumulatedAttributes()
         {
@@ -40,7 +39,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
                 NumAttrs = 1;
             }
         }
-
+       
         /// <summary>
         /// Add adds a value recorded at DateTime to the list. It is assumed
         /// that the date time of this item is after the date time
@@ -50,6 +49,9 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <param name="value"></param>
         public void Add(DateTime dateTime, object value)
         {
+          if (dateTime.Kind != DateTimeKind.Utc)
+            throw new ArgumentException("Attribute time must be a UTC cell pass time", nameof(dateTime));
+
           // If there are available entries to reuse, then reuse them...
           if (NumAttrs < list.Count)
             list[NumAttrs] = new AccumulatedAttribute(dateTime, value);
@@ -62,9 +64,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         // GetLatest simply returns the last value in the list
         public object GetLatest()
         {
-            Debug.Assert(NumAttrs > 0, "NumAttrs is zero in GetLatest");
-
-            return list[NumAttrs - 1].value;
+            return NumAttrs > 0 ? list[NumAttrs - 1].value : null;
         }
 
         // GetValueAtDateTime locates the value appropriate for the given datetime

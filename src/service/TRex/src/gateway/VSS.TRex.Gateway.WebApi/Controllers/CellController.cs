@@ -7,6 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
 
@@ -34,7 +35,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostSubGridPatches)}: {Request.QueryString}");
 
       patchRequest.Validate();
-
+      ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter1);
+      ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter2);
+      
       var patchResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<PatchRequestExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
@@ -49,6 +52,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       }
 
       return new FileStreamResult(new MemoryStream(patchResult?.PatchData), "application/octet-stream");
+    }
+
+    /// <summary>
+    /// Requests a single thematic datum value from a single cell. Examples are elevation, compaction. temperature etc.
+    /// The cell is identified by either WGS84 lat/long coordinates.
+    /// </summary>
+    /// <returns>The requested thematic value expressed as a floating point number. Interpretation is dependant on the thematic domain.</returns>
+    [HttpPost("cells/datum")]
+    public CompactionCellDatumResult PostCellDatum([FromBody] CellDatumTRexRequest cellDatumRequest)
+    {
+      Log.LogInformation($"{nameof(PostCellDatum)}: {Request.QueryString}");
+
+      cellDatumRequest.Validate();
+      ValidateFilterMachines(nameof(PostCellDatum), cellDatumRequest.ProjectUid, cellDatumRequest.Filter);
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<CellDatumExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(cellDatumRequest) as CompactionCellDatumResult);
     }
   }
 }

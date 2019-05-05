@@ -10,10 +10,10 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void AssetId_Should_serialize_to_string()
     {
-      var machineDetails = MachineDetails.Create(123, "machine name", isJohnDoe: false);
+      var machineDetails = new MachineDetails(123, "machine name", isJohnDoe: false);
       var jsonResult = JsonConvert.SerializeObject(machineDetails);
 
-      Assert.AreEqual("{\"assetID\":\"123\",\"machineName\":\"machine name\",\"isJohnDoe\":false}", jsonResult);
+      Assert.AreEqual("{\"assetID\":\"123\",\"machineName\":\"machine name\",\"isJohnDoe\":false,\"assetUid\":null}", jsonResult);
     }
 
 

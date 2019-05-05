@@ -1,7 +1,9 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Records;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
@@ -45,7 +47,6 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       clientGrid.FillWithTestPattern();
 
       var dLength = clientGrid.Cells.Length;
-      var length = (short)Math.Sqrt(dLength);
       aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.DetailsDataValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
@@ -155,6 +156,50 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       Assert.True(aggregator.CellsScannedAtTarget == length * 2, "Invalid value for CellsScannedAtTarget.");
       Assert.True(aggregator.CellsScannedOverTarget == 0, "Invalid value for CellsScannedOverTarget.");
       Assert.True(aggregator.CellsScannedUnderTarget == (dLength - length) * 2, "Invalid value for CellsScannedUnderTarget.");
+    }
+
+    [Fact]
+    public void Test_PassCountStatisticsAggregator_AggregateWith_SamePassCountTargets()
+    {
+      var aggregator = new PassCountStatisticsAggregator
+      {
+        LastPassCountTargetRange = new PassCountRangeRecord(2, 4),
+        SummaryCellsScanned = 1
+      };
+
+      var otheraggregator = new PassCountStatisticsAggregator
+      {
+        LastPassCountTargetRange = new PassCountRangeRecord(2, 4),
+        SummaryCellsScanned = 1
+      };
+
+      aggregator.IsTargetValueConstant.Should().BeTrue();
+      otheraggregator.IsTargetValueConstant.Should().BeTrue();
+
+      aggregator.AggregateWith(otheraggregator);
+      aggregator.IsTargetValueConstant.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Test_PassCountStatisticsAggregator_AggregateWith_DifferingPassCountTargets()
+    {
+      var aggregator = new PassCountStatisticsAggregator
+      {
+        LastPassCountTargetRange = new PassCountRangeRecord(2, 4),
+        SummaryCellsScanned = 1
+      };
+
+      var otheraggregator = new PassCountStatisticsAggregator
+      {
+        LastPassCountTargetRange = new PassCountRangeRecord(3, 5),
+        SummaryCellsScanned = 1
+      };
+
+      aggregator.IsTargetValueConstant.Should().BeTrue();
+      otheraggregator.IsTargetValueConstant.Should().BeTrue();
+
+      aggregator.AggregateWith(otheraggregator);
+      aggregator.IsTargetValueConstant.Should().BeFalse();
     }
   }
 }

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using VSS.TRex.Common.Exceptions;
-using VSS.TRex.DI;
+using VSS.TRex.Common;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
@@ -15,6 +14,14 @@ namespace VSS.TRex.SiteModels
   {
     private const byte VERSION_NUMBER = 1;
     private const string MACHINE_DESIGN_LIST_STREAM_NAME = "MachineDesigns";
+
+    /// <summary>
+    /// There will be at least 1 designName in list
+    /// </summary>
+    public SiteModelMachineDesignList()
+    {
+      CreateNew(Consts.kNoDesignName);
+    }
 
     /// <summary>
     /// The identifier of the site model owning this list of machine design names
@@ -58,7 +65,7 @@ namespace VSS.TRex.SiteModels
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(VERSION_NUMBER); 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.Write((int) Count);
       for (int i = 0; i < Count; i++)
@@ -73,9 +80,9 @@ namespace VSS.TRex.SiteModels
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
-      byte version = reader.ReadByte();
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      this.Clear();
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -102,9 +109,9 @@ namespace VSS.TRex.SiteModels
     /// Loads the content of the machine designs list from the persistent store. If there is no item in the persistent store containing
     /// machine designs for this site model them return an empty list.
     /// </summary>
-    public void LoadFromPersistentStore()
+    public void LoadFromPersistentStore(IStorageProxy storageProxy)
     {
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, out MemoryStream MS);
+      storageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, out MemoryStream MS);
       if (MS == null)
         return;
 

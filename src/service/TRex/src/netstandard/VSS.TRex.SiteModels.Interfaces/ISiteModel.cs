@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -15,6 +18,15 @@ namespace VSS.TRex.SiteModels.Interfaces
 {
   public interface ISiteModel
   {
+    /// <summary>
+    /// Governs which TRex storage representation (mutable or immutable) the Grid member within the site model instance will supply
+    /// </summary>
+    StorageMutability StorageRepresentationToSupply { get; }
+
+    void SetStorageRepresentationToSupply(StorageMutability mutability);
+
+    IStorageProxy PrimaryStorageProxy { get; }
+
     Guid ID { get; set; }
 
     DateTime CreationDate { get; }
@@ -118,9 +130,23 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// <returns></returns>
     (DateTime startUtc, DateTime endUtc) GetDateRange();
 
+    /// <summary>
+    /// GetAssetOnDesignPeriods returns the chronological slices where each machine was on a design.    /// </summary>
+    /// <returns></returns>
+    List<AssetOnDesignPeriod> GetAssetOnDesignPeriods();
+
+
+    /// <summary>
+    /// GetAssetOnDesignLayerPeriods returns the designs and layers used by specific machines.
+    /// </summary>
+    /// <returns></returns>
+    List<AssetOnDesignLayerPeriod> GetAssetOnDesignLayerPeriods();
+
     IMachinesProductionEventLists MachinesTargetValues { get; }
     bool MachineTargetValuesLoaded { get; }
 
     ISiteModelMetadata MetaData { get; }
+
+    byte GetCCAMinimumPassesValue(Guid machineUID, DateTime startDate, DateTime endDate, int layerID);
   }
 }

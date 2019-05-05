@@ -2,7 +2,7 @@
 
 SET config=Release
 SET projectFile=VSS.AWS.TransferProxy.csproj
-SET packageServer=https://packages.vspengg.com/
+SET packageServer=http://10.97.96.144/nuget
 SET packageId=VSS.AWS.TransferProxy
 SET apiKey=qATxVIHO5rIPF3K7
 

@@ -48,14 +48,16 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
     /// When using the Service Resolver, a value not defined (or no resolvers to match it) should NOT throw an exception
     /// </summary>
     [TestMethod]
-    public void TestNullResult()
+    public void TestNoResult()
     {
       // Ensure we don't throw an exception if we have no service resolvers, and no service defined
       var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolution>();
       Assert.IsNotNull(resolver);
       Assert.IsTrue(resolver.Resolvers.Count == 0, "No resolvers specified,");
       var result = resolver.ResolveService("my service, with no providers").Result;
-      Assert.IsNull(result, "Result should be null with no resolvers");
+      Assert.IsNotNull(result, "Result should not be null with no resolvers");
+      Assert.IsTrue(string.IsNullOrEmpty(result.Endpoint), "No endpoint should be defined for an unknown result");
+      Assert.AreEqual(ServiceResultType.Unknown, result.Type, $"Expected {ServiceResultType.Unknown} with no resolvers, but got {result.Type}");
     }
 
     /// <summary>
@@ -83,7 +85,8 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
       var positiveResult = resolver.ResolveService(serviceName).Result;
       var negativeResult = resolver.ResolveService(serviceName + serviceName).Result;
       
-      Assert.IsNull(negativeResult);
+      Assert.IsNotNull(negativeResult);
+      Assert.AreEqual(ServiceResultType.Unknown, negativeResult.Type);
 
       Assert.IsNotNull(positiveResult);
       Assert.AreEqual(serviceType, positiveResult.Type);

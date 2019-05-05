@@ -6,18 +6,13 @@ namespace VSS.TRex.Designs.GridFabric.Requests
 {
   public class DesignProfileRequest : DesignProfilerRequest<CalculateDesignProfileArgument, CalculateDesignProfileResponse>
   {
-  public override CalculateDesignProfileResponse Execute(CalculateDesignProfileArgument arg)
-  {
-    // Construct the function to be used
-    var func = new CalculateDesignProfileComputeFunc();
-
-    // Send the appropriate response to the caller
-    return Compute.Apply(func, arg);
-
-      //  Task<CalculateDesignProfileResponse> taskResult = compute.ApplyAsync(func, arg);
+    public override CalculateDesignProfileResponse Execute(CalculateDesignProfileArgument arg)
+    {
+      // Construct the function to be used
+      var func = new CalculateDesignProfileComputeFunc();
 
       // Send the appropriate response to the caller
-      //            return taskResult.Result;
+      return Compute.Apply(func, arg);
     }
   }
 }

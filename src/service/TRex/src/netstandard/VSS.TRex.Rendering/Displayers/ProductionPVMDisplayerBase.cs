@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using Draw = System.Drawing;
+using System.Drawing;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -48,7 +48,7 @@ namespace VSS.TRex.Rendering.Displayers
     private double cellStripEndX;
 
     // cellStripColour records the colour of the strip of cells we will draw
-    private Draw.Color cellStripColour;
+    private Color cellStripColour;
 
     // OriginX/y and LimitX/Y denote the extents of the physical world area covered by
     // the display context being drawn into
@@ -81,11 +81,8 @@ namespace VSS.TRex.Rendering.Displayers
       stepYIncrementOverTwo = stepYIncrement / 2;
     }
 
-    protected virtual bool DoRenderSubGrid<T>(ISubGrid subGrid) where T : ISubGrid
+    protected virtual bool DoRenderSubGrid(ISubGrid subGrid)
     {
-      if (!(subGrid is T))
-        return false;
-
       SubGrid = subGrid;
 
       bool DrawCellStrips;
@@ -105,7 +102,7 @@ namespace VSS.TRex.Rendering.Displayers
       // Draw the background of the sub grid if a pixel is less than 1 meter is width
       // if (MapView.XPixelSize < 1.0)
       //    MapView.DrawRect(SubGridWorldOriginX, SubGridWorldOriginY + cellSize * 32, cellSize * 32, cellSize * 32, true,
-      //    ((SubGrid.OriginX >> 5) + (SubGrid.OriginY >> 5)) % 2 == 0 ? Draw.Color.Black : Draw.Color.Blue);
+      //    ((SubGrid.OriginX >> 5) + (SubGrid.OriginY >> 5)) % 2 == 0 ? Color.Black : Color.Blue);
 
       // Skip-Iterate through the cells drawing them in strips
 
@@ -157,9 +154,9 @@ namespace VSS.TRex.Rendering.Displayers
 
     private void DoRenderCell()
     {
-      Draw.Color colour = DoGetDisplayColour();
+      Color colour = DoGetDisplayColour();
 
-      if (colour != Draw.Color.Empty)
+      if (colour != Color.Empty)
         MapView.DrawRect(currentEast, currentNorth,
                          cellSize, cellSize, true, colour);
     }
@@ -172,7 +169,7 @@ namespace VSS.TRex.Rendering.Displayers
     // determines the colour that should be displayed there. If there is no value
     // that should be displayed there (ie: it is <Null>, then the function returns
     // clNone as the colour).
-    protected abstract Draw.Color DoGetDisplayColour();
+    protected abstract Color DoGetDisplayColour();
 
     private void DoStartRowScan() => accumulatingScanLine = false;
 
@@ -184,9 +181,9 @@ namespace VSS.TRex.Rendering.Displayers
 
     private void DoAccumulateStrip()
     {
-      Draw.Color displayColour = DoGetDisplayColour();
+      Color displayColour = DoGetDisplayColour();
 
-      if (displayColour != Draw.Color.Empty) // There's something to draw
+      if (displayColour != Color.Empty) // There's something to draw
       {
         // Set the end of the strip to current east
         cellStripEndX = currentEast;
@@ -218,17 +215,17 @@ namespace VSS.TRex.Rendering.Displayers
 
     private void DoRenderStrip()
     {
-      if (!accumulatingScanLine || cellStripColour == Draw.Color.Empty)
-        return;
+      if (accumulatingScanLine && cellStripColour != Color.Empty)
+      {
+        MapView.DrawRect(cellStripStartX - stepXIncrementOverTwo,
+          currentNorth - stepYIncrementOverTwo,
+          (cellStripEndX - cellStripStartX) + stepXIncrement,
+          stepYIncrement,
+          true,
+          cellStripColour);
 
-      MapView.DrawRect(cellStripStartX - stepXIncrementOverTwo,
-                       currentNorth - stepYIncrementOverTwo,
-                       (cellStripEndX - cellStripStartX) + stepXIncrement,
-                       stepYIncrement,
-                       true,
-                       cellStripColour);
-
-      accumulatingScanLine = false;
+        accumulatingScanLine = false;
+      }
     }
 
     // property ICOptions : TSVOICOptions read FICOptions write FICOptions;
@@ -243,19 +240,23 @@ namespace VSS.TRex.Rendering.Displayers
 
     public bool RenderSubGrid(IClientLeafSubGrid clientSubGrid)
     {
-      if (clientSubGrid == null)
-        return true;
+      bool result = false;
 
-      if (!displayParametersCalculated)
+      if (clientSubGrid != null)
       {
-        cellSize = clientSubGrid.CellSize;
-        CalculateDisplayParameters();
-        displayParametersCalculated = true;
+        if (!displayParametersCalculated)
+        {
+          cellSize = clientSubGrid.CellSize;
+          CalculateDisplayParameters();
+          displayParametersCalculated = true;
+        }
+
+        HasRenderedSubGrid = true;
+
+      return DoRenderSubGrid(clientSubGrid);
       }
 
-      HasRenderedSubGrid = true;
-
-      return DoRenderSubGrid<IClientLeafSubGrid>(clientSubGrid);
+      return result;
     }
   }
 }

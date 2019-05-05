@@ -236,7 +236,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // that cell is the per column first cell pass index for the next column in the sub grid. I the cell is the last cell in the last
             // column then the pass count is the difference between the segment pass count and per cell first cell pass count.
 
-            SubGridCellPassCountRecord Result = new SubGridCellPassCountRecord();
+            var Result = new SubGridCellPassCountRecord();
 
             // Remember, the counts are written in column order first in the bit field array.
             uint PerColBitFieldLocation = Col * EncodedColPassCountsBits;
@@ -268,15 +268,15 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Decodes all passes for the identified cell within this subgrid segment
+        /// Decodes all passes for the identified cell within this sub grid segment
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
         public CellPass[] DecodePasses(uint CellX, uint CellY)
         {
-            SubGridCellPassCountRecord Index = GetPassCountAndFirstCellPassIndex(CellX, CellY);
-            CellPass[] cellPasses = new CellPass[Index.PassCount];
+            var Index = GetPassCountAndFirstCellPassIndex(CellX, CellY);
+            var cellPasses = new CellPass[Index.PassCount];
 
             for (uint i = 0; i < Index.PassCount; i++)
             {
@@ -298,7 +298,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // X & Y indicate the cell location in the sub grid, and passNumber represents the index of the pass in the cell that is required
 
             // First determine the starting cell pass index for that location in the segment
-            SubGridCellPassCountRecord Index = GetPassCountAndFirstCellPassIndex(X, Y);
+            var Index = GetPassCountAndFirstCellPassIndex(X, Y);
 
             // Then extract the appropriate cell pass from the list
             return ExtractCellPass(Index.FirstCellPass + passNumber);
@@ -314,13 +314,13 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             // IMPORTANT: The fields read in this method must be read in the  same order as they were written during encoding
 
-            CellPass Result = new CellPass();
+            var Result = new CellPass();
 
             uint CellPassBitLocation = Index * NumBitsPerCellPass;
 
             Result.InternalSiteModelMachineIndex = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MachineIDIndex);
 
-            Result.Time = FirstRealCellPassTime.AddSeconds(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time));
+            Result.Time = FirstRealCellPassTime.AddMilliseconds(AttributeValueModifiers.MILLISECONDS_TO_DECISECONDS_FACTOR * BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time));
 
             long IntegerHeight = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Height);
             Result.Height = IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : (float)(IntegerHeight / 1000.0);
@@ -389,12 +389,12 @@ namespace VSS.TRex.SubGridTrees.Server
         public DateTime PassTime(uint passIndex)
         {
             uint BitLocation = passIndex * NumBitsPerCellPass + EncodedFieldDescriptors.Time.OffsetBits;
-            return FirstRealCellPassTime.AddSeconds(BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Time));
+            return FirstRealCellPassTime.AddMilliseconds(AttributeValueModifiers.MILLISECONDS_TO_DECISECONDS_FACTOR * BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Time));
         }
 
         public DateTime PassTime(uint X, uint Y, uint passNumber)
         {
-            // Translate the cell based pass number to the segment cell list based pass number 
+            // Translate the cell based pass count to the segment cell list based pass count 
             return PassTime((uint)GetPassCountAndFirstCellPassIndex(X, Y).FirstCellPass + passNumber);
         }
 
@@ -548,8 +548,8 @@ namespace VSS.TRex.SubGridTrees.Server
             // Compute the value range and number of bits required to store the column first cell passes indices
             PassCountEncodedFieldDescriptor.Init();
 
-            PassCountEncodedFieldDescriptor.MinValue = ColFirstCellPassIndexes.Min(x => x);
-            PassCountEncodedFieldDescriptor.MaxValue = ColFirstCellPassIndexes.Max(x => x);
+            PassCountEncodedFieldDescriptor.MinValue = ColFirstCellPassIndexes.Min();
+            PassCountEncodedFieldDescriptor.MaxValue = ColFirstCellPassIndexes.Max();
 
             PassCountEncodedFieldDescriptor.CalculateRequiredBitFieldSize();
             EncodedColPassCountsBits = PassCountEncodedFieldDescriptor.RequiredBits;
@@ -627,8 +627,8 @@ namespace VSS.TRex.SubGridTrees.Server
             // For ease of management convert all the cell passes into a single list for the following operations
             CellPass[] allCellPassesArray = new CellPass[SegmentPassCount];
             cellPassIndex = 0;
-
-          Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((col, row) =>
+  
+            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((col, row) =>
             {
                 CellPass[] passes = cellPasses[col, row];
 
@@ -640,7 +640,7 @@ namespace VSS.TRex.SubGridTrees.Server
             });
 
             // Compute the time of the earliest real cell pass within the segment
-            FirstRealCellPassTime = allCellPassesArray.Length > 0 ? allCellPassesArray.Min(x => x.Time) : DateTime.MinValue;
+            FirstRealCellPassTime = allCellPassesArray.Length > 0 ? allCellPassesArray.Min(x => x.Time) : Consts.MIN_DATETIME_AS_UTC;
 
             // Initialise the MachineIDs array and the MachineIDSet that encodes it as a bit array
             MachineIDSet = new BitArray(allCellPassesArray.Max(x => x.InternalSiteModelMachineIndex) + 1);
@@ -657,19 +657,19 @@ namespace VSS.TRex.SubGridTrees.Server
             // Time - based on the long word, second accurate times overriding the TDateTime times
             // Height - based on the long word, millimeter accurate elevations overriding the IEEE double elevations
 
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.InternalSiteModelMachineIndex).ToArray(), 0xffff, 0, false, ref EncodedFieldDescriptors.MachineIDIndex);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedTime(x.Time, FirstRealCellPassTime)).ToArray(), 0xffffffff, 0, false, ref EncodedFieldDescriptors.Time);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.InternalSiteModelMachineIndex).ToArray(), 0xffff, 0, false, ref EncodedFieldDescriptors.MachineIDIndex);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedTime(x.Time, FirstRealCellPassTime)).ToArray(), 0x7fff_ffff_ffff_ffff, 0, false, ref EncodedFieldDescriptors.Time);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedHeight(x.Height)).ToArray(), 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCV).ToArray(), 0xffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RMV).ToArray(), 0xffff, CellPassConsts.NullRMV, true, ref EncodedFieldDescriptors.RMV);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MDP).ToArray(), 0xffff, CellPassConsts.NullMDP, true, ref EncodedFieldDescriptors.MDP);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffff, CellPassConsts.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.GPSModeStore).ToArray(), 0xff, (int)CellPassConsts.NullGPSMode, true, ref EncodedFieldDescriptors.GPSModeStore);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MachineSpeed).ToArray(), 0xffff, CellPassConsts.NullMachineSpeed, true, ref EncodedFieldDescriptors.MachineSpeed);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RadioLatency).ToArray(), 0xff, CellPassConsts.NullRadioLatency, true, ref EncodedFieldDescriptors.RadioLatency);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.Frequency).ToArray(), 0xffff, CellPassConsts.NullFrequency, true, ref EncodedFieldDescriptors.Frequency);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.Amplitude).ToArray(), 0xffff, CellPassConsts.NullAmplitude, true, ref EncodedFieldDescriptors.Amplitude);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCA).ToArray(), 0xff, CellPassConsts.NullCCA, true, ref EncodedFieldDescriptors.CCA);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.CCV).ToArray(), 0xffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.RMV).ToArray(), 0xffff, CellPassConsts.NullRMV, true, ref EncodedFieldDescriptors.RMV);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.MDP).ToArray(), 0xffff, CellPassConsts.NullMDP, true, ref EncodedFieldDescriptors.MDP);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.MaterialTemperature).ToArray(), 0xffff, CellPassConsts.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.GPSModeStore).ToArray(), 0xff, (int)CellPassConsts.NullGPSMode, true, ref EncodedFieldDescriptors.GPSModeStore);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.MachineSpeed).ToArray(), 0xffff, CellPassConsts.NullMachineSpeed, true, ref EncodedFieldDescriptors.MachineSpeed);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.RadioLatency).ToArray(), 0xff, CellPassConsts.NullRadioLatency, true, ref EncodedFieldDescriptors.RadioLatency);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.Frequency).ToArray(), 0xffff, CellPassConsts.NullFrequency, true, ref EncodedFieldDescriptors.Frequency);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.Amplitude).ToArray(), 0xffff, CellPassConsts.NullAmplitude, true, ref EncodedFieldDescriptors.Amplitude);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.CCA).ToArray(), 0xff, CellPassConsts.NullCCA, true, ref EncodedFieldDescriptors.CCA);
 
             // Calculate the offset bit locations for the cell pass attributes
             EncodedFieldDescriptors.CalculateTotalOffsetBits(out NumBitsPerCellPass);
@@ -781,10 +781,10 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Note that this information is immutable
         /// </summary>
         /// <returns></returns>
-        public override bool IsImmutable() => true;
+        public bool IsImmutable() => true;
 
         /// <summary>
-        /// Calculate the total number of passes from all the cells present in this subgrid segment
+        /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>

@@ -213,12 +213,6 @@ namespace VSS.TRex.Pipelines
 
       // Get the current production data existence map from the site model
       ProdDataExistenceMap = SiteModel.ExistenceMap;
-      
-      if (ProdDataExistenceMap == null)
-      {
-        Response.ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
-        return false;
-      }
 
       // Obtain the sub grid existence map for the project
       // Retrieve the existence map for the datamodel

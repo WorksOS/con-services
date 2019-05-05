@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.TRex.Designs.TTM.Optimised;
 
 namespace VSS.TRex.Machines
 {
@@ -26,17 +27,17 @@ namespace VSS.TRex.Machines
 
     public MachineType MachineType { get; set; } = MachineType.Unknown;
 
-    public DeviceType DeviceType { get; set; } = DeviceType.MANUALDEVICE;
+    public DeviceTypeEnum DeviceType { get; set; } = DeviceTypeEnum.MANUALDEVICE;
 
     public string MachineHardwareID { get; set; } = "";
 
     public bool IsJohnDoeMachine { get; set; }
 
-    public double LastKnownX { get; set; } = Consts.NullDouble;
+    public double LastKnownX { get; set; } = Common.Consts.NullDouble;
 
-    public double LastKnownY { get; set; } = Consts.NullDouble;
+    public double LastKnownY { get; set; } = Common.Consts.NullDouble;
 
-    public DateTime LastKnownPositionTimeStamp { get; set; } = DateTime.MinValue;
+    public DateTime LastKnownPositionTimeStamp { get; set; } = Common.Consts.MIN_DATETIME_AS_UTC;
 
     public string LastKnownDesignName { get; set; } = string.Empty;
 
@@ -82,7 +83,7 @@ namespace VSS.TRex.Machines
     public Machine(string name,
                    string machineHardwareID,
                    MachineType machineType,
-                   DeviceType deviceType,
+                   DeviceTypeEnum deviceType,
                    Guid machineID,
                    short internalSiteModelMachineIndex,
                    bool isJohnDoeMachine) : this()
@@ -154,7 +155,7 @@ namespace VSS.TRex.Machines
       InternalSiteModelMachineIndex = reader.ReadInt16();
       Name = reader.ReadString();
       MachineType = (MachineType)reader.ReadByte();
-      DeviceType = (DeviceType)reader.ReadInt32();
+      DeviceType = (DeviceTypeEnum)reader.ReadInt32();
       MachineHardwareID = reader.ReadString();
       IsJohnDoeMachine = reader.ReadBoolean();
       LastKnownX = reader.ReadDouble();

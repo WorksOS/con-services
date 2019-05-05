@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\..\..\..\..\Common\VSS.Tpaas.Client\src\VSS.Tpaas.Client.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj" />

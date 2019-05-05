@@ -5,14 +5,16 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
-    public interface IServerSubGridTree : ISubGridTree
+  public interface IServerSubGridTree : ISubGridTree
   {
-        bool LoadLeafSubGridSegment(IStorageProxy StorageProxy,
-                                    SubGridCellAddress cellAddress,
-                                    bool loadLatestData,
-                                    bool loadAllPasses,
-                                    IServerLeafSubGrid SubGrid,
-                                    ISubGridCellPassesDataSegment Segment);
+    bool IsMutable { get; }
+
+    bool LoadLeafSubGridSegment(IStorageProxy StorageProxy,
+      SubGridCellAddress cellAddress,
+      bool loadLatestData,
+      bool loadAllPasses,
+      IServerLeafSubGrid SubGrid,
+      ISubGridCellPassesDataSegment Segment);
 
     bool LoadLeafSubGrid(IStorageProxy storageProxy,
       SubGridCellAddress CellAddress,

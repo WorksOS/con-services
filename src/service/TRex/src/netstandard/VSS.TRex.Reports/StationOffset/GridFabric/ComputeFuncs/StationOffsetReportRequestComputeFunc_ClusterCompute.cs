@@ -28,7 +28,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs
       catch (Exception e)
       {
         Log.LogError(e, $"{nameof(StationOffsetReportRequestResponse_ClusterCompute)}: Unexpected exception.");
-        return new StationOffsetReportRequestResponse_ClusterCompute(){ResultStatus = RequestErrorStatus.Unknown, ReturnCode = ReportReturnCode.UnknownError};
+        return new StationOffsetReportRequestResponse_ClusterCompute{ResultStatus = RequestErrorStatus.Unknown, ReturnCode = ReportReturnCode.UnknownError};
       }
       finally
       {

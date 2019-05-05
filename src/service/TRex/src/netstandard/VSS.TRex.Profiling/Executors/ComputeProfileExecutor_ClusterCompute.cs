@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -13,7 +14,6 @@ using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
@@ -44,6 +44,8 @@ namespace VSS.TRex.Profiling.Executors
     private ISubGridSegmentCellPassIterator CellPassIterator;
     private ISubGridSegmentIterator SegmentIterator;
 
+    private ISiteModel SiteModel;
+
     /// <summary>
     /// Constructs the profile analysis executor
     /// </summary>
@@ -73,7 +75,7 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="passFilter"></param>
     private void SetupForCellPassStackExamination(ICellPassAttributeFilter passFilter)
     {      
-      SegmentIterator = new SubGridSegmentIterator(null, null, DIContext.Obtain<ISiteModels>().StorageProxy);
+      SegmentIterator = new SubGridSegmentIterator(null, null, SiteModel.PrimaryStorageProxy);
 
       if (passFilter.ReturnEarliestFilteredCellPass ||
           (passFilter.HasElevationTypeFilter && passFilter.ElevationType == ElevationType.First))
@@ -115,7 +117,7 @@ namespace VSS.TRex.Profiling.Executors
           else
             Log.LogWarning($"#In#: DataModel {ProjectID}, Note! vertices list has insufficient vertices (min of 2 required)");
 
-          ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ProjectID);
+          SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ProjectID);
 
           if (SiteModel == null)
           {
@@ -124,13 +126,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           // Obtain the subgrid existence map for the project
-          ISubGridTreeBitMask ProdDataExistenceMap = SiteModel.ExistenceMap;
-
-          if (ProdDataExistenceMap == null)
-          {
-            Log.LogWarning($"Failed to locate production data existence map from sitemodel {ProjectID}");
-            return Response = new ProfileRequestResponse<T> {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
-          }
+          var ProdDataExistenceMap = SiteModel.ExistenceMap;
 
           FilteredValuePopulationControl PopulationControl = new FilteredValuePopulationControl();
           PopulationControl.PreparePopulationControl(ProfileTypeRequired, Filters.Filters[0].AttributeFilter);

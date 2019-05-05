@@ -1,10 +1,9 @@
 ﻿using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 
 namespace VSS.TRex.Profiling
 {
-  public class ProfileCellBase : IProfileCellBase
+  public abstract class ProfileCellBase : IProfileCellBase
   {
     /// <summary>
     /// The real-world distance from the 'start' of the profile line drawn by the user;
@@ -31,7 +30,7 @@ namespace VSS.TRex.Profiling
 
     public float DesignElev { get; set; }
 
-    public virtual bool IsNull() => false;
+    public abstract bool IsNull();
 
     /// <summary>
     /// Serializes content to the writer

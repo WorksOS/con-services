@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
@@ -20,7 +21,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
   {
     ////////////////////////Private properties
     private bool HaveSeenFirstDataTime { get; set; }
-    private DateTime DataTimePrevious { get; set; } = DateTime.MinValue;
+    private DateTime DataTimePrevious { get; set; } = Consts.MIN_DATETIME_AS_UTC;
 
     private XYZ LeftPoint = XYZ.Null;
     private XYZ RightPoint = XYZ.Null;
@@ -57,7 +58,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     // Proofing runs declarations...
     private string _StartProofing = string.Empty;    // Proofing run name...
-    private DateTime _StartProofingDataTime = DateTime.MinValue;
+    private DateTime _StartProofingDataTime = Consts.MIN_DATETIME_AS_UTC;
 
     // Declarations for processing state information
     private float _ICTargetLiftThickness = CellPassConsts.NullOverridingTargetLiftThicknessValue;
@@ -74,11 +75,11 @@ namespace VSS.TRex.TAGFiles.Classes.States
     private int _ControlStateTilt = MachineControlStateFlags.NullGCSControlState;
     private int _ControlStateSideShift = MachineControlStateFlags.NullGCSControlState;
 
-    // FAutomaticsMode records the machine automatic control state as defined by
+    // _AutomaticsMode records the machine automatic control state as defined by
     // the 5 GCS900 control state flag sets. It is currently defined as a simple
     // on/off switch. The UpdateAutomaticsMode method examines the individual
     // control states and sets the value of this accordingly.
-    MachineAutomaticsMode _AutomaticsMode = MachineAutomaticsMode.Unknown;
+    AutomaticsType _AutomaticsMode = AutomaticsType.Unknown;
 
     private byte _UTMZone = CellPassConsts.NullUTMZone;
     private CoordinateSystemType _CSType = CoordinateSystemType.NoCoordSystem;
@@ -91,29 +92,46 @@ namespace VSS.TRex.TAGFiles.Classes.States
     // CalculateMachineSpeed calculates the speed of the machine in meters per second
     private double CalculateMachineSpeed()
     {
-      if (LeftPoint.IsNull || RightPoint.IsNull || DataLeft.IsNull || DataRight.IsNull)
+      XYZ CentrePointFrom;
+      XYZ CentrePointTo;
+
+      if (!LeftPoint.IsNull && !RightPoint.IsNull && !DataLeft.IsNull && !DataRight.IsNull)
+      {
+        CentrePointFrom = (LeftPoint + RightPoint) * 0.5;
+        CentrePointTo = (DataLeft + DataRight) * 0.5;
+      }
+      else
+      if (!LeftTrackPoint.IsNull && !RightTrackPoint.IsNull && !DataTrackLeft.IsNull && !DataTrackRight.IsNull)
+      {
+        CentrePointFrom = (LeftTrackPoint + RightTrackPoint) * 0.5;
+        CentrePointTo = (DataTrackLeft + DataTrackRight) * 0.5;
+      }
+      else
+      if (!LeftWheelPoint.IsNull && !RightWheelPoint.IsNull && !DataWheelLeft.IsNull && !DataWheelRight.IsNull)
+      {
+        CentrePointFrom = (LeftWheelPoint + RightWheelPoint) * 0.5;
+        CentrePointTo = (DataWheelLeft + DataWheelRight) * 0.5;
+      }
+      else
       {
         return Consts.NullDouble;
       }
 
-      XYZ CentrePointFrom = (LeftPoint + RightPoint) * 0.5;
-      XYZ CentrePointTo = (DataLeft + DataRight) * 0.5;
-
       double DistanceTraveled = XYZ.Get3DLength(CentrePointFrom, CentrePointTo); // meters converted to kilometers...
-      double TravelTime = (DataTime - FirstDataTime).TotalMilliseconds / 1000;   // milliseconds converted to seconds...
+      double TravelTime = (DataTime - DataTimePrevious).TotalMilliseconds / 1000;   // milliseconds converted to seconds...
 
       return TravelTime > 0 ? DistanceTraveled / TravelTime : 0.0;
     }
 
     private bool GetLLHReceived() => LLHLat != Consts.NullDouble && LLHLon != Consts.NullDouble && LLHHeight != Consts.NullDouble;
 
-    private bool GetGPSBaseLLHReceived => (GPSBaseLat != Consts.NullDouble) && (GPSBaseLon != Consts.NullDouble) && (GPSBaseHeight != Consts.NullDouble);
+    private bool GetGPSBaseLLHReceived() => (GPSBaseLat != Consts.NullDouble) && (GPSBaseLon != Consts.NullDouble) && (GPSBaseHeight != Consts.NullDouble);
 
     ///////////////////////////////////////// Protected properties
-    protected bool HaveFirstEpoch { get; set; }
-    protected bool HaveFirstRearEpoch { get; set; }
-    protected bool HaveFirstTrackEpoch { get; set; }
-    protected bool HaveFirstWheelEpoch { get; set; }
+    public bool HaveFirstEpoch { get; set; }
+    public bool HaveFirstRearEpoch { get; set; }
+    public bool HaveFirstTrackEpoch { get; set; }
+    public bool HaveFirstWheelEpoch { get; set; }
 
     // FWorkerID is the ID of this instance of a ST processor. It is used when
     // running multiple processors on different threads. It defaults to -1
@@ -123,28 +141,28 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     protected /*virtual*/ void InitialiseAttributeAccumulators()
     {
-      ICMachineSpeedValues.Add(DateTime.MinValue, Consts.NullDouble);
-      ICCCVValues.Add(DateTime.MinValue, CellPassConsts.NullCCV);
-      ICRMVValues.Add(DateTime.MinValue, CellPassConsts.NullRMV);
-      ICFrequencys.Add(DateTime.MinValue, CellPassConsts.NullFrequency);
-      ICAmplitudes.Add(DateTime.MinValue, CellPassConsts.NullAmplitude);
-      GPSModes.Add(DateTime.MinValue, CellPassConsts.NullGPSMode);
+      ICMachineSpeedValues.Add(Consts.MIN_DATETIME_AS_UTC, Consts.NullDouble);
+      ICCCVValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCV);
+      ICRMVValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullRMV);
+      ICFrequencys.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullFrequency);
+      ICAmplitudes.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullAmplitude);
+      GPSModes.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullGPSMode);
 
       // We will assume that the absence of an OnGround flag in the tag file shall
       // default to true wrt to the processing of the file.
-      OnGrounds.Add(DateTime.MinValue, OnGroundState.YesLegacy);
+      OnGrounds.Add(Consts.MIN_DATETIME_AS_UTC, OnGroundState.YesLegacy);
 
-      AgeOfCorrections.Add(DateTime.MinValue, (byte)0);
+      AgeOfCorrections.Add(Consts.MIN_DATETIME_AS_UTC, (byte)0);
 
-      VolkelMeasureRanges.Add(DateTime.MinValue, CellPassConsts.NullVolkelMeasRange);
-      VolkelMeasureUtilRanges.Add(DateTime.MinValue, CellPassConsts.NullVolkelMeasUtilRange);
-      ICMDPValues.Add(DateTime.MinValue, CellPassConsts.NullMDP);
-      ICTemperatureValues.Add(DateTime.MinValue, CellPassConsts.NullMaterialTemperatureValue);
-      ICCCAValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
-      ICCCALeftFrontValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
-      ICCCARightFrontValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
-      ICCCALeftRearValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
-      ICCCALeftRearValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
+      VolkelMeasureRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasRange);
+      VolkelMeasureUtilRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasUtilRange);
+      ICMDPValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullMDP);
+      ICTemperatureValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullMaterialTemperatureValue);
+      ICCCAValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCALeftFrontValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCARightFrontValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCALeftRearValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCALeftRearValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
     }
 
     protected virtual void DiscardAllButLatestAttributeAccumulatorValues()
@@ -198,7 +216,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     protected virtual void SetStartProofing(string value) => _StartProofing = value;
     protected virtual void SetICTargetLiftThickness(float value) => _ICTargetLiftThickness = value;
     protected virtual void SetApplicationVersion(string value) => _ApplicationVersion = value;
-    protected virtual void SetAutomaticsMode(MachineAutomaticsMode value) => _AutomaticsMode = value;
+    protected virtual void SetAutomaticsMode(AutomaticsType value) => _AutomaticsMode = value;
     protected virtual void SetRMVJumpThresholdValue(short value) => _RMVJumpThreshold = value;
     protected virtual void SetICSensorType(CompactionSensorType value) => _ICSensorType = value;
     protected virtual void SetICTempWarningLevelMinValue(ushort value) => _ICTempWarningLevelMinValue = value;
@@ -214,9 +232,9 @@ namespace VSS.TRex.TAGFiles.Classes.States
                                                   MachineControlStateFlags.GCSControlStateInActiveAuto |
                                                   MachineControlStateFlags.GCSControlStateAutoValueNotDriving;
 
-      MachineAutomaticsMode NewAutomaticsModeState;
+      AutomaticsType NewAutomaticsModeState;
 
-      MachineAutomaticsMode OldAutomaticsModeState = _AutomaticsMode;
+      AutomaticsType OldAutomaticsModeState = _AutomaticsMode;
 
       //   implement unknown automatics state for initialisation purposes
 
@@ -226,11 +244,11 @@ namespace VSS.TRex.TAGFiles.Classes.States
          ((_ControlStateTilt & kMachineIsInAutomaticsModeFlags) != 0) ||
          ((_ControlStateSideShift & kMachineIsInAutomaticsModeFlags) != 0))
       {
-        NewAutomaticsModeState = MachineAutomaticsMode.Automatics;
+        NewAutomaticsModeState = AutomaticsType.Automatics;
       }
       else
       {
-        NewAutomaticsModeState = MachineAutomaticsMode.Manual;
+        NewAutomaticsModeState = AutomaticsType.Manual;
       }
 
       if (OldAutomaticsModeState != NewAutomaticsModeState)
@@ -359,15 +377,10 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public int ProcessedCellPassesCount { get; set; }
     public int VisitedEpochCount { get; set; }
 
-    public double OriginX { get; set; } = Consts.NullDouble;
-    public double OriginY { get; set; } = Consts.NullDouble;
-    public double OriginZ { get; set; } = Consts.NullDouble;
-    public DateTime OriginTime { get; set; } = DateTime.MinValue;
-
     public short GPSWeekNumber { get; set; }
     public uint GPSWeekTime { get; set; }
 
-    private DateTime _DataTime = DateTime.MinValue;
+    private DateTime _DataTime = Consts.MIN_DATETIME_AS_UTC;
     public DateTime DataTime { get { return _DataTime; } set { SetDataTime(value); } }
 
     public DateTime _FirstDataTime;
@@ -404,8 +417,6 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public MachineDirection MachineDirection { get { return GetMachineDirection(); } set { SetMachineDirection(value); } }
 
     public MachineType MachineType { get; set; } = CellPassConsts.MachineTypeNull;
-
-    public DateTime UserTimeOffset { get; set; } = DateTime.MinValue;
 
     public string Design { get { return _Design; } set { SetDesign(value); } }
 
@@ -463,8 +474,6 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     public DateTime StartProofingDataTime { get { return _StartProofingDataTime; } set { SetStartProofingDataTime(value); } }
 
-    public bool HaveSeenAProofingStart { get; set; }
-
     public float ICTargetLiftThickness { get { return _ICTargetLiftThickness; } set { SetICTargetLiftThickness(value); } }
 
     public BoundingWorldExtent3D ProofingRunExtent = BoundingWorldExtent3D.Inverted();
@@ -479,7 +488,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public int ControlStateTilt { get { return _ControlStateTilt; } set { SetControlStateTilt(value); } }
     public int ControlStateSideShift { get { return _ControlStateSideShift; } set { SetControlStateSideShift(value); } }
 
-    public MachineAutomaticsMode AutomaticsMode { get { return _AutomaticsMode; } set { SetAutomaticsMode(value); } }
+    public AutomaticsType AutomaticsMode { get { return _AutomaticsMode; } set { SetAutomaticsMode(value); } }
 
     // FMachineWheelWidth records the width of wheels on wheeled machines.
     // Units are meters
@@ -525,7 +534,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public DateTime? LLHHeightRecordedTime { get; set; } = null;
 
 
-    public bool LLHReceived { get; set; } = false;
+    public bool LLHReceived => GetLLHReceived();
 
     public byte UTMZone { get { return _UTMZone; } set { SetUTMZone(value); } }
     public CoordinateSystemType CSType { get { return _CSType; } set { SetCSType(value); } }
@@ -537,7 +546,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public bool IsCSIBCoordSystemTypeOnly { get; set; } = true;
     public byte UTMZoneAtFirstPosition { get; set; }
 
-    public bool GPSBaseLLHReceived { get { return GetGPSBaseLLHReceived; } }
+    public bool GPSBaseLLHReceived => GetGPSBaseLLHReceived(); 
 
     public bool OnGroundFlagSet { get; set; }
 

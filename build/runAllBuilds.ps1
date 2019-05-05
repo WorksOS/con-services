@@ -20,7 +20,7 @@ function runBuild ($filePath) {
 }
 
 [Boolean]$hasErrors = $false
-Get-ChildItem -Path ../src -Filter "*.MonoRepo.sln" -Recurse | ForEach-Object {
+Get-ChildItem -Path ../src -Filter "*.sln" -Recurse | ForEach-Object {
     $errCode = runBuild($_.FullName)
     Write-Host ""
     if($errCode -ne 0) {

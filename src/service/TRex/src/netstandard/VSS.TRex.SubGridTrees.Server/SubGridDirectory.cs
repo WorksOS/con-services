@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server
 { 
   public class SubGridDirectory : ISubGridDirectory
   {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridDirectory>();
-     
+        /// <summary>
+        /// Controls whether segment and cell pass information held within this sub grid is represented
+        /// in the mutable or immutable forms supported by TRex
+        /// </summary>
+        public bool IsMutable { get; set; } = false;
+
         /// <summary>
         /// This sub grid is present in the persistent store
         /// </summary>
@@ -25,17 +28,16 @@ namespace VSS.TRex.SubGridTrees.Server
         // all the segments in the sub grid
         public ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set; }
 
+        private readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
+
         public void AllocateGlobalLatestCells()
         {
             if (GlobalLatestCells == null)
             {
-                GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper();
+              GlobalLatestCells = IsMutable
+                ? subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Global()
+                : subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper_Global();
             }
-        }
-
-        public void DeAllocateGlobalLatestCells()
-        {
-            GlobalLatestCells = null;
         }
 
         public SubGridDirectory()
@@ -44,13 +46,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void CreateDefaultSegment()
         {
-            if (SegmentDirectory.Count != 0)
-            {
-                Log.LogCritical("Cannot create default segment if there are already segments in the list");
-                return;
-            }
-
-            SegmentDirectory.Add(new SubGridCellPassesDataSegmentInfo());
+            if (SegmentDirectory.Count == 0)
+              SegmentDirectory.Add(new SubGridCellPassesDataSegmentInfo());
         }
 
         public void Clear()
@@ -65,12 +62,14 @@ namespace VSS.TRex.SubGridTrees.Server
         public void Write(BinaryWriter writer)
         {
             if (GlobalLatestCells == null)  
-              throw new TRexSubGridIOException("Cannot read sub grid directory without global latest values available");
+              throw new TRexSubGridIOException("Cannot write sub grid directory without global latest values available");
 
             GlobalLatestCells.Write(writer, new byte[10000]);
 
             // Write out the directory of segments
-            Debug.Assert(SegmentDirectory.Count > 0, "Writing a segment directory with no segments");
+            if (SegmentDirectory.Count == 0)
+              throw new TRexSubGridIOException("Writing a segment directory with no segments");
+
             writer.Write(SegmentDirectory.Count);
 
             foreach (var Segment in SegmentDirectory)
@@ -79,7 +78,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void Read_2p0(BinaryReader reader)
+        public void Read(BinaryReader reader)
         {
             if (GlobalLatestCells == null)
               throw new TRexSubGridIOException("Cannot read sub grid directory without global latest values available");

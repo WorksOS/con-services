@@ -1,5 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.Common.Abstractions.ServiceDiscovery;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Clients;
 
@@ -16,10 +23,29 @@ namespace VSS.Productivity3D.Push.WebAPI
       where TInterface : class, IHubClient 
       where TImplementation : class, IHubClient, TInterface
     {
-      services.AddSingleton<TInterface, TImplementation>();
       services.AddHostedService<HostedClientService<TInterface>>();
-      
+      services.AddSingleton<IServiceResolution, InternalServiceResolver>();
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
+      services.AddSingleton<TInterface, TImplementation>();
       return services;
+    }
+
+    /// <summary>
+    /// Start the connection logic for each hub
+    /// Note: The connection logic runs in the background, this will return even if the hub isn't connected straight away
+    /// </summary>
+    public static async Task StartPushClients(this IServiceProvider services)
+    {
+      var clients = services.GetServices<IHubClient>().ToList();
+      var tasks = new List<Task>(clients.Count);
+      foreach (var hubClient in clients)
+      {
+        if(hubClient.IsConnecting || hubClient.Connected)
+          continue;
+        tasks.Add(hubClient.Connect());
+      }
+
+      await Task.WhenAll(tasks);
     }
   }
 }

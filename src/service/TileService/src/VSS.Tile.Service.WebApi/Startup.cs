@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -20,25 +20,32 @@ using VSS.DataOcean.Client;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Clients.Notifications;
+using VSS.TCCFileAccess;
 
 namespace VSS.Tile.Service.WebApi
 {
-  public class Startup
+  public class Startup : BaseStartup
   {
-
-    /// <summary>
-    /// The name of this service for swagger etc.
-    /// </summary>
-    private const string SERVICE_TITLE = "Tile Service API";
 
     /// <summary>
     /// For Log4Net
     /// </summary>
-    public const string LOGGER_REPO_NAME = "WebApi";
+    public const string LoggerRepoName = "TileServiceWebApi";
 
     // This method gets called by the runtime. Use this method to add services to the container.
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-    public void ConfigureServices(IServiceCollection services)
+    public override string ServiceName => "Tiling service";
+    public override string ServiceDescription => "Provides tiling endpoints and tile generation";
+    public override string ServiceVersion => "v1";
+
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
+    {
+    }
+
+
+    protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
@@ -65,6 +72,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
+      services.AddSingleton<IFileRepository, FileRepository>();
 
       services.AddSingleton<CacheInvalidationService>();
 
@@ -77,28 +85,13 @@ namespace VSS.Tile.Service.WebApi
           options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
         });
       });
+    }
 
-      services.AddJaeger(SERVICE_TITLE);
-
-      services.AddCommon<Startup>(SERVICE_TITLE);
-
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    {
+      app.UseFilterMiddleware<TileAuthentication>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-    {
-      if (env.IsDevelopment())
-      {
-        app.UseDeveloperExceptionPage();
-      }
-
-      //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCommon(SERVICE_TITLE);
-      app.UseFilterMiddleware<TileAuthentication>();
-      app.UseMvc();
-      
-    }
   }
 }

@@ -206,7 +206,7 @@ namespace VSS.TRex.SubGridTrees.Client
         I, J : Integer;
         S : String;
       begin
-        SIGLogMessage.PublishNoODS(Nil, Format('Dump of MDP map for subgrid %s', [Moniker]) , ...);
+        SIGLogMessage.PublishNoODS(Nil, Format('Dump of MDP map for sub grid %s', [Moniker]) , ...);
 
         for I := 0 to kSubGridTreeDimension - 1 do
           begin

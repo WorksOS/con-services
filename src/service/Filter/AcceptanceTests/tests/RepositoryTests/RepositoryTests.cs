@@ -676,12 +676,13 @@ namespace RepositoryTests
 
     #region Boundaries
     [TestMethod]
+    [Ignore("Temporary so old and new deployments can run side by side using a common database")]
     public void GeofenceSchemaExists()
     {
       const string tableName = "Geofence";
       List<string> columnNames = new List<string>
       {
-        "ID", "GeofenceUID", "Name" , "fk_GeofenceTypeID", "GeometryWKT", "FillColor", "IsTransparent", "IsDeleted", "Description", "AreaSqMeters", "fk_CustomerUID", "UserUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+        "ID", "GeofenceUID", "Name" , "fk_GeofenceTypeID", "GeometryWKT", "PolygonST", "FillColor", "IsTransparent", "IsDeleted", "Description", "AreaSqMeters", "fk_CustomerUID", "UserUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
       };
       CheckSchema(tableName, columnNames);
     }

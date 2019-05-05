@@ -1,57 +1,59 @@
-﻿using VSS.TRex.Common;
-using VSS.TRex.SubGridTrees.Server.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
   /// <summary>
   /// Factory that creates structures that contain a 'latest pass' records for cells in a sub grid or segment
   /// </summary>
-  public class SubGridCellLatestPassesDataWrapperFactory
+  public class SubGridCellLatestPassesDataWrapperFactory : ISubGridCellLatestPassesDataWrapperFactory
   {
-    private static SubGridCellLatestPassesDataWrapperFactory instance;
-
     /// <summary>
-    /// Chooses which of the three segment cell pass wrappers should be created:
-    ///  - NonStatic: Fully mutable high fidelity representation (most memory blocks allocated)
-    ///  - Static: Immutable high fidelity representation (few memory blocks allocated)
-    ///  - StaticCompressed: Immutable, compressed (with trivial loss level), few memory block allocated
+    /// Constructs a global mutable (non static) cell pass wrapper which is a fully mutable high fidelity representation (most memory blocks allocated)
     /// </summary>
     /// <returns></returns>
-    public ISubGridCellLatestPassDataWrapper NewWrapper()
+    public ISubGridCellLatestPassDataWrapper NewMutableWrapper_Global()
     {
-      return NewWrapper(TRexServerConfig.Instance().UseMutableSpatialData,
-        TRexServerConfig.Instance().CompressImmutableSpatialData);
-    }
-
-    /// <summary>
-    /// Chooses which of the three segment cell pass wrappers should be created:
-    ///  - NonStatic: Fully mutable high fidelity representation (most memory blocks allocated)
-    ///  - Static: Immutable high fidelity representation (few memory blocks allocated)
-    ///  - StaticCompressed: Immutable, compressed (with trivial loss level), few memory block allocated
-    /// </summary>
-    /// <returns></returns>
-    public ISubGridCellLatestPassDataWrapper NewWrapper(bool useMutableSpatialData, bool compressImmutableSpatialData)
-    {
-      ISubGridCellLatestPassDataWrapper result;
-
-      if (useMutableSpatialData)
-        result = new SubGridCellLatestPassDataWrapper_NonStatic();
-      else if (compressImmutableSpatialData)
-        result = new SubGridCellLatestPassDataWrapper_StaticCompressed();
-      else // Note: Static and Static-Compressed are the same for the latest pass information
-        result = new SubGridCellLatestPassDataWrapper_StaticCompressed();
-
+      var result = new SubGridCellLatestPassDataWrapper_NonStatic();
       result.ClearPasses();
+
       return result;
     }
 
     /// <summary>
-    /// Returns the singleton factory instance
+    /// Constructs a mutable (non static) segment cell pass wrapper which is a fully mutable high fidelity representation (most memory blocks allocated)
     /// </summary>
     /// <returns></returns>
-    public static SubGridCellLatestPassesDataWrapperFactory Instance()
+    public ISubGridCellLatestPassDataWrapper NewMutableWrapper_Segment()
     {
-      return instance ?? (instance = new SubGridCellLatestPassesDataWrapperFactory());
+      var result = new SubGridCellLatestPassDataWrapper_NonStatic();
+      result.ClearPasses();
+
+      return result;
+    }
+
+    /// <summary>
+    /// Constructs a global immutable (static) cell pass wrapper which is immutable projection with lower fidelity and which
+    /// is compressed (with trivial loss level), few memory blocks allocated
+    /// </summary>
+    /// <returns></returns>
+    public ISubGridCellLatestPassDataWrapper NewImmutableWrapper_Global()
+    {
+      var result = new SubGridCellLatestPassDataWrapper_StaticCompressed();
+      result.ClearPasses();
+
+      return result;
+    }
+
+    /// <summary>
+    /// Constructs an immutable (static) segment cell pass wrapper which is immutable projection with lower fidelity and which
+    /// is compressed (with trivial loss level), few memory blocks allocated
+    /// Note: Immutable contexts currently do not use the latest cell pass information in segments. Mutable contexts use this to
+    /// support efficient determination of global latest cell pass information.
+    /// </summary>
+    /// <returns></returns>
+    public ISubGridCellLatestPassDataWrapper NewImmutableWrapper_Segment()
+    {
+      return null;
     }
   }
 }

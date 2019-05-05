@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -15,7 +16,6 @@ using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Volumes
@@ -158,13 +158,6 @@ namespace VSS.TRex.Tests.Volumes
       CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }
 
-    public ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private void CheckDefaultFilterToFilterSingleFillCellAtOriginResponse(SimpleVolumesResponse response)
     {
       const double EPSILON = 0.000001;
@@ -184,12 +177,12 @@ namespace VSS.TRex.Tests.Volumes
       response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
     }
 
-    private void BuildModelForSingleCellSmmaryVolume(out ISiteModel siteModel, float heightIncrement)
+    private void BuildModelForSingleCellSummaryVolume(out ISiteModel siteModel, float heightIncrement)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -203,6 +196,7 @@ namespace VSS.TRex.Tests.Volumes
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Count());
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
     [Fact]
@@ -210,7 +204,7 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSmmaryVolume(out var siteModel, 0.5f);
+      BuildModelForSingleCellSummaryVolume(out var siteModel, 0.5f);
 
       var request = new SimpleVolumesRequest_ClusterCompute();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
@@ -224,7 +218,7 @@ namespace VSS.TRex.Tests.Volumes
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSmmaryVolume(out var siteModel, 0.5f);
+      BuildModelForSingleCellSummaryVolume(out var siteModel, 0.5f);
 
       var request = new SimpleVolumesRequest_ApplicationService();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
@@ -256,7 +250,7 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSmmaryVolume(out var siteModel, -0.5f);
+      BuildModelForSingleCellSummaryVolume(out var siteModel, -0.5f);
 
       var request = new SimpleVolumesRequest_ClusterCompute();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
@@ -270,7 +264,7 @@ namespace VSS.TRex.Tests.Volumes
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSmmaryVolume(out var siteModel, -0.5f);
+      BuildModelForSingleCellSummaryVolume(out var siteModel, -0.5f);
 
       var request = new SimpleVolumesRequest_ApplicationService();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));

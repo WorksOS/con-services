@@ -33,16 +33,18 @@ namespace VSS.TRex.Analytics.CCAStatistics
     {
       cellValue = CellPassConsts.NullCCA;
 
-      if (measuredCCA == CellPassConsts.NullCCA)
-        return false;
+      bool result = false;
 
-      if (targetCCA == CellPassConsts.NullCCATarget)
-        return false;
+      if (measuredCCA != CellPassConsts.NullCCA && targetCCA != CellPassConsts.NullCCATarget)
+      {
+        if (targetCCA != 0)
+        {
+          cellValue = ((double) measuredCCA / targetCCA) * 100;
+          result = true;
+        }
+      }
 
-      if (targetCCA != 0)
-        cellValue = ((double)measuredCCA / targetCCA) * 100;
-
-      return true;
+      return result;
 
       // TODO: When CCA details is to be implemented...
       //      case DisplayMode of

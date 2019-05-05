@@ -26,6 +26,7 @@ namespace VSS.TRex.Tests.SiteModels
       // as metadata registration sets all the loaded flags to 'true'
       var _evt = new SiteModelAttributesChangedEvent
       {
+        SiteModelID = guid,
         AlignmentsModified = true,
         CsibModified = true,
         DesignsModified = true,
@@ -37,7 +38,7 @@ namespace VSS.TRex.Tests.SiteModels
         SurveyedSurfacesModified = true
       };
 
-      siteModels.SiteModelAttributesHaveChanged(guid, _evt);
+      siteModels.SiteModelAttributesHaveChanged(_evt);
       siteModel = siteModels.GetSiteModel(guid, false);
 
       loadedFunc.Invoke(siteModel).Should().BeFalse();
@@ -51,7 +52,7 @@ namespace VSS.TRex.Tests.SiteModels
       };
       modifyAction.Invoke(evt, modified);
 
-      siteModels.SiteModelAttributesHaveChanged(guid, evt);
+      siteModels.SiteModelAttributesHaveChanged(evt);
 
       var siteModel2 = siteModels.GetSiteModel(guid, false);
       siteModel2.Should().NotBeNull();

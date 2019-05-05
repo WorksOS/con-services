@@ -6,7 +6,6 @@ using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
@@ -21,7 +20,7 @@ namespace VSS.TRex.Tests.Events
     public void Test_ProjectImmutableSiteModelTest()
     {
       var sourceSiteModel = new SiteModel(Guid.NewGuid(), false);
-      var result = sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(DIContext.Obtain<ISiteModels>().StorageProxy);  
+      var result = sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(sourceSiteModel.PrimaryStorageProxy);  
       Assert.True(result, "unable to save SiteModel to Persistent store");
 
       var targetSiteModel = new SiteModel(sourceSiteModel.ID, false);
@@ -151,7 +150,7 @@ namespace VSS.TRex.Tests.Events
         {
           return null;
         }
-        stream.Position = 8;
+        stream.Position = 1;
 
         var eventType = reader.ReadInt32();
         if (!Enum.IsDefined(typeof(ProductionEventType), eventType))

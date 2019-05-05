@@ -15,11 +15,11 @@ namespace VSS.TRex.Common
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<TRexHeartBeatLogger>();
 
-    private static readonly int kDefaultIntervalInMilliseconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("HEARTBEAT_LOGGER_INTERVAL", Consts.HEARTBEAT_LOGGER_INTERVAL);
-
     private readonly List<object> loggingContexts;
 
     private readonly Thread contextRunner;
+
+    private bool Stopped { get; set; } = false;
 
     public int IntervalInMilliseconds { get; }
 
@@ -28,20 +28,30 @@ namespace VSS.TRex.Common
     /// </summary>
     public TRexHeartBeatLogger(int intervalMS)
     {
-      if (intervalMS <= 100)
-        throw new ArgumentException("Heart beat logger interval cannot be <= 100 milliseconds");
+      if (intervalMS < 100)
+        throw new ArgumentException("Heart beat logger interval cannot be < 100 milliseconds");
 
       loggingContexts = new List<object>();
       IntervalInMilliseconds = intervalMS;
 
       contextRunner = new Thread(() =>
       {
-        while (contextRunner.ThreadState == ThreadState.Running)
+        while (contextRunner.ThreadState == ThreadState.Running && !Stopped)
         {
-          foreach (var context in loggingContexts)
-            Log.LogInformation($"Heartbeat: {context}");
+          try
+          {
+            lock (loggingContexts)
+            {
+              foreach (var context in loggingContexts)
+                Log.LogInformation($"Heartbeat: {context}");
+            }
 
-          Thread.Sleep(IntervalInMilliseconds);
+            Thread.Sleep(IntervalInMilliseconds);
+          }
+          catch (Exception e)
+          {
+            Log.LogError(e, $"Exception in {nameof(TRexHeartBeatLogger)}");
+          }
         }
       });
 
@@ -51,12 +61,29 @@ namespace VSS.TRex.Common
     /// <summary>
     /// Creates a new heartbeat logger with the default interval between heart beat epochs
     /// </summary>
-    public TRexHeartBeatLogger() : this(kDefaultIntervalInMilliseconds)
+    public TRexHeartBeatLogger() : this(DIContext.Obtain<IConfigurationStore>().GetValueInt("HEARTBEAT_LOGGER_INTERVAL", Consts.HEARTBEAT_LOGGER_INTERVAL))
     {
     }
 
-    public void AddContext(object context) => loggingContexts.Add(context);
+    public void AddContext(object context)
+    {
+      lock (loggingContexts)
+      {
+        loggingContexts.Add(context);
+      }
+    }
 
-    public void RemoveContext(object context) => loggingContexts.Remove(context);
+    public void RemoveContext(object context)
+    {
+      lock (loggingContexts)
+      {
+        loggingContexts.Remove(context);
+      }
+    }
+
+    public void Stop()
+    {
+      Stopped = true;
+    }
   }
 }

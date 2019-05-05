@@ -1,25 +1,24 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
   public interface ISubGridCellPassesDataSegment
   {
-    ISubGrid Owner { get; set; }
+    IServerLeafSubGrid Owner { get; }
 
     /// <summary>
     /// Tracks whether there are unsaved changes in this segment
     /// </summary>
     bool Dirty { get; set; }
 
-    bool HasAllPasses { get; set; }
-    bool HasLatestData { get; set; }
+    bool HasAllPasses { get; }
+    bool HasLatestData { get; }
     ISubGridCellPassesDataSegmentInfo SegmentInfo { get; set; }
-    ISubGridCellSegmentPassesDataWrapper PassesData { get; set; }
-    ISubGridCellLatestPassDataWrapper LatestPasses { get; set; }
+    ISubGridCellSegmentPassesDataWrapper PassesData { get; }
+    ISubGridCellLatestPassDataWrapper LatestPasses { get; }
 
     /// <summary>
     /// Determines if this segments time range bounds the data time given in the time argument
