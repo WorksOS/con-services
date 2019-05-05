@@ -39,8 +39,8 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
                      arg.VolumeType,
                      arg.BaseFilter,
                      arg.TopFilter,
-                     arg.BaseDesignID,
-                     arg.TopDesignID,
+                     arg.BaseDesign,
+                     arg.TopDesign,
                      arg.AdditionalSpatialFilter,
                      arg.CutTolerance, 
                      arg.FillTolerance);

@@ -8,6 +8,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -54,8 +55,8 @@ namespace VSS.TRex.Tests.Volumes
           }
         },
         TopFilter = new CombinedFilter(),
-        BaseDesignID = Guid.Empty,
-        TopDesignID = Guid.Empty,
+        BaseDesign = new DesignOffset(),
+        TopDesign = new DesignOffset(),
         CutTolerance = 0.001,
         FillTolerance = 0.001
       };

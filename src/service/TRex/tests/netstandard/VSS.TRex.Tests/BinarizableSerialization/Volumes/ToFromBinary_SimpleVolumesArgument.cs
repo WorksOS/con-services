@@ -5,6 +5,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using Xunit;
 
@@ -58,8 +59,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Volumes
         VolumeType = VolumeComputationType.Between2Filters,
         BaseFilter = FromFilter,
         TopFilter = ToFilter,
-        BaseDesignID = Guid.NewGuid(),
-        TopDesignID = Guid.NewGuid(),
+        BaseDesign = new DesignOffset(Guid.NewGuid(), 0),
+        TopDesign = new DesignOffset(Guid.NewGuid(), 0),
         CutTolerance = CUT_TOLERANCE,
         FillTolerance = FILL_TOLERANCE
       };

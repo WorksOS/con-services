@@ -87,7 +87,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
       }
 
       IDesign cutFillDesign = null;
-      if (requestArgument.ReferenceDesign.DesignID != Guid.Empty)
+      if (requestArgument.ReferenceDesign != null && requestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
         cutFillDesign = siteModel.Designs.Locate(requestArgument.ReferenceDesign.DesignID);
         if (cutFillDesign == null)
@@ -150,7 +150,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
       var result = new StationOffsetRow(point.Station, point.Offset, cell.CellYOffset + subgridWorldOriginY, cell.CellXOffset + subgridWorldOriginX);
       IClientHeightLeafSubGrid designHeights = null;
 
-      if (requestArgument.ReferenceDesign.DesignID != Guid.Empty)
+      if (requestArgument.ReferenceDesign != null && requestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
         cutFillDesign.GetDesignHeights(requestArgument.ProjectID, requestArgument.ReferenceDesign.Offset, clientGrid.OriginAsCellAddress(),
           clientGrid.CellSize, out designHeights, out var errorCode);

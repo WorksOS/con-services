@@ -79,7 +79,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
         pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
         requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
         requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
-        requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty,
+        requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesign != null && _griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty,
         overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
       );
 
@@ -140,7 +140,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
       var result = new List<GriddedReportDataRow>();
       IClientHeightLeafSubGrid designHeights = null;
 
-      if (_griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty)
+      if (_griddedReportRequestArgument.ReferenceDesign != null && _griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
         IDesign cutFillDesign = _siteModel.Designs.Locate(_griddedReportRequestArgument.ReferenceDesign.DesignID);
         if (cutFillDesign == null)

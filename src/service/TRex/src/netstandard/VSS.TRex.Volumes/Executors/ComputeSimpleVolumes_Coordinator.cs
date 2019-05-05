@@ -10,6 +10,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Volumes.Executors
 {
@@ -45,16 +46,16 @@ namespace VSS.TRex.Volumes.Executors
         public ICombinedFilter TopFilter;
 
         /// <summary>
-        /// The ID of the 'base' design. This is the design forming the 'from' surface in 
-        /// the volumes calculation
+        /// The ID of the 'base' design together with its offset for a reference surface.
+        /// This is the design forming the 'from' surface in  the volumes calculation
         /// </summary>
-        private readonly Guid BaseDesignID;
+        private readonly DesignOffset BaseDesign;
 
         /// <summary>
-        /// The ID of the 'to or top' design. This is the design forming the 'to or top' surface in 
-        /// the volumes calculation
+        /// The ID of the 'to or top' design together with its offset for a reference surface.
+        /// This is the design forming the 'to or top' surface in  the volumes calculation
         /// </summary>
-        private readonly Guid TopDesignID;
+        private readonly DesignOffset TopDesign;
 
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
@@ -115,8 +116,8 @@ namespace VSS.TRex.Volumes.Executors
 
             ComputeVolumes.UseEarliestData = BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass;
 
-            ComputeVolumes.RefOriginal = BaseDesignID == Guid.Empty ? null : siteModel.Designs.Locate(BaseDesignID);
-            ComputeVolumes.RefDesign = TopDesignID == Guid.Empty ? null : siteModel.Designs.Locate(TopDesignID);
+            ComputeVolumes.RefOriginal = BaseDesign == null || BaseDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(BaseDesign.DesignID);
+            ComputeVolumes.RefDesign = TopDesign == null || TopDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(TopDesign.DesignID);
 
             if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
             {
@@ -154,8 +155,8 @@ namespace VSS.TRex.Volumes.Executors
                                     VolumeComputationType volumeType,
                                     ICombinedFilter baseFilter,
                                     ICombinedFilter topFilter,
-                                    Guid baseDesignID,
-                                    Guid topDesignID,
+                                    DesignOffset baseDesign,
+                                    DesignOffset topDesign,
                                     ICombinedFilter additionalSpatialFilter,
                                     double cutTolerance,
                                     double fillTolerance)
@@ -164,8 +165,8 @@ namespace VSS.TRex.Volumes.Executors
             VolumeType = volumeType;
             BaseFilter = baseFilter;
             TopFilter = topFilter;
-            BaseDesignID = baseDesignID;
-            TopDesignID = topDesignID;
+            BaseDesign = baseDesign;
+            TopDesign = topDesign;
             AdditionalSpatialFilter = additionalSpatialFilter;
             CutTolerance = cutTolerance;
             FillTolerance = fillTolerance;

@@ -280,7 +280,7 @@ namespace VSS.TRex.Pipelines
       // sub grid requests that overlay the actual design
       if (RequestRequiresAccessToDesignFileExistenceMap)
       {
-        if (CutFillDesign?.DesignID == Guid.Empty)
+        if (CutFillDesign == null || CutFillDesign.DesignID == Guid.Empty)
         {
             Log.LogError($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
             Response.ResultStatus = RequestErrorStatus.NoDesignProvided;

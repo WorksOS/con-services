@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
@@ -39,7 +40,7 @@ namespace VSS.TRex.Profiling.Executors
     // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
-    private readonly Guid DesignUid;
+    private readonly DesignOffset Design;
 
     private ISubGridSegmentCellPassIterator CellPassIterator;
     private ISubGridSegmentIterator SegmentIterator;
@@ -58,14 +59,14 @@ namespace VSS.TRex.Profiling.Executors
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      Guid designUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
+      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
     {
       ProfileStyle = profileStyle;
       ProjectID = projectID;
       ProfileTypeRequired = profileTypeRequired;
       NEECoords = nEECoords;
       Filters = filters;
-      DesignUid = designUid;
+      Design = design;
       VolumeType = volumeType;
     }
 
@@ -132,13 +133,13 @@ namespace VSS.TRex.Profiling.Executors
           PopulationControl.PreparePopulationControl(ProfileTypeRequired, Filters.Filters[0].AttributeFilter);
 
           IDesign design = null;
-          if (DesignUid != Guid.Empty)
+          if (Design != null && Design.DesignID != Guid.Empty)
           {
 
-            design = SiteModel.Designs.Locate(DesignUid);
+            design = SiteModel.Designs.Locate(Design.DesignID);
 
             if (design == null)
-              throw new ArgumentException($"Design {DesignUid} is unknown in project {SiteModel.ID}");
+              throw new ArgumentException($"Design {Design.DesignID} is unknown in project {SiteModel.ID}");
           }
 
           Log.LogInformation("Creating IProfileBuilder");
@@ -150,7 +151,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
 
-          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, design, /* todo design offset */0,
+          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, design, Design.Offset,
             /* todo elevation range design: */null, /* todo elevation range design offset */ 0,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
