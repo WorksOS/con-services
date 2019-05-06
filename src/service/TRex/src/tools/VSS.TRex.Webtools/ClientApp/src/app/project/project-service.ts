@@ -73,8 +73,8 @@ export class ProjectService {
     return this.executeRequest<DisplayMode[]>('getDisplayModes', `tiles/modes`);
   }
 
-  public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents) {
-    let url = `tiles/${projectUid}?mode=${mode}&pixelsX=${pixelsX}&pixelsY=${pixelsY}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`;
+  public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents, designUid: string, designOffset: number) {
+    let url = `tiles/${projectUid}?mode=${mode}&pixelsX=${pixelsX}&pixelsY=${pixelsY}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}&cutFillDesignUid=${designUid}&offset=${designOffset}`;
     return this.executeRequest<TileData>('getTile', url);
   }
 
@@ -164,8 +164,8 @@ export class ProjectService {
     return this.executePutRequest<string>('switchToImmutable', 'switchablegrid/immutable');
   }
 
-  public drawProfileLineForDesign(projectUid: string, designUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
-    return this.executeRequest<XYZS[]>('drawProfileLineForDesign', `profiles/design/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  public drawProfileLineForDesign(projectUid: string, designUid: string, designOffset: number, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
+    return this.executeRequest<XYZS[]>('drawProfileLineForDesign', `profiles/design/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}&offset=${designOffset}`);
   }
 
   public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
@@ -180,10 +180,10 @@ export class ProjectService {
     return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/volumes/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
   }
 
-  public getCellDatum(projectUid: string, designUid: string, x: number, y: number, displayMode: number): Observable<CellDatumResult> {
+  public getCellDatum(projectUid: string, designUid: string, designOffset: number, x: number, y: number, displayMode: number): Observable<CellDatumResult> {
     //This calls the WebTools controller which calls TRex directly (nothing to do with TRex gateway)
     return this.executeRequest<CellDatumResult>
-      ('getCellDatum', `cells/datum?projectUid=${projectUid}&designUid=${designUid}&x=${x}&y=${y}&displayMode=${displayMode}`);
+      ('getCellDatum', `cells/datum?projectUid=${projectUid}&designUid=${designUid}&offset=${designOffset}&x=${x}&y=${y}&displayMode=${displayMode}`);
   }
 
 }

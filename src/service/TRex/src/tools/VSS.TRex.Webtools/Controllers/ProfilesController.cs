@@ -40,7 +40,7 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double startY,
       [FromQuery] double endX,
       [FromQuery] double endY,
-      [FromQuery] double offset)
+      [FromQuery] double? offset)
     {
       Guid siteModelUid = Guid.Parse(siteModelID);
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelUid);
@@ -49,7 +49,7 @@ namespace VSS.TRex.Webtools.Controllers
       if (design == null)
         return new JsonResult($"Unable to locate design {designID} in project {siteModelID}");
 
-      var result = design.ComputeProfile(siteModelUid, new[] {new XYZ(startX, startY, 0), new XYZ(endX, endY, 0)}, siteModel.CellSize, offset, out DesignProfilerRequestResult errCode);
+      var result = design.ComputeProfile(siteModelUid, new[] {new XYZ(startX, startY, 0), new XYZ(endX, endY, 0)}, siteModel.CellSize, offset ?? 0, out DesignProfilerRequestResult errCode);
 
       return new JsonResult(result);
     }

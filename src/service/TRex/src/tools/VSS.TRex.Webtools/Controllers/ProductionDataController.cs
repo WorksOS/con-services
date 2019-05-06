@@ -605,12 +605,16 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("cutfillstatistics/{siteModelID}")]
-    public JsonResult GetCutFillStatistics(string siteModelID)
+    public JsonResult GetCutFillStatistics(string siteModelID,
+      [FromQuery] Guid cutFillDesignUid,
+      [FromQuery] double? cutFillOffset)
     {
       string resultToReturn;
 
       if (!Guid.TryParse(siteModelID, out Guid UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
+      else if (cutFillDesignUid == Guid.Empty)
+        resultToReturn = "<b>Missing CutFill Design UID</b>";
       else
       {
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(UID, false);
@@ -628,7 +632,7 @@ namespace VSS.TRex.Webtools.Controllers
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
-            ReferenceDesign = new DesignOffset(), // TODO (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
+            ReferenceDesign = new DesignOffset(cutFillDesignUid, cutFillOffset ?? 0), 
             Offsets = offsets
           });
 

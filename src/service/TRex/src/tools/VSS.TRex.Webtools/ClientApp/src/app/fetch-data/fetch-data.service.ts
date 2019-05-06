@@ -31,7 +31,7 @@ export class FetchDataService {
     return this.executeRequest<DataRequestType[]>("getDataRequestTypes", `productiondata/requesttypes`);
   }
 
-  public getProductionData(projectUid: string, requestType: number): Observable<string> {
+  public getProductionData(projectUid: string, requestType: number, designUid: string, designOffset: number): Observable<string> {
     let requestTypeString: string = ""; 
     switch (<DisplayModeType>requestType)
     {
@@ -75,7 +75,7 @@ export class FetchDataService {
     if (requestTypeString === "")
       return undefined;
 
-    let url = `productiondata/${requestTypeString}/${projectUid}`;
+    let url = `productiondata/${requestTypeString}/${projectUid}&cutFillDesignUid=${designUid}&cutFillOffset=${designOffset}`;
     return this.executeRequest<string>("getProductionData", url);
   }
 

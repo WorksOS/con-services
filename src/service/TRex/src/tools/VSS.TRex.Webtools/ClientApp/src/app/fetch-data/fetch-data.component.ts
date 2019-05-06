@@ -18,6 +18,8 @@ export class FetchDataComponent {
   public dataResult: any;
 
   private projectUid: string = localStorage.getItem("projectUid");
+  private designUid: string = localStorage.getItem("designUid");
+  private designOffset: number = parseFloat(localStorage.getItem("designOffset"));
   
   constructor(
     private fetchDataService: FetchDataService
@@ -43,7 +45,7 @@ export class FetchDataComponent {
   public getProductionData(): void {
     var self = this;
 
-    this.fetchDataService.getProductionData(this.projectUid, this.requestType).subscribe(data => {
+    this.fetchDataService.getProductionData(this.projectUid, this.requestType, this.designUid, this.designOffset).subscribe(data => {
       self.dataResult = data;
     });
   }
