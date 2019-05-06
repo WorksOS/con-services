@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -38,9 +40,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// </summary>
         private readonly IServerSubGridTree Target;
 
-        private IServerLeafSubGrid SourceSubGrid;
-        private IServerLeafSubGrid TargetSubGrid;
-
         private Action<uint, uint> SubGridChangeNotifier;
 
         private readonly IStorageProxy StorageProxy;
@@ -62,9 +61,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             StorageProxy = storageProxy;
         }
 
-        private void IntegrateIntoIntermediaryGrid(ISubGridSegmentIterator SegmentIterator)
+        private void IntegrateIntoIntermediaryGrid(IServerLeafSubGrid SourceSubGrid, ISubGridSegmentIterator SegmentIterator)
         {
-            TargetSubGrid = Target.ConstructPathToCell(SourceSubGrid.OriginX,
+            IServerLeafSubGrid TargetSubGrid = Target.ConstructPathToCell(SourceSubGrid.OriginX,
                                                        SourceSubGrid.OriginY,
                                                        SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
             TargetSubGrid.AllocateLeafFullPassStacks();
@@ -90,7 +89,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             TargetSubGrid.Integrate(SourceSubGrid, SegmentIterator, true);
         }
 
-        private bool IntegrateIntoLiveDatabase(SubGridSegmentIterator SegmentIterator)
+        private bool IntegrateIntoLiveDatabase(IServerLeafSubGrid SourceSubGrid, IServerLeafSubGrid TargetSubGrid, SubGridSegmentIterator SegmentIterator)
         {
             // Note the fact that this sub grid will be changed and become dirty as a result
             // of the cell pass integration
@@ -129,16 +128,16 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             return result;
         }
 
-        private void IntegrateIntoLiveGrid(SubGridSegmentIterator SegmentIterator)
+        private void IntegrateIntoLiveGrid(IServerLeafSubGrid SourceSubGrid, SubGridSegmentIterator SegmentIterator)
         {
-            TargetSubGrid = LocateOrCreateSubGrid(Target, SourceSubGrid.OriginX, SourceSubGrid.OriginY);
+            var TargetSubGrid = LocateOrCreateSubGrid(Target, SourceSubGrid.OriginX, SourceSubGrid.OriginY);
             if (TargetSubGrid == null)
             {
                 Log.LogError("Failed to locate or create sub grid in IntegrateIntoLiveGrid");
                 return;
             }
 
-            if (!IntegrateIntoLiveDatabase(SegmentIterator))
+            if (!IntegrateIntoLiveDatabase(SourceSubGrid, TargetSubGrid, SegmentIterator))
             {
                 Log.LogError("Integration into live database failed");
             }
@@ -165,7 +164,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             while (Iterator.MoveToNextSubGrid())
             {
-                SourceSubGrid = Iterator.CurrentSubGrid as IServerLeafSubGrid;
+                var SourceSubGrid = Iterator.CurrentSubGrid as IServerLeafSubGrid;
 
                 /*
                  // TODO: Terminated check for integration processing
@@ -181,29 +180,81 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 // and assign the sub grid from the iterator to it. If there is one, process
                 // the cell pass stacks merging the two together
                 if (IntegratingIntoIntermediaryGrid)
-                    IntegrateIntoIntermediaryGrid(SegmentIterator);
+                    IntegrateIntoIntermediaryGrid(SourceSubGrid, SegmentIterator);
                 else
-                    IntegrateIntoLiveGrid(SegmentIterator);
+                    IntegrateIntoLiveGrid(SourceSubGrid, SegmentIterator);
             }
 
             return true;
         }
 
         /// <summary>
-        /// Locates a sub grid in within this site model. If the sub grid cannot be found it will be created.
-        /// If requested from an immutable grid context, the result of this call should be considered as an immutable
-        /// copy of the requested data that is valid for the duration the request holds a reference to it. Updates
-        /// to sub grids in this data model from ingest processing and other operations performed in mutable contexts
-        /// can occur while this request is in process, but will not affected the immutable copy initially requested.
-        /// If requested from a mutable grid context the calling context is responsible for ensuring serialized write access
-        /// to the data elements being requested. 
+        /// Creates a set of tasks for each sub grid in the integrated sub grid tree and executes them concurrently 
         /// </summary>
-        /// <param name="Grid"></param>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
+        /// <param name="integrationMode"></param>
+        /// <param name="subGridChangeNotifier"></param>
         /// <returns></returns>
-        // ReSharper disable once MemberCanBePrivate.Global
-        public IServerLeafSubGrid LocateOrCreateSubGrid(IServerSubGridTree Grid, uint CellX, uint CellY)
+        public bool IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode integrationMode,
+          Action<uint, uint> subGridChangeNotifier)
+        {
+          bool IntegratingIntoIntermediaryGrid = integrationMode == SubGridTreeIntegrationMode.UsingInMemoryTarget;
+          SubGridChangeNotifier = subGridChangeNotifier;
+
+          void ProcessSubGrid(IServerLeafSubGrid SourceSubGrid)
+          {
+            var SegmentIterator = new SubGridSegmentIterator(null, StorageProxy)
+            {
+              IterationDirection = IterationDirection.Forwards
+            };
+
+            // Locate a matching sub grid in this tree. If there is none, then create it
+            // and assign the sub grid from the iterator to it. If there is one, process
+            // the cell pass stacks merging the two together
+            if (IntegratingIntoIntermediaryGrid)
+              IntegrateIntoIntermediaryGrid(SourceSubGrid, SegmentIterator);
+            else
+              IntegrateIntoLiveGrid(SourceSubGrid, SegmentIterator);
+          }
+
+          // Iterate over the sub grids in source and merge the cell passes from source
+          // into the sub grids in this sub grid tree;
+
+          var Iterator = new SubGridTreeIterator(StorageProxy, false)
+          {
+            Grid = Source
+          };
+
+         // var dict = new Dictionary<string, IServerLeafSubGrid>();
+          var tasks = new List<Task>();
+          while (Iterator.MoveToNextSubGrid())
+          {
+         //   dict.Add((Iterator.CurrentSubGrid as IServerLeafSubGrid).Moniker(), Iterator.CurrentSubGrid as IServerLeafSubGrid);
+
+            var subGrid = Iterator.CurrentSubGrid as IServerLeafSubGrid;
+            tasks.Add(Task.Run(() => ProcessSubGrid(subGrid)));
+          }
+
+          var completionTask = Task.WhenAll(tasks);
+          completionTask.Wait();
+
+          return true;
+        }
+
+    /// <summary>
+    /// Locates a sub grid in within this site model. If the sub grid cannot be found it will be created.
+    /// If requested from an immutable grid context, the result of this call should be considered as an immutable
+    /// copy of the requested data that is valid for the duration the request holds a reference to it. Updates
+    /// to sub grids in this data model from ingest processing and other operations performed in mutable contexts
+    /// can occur while this request is in process, but will not affected the immutable copy initially requested.
+    /// If requested from a mutable grid context the calling context is responsible for ensuring serialized write access
+    /// to the data elements being requested. 
+    /// </summary>
+    /// <param name="Grid"></param>
+    /// <param name="CellX"></param>
+    /// <param name="CellY"></param>
+    /// <returns></returns>
+    // ReSharper disable once MemberCanBePrivate.Global
+    public IServerLeafSubGrid LocateOrCreateSubGrid(IServerSubGridTree Grid, uint CellX, uint CellY)
         {
             IServerLeafSubGrid Result = SubGridUtilities.LocateSubGridContaining(
                                     StorageProxy,
