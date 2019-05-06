@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Extensions;
@@ -21,7 +23,7 @@ namespace VSS.TRex.Storage
         private readonly HashSet<TK> PendingTransactedDeletes = new HashSet<TK>();
         protected readonly Dictionary<TK, TV> PendingTransactedWrites = new Dictionary<TK, TV>();
 
-        private long BytesWritten { get; set; }
+        private long BytesWritten;
 
         public StorageProxyCacheTransacted(ICache<TK, TV> cache) : base(cache)
         {
@@ -33,7 +35,16 @@ namespace VSS.TRex.Storage
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public override TV Get(TK key) => PendingTransactedWrites.TryGetValue(key, out TV value) ? value : base.Get(key);
+        public override TV Get(TK key)
+        {
+          lock (PendingTransactedWrites)
+          {
+            if (PendingTransactedWrites.TryGetValue(key, out var value))
+              return value;
+          }
+
+          return base.Get(key);
+        }
 
         /// <summary>
         /// Removes the given key from the cache. If there has been a previous un-committed remove for the key
@@ -44,14 +55,20 @@ namespace VSS.TRex.Storage
         public override bool Remove(TK key)
         {
           // Remove any uncommitted writes for the deleted item from pending writes
-          PendingTransactedWrites.Remove(key);
+          lock (PendingTransactedWrites)
+          {
+              PendingTransactedWrites.Remove(key);
+          }
 
           // Note the delete request in pending deletes
-          if (!PendingTransactedDeletes.Add(key))
+          var pendingTransactedAddFailed = false;
+          lock (PendingTransactedDeletes)
           {
-            if (ReportPendingTransactedDeleteDuplicatesToLog)
-              Log.LogWarning($"Key {key} is already present in the set of transacted deletes for the cache [Remove]");
+            pendingTransactedAddFailed = !PendingTransactedDeletes.Add(key);
           }
+
+          if (pendingTransactedAddFailed && ReportPendingTransactedDeleteDuplicatesToLog)
+            Log.LogWarning($"Key {key} is already present in the set of transacted deletes for the cache [Remove]");
 
           return true;
         }
@@ -72,12 +89,15 @@ namespace VSS.TRex.Storage
         /// <param name="value"></param>
         public override void Put(TK key, TV value)
         {
-            // If there is an existing pending write for the give key, then replace the
-            // element in the dictionary with the new element
-            PendingTransactedWrites.Remove(key);
+            lock (PendingTransactedWrites)
+            {
+              // If there is an existing pending write for the give key, then replace the
+              // element in the dictionary with the new element
+              PendingTransactedWrites.Remove(key);
 
-            // Add the pending write request to the collection
-            PendingTransactedWrites.Add(key, value);
+              // Add the pending write request to the collection
+              PendingTransactedWrites.Add(key, value);
+            }
 
             if (value is byte[] bytes) 
               IncrementBytesWritten(bytes.Length);
@@ -97,12 +117,17 @@ namespace VSS.TRex.Storage
         public override void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
         {
             // The generic transactional cache cannot track the size of the elements being 'put' to the cache
-            numDeleted = PendingTransactedDeletes.Count;
-            base.RemoveAll(PendingTransactedDeletes);
+            lock (PendingTransactedDeletes)
+            {
+              numDeleted = PendingTransactedDeletes.Count;
+              base.RemoveAll(PendingTransactedDeletes);
+            }
 
-            numUpdated = PendingTransactedWrites.Count;
-
-            base.PutAll(PendingTransactedWrites);
+            lock (PendingTransactedWrites)
+            {
+              numUpdated = PendingTransactedWrites.Count;
+              base.PutAll(PendingTransactedWrites);
+            }
 
             numBytesWritten = BytesWritten;
 
@@ -114,12 +139,19 @@ namespace VSS.TRex.Storage
         /// </summary>
         public override void Clear()
         {
+          lock (PendingTransactedDeletes)
+          {
             PendingTransactedDeletes.Clear();
-            PendingTransactedWrites.Clear();
+          }
 
-            BytesWritten = 0;
+          lock (PendingTransactedWrites)
+          {
+            PendingTransactedWrites.Clear();
+          }
+
+          BytesWritten = 0;
         }
 
-        public override void IncrementBytesWritten(long bytesWritten) => BytesWritten += bytesWritten;
+        public override void IncrementBytesWritten(long bytesWritten) => Interlocked.Add(ref BytesWritten, bytesWritten);
   }
 }
