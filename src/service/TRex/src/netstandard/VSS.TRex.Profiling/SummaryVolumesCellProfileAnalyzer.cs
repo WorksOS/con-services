@@ -44,8 +44,7 @@ namespace VSS.TRex.Profiling
 
     private bool IntermediaryFilterRequired = false;
 
-    private IDesign svDesign;
-    private double svDesignOffset;
+    private IDesignWrapper svDesignWrapper;
 
     private int cellCounter;
 
@@ -58,22 +57,17 @@ namespace VSS.TRex.Profiling
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesign"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignOffset"></param>
-    /// <param name="referenceDesign"></param>
-    /// <param name="referenceDesignOffset"></param>
+    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
+    /// <param name="referenceDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
     public SummaryVolumesCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
-      IDesign cellPassFilter_ElevationRangeDesign,
-      double cellPassFilter_ElevationRangeDesignOffset,
-      IDesign referenceDesign,
-      double referenceDesignOffset,
-      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellPassFilter_ElevationRangeDesignOffset)
+      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
+      IDesignWrapper referenceDesignWrapper,
+      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
     {
-      svDesign = referenceDesign;
-      svDesignOffset = referenceDesignOffset;
+      svDesignWrapper = referenceDesignWrapper;
     }
 
     /// <summary>
@@ -169,10 +163,10 @@ namespace VSS.TRex.Profiling
       if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
       {
 
-        if (svDesign != null)
+        if (svDesignWrapper?.Design != null)
         {
 
-          svDesign.GetDesignHeights(SiteModel.ID, svDesignOffset, address, SiteModel.CellSize, out designHeights, out var errorCode);
+          svDesignWrapper.Design.GetDesignHeights(SiteModel.ID, svDesignWrapper.Offset, address, SiteModel.CellSize, out designHeights, out var errorCode);
           if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
           {
             if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)

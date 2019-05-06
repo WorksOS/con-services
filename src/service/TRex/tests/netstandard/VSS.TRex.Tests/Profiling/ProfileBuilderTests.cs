@@ -21,8 +21,8 @@ namespace VSS.TRex.Tests.Profiling
 
         factory.Setup(mk => mk.NewCellLiftBuilder(null, GridDataType.All, null, null, null))
           .Returns(newCellLiftBuilder.Object);
-        factory.Setup(mk => mk.NewCellProfileBuilder(null, null, null, 0, true)).Returns(newCellProfileBuilder.Object);
-        factory.Setup(mk => mk.NewCellProfileAnalyzer(ProfileStyle.CellPasses, null, null, null, null, 0, null, 0, It.IsAny<ICellLiftBuilder>()))
+        factory.Setup(mk => mk.NewCellProfileBuilder(null, null, null, true)).Returns(newCellProfileBuilder.Object);
+        factory.Setup(mk => mk.NewCellProfileAnalyzer(ProfileStyle.CellPasses, null, null, null, null, null, It.IsAny<ICellLiftBuilder>()))
           .Returns(newProfileLiftBuilder.Object);
 
         DIBuilder
@@ -46,7 +46,7 @@ namespace VSS.TRex.Tests.Profiling
     public void Test_ProfilerBuilder_Creation_Null()
     {
       var builder = new ProfilerBuilder<ProfileCell>();
-      builder.Configure(ProfileStyle.CellPasses, null, null, GridDataType.All, null, null, 0, null, 0, null, null);
+      builder.Configure(ProfileStyle.CellPasses, null, null, GridDataType.All, null, null, null, null, null);
 
       Assert.True(builder != null, "Builder failed to construct");
     }
@@ -55,7 +55,7 @@ namespace VSS.TRex.Tests.Profiling
     public void Test_ProfilerBuilder_Creation_ProfileBuilders()
     {
       var builder = new ProfilerBuilder<ProfileCell>();
-      builder.Configure(ProfileStyle.CellPasses, null, null, GridDataType.All, null, null, 0, null, 0, null, null);
+      builder.Configure(ProfileStyle.CellPasses, null, null, GridDataType.All, null, null, null, null, null);
 
       Assert.True(builder.CellLiftBuilder == DIContext.Obtain<ICellLiftBuilder>(), "Cell lift builder not expected one");
       Assert.True(builder.CellProfileBuilder == DIContext.Obtain<ICellProfileBuilder<ProfileCell>>(),

@@ -65,13 +65,10 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// The design supplied as a result of an independent lookup outside the scope of this builder
     /// to find the design identified by the cellPassFilter.ElevationRangeDesign.DesignID
+    /// together with its offset if it's a reference surface
     /// </summary>
-    protected IDesign CellPassFilter_ElevationRangeDesign;
-    /// <summary>
-    /// The offset for the design if it is a reference surface
-    /// </summary>
-    protected double CellPassFilter_ElevationRangeDesignOffset;
-
+    protected IDesignWrapper CellPassFilter_ElevationRangeDesignWrapper;
+  
     /// <summary>
     /// The design to be used as a TIN surface design based 'cookie cutter' selection mask for production data
     /// </summary>
@@ -91,19 +88,16 @@ namespace VSS.TRex.Profiling
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesign"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignOffset"></param>
+    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     public CellProfileAnalyzerBase(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
-      IDesign cellPassFilter_ElevationRangeDesign,
-      double cellPassFilter_ElevationRangeDesignOffset)
+      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper)
     {
       SiteModel = siteModel;
       PDExistenceMap = pDExistenceMap;
       FilterSet = filterSet;
-      CellPassFilter_ElevationRangeDesign = cellPassFilter_ElevationRangeDesign;
-      CellPassFilter_ElevationRangeDesignOffset = cellPassFilter_ElevationRangeDesignOffset;
+      CellPassFilter_ElevationRangeDesignWrapper = cellPassFilter_ElevationRangeDesignWrapper;
 
       Initialise();
     }

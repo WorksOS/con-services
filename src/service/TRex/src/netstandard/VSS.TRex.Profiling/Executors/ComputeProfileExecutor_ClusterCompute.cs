@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -151,9 +152,8 @@ namespace VSS.TRex.Profiling.Executors
           }
 
 
-          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, design, Design.Offset,
-            /* todo elevation range design: */null, /* todo elevation range design offset */ 0,
-            PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
+          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, new DesignWrapper(Design, design),
+            /* todo elevation range design + offset: */null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
           Log.LogInformation("Building cell profile");
           if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))

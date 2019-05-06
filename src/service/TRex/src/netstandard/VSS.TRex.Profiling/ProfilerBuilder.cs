@@ -47,8 +47,8 @@ namespace VSS.TRex.Profiling
     /// <param name="productionDataExistenceMap"></param>
     /// <param name="gridDataType"></param>
     /// <param name="filterSet"></param>
-    /// <param name="cutFillDesign"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesign"></param>
+    /// <param name="referenceDesignWrapper"></param>
+    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     /// <param name="PopulationControl"></param>
     /// <param name="CellPassFastEventLookerUpper"></param>
     /// <param name="VolumeType"></param>
@@ -58,10 +58,8 @@ namespace VSS.TRex.Profiling
       ISubGridTreeBitMask productionDataExistenceMap,
       GridDataType gridDataType,
       IFilterSet filterSet,
-      IDesign referenceDesign,
-      double referenceDesignOffset,
-      IDesign cellPassFilter_ElevationRangeDesign,
-      double cellPassFilter_ElevationRangeDesignOffset,
+      IDesignWrapper referenceDesignWrapper,
+      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
       VolumeComputationType VolumeType = VolumeComputationType.None,
@@ -69,10 +67,10 @@ namespace VSS.TRex.Profiling
     {
         CellLiftBuilder = factory.NewCellLiftBuilder(siteModel, gridDataType, PopulationControl, filterSet, CellPassFastEventLookerUpper);
 
-        CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, filterSet, referenceDesign, referenceDesignOffset, slicerToolUsed);
+        CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, filterSet, referenceDesignWrapper, slicerToolUsed);
 
         CellProfileAnalyzer = factory.NewCellProfileAnalyzer(
-          profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellPassFilter_ElevationRangeDesignOffset, referenceDesign, referenceDesignOffset, CellLiftBuilder);
+          profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, CellLiftBuilder);
     }
   }
 }
