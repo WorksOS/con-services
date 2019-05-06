@@ -55,7 +55,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
-      cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
+      //cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
       cfg.JvmMaxMemoryMb = 2 * 1024; // Set max to 2Gb
       cfg.UserAttributes = new Dictionary<string, object>
             {
@@ -106,7 +106,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.JvmOptions = new List<string>() {
         "-DIGNITE_QUIET=false",
-        "-Djava.net.preferIPv4Stack=true" };
+        "-Djava.net.preferIPv4Stack=true",
+        "-XX:+UseG1GC"
+      };
 
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableCacheComputeServer"));
