@@ -66,7 +66,7 @@ namespace VSS.WebApi.Common
           { "result", context.Response.StatusCode.ToString() }
         };
 
-        NewRelic.Api.Agent.NewRelic.RecordCustomEvent(ServiceName, eventAttributes);
+        NewRelic.Api.Agent.NewRelic.RecordCustomEvent(ServiceName.Replace(" ", String.Empty), eventAttributes);
       
     }
   }
