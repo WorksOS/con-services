@@ -33,7 +33,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 0),
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
         ProfileTypeRequired = GridDataType.Height,
         PositionsAreGrid = true,
         StartPoint = new WGS84Point(MIN_X, MIN_Y, MIN_Z),

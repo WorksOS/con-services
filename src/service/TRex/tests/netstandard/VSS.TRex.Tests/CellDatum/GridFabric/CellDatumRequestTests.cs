@@ -211,7 +211,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CellDatumRequest_ClusterCompute();
 
-      Assert.Throws<ArgumentException>(() => request.Execute(CreateCellDatumRequestArgument_ClusterCompute(siteModel, new DesignOffset(Guid.NewGuid(), 0), DisplayMode.Height), new SubGridSpatialAffinityKey()));
+      Assert.Throws<ArgumentException>(() => request.Execute(CreateCellDatumRequestArgument_ClusterCompute(siteModel, new DesignOffset(Guid.NewGuid(), -0.5), DisplayMode.Height), new SubGridSpatialAffinityKey()));
     }
 
     [Fact]

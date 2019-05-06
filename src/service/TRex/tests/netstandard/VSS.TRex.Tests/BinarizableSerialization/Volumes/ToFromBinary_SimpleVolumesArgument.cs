@@ -59,8 +59,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Volumes
         VolumeType = VolumeComputationType.Between2Filters,
         BaseFilter = FromFilter,
         TopFilter = ToFilter,
-        BaseDesign = new DesignOffset(Guid.NewGuid(), 0),
-        TopDesign = new DesignOffset(Guid.NewGuid(), 0),
+        BaseDesign = new DesignOffset(Guid.NewGuid(), 1.5),
+        TopDesign = new DesignOffset(Guid.NewGuid(), -0.5),
         CutTolerance = CUT_TOLERANCE,
         FillTolerance = FILL_TOLERANCE
       };

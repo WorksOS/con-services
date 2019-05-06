@@ -32,7 +32,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Arguments
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 0),
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
         ReportElevation = true,
         ReportCmv = true,
         ReportMdp = true,

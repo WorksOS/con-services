@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Rendering
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
-        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 0),
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
         Mode = DisplayMode.Height,
         CoordsAreGrid =  true,
         PixelsX = 100,

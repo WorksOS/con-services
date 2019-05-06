@@ -108,7 +108,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new CutFillStatisticsOperation();
 
-      var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid(), 0);
+      var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid(), 1.5);
       var result = operation.Execute(argument);
 
       result.Should().NotBeNull();
@@ -124,7 +124,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       BuildModelForSingleCellCutFill(out var siteModel, 0.5f);
 
       var operation = new CutFillStatisticsOperation();
-      var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid(), 0);
+      var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid(), 1.5);
       var result = operation.Execute(argument);
 
       result.Should().NotBeNull();

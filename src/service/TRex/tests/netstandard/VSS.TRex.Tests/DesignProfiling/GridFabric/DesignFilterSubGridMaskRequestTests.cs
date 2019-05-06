@@ -33,7 +33,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var req = new DesignFilterSubGridMaskRequest();
 
       // Ask for a design that does not exist
-      var response = req.Execute(new DesignSubGridFilterMaskArgument(siteModel.ID, 0, 0, new DesignOffset(Guid.NewGuid(), 0), siteModel.CellSize));
+      var response = req.Execute(new DesignSubGridFilterMaskArgument(siteModel.ID, 0, 0, new DesignOffset(Guid.NewGuid(), -0.5), siteModel.CellSize));
 
       response.Should().NotBeNull();
       response.RequestResult.Should().Be(DesignProfilerRequestResult.DesignDoesNotExist);
