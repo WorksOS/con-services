@@ -306,6 +306,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             ID = SiteModelFromDM.ID
           };
 
+          long totalPassCountInAggregation = 0;
           // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
           // ... first relabel the passes with the machine ID as it is set to null in the swathing engine
           Task.AggregatedCellPasses?.ScanAllSubGrids(leaf =>
@@ -319,6 +320,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 uint passCount = segment.PassesData.PassCount(x, y);
                 for (int i = 0; i < passCount; i++)
                   segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
+
+                totalPassCountInAggregation += passCount;
               });
             }
 
@@ -326,11 +329,15 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           });
 
           // ... then integrate them
-          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results into primary data model for {SiteModelFromDM.ID}");
+          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes into primary data model for {SiteModelFromDM.ID}");
 
           var subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
-          if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
-            return false;
+          if (!subGridIntegrator.IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
+            return false; 
+          //if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
+          //  return false;
+
+          Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {SiteModelFromDM.ID}");
 
           // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
           SiteModelFromDM.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);

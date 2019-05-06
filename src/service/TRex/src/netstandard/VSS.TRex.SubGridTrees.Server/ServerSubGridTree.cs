@@ -336,7 +336,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             else
             {
-              Log.LogWarning($"Failed to save grid segment {GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo)}: Error:{FSError}");
+              Log.LogWarning($"Failed to save cloven grid segment {GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo)}: Error:{FSError}");
               return false;
             }
           }
@@ -362,7 +362,7 @@ namespace VSS.TRex.SubGridTrees.Server
               Log.LogDebug($"Saved modified grid segment file: {segment}");
             else
             {
-              Log.LogError($"Failed to save grid segment {GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo)}: Error:{FSError}");
+              Log.LogError($"Failed to save modified original grid segment {GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo)}: Error:{FSError}");
               return false;
             }
           }
@@ -376,7 +376,7 @@ namespace VSS.TRex.SubGridTrees.Server
         // invalidated streams as this stream will be replaced with the stream
         // containing the updated directory information. Note: This only needs to
         // be done if the sub grid has previously been read from the FS file (if not
-        // it has been created and now yet persisted to the store.
+        // it has been created and not yet persisted to the store.
 
         if (subGrid.Directory.ExistsInPersistentStore)
         {

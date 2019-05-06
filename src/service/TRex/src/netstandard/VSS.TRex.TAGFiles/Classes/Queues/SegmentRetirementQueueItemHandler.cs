@@ -94,7 +94,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           }
         }
 
-        Log.LogInformation($"Prepared {count} retires for removal in {sw.Elapsed}");
+        Log.LogInformation($"Prepared {count} retirees for removal in {sw.Elapsed}");
 
         sw = Stopwatch.StartNew();        
 
