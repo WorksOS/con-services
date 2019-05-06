@@ -467,28 +467,33 @@ namespace VSS.TRex.SubGridTrees.Server
             // which in turn will cause the latest cells in the affected segments to be
             // modified which will always cause the latest cells in the latest segment to be
             // modified.
-            ISubGridCellPassesDataSegment Segment = Directory.SegmentDirectory.Last().Segment;
+            var Segment = Directory.SegmentDirectory.Last().Segment;
 
-            ISubGridCellLatestPassDataWrapper _GlobalLatestCells = Directory.GlobalLatestCells;
-            ISubGridCellLatestPassDataWrapper _LatestPasses = Segment.LatestPasses;
+            var _GlobalLatestCells = Directory.GlobalLatestCells;
+            var _LatestPasses = Segment.LatestPasses;
 
             if (_LatestPasses != null)
             {
               _GlobalLatestCells.Clear();
               _GlobalLatestCells.Assign(_LatestPasses);
 
+              var __GlobalLatestCells = (SubGridCellLatestPassDataWrapper_NonStatic) _GlobalLatestCells;
+              var __LatestPasses = (SubGridCellLatestPassDataWrapper_NonStatic) _LatestPasses;
+
               Segment.LatestPasses.PassDataExistenceMap.ForEachSetBit((x, y) =>
-                ((SubGridCellLatestPassDataWrapper_NonStatic) _GlobalLatestCells).PassData[x, y] =
-                ((SubGridCellLatestPassDataWrapper_NonStatic) _LatestPasses).PassData[x, y]);
+                __GlobalLatestCells.PassData[x, y] = __LatestPasses.PassData[x, y]);
             }
         }
 
         public void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy)
         {
+            //Log.LogInformation($"ComputeLatestPassInformation: Segment dir for {Moniker()}:");
+            //Directory.DumpSegmentDirectoryToLog();
+
             if (!Dirty)
               throw new TRexSubGridTreeException($"Sub grid {Moniker()} not marked as dirty when computing latest pass information");
 
-            ISubGridSegmentIterator Iterator = new SubGridSegmentIterator(this, Directory, storageProxy)
+            var Iterator = new SubGridSegmentIterator(this, Directory, storageProxy)
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = !fullRecompute
@@ -498,6 +503,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // We are in the process of recalculating latest data, so don't ask the iterator to
             // read the latest data information as it will be reconstructed here. The full cell pass
             // stacks are required though...
+            Iterator.RetrieveLatestData = false;
             Iterator.RetrieveAllPasses = true;
 
             ISubGridCellPassesDataSegmentInfo SeedSegmentInfo = null;
@@ -548,6 +554,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
             }
 
+            // The first MoveNext will locate the first segment in the directory marked as dirty
             while (Iterator.MoveNext())
             {
                 NumProcessedSegments++;
@@ -556,9 +563,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
                 LastSegment = Iterator.CurrentSubGridSegment;
 
-                // We have processed a segment. By definition, all segments after the
-                // first segment must have the latest values processed, so instruct
-                // the iterator to return all segments from now on
+                // A segment has been processed... By definition, all segments after the first segment must have the
+                // latest values processed, so instruct the iterator to return all segments from now on
                 Iterator.ReturnDirtyOnly = false;
             }
 
@@ -570,6 +576,8 @@ namespace VSS.TRex.SubGridTrees.Server
                 // same as the last segment)
                 CalculateLatestPassGridForAllSegments();
             }
+
+            //Log.LogInformation($"Completed ComputeLatestPassInformation for {Moniker()}");
         }
 
         public bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, ISubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses)
@@ -580,7 +588,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 return false;
             }
 
-             FileSystemErrorStatus FSError = storageProxy.ReadSpatialStreamFromPersistentStore
+             var FSError = storageProxy.ReadSpatialStreamFromPersistentStore
                          (Owner.ID, FileName, OriginX, OriginY, FileName, FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
 
              bool Result = FSError == FileSystemErrorStatus.OK;
@@ -593,11 +601,13 @@ namespace VSS.TRex.SubGridTrees.Server
              }
              else
              {
-
                SMS.Position = 0;
                using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
                {
                  Result = Segment.Read(reader, loadLatestData, loadAllPasses);
+
+                 if (loadAllPasses && Segment.PassesData == null)
+                   Log.LogError($"Segment {FileName} passes data is null after reading from store with LoadAllPasses=true.");
                }
              }
 
@@ -690,8 +700,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
         {
-            FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty,
-                                                                                         FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
+            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty,
+                                                                       FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
 
             if (FSError != FileSystemErrorStatus.OK || SMS == null)
             {
@@ -719,6 +729,8 @@ namespace VSS.TRex.SubGridTrees.Server
                               ISubGridSegmentIterator Iterator,
                               bool IntegratingIntoIntermediaryGrid)
         {
+            //Log.LogInformation($"Integrating sub grid {Moniker()}, intermediary?:{IntegratingIntoIntermediaryGrid}");
+
             if (Source == null)
               throw new TRexSubGridTreeException("Source sub grid not defined in ServerSubGridTreeLeaf.Integrate");
 
@@ -738,10 +750,13 @@ namespace VSS.TRex.SubGridTrees.Server
             Iterator.SubGrid = this;
             Iterator.Directory = Directory;
 
-            ISubGridCellPassesDataSegment SourceSegment = Source.Cells.PassesData[0];
+            var SourceSegment = Source.Cells.PassesData[0];
 
             UpdateStartEndTimeRange(Source.LeafStartTime);
             UpdateStartEndTimeRange(Source.LeafEndTime);
+
+            uint AddedCount = 0;
+            uint ModifiedCount = 0;
 
             for (uint I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
             {
@@ -752,66 +767,56 @@ namespace VSS.TRex.SubGridTrees.Server
                     uint localPassCount = SourceSegment.PassesData.PassCount(I, J);
 
                     if (localPassCount == 0)
-                    {
                         continue;
-                    }
 
                     // Restrict the iterator to examining only those segments that fall within the
-                    // time range covered by the passes in the cell being processes.
+                    // time range covered by the passes in the cell being processed.
                     Iterator.SetTimeRange(SourceSegment.PassesData.PassTime(I, J, 0),
                                           SourceSegment.PassesData.PassTime(I, J, localPassCount - 1));
 
-                    // Now iterate over the time bounded segments in the database and integrate
-                    // the new cell passes
+                    // Now iterate over the time bounded segments in the database and integrate the new cell passes
                     Iterator.InitialiseIterator();
                     while (Iterator.MoveToNextSubGridSegment())
                     {
-                        ISubGridCellPassesDataSegment Segment = Iterator.CurrentSubGridSegment;
+                        var Segment = Iterator.CurrentSubGridSegment;
 
                         if (StartIndex < localPassCount && SourceSegment.PassesData.PassTime(I, J, StartIndex) >= Segment.SegmentInfo.EndTime)
-                        {
                             continue;
-                        }
 
                         uint EndIndex = StartIndex;
                         DateTime EndTime = Segment.SegmentInfo.EndTime;
                         int PassCountMinusOne = (int)localPassCount - 1;
-                        while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
-                        {
-                            EndIndex++;
-                        }
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out uint AddedCount, out uint ModifiedCount);
+                        while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
+                            EndIndex++;
+
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out AddedCount, out ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
-                        {
                             Segment.Dirty = true;
-                        }
 
                         if (AddedCount != 0)
-                        {
                             Segment.PassesData.SegmentPassCount += AddedCount;
-                        }
 
                         StartIndex = EndIndex + 1;
 
                         if (StartIndex >= localPassCount)
-                        {
                             break; // We are finished
-                        }
                     }
                 }
             }
 
-            // CachedMemorySizeOutOfDate = true;
-        }
+            //Log.LogInformation($"Completed integrating sub grid {Moniker()}, intermediary?:{IntegratingIntoIntermediaryGrid}, {AddedCount} cell passes added, {ModifiedCount} modified");
 
-        /// <summary>
-        /// Constructs a 'filename' representing this leaf sub grid
-        /// </summary>
-        /// <param name="Origin"></param>
-        /// <returns></returns>
-        public static string FileNameFromOriginPosition(SubGridCellAddress Origin) => $"{Origin.X:D10}-{Origin.Y:D10}";
+      // CachedMemorySizeOutOfDate = true;
+    }
+
+    /// <summary>
+    /// Constructs a 'filename' representing this leaf sub grid
+    /// </summary>
+    /// <param name="Origin"></param>
+    /// <returns></returns>
+    public static string FileNameFromOriginPosition(SubGridCellAddress Origin) => $"{Origin.X:D10}-{Origin.Y:D10}";
 
     }
 }

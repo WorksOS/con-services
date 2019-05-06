@@ -23,6 +23,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
+    private static bool WarnOnTFAServiceDisabled = false;
+
     /// <summary>
     /// Calls the TFA service via the nuget Proxy,
     ///    to validates licensing etc
@@ -180,7 +182,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Tagfile contents are OK so proceed
       if (!tfaServiceEnabled) // allows us to bypass a TFA service
       {
-        Log.LogWarning($"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
+        if (WarnOnTFAServiceDisabled)
+          Log.LogWarning("SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
         if (tagDetail.projectId != Guid.Empty) // do we have what we need
         {
           if (tagDetail.assetId == null || tagDetail.assetId == Guid.Empty)

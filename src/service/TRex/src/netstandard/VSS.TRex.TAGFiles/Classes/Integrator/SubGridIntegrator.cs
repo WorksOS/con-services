@@ -150,12 +150,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             // Iterate over the sub grids in source and merge the cell passes from source
             // into the sub grids in this sub grid tree;
 
-            SubGridTreeIterator Iterator = new SubGridTreeIterator(StorageProxy, false)
+            var Iterator = new SubGridTreeIterator(StorageProxy, false)
             {
                 Grid = Source
             };
 
-            SubGridSegmentIterator SegmentIterator = new SubGridSegmentIterator(null, StorageProxy)
+            var SegmentIterator = new SubGridSegmentIterator(null, StorageProxy)
             {
                 IterationDirection = IterationDirection.Forwards
             };

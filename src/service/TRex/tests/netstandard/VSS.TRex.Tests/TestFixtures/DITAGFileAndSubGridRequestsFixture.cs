@@ -129,11 +129,12 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Construct an integration worker and ask it to perform the integration
       ProcessedTasks = new List<AggregatedDataIntegratorTask>();
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess)
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
       {
         MaxMappedTagFilesToProcessPerAggregationEpoch = _tagFiles.Count
       };
       worker.ProcessTask(ProcessedTasks);
+      worker.TaskProcessingComplete();
 
       targetSiteModel.Should().NotBe(null);
       ProcessedTasks.Count.Should().Be(_tagFiles.Count);
