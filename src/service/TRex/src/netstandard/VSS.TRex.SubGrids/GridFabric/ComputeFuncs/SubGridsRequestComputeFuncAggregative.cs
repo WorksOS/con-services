@@ -18,7 +18,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 
       protected override SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse> GetExecutor()
       {
-        return new SubGridsRequestComputeFuncBase_Executor_Aggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>()
+        return new SubGridsRequestComputeFuncBase_Executor_Aggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>
         {
           Task = _task
         };

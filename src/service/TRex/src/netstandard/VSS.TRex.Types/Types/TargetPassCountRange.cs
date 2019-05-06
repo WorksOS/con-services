@@ -10,7 +10,7 @@ namespace VSS.TRex.Types
       public void SetMinMax(ushort min, ushort max)
       {
         if (max < min)
-          throw new ArgumentException("Minimum value must be greater than or equal to minimum value.");
+          throw new ArgumentException("Maximum value must be greater than or equal to minimum value.");
         Min = min;
         Max = max;
       }

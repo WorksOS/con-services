@@ -4,7 +4,7 @@
       "percentEqualsTarget": 0.0,
       "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 100.0,
-      "totalAreaCoveredSqMeters": 953.93120000000022,
+      "totalAreaCoveredSqMeters": 1071.6120000000003,
       "temperatureTarget": {
         "minTemperatureMachineTarget": 90.0,
         "maxTemperatureMachineTarget": 143.0,
@@ -19,7 +19,7 @@
       "percentEqualsTarget": 0.0,
       "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 100.0,
-      "totalAreaCoveredSqMeters": 953.93120000000022,
+      "totalAreaCoveredSqMeters": 1071.6120000000003,
       "temperatureTarget": {
         "minTemperatureMachineTarget": 75.0,
         "maxTemperatureMachineTarget": 130.0,
@@ -54,7 +54,7 @@
       "percentEqualsTarget": 0.0,
       "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 100.0,
-      "totalAreaCoveredSqMeters": 364.14000000000004,
+      "totalAreaCoveredSqMeters": 423.0960083,
       "temperatureTarget": {
         "minTemperatureMachineTarget": 90.0,
         "maxTemperatureMachineTarget": 143.0,
@@ -69,7 +69,7 @@
       "percentEqualsTarget": 0.0,
       "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 100.0,
-      "totalAreaCoveredSqMeters": 22.542000000000005,
+      "totalAreaCoveredSqMeters": 24.160400000000006,
       "temperatureTarget": {
         "minTemperatureMachineTarget": 90.0,
         "maxTemperatureMachineTarget": 143.0,
@@ -84,7 +84,7 @@
       "percentEqualsTarget": 0.0,
       "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 100.0,
-      "totalAreaCoveredSqMeters": 226.46040000000005,
+      "totalAreaCoveredSqMeters": 273.16280000000006,
       "temperatureTarget": {
         "minTemperatureMachineTarget": 90.0,
         "maxTemperatureMachineTarget": 143.0,
@@ -104,7 +104,7 @@
       "percentEqualsTarget": 0.0,
       "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 100.0,
-      "totalAreaCoveredSqMeters": 953.93120000000022,
+      "totalAreaCoveredSqMeters": 1062.36401367,
       "temperatureTarget": {
         "minTemperatureMachineTarget": 90.0,
         "maxTemperatureMachineTarget": 143.0,

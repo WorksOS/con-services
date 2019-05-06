@@ -373,5 +373,24 @@ namespace MockProjectWebApi.Utils
         FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("SummaryVolumes1NovFirstPass")
       };
     }
+
+    public class KettlewellDrive
+    {
+      public static FilterDescriptor MinElevationSingleCellPassMultiMode => new FilterDescriptor
+      {
+        FilterUid = "6c7c899c-7320-446d-a525-d7ed1f285c5c",
+        Name = "SingleMinCellMinElevation",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetKettlewellDriveFilterJson("MinElevationSingleCellPassMultiMode")
+      };
+
+      public static FilterDescriptor MinElevationLastPassMode => new FilterDescriptor
+      {
+        FilterUid = "6c7c899c-7320-446d-a525-d7ed1f285c5d",
+        Name = "SingleCellLastElevation",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetKettlewellDriveFilterJson("LastElevationSingleCellMultiMode")
+      };
+    }
   }
 }

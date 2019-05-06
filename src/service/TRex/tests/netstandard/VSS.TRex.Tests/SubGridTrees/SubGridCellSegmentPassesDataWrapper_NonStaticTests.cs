@@ -30,7 +30,6 @@ namespace VSS.TRex.Tests.SubGridTrees
                 gpsMode = GPSMode.Fixed,
                 HalfPass = false,
                 Height = 104,
-                // MachineID = 105,
                 InternalSiteModelMachineIndex = 105,
                 GPSModeStore = 106,
                 MachineSpeed = 106,

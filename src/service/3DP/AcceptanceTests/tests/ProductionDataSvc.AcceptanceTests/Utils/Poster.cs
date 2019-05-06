@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -45,7 +46,8 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
 
       if (requestFile != null)
       {
-        var path = Path.Combine(testDatapath, requestFile);
+        var datafilePath = requestFile.Split('/', '\\');
+        var path = Path.Combine(datafilePath.Aggregate(testDatapath, Path.Combine));
 
         using (var file = File.OpenText(path))
         {
@@ -56,7 +58,8 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
 
       if (responseFile != null)
       {
-        var path = Path.Combine(testDatapath, responseFile);
+        var datafilePath = responseFile.Split('/', '\\');
+        var path = Path.Combine(datafilePath.Aggregate(testDatapath, Path.Combine));
 
         using (var file = File.OpenText(path))
         {

@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var userPreferences = new UserPreferenceData { Language = "en-US" };
       var request = CompactionReportStationOffsetRequest.CreateRequest(
-        0, null, null, 0, null, true, true, true, true, true, true, null, null, 0, 0, 0, null, userPreferences, "New Zealand Standard Time");
+        33, null, null, 0, null, true, true, true, true, true, true, null, null, 0, 0, 0, null, userPreferences, "New Zealand Standard Time");
       var filterSettings = RaptorConverters.ConvertFilter(request.Filter);
       var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);

@@ -1,12 +1,18 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.Rendering.Palettes.CCAColorScale;
+using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering
@@ -42,7 +48,7 @@ namespace VSS.TRex.Rendering
     // once any rotation of the tile has been removed
     public double WorldTileWidth = 0.0;
     public double WorldTileHeight = 0.0;
-    
+
     // IsWhollyInTermsOfGridProjection determines if we can use a fixed square
     // aspect view and adjust the world coordinate bounds of the viewport to
     // accommodate the extent of the requested display area (Value = True), or
@@ -126,66 +132,85 @@ namespace VSS.TRex.Rendering
     /// <param name="mode"></param>
     /// <param name="processor"></param>
     /// <returns></returns>
-    public RequestErrorStatus PerformRender( DisplayMode mode, IPipelineProcessor processor)
+    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters)
     {
-        // Obtain the display responsible for rendering the thematic information for this mode
-        Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
+      // Obtain the display responsible for rendering the thematic information for this mode
+      Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
 
-        // Create and assign the colour pallete logic for this mode to the displayer
-        Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
+      if (Displayer == null)
+      {
+        processor.Response.ResultStatus = RequestErrorStatus.UnsupportedDisplayType;
+        return processor.Response.ResultStatus;
+      }
 
-        if (Displayer == null)
-          return RequestErrorStatus.UnsupportedDisplayType;
-
-        // Create the world coordinate display surface the displayer will render onto
-        Displayer.MapView = new MapSurface
+      // Create and assign the colour pallete logic for this mode to the displayer
+      if (colourPalette == null)
+      {
+        if (mode == DisplayMode.CCA || mode == DisplayMode.CCASummary)
         {
-          SquareAspect = IsWhollyInTermsOfGridProjection
-        };
+          Displayer.Palette = ComputeCCAPalette(processor.SiteModel, filters.Filters[0].AttributeFilter, mode);
 
-        // Set the world coordinate bounds of the display surface to be rendered on
-        Displayer.MapView.SetBounds(NPixelsX, NPixelsY);
-
-        if (IsWhollyInTermsOfGridProjection)
-          Displayer.MapView.FitAndSetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
-        else
-          Displayer.MapView.SetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
-
-        // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
-        // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
-        Displayer.MapView.SetRotation(-TileRotation /* + (Math.PI / 2) */);
-
-        // Displayer.ICOptions  = ICOptions;
-
-        // Se the skip-step area control cell selection parameters for this tile render
-        processor.Pipeline.AreaControlSet = new AreaControlSet(true, Displayer.MapView.XPixelSize,
-          Displayer.MapView.YPixelSize, 0, 0, 0);
-
-        // todo PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
-        // todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
-        // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
-
-        // Perform the sub grid query and processing to render the tile
-        processor.Process();
-
-        if (processor.Response.ResultStatus == RequestErrorStatus.OK)
-        {
-          PerformAnyRequiredDebugLevelDisplay();
-
-          if (_debugDrawDiagonalCrossOnRenderedTilesDefault)
+          if (Displayer.Palette == null)
           {
-            // Draw diagonal cross and top left corner indicators
-            Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.OriginY, Displayer.MapView.LimitX, Displayer.MapView.LimitY, Color.Red);
-            Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY, Displayer.MapView.LimitX, Displayer.MapView.OriginY, Color.Red);
-
-            // Draw the horizontal line a little below the world coordinate 'top' of the tile to encourage the line
-            // drawing algorithm not to clip it
-            Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY, Displayer.MapView.OriginX, Displayer.MapView.CenterY, Color.Red);
-            Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY - 0.01, Displayer.MapView.CenterX, Displayer.MapView.LimitY - 0.01, Color.Red);
+            processor.Response.ResultStatus = RequestErrorStatus.FailedToGetCCAMinimumPassesValue;
+            return processor.Response.ResultStatus;
           }
         }
+        else
+          Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
+      }
+      else
+        Displayer.Palette = colourPalette;
 
-        return processor.Response.ResultStatus;
+      // Create the world coordinate display surface the displayer will render onto
+      Displayer.MapView = new MapSurface
+      {
+        SquareAspect = IsWhollyInTermsOfGridProjection
+      };
+
+      // Set the world coordinate bounds of the display surface to be rendered on
+      Displayer.MapView.SetBounds(NPixelsX, NPixelsY);
+
+      if (IsWhollyInTermsOfGridProjection)
+        Displayer.MapView.FitAndSetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
+      else
+        Displayer.MapView.SetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
+
+      // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
+      // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
+      Displayer.MapView.SetRotation(-TileRotation /* + (Math.PI / 2) */);
+
+      // Displayer.ICOptions  = ICOptions;
+
+      // Se the skip-step area control cell selection parameters for this tile render
+      processor.Pipeline.AreaControlSet = new AreaControlSet(true, Displayer.MapView.XPixelSize,
+        Displayer.MapView.YPixelSize, 0, 0, 0);
+
+      // todo PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
+      // todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
+      // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
+
+      // Perform the sub grid query and processing to render the tile
+      processor.Process();
+
+      if (processor.Response.ResultStatus == RequestErrorStatus.OK)
+      {
+        PerformAnyRequiredDebugLevelDisplay();
+
+        if (_debugDrawDiagonalCrossOnRenderedTilesDefault)
+        {
+          // Draw diagonal cross and top left corner indicators
+          Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.OriginY, Displayer.MapView.LimitX, Displayer.MapView.LimitY, Color.Red);
+          Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY, Displayer.MapView.LimitX, Displayer.MapView.OriginY, Color.Red);
+
+          // Draw the horizontal line a little below the world coordinate 'top' of the tile to encourage the line
+          // drawing algorithm not to clip it
+          Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY, Displayer.MapView.OriginX, Displayer.MapView.CenterY, Color.Red);
+          Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY - 0.01, Displayer.MapView.CenterX, Displayer.MapView.LimitY - 0.01, Color.Red);
+        }
+      }
+
+      return processor.Response.ResultStatus;
     }
 
     /// <summary>
@@ -209,6 +234,38 @@ namespace VSS.TRex.Rendering
       Height = AHeight;
       NPixelsX = ANPixelsX;
       NPixelsY = ANPixelsY;
+    }
+
+    public IPlanViewPalette ComputeCCAPalette(ISiteModel siteModel,  ICellPassAttributeFilter filter, DisplayMode mode)
+    {
+      var machineUID = filter.MachinesList.Length > 0 ? filter.MachinesList[0] : Guid.Empty;
+      
+      var ccaMinimumPassesValue = siteModel.GetCCAMinimumPassesValue(machineUID, filter.StartTime, filter.EndTime, filter.LayerID);
+
+      if (ccaMinimumPassesValue == 0)
+        return null;
+
+      var ccaColorScale = CCAColorScaleManager.CreateCoverageScale(ccaMinimumPassesValue);
+
+      var transitions = new Transition[ccaColorScale.TotalColors];
+
+      for (var i = 0; i < transitions.Length; i++)
+        transitions[i] = new Transition(i + 1, ColorUtility.UIntToColor(ccaColorScale.ColorSegments[transitions.Length - i - 1].Color));
+
+      if (mode == DisplayMode.CCA)
+      {
+        var ccaPalette = new CCAPalette();
+        ccaPalette.PaletteTransitions = transitions;
+
+        return ccaPalette;
+      }
+
+      var ccaSummaryPalette = new CCASummaryPalette();
+      ccaSummaryPalette.UndercompactedColour = transitions[0].Color;
+      ccaSummaryPalette.CompactedColour = transitions[1].Color;
+      ccaSummaryPalette.OvercompactedColour = transitions[2].Color;
+
+      return ccaSummaryPalette;
     }
   }
 }

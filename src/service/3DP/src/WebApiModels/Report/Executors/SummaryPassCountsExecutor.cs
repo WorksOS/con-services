@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #if RAPTOR
         }
 
-        var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient, request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
 
         var raptorResult = raptorClient.GetPassCountSummary(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((request.CallId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtPassCountSummary),

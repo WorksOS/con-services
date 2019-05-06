@@ -75,9 +75,9 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasNoFiltersToCombinedFilter()
     {
-      var filter = Filter.CreateFilter(null, null,
+      var filter = new Filter(null, null,
         string.Empty, string.Empty,
-        new List<MachineDetails>(0), null, null, 
+        new List<MachineDetails>(0), null, null,
         null, null, null, null
       );
       var filterResult = new FilterResult(null, filter, null, null, 
@@ -110,7 +110,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasTimeFilterToCombinedFilter()
     {
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc),
         null, null,
@@ -137,7 +137,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Big yella 1", false, Guid.NewGuid()),
         new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Big yella 2", true, Guid.NewGuid())
       };
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         contributingMachines, null, null, null, null, null, null
       );
@@ -164,7 +164,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Big yella 1", false, Guid.NewGuid()),
         new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Big yella 2", true, Guid.NewGuid())
       };
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         contributingMachines, null, null, null, null, null, null
       );
@@ -195,7 +195,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasMachineDirectionFilterToCombinedFilter()
     {
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), null, null, 
         null, null, true, null
@@ -208,7 +208,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       combinedFilter.AttributeFilter.HasMachineDirectionFilter.Should().BeTrue();
       combinedFilter.AttributeFilter.MachineDirection.Should().Be(MachineDirection.Forward);
 
-      filter = Filter.CreateFilter(
+      filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), null, null,
         null, null, false, null
@@ -219,7 +219,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       combinedFilter.AttributeFilter.HasMachineDirectionFilter.Should().BeTrue();
       combinedFilter.AttributeFilter.MachineDirection.Should().Be(MachineDirection.Reverse);
 
-      filter = Filter.CreateFilter(
+      filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), null, null,
         null, null, null, null
@@ -235,7 +235,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasDesignFilterToCombinedFilter()
     {
       var onMachineDesignId = 66;
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), onMachineDesignId, null, 
         null, null, null, null
@@ -252,7 +252,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasVibeStateFilterToCombinedFilter()
     {
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), null, null,
         true, null, null, null
@@ -269,7 +269,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasLayerStateFilterToCombinedFilter()
     {
       FilterLayerMethod? layerType = FilterLayerMethod.Automatic;
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), null, null,
         null, null, null, null
@@ -326,7 +326,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasGCSGuidanceModeFilterToCombinedFilter()
     {
       var automaticsType = AutomaticsType.Automatics;
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), null, null,
         null, null, null, null, automaticsType: automaticsType
@@ -344,7 +344,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasLayerIdFilterToCombinedFilter()
     {
       var layerType = FilterLayerMethod.TagfileLayerNumber;
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), null, null,
         null, null, null, 45
@@ -361,7 +361,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasTemperatureRangeFilterToCombinedFilter()
     {
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), null, null,
         null, null, null, null,
@@ -380,7 +380,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasPassCountRangeFilterToCombinedFilter()
     {
-      var filter = Filter.CreateFilter(
+      var filter = new Filter(
         null, null, null, null,
         new List<MachineDetails>(0), null, null,
         null, null, null, null,

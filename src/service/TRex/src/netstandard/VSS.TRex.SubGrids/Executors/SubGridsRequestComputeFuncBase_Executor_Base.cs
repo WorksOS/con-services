@@ -434,11 +434,16 @@ namespace VSS.TRex.SubGrids.Executors
       ProcessSubGridAddressGroup(addresses, listCount); // Process the remaining sub grids...
 
       // Wait for all the sub-tasks to complete
+
+      Log.LogInformation($"Waiting for {tasks.Count} sub tasks to complete for sub grids request");
       var summaryTask = Task.WhenAll(tasks);
       summaryTask.Wait();
 
       if (summaryTask.Status == TaskStatus.RanToCompletion)
+      {
+        Log.LogInformation($"{tasks.Count} sub grid tasks completed, executing AcquireComputationResult()");
         return AcquireComputationResult();
+      }
 
       Log.LogError("Failed to process all sub grids");
       return null;
@@ -454,14 +459,13 @@ namespace VSS.TRex.SubGrids.Executors
 
       Log.LogInformation($"Num sub grids present in request = {NumSubGridsToBeExamined} [All divisions]");
 
-      if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
+      if (!EstablishRequiredIgniteContext(out var contextEstablishmentResponse))
         return new TSubGridRequestsResponse {ResponseCode = contextEstablishmentResponse};
 
       RequestorIntermediaries = DIContext.Obtain<IRequestorUtilities>().ConstructRequestorIntermediaries
-        (siteModel, localArg.Filters, localArg.IncludeSurveyedSurfaceInformation, 
-        localArg.GridDataType);
+        (siteModel, localArg.Filters, localArg.IncludeSurveyedSurfaceInformation, localArg.GridDataType);
 
-      TSubGridRequestsResponse result = PerformSubGridRequests();
+      var result = PerformSubGridRequests();
       result.NumSubgridsExamined = NumSubGridsToBeExamined;
 
       //TODO: Map the actual response code into this

@@ -79,6 +79,7 @@ namespace RepositoryTests
     }
 
     [TestMethod]
+    [Ignore("Temporary so old and new deployments can run side by side using a common database")]
     public void ProjectSchemaExists()
     {
       const string tableName = "Project";
@@ -179,6 +180,7 @@ namespace RepositoryTests
     }
 
     [TestMethod]
+    [Ignore("Temporary so old and new deployments can run side by side using a common database")]
     public void GeofenceSchemaExists()
     {
       const string tableName = "Geofence";

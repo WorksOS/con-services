@@ -38,15 +38,18 @@ data:
   IMPORTED_FILE_API_URL2: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfile
   PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0
   PROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project
-  PROJECT_INTERNAL_BASE_URL: http://project.prod.k8s.services.myvisionlink.com
+  PROJECT_INTERNAL_BASE_URL: http://project.prod.prod-eks.services.myvisionlink.com
   PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4
   RAPTOR_3DPM_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
   RAPTOR_NOTIFICATION_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/notification
   RAPTOR_PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
-  SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/background
-  SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/export
+  SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1/background
+  SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1/export
   VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta
   TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
+#SERVICE DISCOVERY REFERENCES
+  assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
+  assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
 #Misc stuff
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"
   TILE_RENDER_MAX_ZOOM_RANGE: "14"
@@ -58,6 +61,7 @@ data:
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
   AWS_TAGFILE_BUCKET_NAME: vss-prod-directtagfile-archives
   ENVIRONMENT: PROD
+  NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
 #AWS configuration  
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-prod
@@ -102,7 +106,6 @@ data:
   MIN_WORKER_THREADS: "512"
   SCHEDULED_JOB_TIMEOUT: "900000"
 #Notifications
-  NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com/notifications
   PUSH_NO_AUTHENTICATION_HEADER: "true" 
 #DataOcean
   DATA_OCEAN_URL: https://api-usw2.trimblepaas.com/data_ocean-v1.0

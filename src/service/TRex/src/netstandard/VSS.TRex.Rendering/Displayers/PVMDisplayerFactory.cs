@@ -23,8 +23,14 @@ namespace VSS.TRex.Rendering.Displayers
         case DisplayMode.CCV:
           displayer = new PVMDisplayer_CMV();
           break;
+        case DisplayMode.CCVPercentSummary:
+          displayer = new PVMDisplayer_CMVSummary();
+          break;
         case DisplayMode.MDP:
           displayer = new PVMDisplayer_MDP();
+          break;
+        case DisplayMode.MDPPercentSummary:
+          displayer = new PVMDisplayer_MDPSummary();
           break;
         case DisplayMode.PassCount:
           displayer = new PVMDisplayer_PassCount();
@@ -32,22 +38,25 @@ namespace VSS.TRex.Rendering.Displayers
         case DisplayMode.PassCountSummary:
           displayer = new PVMDisplayer_PassCountSummary();
           break;
+        case DisplayMode.TemperatureDetail:
+          displayer = new PVMDisplayer_Temperature();
+          break;
         case DisplayMode.TemperatureSummary:
-          displayer = new PVMDisplayer_TemperatureSummary();
+          displayer = new PVMDisplayer_Temperature();
           break;
         case DisplayMode.CutFill:
           displayer = new PVMDisplayer_CutFill();
           break;
         case DisplayMode.CCA:
-        case DisplayMode.CCASummary:
           displayer = new PVMDisplayer_CCA();
+          break;
+        case DisplayMode.CCASummary:
+          displayer = new PVMDisplayer_CCASummary();
           break;
 
         default:
           throw new TRexException($"Unknown display mode to create a displayer for: {mode}");
       }
-
-      displayer.DisplayMode = mode;
 
       return displayer;
 

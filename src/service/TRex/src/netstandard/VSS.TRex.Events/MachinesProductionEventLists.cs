@@ -22,7 +22,7 @@ namespace VSS.TRex.Events
     /// Maps machine IDs (currently as 16 bit integers) to the instance containing all the event lists for all the machines
     /// that have contributed to the owner SiteModel
     /// </summary>
-    private IProductionEventLists[] MachineIDMap;
+    private IProductionEventLists[] internalSiteModelMachineIndexMap;
 
     /// <summary>
     /// Constructor for the machines events within the site model supplier as owner
@@ -34,38 +34,38 @@ namespace VSS.TRex.Events
       Owner = owner;
 
       Log.LogInformation($"Creating machine ID map containing {machineCount} entries");
-      MachineIDMap = new IProductionEventLists[machineCount]; 
+      internalSiteModelMachineIndexMap = new IProductionEventLists[machineCount]; 
     }
 
     /// <summary>
     /// </summary>
-    /// <param name="machineID"></param>
+    /// <param name="internalSiteModelMachineIndex"></param>
     /// <returns></returns>
-    private IProductionEventLists GetMachineEventLists(short machineID)
+    private IProductionEventLists GetMachineEventLists(short internalSiteModelMachineIndex)
     {
-      if (machineID < 0 || machineID >= MachineIDMap.Length)
+      if (internalSiteModelMachineIndex < 0 || internalSiteModelMachineIndex >= internalSiteModelMachineIndexMap.Length)
         return null;
 
       // Return (creating if necessary) the machine event lists for this machine and allow required events to lazy load.
-      if (MachineIDMap[machineID] == null)
+      if (internalSiteModelMachineIndexMap[internalSiteModelMachineIndex] == null)
       {
         lock (this)
         {
-          if (MachineIDMap[machineID] == null) // This thread 'won'
-            MachineIDMap[machineID] = new ProductionEventLists(Owner, machineID);
+          if (internalSiteModelMachineIndexMap[internalSiteModelMachineIndex] == null) // This thread 'won'
+            internalSiteModelMachineIndexMap[internalSiteModelMachineIndex] = new ProductionEventLists(Owner, internalSiteModelMachineIndex);
         }
       }
 
-      return MachineIDMap[machineID];
+      return internalSiteModelMachineIndexMap[internalSiteModelMachineIndex];
     }
 
     /// <summary>
     /// Default (short) indexer for the machines target values that uses the machine ID map dictionary to locate the set of 
     /// events lists for that machine.
     /// </summary>
-    /// <param name="machineID"></param>
+    /// <param name="internalSiteModelMachineIndex"></param>
     /// <returns></returns>
-    public IProductionEventLists this[short machineID] => GetMachineEventLists(machineID);
+    public IProductionEventLists this[short internalSiteModelMachineIndex] => GetMachineEventLists(internalSiteModelMachineIndex);
 
     /// <summary>
     /// Overrides the base List T Add() method to add the item to the local machine ID map dictionary as well as add it to the list
@@ -73,10 +73,10 @@ namespace VSS.TRex.Events
     /// <param name="events"></param>
     public void Add(IProductionEventLists events)
     {
-      if (events.MachineID >= MachineIDMap.Length)
-        Array.Resize(ref MachineIDMap, events.MachineID + 1);
+      if (events.InternalSiteModelMachineIndex >= internalSiteModelMachineIndexMap.Length)
+        Array.Resize(ref internalSiteModelMachineIndexMap, events.InternalSiteModelMachineIndex + 1);
 
-      MachineIDMap[events.MachineID] = events;
+      internalSiteModelMachineIndexMap[events.InternalSiteModelMachineIndex] = events;
     }
   }
 }

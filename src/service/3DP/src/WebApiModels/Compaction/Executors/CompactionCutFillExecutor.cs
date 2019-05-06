@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #if RAPTOR
         }
 
-        var filter = RaptorConverters.ConvertFilter(request.Filter);
+        var filter = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient);
         var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
         var liftBuildSettings =
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);

@@ -22,7 +22,7 @@ data:
   KAFKA_PORT: "9092"
   KAFKA_TOPIC_NAME_SUFFIX: -Alpha
   KAFKA_OFFSET: latest
-  PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
+  PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V1
 #Service references  
   ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/associateprojectsubscription
   DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/dissociateprojectsubscription
@@ -47,6 +47,9 @@ data:
   TREX_TAGFILE_API_URL: http://trex.mutable.alpha.eks.vspengg.com/api/v2/tagfiles
   TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.alpha.eks.vspengg.com/api/v1/design
   TILE_INTERNAL_BASE_URL: http://tile.alpha.eks.vspengg.com/internal/v1
+#SERVICE DISCOVERY REFERENCES
+  assetdetails-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
+  assetsummary-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
 #TPaaS
   TPAAS_APP_TOKENKEYS: MGh1X25tYXlEQWFkMFdpY1hDekVHVTE3U2ZVYTppVWN3eEZ1cFRDRWFsaFVFOTRwWGhkVVNEa0Vh
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2/token
@@ -128,4 +131,3 @@ data:
   SLACK_URL: https://hooks.slack.com/services/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
   SLACK_CHANNEL: "#notifications-alpha"
   SLACK_USERNAME: vss-jobs-alpha
-  ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: false

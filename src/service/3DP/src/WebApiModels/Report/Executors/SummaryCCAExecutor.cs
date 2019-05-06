@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #if RAPTOR
         }
 
-        var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient);
 
         bool success = raptorClient.GetCCASummary(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
                             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCCASummary),
