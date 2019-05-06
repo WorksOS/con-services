@@ -24,6 +24,7 @@ data:
   KAFKA_URI: 10.211.16.11
   KAFKA_PORT: "9092"
   KAFKA_OFFSET: latest
+  KAFKA_TOPIC_NAME_SUFFIX:
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
 #Service references  
   ASSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/associateprojectsubscription
@@ -45,11 +46,15 @@ data:
   RAPTOR_PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
   SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1/background
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1/export
+  SCHEDULER_INTERNAL_BASE_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1
   VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta
   TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
 #SERVICE DISCOVERY REFERENCES
   assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
   assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
+#TPaaS
+  TPAAS_APP_TOKENKEYS: Q1VrR3pGbzhfd2xzcElhbWtNSkozODF1R1RzYTpwOWxjU0phbVFFQ2lXYkhpdTJiMUhUSFM3S1Fh
+  TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2/token
 #Misc stuff
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"
   TILE_RENDER_MAX_ZOOM_RANGE: "14"
@@ -111,8 +116,9 @@ data:
   DATA_OCEAN_URL: https://api-usw2.trimblepaas.com/data_ocean-v1.0
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
+  DATA_OCEAN_ROOT_FOLDER: prod
 #Pegasus
-  PEGASUS_URL: https://api-usw2.trimblepaas.com/pegasus_stage-v1.0
+  PEGASUS_URL:  https://api-usw2.trimblepaas.com/pegasus-v1.0
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
   PEGASUS_DXF_PROCEDURE_ID: cd1ef2a0-63fb-4469-809a-e650c4feb4ca
