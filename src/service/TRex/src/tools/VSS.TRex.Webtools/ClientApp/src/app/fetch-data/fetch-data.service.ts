@@ -75,7 +75,10 @@ export class FetchDataService {
     if (requestTypeString === "")
       return undefined;
 
-    let url = `productiondata/${requestTypeString}/${projectUid}&cutFillDesignUid=${designUid}&cutFillOffset=${designOffset}`;
+    let url = `productiondata/${requestTypeString}/${projectUid}`;
+    if (<DisplayModeType>requestType == DisplayModeType.CutFill) {
+        url += `?cutFillDesignUid=${designUid}&cutFillOffset=${designOffset}`;
+    }
     return this.executeRequest<string>("getProductionData", url);
   }
 

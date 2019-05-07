@@ -37,6 +37,8 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="minX"></param>
     /// <param name="minY"></param>
     /// <param name="maxX"></param>
+    /// <param name="cutFillDesignUid"></param>
+    /// <param name="offset"></param>
     /// <returns></returns>
     [HttpGet("{siteModelID}")]
     public async Task<JsonResult> GetTile(string siteModelID,

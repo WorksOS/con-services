@@ -69,7 +69,7 @@ export class ProjectComponent {
   public designs: DesignSurface[] = [];
   public designFileName: string = "";
   public designOffset: number = 0.0;
-  public designUID: string = "";
+  public designUid: string = "";
 
   public newDesignGuid: string = "";
   public machineDesigns: MachineDesign[] = [];
@@ -247,10 +247,12 @@ constructor(
     mode: number,
     pixelsX: number,
     pixelsY: number,
-    tileExtents: ProjectExtents): Promise<string> {
+    tileExtents: ProjectExtents,
+    designUid: string,
+    designOffset: number): Promise<string> {
 
     var vm = this;
-    return new Promise<string>((resolve) => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents)
+    return new Promise<string>((resolve) => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents, designUid, designOffset)
         .subscribe(tile => {
           vm.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
           resolve();
@@ -269,7 +271,7 @@ constructor(
 
   public testAsync() {
     this.tileExtents = new ProjectExtents(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
-    this.performNTimesSync(() => this.getTileAsync(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents), 10);
+    this.performNTimesSync(() => this.getTileAsync(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents, this.designUid, this.designOffset), 10);
   }
 
   public getTile() : void {
@@ -279,7 +281,7 @@ constructor(
 
     // Make sure the displayed tile extents is updated
     this.tileExtents = new ProjectExtents(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
-    this.projectService.getTile(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents, this.designUID, this.designOffset)
+    this.projectService.getTile(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents, this.designUid, this.designOffset)
       .subscribe(tile => {
         this.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
         this.updateTimerCompletionTime();      
@@ -404,7 +406,7 @@ constructor(
     //if user pauses then get cell datum value
     if (this.showCellDatum) {
       if (this.prevMousePixelX == this.mousePixelX && this.prevMousePixelY == this.mousePixelY) {
-        this.projectService.getCellDatum(this.projectUid, this.designUID, this.designOffset, this.mouseWorldX, this.mouseWorldY, this.mode)
+        this.projectService.getCellDatum(this.projectUid, this.designUid, this.designOffset, this.mouseWorldX, this.mouseWorldY, this.mode)
           .subscribe(result => {
             //TODO: display nicely
             //for now just display raw value
@@ -540,7 +542,7 @@ constructor(
   }
 
   public selectDesign(): void {
-      localStorage.setItem("designUid", this.designUID);
+      localStorage.setItem("designUid", this.designUid);
       localStorage.setItem("designOffset", this.designOffset.toString());
   }
 
@@ -700,7 +702,7 @@ constructor(
     var result: string = "";
     var first: boolean = true;
 
-    return this.projectService.drawProfileLineForDesign(this.projectUid, this.designUID, this.designOffset, startX, startY, endX, endY)
+    return this.projectService.drawProfileLineForDesign(this.projectUid, this.designUid, this.designOffset, startX, startY, endX, endY)
       .subscribe(points =>
       {
         var stationRange:number = points[points.length - 1].station - points[0].station;
