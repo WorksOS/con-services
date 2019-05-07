@@ -105,7 +105,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.JvmOptions = new List<string>() {
         "-DIGNITE_QUIET=false",
-        "-Djava.net.preferIPv4Stack=true" };
+        "-Djava.net.preferIPv4Stack=true"
+      };
 
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableCacheComputeServer"));
@@ -130,6 +131,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
     {
       cfg.SpringConfigUrl = @".\ignitePersistantMutableKubeConfig.xml";
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
 
       cfg.CommunicationSpi = new TcpCommunicationSpi()
       {
