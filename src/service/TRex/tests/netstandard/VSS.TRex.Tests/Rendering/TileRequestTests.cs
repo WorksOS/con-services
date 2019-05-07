@@ -278,9 +278,11 @@ namespace VSS.TRex.Tests.Rendering
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_CutFill(bool usePalette)
+    [InlineData(false, -25)]
+    [InlineData(true, -25)]
+    [InlineData(false, 0)]
+    [InlineData(true, 0)]
+    public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_CutFill(bool usePalette, double offset)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -300,7 +302,7 @@ namespace VSS.TRex.Tests.Rendering
       var palette = usePalette ? PVMPaletteFactory.GetPallete(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent) : null;
 
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
-      var referenceDesign = new DesignOffset(designUid, 0);
+      var referenceDesign = new DesignOffset(designUid, offset);
 
       var request = new TileRenderRequest();
       var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette);
@@ -314,7 +316,8 @@ namespace VSS.TRex.Tests.Rendering
       var response = request.Execute(arg);
       CheckSimpleRenderTileResponse(response);
 
-      // File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //The tile for 0 offset is red, for -25 it is blue
+      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }
   }
 }

@@ -63,10 +63,9 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
-    private void BuildModelForSingleSubGridCutFill(out ISiteModel siteModel, float heightIncrement)
+    private void BuildModelForSingleSubGridCutFill(out ISiteModel siteModel, float heightIncrement, float baseHeight=1.0f)
     {
       var baseTime = DateTime.UtcNow;
-      var baseHeight = 1.0f;
 
       siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
@@ -165,7 +164,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid, 0);
-      argument.Offsets = new[] {1.0, 0.4, 0.2, 0.0, -0.2, -0.4, -1.0};
+      argument.Offsets = new[] { 1.0, 0.4, 0.2, 0.0, -0.2, -0.4, -1.0 };
 
       var result = operation.Execute(argument);
 
@@ -184,6 +183,42 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
       for (int i = 0; i < result.Counts.Length; i++)
         result.Percents[i].Should().Be((double) result.Counts[i] / sum * 100);
+    }
+
+    [Theory]
+    [InlineData(0, 3)]//Difference between production data and design is 0.1
+    [InlineData(-0.4, 2)]//Difference between production data and design is -0.3
+    [InlineData(0.5, 5)]//Difference between production data and design is 0.6
+    public void SiteModelWithSingleFlatSubGrid_FullExtents_WithSingleFlatTriangleDesignAboutOrigin(double offset, int indexWithData)
+    {
+      AddClusterComputeGridRouting();
+      AddApplicationGridRouting();
+      AddDesignProfilerGridRouting();
+
+      BuildModelForSingleSubGridCutFill(out var siteModel, 0.0f, 1.0f);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.1f);
+
+      var operation = new CutFillStatisticsOperation();
+      var argument = SimpleCutFillStatisticsArgument(siteModel, designUid, offset);
+      argument.Offsets = new[] { 1.0, 0.4, 0.2, 0.0, -0.2, -0.4, -1.0 };
+
+      var result = operation.Execute(argument);
+
+      result.Should().NotBeNull();
+      result.ResultStatus.Should().Be(RequestErrorStatus.OK);
+
+      for (int i = 0; i < 6; i++)
+      {
+        if (i == indexWithData)
+          result.Counts[i].Should().Be(903);
+        else
+          result.Counts[i].Should().Be(0);
+      }
+  
+      long sum = result.Counts.Sum();
+
+      for (int i = 0; i < result.Counts.Length; i++)
+        result.Percents[i].Should().Be((double)result.Counts[i] / sum * 100);
     }
   }
 }
