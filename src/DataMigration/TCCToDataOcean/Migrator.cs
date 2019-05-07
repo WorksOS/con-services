@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -135,111 +136,121 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<bool> MigrateProject(Project project)
     {
-      Log.LogInformation($"{Method.In()} Migrating project {project.ProjectUID}, Name: '{project.Name}'");
-      _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.InProgress);
-
-      var coordinateSystemFileMigrationResult = false;
-
-      // DIAGNOSTIC RUNTIME SWITCH
-      if (_downloadProjectCoordinateSystemFile)
+      try
       {
-        // Get the real CSIB for this project, ignoring what's attached to the project in the database.
-        var csibResponse = await _csibAgent.GetCSIBForProject(project);
+        Log.LogInformation($"{Method.In()} Migrating project {project.ProjectUID}, Name: '{project.Name}'");
+        _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.InProgress);
 
-        _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
+        var coordinateSystemFileMigrationResult = false;
 
-        byte[] coordSystemFileContent;
-
-        if (csibResponse.Code != 0)
+        // DIAGNOSTIC RUNTIME SWITCH
+        if (_downloadProjectCoordinateSystemFile)
         {
-          _migrationDb.SetResolveCSIBMessage(Table.Projects, project.ProjectUID, csibResponse.Message);
+          // Get the real CSIB for this project, ignoring what's attached to the project in the database.
+          var csibResponse = await _csibAgent.GetCSIBForProject(project);
 
-          // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
-          coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
-        }
-        else
-        {
-          _migrationDb.SetProjectCSIB(Table.Projects, project.ProjectUID, csibResponse.Message);
+          _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
 
-          var coordSysInfo = await _csibAgent.GetCoordSysInfoFromCSIB64(project, csibResponse.Message);
-          var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(project, coordSysInfo["coordinateSystem"]["id"].ToString());
+          byte[] coordSystemFileContent;
 
-          coordSystemFileContent = Encoding.UTF8.GetBytes(dcFileContent);
-        }
-
-        if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
-        {
-          _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, true);
-
-          // DIAGNOSTIC RUNTIME SWITCH
-          if (_updateProjectCoordinateSystemFile)
+          if (csibResponse.Code != 0)
           {
-            var updateProjectResult = await WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
+            _migrationDb.SetResolveCSIBMessage(Table.Projects, project.ProjectUID, csibResponse.Message);
 
-            coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
-
-            Log.LogInformation($"{Method.Info()} Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
+            // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
+            coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
           }
           else
           {
-            Log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
+            _migrationDb.SetProjectCSIB(Table.Projects, project.ProjectUID, csibResponse.Message);
+
+            var coordSysInfo = await _csibAgent.GetCoordSysInfoFromCSIB64(project, csibResponse.Message);
+            var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(project, coordSysInfo["coordinateSystem"]["id"].ToString());
+
+            coordSystemFileContent = Encoding.UTF8.GetBytes(dcFileContent);
           }
 
-          // DIAGNOSTIC STEP: To validate content of DC file is good.
-          SaveDCFileToDisk(project, coordSystemFileContent);
+          if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
+          {
+            _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, true);
+
+            // DIAGNOSTIC RUNTIME SWITCH
+            if (_updateProjectCoordinateSystemFile)
+            {
+              var updateProjectResult = await WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
+
+              coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
+
+              Log.LogInformation($"{Method.Info()} Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
+            }
+            else
+            {
+              Log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
+            }
+
+            // DIAGNOSTIC STEP: To validate content of DC file is good.
+            SaveDCFileToDisk(project, coordSystemFileContent);
+          }
         }
-      }
-      else
-      {
-        _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, false);
-      }
-
-      var importedFilesResult = false;
-      var filesResult = await ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project);
-
-      if (filesResult == null)
-      {
-        Log.LogInformation($"{Method.Info()} Failed to fetch imported files for project {project.ProjectUID}, aborting project migration");
-        _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.Failed);
-
-        return false;
-      }
-
-      if (filesResult.ImportedFileDescriptors?.Count > 0)
-      {
-        var selectedFiles = filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
-        _migrationDb.SetProjectFilesDetails(Table.Projects, project, filesResult.ImportedFileDescriptors.Count, selectedFiles.Count);
-
-        Log.LogInformation($"{Method.Info()} Found {selectedFiles.Count} out of {filesResult.ImportedFileDescriptors.Count} files to migrate for {project.ProjectUID}");
-
-        var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();
-
-        foreach (var file in selectedFiles)
+        else
         {
-          _migrationDb.WriteRecord(Table.Files, file);
-          var migrationResult = MigrateFile(file);
-
-          fileTasks.Add(migrationResult);
+          _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, false);
         }
 
-        await Task.WhenAll(fileTasks);
+        var importedFilesResult = false;
+        var filesResult = await ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project);
 
-        importedFilesResult = fileTasks.All(t => t.Result.Item1);
+        if (filesResult == null)
+        {
+          Log.LogInformation($"{Method.Info()} Failed to fetch imported files for project {project.ProjectUID}, aborting project migration");
+          _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.Failed);
+
+          return false;
+        }
+
+        if (filesResult.ImportedFileDescriptors?.Count > 0)
+        {
+          var selectedFiles = filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
+          _migrationDb.SetProjectFilesDetails(Table.Projects, project, filesResult.ImportedFileDescriptors.Count, selectedFiles.Count);
+
+          Log.LogInformation($"{Method.Info()} Found {selectedFiles.Count} out of {filesResult.ImportedFileDescriptors.Count} files to migrate for {project.ProjectUID}");
+
+          var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();
+
+          foreach (var file in selectedFiles)
+          {
+            _migrationDb.WriteRecord(Table.Files, file);
+            var migrationResult = MigrateFile(file);
+
+            fileTasks.Add(migrationResult);
+          }
+
+          await Task.WhenAll(fileTasks);
+
+          importedFilesResult = fileTasks.All(t => t.Result.Item1);
+        }
+        else
+        {
+          Log.LogInformation($"{Method.Info()} No files found for {project.ProjectUID}");
+        }
+
+        var result = (coordinateSystemFileMigrationResult && importedFilesResult) || filesResult.ImportedFileDescriptors?.Count == 0;
+
+        _migrationDb.SetMigrationState(Table.Projects, project, result ? MigrationState.Completed : MigrationState.Failed);
+
+        Log.LogInformation($"{Method.Out()} Project '{project.Name}' ({project.ProjectUID}) {(result ? "succeeded" : "failed")}");
+
+        _migrationDb.SetMigationInfo_IncrementProjectsProcessed();
+
+        return result;
       }
-      else
-      {
-        Log.LogInformation($"{Method.Info()} No files found for {project.ProjectUID}");
+      catch (Exception exception)
+      { 
+        Log.LogError($"{Method.Info()} Error processing project {project.ProjectUID}");
+        Log.LogError(exception.GetBaseException().Message);
       }
 
-      var result = (coordinateSystemFileMigrationResult && importedFilesResult) || filesResult.ImportedFileDescriptors?.Count == 0;
-
-      _migrationDb.SetMigrationState(Table.Projects, project, result ? MigrationState.Completed : MigrationState.Failed);
-
-      Log.LogInformation($"{Method.Out()} Project '{project.Name}' ({project.ProjectUID}) {(result ? "succeeded" : "failed")}");
-
-      _migrationDb.SetMigationInfo_IncrementProjectsProcessed();
-
-      return result;
+      return false;
     }
 
     /// <summary>

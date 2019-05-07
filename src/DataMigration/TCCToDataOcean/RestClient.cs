@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -33,7 +35,17 @@ namespace TCCToDataOcean
       httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {bearerToken}");
     }
 
-    public async Task<TResponse> SendHttpClientRequest<TResponse>(string uri, HttpMethod method, string acceptHeader, string contentType, string customerUid, string payloadData = null) where TResponse : class
+    /// <summary>
+    /// Multi purpose HttpClient request wrapper.
+    /// </summary>
+    public async Task<TResponse> SendHttpClientRequest<TResponse>(
+      string uri, 
+      HttpMethod method, 
+      string acceptHeader, 
+      string contentType, 
+      string customerUid, 
+      string payloadData = null, 
+      Dictionary<string, string> customHeaders = null) where TResponse : class
     {
       Log.LogInformation($"{Method.In()} URI: {uri}");
 
@@ -41,6 +53,14 @@ namespace TCCToDataOcean
 
       request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
       request.Headers.Add("X-VisionLink-CustomerUid", customerUid);
+
+      if (customHeaders != null)
+      {
+        foreach (var keyValuePair in customHeaders)
+        {
+          request.Headers.Add(keyValuePair.Key, keyValuePair.Value);
+        }
+      }
 
       if (payloadData != null)
       {
@@ -75,7 +95,15 @@ namespace TCCToDataOcean
         {
           Log.LogInformation($"{Method.Info()} Status [{response.StatusCode}] Body: '{responseBody}'");
         }
-        else Log.LogDebug($"{Method.Info()} Status [{response.StatusCode}] URI: '{request.RequestUri.AbsoluteUri}', Body: '{responseBody}'");
+        else
+        {
+          Log.LogDebug($"{Method.Info()} Status [{response.StatusCode}] URI: '{request.RequestUri.AbsoluteUri}', Body: '{responseBody}'");
+
+          if (response.StatusCode == HttpStatusCode.Unauthorized)
+          { 
+            Debugger.Break();
+          }
+        }
 
         switch (response.Content.Headers.ContentType.MediaType)
         {
