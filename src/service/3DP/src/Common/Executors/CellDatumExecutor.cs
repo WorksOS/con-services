@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Common.Executors
 #if RAPTOR
     protected virtual bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)
     {
-      var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
+      var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient);
 
       return raptorClient.GetCellProductionData
       (request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,

@@ -88,11 +88,11 @@ namespace VSS.MasterData.Models.UnitTests
     {
       var designUid = Guid.NewGuid().ToString();
 
-      var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
+      var filter1 = new Filter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
-      var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
+      var filter2 = new Filter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash2 = filter2.GetHashCode();
@@ -103,11 +103,11 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void CanCompareFiltersMachineDirection()
     {
-      var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var filter1 = new Filter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
-      var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var filter2 = new Filter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash2 = filter2.GetHashCode();
@@ -118,11 +118,11 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void CanCompareFiltersMachineDirectionTrue()
     {
-      var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var filter1 = new Filter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), true, -1, null, "123");
       var hash1 = filter1.GetHashCode();
-      var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var filter2 = new Filter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash2 = filter2.GetHashCode();
@@ -134,11 +134,11 @@ namespace VSS.MasterData.Models.UnitTests
     public void CanCompareFiltersMachineDirectionNulls()
     {
       var designUid = Guid.NewGuid().ToString();
-      var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
+      var filter1 = new Filter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash1 = filter1.GetHashCode();
-      var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
+      var filter2 = new Filter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash2 = filter2.GetHashCode();
@@ -149,11 +149,11 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void CanCompareFiltersNonEqual()
     {
-      var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var filter1 = new Filter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
-      var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var filter2 = new Filter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test2", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash2 = filter2.GetHashCode();
@@ -166,11 +166,11 @@ namespace VSS.MasterData.Models.UnitTests
     {
       var designUid = Guid.NewGuid().ToString();
 
-      var filter1 = Filter.CreateFilter(DateTime.MinValue, null, designUid, "designName",
+      var filter1 = new Filter(DateTime.MinValue, null, designUid, "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
-      var filter2 = Filter.CreateFilter(DateTime.MinValue, null, designUid, "designName",
+      var filter2 = new Filter(DateTime.MinValue, null, designUid, "designName",
         new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash2 = filter2.GetHashCode();
@@ -182,12 +182,12 @@ namespace VSS.MasterData.Models.UnitTests
     public void CanCreateFilterTest()
     {
       // Empty filter...
-      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null);
+      Filter filter = new Filter(null, null, null, null, null, null, null, null, null, null, null);
       ICollection<ValidationResult> results;
       Assert.IsTrue(this._validator.TryValidate(filter, out results));
 
       // Complete filter...
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, this._polygonLL, true, 1);
       Assert.IsTrue(this._validator.TryValidate(filter, out results));
     }
@@ -196,47 +196,47 @@ namespace VSS.MasterData.Models.UnitTests
     public void ValidateSuccessTest()
     {
       // All properties' values are valid...
-      Filter filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      Filter filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, this._polygonLL, true, 1, this._boundaryUid, this._boundaryName);
       filter.Validate(this._serviceExceptionHandler);
 
       // Date range is not provided...
-      filter = Filter.CreateFilter(null, null, new Guid().ToString(), "designName", this._machines, 123, ElevationType.Lowest, true, null,
+      filter = new Filter(null, null, new Guid().ToString(), "designName", this._machines, 123, ElevationType.Lowest, true, null,
         true, 1);
       filter.Validate(this._serviceExceptionHandler);
 
       // Design UID is not provided...
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), null, "designName", this._machines, 123, ElevationType.Lowest, true, null,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), null, "designName", this._machines, 123, ElevationType.Lowest, true, null,
         true, 1);
       filter.Validate(this._serviceExceptionHandler);
 
       // Machines' list is not provided...
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", null, 123, ElevationType.Lowest,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", null, 123, ElevationType.Lowest,
         true, null, true, 1);
       filter.Validate(this._serviceExceptionHandler);
 
       // Machine's design name is not provided...
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, null,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, null,
         ElevationType.Lowest, true, null, true, 1);
       filter.Validate(this._serviceExceptionHandler);
 
       // Elevation type is not provided...
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, 1);
       filter.Validate(this._serviceExceptionHandler);
 
       // Vibration state is not provided...
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, null, null, true, 1);
       filter.Validate(this._serviceExceptionHandler);
 
       // Forward direction flag is not provided...
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, null, 1);
       filter.Validate(this._serviceExceptionHandler);
 
       // Layer number is not provided...
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, null);
       filter.Validate(this._serviceExceptionHandler);
     }
@@ -245,23 +245,23 @@ namespace VSS.MasterData.Models.UnitTests
     public void ValidateFailureTest()
     {
       // Start UTC date is not provided...
-      var filter = Filter.CreateFilter(null, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(null, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, this._polygonLL, true, 1);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
 
       // End UTC date is not provided...
-      filter = Filter.CreateFilter(this._utcNow, null, new Guid().ToString(), "designName", this._machines, 123, ElevationType.Lowest, true,
+      filter = new Filter(this._utcNow, null, new Guid().ToString(), "designName", this._machines, 123, ElevationType.Lowest, true,
         this._polygonLL, true, 1);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
 
       // Invalid design UID's Guid is provided...
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), this.INVALID_GUID, "designName", this._machines, 123, ElevationType.Lowest,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), this.INVALID_GUID, "designName", this._machines, 123, ElevationType.Lowest,
         true, this._polygonLL, true, 1);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
 
       // The provided polygon's boundary has less than 3 points...
       this._polygonLL.RemoveAt(this._polygonLL.Count - 1);
-      filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, this._polygonLL, true, 1);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
     }
@@ -269,7 +269,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void ValidateJsonStringTest()
     {
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, this._polygonLL, true, 1, this._boundaryUid, this._boundaryName);
       var jsonString = JsonConvert.SerializeObject(filter);
 
@@ -282,7 +282,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void HydrateJsonStringWithPolygonTest()
     {
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, 1);
 
       // now add the polygon
@@ -311,7 +311,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void HydrateJsonStringWithPolygonTest_Update()
     {
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new  Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, this._polygonLL, true, 1, this._boundaryUid, this._boundaryName);
       var jsonString = JsonConvert.SerializeObject(filter);
 
@@ -355,7 +355,7 @@ namespace VSS.MasterData.Models.UnitTests
       double? endStation = 50.6;
       double? leftOffset = 4.5;
       double? rightOffset = 8.94;
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, 1, null, null,
         alignmentUid, null, startStation, endStation, leftOffset, rightOffset);
 
@@ -379,7 +379,7 @@ namespace VSS.MasterData.Models.UnitTests
       double? endStation = 50.6;
       double? leftOffset = 4.5;
       double? rightOffset = 8.94;
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, 1, null, null,
         alignmentUid, null, startStation, endStation, leftOffset, rightOffset);
 
@@ -398,7 +398,7 @@ namespace VSS.MasterData.Models.UnitTests
       double? endStation = 50.6;
       double? leftOffset = 4.5;
       double? rightOffset = 8.94;
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, 1, null, null,
         alignmentUid, null, startStation, endStation, leftOffset, rightOffset);
 
@@ -418,7 +418,7 @@ namespace VSS.MasterData.Models.UnitTests
       double? endStation = null;
       double? leftOffset = 4.5;
       double? rightOffset = 8.94;
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, 1, null, null,
         alignmentUid, null, startStation, endStation, leftOffset, rightOffset);
 
@@ -438,7 +438,7 @@ namespace VSS.MasterData.Models.UnitTests
       double? endStation = 49.5;
       double? leftOffset = 0;
       double? rightOffset = 29.5;
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, 1, null, null,
         alignmentUid, null, startStation, endStation, leftOffset, rightOffset);
 
@@ -458,7 +458,7 @@ namespace VSS.MasterData.Models.UnitTests
       double? endStation = 65;
       double? leftOffset = 0;
       double? rightOffset = null;
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, 1, null, null,
         alignmentUid, null, startStation, endStation, leftOffset, rightOffset);
 
@@ -478,7 +478,7 @@ namespace VSS.MasterData.Models.UnitTests
       double? endStation = 50.6;
       double? leftOffset = -20;
       double? rightOffset = 25;
-      var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
+      var filter = new Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, null, true, 1, null, null,
         alignmentUid, null, startStation, endStation, leftOffset, rightOffset);
 
@@ -497,7 +497,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void AsAtDateFilterCustom_Success()
     {
-      var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, true);
       filter.Validate(_serviceExceptionHandler);
     }
@@ -514,7 +514,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void AsAtDateFilterFailure_MissingEndUtc()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, true);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
     }
@@ -522,7 +522,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void AsAtDateFilterFailure_MissingStartUtc()
     {
-      var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, false);
       Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
     }
@@ -530,7 +530,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void AutomaticsFilterSuccess()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, AutomaticsType.Manual);
       filter.Validate(_serviceExceptionHandler);
     }
@@ -538,7 +538,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void TemperatureRangeFilterSuccess()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, 100.0, 120.5);
       filter.Validate(_serviceExceptionHandler);
     }
@@ -546,7 +546,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void TemperatureRangeFilter_MissingMax()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, 100.0);
       var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
       Assert.IsTrue(ex.GetContent.Contains(":2072"), "wrong code for missing max temperature");
@@ -555,7 +555,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void TemperatureRangeFilter_OutOfRange()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, -10.0, 320.0);
       var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
       Assert.IsTrue(ex.GetContent.Contains(":2076"), "wrong code for temperature out of range");
@@ -564,7 +564,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void TemperatureRangeFilter_InvalidRange()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, 255.0, 127.5);
       var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
       Assert.IsTrue(ex.GetContent.Contains(":2074"), "wrong code for invalid temperature range");
@@ -573,7 +573,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void PassCountRangeFilterSuccess()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, 5, 10);
       filter.Validate(_serviceExceptionHandler);
 
@@ -582,7 +582,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void PassCountRangeFilter_MissingMax()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, 5);
       var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
       Assert.IsTrue(ex.GetContent.Contains(":2073"), "wrong code for missing max pass count");
@@ -591,7 +591,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void PassCountRangeFilter_OutOfRange()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, 900, 1100);
       var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
       Assert.IsTrue(ex.GetContent.Contains(":2077"), "wrong code for pass count out of range");
@@ -601,7 +601,7 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void PassCountRangeFilter_InvalidRange()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter(null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, 25, 15);
       var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
       Assert.IsTrue(ex.GetContent.Contains(":2075"), "wrong code for invalid pass count range");

@@ -694,7 +694,7 @@ namespace VSS.TRex.Filters
 
       if (HasMachineFilter)
       {
-        // Check the machine identified by PassValue.MachineID is in our site model Machine
+        // Check the machine identified by PassValue.InternalSiteModelMachineIndex is in our site model Machine
         // list based on the index of the machine in that list
 
         if (PassValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.InternalSiteModelMachineIndex])
@@ -824,7 +824,7 @@ namespace VSS.TRex.Filters
 
       if (HasMachineFilter)
       {
-        // Check the machine identified by PassValue.MachineID is in our site model Machine
+        // Check the machine identified by PassValue.InternalSiteModelMachineIndex is in our site model Machine
         // list based on the index of the machine in that list
 
         if (PassValue.FilteredPass.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.FilteredPass.InternalSiteModelMachineIndex])
@@ -1035,7 +1035,7 @@ namespace VSS.TRex.Filters
 
       if (HasMachineFilter)
       {
-        // Check the machine identified by PassValue.MachineID is in our site model Machine
+        // Check the machine identified by PassValue.InternalSiteModelMachineIndex is in our site model Machine
         // list based on the index of the machine in that list
 
         if (PassValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.InternalSiteModelMachineIndex])

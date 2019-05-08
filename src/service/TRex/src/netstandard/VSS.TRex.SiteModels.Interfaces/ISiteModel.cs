@@ -146,5 +146,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     bool MachineTargetValuesLoaded { get; }
 
     ISiteModelMetadata MetaData { get; }
+
+    byte GetCCAMinimumPassesValue(Guid machineUID, DateTime startDate, DateTime endDate, int layerID);
   }
 }

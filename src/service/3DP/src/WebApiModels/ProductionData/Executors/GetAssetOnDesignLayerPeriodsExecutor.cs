@@ -56,7 +56,16 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           if (layerList == null || layerList.Length == 0)
             return new AssetOnDesignLayerPeriodsExecutionResult(new List<AssetOnDesignLayerPeriod>());
 
-          assetOnDesignLayerPeriods = ConvertLayerList(layerList);
+          var raptorDesigns = raptorClient.GetOnMachineDesignEvents(request.ProjectId ?? -1);
+
+          if (raptorDesigns == null)
+          {
+            log.LogError(
+            $"GetAssetOnDesignLayerPeriodsExecutor: no raptor machineDesigns found to match with layers");
+            return new AssetOnDesignLayerPeriodsExecutionResult(new List<AssetOnDesignLayerPeriod>());
+          }
+
+          assetOnDesignLayerPeriods = ConvertLayerList(layerList, raptorDesigns);
         }
         else
         {
@@ -111,16 +120,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     }
 
 #if RAPTOR
-    private List<AssetOnDesignLayerPeriod> ConvertLayerList(TDesignLayer[] layerList)
+    private List<AssetOnDesignLayerPeriod> ConvertLayerList(TDesignLayer[] layerList, TDesignName[] raptorDesigns)
     {
       var assetOnDesignLayerPeriods = new List<AssetOnDesignLayerPeriod>(layerList.Length);
+      var designNames = raptorDesigns.ToList();
 
       for (var i = 0; i < layerList.Length; i++)
       {
+        var designName = designNames.Where(d => d.FID == layerList[i].FDesignID).Select( d => d.FName).FirstOrDefault();
         assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod
         (
           layerList[i].FAssetID, layerList[i].FDesignID, layerList[i].FLayerID, layerList[i].FStartTime,
-          layerList[i].FEndTime, null
+          layerList[i].FEndTime, null, designName
         ));
       }
 

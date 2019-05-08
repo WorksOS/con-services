@@ -9,9 +9,10 @@ namespace VSS.TMS
   static class Utils
   {
 
-    public static readonly string TerrainData = "application/octet-stream";
-    //  public static readonly string TerrainData = "application/vnd.quantized-mesh; extensions=octvertexnormals";
-
+    public static readonly string TerrainDataHM = "application/octet-stream";
+  //  public static readonly string TerrainDataQM = "application/vnd.quantized-mesh";
+  //  public static readonly string TerrainDataQM = "application/vnd.quantized-mesh; extensions=octvertexnormals";
+    public static readonly string TerrainDataQM = "application/octet-stream";
     public static readonly string ImagePng = "image/png";
 
     public static readonly string ImageJpeg = "image/jpeg";
@@ -41,7 +42,9 @@ namespace VSS.TMS
       {
         case "png": { mediaType = ImagePng; break; }
         case "jpg": { mediaType = ImageJpeg; break; }
-        case "terrain": { mediaType = TerrainData; break; }
+        case "terrain": { mediaType = TerrainDataHM; break; }
+        case "terrainhm": { mediaType = TerrainDataHM; break; }
+        case "terrainqm": { mediaType = TerrainDataQM; break; }
 
         default: throw new ArgumentException("tileFormat");
       }

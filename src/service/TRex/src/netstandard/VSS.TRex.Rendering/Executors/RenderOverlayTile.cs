@@ -222,7 +222,7 @@ namespace VSS.TRex.Rendering.Executors
             end;
                   end
                 else
-                  SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: GetMachineCCAMinimumPassesValue Failed for MachineID: %d. ReturnCode:%d', [Self.ClassName, FMachineID, Ord(ServerResult)]), slmcWarning);
+                  SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: GetMachineCCAMinimumPassesValue Failed for InternalSiteModelMachineIndex: %d. ReturnCode:%d', [Self.ClassName, FMachineID, Ord(ServerResult)]), slmcWarning);
               end;
         finally
           if Assigned(ResponseVerb) then
@@ -573,7 +573,7 @@ namespace VSS.TRex.Rendering.Executors
         Renderer.WorldTileWidth = WorldTileWidth;
         Renderer.WorldTileHeight = WorldTileHeight;
 
-        ResultStatus = Renderer.PerformRender(Mode, processor, ColourPalettes);
+        ResultStatus = Renderer.PerformRender(Mode, processor, ColourPalettes, Filters);
 
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
         {

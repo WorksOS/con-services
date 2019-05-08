@@ -93,65 +93,21 @@ namespace Common.Repository
 
     #region(Projects)
 
-    public static IEnumerable<Models.Project> GetLandfillProjectsForUser(string userUid)
-    {
-      return WithConnection(conn =>
-      {
-        var command = @"SELECT 
-              p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
-              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
-              p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-              p.fk_ProjectTypeID AS ProjectType, p.GeometryWKT, 
-              s.StartDate AS SubStartDate, s.EndDate AS SubEndDate
-          FROM Project p  
-              JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-              JOIN CustomerUser cu ON cu.fk_CustomerUID = cp.fk_CustomerUID
-              JOIN ProjectSubscription ps ON ps.fk_ProjectUID = p.ProjectUID
-              JOIN Subscription s ON s.SubscriptionUID = ps.fk_SubscriptionUID
-          WHERE cu.UserUID = @userUid and p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
-
-
-        var projects = new List<Models.Project>();
-
-        using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
-        {
-          while (reader.Read())
-            projects.Add(new Models.Project
-            {
-              LegacyProjectID = reader.GetUInt16(reader.GetOrdinal("LegacyProjectID")),
-              ProjectUID = reader.GetString(reader.GetOrdinal("ProjectUID")),
-              Name = reader.GetString(reader.GetOrdinal("Name")),
-              LandfillTimeZone = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
-              ProjectTimeZone = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
-              LegacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID")),
-              SubscriptionEndDate = reader.GetDateTime(reader.GetOrdinal("SubEndDate")),
-              GeometryWKT = reader.GetString(reader.GetOrdinal("GeometryWKT")) == null
-                ? string.Empty
-                : reader.GetString(reader.GetOrdinal("GeometryWKT")),
-              IsDeleted = reader.GetBoolean(reader.GetOrdinal("IsDeleted"))
-            });
-        }
-
-        return projects;
-      });
-    }
-
     public static IEnumerable<Project> GetProjects(string userUid, string customerUid)
     {
       return WithConnection(conn =>
       {
         var command = @"SELECT 
-              p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
-              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
-              p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-              p.fk_ProjectTypeID AS ProjectType, p.GeometryWKT, 
+              p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,      
+              cp.LegacyCustomerID, 
               s.StartDate AS SubStartDate, s.EndDate AS SubEndDate
-            FROM Project p  
-              JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-              JOIN CustomerUser cu ON cu.fk_CustomerUID = cp.fk_CustomerUID
+            FROM CustomerUser cu   
+              JOIN CustomerProject cp ON cp.fk_CustomerUID = cu.fk_CustomerUID 
+              JOIN Project p ON p.ProjectUID = cp.fk_ProjectUID
               JOIN ProjectSubscription ps ON ps.fk_ProjectUID = p.ProjectUID
               JOIN Subscription s ON s.SubscriptionUID = ps.fk_SubscriptionUID
-            WHERE cu.UserUID = @userUid AND cu.fk_CustomerUID = @customerUid AND p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
+            WHERE cu.UserUID = @userUid AND cu.fk_CustomerUID = @customerUid 
+              AND p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
 
         var projects = new List<Project>();
 
@@ -205,16 +161,6 @@ namespace Common.Repository
       return WithConnection(conn =>
       {
         var command =
-        //@"SELECT DISTINCT p.ProjectUID,  p.Name, p.LegacyProjectID AS ProjectID, 
-        //      p.LandfillTimeZone as TimeZone,
-        //      cp.LegacyCustomerID, cp.fk_CustomerUID As CustomerUid
-        //    FROM Project p  
-        //      JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-        //      JOIN CustomerUser cu ON cu.fk_CustomerUID = cp.fk_CustomerUID
-        //      JOIN ProjectSubscription ps ON ps.fk_ProjectUID = p.ProjectUID
-        //      JOIN Subscription s ON s.SubscriptionUID = ps.fk_SubscriptionUID
-        //    WHERE p.fk_ProjectTypeID = 1 AND p.IsDeleted = 0";
-
         @"SELECT DISTINCT p.ProjectUID,  p.Name, p.LegacyProjectID AS ProjectID, 
                           p.LandfillTimeZone as TimeZone,
                           cp.LegacyCustomerID, cp.fk_CustomerUID As CustomerUid
@@ -546,7 +492,7 @@ namespace Common.Repository
     {
       return WithConnection(conn =>
       {
-        var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID, g.GeometryWKT 
+        var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID, ST_AsWKT(g.PolygonST) AS GeometryWKT 
                           FROM Geofence g
                             JOIN ProjectGeofence pg on g.GeofenceUID = pg.fk_GeofenceUID
                           WHERE pg.fk_ProjectUID = @projectUid AND g.IsDeleted = 0 
@@ -603,9 +549,9 @@ namespace Common.Repository
     {
       return WithConnection(conn =>
       {
-        var command = @"SELECT GeometryWKT 
-                          FROM Geofence
-                          WHERE GeofenceUID = @geofenceUid";
+        var command = @"SELECT ST_AsWKT(g.PolygonST) AS GeometryWKT 
+                          FROM Geofence g
+                          WHERE g.GeofenceUID = @geofenceUid";
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@geofenceUid", geofenceUid)))
         {

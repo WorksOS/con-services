@@ -7,6 +7,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
@@ -39,10 +40,14 @@ namespace VSS.TRex.Tests.Rendering
     private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
-    private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null)
+    private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null, CellPassAttributeFilter attributeFilter = null)
     {
-      return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256,
-        new FilterSet(new CombinedFilter()), Guid.Empty);
+      var filter = new FilterSet(new CombinedFilter());
+
+      if (attributeFilter != null)
+        filter.Filters[0].AttributeFilter = attributeFilter;
+
+      return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256, filter, Guid.Empty);
     }
 
     private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement,
@@ -50,9 +55,20 @@ namespace VSS.TRex.Tests.Rendering
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
+      byte baseCCA = 1;
 
       siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCAStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, 5);
+
+      var referenceDate = DateTime.UtcNow;
+      var startReportPeriod1 = referenceDate.AddMinutes(-60);
+      var endReportPeriod1 = referenceDate.AddMinutes(-30);
+
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(startReportPeriod1, ProductionEventType.StartEvent);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(endReportPeriod1, ProductionEventType.EndEvent);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].LayerIDStateEvents.PutValueAtDate(endReportPeriod1, 1);
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
         new CellPass
@@ -60,6 +76,7 @@ namespace VSS.TRex.Tests.Rendering
           InternalSiteModelMachineIndex = bulldozerMachineIndex,
           Time = baseTime.AddMinutes(x),
           Height = baseHeight + x * heightIncrement,
+          CCA = (byte)(baseCCA + x),
           PassType = PassType.Front
         }).ToArray();
 
@@ -67,18 +84,27 @@ namespace VSS.TRex.Tests.Rendering
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
-    private void CheckSimpleRenderTileResponse(TileRenderResponse response)
+    private void CheckSimpleRenderTileResponse(TileRenderResponse response, DisplayMode? displayMode = null)
     {
       response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
       response.Should().BeOfType<TileRenderResponse_Core2>();
-      ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
 
-      // Convert the response into a bitmap
-      var bmp = System.Drawing.Image.FromStream(new MemoryStream(((TileRenderResponse_Core2)response).TileBitmapData));
-      bmp.Should().NotBeNull();
-      bmp.Height.Should().Be(256);
-      bmp.Width.Should().Be(256);
+      if (displayMode != null && (displayMode == DisplayMode.CCA || displayMode == DisplayMode.CCASummary))
+      {
+        response.ResultStatus.Should().Be(RequestErrorStatus.FailedToGetCCAMinimumPassesValue);
+        ((TileRenderResponse_Core2)response).TileBitmapData.Should().BeNull();
+      }
+      else
+      {
+        response.ResultStatus.Should().Be(RequestErrorStatus.OK);
+        ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
+
+        // Convert the response into a bitmap
+        var bmp = System.Drawing.Image.FromStream(new MemoryStream(((TileRenderResponse_Core2)response).TileBitmapData));
+        bmp.Should().NotBeNull();
+        bmp.Height.Should().Be(256);
+        bmp.Width.Should().Be(256);
+      }
     }
 
     [Fact]
@@ -114,7 +140,7 @@ namespace VSS.TRex.Tests.Rendering
       var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode));
 
       response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.Unknown);
+      response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
       response.Should().BeOfType<TileRenderResponse_Core2>();
       ((TileRenderResponse_Core2) response).TileBitmapData.Should().BeNull();
     }
@@ -146,7 +172,7 @@ namespace VSS.TRex.Tests.Rendering
       var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode, palette));
 
       response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.Unknown);
+      response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
       response.Should().BeOfType<TileRenderResponse_Core2>();
       ((TileRenderResponse_Core2)response).TileBitmapData.Should().BeNull();
     }
@@ -173,7 +199,8 @@ namespace VSS.TRex.Tests.Rendering
       BuildModelForSingleCellTileRender(out var siteModel, 0.5f);
       
       var request = new TileRenderRequest();
-      var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode));
+      var filter = new CellPassAttributeFilter() { MachinesList = new[] { siteModel.Machines[0].ID }, LayerID = 1 };
+      var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode, null, filter));
 
       CheckSimpleRenderTileResponse(response);
     }
@@ -235,7 +262,7 @@ namespace VSS.TRex.Tests.Rendering
       var request = new TileRenderRequest();
       var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode));
 
-      CheckSimpleRenderTileResponse(response);
+      CheckSimpleRenderTileResponse(response, displayMode);
 
       //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }

@@ -83,7 +83,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       var outputType = OutputTypes.VedaAllPasses;
       string[] machineNames = new string[] { "first machineName" };
       var userPreferences = new UserPreferences();
-      var filter = Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(
+      var filter = new Productivity3D.Filter.Abstractions.Models.Filter(
         DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         new List<MachineDetails>(), null, null, null, null, null, null
@@ -117,7 +117,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       var userPreferences = new UserPreferences();
       var contributingMachines = new List<MachineDetails>()
         { new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Machine Name", false, Guid.NewGuid())};
-      var filter = Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(
+      var filter = new Productivity3D.Filter.Abstractions.Models.Filter(
         DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         contributingMachines, null, ElevationType.First, null, null, null, null

@@ -25,7 +25,6 @@ using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -67,7 +66,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var user = (TIDCustomPrincipal)User;
 
       var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(),
+        Request.Headers.GetCustomHeaders(true),
         user.CustomerUid,
         user.IsApplication,
         (user.Identity as GenericIdentity)?.Name,
@@ -97,7 +96,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var user = (TIDCustomPrincipal)User;
 
       var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(),
+        Request.Headers.GetCustomHeaders(true),
         user.CustomerUid,
         user.IsApplication,
         (user.Identity as GenericIdentity)?.Name,
@@ -207,7 +206,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     private async Task<FilterDescriptorSingleResult> UpsertFilter(TIDCustomPrincipal user, string username, UpsertFilterExecutor filterExecutor, ProjectData project, FilterRequest filterRequest)
     {
       var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(),
+        Request.Headers.GetCustomHeaders(true),
         user.CustomerUid,
         user.IsApplication,
         username,

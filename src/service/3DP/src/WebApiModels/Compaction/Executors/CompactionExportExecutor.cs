@@ -103,7 +103,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(ExportReport request)
     {
-      var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
+      var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient);
 
       bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,

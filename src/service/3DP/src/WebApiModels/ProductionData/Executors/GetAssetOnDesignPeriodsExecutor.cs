@@ -35,6 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           var machineDesignsResult = await trexCompactionDataProxy
             .SendDataGetRequest<MachineDesignsExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/machinedesigns",
               customHeaders);
+          // Trex will set OnMachineDesignId = -1, so that OnMachineDesignName should be used
           assetOnDesignPeriods = machineDesignsResult.AssetOnDesignPeriods;
         }
         else
@@ -140,8 +141,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         for (var i = 1; i < machineDesigns.Count; i++)
         {
           assetOnDesignPeriodsResult.Add(new AssetOnDesignPeriod(
-            machineDesigns[i - 1].Name,
-            machineDesigns[i - 1].Id,
+            machineDesigns[i - 1].OnMachineDesignName,
+            machineDesigns[i - 1].OnMachineDesignId,
             machineDesigns[i - 1].MachineId,
             machineDesigns[i - 1].StartDate,
             machineDesigns[i].StartDate,
@@ -150,8 +151,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         }
 
         assetOnDesignPeriodsResult.Add(new AssetOnDesignPeriod(
-          machineDesigns[machineDesigns.Count - 1].Name,
-          machineDesigns[machineDesigns.Count - 1].Id,
+          machineDesigns[machineDesigns.Count - 1].OnMachineDesignName,
+          machineDesigns[machineDesigns.Count - 1].OnMachineDesignId,
           machineDesigns[machineDesigns.Count - 1].MachineId,
           machineDesigns[machineDesigns.Count - 1].StartDate,
           DateTime.UtcNow,

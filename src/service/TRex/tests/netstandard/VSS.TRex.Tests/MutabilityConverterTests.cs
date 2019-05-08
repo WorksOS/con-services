@@ -41,7 +41,6 @@ namespace VSS.TRex.Tests
         gpsMode = GPSMode.Fixed,
         HalfPass = false,
         Height = 104,
-        //MachineID = 105,
         InternalSiteModelMachineIndex = 105,
         GPSModeStore = 106,
         MachineSpeed = 106,
@@ -224,7 +223,6 @@ namespace VSS.TRex.Tests
           // machine ID as the immutable representation does not include it in the Ignite POC
           cellPass.Time = mutablePasses[x, y][i].Time;
           cellPass.Height = mutablePasses[x, y][i].Height;
-          //cellPass.MachineID = mutablePasses[x, y][i].MachineID;
           cellPass.InternalSiteModelMachineIndex = mutablePasses[x, y][i].InternalSiteModelMachineIndex;
 
           CellPass mutableCellPass = mutablePasses[x, y][i];
