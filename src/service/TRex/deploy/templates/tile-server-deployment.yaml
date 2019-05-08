@@ -7,6 +7,7 @@ metadata:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
     immutable-cluster: "true"
+    jmx-prometheus: "true"
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
   replicas: {{ .Values.tileServer.replicaCount }}
@@ -18,6 +19,7 @@ spec:
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.deployname" . }}
         immutable-cluster: "true"
+        jmx-prometheus: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       #volumes:
@@ -52,8 +54,8 @@ spec:
           name: spicommsmutable
         - containerPort: 48500
           name: spidiscomutable
-        - containerPort: 49112 # JMX port number.
-          name: jmx
+        - containerPort: 8088 #JMX prometheus
+          name: jmxprometheus
         - containerPort: 8080  # REST port number.
           name: restapi
         - containerPort: 10800 # SQL port number.

@@ -17,7 +17,7 @@ services:
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
      - AWS_SECRET_KEY=qQAEmtYOcn0PCzSfpqIgmNFpyMclrZllnOnY1Ecx
      - AWS_TAGFILE_BUCKET_NAME=vss-prod-directtagfile-archives
-     - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.prod.prod-eks.services.myvisionlink.com/api/status
+     - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.prod.k8s.services.myvisionlink.com/api/status
      - CUSTOMERSERVICE_API_URL=https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
      - CUSTOMERSERVICE_CACHE_LIFE=00:15:00
      - DEFAULT_CONNECTION_LIMIT=64
@@ -78,6 +78,7 @@ services:
      - SNAKEPIT_HOST=snakepit.prod.prod-eks.services.myvisionlink.com
      - TCCBASEURL=https://www.myconnectedsite.com
      - TCCFILESPACEID=ucc083712-346e-466e-8cba-3c3eb0f9fb05
+     - TCC_TAGFILE_FILESPACEID=ufb92e643-ca3e-49b3-a52f-0fbf29c3e18e
      - TCCFILESPACENAME=Vldatastore-Production
      - TCCORG=vlproduction
      - TCCPWD=vlproduction_key5

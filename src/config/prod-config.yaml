@@ -9,6 +9,7 @@ data:
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: ucc083712-346e-466e-8cba-3c3eb0f9fb05
+  TCC_TAGFILE_FILESPACEID: ufb92e643-ca3e-49b3-a52f-0fbf29c3e18e
   TCCUSERNAME: vlproduction
   TCCPWD: vlproduction_key5
   TCCORG: vlproduction
@@ -112,7 +113,7 @@ data:
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
 #Pegasus
-  PEGASUS_URL: https://api-usw2.trimblepaas.com/pegasus_stage-v1.0
+  PEGASUS_URL: https://api-usw2.trimblepaas.com/pegasus-v1.0
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
   PEGASUS_DXF_PROCEDURE_ID: cd1ef2a0-63fb-4469-809a-e650c4feb4ca

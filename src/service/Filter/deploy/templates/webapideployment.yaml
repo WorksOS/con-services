@@ -25,6 +25,8 @@ spec:
             name: {{ $configName }}
         - configMapRef:
             name: {{ .Values.globalConfig }}
+        - secretRef:
+            name: {{ .Values.globalConfig }}-secret            
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:{{ .Values.image.tag }}
         name: {{ $name }}     

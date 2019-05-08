@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -188,6 +188,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </summary>
     public int MaxZoomLevel { get; set; }
 
+    /// <summary>
+    /// The UID of the design file that the reference surface is based off.
+    /// </summary>
+    public Guid? ParentUid { get; set; }
+    
+    /// <summary>
+    /// The offset in meters for the reference surface.
+    /// </summary>
+    public double? Offset { get; set; }
+
     public List<ImportedFileHistoryItem> ImportedFileHistory { get; set; }
 
     public override int GetHashCode()
@@ -215,6 +225,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
              && otherImportedFile.MinZoomLevel == this.MinZoomLevel
              && otherImportedFile.MaxZoomLevel == this.MaxZoomLevel
              && otherImportedFile.ImportedFileHistory == this.ImportedFileHistory
+             && otherImportedFile.ParentUid == this.ParentUid
+             && Math.Round((otherImportedFile.Offset ?? 0), 3) == Math.Round((this.Offset ?? 0), 3)
         ;
     }
   }

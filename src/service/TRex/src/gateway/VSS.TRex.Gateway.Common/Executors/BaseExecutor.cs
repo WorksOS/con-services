@@ -254,6 +254,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.DesignImportUnableToUpdateDesign);
       ContractExecutionStates.DynamicAddwithOffset("Failed to delete design from project.",
         (int)RequestErrorStatus.DesignImportUnableToDeleteDesign);
+      ContractExecutionStates.DynamicAddwithOffset("Failed to prepare filter.",
+        (int)RequestErrorStatus.FailedToPrepareFilter);
+      ContractExecutionStates.DynamicAddwithOffset("Failed to get CCA minimum passes value.",
+        (int)RequestErrorStatus.FailedToGetCCAMinimumPassesValue);
     }
 
     protected ServiceException CreateServiceException<T>(RequestErrorStatus resultStatus = RequestErrorStatus.OK)

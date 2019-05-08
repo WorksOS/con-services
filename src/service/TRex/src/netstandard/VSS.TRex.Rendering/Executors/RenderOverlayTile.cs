@@ -575,7 +575,7 @@ namespace VSS.TRex.Rendering.Executors
         Renderer.WorldTileWidth = WorldTileWidth;
         Renderer.WorldTileHeight = WorldTileHeight;
 
-        ResultStatus = Renderer.PerformRender(Mode, processor, ColourPalettes);
+        ResultStatus = Renderer.PerformRender(Mode, processor, ColourPalettes, Filters);
 
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
         {
