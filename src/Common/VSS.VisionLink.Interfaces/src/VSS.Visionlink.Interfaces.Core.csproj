@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Provides interface definitions for various aspects in VisionLink.</Description>
+    <Title>Interface definitions for various aspects in VisionLink.</Title>
+    <AssemblyTitle></AssemblyTitle>
+    <Authors>Merino</Authors>
+    <VersionPrefix>1.6.4</VersionPrefix>
+    <TargetFrameworks>net451;netstandard1.6</TargetFrameworks>
+    <AssemblyName>VSS.Interfaces.netcore</AssemblyName>
+    <PackageId>VSS.Interfaces.netcore</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+</Project>

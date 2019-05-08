@@ -206,7 +206,9 @@ namespace VSS.WebApi.Common
 
       if (Configuration.GetValueBool("newrelic").HasValue && Configuration.GetValueBool("newrelic").Value)
       {
+        NewRelicMiddleware.ServiceName = ServiceName;
         app.UseMiddleware<NewRelicMiddleware>();
+        Log.LogInformation("NewRelic is enabled");
       }
 
       Services.AddSingleton(loggerFactory);

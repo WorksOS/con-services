@@ -96,6 +96,7 @@
         DesignImportUnableToCreateDesign,
         DesignImportUnableToUpdateDesign,
         DesignImportUnableToDeleteDesign,
-        FailedToPrepareFilter
+        FailedToPrepareFilter,
+        FailedToGetCCAMinimumPassesValue
   }
 }

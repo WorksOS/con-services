@@ -98,6 +98,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] DateTime? surveyedUtc = null,
       [FromQuery] Guid? parentUid = null,
       [FromQuery] double? offset = 0)
+      [FromQuery] double offset = 0)
     {
       Console.WriteLine(
         $"UpdateMockImportedFile. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} " +

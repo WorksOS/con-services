@@ -9,6 +9,7 @@ data:
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: ucc083712-346e-466e-8cba-3c3eb0f9fb05
+  TCC_TAGFILE_FILESPACEID: ufb92e643-ca3e-49b3-a52f-0fbf29c3e18e
   TCCUSERNAME: vlproduction
   TCCPWD: vlproduction_key5
   TCCORG: vlproduction
@@ -38,13 +39,13 @@ data:
   IMPORTED_FILE_API_URL2: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfile
   PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0
   PROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project
-  PROJECT_INTERNAL_BASE_URL: http://project.prod.k8s.services.myvisionlink.com
+  PROJECT_INTERNAL_BASE_URL: http://project.prod.prod-eks.services.myvisionlink.com
   PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4
   RAPTOR_3DPM_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
   RAPTOR_NOTIFICATION_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/notification
   RAPTOR_PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
-  SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/background
-  SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/export
+  SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1/background
+  SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1/export
   VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta
   TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
 #SERVICE DISCOVERY REFERENCES
@@ -61,6 +62,7 @@ data:
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
   AWS_TAGFILE_BUCKET_NAME: vss-prod-directtagfile-archives
   ENVIRONMENT: PROD
+  NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
 #AWS configuration  
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-prod
@@ -105,14 +107,13 @@ data:
   MIN_WORKER_THREADS: "512"
   SCHEDULED_JOB_TIMEOUT: "900000"
 #Notifications
-  NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com/notifications
   PUSH_NO_AUTHENTICATION_HEADER: "true" 
 #DataOcean
   DATA_OCEAN_URL: https://api-usw2.trimblepaas.com/data_ocean-v1.0
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
 #Pegasus
-  PEGASUS_URL: https://api-usw2.trimblepaas.com/pegasus_stage-v1.0
+  PEGASUS_URL: https://api-usw2.trimblepaas.com/pegasus-v1.0
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
   PEGASUS_DXF_PROCEDURE_ID: cd1ef2a0-63fb-4469-809a-e650c4feb4ca

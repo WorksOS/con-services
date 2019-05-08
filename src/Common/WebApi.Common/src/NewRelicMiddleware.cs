@@ -10,6 +10,7 @@ namespace VSS.WebApi.Common
   /// </summary>
   public class NewRelicMiddleware
   {
+    public static string ServiceName = string.Empty;
     private readonly RequestDelegate NextRequestDelegate;
 
     /// <summary>
@@ -32,12 +33,19 @@ namespace VSS.WebApi.Common
 
       watch.Stop();
 
+
+      var projectUid = string.Empty;
+      var origin = string.Empty;
+      var customerUid = string.Empty;
+      var userEmail = string.Empty;
+
       if (context.User is TIDCustomPrincipal principal)
       {
-        var projectUid = string.Empty;
-        var origin = string.Empty;
+        customerUid = principal.CustomerUid;
+        userEmail = principal.UserEmail;
+      }
 
-        if (context.Request.Query.ContainsKey("projectuid"))
+      if (context.Request.Query.ContainsKey("projectuid"))
         {
           projectUid = context.Request.Query["projectuid"];
         }
@@ -50,16 +58,16 @@ namespace VSS.WebApi.Common
         var eventAttributes = new Dictionary<string, object>
         {
           { "endpoint", context.Request.Path.ToString() },
-          { "customerUid", principal.CustomerUid },
-          { "userName", principal.UserEmail },
+          { "customerUid", customerUid },
+          { "userName", userEmail },
           { "executionTime",(Single)watch.ElapsedMilliseconds },
           { "projectUid", projectUid },
           { "origin",origin },
           { "result", context.Response.StatusCode.ToString() }
         };
-        if (context.Request.Host.HasValue)
-          NewRelic.Api.Agent.NewRelic.RecordCustomEvent(context.Request.Host.Host, eventAttributes);
-      }
+
+        NewRelic.Api.Agent.NewRelic.RecordCustomEvent(ServiceName.Replace(" ", String.Empty), eventAttributes);
+      
     }
   }
 }
