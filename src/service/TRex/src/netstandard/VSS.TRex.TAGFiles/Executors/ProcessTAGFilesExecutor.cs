@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
             var response = new ProcessTAGFileResponse();
 
-            int batchSize = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
+            int batchSize = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
             int batchCount = 0;
 
             // Create the machinery responsible for tracking tasks and integrating them into the database
