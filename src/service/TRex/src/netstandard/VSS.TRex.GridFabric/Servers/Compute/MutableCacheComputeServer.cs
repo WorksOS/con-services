@@ -50,12 +50,10 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
     public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
-      //cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
       base.ConfigureTRexGrid(cfg);
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
-      //cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
       cfg.JvmMaxMemoryMb = 2 * 1024; // Set max to 2Gb
       cfg.UserAttributes = new Dictionary<string, object>
             {

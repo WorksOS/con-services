@@ -60,8 +60,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         "-XX:+UseG1GC"
       };
 
-
-      //cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
       cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
       cfg.UserAttributes = new Dictionary<string, object>
             {
@@ -84,7 +82,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
           Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
           InitialSize = 128 * 1024 * 1024,  // 128 MB
           MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
-
           PersistenceEnabled = true
         }
       };

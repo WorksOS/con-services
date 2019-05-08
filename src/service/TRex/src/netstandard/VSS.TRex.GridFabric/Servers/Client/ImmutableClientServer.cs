@@ -62,7 +62,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
           //Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
-          IgniteConfiguration cfg = new IgniteConfiguration
+          var cfg = new IgniteConfiguration
           {
             IgniteInstanceName = TRexGrids.ImmutableGridName(),
             ClientMode = true,
@@ -73,7 +73,6 @@ namespace VSS.TRex.GridFabric.Servers.Client
               "-XX:+UseG1GC"
             },
 
-            //JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
             JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
 
             UserAttributes = new Dictionary<string, object>()
