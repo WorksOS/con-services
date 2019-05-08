@@ -277,12 +277,14 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);
 
+      /*
       // Read all sub grids from the persistent store into the grid ready for access
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
       {
         TRex.SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(siteModel.PrimaryStorageProxy, siteModel.Grid,
           x.X, x.Y, siteModel.Grid.NumLevels, false, false).Should().NotBeNull();
       });
+      */
     }
 
     public new void Dispose()
