@@ -9,6 +9,7 @@ data:
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: ucc083712-346e-466e-8cba-3c3eb0f9fb05
+  TCC_TAGFILE_FILESPACEID: ufb92e643-ca3e-49b3-a52f-0fbf29c3e18e
   TCCUSERNAME: vlproduction
   TCCPWD: vlproduction_key5
   TCCORG: vlproduction
