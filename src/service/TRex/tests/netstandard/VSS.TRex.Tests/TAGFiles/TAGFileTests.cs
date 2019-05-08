@@ -12,7 +12,8 @@ namespace VSS.TRex.Tests.TAGFiles
 {
   public class TAGFileTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void CompareSiteModels(ISiteModel sm1, ISiteModel sm2, int expectedExistanceMapSubGridCount, int expectedCallPassCount)
+    private void CompareSiteModels(ISiteModel sm1, ISiteModel sm2, 
+      int expectedExistanceMapSubGridCount, int expectedCallPassCount, int expectedNonNullCelCount)
     {
       var bitCount1 = sm1.ExistenceMap.CountBits();
       var bitCount2 = sm2.ExistenceMap.CountBits();
@@ -96,7 +97,7 @@ namespace VSS.TRex.Tests.TAGFiles
       actualCounts1.Should().BeEquivalentTo(expectedCounts);
 
       nonNullCellCount1.Should().Be(nonNullCellCount2);
-      nonNullCellCount1.Should().Be(2538);
+      nonNullCellCount1.Should().Be(expectedNonNullCelCount);
     }
 
     [Fact]
@@ -112,7 +113,7 @@ namespace VSS.TRex.Tests.TAGFiles
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, true);
       var siteModel2 = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, false);
 
-      CompareSiteModels(siteModel, siteModel2, 12, 16525);
+      CompareSiteModels(siteModel, siteModel2, 12, 16525, 3054);
     }
 
     [Fact]
@@ -131,7 +132,7 @@ namespace VSS.TRex.Tests.TAGFiles
       siteModel.ExistenceMap.CountBits().Should().Be(12);
       siteModel2.ExistenceMap.CountBits().Should().Be(12);
 
-      CompareSiteModels(siteModel, siteModel2, 12, 16525);
+      CompareSiteModels(siteModel, siteModel2, 12, 16525, 3054);
     }
 
     [Fact]
@@ -147,12 +148,12 @@ namespace VSS.TRex.Tests.TAGFiles
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, false, false);
       var siteModel2 = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, false, true);
 
-      CompareSiteModels(siteModel, siteModel2, 12, 16525);
+      CompareSiteModels(siteModel, siteModel2, 12, 16525, 3054);
 
       siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, false);
       siteModel2 = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, true);
 
-      CompareSiteModels(siteModel, siteModel2, 12, 16525);
+      CompareSiteModels(siteModel, siteModel2, 12, 16525, 3054);
     }
   }
 }
