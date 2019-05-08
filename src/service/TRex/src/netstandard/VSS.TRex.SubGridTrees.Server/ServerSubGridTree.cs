@@ -213,8 +213,11 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     /// <param name="subGrid"></param>
     /// <param name="storageProxy"></param>
+    /// <param name="invalidatedSpatialStreams"></param>
     /// <returns></returns>
-    public bool SaveLeafSubGrid(IServerLeafSubGrid subGrid, IStorageProxy storageProxy, List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams)
+    public bool SaveLeafSubGrid(IServerLeafSubGrid subGrid, 
+                                IStorageProxy storageProxy, 
+                                List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams)
     {
       //Log.LogInformation($"Saving {subGrid.Moniker()} to persistent store");
 
@@ -290,10 +293,13 @@ namespace VSS.TRex.SubGridTrees.Server
         //*** deferred deletion list
         //**********************************************************************
 
-        if (cleaver.PersistedClovenSegments != null)
-          invalidatedSpatialStreams.AddRange(cleaver.PersistedClovenSegments);
+        lock (invalidatedSpatialStreams)
+        {
+          if (cleaver.PersistedClovenSegments != null)
+            invalidatedSpatialStreams.AddRange(cleaver.PersistedClovenSegments);
 
-        invalidatedSpatialStreams.AddRange(ModifiedOriginalSegments.Select(x => x.SegmentInfo.AffinityKey(ID)));
+          invalidatedSpatialStreams.AddRange(ModifiedOriginalSegments.Select(x => x.SegmentInfo.AffinityKey(ID)));
+        }
 
         //**********************************************************************
         //*** Construct list of new segment files that have been created     ***
@@ -381,7 +387,10 @@ namespace VSS.TRex.SubGridTrees.Server
         if (subGrid.Directory.ExistsInPersistentStore)
         {
           // Include an additional invalidated spatial stream for the sub grid directory stream
-          invalidatedSpatialStreams.Add(subGrid.AffinityKey());
+          lock (invalidatedSpatialStreams)
+          {
+            invalidatedSpatialStreams.Add(subGrid.AffinityKey());
+          }
         }
 
         if (subGrid.SaveDirectoryToFile(storageProxy, GetLeafSubGridFullFileName(OriginAddress)))

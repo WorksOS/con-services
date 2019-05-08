@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -40,8 +39,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// </summary>
         private readonly IServerSubGridTree Target;
 
-        private Action<uint, uint> SubGridChangeNotifier;
-
         private readonly IStorageProxy StorageProxy;
 
         public readonly List<ISubGridSpatialAffinityKey> InvalidatedSpatialStreams = new List<ISubGridSpatialAffinityKey>(100);
@@ -63,9 +60,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         private void IntegrateIntoIntermediaryGrid(IServerLeafSubGrid SourceSubGrid, ISubGridSegmentIterator SegmentIterator)
         {
-            IServerLeafSubGrid TargetSubGrid = Target.ConstructPathToCell(SourceSubGrid.OriginX,
-                                                       SourceSubGrid.OriginY,
-                                                       SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+            var TargetSubGrid = Target.ConstructPathToCell(SourceSubGrid.OriginX,
+                                                           SourceSubGrid.OriginY,
+                                                           SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
             TargetSubGrid.AllocateLeafFullPassStacks();
 
             // If the node is brand new (ie: it does not have any cell passes committed to it yet)
@@ -89,7 +86,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             TargetSubGrid.Integrate(SourceSubGrid, SegmentIterator, true);
         }
 
-        private bool IntegrateIntoLiveDatabase(IServerLeafSubGrid SourceSubGrid, IServerLeafSubGrid TargetSubGrid, SubGridSegmentIterator SegmentIterator)
+        private bool IntegrateIntoLiveDatabase(IServerLeafSubGrid SourceSubGrid, 
+                                               IServerLeafSubGrid TargetSubGrid, 
+                                               SubGridSegmentIterator SegmentIterator,
+                                               Action<uint, uint> subGridChangeNotifier)
         {
             // Note the fact that this sub grid will be changed and become dirty as a result
             // of the cell pass integration
@@ -102,7 +102,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             TargetSubGrid.Integrate(SourceSubGrid, SegmentIterator, false);
 
-            SubGridChangeNotifier?.Invoke(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
+            subGridChangeNotifier?.Invoke(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
 
             // Save the integrated state of the sub grid segments to allow Ignite to store & socialize the update
             // within the cluster. 
@@ -119,6 +119,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                              true);
               result = true;
             }
+            else
+            {
+              Log.LogError($"Sub grid leaf save failed for {TargetSubGrid}, existence map not modified.");
+            }
         
             // Finally, mark the source sub grid as not being dirty. We need to do this to allow
             // the sub grid to permit its destruction as all changes have been merged into the target.
@@ -128,7 +132,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             return result;
         }
 
-        private void IntegrateIntoLiveGrid(IServerLeafSubGrid SourceSubGrid, SubGridSegmentIterator SegmentIterator)
+        private void IntegrateIntoLiveGrid(IServerLeafSubGrid SourceSubGrid, 
+                                           SubGridSegmentIterator SegmentIterator,
+                                           Action<uint, uint> subGridChangeNotifier)
         {
             var TargetSubGrid = LocateOrCreateSubGrid(Target, SourceSubGrid.OriginX, SourceSubGrid.OriginY);
             if (TargetSubGrid == null)
@@ -137,7 +143,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 return;
             }
 
-            if (!IntegrateIntoLiveDatabase(SourceSubGrid, TargetSubGrid, SegmentIterator))
+            if (!IntegrateIntoLiveDatabase(SourceSubGrid, TargetSubGrid, SegmentIterator, subGridChangeNotifier))
             {
                 Log.LogError("Integration into live database failed");
             }
@@ -160,7 +166,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             };
 
             bool IntegratingIntoIntermediaryGrid = integrationMode == SubGridTreeIntegrationMode.UsingInMemoryTarget;
-            SubGridChangeNotifier = subGridChangeNotifier;
 
             while (Iterator.MoveToNextSubGrid())
             {
@@ -182,7 +187,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 if (IntegratingIntoIntermediaryGrid)
                     IntegrateIntoIntermediaryGrid(SourceSubGrid, SegmentIterator);
                 else
-                    IntegrateIntoLiveGrid(SourceSubGrid, SegmentIterator);
+                    IntegrateIntoLiveGrid(SourceSubGrid, SegmentIterator, subGridChangeNotifier);
             }
 
             return true;
@@ -197,23 +202,17 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         public bool IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode integrationMode,
           Action<uint, uint> subGridChangeNotifier)
         {
-          bool IntegratingIntoIntermediaryGrid = integrationMode == SubGridTreeIntegrationMode.UsingInMemoryTarget;
-          SubGridChangeNotifier = subGridChangeNotifier;
-
-          void ProcessSubGrid(IServerLeafSubGrid SourceSubGrid)
+          void ProcessSubGrid(IServerLeafSubGrid SourceSubGrid, 
+                              bool integratingIntoIntermediaryGrid,
+                              Action<uint, uint> _subGridChangeNotifier)
           {
-            var SegmentIterator = new SubGridSegmentIterator(null, StorageProxy)
-            {
-              IterationDirection = IterationDirection.Forwards
-            };
-
             // Locate a matching sub grid in this tree. If there is none, then create it
             // and assign the sub grid from the iterator to it. If there is one, process
             // the cell pass stacks merging the two together
-            if (IntegratingIntoIntermediaryGrid)
-              IntegrateIntoIntermediaryGrid(SourceSubGrid, SegmentIterator);
+            if (integratingIntoIntermediaryGrid)
+              IntegrateIntoIntermediaryGrid(SourceSubGrid, new SubGridSegmentIterator(null, StorageProxy));
             else
-              IntegrateIntoLiveGrid(SourceSubGrid, SegmentIterator);
+              IntegrateIntoLiveGrid(SourceSubGrid, new SubGridSegmentIterator(null, StorageProxy), _subGridChangeNotifier);
           }
 
           // Iterate over the sub grids in source and merge the cell passes from source
@@ -224,14 +223,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             Grid = Source
           };
 
-         // var dict = new Dictionary<string, IServerLeafSubGrid>();
           var tasks = new List<Task>();
           while (Iterator.MoveToNextSubGrid())
           {
-         //   dict.Add((Iterator.CurrentSubGrid as IServerLeafSubGrid).Moniker(), Iterator.CurrentSubGrid as IServerLeafSubGrid);
-
             var subGrid = Iterator.CurrentSubGrid as IServerLeafSubGrid;
-            tasks.Add(Task.Run(() => ProcessSubGrid(subGrid)));
+            tasks.Add(Task.Run(() => ProcessSubGrid(subGrid, integrationMode == SubGridTreeIntegrationMode.UsingInMemoryTarget, subGridChangeNotifier)));
           }
 
           var completionTask = Task.WhenAll(tasks);

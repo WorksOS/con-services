@@ -122,7 +122,7 @@ namespace VSS.TRex.SiteModels
     /// This will never return a null reference. In the case of a site model that does not have any spatial data within it
     /// this will return an empty existence map rather than null.
     /// </summary>
-    public ISubGridTreeBitMask ExistenceMap => existenceMap ?? (existenceMap = LoadProductionDataExistenceMapFromStorage());
+    public ISubGridTreeBitMask ExistenceMap => LoadProductionDataExistenceMapFromStorage();
 
     /// <summary>
     /// Gets the loaded state of the existence map. This permits testing if an existence map is loaded without forcing
@@ -631,20 +631,35 @@ namespace VSS.TRex.SiteModels
     /// Retrieves the content of the existence map from storage
     /// </summary>
     /// <returns></returns>
-    private SubGridTreeSubGridExistenceBitMask LoadProductionDataExistenceMapFromStorage()
+    private ISubGridTreeBitMask LoadProductionDataExistenceMapFromStorage()
     {
-      var localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
+      var existenceMapCopy = existenceMap;
+      if (existenceMapCopy != null)
+        return existenceMapCopy;
 
-      // Read its content from storage 
-      var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+      lock (this)
+      {
+        // Check we this is the winning thread
+        existenceMapCopy = existenceMap;
+        if (existenceMapCopy != null)
+          return existenceMapCopy;
 
-      if (MS == null)
-        Log.LogInformation($"Attempt to read existence map for site model {ID} failed [with result {readResult}] as the map does not exist, creating new existence map");
-      else
-        localExistenceMap.FromStream(MS);
+        var localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
-      // Replace existence map with the newly read map
-      return localExistenceMap;
+        // Read its content from storage 
+        var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName,
+          FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+
+        if (MS == null)
+          Log.LogInformation(
+            $"Attempt to read existence map for site model {ID} failed [with result {readResult}] as the map does not exist, creating new existence map");
+        else
+          localExistenceMap.FromStream(MS);
+
+        // Replace existence map with the newly read map
+        existenceMap = localExistenceMap;
+        return localExistenceMap;
+      }
     }
 
     /// <summary>
