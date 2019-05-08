@@ -335,7 +335,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           if (!subGridIntegrator.IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
             return false; 
           //if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
-          //  return false;
+            //return false;
 
           Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {SiteModelFromDM.ID}");
 
