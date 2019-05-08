@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LiteDB;
@@ -22,6 +23,8 @@ namespace TCCToDataOcean.DatabaseAgent
 
       db = new LiteDatabase(Path.Combine(databasePath, configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE") + "-" + databaseSuffix + ".db"));
     }
+
+    public IEnumerable<T> GetTable<T>(string tableName) => db.GetCollection<T>(tableName).FindAll();
 
     public void DropTables(string[] tableNames)
     {
@@ -76,7 +79,18 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public void WriteRecord(string tableName, Project project)
     {
-      db.GetCollection<MigrationProject>(tableName).Insert(new MigrationProject(project));
+      var objs = db.GetCollection<MigrationProject>(tableName);
+      var dbObj = objs.Find(x => x.Id == project.LegacyProjectID).FirstOrDefault();
+
+      if (dbObj == null)
+      {
+        db.GetCollection<MigrationProject>(tableName).Insert(new MigrationProject(project));
+      }
+      else
+      {
+        dbObj = new MigrationProject(project);
+        objs.Update(dbObj);
+      }
     }
 
     public void WriteError(string projectUid, string errorMessage)
@@ -97,7 +111,18 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public void WriteRecord(string tableName, FileData file)
     {
-      db.GetCollection<MigrationFile>(tableName).Insert(new MigrationFile(file));
+      var objs = db.GetCollection<MigrationFile>(tableName);
+      var dbObj = objs.Find(x => x.Id == file.LegacyFileId).FirstOrDefault();
+
+      if (dbObj == null)
+      {
+        db.GetCollection<MigrationFile>(tableName).Insert(new MigrationFile(file));
+      }
+      else
+      {
+        dbObj = new MigrationFile(file);
+        objs.Update(dbObj);
+      }
     }
 
     public void SetMigrationState(string tableName, FileData file, MigrationState migrationState)

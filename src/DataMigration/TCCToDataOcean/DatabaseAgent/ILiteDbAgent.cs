@@ -1,10 +1,12 @@
-﻿using VSS.MasterData.Models.Models;
+﻿using System.Collections.Generic;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
 namespace TCCToDataOcean.DatabaseAgent
 {
   public interface ILiteDbAgent
   {
+    IEnumerable<T> GetTable<T>(string tableName);
     void DropTables(string[] tableNames);
     void WriteRecord(string tableName, Project project);
     void WriteRecord(string tableName, FileData file);

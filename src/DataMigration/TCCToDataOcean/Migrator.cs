@@ -1,11 +1,11 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
@@ -43,6 +43,7 @@ namespace TCCToDataOcean
     private readonly bool _downloadProjectCoordinateSystemFile;
     private readonly bool _updateProjectCoordinateSystemFile;
     private readonly bool _saveCoordinateSystemFile;
+    private readonly bool _saveFailedProjects;
 
     private readonly List<ImportedFileType> MigrationFileTypes = new List<ImportedFileType>
     {
@@ -58,7 +59,6 @@ namespace TCCToDataOcean
     {
       Log = logger.CreateLogger<Migrator>();
       ProjectRepo = projectRepository;
-      var configStore1 = configStore;
       FileRepo = fileRepo;
       WebApiUtils = webApiUtils;
       ImportFile = importFile;
@@ -72,49 +72,71 @@ namespace TCCToDataOcean
       TemporaryFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
 
       // Diagnostic settings
-      _downloadProjectFiles = configStore1.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
-      _uploadProjectFiles = configStore1.GetValueBool("UPLOAD_PROJECT_FILES", defaultValue: false);
-      _downloadProjectCoordinateSystemFile = configStore1.GetValueBool("DOWNLOAD_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
-      _updateProjectCoordinateSystemFile = configStore1.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
-      _saveCoordinateSystemFile = configStore1.GetValueBool("SAVE_COORDIANTE_SYSTEM_FILE", defaultValue: false);
+      _downloadProjectFiles = configStore.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
+      _uploadProjectFiles = configStore.GetValueBool("UPLOAD_PROJECT_FILES", defaultValue: false);
+      _downloadProjectCoordinateSystemFile = configStore.GetValueBool("DOWNLOAD_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
+      _updateProjectCoordinateSystemFile = configStore.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
+      _saveCoordinateSystemFile = configStore.GetValueBool("SAVE_COORDIANTE_SYSTEM_FILE", defaultValue: false);
+      _saveFailedProjects = configStore.GetValueBool("SAVE_FAILED_PROJECT_IDS", defaultValue: true);
     }
 
     public async Task MigrateFilesForAllActiveProjects()
     {
-      Log.LogInformation(Method.In());
-
-      // TODO (Aaron) Remove if part of recovery phase.
-      Log.LogInformation($"{Method.Info()} Cleaning database, dropping collections");
-      _migrationDb.DropTables(new[]
-      {
-          Table.MigrationInfo,
-          Table.Projects,
-          Table.Files,
-          Table.Errors
-      });
-
-      if (Directory.Exists(TemporaryFolder))
-      {
-        Directory.Delete(TemporaryFolder, recursive: true);
-      }
-      // TODO (Aaron) Tidy up complete.
-
-      _migrationDb.InitDatabase();
+      var recoveryFile = Path.Combine(TemporaryFolder, "MigrationRecovery.log");
 
       Log.LogInformation($"{Method.Info()} Fetching projects from: '{ProjectApiUrl}'");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
       Log.LogInformation($"{Method.Info()} Found {projects.Count} projects");
 
+      if (File.Exists(recoveryFile))
+      {
+        Log.LogInformation($"{Method.Info()} Fetching projects from: '{recoveryFile}'");
+        var fileContents = File.ReadAllLines(recoveryFile, Encoding.UTF8).ToList();
+        Log.LogInformation($"{Method.Info()} Found {fileContents.Count} projects to reprocess");
+
+        var tmpProjects = new List<Project>();
+
+        foreach (var project in projects)
+        {
+          if (fileContents.Contains(project.ProjectUID)) tmpProjects.Add(project);
+        }
+
+        Log.LogInformation($"{Method.Info()} Cleaning database, dropping collections");
+        _migrationDb.DropTables(new[]
+        {
+          Table.MigrationInfo,
+          Table.Projects,
+          Table.Files,
+          Table.Errors
+        });
+
+        projects = tmpProjects;
+      }
+      else
+      {
+        Log.LogInformation($"{Method.Info()} Cleaning database, dropping collections");
+        _migrationDb.DropTables(new[]
+        {
+          Table.MigrationInfo,
+          Table.Projects,
+          Table.Files,
+          Table.Errors
+        });
+
+        if (Directory.Exists(TemporaryFolder))
+        {
+          Directory.Delete(TemporaryFolder, recursive: true);
+        }
+      }
+
+      _migrationDb.InitDatabase();
+
       var projectTasks = new List<Task<bool>>(projects.Count);
       _migrationDb.SetMigationInfo_SetProjectCount(projects.Count);
 
-      //var project = projects.First(p => p.ProjectUID == "6470f6f5-77d7-e511-80dc-a0369f4c5117");
-      //_migrationDb.WriteRecord(Table.Projects, project);
-
-      //await MigrateProject(project);
-
-      // Throttle the async jobs or on we could attempt to run thousands or projection migrations currently; which results in file stream errors in production.
-      const int THROTTLE_ASYNC_JOBS = 20;
+      // Throttle the async jobs or on we could attempt to run thousands or projection migrations
+      // currently; which results in file stream errors in production.
+      const int THROTTLE_ASYNC_JOBS = 10;
 
       foreach (var project in projects)
       {
@@ -129,6 +151,27 @@ namespace TCCToDataOcean
       }
 
       await Task.WhenAll(projectTasks);
+
+      // DIAGNOSTIC RUNTIME SWITCH
+      if (_saveFailedProjects)
+      {
+        // Create a recovery file of project uids for re processing
+        var processedProjects = _migrationDb.GetTable<MigrationProject>(Table.Projects);
+        var logFilename = Path.Combine(TemporaryFolder, $"MigrationRecovery_{DateTime.Now.Date.ToShortDateString().Replace('/', '-')}_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}.log");
+
+        using (TextWriter tw = new StreamWriter(logFilename))
+        {
+          foreach (var project in processedProjects)
+          {
+            if (project.MigrationState != MigrationState.Completed)
+            {
+              tw.WriteLine(project.ProjectUid);
+            }
+          }
+
+          tw.Close();
+        }
+      }
     }
 
     /// <summary>
@@ -213,7 +256,7 @@ namespace TCCToDataOcean
           var selectedFiles = filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
           _migrationDb.SetProjectFilesDetails(Table.Projects, project, filesResult.ImportedFileDescriptors.Count, selectedFiles.Count);
 
-          Log.LogInformation($"{Method.Info()} Found {selectedFiles.Count} out of {filesResult.ImportedFileDescriptors.Count} files to migrate for {project.ProjectUID}");
+          Log.LogInformation($"{Method.Info()} Found {selectedFiles.Count} eligible files out of {filesResult.ImportedFileDescriptors.Count} total to migrate for {project.ProjectUID}");
 
           var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();
 
@@ -245,7 +288,7 @@ namespace TCCToDataOcean
         return result;
       }
       catch (Exception exception)
-      { 
+      {
         Log.LogError($"{Method.Info()} Error processing project {project.ProjectUID}");
         Log.LogError(exception.GetBaseException().Message);
       }
