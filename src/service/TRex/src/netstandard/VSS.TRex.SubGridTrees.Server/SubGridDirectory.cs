@@ -78,12 +78,9 @@ namespace VSS.TRex.SubGridTrees.Server
             // Write out the directory of segments
             writer.Write(SegmentDirectory.Count);
 
-            if (SegmentDirectory.Count > 0)
+            foreach (var Segment in SegmentDirectory)
             {
-              foreach (var Segment in SegmentDirectory)
-              {
-                Segment.Write(writer);
-              }
+              Segment.Write(writer);
             }
 
             ExistsInPersistentStore = true;

@@ -65,7 +65,7 @@ namespace TAGFiles.Tests
             Guid projectID = Guid.NewGuid();
             Guid assetID = Guid.NewGuid();
 
-            var kMaxNumberOfTAGFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXGROUPEDTAGFILES_TOPROCESSPERPROCESSINGEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
+            var kMaxNumberOfTAGFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
             // Add twice the limit of TAG files to the same project/asset combination to the grouper and ensure there are two full buckets returned
             for (int i = 0; i < 2 * kMaxNumberOfTAGFilesPerBucket; i++)
             {

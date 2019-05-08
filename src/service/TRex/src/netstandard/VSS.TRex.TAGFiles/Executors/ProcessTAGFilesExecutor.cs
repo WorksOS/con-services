@@ -107,7 +107,7 @@ namespace VSS.TRex.TAGFiles.Executors
                 worker.ProcessTask(ProcessedTasks);
             }
 
-            worker.TaskProcessingComplete();
+            worker.CompleteTaskProcessing();
 
             Log.LogInformation($"#Progress# Completed task based conversion of TAG files into project {ProjectID}");
 

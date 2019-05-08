@@ -139,23 +139,12 @@ namespace VSS.TRex.Tests.TestFixtures
       ProcessedTasks.Count.Should().Be(_tagFiles.Count);
 
       if (callTaskProcessingComplete)
-        worker.TaskProcessingComplete();
+        worker.CompleteTaskProcessing();
 
       // Reacquire the target site model to ensure any notification based changes to the site model are observed
       targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(targetSiteModel.ID, false);
 
       targetSiteModel.Should().NotBe(null);
-
-      // Cause the latest cell pass information to be created for all sub grids
-      // targetSiteModel.Grid.Root.ScanSubGrids(targetSiteModel.Grid.FullCellExtent(),
-      //  leaf =>
-      //  {
-      //    if (leaf is IServerLeafSubGrid Leaf)
-      //      Leaf.ComputeLatestPassInformation(true, targetSiteModel.PrimaryStorageProxy);
-      //    return true;
-      //  });
-
-      //targetSiteModel.SaveToPersistentStoreForTAGFileIngest(targetSiteModel.PrimaryStorageProxy).Should().BeTrue();
 
       // Modify the site model to switch from the mutable to immutable cell pass representation for read requests
       if (convertToImmutableRepresentation)
@@ -276,15 +265,6 @@ namespace VSS.TRex.Tests.TestFixtures
     public static void ConvertSiteModelToImmutable(ISiteModel siteModel)
     {
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);
-
-      /*
-      // Read all sub grids from the persistent store into the grid ready for access
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
-      {
-        TRex.SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(siteModel.PrimaryStorageProxy, siteModel.Grid,
-          x.X, x.Y, siteModel.Grid.NumLevels, false, false).Should().NotBeNull();
-      });
-      */
     }
 
     public new void Dispose()

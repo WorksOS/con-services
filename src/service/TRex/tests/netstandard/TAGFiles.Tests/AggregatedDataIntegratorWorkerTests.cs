@@ -64,7 +64,7 @@ namespace TAGFiles.Tests
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks);
-      worker.TaskProcessingComplete();
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -98,7 +98,7 @@ namespace TAGFiles.Tests
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks);
-      worker.TaskProcessingComplete();
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -135,7 +135,7 @@ namespace TAGFiles.Tests
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks);
-      worker.TaskProcessingComplete();
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -173,7 +173,7 @@ namespace TAGFiles.Tests
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks);
-      worker.TaskProcessingComplete();
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(2);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -218,7 +218,7 @@ namespace TAGFiles.Tests
         MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
       };
       worker.ProcessTask(processedTasks);
-      worker.TaskProcessingComplete();
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(numToTake);
 

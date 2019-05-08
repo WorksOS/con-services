@@ -334,8 +334,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           var subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
           if (!subGridIntegrator.IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
             return false; 
-          //if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
-            //return false;
 
           Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {SiteModelFromDM.ID}");
 
@@ -429,7 +427,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       return true;
     }
 
-    public void TaskProcessingComplete()
+    public void CompleteTaskProcessing()
     {
       Log.LogInformation($"Aggregation Task Process --> Dropping cached content for site model {SiteModelID}");
       // Finally, drop the site model context being used to perform the aggregation/integration to free up the cached

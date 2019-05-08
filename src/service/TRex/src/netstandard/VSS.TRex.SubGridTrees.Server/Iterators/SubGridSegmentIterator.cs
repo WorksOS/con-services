@@ -83,11 +83,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                              IterationState.SubGrid,
                              Result))
                         {
-                            if (RetrieveAllPasses && Result.PassesData == null)
-                            {
-                              Log.LogError("Segment read via LoadLeafSubGridSegment() with RetrieveAllPasses = true has PassesData = null in response");
-                            }
-
                             /* TODO: no separate cache - it is in ignite
                             // The segment is now loaded and available for use and should be touched
                             // to link it into the cache segment MRU management

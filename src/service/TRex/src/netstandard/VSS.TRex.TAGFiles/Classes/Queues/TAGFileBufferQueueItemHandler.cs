@@ -129,11 +129,17 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             {
                                 try
                                 {
-                                    // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
-                                    if (!tagFileResponse.Success)
-                                        ; //Log.LogInformation($"Grouper1 TAG file {tagFileResponse.FileName} successfully processed");
+                                    if (tagFileResponse.Success)
+                                    {
+                                        //Commented out to keep happy path log less noisy
+                                        //Log.LogInformation($"Grouper1 TAG file {tagFileResponse.FileName} successfully processed");
+                                    }
                                     else
+                                    {
                                         Log.LogError($"Grouper1 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                                        // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
+
+                                    }
 
                                     removalKey.FileName = tagFileResponse.FileName;
 
@@ -237,11 +243,16 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     try
                     {
-                        // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
                         if (tagFileResponse.Success)
-                            ; // Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
+                        {
+                          //Commented out to keep happy path log less noisy
+                          // Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
+                        }
                         else
-                            Log.LogError($"Grouper2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                        {
+                          // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
+                          Log.LogError($"Grouper2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                        }
 
                         removalKey.FileName = tagFileResponse.FileName;
 

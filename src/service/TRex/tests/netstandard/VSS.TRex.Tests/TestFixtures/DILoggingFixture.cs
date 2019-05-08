@@ -36,8 +36,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", It.IsAny<bool>())).Returns(true /*Consts.ADVISEOTHERSERVICES_OFMODELCHANGES*/);
 
-          config.Setup(c => c.GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", It.IsAny<int>())).Returns(Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
-          config.Setup(c => c.GetValueInt("MAXGROUPEDTAGFILES_TOPROCESSPERPROCESSINGEPOCH", It.IsAny<int>())).Returns(Consts.MAXGROUPEDTAGFILES_TOPROCESSPERPROCESSINGEPOCH);
+          config.Setup(c => c.GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", It.IsAny<int>())).Returns(Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
+          config.Setup(c => c.GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", It.IsAny<int>())).Returns(Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
           
           config.Setup(c => c.GetValueInt("HEARTBEAT_LOGGER_INTERVAL")).Returns(Consts.HEARTBEAT_LOGGER_INTERVAL);
 
