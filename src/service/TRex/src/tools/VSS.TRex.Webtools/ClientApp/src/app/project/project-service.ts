@@ -90,7 +90,7 @@ export class ProjectService {
 
   public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-    ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface?fileName=${descriptor.fileName}&asAtDate=${asAtDate}`,null);
+      ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface?fileNameAndLocalPath=${descriptor.fileName}&asAtDate=${asAtDate}`,null);
   }
 
   public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
@@ -103,7 +103,7 @@ export class ProjectService {
 
   public addDesignSurface(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-      ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileName=${descriptor.fileName}`, null);
+      ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileNameAndLocalPath=${descriptor.fileName}`, null);
   }
 
   public getDesignSurfaces(projectUid: string): Observable<DesignSurface[]> {
@@ -116,7 +116,7 @@ export class ProjectService {
 
   public addAlignment(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-      ('addAlignment', `designs/${projectUid}/Alignment?fileName=${descriptor.fileName}`, null);
+      ('addAlignment', `designs/${projectUid}/Alignment?fileNameAndLocalPath=${descriptor.fileName}`, null);
   }
 
   public getAlignments(projectUid: string): Observable<Alignment[]> {

@@ -2,13 +2,8 @@
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Tpaas.Client.Abstractions;
 using VSS.Tpaas.Client.Clients;
 using VSS.Tpaas.Client.RequestHandlers;
@@ -38,7 +33,6 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
 
-      services.AddTransient<TPaaSAuthenticatedRequestHandler>();
       services.AddHttpClient<ITPaaSClient, TPaaSClient>(client =>
         client.BaseAddress = new Uri(Configuration.GetValueString(TPaaSClient.TPAAS_AUTH_URL_ENV_KEY))
       ).ConfigurePrimaryHttpMessageHandler(() => new TPaaSApplicationCredentialsRequestHandler
@@ -46,6 +40,12 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
         TPaaSToken = Configuration.GetValueString(TPaaSApplicationCredentialsRequestHandler.TPAAS_APP_TOKEN_ENV_KEY),
         InnerHandler = new HttpClientHandler()
       });
+
+      services.AddTransient(context => new TPaaSAuthenticatedRequestHandler
+      {
+        TPaaSClient = context.GetService<ITPaaSClient>()
+      });
+      
       services.AddHttpClient<IConnectedSiteClient, ConnectedSiteClient>(client =>
         client.BaseAddress = new Uri(Configuration.GetValueString(CONNECTED_SITE_URL_ENV_KEY))
       ).AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>();

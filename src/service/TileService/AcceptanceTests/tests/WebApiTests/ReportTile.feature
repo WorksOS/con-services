@@ -175,12 +175,3 @@ And a volumeCalcType "DesignToGround"
 And a volumeBaseUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
 When I request a Report Tile Expecting BadRequest
 Then I should get error code -1 and message "Missing top filter for summary volumes production data overlay"
-
-
-
-
-
-
-
-
-

@@ -56,8 +56,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.JvmOptions = new List<string>() {
         "-DIGNITE_QUIET=false",
-        "-Djava.net.preferIPv4Stack=true"};
-
+        "-Djava.net.preferIPv4Stack=true"
+      };
 
       cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
       cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
@@ -120,6 +120,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       {
         LocalPort = 47100,
       };
+
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
+
       return cfg;
     }
 

@@ -27,6 +27,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
+using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 {
@@ -73,13 +74,32 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         OrgId = string.Empty
       };
 
+      // We need to validate the tag file is uploaded correctly to both TCC and S3
+      const string expectedS3Filename = "Machine Name--whatever /Production-Data (Archived)/Machine Name--whatever --16/Machine Name--whatever --161230235959";
+      const string expectedTccFilename = "Machine Name--whatever --161230235959";
+      const string expectedTccPath = "/Machine Name--whatever /Production-Data (Archived)/Machine Name--whatever --16/";
+      const string expectedTccFilespaceId = "abc123";
+
 #if RAPTOR
       // create the Raptor mocks with successful result
       var mockTagProcessor = new Mock<ITagProcessor>();
       var mockRaptorClient = new Mock<IASNodeClient>();
 #endif
+
+      // S3 Repository 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>()));
+      
+      // TCC File Repository
+      var mockTccFileRepo = new Mock<IFileRepository>();
+      mockTccFileRepo.Setup(t => 
+        t.PutFile(It.IsAny<string>(), 
+          It.IsAny<string>(), 
+          It.IsAny<string>(), 
+          It.IsAny<Stream>(), 
+          It.IsAny<long>()))
+        .Returns(Task.FromResult(true));
+
 #if RAPTOR
       mockTagProcessor.Setup(prj => prj.ProjectDataServerTAGProcessorClient()
           .SubmitTAGFileToTAGFileProcessor(
@@ -91,6 +111,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       // create the Trex mocks with successful result
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TAGFILE")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("TCC_TAGFILE_FILESPACEID")).Returns(expectedTccFilespaceId);
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.OK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
@@ -102,12 +123,26 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #if RAPTOR
           mockRaptorClient.Object, mockTagProcessor.Object,
 #endif
-          mockConfigStore.Object, transferProxy: mockTransferProxy.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
+          mockConfigStore.Object, transferProxy: mockTransferProxy.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders, fileRepo: mockTccFileRepo.Object);
 
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage);
+
+#if RAPTOR
+      // We are only uploading files if we have the RAPTOR define
+      // Ensure we have uploaded our file to S3, with the correct filename
+      mockTransferProxy.Verify(m => m.Upload(It.IsAny<Stream>(), It.Is<string>(s => s == expectedS3Filename)), Times.Once);
+
+      // Ensure we have also uploaded our file to TCC 
+      mockTccFileRepo.Verify(m => m.PutFile(
+        It.Is<string>(s => s == expectedTccFilespaceId),
+        It.Is<string>(s => s == expectedTccPath),
+        It.Is<string>(s => s == expectedTccFilename),
+        It.IsAny<Stream>(),
+        It.Is<long>(l => l == tagFileContent.Length)), Times.Once);
+#endif
     }
 
     [TestMethod]

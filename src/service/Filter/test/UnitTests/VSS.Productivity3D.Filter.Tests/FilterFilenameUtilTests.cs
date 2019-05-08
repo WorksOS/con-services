@@ -188,9 +188,8 @@ namespace VSS.Productivity3D.Filter.Tests
           ImportedFileType = ImportedFileType.DesignSurface,
           ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
           LegacyFileId = 111,
-          IsActivated = true,
-          MinZoomLevel = 15,
-          MaxZoomLevel = 20
+          IsActivated = true
+
         }};
 
       var fileListProxy = new Mock<IFileListProxy>();
@@ -340,9 +339,7 @@ namespace VSS.Productivity3D.Filter.Tests
           ImportedFileType = ImportedFileType.DesignSurface,
           ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
           LegacyFileId = 111,
-          IsActivated = true,
-          MinZoomLevel = 15,
-          MaxZoomLevel = 20
+          IsActivated = true
         }};
 
       var fileListProxy = new Mock<IFileListProxy>();

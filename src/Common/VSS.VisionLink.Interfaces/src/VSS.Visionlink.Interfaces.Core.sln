@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.489
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "VSS.Visionlink.Interfaces.Core.csproj", "{FA8886C3-66A2-4C07-9193-070AAD60138B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA8886C3-66A2-4C07-9193-070AAD60138B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA8886C3-66A2-4C07-9193-070AAD60138B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA8886C3-66A2-4C07-9193-070AAD60138B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA8886C3-66A2-4C07-9193-070AAD60138B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E4D6B9A4-3FA0-4709-AA0C-7B2080A2CE97}
+	EndGlobalSection
+EndGlobal
