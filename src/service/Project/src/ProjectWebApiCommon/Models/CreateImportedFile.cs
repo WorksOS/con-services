@@ -28,6 +28,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 
     public string DataOceanRootFolder { get; set; }
 
+    public Guid? ParentUid { get; set; }
+
+    public double? Offset { get; set; }
+
     /// <summary>
     /// Private constructor
     /// </summary>
@@ -40,7 +44,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public static CreateImportedFile Create(Guid projectUid,
       string fileName, FileDescriptor fileDescriptor, ImportedFileType importedFileType, 
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      string dataOceanRootFolder)
+      string dataOceanRootFolder, Guid? parentUid, double? offset)
     {
       return new CreateImportedFile
       {
@@ -52,7 +56,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
         DxfUnitsType = dxfUnitsType,
         FileCreatedUtc = fileCreatedUtc,
         FileUpdatedUtc = fileUpdatedUtc,
-        DataOceanRootFolder = dataOceanRootFolder
+        DataOceanRootFolder = dataOceanRootFolder,
+        ParentUid = parentUid,
+        Offset = offset
       };
     }
   }
