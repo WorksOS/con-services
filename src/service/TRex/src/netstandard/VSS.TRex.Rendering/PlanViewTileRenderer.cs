@@ -1,13 +1,18 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.Rendering.Palettes.CCAColorScale;
 using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering
@@ -127,20 +132,29 @@ namespace VSS.TRex.Rendering
     /// <param name="mode"></param>
     /// <param name="processor"></param>
     /// <returns></returns>
-    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette)
+    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters)
     {
       // Obtain the display responsible for rendering the thematic information for this mode
       Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
 
       if (Displayer == null)
-        return RequestErrorStatus.UnsupportedDisplayType;
+      {
+        processor.Response.ResultStatus = RequestErrorStatus.UnsupportedDisplayType;
+        return processor.Response.ResultStatus;
+      }
 
       // Create and assign the colour pallete logic for this mode to the displayer
       if (colourPalette == null)
       {
         if (mode == DisplayMode.CCA || mode == DisplayMode.CCASummary)
         {
-          // TODO Create CCA palette...
+          Displayer.Palette = ComputeCCAPalette(processor.SiteModel, filters.Filters[0].AttributeFilter, mode);
+
+          if (Displayer.Palette == null)
+          {
+            processor.Response.ResultStatus = RequestErrorStatus.FailedToGetCCAMinimumPassesValue;
+            return processor.Response.ResultStatus;
+          }
         }
         else
           Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
@@ -220,6 +234,38 @@ namespace VSS.TRex.Rendering
       Height = AHeight;
       NPixelsX = ANPixelsX;
       NPixelsY = ANPixelsY;
+    }
+
+    public IPlanViewPalette ComputeCCAPalette(ISiteModel siteModel,  ICellPassAttributeFilter filter, DisplayMode mode)
+    {
+      var machineUID = filter.MachinesList.Length > 0 ? filter.MachinesList[0] : Guid.Empty;
+      
+      var ccaMinimumPassesValue = siteModel.GetCCAMinimumPassesValue(machineUID, filter.StartTime, filter.EndTime, filter.LayerID);
+
+      if (ccaMinimumPassesValue == 0)
+        return null;
+
+      var ccaColorScale = CCAColorScaleManager.CreateCoverageScale(ccaMinimumPassesValue);
+
+      var transitions = new Transition[ccaColorScale.TotalColors];
+
+      for (var i = 0; i < transitions.Length; i++)
+        transitions[i] = new Transition(i + 1, ColorUtility.UIntToColor(ccaColorScale.ColorSegments[transitions.Length - i - 1].Color));
+
+      if (mode == DisplayMode.CCA)
+      {
+        var ccaPalette = new CCAPalette();
+        ccaPalette.PaletteTransitions = transitions;
+
+        return ccaPalette;
+      }
+
+      var ccaSummaryPalette = new CCASummaryPalette();
+      ccaSummaryPalette.UndercompactedColour = transitions[0].Color;
+      ccaSummaryPalette.CompactedColour = transitions[1].Color;
+      ccaSummaryPalette.OvercompactedColour = transitions[2].Color;
+
+      return ccaSummaryPalette;
     }
   }
 }

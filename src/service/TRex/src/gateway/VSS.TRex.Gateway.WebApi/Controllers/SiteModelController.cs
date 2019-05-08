@@ -12,7 +12,9 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Executors;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Helpers;
+using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Gateway.WebApi.ActionServices;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -65,26 +67,12 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       try
       {
         projectStatisticsTRexRequest.Validate();
+        GatewayHelper.ValidateAndGetSiteModel(nameof(GetStatistics), projectStatisticsTRexRequest.ProjectUid);
 
-        var siteModel =
-          GatewayHelper.ValidateAndGetSiteModel(nameof(GetStatistics), projectStatisticsTRexRequest.ProjectUid);
-        var extents = ProjectExtents.ProductionDataAndSurveyedSurfaces(projectStatisticsTRexRequest.ProjectUid,
-          projectStatisticsTRexRequest.ExcludedSurveyedSurfaceUids);
-
-        var result = new ProjectStatisticsResult();
-        if (extents != null)
-          result.extents = new BoundingBox3DGrid(
-            extents.MinX, extents.MinY, extents.MinZ,
-            extents.MaxX, extents.MaxY, extents.MaxZ
-          );
-
-        var startEndDates = siteModel.GetDateRange();
-        result.startTime = startEndDates.startUtc;
-        result.endTime = startEndDates.endUtc;
-
-        result.cellSize = siteModel.Grid.CellSize;
-        result.indexOriginOffset = (int) siteModel.Grid.IndexOriginOffset;
-        return result;
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<SiteModelStatisticsExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(projectStatisticsTRexRequest) as ProjectStatisticsResult);
       }
       finally
       {

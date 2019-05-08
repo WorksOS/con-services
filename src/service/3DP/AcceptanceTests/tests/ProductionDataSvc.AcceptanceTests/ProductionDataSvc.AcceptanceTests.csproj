@@ -180,6 +180,9 @@
     </None>
     <None Update="GetLifts.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None> 
+    <None Update="GeoJson.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="GetMachineDesigns.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

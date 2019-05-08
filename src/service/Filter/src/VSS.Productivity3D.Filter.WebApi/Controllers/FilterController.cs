@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var user = (TIDCustomPrincipal)User;
 
       var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(),
+        Request.Headers.GetCustomHeaders(true),
         user.CustomerUid,
         user.IsApplication,
         (user.Identity as GenericIdentity)?.Name,
@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var user = (TIDCustomPrincipal)User;
 
       var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(),
+        Request.Headers.GetCustomHeaders(true),
         user.CustomerUid,
         user.IsApplication,
         (user.Identity as GenericIdentity)?.Name,
@@ -206,7 +206,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     private async Task<FilterDescriptorSingleResult> UpsertFilter(TIDCustomPrincipal user, string username, UpsertFilterExecutor filterExecutor, ProjectData project, FilterRequest filterRequest)
     {
       var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(),
+        Request.Headers.GetCustomHeaders(true),
         user.CustomerUid,
         user.IsApplication,
         username,

@@ -11,7 +11,9 @@ namespace VSS.TMS.TileSources
 
   Task<byte[]> GetTerrainTileAsync(int x, int y, int z);
 
-  TileSetConfiguration Configuration { get; }
+  Task<byte[]> GetTerrainQMTileAsync(int x, int y, int z, string path, int mode);
+
+    TileSetConfiguration Configuration { get; }
 
   string ContentType { get; }
 
