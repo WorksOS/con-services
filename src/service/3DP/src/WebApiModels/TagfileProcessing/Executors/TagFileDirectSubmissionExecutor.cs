@@ -27,6 +27,8 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
   /// </summary>
   public class TagFileDirectSubmissionExecutor : RequestExecutorContainer
   {
+    private const string TCC_FILESPACE_CONFIG_KEY = "TCC_TAGFILE_FILESPACEID";
+
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<CompactionTagFileRequest>(item);
@@ -77,11 +79,11 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var data = new MemoryStream(request.Data);
       if (useRaptorGateway)
       {
-        ArchiveFile((TAGProcServerProcessResultCode) result.Code, data, request.FileName, request.OrgId);
+        await ArchiveFile((TAGProcServerProcessResultCode) result.Code, data, request.FileName, request.OrgId);
       }
       else if (useTrexGateway)
       {
-        ArchiveFile((TRexTagFileResultCode)result.Code, data, request.FileName, request.OrgId);
+        await ArchiveFile((TRexTagFileResultCode)result.Code, data, request.FileName, request.OrgId);
       }
       else
       {
@@ -139,7 +141,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     /// <param name="data">Tagfile contents to archive</param>
     /// <param name="tagFileName">Tagfile name</param>
     /// <param name="tccOrgId">ID of TCC organization who owns the tagfile</param>
-    private void ArchiveFile(TAGProcServerProcessResultCode resultCode, Stream data, string tagFileName, string tccOrgId)
+    private Task ArchiveFile(TAGProcServerProcessResultCode resultCode, MemoryStream data, string tagFileName, string tccOrgId)
     {
       string folderName = null;
       switch (resultCode)
@@ -170,11 +172,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
           break;
       }
 
-      if (!string.IsNullOrEmpty(folderName))
-      {
-        log.LogDebug($"Moving file {tagFileName} for org {tccOrgId} to {folderName} folder");
-        transferProxy.Upload(data, GetS3Key(tagFileName, folderName, tccOrgId));
-      }
+      return UploadTagFile(data, tagFileName, tccOrgId, folderName);
     }
 
     /// <summary>
@@ -184,7 +182,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     /// <param name="data">Tagfile contents to archive</param>
     /// <param name="tagFileName">Tagfile name</param>
     /// <param name="tccOrgId">ID of TCC organization who owns the tagfile</param>
-    private void ArchiveFile(TRexTagFileResultCode resultCode, Stream data, string tagFileName, string tccOrgId)
+    private Task ArchiveFile(TRexTagFileResultCode resultCode, MemoryStream data, string tagFileName, string tccOrgId)
     {
       string folderName = null;
       switch (resultCode)
@@ -258,10 +256,62 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
           break;
       }
 
-      if (!string.IsNullOrEmpty(folderName))
+      return UploadTagFile(data, tagFileName, tccOrgId, folderName);
+    }
+
+    /// <summary>
+    /// Update the Tag file to S3 and / or TCC 
+    /// </summary>
+    /// <param name="data">Memory Stream for data</param>
+    /// <param name="tagFileName">Tag file name</param>
+    /// <param name="tccOrgId">TCC org id</param>
+    /// <param name="folderName">Folder name for the tag file</param>
+    private async Task UploadTagFile(MemoryStream data, string tagFileName, string tccOrgId, string folderName)
+    {
+      if (string.IsNullOrEmpty(folderName)) 
+        return;
+
+      var path = GetS3Key(tagFileName, folderName, tccOrgId);
+      // S3 needs a full path including file, but TCC needs a path and filename as two separate variables
+      var s3FullPath = path + tagFileName;
+
+      // TCC is very sensitive about its paths... (the method may change to have a slash at the start, we want to handle that)
+      var tccPath = path.StartsWith("/") ? path : $"/{path}"; 
+      var tccFileSpaceId = configStore.GetValueString(TCC_FILESPACE_CONFIG_KEY);
+
+      log.LogDebug($"Moving file {tagFileName} for org {tccOrgId} to {folderName} folder. Path: {path}, S3 Path: {s3FullPath}, TCC FilespaceID: {tccFileSpaceId}");
+
+      
+      using (var s3Stream = new MemoryStream())
       {
-        log.LogDebug($"Moving file {tagFileName} for org {tccOrgId} to {folderName} folder");
-        transferProxy.Upload(data, GetS3Key(tagFileName, folderName, tccOrgId));
+        // Transfer Proxy will dispose of the stream passed in, but we need it later
+        // So we will create a new memory stream
+        // Also we need to seek to the beginning each time as it will set the position to the end after copy (for both the src and dst)
+        data.Seek(0, SeekOrigin.Begin);
+        await data.CopyToAsync(s3Stream);
+        s3Stream.Seek(0, SeekOrigin.Begin);
+
+        transferProxy.Upload(s3Stream, s3FullPath);
+      }
+
+      if (!string.IsNullOrEmpty(tccFileSpaceId))
+      {
+        var directoryExists = await fileRepo.FolderExists(tccFileSpaceId, tccPath);
+        if (!directoryExists)
+          await fileRepo.MakeFolder(tccFileSpaceId, tccPath);
+
+        using (var tccStream = new MemoryStream())
+        {
+          // Same thing here, make sure we create a new stream in case it's disposed in the file repo (and seek)
+          data.Seek(0, SeekOrigin.Begin);
+          await data.CopyToAsync(tccStream);
+          tccStream.Seek(0, SeekOrigin.Begin); 
+          await fileRepo.PutFile(tccFileSpaceId, tccPath, tagFileName, data, data.Length);
+        }
+      }
+      else
+      {
+        log.LogWarning($"Failed to upload tag file {tagFileName} to TCC due to missing key {TCC_FILESPACE_CONFIG_KEY}");
       }
     }
 
@@ -284,7 +334,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       //TCC org ID is not provided with direct submission from machines
       var prefix = string.IsNullOrEmpty(tccOrgId) ? string.Empty : $"{tccOrgId}/";
 
-      return $"{prefix}{parts[0]}{separator}{parts[1]}/{archiveFolder}/{nameWithoutTime}/{tagFileName}";
+      return $"{prefix}{parts[0]}{separator}{parts[1]}/{archiveFolder}/{nameWithoutTime}/";
     }
 #endif
     protected override ContractExecutionResult ProcessEx<T>(T item)

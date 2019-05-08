@@ -154,6 +154,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
     {
       cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
 
       cfg.CommunicationSpi = new TcpCommunicationSpi()
       {
@@ -177,7 +178,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
         IpFinder = new TcpDiscoveryStaticIpFinder()
         {
-          Endpoints = new[] {"127.0.0.1:48500..48502"}
+          Endpoints = new[] { "127.0.0.1:48500..48502" }
         }
       };
 

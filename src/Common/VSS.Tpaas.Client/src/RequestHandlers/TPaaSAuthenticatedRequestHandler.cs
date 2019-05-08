@@ -14,11 +14,22 @@ namespace VSS.Tpaas.Client.RequestHandlers
   /// Example usage (in Startup.cs)
   /// 
   ///   ...
-  ///    services.AddTransient<TPaaSAuthenticatedRequestHandler>();
-  ///    services.AddHttpClient<YOUR_TYPED_HTTP_CLIENT>(client => 
-  ///        client.BaseAddress = new Uri("YOUR_BASE_URI")
-  ///      )
-  ///      .AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>();
+  ///   services.AddHttpClient<ITPaaSClient, TPaaSClient>(client =>
+  ///     client.BaseAddress = new Uri(Configuration.GetValueString(TPaaSClient.TPAAS_AUTH_URL_ENV_KEY))
+  ///   ).ConfigurePrimaryHttpMessageHandler(() => new TPaaSApplicationCredentialsRequestHandler
+  ///  {
+  ///     TPaaSToken = Configuration.GetValueString(TPaaSApplicationCredentialsRequestHandler.TPAAS_APP_TOKEN_ENV_KEY),
+  ///     InnerHandler = new HttpClientHandler()
+  ///   });
+  ///
+  ///   services.AddTransient(context => new TPaaSAuthenticatedRequestHandler
+  ///   {
+  ///     TPaaSClient = context.GetService<ITPaaSClient>()
+  ///   });
+  ///
+  ///   services.AddHttpClient<IYOUR_TYPED_HTTP_CLIENT, YOUR_TYPED_HTTP_CLIENT>(client =>
+  ///   client.BaseAddress = new Uri("YOUR_BASE_URI")
+  ///   ).AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>();
   ///   ...
   ///   
   /// see <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-2.1">MS Documentation</a>
@@ -27,12 +38,11 @@ namespace VSS.Tpaas.Client.RequestHandlers
   public class TPaaSAuthenticatedRequestHandler : DelegatingHandler
   {
 
-    private readonly ITPaaSClient client;
+    public ITPaaSClient TPaaSClient { get; set; }
 
-    public TPaaSAuthenticatedRequestHandler(HttpMessageHandler innerHandler, ITPaaSClient tpaasClient) :
+    public TPaaSAuthenticatedRequestHandler(HttpMessageHandler innerHandler) :
       base(innerHandler)
     {
-      client = tpaasClient;
     }
 
     /// <summary>
@@ -51,7 +61,7 @@ namespace VSS.Tpaas.Client.RequestHandlers
       {
         if (!request.Headers.Contains("Authorization"))
         {
-          string bearerToken = await client.GetBearerTokenAsync();
+          string bearerToken = await TPaaSClient.GetBearerTokenAsync();
 
           request.Headers.Add("Authorization", bearerToken);
         }
