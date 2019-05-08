@@ -25,6 +25,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public long? LegacyImportedFileId { get; set; }
 
     public string DataOceanRootFolder { get; set; }
+
     /// <summary>
     /// Private constructor
     /// </summary>

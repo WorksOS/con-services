@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -17,12 +18,33 @@ namespace VSS.FlowJSHandler
             public string[] Extensions { get; set; }
             public override void OnActionExecuting(ActionExecutingContext filterContext)
             {
-                var flowJs = new FlowJsRepo();
                 var request = filterContext.HttpContext.Request;
-                var validationRules = new FlowValidationRules();
-                validationRules.AcceptedExtensions.AddRange(Extensions);
-                validationRules.MaxFileSize = Size;
-                var status = flowJs.PostChunk(request, Path.GetTempPath(),validationRules);
+                FlowJsPostChunkResponse status = null;
+                //For reference surface files there is nothing to upload
+                if (request.Query.ContainsKey("importedFileType"))
+                {
+                  var fileType = request.Query["importedFileType"];
+                  if (fileType == "ReferenceSurface")
+                  {
+                    if (request.Query.ContainsKey("filename"))
+                    {
+                      var filename = request.Query["filename"];
+                      status = new FlowJsPostChunkResponse { FileName = filename, Status = PostChunkStatus.Done };
+                    }
+                    else
+                    {
+                      status = new FlowJsPostChunkResponse { Status = PostChunkStatus.Error, ErrorMessages = new List<string>{"Missing filename for reference surface"}};
+                    }
+                  }
+                  else
+                  {
+                    var flowJs = new FlowJsRepo();
+                    var validationRules = new FlowValidationRules();
+                    validationRules.AcceptedExtensions.AddRange(Extensions);
+                    validationRules.MaxFileSize = Size;
+                    status = flowJs.PostChunk(request, Path.GetTempPath(), validationRules);
+                  }
+                }
 
                 if (status.Status == PostChunkStatus.Done)
                 {
