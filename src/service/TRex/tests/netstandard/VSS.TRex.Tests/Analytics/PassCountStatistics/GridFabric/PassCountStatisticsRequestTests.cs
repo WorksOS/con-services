@@ -2,12 +2,10 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using VSS.MasterData.Models.Models;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Records;
-using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -214,7 +212,8 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     // Todo: Add additional tests for pass count detail
 
     [Theory]
-    [InlineData(0, 0, 40.425531914893611, 22.391084093211752, 37.18338399189463, 342.29160000000007)]
+   // [InlineData(0, 0, 40.425531914893611, 22.391084093211752, 37.18338399189463, 342.29160000000007)]
+    [InlineData(0, 0, 25.540275049115913, 2.226588081204977, 72.2331368696791, 353.04240000000004)]
     public void Test_DetailedPassCountStatistics_SiteModelWithSingleTAGFile_FullExtents
       (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove, double totalArea)
     {
@@ -236,13 +235,22 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       passCountDetailResult.Should().NotBeNull();
 
       // Checks counts and percentages
-      long[] expectedCounts = {755, 442, 663, 1038, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-      
+//      long[] expectedCounts = {755, 442, 663, 1038, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      long[] expectedCounts = { 93, 687, 68, 385, 57, 598, 65, 986, 52, 63, 0, 0, 0, 0, 0 };
+      long expectedCountsSum = 0;
+      for (int i = 0; i < expectedCounts.Length; i++)
+        expectedCountsSum += (i + 1) * expectedCounts[i];
+
       // Is sum of counts the same?
-      passCountDetailResult.Counts.Sum().Should().Be(expectedCounts.Sum());
+      long passCountDetailResultSum = 0;
+      for (int i = 0; i < passCountDetailResult.Counts.Length; i++)
+        passCountDetailResultSum += (i + 1) * passCountDetailResult.Counts[i];
+
+      passCountDetailResultSum.Should().Be(expectedCountsSum);
+
       // Are all counts the same and do percentages match?
 
-      long totalCount = expectedCounts.Sum();
+      long totalCount = passCountDetailResult.Counts.Sum();
       for (int i = 0; i < expectedCounts.Length; i++)
       {
         expectedCounts[i].Should().Be(passCountDetailResult.Counts[i]);
