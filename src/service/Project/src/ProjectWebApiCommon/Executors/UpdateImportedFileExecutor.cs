@@ -47,7 +47,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
       var isDesignFileType = updateImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
                              updateImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface ||
-                             updateImportedFile.ImportedFileType == ImportedFileType.Alignment;
+                             updateImportedFile.ImportedFileType == ImportedFileType.Alignment ||
+                             updateImportedFile.ImportedFileType == ImportedFileType.ReferenceSurface;
 
       var existing = await projectRepo.GetImportedFile(updateImportedFile.ImportedFileUid.ToString())
         .ConfigureAwait(false);

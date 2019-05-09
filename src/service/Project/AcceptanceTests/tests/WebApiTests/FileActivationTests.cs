@@ -324,7 +324,7 @@ namespace WebApiTests
     private static ImportedFileDescriptorSingleResult ImportFiles(ImportFile importFile, TestSupport testSupport, Guid projectUid, Guid customerUid, DateTime startDateTime, string testFile)
     {
       var importFileArray = new[] {
-        "| EventType              | ProjectUid   | CustomerUid   | Name                       | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated |",
+         "| EventType              | ProjectUid   | CustomerUid   | Name       | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {testFile} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |"};
 
       return importFile.SendRequestToFileImportV4(testSupport, importFileArray, 1, new ImportOptions(HttpMethod.Post));

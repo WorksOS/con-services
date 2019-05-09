@@ -65,6 +65,7 @@ RUN wget http://central.maven.org/maven2/org/apache/ignite/ignite-log4j/2.7.0/ig
 RUN wget http://central.maven.org/maven2/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar
 RUN wget http://central.maven.org/maven2/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar
 RUN wget http://central.maven.org/maven2/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar
+RUN wget http://central.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.11.0/jmx_prometheus_javaagent-0.11.0.jar
 RUN rm spring*4.3.18*
 
 #TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile

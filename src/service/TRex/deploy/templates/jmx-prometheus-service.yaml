@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # Services which have the java agent for JMX prometheus stats
+  name: jmx-prometheus
+  annotations:
+    prometheus.io/scrape: "true"
+spec:
+  clusterIP: None # custom value.
+  ports:
+    - port: 8088 # custom value.
+  selector:
+    # Must be equal to one of the labels set in Ignite pods'
+    # deployement configuration.
+    jmx-prometheus: "true"

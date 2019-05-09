@@ -62,8 +62,9 @@ namespace TAGFiles.Tests
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
 
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks);
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -95,8 +96,9 @@ namespace TAGFiles.Tests
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
 
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks);
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -131,8 +133,9 @@ namespace TAGFiles.Tests
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
 
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks);
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -168,8 +171,9 @@ namespace TAGFiles.Tests
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
 
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks);
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(2);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -209,11 +213,12 @@ namespace TAGFiles.Tests
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
 
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess)
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
       {
         MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
       };
       worker.ProcessTask(processedTasks);
+      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(numToTake);
 

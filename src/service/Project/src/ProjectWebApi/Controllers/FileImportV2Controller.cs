@@ -127,7 +127,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var existing = await ImportedFileRequestDatabaseHelper
         .GetImportedFileForProject
         (project.ProjectUID, importedFileTbc.Name, importedFileTbc.ImportedFileTypeId, null,
-        log, projectRepo)
+        log, projectRepo, 0, null)
         .ConfigureAwait(false);
       bool creating = existing == null;
       log.LogInformation(
@@ -148,7 +148,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
-          DataOceanRootFolder);
+          DataOceanRootFolder, null, 0);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -176,7 +176,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
           fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolder
+          DataOceanRootFolder, 0
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>

@@ -197,7 +197,7 @@ namespace VSS.TRex.SiteModels
         mask.ScanAllSubGrids(leaf =>
         {
           // Obtain the matching node sub grid in Grid
-          ISubGrid node = siteModel.Grid.LocateClosestSubGridContaining
+          var node = siteModel.Grid.LocateClosestSubGridContaining
             (leaf.OriginX << SubGridTreeConsts.SubGridIndexBitsPerLevel,
              leaf.OriginY << SubGridTreeConsts.SubGridIndexBitsPerLevel,
              leaf.Level);
@@ -215,6 +215,22 @@ namespace VSS.TRex.SiteModels
         // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
         DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(message.SiteModelID, mask);
       }
+    }
+
+    /// <summary>
+    /// Returns a cloned list of references to the set of site models currently present in the site models cache
+    /// </summary>
+    /// <returns></returns>
+    public List<ISiteModel> GetSiteModels()
+    {
+      var models = new List<ISiteModel>();
+
+      lock (CachedModels)
+      {
+        models.AddRange(CachedModels.Values);
+      }
+
+      return models;
     }
   }
 }
