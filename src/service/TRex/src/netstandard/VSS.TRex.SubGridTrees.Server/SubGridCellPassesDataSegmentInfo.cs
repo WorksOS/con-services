@@ -102,5 +102,10 @@ namespace VSS.TRex.SubGridTrees.Server
         {
           Version = DateTime.UtcNow.Ticks;
         }
+
+        public override string ToString()
+        {
+          return $"ID: {SegmentIdentifier()}, MinElev: {MinElevation}, MaxElev: {MaxElevation}, ExistsInPersistentStore?:{ExistsInPersistentStore}, AllPasses?:{Segment?.HasAllPasses ?? false}, LatestData?:{Segment?.HasLatestData ?? false}";
+        }
     }
 }

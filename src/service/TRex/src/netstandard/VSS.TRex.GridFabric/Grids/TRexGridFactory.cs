@@ -27,6 +27,7 @@ namespace VSS.TRex.GridFabric.Grids
     /// If the grid reference has previously been requested it returned from a cached reference.
     /// </summary>
     /// <param name="mutability"></param>
+    /// <param name="cfg"></param>
     /// <returns></returns>
     public IIgnite Grid(StorageMutability mutability, IgniteConfiguration cfg = null)
     {
@@ -37,11 +38,12 @@ namespace VSS.TRex.GridFabric.Grids
     {
       igniteGrids = new IIgnite[Enum.GetValues(typeof(StorageMutability)).Cast<int>().Max(x => x) + 1];
     }
-    
+
     /// <summary>
     /// Creates an appropriate new Ignite grid reference depending on the TRex Grid passed in
     /// </summary>
     /// <param name="gridName"></param>
+    /// <param name="cfg"></param>
     /// <returns></returns>
     public IIgnite Grid(string gridName, IgniteConfiguration cfg = null)
     {
@@ -56,7 +58,7 @@ namespace VSS.TRex.GridFabric.Grids
 
     /// <summary>
     /// The default factory for obtaining or creating ignite nodes. This method is injected into the
-    /// DI context as the Func(string, IIgnite factory delegate obtained from the DIContext in Grid())
+    /// DI context as the Func(string, IIgnite) factory delegate obtained from the DIContext in Grid()
     /// </summary>
     /// <param name="gridName"></param>
     /// <param name="cfg"></param>

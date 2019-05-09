@@ -60,7 +60,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       return new PatchRequestArgument
       {
         DataPatchNumber = 0,
-        DataPatchSize = 10,
+        DataPatchSize = 100,
         Filters = new FilterSet(new CombinedFilter()),
         Mode = DisplayMode.Height,
         ProjectID = projectUid,
@@ -100,13 +100,13 @@ namespace VSS.TRex.Tests.Exports.Patches
 
       response.Should().NotBeNull();
       response.SubGrids.Should().NotBeNull();
-      response.SubGrids.Count.Should().Be(10);
+      response.SubGrids.Count.Should().Be(12);
 
       response.SubGrids.ForEach(x => x.Should().BeOfType<ClientHeightAndTimeLeafSubGrid>());
 
       int nonNullCellCount = 0;
       response.SubGrids.ForEach(x => nonNullCellCount += ((ClientHeightAndTimeLeafSubGrid)x).CountNonNullCells());
-      nonNullCellCount.Should().Be(2743);
+      nonNullCellCount.Should().Be(3054);
     }
 
     [Fact]

@@ -29,7 +29,30 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <returns></returns>
     public override TV Get(TK key)
     {
-      return PendingTransactedWrites.TryGetValue(key, out TV value) ? value : throw new KeyNotFoundException($"Key {key} not found");
+      lock (PendingTransactedWrites)
+      {
+        if (PendingTransactedWrites.TryGetValue(key, out var value))
+          return value;
+      }
+
+      throw new KeyNotFoundException($"Key {key} not found");
+    }
+
+    /// <summary>
+    /// Suppress clearing content from the test harne4ss storage proxy cache. This is due to the need to mock the
+    /// persistence layer in Ignite via the proxied storage cache for the lifecycle of individual tests.
+    /// </summary>
+    public override void Clear()
+    {
+      // Do nothing - retain the information within the storage proxy for test purposes
+    }
+
+    /// <summary>
+    /// Provide a means for tests to forcibly clear the proxy cache if required.
+    /// </summary>
+    public void ForceClear()
+    {
+      base.Clear();
     }
   }
 }

@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Server
       dir.SegmentDirectory.Should().NotBeNull();
     }
 
-    [Fact]
+    [Fact(Skip = "Obsolete")]
     public void Read_FailWithNoGlobalLatestCells()
     {
       var dir = new SubGridDirectory();
@@ -30,7 +30,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Server
       act.Should().Throw<TRexSubGridIOException>().WithMessage("Cannot read sub grid directory without global latest values available");
     }
 
-    [Fact]
+    [Fact(Skip = "Obsolete")]
     public void Write_FailWithNoGlobalLatestCells()
     {
       var dir = new SubGridDirectory();
@@ -39,7 +39,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Server
       act.Should().Throw<TRexSubGridIOException>().WithMessage("Cannot write sub grid directory without global latest values available");
     }
 
-    [Fact]
+    [Fact(Skip = "Obsolete")]
     public void Write_FailWithNoSegmentsInDirectory()
     {
       var dir = new SubGridDirectory();
