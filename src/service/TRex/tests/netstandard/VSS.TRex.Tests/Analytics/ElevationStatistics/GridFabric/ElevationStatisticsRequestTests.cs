@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
@@ -8,6 +9,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
@@ -29,10 +31,10 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       };
     }
 
-    private void BuildModelForCellsElevation(out ISiteModel siteModel, float elevationIncrement, int numberOfCells)
+    private void BuildModelForSingleCellElevation(out ISiteModel siteModel, float elevationIncrement)
     {
       var baseTime = DateTime.UtcNow;
-      byte baseElevation = 1;
+      var baseElevation = 1.0F;
 
       siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
@@ -49,6 +51,31 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+    }
+
+    private void BuildModelForCellsElevation(out ISiteModel siteModel, float elevationIncrement)
+    {
+      var baseTime = DateTime.UtcNow;
+      var baseElevation = 1.0F;
+
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+
+      CellPass[,][] cellPasses = new CellPass[32, 32][];
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        cellPasses[x, y] = Enumerable.Range(0, 1).Select(p =>
+          new CellPass
+          {
+            InternalSiteModelMachineIndex = bulldozerMachineIndex,
+            Time = baseTime.AddMinutes(p),
+            Height = baseElevation + (x + y) * elevationIncrement, // incrementally increase height across the sub grid
+            PassType = PassType.Front
+          }).ToArray();
+      });
+
+      DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
     }
 
     [Fact]
@@ -80,7 +107,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForCellsElevation(out var siteModel, 1, 1);
+      BuildModelForSingleCellElevation(out var siteModel, 1.0F);
       var operation = new ElevationStatisticsOperation();
 
       var elevationStatisticsResult = operation.Execute(SimpleElevationStatisticsArgument(siteModel));
@@ -99,7 +126,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForCellsElevation(out var siteModel, 1, 2);
+      BuildModelForCellsElevation(out var siteModel, 1.0F);
 
       var operation = new ElevationStatisticsOperation();
 
@@ -107,9 +134,9 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
 
       elevationStatisticsResult.Should().NotBeNull();
       elevationStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
-      elevationStatisticsResult.MinElevation.Should().Be(10.0);
-      elevationStatisticsResult.MaxElevation.Should().Be(20.0);
-      elevationStatisticsResult.CoverageArea.Should().BeApproximately(2 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      elevationStatisticsResult.MinElevation.Should().Be(1.0);
+      elevationStatisticsResult.MaxElevation.Should().Be(63.0);
+      elevationStatisticsResult.CoverageArea.Should().BeApproximately(1024 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
       elevationStatisticsResult.BoundingExtents.IsValidPlanExtent.Should().Be(true);
     }
 
