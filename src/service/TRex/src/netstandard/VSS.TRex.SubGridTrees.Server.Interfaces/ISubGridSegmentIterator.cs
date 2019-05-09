@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
@@ -17,6 +18,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool RetrieveLatestData { get; set; }
         bool ReturnCachedItemsOnly { get; set; }
         bool ReturnDirtyOnly { get; set; }
+
+        IStorageProxy StorageProxy { get; }
 
         IServerLeafSubGrid SubGrid { get; set; }
 
