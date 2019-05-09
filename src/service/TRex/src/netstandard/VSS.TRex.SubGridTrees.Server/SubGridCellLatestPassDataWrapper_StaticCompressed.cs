@@ -14,6 +14,8 @@ namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridCellLatestPassDataWrapper_StaticCompressed : SubGridCellLatestPassDataWrapperBase, ISubGridCellLatestPassDataWrapper
     {
+        //private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellLatestPassDataWrapper_StaticCompressed>();
+
         private DateTime FirstRealCellPassTime;
 
         // BF_CellPasses contains all the cell pass information for the segment (read in via
@@ -205,6 +207,8 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 BF_CellPasses.StreamWriteEnd();
             }
+
+            //Log.LogInformation($"Internal cache encoding for latest passes required {BF_CellPasses.NumBits / 8} bytes @ {NumBitsPerCellPass} bits per cell pass");
         }
 
         /// <summary>

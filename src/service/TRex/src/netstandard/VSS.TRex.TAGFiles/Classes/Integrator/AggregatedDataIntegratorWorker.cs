@@ -45,9 +45,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
     private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.ADVISEOTHERSERVICES_OFMODELCHANGES);
 
-    public int MaxMappedTagFilesToProcessPerAggregationEpoch { get; set; } = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
+    public int MaxMappedTagFilesToProcessPerAggregationEpoch { get; set; } = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
 
-    private AggregatedDataIntegratorWorker() { }
+    private Guid SiteModelID { get; set; }
+
+    private AggregatedDataIntegratorWorker(Guid siteModelID)
+    {
+      SiteModelID = siteModelID;
+    }
 
     /// <summary>
     /// Worker constructor accepting the list of tasks for it to process.
@@ -55,7 +60,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// within a single project
     /// </summary>
     /// <param name="tasksToProcess"></param>
-    public AggregatedDataIntegratorWorker(ConcurrentQueue<AggregatedDataIntegratorTask> tasksToProcess) : this()
+    /// <param name="siteModelID"></param>
+    public AggregatedDataIntegratorWorker(ConcurrentQueue<AggregatedDataIntegratorTask> tasksToProcess,
+      Guid siteModelID) : this(siteModelID)
     {
       TasksToProcess = tasksToProcess;
     }
@@ -80,7 +87,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <returns></returns>
     public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks)
     {
-      EventIntegrator eventIntegrator = new EventIntegrator();
+      var eventIntegrator = new EventIntegrator();
 
       /* The task contains a set of machine events and cell passes that need to be integrated into the
         machine and site model references in the task respectively. Machine events need to be integrated
@@ -104,12 +111,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         if (!TasksToProcess.TryDequeue(out Task) || Task == null)
           return true; // There is nothing in the queue to work on so just return true
 
+        Log.LogInformation("Aggregation Task Process: Clearing mutable storage proxy");
+
         storageProxy_Mutable.Clear();
 
         // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
         // and also explicitly provides the transactional storage proxy being used for processing the
         // data from TAG files into the model
-        ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(Task.PersistedTargetSiteModelID, true);
+        var SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(Task.PersistedTargetSiteModelID, true);
 
         if (SiteModelFromDM == null)
         {
@@ -170,7 +179,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         for (int I = 1; I < ProcessedTasks.Count; I++) // Zeroth item in the list is Task
         {
-          AggregatedDataIntegratorTask processedTask = ProcessedTasks[I];
+          var processedTask = ProcessedTasks[I];
 
           // 'Include' the extents etc of each site model being merged into 'task' into its extents and design change events
           Task.IntermediaryTargetSiteModel.Include(processedTask.IntermediaryTargetSiteModel);
@@ -181,7 +190,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
           // Integrate the cell passes from all cell pass aggregators 
-          SubGridIntegrator subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null, Task.AggregatedCellPasses, null);
+          var subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null, Task.AggregatedCellPasses, null);
           subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.UsingInMemoryTarget, SubGridHasChanged);
 
           //Update current DateTime with the latest one
@@ -283,6 +292,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // ====== STAGE 4: INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
         try
         {
+          Log.LogInformation($"Aggregation Task Process --> Labeling aggregated cell pass with correct machine ID for {SiteModelFromDM.ID}");
+
           // This is a dirty map for the leaf sub grids and is stored as a bitmap grid
           // with one level fewer that the sub grid tree it is representing, and
           // with cells the size of the leaf sub grids themselves. As the cell coordinates
@@ -295,11 +306,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             ID = SiteModelFromDM.ID
           };
 
+          long totalPassCountInAggregation = 0;
           // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
-          // ... first relable the passes with the machine ID as it is set to null in the swathing engine
+          // ... first relabel the passes with the machine ID as it is set to null in the swathing engine
           Task.AggregatedCellPasses?.ScanAllSubGrids(leaf =>
           {
-            ServerSubGridTreeLeaf serverLeaf = (ServerSubGridTreeLeaf) leaf;
+            var serverLeaf = (ServerSubGridTreeLeaf) leaf;
 
             foreach (var segment in serverLeaf.Cells.PassesData.Items)
             {
@@ -308,6 +320,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 uint passCount = segment.PassesData.PassCount(x, y);
                 for (int i = 0; i < passCount; i++)
                   segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
+
+                totalPassCountInAggregation += passCount;
               });
             }
 
@@ -315,9 +329,13 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           });
 
           // ... then integrate them
-          SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
-          if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
-            return false;
+          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes into primary data model for {SiteModelFromDM.ID}");
+
+          var subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
+          if (!subGridIntegrator.IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
+            return false; 
+
+          Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {SiteModelFromDM.ID}");
 
           // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
           SiteModelFromDM.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
@@ -332,7 +350,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
 
           // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
-
+          Log.LogInformation($"Aggregation Task Process --> Updating segment retirement queue for {SiteModelFromDM.ID}");
           if (subGridIntegrator.InvalidatedSpatialStreams.Count > 0)
           {
             // Stamp all the invalidated spatial streams with the project ID
@@ -341,14 +359,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             try
             {
-              ISegmentRetirementQueue retirementQueue = DIContext.Obtain<ISegmentRetirementQueue>();
+              var retirementQueue = DIContext.Obtain<ISegmentRetirementQueue>();
 
               if (retirementQueue == null)
               {
                 throw new TRexTAGFileProcessingException("No registered segment retirement queue in DI context");
               }
 
-              DateTime insertUTC = DateTime.UtcNow;
+              var insertUTC = DateTime.UtcNow;
 
               retirementQueue.Add(new SegmentRetirementQueueKey
                 {
@@ -374,7 +392,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           if (_adviseOtherServicesOfDataModelChanges)
           {
             // Notify the site model in all contents in the grid that it's attributes have changed
-            Log.LogInformation($"Notifying site model attributes changed for {SiteModelFromDM.ID}");
+            Log.LogInformation($"Aggregation Task Process --> Notifying site model attributes changed for {SiteModelFromDM.ID}");
 
             // Notify the immutable grid listeners that attributes of this site model have changed.
             var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
@@ -390,7 +408,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           }
 
           // Update the metadata for the site model
-          Log.LogInformation($"Updating site model metadata for {SiteModelFromDM.ID}");
+          Log.LogInformation($"Aggregation Task Process --> Updating site model metadata for {SiteModelFromDM.ID}");
           DIContext.Obtain<ISiteModelMetadataManager>().Update
           (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.UtcNow, siteModelExtent: SiteModelFromDM.SiteModelExtent,
             machineCount: SiteModelFromDM.Machines.Count);
@@ -407,6 +425,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
 
       return true;
+    }
+
+    public void CompleteTaskProcessing()
+    {
+      Log.LogInformation($"Aggregation Task Process --> Dropping cached content for site model {SiteModelID}");
+      // Finally, drop the site model context being used to perform the aggregation/integration to free up the cached
+      // sub grid and segment information used during this processing epoch.
+      DIContext.Obtain<ISiteModels>().DropSiteModel(SiteModelID);
     }
   }
 }

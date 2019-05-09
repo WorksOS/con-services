@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Services;
+﻿using System;
+using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using Apache.Ignite.Core;
@@ -29,7 +30,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// The interval between epochs where the service checks to see if there is anything to do
     /// </summary>
-    private const int kTAGFileBufferQueueServiceCheckIntervalMS = 1000;
+    private int TAGFileBufferQueueServiceCheckIntervalMS = 1000;
 
     /// <summary>
     /// Flag set then Cancel() is called to instruct the service to finish operations
@@ -63,48 +64,61 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="context"></param>
     public void Execute(IServiceContext context)
     {
-      Log.LogInformation($"{nameof(TAGFileBufferQueueService)} {context.Name} starting executing");
-
-      aborted = false;
-      waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-
-      // Get the ignite grid and cache references
-
-      IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
-
-      if (_ignite == null)
+      try
       {
-        Log.LogError("Ignite reference in service is null - aborting service execution");
-        return;
-      }
+        Log.LogInformation($"{nameof(TAGFileBufferQueueService)} {context.Name} starting executing");
 
-      var queueCache = _ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+        aborted = false;
+        waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
-      TAGFileBufferQueueItemHandler handler = new TAGFileBufferQueueItemHandler();
+        // Get the ignite grid and cache references
 
-      // Construct the continuous query machinery
-      // Set the initial query to return all elements in the cache
-      // Instantiate the queryHandle and start the continuous query on the remote nodes
-      // Note: Only cache items held on this local node will be handled here
-      // var = IContinuousQueryHandle<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>>
-      using (var queryHandle = queueCache.QueryContinuous
-      (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener(handler)) {Local = true},
-        initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> {Local = true}))
-      {
-        // Perform the initial query to grab all existing elements and add them to the grouper
-        foreach (var item in queryHandle.GetInitialQueryCursor())
+        var _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ??
+                      Ignition.GetIgnite(TRexGrids.MutableGridName());
+
+        if (_ignite == null)
         {
-          handler.Add(item.Key);
+          Log.LogError("Ignite reference in service is null - aborting service execution");
+          return;
         }
 
-        // Cycle looking for new work to do as TAG files arrive until aborted...
-        do
-        {
-          waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
-        } while (!aborted);
-      }
+        var queueCache =
+          _ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
-      Log.LogInformation($"{nameof(TAGFileBufferQueueService)} {context.Name} completed executing");
+        var handler = new TAGFileBufferQueueItemHandler();
+
+        // Construct the continuous query machinery
+        // Set the initial query to return all elements in the cache
+        // Instantiate the queryHandle and start the continuous query on the remote nodes
+        // Note: Only cache items held on this local node will be handled here
+        // var = IContinuousQueryHandle<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>>
+        using (var queryHandle = queueCache.QueryContinuous
+        (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener(handler)) {Local = true},
+          initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> {Local = true}))
+        {
+          Log.LogInformation(
+            "Performing initial continuous query cursor scan of items to process in TAGFileBufferQueue");
+
+          // Perform the initial query to grab all existing elements and add them to the grouper
+          foreach (var item in queryHandle.GetInitialQueryCursor())
+          {
+            handler.Add(item.Key);
+          }
+
+          // Cycle looking for new work to do as TAG files arrive until aborted...
+          Log.LogInformation("Entering steady state continuous query scan of items to process in TAGFileBufferQueue");
+
+          do
+          {
+            waitHandle.WaitOne(TAGFileBufferQueueServiceCheckIntervalMS);
+            //Log.LogInformation("Continuous query scan of items to process in TAGFileBufferQueue still active");
+          } while (!aborted);
+        }
+      }
+      finally
+      {
+        Log.LogInformation($"{nameof(TAGFileBufferQueueService)} {context.Name} completed executing");
+      }
     }
 
     /// <summary>
@@ -130,6 +144,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     public void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
+      writer.WriteInt(TAGFileBufferQueueServiceCheckIntervalMS);
     }
 
     /// <summary>
@@ -139,6 +155,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     public void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      TAGFileBufferQueueServiceCheckIntervalMS = reader.ReadInt();
     }
   }
 }

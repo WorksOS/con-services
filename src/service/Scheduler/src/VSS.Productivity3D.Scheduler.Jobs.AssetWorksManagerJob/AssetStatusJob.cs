@@ -11,6 +11,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity.Push.Models;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
@@ -132,15 +133,15 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       var assetList = assets?.ToList();
       if (assetList != null && assetList.Any())
       {
-        var matchingAsset = await assetResolverProxy.GetMatching3D2DAssets(assetList.First().Key, headers);
+        var matchingAsset = await assetResolverProxy.GetMatching3D2DAssets(new MatchingAssetsDisplayModel(){AssetUID3D = assetList.First().Key.ToString()}, headers);
         //Change that for the actual matched asset. Since we supplied 3d asset get data for the matching 2d asset.
         //if there is no 2d asset we should try using SNM asset
 
         string uid;
-        if (matchingAsset == null || matchingAsset.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        if (matchingAsset == null || matchingAsset.Code != ContractExecutionStatesEnum.ExecutedSuccessfully || string.IsNullOrEmpty(matchingAsset.AssetUID2D))
           uid = assetList.First().Key.ToString();
         else
-          uid = matchingAsset.MatchingAssetUID;
+          uid = matchingAsset.AssetUID2D;
 
         var (details, summary) = await GetAssetData(uid, headers);
 

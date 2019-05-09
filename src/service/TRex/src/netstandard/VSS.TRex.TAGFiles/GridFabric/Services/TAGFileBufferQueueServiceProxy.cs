@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// <summary>
         /// Services interface for the cluster group projection
         /// </summary>
-        private IServices services;
+        private readonly IServices services;
 
         /// <summary>
         /// The proxy to the deployed service
@@ -44,7 +44,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         }
 
         /// <summary>
-        /// Deploys the TAG file buffer queue service on to each TAG file processor node in the mjtable grid.
+        /// Deploys the TAG file buffer queue service on to each TAG file processor node in the mutable grid.
         /// </summary>
         public void Deploy()
         {
