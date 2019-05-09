@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Abstractions
     Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<long> assetIds,
       IDictionary<string, string> customHeaders = null);
 
-    Task<MatchingAssetsDisplayModel> GetMatching3D2DAssets(Guid assetUid,
+    Task<MatchingAssetsDisplayModel> GetMatching3D2DAssets(MatchingAssetsDisplayModel asset,
       IDictionary<string, string> customHeaders = null);
   }
 }

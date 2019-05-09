@@ -18,19 +18,19 @@ namespace VSS.Productivity3D.AssetMgmt3D.Abstractions.Models
       
     }
 
-    public string AssetUID { get; set; }
-    public string MatchingAssetUID { get; set; }
+    public string AssetUID2D { get; set; }
+    public string AssetUID3D { get; set; }
     public string Name { get; set; }
-    public string SerialNumber { get; set; }
-    public string MatchingSerialNumber { get; set; }
-    public string MakeCode { get; set; }
-    public string MatchingMakeCode { get; set; }
+    public string SerialNumber2D { get; set; }
+    public string SerialNumber3D { get; set; }
+    public string MakeCode2D { get; set; }
+    public string MakeCode3D { get; set; }
     public string Model { get; set; }
     public string CustomerName { get; set; }
 
     public List<string> GetIdentifiers()
     {
-      return new List<string>(){ AssetUID };
+      return new List<string>(){ AssetUID2D.ToString() };
     }
   }
 }

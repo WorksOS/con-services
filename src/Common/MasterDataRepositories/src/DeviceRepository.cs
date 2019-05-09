@@ -273,7 +273,7 @@ namespace VSS.MasterData.Repositories
       var upsertedCount = 0;
 
       var existing = (await QueryWithAsyncPolicy<AssetDevice>
-      (@"SELECT fk_DeviceUID AS DeviceUID, fk_AssetUID AS AssetUID, LastActionedUTC
+      (@"SELECT fk_DeviceUID AS DeviceUID, fk_AssetUID AS AssetUID2D, LastActionedUTC
           FROM AssetDevice
           WHERE fk_DeviceUID = @DeviceUID"
         , new {DeviceUID = assetDevice.DeviceUID}
@@ -300,7 +300,7 @@ namespace VSS.MasterData.Repositories
           @"INSERT AssetDevice
                 (fk_DeviceUID, fk_AssetUID, LastActionedUTC )
               VALUES
-                (@DeviceUID, @AssetUID, @LastActionedUtc)";
+                (@DeviceUID, @AssetUID2D, @LastActionedUtc)";
         return await ExecuteWithAsyncPolicy(upsert, assetDevice);
       }
 
@@ -308,7 +308,7 @@ namespace VSS.MasterData.Repositories
       {
         const string update =
           @"UPDATE AssetDevice                
-                SET fk_AssetUID = @AssetUID
+                SET fk_AssetUID = @AssetUID2D
               WHERE fk_DeviceUID = @DeviceUID";
         return await ExecuteWithAsyncPolicy(update, assetDevice);
       }
@@ -328,7 +328,7 @@ namespace VSS.MasterData.Repositories
           const string update =
             @"DELETE FROM AssetDevice                                 
                 WHERE fk_DeviceUID = @DeviceUID
-                  AND fk_AssetUID = @AssetUID";
+                  AND fk_AssetUID = @AssetUID2D";
           return await ExecuteWithAsyncPolicy(update, assetDevice);
         }
         else
@@ -365,10 +365,10 @@ namespace VSS.MasterData.Repositories
     {
       return (await QueryWithAsyncPolicy<AssetDeviceIds>
       (@"SELECT 
-                a.AssetUID, a.LegacyAssetID, a.OwningCustomerUID, d.DeviceUid, d.DeviceType, d.DeviceSerialNumber AS RadioSerial
+                a.AssetUID2D, a.LegacyAssetID, a.OwningCustomerUID, d.DeviceUid, d.DeviceType, d.DeviceSerialNumber AS RadioSerial
               FROM Device d
                 INNER JOIN AssetDevice ad ON ad.fk_DeviceUID = d.DeviceUID
-                INNER JOIN Asset a ON a.AssetUID = ad.fk_AssetUID
+                INNER JOIN Asset a ON a.AssetUID2D = ad.fk_AssetUID
               WHERE a.IsDeleted = 0
                 AND d.DeviceSerialNumber LIKE @RadioSerial
                 AND d.DeviceType LIKE @DeviceType"
