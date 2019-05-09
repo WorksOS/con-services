@@ -37,21 +37,26 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       //  on-null cells in the site model, which also have passCount data
       var points = new List<StationOffsetPoint>();
       double station = 0;
-      siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(),
-        subGrid =>
-        {
-          subGrid.CalculateWorldOrigin(out var originX, out var originY);
 
-          ((IServerLeafSubGrid) subGrid).Directory.GlobalLatestCells.PassDataExistenceMap.ForEachSetBit(
-            (x, y) =>
-            {
-              points.Add(new StationOffsetPoint(station += 1, 0,
-                originY + y * siteModel.CellSize + siteModel.CellSize / 2,
-                originX + x * siteModel.CellSize + siteModel.CellSize / 2));
-            });
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(addr =>
+      {
+        if (points.Count > 100)
+          return;
 
-          return points.Count < 100;
-        });
+        var subGrid = TRex.SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(
+          siteModel.PrimaryStorageProxy, siteModel.Grid,
+          addr.X, addr.Y, siteModel.Grid.NumLevels, false, false);
+
+        subGrid.CalculateWorldOrigin(out var originX, out var originY);
+
+        ((IServerLeafSubGrid) subGrid).Directory.GlobalLatestCells.PassDataExistenceMap.ForEachSetBit(
+          (x, y) =>
+          {
+            points.Add(new StationOffsetPoint(station += 1, 0,
+              originY + y * siteModel.CellSize + siteModel.CellSize / 2,
+              originX + x * siteModel.CellSize + siteModel.CellSize / 2));
+          });
+      });
 
       var executor = new ComputeStationOffsetReportExecutor_ClusterCompute
       (new StationOffsetReportRequestArgument_ClusterCompute

@@ -23,6 +23,7 @@ using VSS.Productivity3D.WebApi.Compaction.Utilities;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
+using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 {
@@ -41,6 +42,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private readonly ITransferProxy transferProxy;
     private readonly IConfigurationStore configStore;
     private readonly ITRexTagFileProxy tRexTagFileProxy;
+    private readonly IFileRepository tccRepository;
     private IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
@@ -51,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       IASNodeClient raptorClient, 
       ITagProcessor tagProcessor, 
 #endif
-      ILoggerFactory logger, ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IConfigurationStore configStore)
+      ILoggerFactory logger, ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IConfigurationStore configStore, IFileRepository tccRepository)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -62,6 +64,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       this.transferProxy = transferProxy;
       this.tRexTagFileProxy = tRexTagFileProxy;
       this.configStore = configStore;
+      this.tccRepository = tccRepository;
     }
 
     /// <summary>
@@ -163,7 +166,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           raptorClient, 
           tagProcessor, 
 #endif
-          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders: customHeaders)
+          configStore, tccRepository, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders: customHeaders)
         .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
 
       if (result.Code == 0)

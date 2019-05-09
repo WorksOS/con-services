@@ -116,6 +116,34 @@ namespace MockProjectWebApi.Services
             IsActivated = true,
             MinZoomLevel = 16,
             MaxZoomLevel = 19
+          },
+          new FileData
+          {
+            Name = "Section 1 IFC Rev J (1.5)",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "ImportFileProxyTest",
+            ImportedFileType = ImportedFileType.ReferenceSurface,
+            ImportedFileUid = "5642ec46-7aa4-4056-8785-c9534a06f54f",
+            LegacyFileId = 116,
+            IsActivated = true,
+            MinZoomLevel = 16,
+            MaxZoomLevel = 19,
+            ParentUid = "eb798b46-c927-4fdd-b998-b11011ee7365",
+            Offset = 1.5
+          },
+          new FileData
+          {
+            Name = "Section 1 IFC Rev J (-2.5)",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "ImportFileProxyTest",
+            ImportedFileType = ImportedFileType.ReferenceSurface,
+            ImportedFileUid = "3bb94403-9d42-46ae-85e0-9261c8682a0d",
+            LegacyFileId = 117,
+            IsActivated = true,
+            MinZoomLevel = 16,
+            MaxZoomLevel = 19,
+            ParentUid = "eb798b46-c927-4fdd-b998-b11011ee7365",
+            Offset = -2.5
           }
       };
 
@@ -124,6 +152,7 @@ namespace MockProjectWebApi.Services
       var importedFilesGoldenData1 = new List<FileData>();
       importedFilesGoldenData1.AddRange(surveyedSurfacesFileListIsActivated);
       importedFilesGoldenData1.AddRange(goldenDataDesignSurfaceFileList);
+      importedFilesGoldenData1.AddRange(goldenDataReferenceSurfaceFileList);
 
       ImportedFiles.Add(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1, importedFilesGoldenData1);
 
@@ -323,6 +352,66 @@ namespace MockProjectWebApi.Services
           IsActivated = true,
           MinZoomLevel = 19,
           MaxZoomLevel = 20
+        }
+      };
+
+    private readonly List<FileData> goldenDataReferenceSurfaceFileList = new List<FileData>
+      {
+        new FileData
+        {
+          Name = "Large Sites Road - Trimble Road +1.5m",
+          ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+          CustomerUid = "ReferenceSurfaceAcceptanceTest",
+          ImportedFileType = ImportedFileType.ReferenceSurface,
+          ImportedFileUid = "c91e56cf-6d5f-436d-9655-cf4f919523f4",
+          LegacyFileId = 15277,
+          IsActivated = true,
+          MinZoomLevel = 15,
+          MaxZoomLevel = 18,
+          ParentUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
+          Offset = 1.5
+        },
+        new FileData
+        {
+          Name = "Large Sites Road - Trimble Road +2.8m",
+          ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+          CustomerUid = "ReferenceSurfaceAcceptanceTest",
+          ImportedFileType = ImportedFileType.ReferenceSurface,
+          ImportedFileUid = "1fdb413d-7521-4efc-9916-73d82b9de366",
+          LegacyFileId = 15276,
+          IsActivated = true,
+          MinZoomLevel = 15,
+          MaxZoomLevel = 18,
+          ParentUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
+          Offset = 2.8
+        },
+        new FileData
+        {
+          Name = "Milling - Milling -1.75m",
+          ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+          CustomerUid = "ReferenceSurfaceAcceptanceTest",
+          ImportedFileType = ImportedFileType.ReferenceSurface,
+          ImportedFileUid = "bf0c5759-337a-4721-941b-5349462c15a3",
+          LegacyFileId = 15275,
+          IsActivated = true,
+          MinZoomLevel = 16,
+          MaxZoomLevel = 17,
+          ParentUid = "220e12e5-ce92-4645-8f01-1942a2d5a57f",
+          Offset = -1.75
+        },
+        new FileData
+        {
+          Name = "Topcon Road - Topcon -3.2m",
+          ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+          CustomerUid = "ReferenceSurfaceAcceptanceTest",
+          ImportedFileType = ImportedFileType.ReferenceSurface,
+          ImportedFileUid = "54c905e2-3bc0-4a17-9ef3-5ddcb6030a1d",
+          LegacyFileId = 15274,
+          IsActivated = true,
+          MinZoomLevel = 16,
+          MaxZoomLevel = 18,
+          ParentUid = "ea97efb9-c0c4-4a7f-9eee-e2b0ef0b0916",
+          Offset = -3.2
         }
       };
   }

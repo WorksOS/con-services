@@ -234,7 +234,7 @@ namespace VSS.TRex.SubGridTrees.Core
       {
         for (int I = 0; I < _sparseCellCount; I++)
         {
-          SubGridTreeSparseCellRecord sparseCell = _sparseCells[I];
+          var sparseCell = _sparseCells[I];
 
           if ((sparseCell.CellX >= minSubGridCellX && sparseCell.CellX <= maxSubGridCellX &&
                sparseCell.CellY >= minSubGridCellY && sparseCell.CellY <= maxSubGridCellY) &&

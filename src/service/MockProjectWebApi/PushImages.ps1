@@ -1,7 +1,7 @@
 param (
   [Parameter(Mandatory=$true)][string]$fullVersion
 )
-$command = & aws ecr get-login --region us-west-2 --profile vss-grant
+$command = & aws ecr get-login --region us-west-2 --no-include-email
 $fixedCommand = $command.Replace("https://","")
 Invoke-Expression $fixedCommand
 

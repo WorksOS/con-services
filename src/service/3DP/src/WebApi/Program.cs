@@ -71,7 +71,6 @@ namespace VSS.Productivity3D.WebApi
             builderConf.SetMinimumLevel(LogLevel.Debug);
             builderConf.AddConfiguration(config);
           })
-          .UsePrometheus()
           .UseStartup<Startup>()
           .Build();
       });

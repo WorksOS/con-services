@@ -8,7 +8,6 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
-//using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
@@ -114,8 +113,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         if (TAGQueueItems?.Count > 0)
                         {
                             // -> Supply the package to the processor
-                            ProcessTAGFileRequest request = new ProcessTAGFileRequest();
-                            ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
+                            var request = new ProcessTAGFileRequest();
+                            var response = request.Execute(new ProcessTAGFileRequestArgument
                             {
                                 ProjectID = projectID,
                                 AssetUID = TAGQueueItems[0].AssetID,
@@ -130,11 +129,17 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             {
                                 try
                                 {
-                                    // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
-                                    if (!tagFileResponse.Success)
-                                        Log.LogInformation($"Grouper1 TAG file {tagFileResponse.FileName} successfully processed");
+                                    if (tagFileResponse.Success)
+                                    {
+                                        //Commented out to keep happy path log less noisy
+                                        //Log.LogInformation($"Grouper1 TAG file {tagFileResponse.FileName} successfully processed");
+                                    }
                                     else
+                                    {
                                         Log.LogError($"Grouper1 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                                        // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
+
+                                    }
 
                                     removalKey.FileName = tagFileResponse.FileName;
 
@@ -177,7 +182,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="package"></param>
         private void ProcessTAGFileBucketFromGrouper2(IReadOnlyList<ITAGFileBufferQueueKey> package)
         {
-            Guid projectID = package[0].ProjectUID;
+            var projectID = package[0].ProjectUID;
 
             List<TAGFileBufferQueueItem> TAGQueueItems = null;
             List<ProcessTAGFileRequestFileItem> fileItems = null;
@@ -219,8 +224,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             if (TAGQueueItems?.Count > 0)
             {
                 // -> Supply the package to the processor
-                ProcessTAGFileRequest request = new ProcessTAGFileRequest();
-                ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
+                var request = new ProcessTAGFileRequest();
+                var response = request.Execute(new ProcessTAGFileRequestArgument
                 {
                     ProjectID = projectID,
                     AssetUID = TAGQueueItems[0].AssetID,
@@ -238,11 +243,16 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     try
                     {
-                        // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
                         if (tagFileResponse.Success)
-                            Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
+                        {
+                          //Commented out to keep happy path log less noisy
+                          // Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
+                        }
                         else
-                            Log.LogError($"Grouper2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                        {
+                          // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
+                          Log.LogError($"Grouper2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                        }
 
                         removalKey.FileName = tagFileResponse.FileName;
 
@@ -284,9 +294,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         hadWorkToDo = true;
                         try
                         {
-                            //Task task = Task.Factory.StartNew(() => ProcessTAGFileBucketFromGrouper2(package));
-                            //task.Wait();
-
                             Log.LogInformation(
                                 $"#Progress# Start processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
                             ProcessTAGFileBucketFromGrouper2(package);

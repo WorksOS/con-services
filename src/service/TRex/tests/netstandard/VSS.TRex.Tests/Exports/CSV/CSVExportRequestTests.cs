@@ -77,14 +77,22 @@ namespace VSS.TRex.Tests.Exports.CSV
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
       // Read back the zip file
-      var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read);
-      var extractedFileName = Path.GetTempFileName() + ".csv";
-      archive.Entries[0].ExtractToFile(extractedFileName);
+      using (var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read))
+      {
+        var extractedFileName = tempFileName.Remove(tempFileName.Length - 4) + ".csv";
+        archive.Entries[0].ExtractToFile(extractedFileName);
 
-      var lines = File.ReadAllLines(extractedFileName);
-      lines.Length.Should().Be(2);
-      lines[0].Should().Be("Time,CellN,CellE,Elevation,PassCount,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,TotalPasses,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
-      lines[1].Should().Be(@"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+        var lines = File.ReadAllLines(extractedFileName);
+        lines.Length.Should().Be(2);
+        lines[0].Should()
+          .Be(
+            "Time,CellN,CellE,Elevation,PassCount,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,TotalPasses,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
+        lines[1].Should()
+          .Be(
+            @"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+      }
+
+      CleanupMockedFile(tempFileName, siteModel.ID);
     }
 
     [Fact]
@@ -109,14 +117,22 @@ namespace VSS.TRex.Tests.Exports.CSV
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
       // Read back the zip file
-      var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read);
-      var extractedFileName = Path.GetTempFileName() + ".csv";
-      archive.Entries[0].ExtractToFile(extractedFileName);
+      using (var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read))
+      {
+        var extractedFileName = tempFileName.Remove(tempFileName.Length - 4) + ".csv";
+        archive.Entries[0].ExtractToFile(extractedFileName);
 
-      var lines = File.ReadAllLines(extractedFileName);
-      lines.Length.Should().Be(2);
-      lines[0].Should().Be("Time,CellN,CellE,Elevation,PassNumber,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,ValidPos,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
-      lines[1].Should().Be(@"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,?,?,0,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+        var lines = File.ReadAllLines(extractedFileName);
+        lines.Length.Should().Be(2);
+        lines[0].Should()
+          .Be(
+            "Time,CellN,CellE,Elevation,PassNumber,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,ValidPos,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
+        lines[1].Should()
+          .Be(
+            @"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,?,?,0,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+      }
+
+      CleanupMockedFile(tempFileName, siteModel.ID);
     }
 
     [Fact]
@@ -144,17 +160,25 @@ namespace VSS.TRex.Tests.Exports.CSV
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
       // Read back the zip file
-      var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read);
-      var extractedFileName = Path.GetTempFileName() + ".csv";
-      archive.Entries[0].ExtractToFile(extractedFileName);
+      using (var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read))
+      {
+        var extractedFileName = tempFileName.Remove(tempFileName.Length - 4) + ".csv";
+        archive.Entries[0].ExtractToFile(extractedFileName);
 
-      var lines = File.ReadAllLines(extractedFileName);
-      lines.Length.Should().Be(SubGridTreeConsts.SubGridTreeCellsPerSubGrid + 1);
-      lines[0].Should().BeEquivalentTo(
-        "Time,CellN,CellE,Elevation,PassCount,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,TotalPasses,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
-      lines[1].Should().BeEquivalentTo("2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
-      lines[10].Length.Should().Be(118);
-      lines[10].Should().BeEquivalentTo("2000/Jan/01 01:00:00.000,3.230m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+        var lines = File.ReadAllLines(extractedFileName);
+        lines.Length.Should().Be(SubGridTreeConsts.SubGridTreeCellsPerSubGrid + 1);
+        lines[0].Should().BeEquivalentTo(
+          "Time,CellN,CellE,Elevation,PassCount,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,TotalPasses,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
+        lines[1].Should()
+          .BeEquivalentTo(
+            "2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+        lines[10].Length.Should().Be(118);
+        lines[10].Should()
+          .BeEquivalentTo(
+            "2000/Jan/01 01:00:00.000,3.230m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+      }
+
+      CleanupMockedFile(tempFileName, siteModel.ID);
     }
 
     [Fact]
@@ -163,7 +187,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      MockS3FileTransfer_UploadToBucket("InvalidFilename*@");
+      var tempFileName = MockS3FileTransfer_UploadToBucket("InvalidFilename*@");
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
       var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
@@ -171,7 +195,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        cellPasses[x, y] = new[] { new CellPass { Time = baseDate, Height = 1.0f } };
+        cellPasses[x, y] = new[] {new CellPass {Time = baseDate, Height = 1.0f}};
       });
 
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
@@ -180,6 +204,8 @@ namespace VSS.TRex.Tests.Exports.CSV
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.ExportUnableToLoadFileToS3);
+
+      CleanupMockedFile(tempFileName, siteModel.ID);
     }
 
     [Fact]
@@ -188,22 +214,25 @@ namespace VSS.TRex.Tests.Exports.CSV
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      MockS3FileTransfer_UploadToBucket();
+      var tempFileName = MockS3FileTransfer_UploadToBucket();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
       
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
+
+      CleanupMockedFile(tempFileName, siteModel.ID);
     }
 
+    
     [Fact]
     public void CSVExportRequest_Execute_NoCellPasses()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      MockS3FileTransfer_UploadToBucket();
+      var tempFileName = MockS3FileTransfer_UploadToBucket();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
       var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
@@ -221,6 +250,8 @@ namespace VSS.TRex.Tests.Exports.CSV
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.ExportNoDataFound);
+
+      CleanupMockedFile(tempFileName, siteModel.ID);
     }
 
     [Fact]
@@ -231,7 +262,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      MockS3FileTransfer_UploadToBucket();
+      var tempFileName = MockS3FileTransfer_UploadToBucket();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
       var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
@@ -247,6 +278,8 @@ namespace VSS.TRex.Tests.Exports.CSV
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.ExportExceededRowLimit);
+
+      CleanupMockedFile(tempFileName, siteModel.ID);
     }
 
     private CSVExportRequestArgument SimpleCSVExportRequestArgument(Guid projectUid, OutputTypes outputType = OutputTypes.PassCountLastPass)
@@ -284,6 +317,23 @@ namespace VSS.TRex.Tests.Exports.CSV
       DIBuilder.Continue().Add(x => x.AddSingleton(mockTransferProxy.Object)).Complete();
 
       return tempFileName;
+    }
+
+    private void CleanupMockedFile(string mockedFileWithPath, Guid projectUid)
+    {
+      var nameWithoutZip = mockedFileWithPath.Remove(mockedFileWithPath.Length - 4);
+      if (File.Exists(nameWithoutZip))
+        File.Delete(nameWithoutZip);
+
+      if (File.Exists(nameWithoutZip + ".csv"))
+        File.Delete(nameWithoutZip + ".csv");
+
+      if (File.Exists(mockedFileWithPath))
+        File.Delete(mockedFileWithPath);
+
+      var tempProjectPath = Path.Combine(new[] { Path.GetTempPath(), projectUid.ToString() });
+      if (Directory.Exists(tempProjectPath))
+        Directory.Delete(tempProjectPath);
     }
   }
 }

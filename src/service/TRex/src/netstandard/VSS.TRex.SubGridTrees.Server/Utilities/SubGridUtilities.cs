@@ -74,7 +74,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                 if (!subGrid.IsLeafSubGrid() && !lookInCacheOnly && level == forSubGridTree.NumLevels)
                 {
                     // Create the leaf sub grid that will be used to read in the sub grid from the disk.
-                    // In the case where the su grid isn't present on the disk this reference will
+                    // In the case where the sub grid isn't present on the disk this reference will
                     // be destroyed
                     subGrid = forSubGridTree.ConstructPathToCell(cellX, cellY, Types.SubGridPathConstructionType.CreateLeaf);
 

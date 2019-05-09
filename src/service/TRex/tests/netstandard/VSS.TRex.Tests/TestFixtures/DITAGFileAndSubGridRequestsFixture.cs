@@ -14,7 +14,6 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
@@ -101,7 +100,9 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <param name="tagFiles"></param>
     /// <param name="ProcessedTasks"></param>
     /// <returns></returns>
-    public static ISiteModel BuildModel(IEnumerable<string> tagFiles, out List<AggregatedDataIntegratorTask> ProcessedTasks)
+    public static ISiteModel BuildModel(IEnumerable<string> tagFiles, out List<AggregatedDataIntegratorTask> ProcessedTasks, 
+      bool callTaskProcessingComplete = true,
+      bool convertToImmutableRepresentation = true)
     {
       var _tagFiles = tagFiles.ToList();
 
@@ -109,16 +110,16 @@ namespace VSS.TRex.Tests.TestFixtures
       var converters = _tagFiles.Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
       // Switch to mutable storage representation to allow creation of content in the site model
       targetSiteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
-      AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+      var integrator = new AggregatedDataIntegrator();
 
       foreach (var c in converters)
       {
@@ -129,28 +130,25 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Construct an integration worker and ask it to perform the integration
       ProcessedTasks = new List<AggregatedDataIntegratorTask>();
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess)
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
       {
         MaxMappedTagFilesToProcessPerAggregationEpoch = _tagFiles.Count
       };
       worker.ProcessTask(ProcessedTasks);
 
-      targetSiteModel.Should().NotBe(null);
       ProcessedTasks.Count.Should().Be(_tagFiles.Count);
 
-      // Cause the latest cell pass information to be created for all sub grids
-      targetSiteModel.Grid.Root.ScanSubGrids(targetSiteModel.Grid.FullCellExtent(),
-        leaf =>
-        {
-          if (leaf is IServerLeafSubGrid Leaf)
-            Leaf.ComputeLatestPassInformation(true, targetSiteModel.PrimaryStorageProxy);
-          return true;
-        });
+      if (callTaskProcessingComplete)
+        worker.CompleteTaskProcessing();
 
-      targetSiteModel.SaveToPersistentStoreForTAGFileIngest(targetSiteModel.PrimaryStorageProxy).Should().BeTrue();
+      // Reacquire the target site model to ensure any notification based changes to the site model are observed
+      targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(targetSiteModel.ID, false);
+
+      targetSiteModel.Should().NotBe(null);
 
       // Modify the site model to switch from the mutable to immutable cell pass representation for read requests
-      ConvertSiteModelToImmutable(targetSiteModel);
+      if (convertToImmutableRepresentation)
+        ConvertSiteModelToImmutable(targetSiteModel);
 
       return targetSiteModel;
     }
@@ -159,7 +157,7 @@ namespace VSS.TRex.Tests.TestFixtures
       IEnumerable<CellPass> passes, int expectedCellCount = -1, int expectedPassCount = -1)
     {
       // Construct the sub grid to hold the cell being tested
-      IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+      var leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
       leaf.Should().NotBeNull();
 
       leaf.AllocateLeafFullPassStacks();
@@ -326,13 +324,6 @@ namespace VSS.TRex.Tests.TestFixtures
     public static void ConvertSiteModelToImmutable(ISiteModel siteModel)
     {
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);
-
-      // Read all sub grids from the persistent store into the grid ready for access
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
-      {
-        TRex.SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(siteModel.PrimaryStorageProxy, siteModel.Grid,
-          x.X, x.Y, siteModel.Grid.NumLevels, false, false).Should().NotBeNull();
-      });
     }
 
     public new void Dispose()

@@ -63,21 +63,23 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
           Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
-          IgniteConfiguration cfg = new IgniteConfiguration()
+          var cfg = new IgniteConfiguration()
           {
-
             IgniteInstanceName = TRexGrids.MutableGridName(),
             ClientMode = true,
 
-            JvmOptions = new List<string>() { "-DIGNITE_QUIET=false", "-Djava.net.preferIPv4Stack=true" },
-            JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
+            JvmOptions = new List<string>() {
+              "-DIGNITE_QUIET=false",
+              "-Djava.net.preferIPv4Stack=true",
+              "-XX:+UseG1GC"
+            },
+
             JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
 
             UserAttributes = new Dictionary<string, object>()
                         {
                             { "TRexNodeId", TRexNodeID }
                         },
-
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableClientServer")),
 
@@ -150,6 +152,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
     {
       cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
 
       cfg.CommunicationSpi = new TcpCommunicationSpi()
       {
@@ -173,7 +176,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
         IpFinder = new TcpDiscoveryStaticIpFinder()
         {
-          Endpoints = new[] {"127.0.0.1:48500..48502"}
+          Endpoints = new[] { "127.0.0.1:48500..48502" }
         }
       };
 

@@ -21,7 +21,7 @@
                 long TestValue = t;
 
                 // Ensure negative values are preserved
-                TestValue = TestValue < 0 ? -(TestValue & Mask) : TestValue & Mask;
+                TestValue = TestValue < 0 ? -(-TestValue & Mask) : TestValue & Mask;
 
                 if (FieldDescriptor.Nullable)
                 {

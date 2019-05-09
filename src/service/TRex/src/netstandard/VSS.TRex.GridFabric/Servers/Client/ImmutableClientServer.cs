@@ -24,13 +24,13 @@ using VSS.TRex.DI;
 
 namespace VSS.TRex.GridFabric.Servers.Client
 {
-    /// <summary>
-    /// Defines a representation of a client able to request TRex related compute operations using
-    /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
-    /// </summary>
-    public class ImmutableClientServer : IgniteServer, IImmutableClientServer
+  /// <summary>
+  /// Defines a representation of a client able to request TRex related compute operations using
+  /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
+  /// </summary>
+  public class ImmutableClientServer : IgniteServer, IImmutableClientServer
   {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<ImmutableClientServer>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ImmutableClientServer>();
 
     /// <summary>
     /// Constructor that creates a new server instance with a single role
@@ -62,14 +62,17 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
           //Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
-          IgniteConfiguration cfg = new IgniteConfiguration
+          var cfg = new IgniteConfiguration
           {
             IgniteInstanceName = TRexGrids.ImmutableGridName(),
             ClientMode = true,
 
-            JvmOptions = new List<string>() { "-DIGNITE_QUIET=false", "-Djava.net.preferIPv4Stack=true" },
+            JvmOptions = new List<string>() {
+              "-DIGNITE_QUIET=false",
+              "-Djava.net.preferIPv4Stack=true",
+              "-XX:+UseG1GC"
+            },
 
-            JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
             JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
 
             UserAttributes = new Dictionary<string, object>()
@@ -137,6 +140,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
     {
       cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
 
       cfg.CommunicationSpi = new TcpCommunicationSpi()
       {

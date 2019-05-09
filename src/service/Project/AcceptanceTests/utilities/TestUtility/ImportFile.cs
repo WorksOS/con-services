@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using TestUtility.Model;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -77,7 +78,7 @@ namespace TestUtility
     /// <summary>
     /// Send request to the FileImportV4 controller
     /// </summary>
-    public ImportedFileDescriptorSingleResult SendRequestToFileImportV4(TestSupport ts, string[] importFileArray, int row, ImportOptions importOptions = new ImportOptions())
+    public ImportedFileDescriptorSingleResult SendRequestToFileImportV4(TestSupport ts, string[] importFileArray, int row, ImportOptions importOptions = new ImportOptions(), string expectedExceptionMessage = null)
     {
       var uri = ts.GetBaseUri();
       var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
@@ -92,10 +93,13 @@ namespace TestUtility
       switch (ed.ImportedFileTypeName)
       {
         case "SurveyedSurface":
-          uri = $"{uri}&SurveyedUtc={ed.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff} ";
+          uri = $"{uri}&SurveyedUtc={ed.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
           break;
         case "Linework":
-          uri = $"{uri}&DxfUnitsType={ed.DxfUnitsType} ";
+          uri = $"{uri}&DxfUnitsType={ed.DxfUnitsType}";
+          break;
+        case "ReferenceSurface":
+          uri = $"{uri}&ParentUid={ed.ParentUid}&Offset={ed.Offset}";
           break;
       }
 
@@ -112,8 +116,9 @@ namespace TestUtility
         uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
 
-      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod);
-      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
+      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod, ed.ImportedFileTypeName == "ReferenceSurface");
+      if (ed.ImportedFileType != ImportedFileType.ReferenceSurface)
+        ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
 
       try
       {
@@ -126,7 +131,10 @@ namespace TestUtility
       catch (Exception exception)
       {
         Console.WriteLine(response);
-        Assert.Fail(response);
+        if (expectedExceptionMessage != response)
+        {
+          Assert.Fail(response);
+        }
       }
 
       return null;
@@ -167,13 +175,14 @@ namespace TestUtility
     /// Upload a single file to the web api 
     /// </summary>
     /// <returns>Repsonse from web api as string</returns>
-    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
+    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod, bool isReferenceSurface)
     {
       try
       {
-        var name = new DirectoryInfo(fullFileName).Name;
-        Byte[] bytes = File.ReadAllBytes(fullFileName);
-        var fileSize = bytes.Length;
+        //For reference surfaces no file to upload
+        var name = isReferenceSurface ?  fullFileName : new DirectoryInfo(fullFileName).Name;
+        Byte[] bytes = isReferenceSurface ? null : File.ReadAllBytes(fullFileName);
+        var fileSize = isReferenceSurface ? 0 : bytes.Length;
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
         string result = null;
         for (var offset = 0; offset < chunks; offset++)
@@ -190,12 +199,13 @@ namespace TestUtility
           int currentChunkSize = endByte - startByte;
           var boundaryIdentifier = Guid.NewGuid().ToString();
           var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
-          var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
+          var currentBytes = isReferenceSurface ? null : bytes.Skip(startByte).Take(currentChunkSize).ToArray();
           string contentType = $"multipart/form-data; boundary={BOUNDARY_START}{boundaryIdentifier}";
 
           using (var content = new MemoryStream())
           {
-            FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
+            FormatTheContentDisposition(flowFileUpload, currentBytes, name,
+              $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
             result = DoHttpRequest(uri, httpMethod, content, customerUid, contentType);
           }
         }
@@ -311,7 +321,8 @@ namespace TestUtility
 
       byte[] header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
       resultingStream.Write(header, 0, header.Length);
-      resultingStream.Write(chunkContent, 0, chunkContent.Length);
+      if (chunkContent != null)
+        resultingStream.Write(chunkContent, 0, chunkContent.Length);
 
       sb = new StringBuilder();
       sb.Append($"{NEWLINE}{boundary}{BOUNDARY_BLOCK_DELIMITER}{NEWLINE}");

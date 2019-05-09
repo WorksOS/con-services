@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
@@ -52,12 +53,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           "shouldn't get here"); // to keep compiler happy
       }
 
+      await ImportedFileRequestDatabaseHelper.CheckIfParentSurfaceExistsAsync(createimportedfile.ImportedFileType, createimportedfile.ParentUid, serviceExceptionHandler, projectRepo);
+
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
         out var useRaptorGatewayDesignImport);
       var isDesignFileType = createimportedfile.ImportedFileType == ImportedFileType.DesignSurface ||
                              createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface ||
-                             createimportedfile.ImportedFileType == ImportedFileType.Alignment;
+                             createimportedfile.ImportedFileType == ImportedFileType.Alignment ||
+                             createimportedfile.ImportedFileType == ImportedFileType.ReferenceSurface;
 
       // need to write to Db prior to 
       //      notifying raptor, as raptor needs the legacyImportedFileID 
@@ -68,7 +72,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileName,
           createimportedfile.SurveyedUtc, JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
           createimportedfile.FileCreatedUtc, createimportedfile.FileUpdatedUtc, userEmailAddress,
-          log, serviceExceptionHandler, projectRepo)
+          log, serviceExceptionHandler, projectRepo, createimportedfile.ParentUid, createimportedfile.Offset)
         .ConfigureAwait(false);
 
       if (useTrexGatewayDesignImport && isDesignFileType)
