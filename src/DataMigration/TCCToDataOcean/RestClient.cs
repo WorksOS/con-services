@@ -18,8 +18,11 @@ namespace TCCToDataOcean
 {
   public class RestClient : IRestClient
   {
+    private const string BOUNDARY_START = "-----";
+
     private readonly HttpClient httpClient;
     private readonly ILogger Log;
+    private readonly string _bearerToken;
 
     private static HttpRequestMessage GetRequestMessage(HttpMethod method, string uri) => new HttpRequestMessage(method, new Uri(uri));
 
@@ -28,11 +31,11 @@ namespace TCCToDataOcean
       Log = loggerFactory.CreateLogger<HttpClient>();
       Log.LogInformation(Method.In());
 
-      var bearerToken = authentication.GetApplicationBearerToken();
+      _bearerToken = authentication.GetApplicationBearerToken();
 
       httpClient = new HttpClient();
       httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
-      httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {bearerToken}");
+   //   httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
     }
 
     /// <summary>
@@ -44,8 +47,8 @@ namespace TCCToDataOcean
       string acceptHeader, 
       string contentType, 
       string customerUid, 
-      string payloadData = null, 
-      Dictionary<string, string> customHeaders = null) where TResponse : class
+      string requestBodyJson = null, 
+      byte[] payloadData = null) where TResponse : class
     {
       Log.LogInformation($"{Method.In()} URI: {uri}");
 
@@ -53,29 +56,22 @@ namespace TCCToDataOcean
 
       request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
       request.Headers.Add("X-VisionLink-CustomerUid", customerUid);
+      request.Headers.Add("Authorization", $"Bearer {_bearerToken}");
 
-      if (customHeaders != null)
-      {
-        foreach (var keyValuePair in customHeaders)
-        {
-          request.Headers.Add(keyValuePair.Key, keyValuePair.Value);
-        }
-      }
-
-      if (payloadData != null)
+      if (requestBodyJson != null || payloadData != null)
       {
         switch (acceptHeader)
         {
           case MediaType.APPLICATION_JSON:
             {
-              request.Content = new StringContent(payloadData, Encoding.UTF8, contentType);
+              request.Content = new StringContent(requestBodyJson, Encoding.UTF8, contentType);
               break;
             }
-          //case MediaType.MULTIPART_FORM_DATA:
-          //  {
-          //    contentType = $"{MediaType.MULTIPART_FORM_DATA}; boundary=-----{Guid.NewGuid().ToString()}";
-          //    throw new NotImplementedException();
-          //  }
+          case MediaType.MULTIPART_FORM_DATA:
+            {
+              contentType = $"multipart/form-data; boundary={BOUNDARY_START}{Guid.NewGuid().ToString()}";
+              throw new NotImplementedException();
+            }
           default:
             {
               throw new Exception($"Unsupported content type '{contentType}'");

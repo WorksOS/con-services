@@ -307,7 +307,7 @@ namespace TCCToDataOcean
 
       if (!Directory.Exists(dcFilePath)) Directory.CreateDirectory(dcFilePath);
 
-      var tempFileName = Path.Combine(dcFilePath, "CoordSystemFile.dc");
+      var tempFileName = Path.Combine(dcFilePath, project.CoordinateSystemFileName);
 
       Log.LogInformation($"{Method.Info()} Creating DC file '{tempFileName}' for project {project.ProjectUID}");
 
@@ -428,6 +428,10 @@ namespace TCCToDataOcean
         result = ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
 
         _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Completed);
+      }
+      else
+      {
+        Log.LogDebug($"{Method.Info()} Skipped uploading file {file.ImportedFileUid}");
       }
 
       Log.LogInformation($"{Method.Out()} File {file.ImportedFileUid} update result {result.Code} {result.Message}");

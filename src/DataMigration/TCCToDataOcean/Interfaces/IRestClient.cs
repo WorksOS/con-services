@@ -12,7 +12,7 @@ namespace TCCToDataOcean.Interfaces
       string acceptHeader,
       string contentType,
       string customerUid,
-      string payloadData = null,
-      Dictionary<string, string> customHeaders = null) where TResponse : class;
+      string requestBodyJson = null,
+      byte[] payloadData = null) where TResponse : class;
   }
 }
