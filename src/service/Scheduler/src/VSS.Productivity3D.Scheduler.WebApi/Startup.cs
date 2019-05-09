@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using Hangfire;
 using Hangfire.Dashboard;
@@ -21,10 +20,8 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Proxy;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.Clients.AssetLocations;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
@@ -183,13 +180,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       //    therefore create temp configStore to read environment variables (unfortunately this requires log stuff)
 
       var hangfireConnectionString = Configuration.GetConnectionString("VSPDB");
-      // queuePollIntervalSeconds needs to be low for acceptance tests of FilterSchedulerTask_WaitForCleanup
-      if (!int.TryParse(Configuration.GetValueString("SCHEDULER_QUE_POLL_INTERVAL_SECONDS"),
+      if (!int.TryParse(Configuration.GetValueString("SCHEDULER_QUEUE_POLL_INTERVAL_SECONDS"),
         out var queuePollIntervalSeconds))
-        queuePollIntervalSeconds = 60;
+        queuePollIntervalSeconds = 2;
       if (!int.TryParse(Configuration.GetValueString("SCHEDULER_JOB_EXPIRATION_CHECK_HOURS"),
         out var jobExpirationCheckIntervalHours))
-        jobExpirationCheckIntervalHours = 1;
+        jobExpirationCheckIntervalHours = 24;
       if (!int.TryParse(Configuration.GetValueString("SCHEDULER_COUNTER_AGGREGATE_MINUTES"),
         out var countersAggregateIntervalMinutes))
         countersAggregateIntervalMinutes = 55;
@@ -198,7 +194,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         new MySqlStorageOptions
         {
           QueuePollInterval = TimeSpan.FromSeconds(queuePollIntervalSeconds),
-          JobExpirationCheckInterval = TimeSpan.FromHours(24),
+          JobExpirationCheckInterval = TimeSpan.FromHours(jobExpirationCheckIntervalHours),
           CountersAggregateInterval = TimeSpan.FromMinutes(countersAggregateIntervalMinutes),
           PrepareSchemaIfNecessary = false
         });
@@ -222,16 +218,20 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       try
       {
+        // General Job processing settings e.g.
+        //    WorkerCount will be internally set based on #cores.
+        //       This affects CPU usage and number of db connections
+        //    BackgroundJobServerOptions.SchedulePollingInterval and MySqlStorage.QueuePollInterval
+        //       Affects how quickly a queued job will be picked up and processing begun
+        // Individual task settings can be set as attributes on the task
+        //       e.g. Hangfire.AutomaticRetryAttribute.DefaultRetryAttempts 
+
         var hangfireServerName = string.Format($"vss-3dpScheduler{Guid.NewGuid()}");
-        // WorkerCount will be internally set based on #cores - on prod = 10. For a single scheduled task we need a low number
-        // these affect CPU usage and number of db connections
-        // things more specific to each task e.g. Hangfire.AutomaticRetryAttribute.DefaultRetryAttempts are attributes on the task
-        // schedulePollingIntervalSeconds may need to be low for acceptance tests of FilterSchedulerTask_WaitForCleanup?
         if (!int.TryParse(Configuration.GetValueString("SCHEDULER_WORKER_COUNT"), out var workerCount))
-          workerCount = 2;
+          workerCount = Environment.ProcessorCount * 5;
         if (!int.TryParse(Configuration.GetValueString("SCHEDULER_SCHEDULE_POLLING_INTERVAL_SECONDS"),
           out var schedulePollingIntervalSeconds))
-          schedulePollingIntervalSeconds = 60;
+          schedulePollingIntervalSeconds = 2;
 
         var options = new BackgroundJobServerOptions
         {
