@@ -180,12 +180,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       //    therefore create temp configStore to read environment variables (unfortunately this requires log stuff)
 
       var hangfireConnectionString = Configuration.GetConnectionString("VSPDB");
-      if (!int.TryParse(Configuration.GetValueString("SCHEDULER_QUE_POLL_INTERVAL_SECONDS"),
+      if (!int.TryParse(Configuration.GetValueString("SCHEDULER_QUEUE_POLL_INTERVAL_SECONDS"),
         out var queuePollIntervalSeconds))
         queuePollIntervalSeconds = 2;
       if (!int.TryParse(Configuration.GetValueString("SCHEDULER_JOB_EXPIRATION_CHECK_HOURS"),
         out var jobExpirationCheckIntervalHours))
-        jobExpirationCheckIntervalHours = 241;
+        jobExpirationCheckIntervalHours = 24;
       if (!int.TryParse(Configuration.GetValueString("SCHEDULER_COUNTER_AGGREGATE_MINUTES"),
         out var countersAggregateIntervalMinutes))
         countersAggregateIntervalMinutes = 55;
