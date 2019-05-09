@@ -692,6 +692,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ContractExecutionResult> CreateReferenceSurface(
       [FromQuery] Guid projectUid,
       [FromQuery] string filename,
+      [FromQuery] DateTime fileCreatedUtc,
+      [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] Guid parentUid,
       [FromQuery] double offset,
       [FromServices] ISchedulerProxy schedulerProxy)
@@ -724,9 +726,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 120);
       }
 
-      var utcNow = DateTime.UtcNow;
       var importedFileResult = await UpsertFileInternal(filename, null, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.Meters,
-        utcNow, utcNow, null, schedulerProxy, parentUid, offset);
+        fileCreatedUtc, fileUpdatedUtc, null, schedulerProxy, parentUid, offset);
 
       log.LogInformation(
         $"CreateReferenceSurface. Completed successfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
