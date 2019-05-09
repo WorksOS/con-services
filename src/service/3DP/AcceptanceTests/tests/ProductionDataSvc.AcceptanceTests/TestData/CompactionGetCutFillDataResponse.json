@@ -17,6 +17,19 @@
     "Code": 0,
     "Message": "success"
   },
+  "NoDesignFilter_Details_Ref": {
+    "percents": [
+      86.254991953269354,
+      4.0084639685283427,
+      1.6689515407999047,
+      2.5689932645884248,
+      1.221910949514216,
+      2.4617035226798594,
+      1.8149848006198961
+    ],
+    "Code": 0,
+    "Message": "success"
+  },
   "DesignOutside_Details": {
     "percents": [
       0.0,

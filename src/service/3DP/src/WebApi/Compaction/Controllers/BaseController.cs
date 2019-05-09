@@ -282,6 +282,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                       "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
                       Path.GetExtension(tccFileName);
       }
+
 #if RAPTOR
       //For Raptor, need the parent design if it's a reference surface
       if (file.ImportedFileType == ImportedFileType.ReferenceSurface)
@@ -304,7 +305,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
-      return new DesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0, fileUid);
+      return new DesignDescriptor(file.LegacyFileId, fileDescriptor, file.Offset ?? 0.0, fileUid);
     }
 
     /// <summary>
