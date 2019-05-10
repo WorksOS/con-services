@@ -61,13 +61,11 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] DxfUnitsType dxfUnitsType,
       [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
-      [FromQuery] DateTime? surveyedUtc = null,
-      [FromQuery] Guid? parentUid = null,
-      [FromQuery] double? offset = 0)
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       Console.WriteLine(
         $"CreateMockImportedFile. file: {file.flowFilename} path {file.path} projectUid {projectUid} ImportedFileType: {importedFileType} " +
-        $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid: {parentUid} offset: {offset}");
+        $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
@@ -95,13 +93,11 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] DxfUnitsType dxfUnitsType,
       [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
-      [FromQuery] DateTime? surveyedUtc = null,
-      [FromQuery] Guid? parentUid = null,
-      [FromQuery] double? offset = 0)
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       Console.WriteLine(
         $"UpdateMockImportedFile. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} " +
-        $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid: {parentUid} offset: {offset}");
+        $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
