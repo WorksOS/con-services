@@ -126,6 +126,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("A reference surface must have a parent design surface and offset", 118);
       this.DynamicAddwithOffset("Cannot delete a design that has reference surfaces", 119);
       this.DynamicAddwithOffset("Missing parent design for reference surface", 120);
+      this.DynamicAddwithOffset("Reference surface already exists", 121);
 
     }
   }

@@ -19,7 +19,7 @@ services:
      - AWS_TAGFILE_BUCKET_NAME=vss-prod-directtagfile-archives
      - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.prod.k8s.services.myvisionlink.com/api/status
      - CUSTOMERSERVICE_API_URL=https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
-     - CUSTOMERSERVICE_CACHE_LIFE=00:15:00
+     - CUSTOMER_CACHE_LIFE=00:30:00
      - DEFAULT_CONNECTION_LIMIT=64
      - ELEVATION_EXTENTS_CACHE_LIFE=00:15:00
      - ENABLE_CONNECTED_SITE_GATEWAY=true

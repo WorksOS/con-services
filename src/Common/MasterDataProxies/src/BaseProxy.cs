@@ -85,8 +85,7 @@ namespace VSS.MasterData.Proxies
       }
       catch (Exception ex)
       {
-        LogWebRequestException(ex);
-        BaseProxyHealthCheck.SetStatus(false,this.GetType());
+        LogWebRequestExceptionAndSetHealth(ex);
         throw;
       }
 
@@ -179,8 +178,7 @@ namespace VSS.MasterData.Proxies
       }
       catch (Exception ex)
       {
-        LogWebRequestException(ex);
-        BaseProxyHealthCheck.SetStatus(false, this.GetType());
+        LogWebRequestExceptionAndSetHealth(ex);
         throw;
       }
 
@@ -235,8 +233,7 @@ namespace VSS.MasterData.Proxies
       }
       catch (Exception ex)
       {
-        LogWebRequestException(ex);
-        BaseProxyHealthCheck.SetStatus(false, this.GetType());
+        LogWebRequestExceptionAndSetHealth(ex);
         throw;
       }
 
@@ -506,7 +503,7 @@ namespace VSS.MasterData.Proxies
     ///   Check exception for Web Request details and log a warning
     /// </summary>
     /// <param name="ex">Exception to be logged</param>
-    private void LogWebRequestException(Exception ex)
+    private void LogWebRequestExceptionAndSetHealth(Exception ex)
     {
       var message = ex.Message;
       var stacktrace = ex.StackTrace;
@@ -519,6 +516,12 @@ namespace VSS.MasterData.Proxies
 
       log.LogWarning("Error sending data from master data: ", message);
       log.LogWarning("Stacktrace: ", stacktrace);
+
+      //WE want to exclude business exceptions as they are valid cases for health monitoring
+      if (ex.InnerException != null && ex.InnerException is ServiceException serviceException &&
+          serviceException.Code == HttpStatusCode.BadRequest)
+        return;
+      BaseProxyHealthCheck.SetStatus(false, this.GetType());
     }
 
     /// <summary>

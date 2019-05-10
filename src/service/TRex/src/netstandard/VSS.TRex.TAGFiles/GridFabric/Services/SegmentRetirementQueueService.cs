@@ -25,6 +25,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
 
+    private static readonly bool ReportDetailedSegmentRetirementActivityToLog = false;
+
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
@@ -112,7 +114,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
             if (handler.Process(storageProxy, queueCache, retirees))
             {
-              Log.LogInformation($"Successfully retired {retireesCount} spatial streams from mutable and immutable contexts");
+              if (ReportDetailedSegmentRetirementActivityToLog)
+                Log.LogInformation($"Successfully retired {retireesCount} spatial streams from mutable and immutable contexts");
 
               // Remove the elements from the segment retirement queue
               queue.Remove(earlierThan);

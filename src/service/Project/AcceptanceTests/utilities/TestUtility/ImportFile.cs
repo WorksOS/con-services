@@ -116,9 +116,17 @@ namespace TestUtility
         uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
 
-      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod, ed.ImportedFileTypeName == "ReferenceSurface");
-      if (ed.ImportedFileType != ImportedFileType.ReferenceSurface)
-        ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
+      string response;
+      if (ed.ImportedFileType == ImportedFileType.ReferenceSurface)
+      {
+        response = DoHttpRequest(uri, importOptions.HttpMethod, (byte[])null, ed.CustomerUid, "application/json");
+      }
+      else
+      {
+        response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod, ed.ImportedFileTypeName == "ReferenceSurface");
+        if (ed.ImportedFileType != ImportedFileType.ReferenceSurface)
+          ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
+      }
 
       try
       {

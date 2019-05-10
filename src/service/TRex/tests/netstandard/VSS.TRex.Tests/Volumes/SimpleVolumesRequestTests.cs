@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using VSS.MasterData.Models.Models;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -105,13 +104,13 @@ namespace VSS.TRex.Tests.Volumes
 
     private void CheckDefaultFilterToFilterSingleTAGFileResponse(SimpleVolumesResponse response)
     {
-      //response = {Cut:1.00113831634521, Fill:2.48526947021484, Cut Area:117.5652, FillArea: 202.9936, Total Area:353.0424, BoundingGrid:MinX: 537669.2, MaxX:537676.34, MinY:5427391.44, MaxY:5427514.52, MinZ: 1E+308, MaxZ:1E+308, BoundingLLH:MinX: 1E+308, MaxX:1E+308, MinY:1...
+      //Was, response = {Cut:1.00113831634521, Fill:2.48526947021484, Cut Area:117.5652, FillArea: 202.9936, Total Area:353.0424, BoundingGrid:MinX: 537669.2, MaxX:537676.34, MinY:5427391.44, MaxY:5427514.52, MinZ: 1E+308, MaxZ:1E+308, BoundingLLH:MinX: 1E+308, MaxX:1E+308, MinY:1...
       const double EPSILON = 0.000001;
       response.Should().NotBeNull();
-      response.Cut.Should().BeApproximately(1.001138316, EPSILON);
-      response.Fill.Should().BeApproximately(2.4852694702148, EPSILON); 
-      response.CutArea.Should().BeApproximately(117.5652, EPSILON); 
-      response.FillArea.Should().BeApproximately(202.9936, EPSILON);
+      response.Cut.Should().BeApproximately(0.99982155303955178, EPSILON);
+      response.Fill.Should().BeApproximately(2.4776475891113323, EPSILON); 
+      response.CutArea.Should().BeApproximately(113.86600000000001, EPSILON); 
+      response.FillArea.Should().BeApproximately(200.56600000000006, EPSILON);
       response.TotalCoverageArea.Should().BeApproximately(353.0424, EPSILON);
 
       response.BoundingExtentGrid.MinX.Should().BeApproximately(537669.2, EPSILON);

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -19,6 +20,8 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public class SubGridCellSegmentPassesDataWrapper_StaticCompressed : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
+        // private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellSegmentPassesDataWrapper_StaticCompressed>();
+
         /// <summary>
         /// The set of field descriptors for the attribute being stored in the bit field array compressed form
         /// </summary>
@@ -733,6 +736,8 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 BF_CellPasses.StreamWriteEnd();
             }
+
+            //Log.LogInformation($"Internal cache encoding for cell passes required {BF_CellPasses.NumBits / 8} bytes @ {NumBitsPerCellPass} bits per cell pass & {BF_PassCounts.NumBits / 8} bytes for pass counts");
 
             /*
             {$IFDEF DEBUG}

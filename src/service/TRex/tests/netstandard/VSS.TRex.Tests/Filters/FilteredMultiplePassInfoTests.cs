@@ -261,7 +261,7 @@ namespace VSS.TRex.Tests.Filters
       aValue.Should().Be(1);
       aTarget.Should().Be(11);
 
-      info.FilteredPassData[1].FilteredPass.CCV = CellPassConsts.NullMDP;
+      info.FilteredPassData[1].FilteredPass.CCV = CellPassConsts.NullCCV;
 
       info.LastPassValidCCVDetails(out aValue, out aTarget);
       aValue.Should().Be(0);

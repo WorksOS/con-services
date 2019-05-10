@@ -63,7 +63,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc = null,
       [FromQuery] Guid? parentUid = null,
-      [FromQuery] double offset = 0)
+      [FromQuery] double? offset = 0)
     {
       Console.WriteLine(
         $"CreateMockImportedFile. file: {file.flowFilename} path {file.path} projectUid {projectUid} ImportedFileType: {importedFileType} " +
@@ -97,7 +97,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc = null,
       [FromQuery] Guid? parentUid = null,
-      [FromQuery] double offset = 0)
+      [FromQuery] double? offset = 0)
     {
       Console.WriteLine(
         $"UpdateMockImportedFile. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} " +

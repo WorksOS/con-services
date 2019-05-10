@@ -438,6 +438,7 @@ namespace VSS.TRex.SubGrids.Executors
       // Wait for all the sub-tasks to complete
 
       Log.LogInformation($"Waiting for {tasks.Count} sub tasks to complete for sub grids request");
+
       var summaryTask = Task.WhenAll(tasks);
       summaryTask.Wait();
 

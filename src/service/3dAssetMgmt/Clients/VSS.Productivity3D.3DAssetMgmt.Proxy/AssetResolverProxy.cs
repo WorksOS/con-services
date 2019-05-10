@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,9 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
@@ -76,19 +79,32 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
       return null;
     }
 
-    public async Task<MatchingAssetsDisplayModel> GetMatching3D2DAssets(Guid assetUid, IDictionary<string, string> customHeaders = null)
+    public async Task<MatchingAssetsDisplayModel> GetMatching3D2DAssets(MatchingAssetsDisplayModel asset,
+      IDictionary<string, string> customHeaders = null)
     {
-      var result =
-        await GetMasterDataItemServiceDiscovery<MatchingAssetsDisplayModel>($"/assets/matchasset/{assetUid.ToString()}",
-          null, null, customHeaders);
+      MatchingAssetsDisplayModel result = null;
+
+      if (!string.IsNullOrEmpty(asset.AssetUID2D))
+        result =
+          await GetMasterDataItemServiceDiscovery<MatchingAssetsDisplayModel>(
+            $"/assets/match2dasset/{asset.AssetUID2D}",
+            null, null, customHeaders);
+
+      if (!string.IsNullOrEmpty(asset.AssetUID3D))
+        result =
+          await GetMasterDataItemServiceDiscovery<MatchingAssetsDisplayModel>(
+            $"/assets/match3dasset/{asset.AssetUID3D}",
+            null, null, customHeaders);
+
+      if (result == null)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No assert to process provided"));
+
       if (result.Code == 0)
-      {
         return result;
-      }
 
       log.LogDebug($"Failed to get list of matching assets: {result.Code}, {result.Message}");
       return null;
-
     }
 
     public void ClearCacheItem(string uid, string userId = null)

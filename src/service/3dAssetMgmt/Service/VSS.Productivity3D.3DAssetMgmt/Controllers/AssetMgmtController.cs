@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.AssetMgmt3D.Models;
 
@@ -60,33 +61,66 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     }
 
     /// <summary>
-    /// Get a potentially matching asset between 3d and 2d
+    /// Get a potentially matching 2D asset  for a 3D asset
     /// </summary>
     /// <response code="200">A list of matched assets.</response>
     /// <response code="403">Invalid access token provided</response>
-    [HttpGet("api/v1/assets/matchasset/{assetUid}")]
-    [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
-    public async Task<IActionResult> GetMatching3D2DAssets([FromRoute] Guid assetUid)
+    [HttpGet("api/v1/assets/match3dasset/{assetUid}")]
+    [ProducesResponseType(typeof(AssetDisplayModel), 200)]
+    public async Task<IActionResult> GetMatching2DAssets([FromRoute] Guid assetUid)
     {
-      Log.LogInformation($"Getting matching Assets for AssetUID: {assetUid}");
-      var result = await assetRepository.GetMatching3D2DAssets(assetUid);
+      Log.LogInformation($"Getting matching Assets for AssetUID3D: {assetUid}");
+      var matchingAsset = new MatchingAssets() {AssetUID3D = assetUid.ToString()};
+      var result = await assetRepository.GetMatching3D2DAssets(matchingAsset);
 
       var model = result == null
         ? new MatchingAssetsDisplayModel((int) AssetMgmt3DExecutionStates.ErrorCodes.NoMatchingAssets, "No matching assets found")
         : new MatchingAssetsDisplayModel
         {
-          MatchingAssetUID = result.MatchingAssetUID,
+          AssetUID3D = result.AssetUID3D,
           CustomerName = result.CustomerName,
-          AssetUID = result.AssetUID,
-          MakeCode = result.MakeCode,
-          MatchingMakeCode = result.MatchingMakeCode,
-          MatchingSerialNumber = result.MatchingSerialNumber,
+          AssetUID2D = result.AssetUID2D,
+          MakeCode2D = result.MakeCode2D,
+          MakeCode3D = result.MakeCode3D,
+          SerialNumber3D = result.SerialNumber3D,
           Model = result.Model,
           Name = result.Name,
-          SerialNumber = result.SerialNumber
+          SerialNumber2D = result.SerialNumber2D
         };
 
-      Log.LogInformation($"Returning Asset Display Model for AssetUID: {assetUid}. Data: {JsonConvert.SerializeObject(result)}");
+      Log.LogInformation($"Returning Asset Display Model for AssetUID3D: {assetUid}. Data: {JsonConvert.SerializeObject(result)}");
+      return Json(model);
+    }
+
+    /// <summary>
+    /// Get a potentially matching 3D asset  for a 2D asset
+    /// </summary>
+    /// <response code="200">A list of matched assets.</response>
+    /// <response code="403">Invalid access token provided</response>
+    [HttpGet("api/v1/assets/match2dasset/{assetUid}")]
+    [ProducesResponseType(typeof(AssetDisplayModel), 200)]
+    public async Task<IActionResult> GetMatching3DAssets([FromRoute] Guid assetUid)
+    {
+      Log.LogInformation($"Getting matching Assets for AssetUID2D: {assetUid}");
+      var matchingAsset = new MatchingAssets() { AssetUID2D = assetUid.ToString() };
+      var result = await assetRepository.GetMatching3D2DAssets(matchingAsset);
+
+      var model = result == null
+        ? new MatchingAssetsDisplayModel((int)AssetMgmt3DExecutionStates.ErrorCodes.NoMatchingAssets, "No matching assets found")
+        : new MatchingAssetsDisplayModel
+        {
+          AssetUID3D = result.AssetUID3D,
+          CustomerName = result.CustomerName,
+          AssetUID2D = result.AssetUID2D,
+          MakeCode2D = result.MakeCode2D,
+          MakeCode3D = result.MakeCode3D,
+          SerialNumber3D = result.SerialNumber3D,
+          Model = result.Model,
+          Name = result.Name,
+          SerialNumber2D = result.SerialNumber2D
+        };
+
+      Log.LogInformation($"Returning Asset Display Model for AssetUID2D: {assetUid}. Data: {JsonConvert.SerializeObject(result)}");
       return Json(model);
     }
 
