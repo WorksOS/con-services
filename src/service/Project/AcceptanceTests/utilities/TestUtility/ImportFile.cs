@@ -116,9 +116,17 @@ namespace TestUtility
         uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
 
-      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod, ed.ImportedFileTypeName == "ReferenceSurface");
-      if (ed.ImportedFileType != ImportedFileType.ReferenceSurface)
-        ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
+      string response;
+      if (ed.ImportedFileType == ImportedFileType.ReferenceSurface)
+      {
+        response = DoHttpRequest(uri, importOptions.HttpMethod, (byte[])null, ed.CustomerUid, "application/json");
+      }
+      else
+      {
+        response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod);
+        if (ed.ImportedFileType != ImportedFileType.ReferenceSurface)
+          ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
+      }
 
       try
       {
@@ -175,14 +183,14 @@ namespace TestUtility
     /// Upload a single file to the web api 
     /// </summary>
     /// <returns>Repsonse from web api as string</returns>
-    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod, bool isReferenceSurface)
+    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
     {
       try
       {
         //For reference surfaces no file to upload
-        var name = isReferenceSurface ?  fullFileName : new DirectoryInfo(fullFileName).Name;
-        Byte[] bytes = isReferenceSurface ? null : File.ReadAllBytes(fullFileName);
-        var fileSize = isReferenceSurface ? 0 : bytes.Length;
+        var name = new DirectoryInfo(fullFileName).Name;
+        Byte[] bytes = File.ReadAllBytes(fullFileName);
+        var fileSize =  bytes.Length;
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
         string result = null;
         for (var offset = 0; offset < chunks; offset++)
@@ -199,7 +207,7 @@ namespace TestUtility
           int currentChunkSize = endByte - startByte;
           var boundaryIdentifier = Guid.NewGuid().ToString();
           var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
-          var currentBytes = isReferenceSurface ? null : bytes.Skip(startByte).Take(currentChunkSize).ToArray();
+          var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
           string contentType = $"multipart/form-data; boundary={BOUNDARY_START}{boundaryIdentifier}";
 
           using (var content = new MemoryStream())
