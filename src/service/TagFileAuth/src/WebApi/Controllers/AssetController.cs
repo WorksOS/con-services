@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
         customerRepository, projectRepository,
         subscriptionsRepository, producer)
     {
-      log = logger.CreateLogger< AssetController>();
+      log = logger.CreateLogger<AssetController>();
     }
 
     /// <summary>
@@ -47,15 +47,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <executor>AssetIdExecutor</executor>
     [Route("api/v1/asset/getId")]
     [HttpPost]
-    public async Task<GetAssetIdResult> GetAssetId([FromBody]GetAssetIdRequest request)
+    public async Task<GetAssetIdResult> GetAssetId([FromBody] GetAssetIdRequest request)
     {
-      log.LogDebug($"GetAssetId: request: {JsonConvert.SerializeObject(request)}");            
+      log.LogDebug($"{nameof(GetAssetId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(log, configStore, assetRepository,
+        deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetAssetIdResult;
 
-      log.LogResult(methodName: ToString(), request: request, result: result);
+      log.LogResult(nameof(GetAssetId), request: request, result: result);
       return result;
     }
   }

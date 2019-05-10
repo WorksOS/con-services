@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class TagFileProcessingErrorV2Executor : RequestExecutorContainer
   {
-    protected TagFileErrorMappings tagFileErrorMappings = new TagFileErrorMappings();
+    private readonly TagFileErrorMappings tagFileErrorMappings = new TagFileErrorMappings();
 
     /// <summary>
     /// Processes the tag file processing error request and creates an alert if required.
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var processedOk = false;
 
       var errorMessage =
-          string.Format($"OnTagFileProcessingError: assetID = {request.assetId}, " +
+          string.Format($"OnTagFileProcessingErrorV2: assetID = {request.assetId}, " +
                         $"tagFileName = {request.tagFileName}, displaySerialNumber = { request.DisplaySerialNumber()}, machineName = { request.MachineName()}, tagfileUtc = {request.TagFileDateTimeUtc()}" +
                         $"errorNumber = {(int)request.error}, error = {Enum.GetName(typeof(TagFileErrorsEnum), request.error)}, " + 
                         $"projectId = {request.projectId} tccOrgId = {request.tccOrgId} deviceSerialNumber = {request.deviceSerialNumber} ");
@@ -57,9 +57,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgId);
         if (customerTCCOrg == null)
-          log.LogError($"TagFileProcessingErrorV2Executor: tccOrgId Not found)");
+          log.LogError($"{nameof(TagFileProcessingErrorV2Executor)}: tccOrgId Not found)");
         else
-          log.LogDebug($"TagFileProcessingErrorV2Executor: tccOrgId {JsonConvert.SerializeObject(customerTCCOrg)}");
+          log.LogDebug($"{nameof(TagFileProcessingErrorV2Executor)}: tccOrgId {JsonConvert.SerializeObject(customerTCCOrg)}");
       }
 
       // can TFHarvester send a projectId -1 thru -3? 
@@ -69,18 +69,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         project = await dataRepository.LoadProject(request.projectId.Value);
         if (project == null)
-          log.LogError($"TagFileProcessingErrorV2Executor: project Not found)");
+          log.LogError($"{nameof(TagFileProcessingErrorV2Executor)}: project Not found)");
         else
-          log.LogDebug($"TagFileProcessingErrorV2Executor: project {JsonConvert.SerializeObject(project)}");
+          log.LogDebug($"{nameof(TagFileProcessingErrorV2Executor)}: project {JsonConvert.SerializeObject(project)}");
       }
 
       if (request.assetId != null && request.assetId > 0)
       {
         asset = await dataRepository.LoadAsset(request.assetId.Value);
         if (asset == null)
-          log.LogError($"TagFileProcessingErrorV2Executor: asset Not found)");
+          log.LogError($"{nameof(TagFileProcessingErrorV2Executor)}: asset Not found)");
         else
-          log.LogDebug($"TagFileProcessingErrorV2Executor: asset {JsonConvert.SerializeObject(asset)}");
+          log.LogDebug($"{nameof(TagFileProcessingErrorV2Executor)}: asset {JsonConvert.SerializeObject(asset)}");
       }
 
       // if no assetid how about getting it and possibly customerUid from DeviceSerialNumber/DeviceType?

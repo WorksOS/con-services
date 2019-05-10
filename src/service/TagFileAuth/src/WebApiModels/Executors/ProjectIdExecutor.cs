@@ -2,16 +2,13 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -50,10 +47,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as GetProjectIdRequest;
-      log.LogDebug("ProjectIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
-
       long projectId = -1;
-      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> potentialProjects = null;
+      var potentialProjects = new List<Project.Abstractions.Models.DatabaseModels.Project>();
 
       IEnumerable<Subscriptions> assetSubs = null;
       CustomerTccOrg customerTCCOrg = null;
@@ -63,23 +58,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.tccOrgUid))
       {
         customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgUid);
-        log.LogDebug("ProjectIdExecutor: Loaded CustomerByTccOrgId? {0}", JsonConvert.SerializeObject(customerTCCOrg));
+        log.LogDebug(
+          $"{nameof(ProjectIdExecutor)}: Loaded CustomerByTccOrgId? {JsonConvert.SerializeObject(customerTCCOrg)}");
       }
 
       // assetId could be valid (>0) or -1 (john doe i.e. landfill) or -2 (imported tagfile)
       if (request.assetId > 0)
       {
         var asset = await dataRepository.LoadAsset(request.assetId);
-        log.LogDebug("ProjectIdExecutor: Loaded asset? {0}", JsonConvert.SerializeObject(asset));
+        log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded asset? {JsonConvert.SerializeObject(asset)}");
 
         if (asset != null && !string.IsNullOrEmpty(asset.OwningCustomerUID))
         {
           customerAssetOwner = await dataRepository.LoadCustomerByCustomerUIDAsync(asset.OwningCustomerUID);
-          log.LogDebug("ProjectIdExecutor: Loaded assetsCustomer? {0}",
-            JsonConvert.SerializeObject(customerAssetOwner));
+          log.LogDebug(
+            $"{nameof(ProjectIdExecutor)}: Loaded customerAssetOwner? {JsonConvert.SerializeObject(customerAssetOwner)}");
 
           assetSubs = await dataRepository.LoadAssetSubs(asset.AssetUID, request.timeOfPosition);
-          log.LogDebug("ProjectIdExecutor: Loaded assetSubs? {0}", JsonConvert.SerializeObject(assetSubs));
+          log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
         }
       }
 
@@ -96,19 +92,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //    must have valid assetID, which must have a 3d sub.
         if (customerAssetOwner != null && assetSubs != null && assetSubs.Any())
         {
-          var p = await dataRepository.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude,
+          var standardProjects = await dataRepository.GetStandardProject(customerAssetOwner.CustomerUID,
+            request.latitude,
             request.longitude,
             request.timeOfPosition);
-          var enumerable = p as IList<Project.Abstractions.Models.DatabaseModels.Project> ?? p.ToList();
-          if (p != null && enumerable.Any())
+          var standardProjectsList = standardProjects as IList<Project.Abstractions.Models.DatabaseModels.Project> ??
+                                     standardProjects.ToList();
+          if (standardProjectsList.Any())
           {
-            potentialProjects = potentialProjects == null ? p : potentialProjects.Concat(p);
-            log.LogDebug("ProjectIdExecutor: Loaded standardProjects which lat/long is within {0}",
-              JsonConvert.SerializeObject(p));
+            potentialProjects.AddRange(standardProjectsList);
+            log.LogDebug(
+              $"{nameof(ProjectIdExecutor)}: Loaded standardProjects which lat/long is within {JsonConvert.SerializeObject(standardProjects)}");
           }
           else
           {
-            log.LogDebug("ProjectIdExecutor: No standardProjects loaded");
+            log.LogDebug($"{nameof(ProjectIdExecutor)}: No standardProjects loaded");
           }
         }
 
@@ -118,19 +116,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //  allow johnDoe assets(-1) and valid assetIDs(no manually imported tagfile(assetid = -2))
         if (customerTCCOrg != null && request.assetId != -2)
         {
-          var p = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
+          var pmProjects = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
             (int) ProjectType.ProjectMonitoring, (int) ServiceTypeEnum.ProjectMonitoring);
-          var enumerable = p as IList<Project.Abstractions.Models.DatabaseModels.Project> ?? p.ToList();
-          if (p != null && enumerable.Any())
+          var pmProjectsList = pmProjects as IList<Project.Abstractions.Models.DatabaseModels.Project> ??
+                               pmProjects.ToList();
+          if (pmProjectsList.Any())
           {
-            potentialProjects = potentialProjects == null ? enumerable : potentialProjects.Concat(enumerable);
-            log.LogDebug("ProjectIdExecutor: Loaded pmProjects which lat/long is within {0}",
-              JsonConvert.SerializeObject(enumerable));
+            potentialProjects.AddRange(pmProjectsList);
+            log.LogDebug(
+              $"{nameof(ProjectIdExecutor)}: Loaded pmProjects which lat/long is within {JsonConvert.SerializeObject(pmProjectsList)}");
           }
           else
           {
-            log.LogDebug("ProjectIdExecutor: No pmProjects loaded");
+            log.LogDebug($"{nameof(ProjectIdExecutor)}: No pmProjects loaded");
           }
         }
 
@@ -140,18 +139,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //   allow manual assets(-2) and johnDoe assets(-1) and valid assetIDs
         if (customerTCCOrg != null)
         {
-          var p = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
+          var landfillProjects = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
             (int) ProjectType.LandFill, (int) ServiceTypeEnum.Landfill);
-          if (p != null && p.Any())
+          var landfillProjectsList = landfillProjects as IList<Project.Abstractions.Models.DatabaseModels.Project> ??
+                                     landfillProjects.ToList();
+          if (landfillProjectsList.Any())
           {
-            potentialProjects = potentialProjects?.Concat(p) ?? p;
-            log.LogDebug("ProjectIdExecutor: Loaded landfillProjects which lat/long is within {0}",
-              JsonConvert.SerializeObject(p));
+            potentialProjects.AddRange(landfillProjectsList);
+            log.LogDebug(
+              $"{nameof(ProjectIdExecutor)}: Loaded landfillProjects which lat/long is within {JsonConvert.SerializeObject(landfillProjects)}");
           }
           else
           {
-            log.LogDebug("ProjectIdExecutor: No landfillProjects loaded");
+            log.LogDebug($"{nameof(ProjectIdExecutor)}: No landfillProjects loaded");
           }
         }
 
@@ -159,7 +160,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //If zero found then If manualAsset returns -3 else returns -1
         //If one found then returns its id
         //If > 1 found then returns -2
-        if (potentialProjects == null || !potentialProjects.Any())
+        if (!potentialProjects.Any())
           switch (request.assetId)
           {
             case -2:
@@ -172,22 +173,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         else if (potentialProjects.Distinct().Count() > 1)
           projectId = -2;
         else
-          projectId = potentialProjects.ToList()[0].LegacyProjectID;
-        log.LogDebug("ProjectIdExecutor: returning potential projectId {0}", projectId);
+          projectId = potentialProjects[0].LegacyProjectID;
       }
 
       var result = projectId > 1;
-
-      try
-      {
-        return GetProjectIdResult.CreateGetProjectIdResult(result, projectId);
-      }
-      catch
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          GetProjectIdResult.CreateGetProjectIdResult(false, -1,
-            ContractExecutionStatesEnum.InternalProcessingError, 19));
-      }
+      return GetProjectIdResult.CreateGetProjectIdResult(result, projectId);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
