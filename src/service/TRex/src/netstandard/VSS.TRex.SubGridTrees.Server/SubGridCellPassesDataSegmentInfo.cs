@@ -24,7 +24,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public ISubGridSpatialAffinityKey AffinityKey(Guid projectUID)
         {
-          return new SubGridSpatialAffinityKey(projectUID, Segment.Owner.OriginX, Segment.Owner.OriginY, 
+          return new SubGridSpatialAffinityKey(Version, projectUID, Segment.Owner.OriginX, Segment.Owner.OriginY, 
                                                SegmentIdentifier());
         }
 

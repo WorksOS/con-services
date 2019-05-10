@@ -60,7 +60,7 @@ namespace VSS.TRex.CellDatum.Executors
       var argClusterCompute = new CellDatumRequestArgument_ClusterCompute(
         arg.ProjectID, arg.Mode, arg.Point, OTGCellX, OTGCellY, arg.Filters, arg.ReferenceDesignUID);
       var request = new CellDatumRequest_ClusterCompute();
-      var response = request.Execute(argClusterCompute, new SubGridSpatialAffinityKey(arg.ProjectID, OTGCellX, OTGCellY));
+      var response = request.Execute(argClusterCompute, new SubGridSpatialAffinityKey(0, arg.ProjectID, OTGCellX, OTGCellY));
       result.ReturnCode = response.ReturnCode;
       result.Value = response.Value;
       result.TimeStampUTC = response.TimeStampUTC;

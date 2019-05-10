@@ -92,7 +92,7 @@ namespace VSS.TRex.Storage
         return FileSystemErrorStatus.UnknownErrorWritingToFS;
       }
     }
-    
+
     /// <summary>
     /// Supports writing a spatial data stream to the persistent store via the grid cache.
     /// </summary>
@@ -101,6 +101,7 @@ namespace VSS.TRex.Storage
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
     /// <param name="segmentIdentifier"></param>
+    /// <param name="version"></param>
     /// <param name="streamType"></param>
     /// <param name="mutableStream"></param>
     /// <param name="source"></param>
@@ -109,13 +110,14 @@ namespace VSS.TRex.Storage
       string streamName,
       uint subGridX, uint subGridY,
       string segmentIdentifier,
+      long version,
       FileSystemStreamType streamType,
       MemoryStream mutableStream,
       object source)
     {
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subGridX, subGridY, segmentIdentifier);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentIdentifier);
 
         using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
@@ -196,6 +198,7 @@ namespace VSS.TRex.Storage
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
     /// <param name="segmentIdentifier"></param>
+    /// <param name="version"></param>
     /// <param name="streamType"></param>
     /// <param name="stream"></param>
     /// <returns></returns>
@@ -203,6 +206,7 @@ namespace VSS.TRex.Storage
       string streamName,
       uint subGridX, uint subGridY,
       string segmentIdentifier,
+      long version,
       FileSystemStreamType streamType,
       out MemoryStream stream)
     {
@@ -210,7 +214,7 @@ namespace VSS.TRex.Storage
 
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subGridX, subGridY, segmentIdentifier);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentIdentifier);
 
         //Log.LogInformation($"Getting key:{streamName}");
 
