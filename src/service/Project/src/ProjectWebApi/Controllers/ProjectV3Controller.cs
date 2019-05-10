@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
@@ -16,8 +16,6 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -25,12 +23,12 @@ using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
-    /// <summary>
-    /// Project controller v3
-    ///   This is used by Legacy during Lift and Shift
-    ///   The functionality is quite different (simplified) to v4
-    /// </summary>
-    public class ProjectV3Controller : ProjectBaseController
+  /// <summary>
+  /// Project controller v3
+  ///   This is used by Legacy during Lift and Shift
+  ///   The functionality is quite different (simplified) to v4
+  /// </summary>
+  public class ProjectV3Controller : ProjectBaseController
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectV3Controller"/> class.
@@ -52,7 +50,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, 
       IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-          logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>(), dataOceanClient, authn)
+          logger, serviceExceptionHandler, dataOceanClient, authn)
     { }
 
     /// <summary>
@@ -64,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ImmutableDictionary<int, ProjectDescriptor>> GetProjectsV3()
     {
-      log.LogInformation("GetProjectsV3");
+      logger.LogInformation("GetProjectsV3");
       var projects = (await GetProjectList());
       var customerUid = LogCustomerDetails("GetProjectsV3", "");
 
@@ -101,7 +99,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPost]
     public async Task CreateProjectV3([FromBody] CreateProjectEvent project)
     {
-      log.LogInformation("CreateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
+      logger.LogInformation("CreateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
       ProjectRequestHelper.ValidateProjectBoundary(project.ProjectBoundary, serviceExceptionHandler);
       string wktBoundary = project.ProjectBoundary;
 
@@ -126,7 +124,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPut]
     public async Task UpdateProjectV3([FromBody] UpdateProjectEvent project)
     {
-      log.LogInformation("UpdateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
+      logger.LogInformation("UpdateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
 
       await UpdateProject(project);
     }
@@ -143,7 +141,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpDelete]
     public async Task DeleteProjectV3([FromRoute] Guid projectUid)
     {
-      log.LogInformation("DeleteProjectV3. project: {0}", projectUid);
+      logger.LogInformation("DeleteProjectV3. project: {0}", projectUid);
       var project = new DeleteProjectEvent
       {
         ProjectUID = projectUid,
@@ -201,7 +199,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
       await ProjectRequestHelper.AssociateProjectGeofence(geofenceProject, projectRepo,
-        log, serviceExceptionHandler, producer, kafkaTopicName);
+        logger, serviceExceptionHandler, producer, kafkaTopicName);
     }
 
     #region private

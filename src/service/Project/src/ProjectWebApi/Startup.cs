@@ -1,10 +1,7 @@
 ﻿using System;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
@@ -13,7 +10,6 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -31,9 +27,7 @@ using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Repository;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.Scheduler.Abstractions;
@@ -48,25 +42,18 @@ namespace VSS.MasterData.Project.WebAPI
   /// </summary>
   public class Startup : BaseStartup
   {
-
-
-
+    public const string LoggerRepoName = "projectservice";
     public override string ServiceName => "Project Service API";
     public override string ServiceDescription => " Project masterdata service";
     public override string ServiceVersion => "v4";
 
     private static IServiceProvider serviceProvider;
 
-    public const string LoggerRepoName = "projectservice";
-
     public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
-
+    { }
 
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
       //TODO: Check if SetPreflightMaxAge(TimeSpan.FromSeconds(2520) in WebApi pkg matters
 
@@ -102,7 +89,6 @@ namespace VSS.MasterData.Project.WebAPI
         });
       });
 
-
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
       services.AddTransient<ImportedFileUpdateService>();
@@ -127,12 +113,10 @@ namespace VSS.MasterData.Project.WebAPI
         x.UseDashboard(); //View dashboard at http://localhost:5000/cap
       });
       */
-
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
-
       app.UseFilterMiddleware<ProjectAuthentication>();
       app.UseStaticFiles();
       // Because we use Flow Files, and Background tasks we sometimes need to reread the body of the request
@@ -155,11 +139,9 @@ namespace VSS.MasterData.Project.WebAPI
           return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(),
             "AWS_DESIGNIMPORT_BUCKET_NAME");
         default:
-          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), 
+          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(),
             "AWS_BUCKET_NAME");
       }
     }
-
-
   }
 }

@@ -73,13 +73,13 @@ namespace TestUtility
     /// <returns>Count of records effected</returns>
     public int ExecuteMySqlInsert(string connectionString, string sqlCommand)
     {
-      Log.Info(sqlCommand, Log.ContentType.DbQuery);
+      Console.WriteLine(sqlCommand);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(sqlCommand, mySqlConnection);
         var result = mySqlCommand.ExecuteNonQuery();
-        Log.Info(result.ToString(), Log.ContentType.DbQuery);
+        Console.WriteLine(result.ToString());
         return result;
       }
     }

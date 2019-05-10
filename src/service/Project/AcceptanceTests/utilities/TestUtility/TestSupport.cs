@@ -39,7 +39,6 @@ namespace TestUtility
     public string CustomerId { get; set; }
     public CreateProjectEvent CreateProjectEvt { get; set; }
     public UpdateProjectEvent UpdateProjectEvt { get; set; }
-    public DeleteProjectEvent DeleteProjectEvt { get; set; }
     public AssociateProjectCustomer AssociateCustomerProjectEvt { get; set; }
     public DissociateProjectCustomer DissociateCustomerProjectEvt { get; set; }
     public AssociateProjectGeofence AssociateProjectGeofenceEvt { get; set; }
@@ -265,7 +264,6 @@ namespace TestUtility
       }
     }
 
-
     public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray, int row)
     {
       msg.DisplayEventsToConsoleWeb(importFileArray);
@@ -280,13 +278,9 @@ namespace TestUtility
     /// <summary>
     /// Call the version 4 of the project master data
     /// </summary>
-    /// <param name="jsonString"></param>
-    /// <param name="eventType"></param>
-    /// <param name="customerUid"></param>
     private string CallWebApiWithProject(string jsonString, string eventType, string customerUid)
     {
       var response = string.Empty;
-      Thread.Sleep(500);
       switch (eventType)
       {
         case "CreateProjectEvent":
@@ -595,7 +589,7 @@ namespace TestUtility
     {
       var response = CallProjectWebApiV4("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
       ProjectV4DescriptorsSingleResult projectDescriptorResult = null;
-      Log.Info($"GetProjectDetailsViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+      Console.WriteLine($"GetProjectDetailsViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       if (!string.IsNullOrEmpty(response))
       {
@@ -613,7 +607,7 @@ namespace TestUtility
     {
       var routeSuffix = "api/v4/geofences" + geofenceTypeString + projectUidString;
       var response = CallProjectWebApiV4(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
-      Log.Info($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+      Console.WriteLine($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       if (!string.IsNullOrEmpty(response))
       {
@@ -629,7 +623,7 @@ namespace TestUtility
             (ProjectUid = Guid.Parse(projectUid), geofenceTypes, geofenceGuids);
       var messagePayload = JsonConvert.SerializeObject(updateProjectGeofenceRequest);
       var response = CallProjectWebApiV4("api/v4/geofences", HttpMethod.Put.ToString(), messagePayload, customerUid);
-      Log.Info($"AssociateProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+      Console.WriteLine($"AssociateProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       if (!string.IsNullOrEmpty(response))
       {
@@ -1498,14 +1492,6 @@ namespace TestUtility
           {
             importedFileDescriptor.SurveyedUtc = DateTime.Parse(eventObject.SurveyedUtc);
           }
-          if (HasProperty(eventObject, "ParentUid"))
-          {
-            importedFileDescriptor.ParentUid = Guid.Parse(eventObject.ParentUid);
-          }
-          if (HasProperty(eventObject, "Offset"))
-          {
-            importedFileDescriptor.Offset = double.Parse(eventObject.Offset);
-          }
           if (HasProperty(eventObject, "IsActivated"))
           {
             importedFileDescriptor.IsActivated = eventObject.IsActivated.ToLower() == "true";
@@ -1606,9 +1592,9 @@ namespace TestUtility
                       '{eventObject.fk_CustomerUID}','{eventObject.UserUID}','{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "ImportedFile":
-          sqlCmd += $@"(fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_ReferenceImportedFileUid, Offset, IsDeleted, IsActivated, LastActionedUTC) VALUES 
+          sqlCmd += $@"(fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated, LastActionedUTC) VALUES 
                      ('{eventObject.ProjectUID}', '{eventObject.ImportedFileUID}', {eventObject.ImportedFileID}, '{eventObject.CustomerUID}', {eventObject.ImportedFileType}, '{eventObject.Name}', 
-                      '{eventObject.FileDescriptor}', {eventObject.FileCreatedUTC}, {eventObject.FileUpdatedUTC}, '{eventObject.ImportedBy}', {eventObject.SurveyedUTC}, {eventObject.ParentUid}, {eventObject.Offset}, {eventObject.IsDeleted}, {eventObject.IsActivated}, {eventObject.LastActionedUTC});";
+                      '{eventObject.FileDescriptor}', {eventObject.FileCreatedUTC}, {eventObject.FileUpdatedUTC}, '{eventObject.ImportedBy}', {eventObject.SurveyedUTC}, {eventObject.IsDeleted}, {eventObject.IsActivated}, {eventObject.LastActionedUTC});";
           break;
         case "Project":
           var formattedPolygon = string.Format("ST_GeomFromText('{0}')", eventObject.GeometryWKT);
@@ -1884,7 +1870,7 @@ namespace TestUtility
     /// <returns></returns>
     public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null)
     {
-      var uri = GetBaseUri() + routeSuffix;  // "http://localhost:20979/"
+      var uri = GetBaseUri() + routeSuffix;
       Console.WriteLine("URI=" + uri);
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);

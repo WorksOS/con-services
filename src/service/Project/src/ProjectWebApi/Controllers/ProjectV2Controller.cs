@@ -14,7 +14,6 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TCCFileAccess;
@@ -31,11 +30,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class ProjectV2Controller : ProjectBaseController
   {
     /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
-
-    /// <summary>
     /// Gets or sets the Customer Repository.
     /// </summary>
     protected readonly ICustomerRepository customerRepo;
@@ -49,31 +43,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="producer"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="fileRepo"></param>
-    /// <param name="customerRepo"></param>
-    /// <param name="store"></param>
-    /// <param name="subscriptionProxy"></param>
-    /// <param name="raptorProxy"></param>
-    /// <param name="logger"></param>
-    /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
-    /// <param name="httpContextAccessor"></param>
-    /// <param name="dataOceanClient"></param>
-    /// <param name="authn"></param>
     public ProjectV2Controller(IKafka producer,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, ICustomerRepository customerRepo,
       IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IRaptorProxy raptorProxy,
-      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
+      ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,
       IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>(), dataOceanClient, authn)
+        loggerFactory, serviceExceptionHandler, dataOceanClient, authn)
     {
-      this.logger = logger;
       this.customerRepo = customerRepo;
       this.httpContextAccessor = httpContextAccessor;
     }
@@ -104,7 +84,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 81);
       }
 
-      log.LogInformation($"CreateProjectV2. projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
+      logger.LogInformation($"CreateProjectV2. projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
 
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(projectRequest, customerUid);
 
@@ -122,18 +102,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       createProjectEvent.CoordinateSystemFileContent = 
         await TccHelper
         .GetFileContentFromTcc(projectRequest.CoordinateSystem,
-          log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
+          logger, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
+          .Build<CreateProjectExecutor>(loggerFactory, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders, producer, kafkaTopicName,
             raptorProxy, subscriptionProxy, null, null, null, projectRepo, 
             subscriptionRepo, fileRepo, null, httpContextAccessor, dataOceanClient, authn)
           .ProcessAsync(createProjectEvent)
       );
 
-      log.LogDebug("CreateProjectV2. completed succesfully");
+      logger.LogDebug("CreateProjectV2. completed succesfully");
       return ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.Created, createProjectEvent.ProjectID);
     }
 
@@ -171,7 +151,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //Note: This is a very old legacy code that validates subs against TCC. This is not needed anymore as we allow project creation regardless of TCC subscription to support Earthworks machines.
 
-       /* log.LogInformation(
+       /* logger.LogInformation(
         $"ValidateTCCAuthorization. tccAuthorizationRequest: {JsonConvert.SerializeObject(tccAuthorizationRequest)}");
 
       tccAuthorizationRequest.Validate();
@@ -186,7 +166,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(tccAuthorizationRequest)
       );*/
 
-      log.LogInformation("ValidateTccAuthorization. completed succesfully");
+      logger.LogInformation("ValidateTccAuthorization. completed succesfully");
       return ReturnSuccessV2Result.CreateReturnSuccessV2Result(HttpStatusCode.OK, true);
     }
 

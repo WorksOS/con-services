@@ -28,7 +28,7 @@ namespace TestUtility
     /// <returns></returns>
     public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, HttpStatusCode httpResponseCode = HttpStatusCode.OK, string mediaType = "application/json", string customerUid = null, string jwt=null)
     {
-      Log.Info(resourceUri, Log.ContentType.ApiSend);
+      Console.WriteLine(resourceUri);
       var msg = new Msg();
       var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid, jwt);                   //Initialize the Http Request
       if (payloadData != null)
