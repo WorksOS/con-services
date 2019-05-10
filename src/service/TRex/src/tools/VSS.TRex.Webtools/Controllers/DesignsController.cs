@@ -92,33 +92,33 @@ namespace VSS.TRex.Webtools.Controllers
     public async Task<JsonResult> AddDesignToSiteModel(
       string siteModelUid,
       string importedFileType,
-      [FromQuery] string fileName)
+      [FromQuery] string fileNameAndLocalPath)
     {
       var importedFileTypeEnum = ValidateImportedFileType(importedFileType);
 
       if (string.IsNullOrEmpty(siteModelUid))
         throw new ArgumentException($"Invalid siteModelUid (you need to have selected one first): {siteModelUid}");
 
-      if (string.IsNullOrEmpty(fileName) || 
-          !Path.HasExtension(fileName) ||
+      if (string.IsNullOrEmpty(fileNameAndLocalPath) || 
+          !Path.HasExtension(fileNameAndLocalPath) ||
          (importedFileTypeEnum != ImportedFileType.Alignment && 
-          (string.Compare(Path.GetExtension(fileName), ".ttm", StringComparison.OrdinalIgnoreCase) != 0))
+          (string.Compare(Path.GetExtension(fileNameAndLocalPath), ".ttm", StringComparison.OrdinalIgnoreCase) != 0))
           ||
          (importedFileTypeEnum == ImportedFileType.Alignment &&
-          (string.Compare(Path.GetExtension(fileName), ".svl", StringComparison.OrdinalIgnoreCase) != 0))
+          (string.Compare(Path.GetExtension(fileNameAndLocalPath), ".svl", StringComparison.OrdinalIgnoreCase) != 0))
         )
-        throw new ArgumentException($"Invalid [path]filename: {fileName}");
+        throw new ArgumentException($"Invalid [path]filename: {fileNameAndLocalPath}");
 
-      if (!System.IO.File.Exists(fileName))
-        throw new ArgumentException($"Unable to locate [path]fileName: {fileName}");
+      if (!System.IO.File.Exists(fileNameAndLocalPath))
+        throw new ArgumentException($"Unable to locate [path]fileName: {fileNameAndLocalPath}");
       
       var siteModelGuid = Guid.Parse(siteModelUid);
       var designUid = Guid.NewGuid();
 
-      var fileNameOnly = Path.GetFileName(fileName);
+      var fileNameOnly = Path.GetFileName(fileNameAndLocalPath);
 
       // copy local file to S3
-      var designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileName), Guid.Parse(siteModelUid), fileNameOnly);
+      var designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), fileNameOnly);
       if (!designFileLoadedOk)
         throw new ArgumentException($"Unable to copy design file to S3: {fileNameOnly}");
 
