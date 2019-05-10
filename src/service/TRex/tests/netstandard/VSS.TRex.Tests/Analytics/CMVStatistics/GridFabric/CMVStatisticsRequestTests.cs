@@ -21,6 +21,8 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CMVStatisticsRequest_ClusterCompute))]
   public class CMVStatisticsRequestTests : BaseTests<CMVStatisticsArgument, CMVStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const short MACHINE_TARGET_CMV = 300;
+
     private CMVStatisticsArgument SimpleCMVStatisticsArgument(ISiteModel siteModel, short target, double minPercentage, double maxPercentage)
     {
       return new CMVStatisticsArgument
@@ -85,6 +87,8 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       AddApplicationGridRouting();
 
       BuildModelForSingleCellCMV(out var siteModel, 10);
+      siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
+
       var operation = new CMVStatisticsOperation();
 
       var cmvSummaryResult = operation.Execute(SimpleCMVStatisticsArgument(siteModel, 0, 0.0, 0.0));
@@ -105,11 +109,13 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     [Fact]
     public void Test_SummaryCMVStatistics_SiteModelWithSingleCell_FullExtents_NoCMVTargetOverride_WithMachineCMVTarget()
     {
+      const short TARGET_CMV = 50;
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
       BuildModelForSingleCellCMV(out var siteModel, 10);
-      siteModel.MachinesTargetValues[0].TargetCCVStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, 50);
+      siteModel.MachinesTargetValues[0].TargetCCVStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, TARGET_CMV);
+      siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
       var operation = new CMVStatisticsOperation();
 
@@ -118,13 +124,13 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       cmvSummaryResult.Should().NotBeNull();
       cmvSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
       cmvSummaryResult.ReturnCode.Should().Be(MissingTargetDataResultType.NoProblems);
-      cmvSummaryResult.ConstantTargetCMV.Should().Be(CellPassConsts.NullCCV);
+      cmvSummaryResult.ConstantTargetCMV.Should().Be(TARGET_CMV);
       cmvSummaryResult.IsTargetCMVConstant.Should().BeTrue();
       cmvSummaryResult.Counts.Should().BeNull();
       cmvSummaryResult.Percents.Should().BeNull();
       cmvSummaryResult.BelowTargetPercent.Should().Be(0);
-      cmvSummaryResult.AboveTargetPercent.Should().Be(0);
-      cmvSummaryResult.WithinTargetPercent.Should().Be(100);
+      cmvSummaryResult.AboveTargetPercent.Should().Be(100);
+      cmvSummaryResult.WithinTargetPercent.Should().Be(0);
       cmvSummaryResult.TotalAreaCoveredSqMeters.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
     }
 
@@ -139,6 +145,8 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       AddApplicationGridRouting();
 
       BuildModelForSingleCellCMV(out var siteModel, cmvIncrement);
+      siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
+
       var operation = new CMVStatisticsOperation();
 
       var cmvSummaryResult = operation.Execute(SimpleCMVStatisticsArgument(siteModel, target, minPercentage, maxPercentage));
@@ -165,6 +173,8 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       AddApplicationGridRouting();
 
       BuildModelForSingleCellCMV(out var siteModel, 10);
+      siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
+
       var operation = new CMVStatisticsOperation();
 
       var arg = SimpleCMVStatisticsArgument(siteModel, target, minPercentage, maxPercentage);
@@ -187,20 +197,18 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       cmvDetailResult.BelowTargetPercent.Should().BeApproximately(percentBelow, 0.001);
       cmvDetailResult.AboveTargetPercent.Should().BeApproximately(percentAbove, 0.001);
       cmvDetailResult.WithinTargetPercent.Should().BeApproximately(percentWithin, 0.001);
-      cmvDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(0, 0.000001); // This being zero seems strange...
+      cmvDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(0.0, 0.000001); // This being zero seems strange...
     }
 
     [Theory]
-    [InlineData(0, 0.0, 0.0, 0.0, 1.056499770326137, 98.943500229673859)]
-    [InlineData(200, 90.0, 110.0, 1.056499770326137, 0.0, 98.943500229673859)]
-    [InlineData(400, 70.0, 130.0, 1.056499770326137, 90.261828203950387, 8.6816720257234739)]
-    [InlineData(500, 80.0, 120.0, 17.638952687184197, 81.350482315112544, 1.0105649977032614)]
+    [InlineData(0, 0.0, 0.0, 0.0, 0.964630225080386, 99.035369774919616)]
+    [InlineData(200, 90.0, 110.0, 0.964630225080386, 0.0, 99.035369774919616)]
+    [InlineData(400, 70.0, 130.0, 0.964630225080386, 90.353697749196144, 8.6816720257234739)]
+    [InlineData(500, 80.0, 120.0, 17.684887459807076, 81.304547542489672, 1.0105649977032614)]
     [InlineData(600, 80.0, 120.0, 73.449701423977956, 26.366559485530544, 0.18373909049150206)]
     public void Test_SummaryCMVStatistics_SiteModelWithSingleTAGFile_FullExtents_WithCMVTargetOverrides
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
-      const short MACHINE_TARGET_CMV = 300;
-
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
@@ -227,5 +235,58 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       cmvSummaryResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2177 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
     }
 
+    [Theory]
+    [InlineData(0, 0.0, 0.0, 0.0, 0.964630225080386, 99.035369774919616)]
+    public void Test_DetailedCMVStatistics_SiteModelWithSingleTAGFile_FullExtents
+      (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
+    {
+      AddClusterComputeGridRouting();
+      AddApplicationGridRouting();
+
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
+      };
+
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var operation = new CMVStatisticsOperation();
+
+      var arg = SimpleCMVStatisticsArgument(siteModel, target, minPercentage, maxPercentage);
+      arg.CMVDetailValues = new[] { 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500 };
+      var cmvDetailResult = operation.Execute(arg);
+
+      cmvDetailResult.Should().NotBeNull();
+
+      // Checks counts and percentages
+      long[] expectedCounts = { 0, 2, 362, 1445, 325, 16, 6, 0, 0, 0, 0, 0, 0, 0, 0 };
+      long expectedCountsSum = 0;
+      for (int i = 0; i < expectedCounts.Length; i++)
+        expectedCountsSum += (i + 1) * expectedCounts[i];
+
+      // Is sum of counts the same?
+      long cmvDetailResultSum = 0;
+      for (int i = 0; i < cmvDetailResult.Counts.Length; i++)
+        cmvDetailResultSum += (i + 1) * cmvDetailResult.Counts[i];
+
+      cmvDetailResultSum.Should().Be(expectedCountsSum);
+
+      // Are all counts the same and do percentages match?
+      long totalCount = cmvDetailResult.Counts.Sum();
+      for (int i = 0; i < expectedCounts.Length; i++)
+      {
+        expectedCounts[i].Should().Be(cmvDetailResult.Counts[i]);
+        cmvDetailResult.Percents[i].Should().BeApproximately(100.0 * expectedCounts[i] / (1.0 * totalCount), 0.001);
+      }
+
+      // Check summary related fields are zero
+      cmvDetailResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      cmvDetailResult.ReturnCode.Should().Be(MissingTargetDataResultType.NoProblems);
+      cmvDetailResult.BelowTargetPercent.Should().BeApproximately(percentBelow, 0.001);
+      cmvDetailResult.AboveTargetPercent.Should().BeApproximately(percentAbove, 0.001);
+      cmvDetailResult.WithinTargetPercent.Should().BeApproximately(percentWithin, 0.001);
+      cmvDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2177 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      cmvDetailResult.ConstantTargetCMV.Should().Be(MACHINE_TARGET_CMV);
+      cmvDetailResult.IsTargetCMVConstant.Should().BeTrue();
+    }
   }
 }

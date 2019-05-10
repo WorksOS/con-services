@@ -21,6 +21,8 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(MDPStatisticsRequest_ClusterCompute))]
   public class MDPStatisticsRequestTests : BaseTests<MDPStatisticsArgument, MDPStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const short MACHINE_TARGET_MDP = 1500;
+
     private MDPStatisticsArgument SimpleMDPStatisticsArgument(ISiteModel siteModel, short target, double minPercentage, double maxPercentage)
     {
       return new MDPStatisticsArgument
@@ -85,6 +87,8 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       AddApplicationGridRouting();
 
       BuildModelForSingleCellMDP(out var siteModel, 10);
+      siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
+
       var operation = new MDPStatisticsOperation();
 
       var mdpSummaryResult = operation.Execute(SimpleMDPStatisticsArgument(siteModel, 0, 0.0, 0.0));
@@ -105,11 +109,14 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
     [Fact]
     public void Test_SummaryMDPStatistics_SiteModelWithSingleCell_FullExtents_NoMDPTargetOverride_WithMachineMDPTarget()
     {
+      const short TARGET_MDP = 50;
+
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
       BuildModelForSingleCellMDP(out var siteModel, 10);
-      siteModel.MachinesTargetValues[0].TargetMDPStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, 50);
+      siteModel.MachinesTargetValues[0].TargetMDPStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, TARGET_MDP);
+      siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
       var operation = new MDPStatisticsOperation();
 
@@ -118,13 +125,13 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       mdpSummaryResult.Should().NotBeNull();
       mdpSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
       mdpSummaryResult.ReturnCode.Should().Be(MissingTargetDataResultType.NoProblems);
-      mdpSummaryResult.ConstantTargetMDP.Should().Be(CellPassConsts.NullMDP);
+      mdpSummaryResult.ConstantTargetMDP.Should().Be(TARGET_MDP);
       mdpSummaryResult.IsTargetMDPConstant.Should().BeTrue();
       mdpSummaryResult.Counts.Should().BeNull();
       mdpSummaryResult.Percents.Should().BeNull();
       mdpSummaryResult.BelowTargetPercent.Should().Be(0);
-      mdpSummaryResult.AboveTargetPercent.Should().Be(0);
-      mdpSummaryResult.WithinTargetPercent.Should().Be(100);
+      mdpSummaryResult.AboveTargetPercent.Should().Be(100);
+      mdpSummaryResult.WithinTargetPercent.Should().Be(0);
       mdpSummaryResult.TotalAreaCoveredSqMeters.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
     }
 
@@ -139,6 +146,8 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       AddApplicationGridRouting();
 
       BuildModelForSingleCellMDP(out var siteModel, mdpIncrement);
+      siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
+
       var operation = new MDPStatisticsOperation();
 
       var mdpSummaryResult = operation.Execute(SimpleMDPStatisticsArgument(siteModel, target, minPercentage, maxPercentage));
@@ -165,6 +174,8 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       AddApplicationGridRouting();
 
       BuildModelForSingleCellMDP(out var siteModel, 10);
+      siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
+
       var operation = new MDPStatisticsOperation();
 
       var arg = SimpleMDPStatisticsArgument(siteModel, target, minPercentage, maxPercentage);
@@ -199,8 +210,6 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
     public void Test_SummaryMDPStatistics_SiteModelWithSingleTAGFile_FullExtents_WithCMVTargetOverrides
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
-      const short MACHINE_TARGET_MDP = 1500;
-
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
@@ -227,5 +236,58 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       mdpSummaryResult.TotalAreaCoveredSqMeters.Should().BeApproximately(1283 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
     }
 
+    [Theory]
+    [InlineData(0, 0.0, 0.0, 0.0, 0.0, 100)]
+    public void Test_DetailedMDPStatistics_SiteModelWithSingleTAGFile_FullExtents
+      (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
+    {
+      AddClusterComputeGridRouting();
+      AddApplicationGridRouting();
+
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile-MDP.tag"),
+      };
+
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var operation = new MDPStatisticsOperation();
+
+      var arg = SimpleMDPStatisticsArgument(siteModel, target, minPercentage, maxPercentage);
+      arg.MDPDetailValues = new[] { 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500 };
+      var mdpDetailResult = operation.Execute(arg);
+
+      mdpDetailResult.Should().NotBeNull();
+
+      // Checks counts and percentages
+      long[] expectedCounts = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 321, 400, 535, 6 };
+      long expectedCountsSum = 0;
+      for (int i = 0; i < expectedCounts.Length; i++)
+        expectedCountsSum += (i + 1) * expectedCounts[i];
+
+      // Is sum of counts the same?
+      long cmvDetailResultSum = 0;
+      for (int i = 0; i < mdpDetailResult.Counts.Length; i++)
+        cmvDetailResultSum += (i + 1) * mdpDetailResult.Counts[i];
+
+      cmvDetailResultSum.Should().Be(expectedCountsSum);
+
+      // Are all counts the same and do percentages match?
+      long totalCount = mdpDetailResult.Counts.Sum();
+      for (int i = 0; i < expectedCounts.Length; i++)
+      {
+        expectedCounts[i].Should().Be(mdpDetailResult.Counts[i]);
+        mdpDetailResult.Percents[i].Should().BeApproximately(100.0 * expectedCounts[i] / (1.0 * totalCount), 0.001);
+      }
+
+      // Check summary related fields are zero
+      mdpDetailResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      mdpDetailResult.ReturnCode.Should().Be(MissingTargetDataResultType.NoProblems);
+      mdpDetailResult.BelowTargetPercent.Should().BeApproximately(percentBelow, 0.001);
+      mdpDetailResult.AboveTargetPercent.Should().BeApproximately(percentAbove, 0.001);
+      mdpDetailResult.WithinTargetPercent.Should().BeApproximately(percentWithin, 0.001);
+      mdpDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(1283 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      mdpDetailResult.ConstantTargetMDP.Should().Be(MACHINE_TARGET_MDP);
+      mdpDetailResult.IsTargetMDPConstant.Should().BeTrue();
+    }
   }
 }
