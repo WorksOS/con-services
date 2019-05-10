@@ -680,6 +680,57 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
     }
 
+    /// <summary>
+    /// Import a reference surface
+    /// </summary>
+    [Route("api/v4/importedfile/referencesurface")]
+    [HttpPost]
+    public async Task<ContractExecutionResult> CreateReferenceSurface(
+      [FromQuery] Guid projectUid,
+      [FromQuery] string filename,
+      [FromQuery] DateTime fileCreatedUtc,
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] Guid parentUid,
+      [FromQuery] double offset,
+      [FromServices] ISchedulerProxy schedulerProxy)
+    {
+      log.LogInformation($"CreateReferenceSurface. projectUid {projectUid} filename: {filename} parentUid: {parentUid} offset: {offset}");
+
+      await ValidateProjectId(projectUid.ToString());
+
+      //Validate parameters
+      if (parentUid == Guid.Empty || offset == 0)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 118);
+      }
+
+      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid.ToString(), log, projectRepo).ConfigureAwait(false);
+      //Check reference surface does not exist
+      var existing = importedFiles.FirstOrDefault(i =>
+        i.ImportedFileType == ImportedFileType.ReferenceSurface 
+        && i.ParentUid == parentUid.ToString()
+        && Math.Abs(Math.Round(i.Offset - offset, 3)) < 0.001);
+      if (existing != null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 121);
+      }
+
+      //Check parent design does exist
+      var parent = importedFiles.FirstOrDefault(i => i.ImportedFileUid == parentUid.ToString());
+      if (parent == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 120);
+      }
+
+      var importedFileResult = await UpsertFileInternal(filename, null, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.Meters,
+        fileCreatedUtc, fileUpdatedUtc, null, schedulerProxy, parentUid, offset);
+
+      log.LogInformation(
+        $"CreateReferenceSurface. Completed successfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
+
+      return importedFileResult;
+    }
+
     #endregion fileActivation
   }
 }
