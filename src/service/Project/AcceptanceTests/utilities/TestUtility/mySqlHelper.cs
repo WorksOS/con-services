@@ -10,6 +10,7 @@ namespace TestUtility
   {
     private readonly TestConfig appConfig = new TestConfig();
     private readonly Msg msg = new Msg();
+    public readonly TestConfig TsCfg = new TestConfig();
 
     /// <summary>
     /// Read a my sql table and return records/columns 
@@ -45,6 +46,8 @@ namespace TestUtility
       string queryResult = null;
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
+        Console.WriteLine($"Opening MySQL connection: {connectionString}");
+
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
         var mySqlDataReader = mySqlCommand.ExecuteReader();
@@ -65,6 +68,8 @@ namespace TestUtility
       Console.WriteLine(sqlCommand);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
+        Console.WriteLine($"Opening MySQL connection: {connectionString}");
+
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(sqlCommand, mySqlConnection);
         var result = mySqlCommand.ExecuteNonQuery();
@@ -116,9 +121,6 @@ namespace TestUtility
     /// Check the database to see if the records injected into kafka have reached there. This
     /// Will loop for 10 times or until it finds the correct answer.
     /// </summary>
-    /// <param name="query"></param>
-    /// <param name="eventCount"></param>
-    /// <returns>Count of records</returns>
     public int GetDatabaseCountForEvents(string query, int eventCount)
     {
       var retryCount = 0;
@@ -143,9 +145,6 @@ namespace TestUtility
     /// <summary>
     /// Read the database for records
     /// </summary>
-    /// <param name="query"></param>
-    /// <param name="fields"></param>
-    /// <returns></returns>
     private string GetDatabaseFieldsForQuery(string query, string fields)
     {
       var mysqlHelper = new MySqlHelper();
@@ -156,10 +155,6 @@ namespace TestUtility
     /// <summary>
     /// Used to update the dbSchema name which will be used when performing database actions
     /// </summary>
-    /// <param name="dbSchemaName"></param>
-    public void UpdateDbSchemaName(string dbSchemaName)
-    {
-      appConfig.SetMySqlDbSchema(dbSchemaName);
-    }
+    public void UpdateDbSchemaName(string dbSchemaName) => appConfig.SetMySqlDbSchema(dbSchemaName);
   }
 }
