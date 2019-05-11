@@ -10,15 +10,10 @@ namespace TestUtility
   {
     private readonly TestConfig appConfig = new TestConfig();
     private readonly Msg msg = new Msg();
-    public readonly TestConfig TsCfg = new TestConfig();
 
     /// <summary>
     /// Read a my sql table and return records/columns 
     /// </summary>
-    /// <param name="connectionString"></param>
-    /// <param name="queryString"></param>
-    /// <param name="fields"></param>
-    /// <returns></returns>
     public string ExecuteMySqlQueryAndReturnColumns(string connectionString, string queryString, string fields)
     {
       var allFields = fields.Split(',');
@@ -45,9 +40,6 @@ namespace TestUtility
     /// <summary>
     /// Read the my sql database and return a record count
     /// </summary>
-    /// <param name="connectionString"></param>
-    /// <param name="queryString"></param>
-    /// <returns></returns>
     public string ExecuteMySqlQueryAndReturnRecordCountResult(string connectionString, string queryString)
     {
       string queryResult = null;
@@ -68,9 +60,6 @@ namespace TestUtility
     /// <summary>
     /// Used for updating the database
     /// </summary>
-    /// <param name="connectionString">Connection string</param>
-    /// <param name="sqlCommand">SQL command to execute</param>
-    /// <returns>Count of records effected</returns>
     public int ExecuteMySqlInsert(string connectionString, string sqlCommand)
     {
       Console.WriteLine(sqlCommand);
@@ -119,30 +108,6 @@ namespace TestUtility
       foreach (var col in fldArray)
       {
         Assert.AreEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(), "Expected results for " + col + " do not match actual");
-        idx++;
-      }
-    }
-
-    /// <summary>
-    /// Verify the value of fields in the table for the given uid (not equal)
-    /// </summary>
-    /// <param name="table">Database table name</param>
-    /// <param name="column">Database column name for the uid</param>
-    /// <param name="fields"></param>
-    /// <param name="expectedData"></param>
-    /// <param name="uid">The uid to use</param>
-    public void VerifyTestResultDatabaseFieldsAreNotEqualAsExpected(string table, string column, string fields, string expectedData, Guid uid)
-    {
-      var sqlQuery = @"SELECT {4} FROM `{0}`.{1} WHERE {2}='{3}'";
-      var allActualData = GetDatabaseFieldsForQuery(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid, fields), fields);
-      var fldArray = fields.Split(',');
-      var actualDataArray = allActualData.Split(',');
-      var expectedDataArray = expectedData.Split(',');
-      var idx = 0;
-      msg.DisplayResults(expectedData, allActualData);
-      foreach (var col in fldArray)
-      {
-        Assert.AreNotEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(), "Expected results for " + col + " do not match actual");
         idx++;
       }
     }

@@ -2,6 +2,9 @@
 
 IF ($args -contains "--set-vars") { & ./set-environment-variables.ps1 }
 
+# Set KAFKA_ADVERTISED_HOST_NAME for local testing.
+& ../../config/apply-kafka-config-local.ps1
+
 Write-Host "Stopping Docker containers"
 docker ps -q | ForEach-Object { docker stop $_ }
 
@@ -14,7 +17,7 @@ Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-wes
 
 IF (-not $?) {
     Write-Host "Error: Logging in to AWS" -ForegroundColor Red
-    Exit 1
+    EXIT 1
 }
 
 Write-Host "Building solution" -ForegroundColor DarkGray
@@ -51,7 +54,7 @@ Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $de
 
 IF (-not $?) {
     Write-Host "Error: Environment failed to start" -ForegroundColor Red
-    Exit 1
+    EXIT 1
 }
 
 Write-Host "Finished`n" -ForegroundColor Green

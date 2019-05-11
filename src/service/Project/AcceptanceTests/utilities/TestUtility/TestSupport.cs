@@ -16,7 +16,6 @@ using TestUtility.Model.WebApi;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -603,7 +602,7 @@ namespace TestUtility
       return projectDescriptorResult?.ProjectDescriptor;
     }
 
-    public GeofenceV4DescriptorsListResult GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString )
+    public GeofenceV4DescriptorsListResult GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString)
     {
       var routeSuffix = "api/v4/geofences" + geofenceTypeString + projectUidString;
       var response = CallProjectWebApiV4(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
@@ -736,15 +735,15 @@ namespace TestUtility
         }
       }
     }
-   
-    public void CompareTheActualImportFileWithExpectedV4(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
+
+    public void CompareActualImportFileWithExpected<T>(T actualFile, T expectedFile, bool ignoreZeros) where T : ContractExecutionResult
     {
-      CompareTheActualImportFileWithExpected<ImportedFileDescriptor>(actualFile, expectedFile, ignoreZeros);
+      CompareTheActualImportFileWithExpected(actualFile, expectedFile, ignoreZeros);
     }
 
-    public void CompareTheActualImportFileWithExpectedV2(DesignDetailV2Result actualFile, DesignDetailV2Result expectedFile, bool ignoreZeros)
+    public void CompareTheActualImportFileWithExpectedV4(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
     {
-      CompareTheActualImportFileWithExpected< DesignDetailV2Result>(actualFile, expectedFile, ignoreZeros);
+      CompareTheActualImportFileWithExpected(actualFile, expectedFile, ignoreZeros);
     }
 
     /// <summary>
@@ -1870,39 +1869,22 @@ namespace TestUtility
     /// <summary>
     /// Call the version 4 of the web api
     /// </summary>
-    /// <param name="routeSuffix"></param>
-    /// <param name="method"></param>
-    /// <param name="configJson"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="jwt"></param>
-    /// <returns></returns>
     public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null)
     {
       var uri = GetBaseUri() + routeSuffix;
-      Console.WriteLine("URI=" + uri);
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
-      return response;
+      return restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
     }
 
     /// <summary>
     /// Call the version 2 of the web api - used for BCC integration
     /// </summary>
-    /// <param name="requestJson"></param>
-    /// <param name="routeSuffix"></param>
-    /// <param name="what"></param>
-    /// <param name="method"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="jwt"></param>
-    /// <param name="endPoint"></param>
-    /// <param name="statusCode"></param>
     /// <returns></returns>
     public string CallProjectWebApiV2(string requestJson, string routeSuffix, string endPoint, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null, string jwt = null)
     {
       var uri = GetBaseUri() + endPoint + routeSuffix;
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, requestJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
-      return response;
+      return restClient.DoHttpRequest(uri, method, requestJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
     }
 
     #endregion
