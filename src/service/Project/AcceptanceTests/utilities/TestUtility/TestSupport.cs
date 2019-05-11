@@ -1492,6 +1492,14 @@ namespace TestUtility
           {
             importedFileDescriptor.SurveyedUtc = DateTime.Parse(eventObject.SurveyedUtc);
           }
+          if (HasProperty(eventObject, "ParentUid"))
+          {
+            importedFileDescriptor.ParentUid = Guid.Parse(eventObject.ParentUid);
+          }
+          if (HasProperty(eventObject, "Offset"))
+          {
+            importedFileDescriptor.Offset = double.Parse(eventObject.Offset);
+          }
           if (HasProperty(eventObject, "IsActivated"))
           {
             importedFileDescriptor.IsActivated = eventObject.IsActivated.ToLower() == "true";
@@ -1515,28 +1523,28 @@ namespace TestUtility
           switch (eventObject.ImportedFileType)
           {
             case "0":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Linework;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.Linework;
               break;
             case "1":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.DesignSurface;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.DesignSurface;
               break;
             case "2":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.SurveyedSurface;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.SurveyedSurface;
               break;
             case "3":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.Alignment;
               break;
             case "4":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.MobileLinework;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.MobileLinework;
               break;
             case "5":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.SiteBoundary;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.SiteBoundary;
               break;
             case "6":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.ReferenceSurface;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.ReferenceSurface;
               break;
             case "7":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.MassHaulPlan;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.MassHaulPlan;
               break;
           }
           jsonString = JsonConvert.SerializeObject(importedFileDescriptor, JsonSettings);
@@ -1592,9 +1600,9 @@ namespace TestUtility
                       '{eventObject.fk_CustomerUID}','{eventObject.UserUID}','{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "ImportedFile":
-          sqlCmd += $@"(fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated, LastActionedUTC) VALUES 
+          sqlCmd += $@"(fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_ReferenceImportedFileUid, Offset, IsDeleted, IsActivated, LastActionedUTC) VALUES 
                      ('{eventObject.ProjectUID}', '{eventObject.ImportedFileUID}', {eventObject.ImportedFileID}, '{eventObject.CustomerUID}', {eventObject.ImportedFileType}, '{eventObject.Name}', 
-                      '{eventObject.FileDescriptor}', {eventObject.FileCreatedUTC}, {eventObject.FileUpdatedUTC}, '{eventObject.ImportedBy}', {eventObject.SurveyedUTC}, {eventObject.IsDeleted}, {eventObject.IsActivated}, {eventObject.LastActionedUTC});";
+                      '{eventObject.FileDescriptor}', {eventObject.FileCreatedUTC}, {eventObject.FileUpdatedUTC}, '{eventObject.ImportedBy}', {eventObject.SurveyedUTC}, {eventObject.ParentUid}, {eventObject.Offset}, {eventObject.IsDeleted}, {eventObject.IsActivated}, {eventObject.LastActionedUTC});";
           break;
         case "Project":
           var formattedPolygon = string.Format("ST_GeomFromText('{0}')", eventObject.GeometryWKT);
