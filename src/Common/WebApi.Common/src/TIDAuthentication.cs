@@ -26,19 +26,14 @@ namespace VSS.WebApi.Common
 
     protected virtual List<string> IgnoredPaths => new List<string> { "/swagger/", "/cache/" };
 
-  /// <summary>
-  /// Service exception handler.
-  /// </summary>
-  protected IServiceExceptionHandler ServiceExceptionHandler;
+    /// <summary>
+    /// Service exception handler.
+    /// </summary>
+    protected IServiceExceptionHandler ServiceExceptionHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TIDAuthentication"/> class.
     /// </summary>
-    /// <param name="next">The next.</param>
-    /// <param name="customerProxy">The customer proxy.</param>
-    /// <param name="store">The configStore.</param>
-    /// <param name="logger">The logger.</param>
-    /// <param name="serviceExceptionHandler"></param>
     public TIDAuthentication(RequestDelegate next,
       ICustomerProxy customerProxy,
       IConfigurationStore store,
@@ -55,19 +50,17 @@ namespace VSS.WebApi.Common
     /// <summary>
     /// Invokes the specified context.
     /// </summary>
-    /// <param name="context">The context.</param>
-    /// <returns></returns>
     public async Task Invoke(HttpContext context)
     {
-      if (IgnoredPaths.Select(s=>context.Request.Path.Value.Contains(s)).Contains(true))
+      if (IgnoredPaths.Select(s => context.Request.Path.Value.Contains(s)).Contains(true))
       {
         await _next(context);
         return;
-      } 
+      }
 
       if (!InternalConnection(context))
       {
-        bool isApplicationContext = false;
+        bool isApplicationContext;
         string applicationName = string.Empty;
         string userUid = string.Empty;
         string userEmail = string.Empty;
@@ -113,7 +106,10 @@ namespace VSS.WebApi.Common
           return;
         }
 
-        var customHeaders = context.Request.Headers.GetCustomHeaders();
+        // Temporary until service discovery is in use by all services; set the internal flag on GetCustomHeaders
+        // So we retain the X-JWT-Assertion header and leave it to internal controllers to drop the header if necessary.
+        var customHeaders = context.Request.Headers.GetCustomHeaders(true);
+
         //If this is an application context do not validate user-customer
         if (isApplicationContext)
         {
@@ -162,18 +158,12 @@ namespace VSS.WebApi.Common
     /// <summary>
     /// If true, bypasses authentication. Override in a service if required.
     /// </summary>
-    public virtual bool InternalConnection(HttpContext context)
-    {
-      return false;
-    }
+    public virtual bool InternalConnection(HttpContext context) => false;
 
     /// <summary>
     /// If true, the customer-user association is validated. Override in a service if required.
     /// </summary>
-    public virtual bool RequireCustomerUid(HttpContext context)
-    {
-      return true;
-    }
+    public virtual bool RequireCustomerUid(HttpContext context) => true;
 
     /// <summary>
     /// Creates a TID principal. Override in a service to create custom service principals.

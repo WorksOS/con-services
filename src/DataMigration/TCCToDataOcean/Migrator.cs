@@ -425,7 +425,7 @@ namespace TCCToDataOcean
       if (_downloadProjectFiles && _uploadProjectFiles)
       {
         Log.LogInformation($"{Method.Info()} Uploading file {file.ImportedFileUid}");
-        result = ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
+        result = ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Put));
 
         _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Completed);
       }
