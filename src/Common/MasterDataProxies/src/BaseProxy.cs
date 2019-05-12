@@ -28,6 +28,11 @@ namespace VSS.MasterData.Proxies
     protected readonly IConfigurationStore configurationStore;
     protected readonly ILogger log;
     protected readonly ILoggerFactory logger;
+    /// <summary>
+    /// If there is no provided LOG_MAX_CHAR env variable, then we will default to this
+    /// </summary>
+    private const int DefaultLogMaxChar = 1000;
+    private readonly int _logMaxChar;
 
     protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache)
     {
@@ -35,6 +40,7 @@ namespace VSS.MasterData.Proxies
       this.logger = logger;
       this.configurationStore = configurationStore;
       this.dataCache = dataCache;
+      _logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
     }
 
     /// <summary>
@@ -56,7 +62,7 @@ namespace VSS.MasterData.Proxies
       if (method == null)
         method = HttpMethod.Post;
       var result = default(T);
-      log.LogDebug($"Preparing {url} ({method}) headers {customHeaders.LogHeaders()}");
+      log.LogDebug($"{nameof(SendRequestInternal)}: Preparing {url} ({method}) headers {customHeaders.LogHeaders()}");
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
@@ -80,7 +86,7 @@ namespace VSS.MasterData.Proxies
           result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get,customHeaders: customHeaders, timeout:timeout, retries:retries);
         }
 
-        log.LogDebug("Result of send to master data request: {0}", result);
+        log.LogDebug($"{nameof(SendRequestInternal)}: Result of send to master data request: {result}");
         BaseProxyHealthCheck.SetStatus(true,this.GetType());
       }
       catch (Exception ex)
@@ -102,18 +108,18 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <param name="method">Http method, defaults to POST</param>
     /// <param name="queryParameters">Query parameters (optional)</param>
-    /// <param name="timeout">Optional timeout in millisecs for the request</param>
+    /// <param name="timeout">Optional timeout in milliseconds for the request</param>
     /// <param name="retries">How many times to retry the request (optional)</param>
     /// <returns>The item</returns>
     protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
       string route = null, HttpMethod method = null, string queryParameters = null, int ? timeout = null, int retries = 3)
     {
-      log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
+      log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders()}");
       return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload, timeout:timeout, retries:retries);
     }
 
     /// <summary>
-    ///   Executes a request against masterdata service
+    ///   Executes a request against master data service
     /// </summary>
     /// <param name="urlKey">The configuration store key for the URL</param>
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
@@ -125,12 +131,12 @@ namespace VSS.MasterData.Proxies
     protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
       string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null)
     {
-      log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
+      log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders()}");
       return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
     }
 
     /// <summary>
-    ///   Executes a request against masterdata service
+    ///   Executes a request against master data service
     /// </summary>
     /// <param name="urlKey">The configuration store key for the URL</param>
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
@@ -174,7 +180,7 @@ namespace VSS.MasterData.Proxies
       {
         var request = new GracefulWebRequest(logger, configurationStore);
         result = await request.ExecuteRequest<K>(url, customHeaders: customHeaders, method: HttpMethod.Get);
-        log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result)}");
+        log.LogDebug($"{nameof(GetObjectsFromMasterdata)}: Result of get item request: {JsonConvert.SerializeObject(result)}");
         BaseProxyHealthCheck.SetStatus(true,this.GetType());
       }
       catch (Exception ex)
@@ -305,7 +311,7 @@ namespace VSS.MasterData.Proxies
           return await dataCache.GetOrCreate(cacheKey, async entry =>
           {
             entry.SetOptions(opts);
-            log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
+            log.LogDebug($"{nameof(WithMemoryCacheExecute)}: Item for key {cacheKey} not found in cache, getting from web api");
             result = await action.Invoke();
             if (result != null)
               return new CacheItem<T>(result, result.GetIdentifiers());
@@ -317,7 +323,7 @@ namespace VSS.MasterData.Proxies
           });
         }
 
-        log.LogDebug($"Item for key {cacheKey} is requested to be invalidated, getting from web api");
+        log.LogDebug($"{nameof(WithMemoryCacheExecute)}: Item for key {cacheKey} is requested to be invalidated, getting from web api");
         result = await action.Invoke();
         if (result != null)
           return dataCache.Set(cacheKey, result, result.GetIdentifiers(), opts); 
@@ -406,12 +412,12 @@ namespace VSS.MasterData.Proxies
     private string ExtractBaseUrl(string urlKey, string route)
     {
       var url = configurationStore.GetValueString(urlKey);
-      log.LogInformation(string.Format("{0}: {1}, route={2}", urlKey, url, route));
+      log.LogInformation($"{nameof(ExtractBaseUrl)}: {urlKey}: {url}, route={route}");
 
       if (string.IsNullOrEmpty(url))
       {
-        var errorString = string.Format("Your application is missing an environment variable {0}", urlKey);
-        log.LogError(errorString);
+        var errorString = $"Your application is missing an environment variable, urlKey: {urlKey}";
+        log.LogError($"{nameof(ExtractBaseUrl)}: error: {errorString}");
         throw new InvalidOperationException(errorString);
       }
 
@@ -471,7 +477,7 @@ namespace VSS.MasterData.Proxies
       if (dataCache == null)
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
       var cacheKey = GetCacheKey<T>(uid, userId);
-      log.LogDebug($"Clearing item from cache: {cacheKey}");
+      log.LogDebug($"{nameof(ClearCacheItem)}: Clearing item from cache: {cacheKey}");
       dataCache.RemoveByKey(cacheKey);
     }
 
@@ -517,8 +523,8 @@ namespace VSS.MasterData.Proxies
         stacktrace = ex.InnerException.StackTrace;
       }
 
-      log.LogWarning("Error sending data from master data: ", message);
-      log.LogWarning("Stacktrace: ", stacktrace);
+      log.LogWarning($"{nameof(LogWebRequestException)}: Error sending data from master data: ", message);
+      log.LogWarning($"{nameof(LogWebRequestException)}:Stacktrace: ", stacktrace);
     }
 
     /// <summary>

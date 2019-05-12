@@ -58,12 +58,11 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
         if (result.Code == 0)
         {
-          log.LogDebug($"PostTagFile (NonDirect TRex): Successfully imported TAG file '{request.FileName}'.");
+          log.LogDebug($"{nameof(ProcessAsyncEx)} (TRex): Successfully imported TAG file '{request.FileName}'.");
         }
         else
         {
-          log.LogDebug(
-            $"PostTagFile (NonDirect TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
+          log.LogDebug($"{nameof(ProcessAsyncEx)} (TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
         }
 #if RAPTOR
       }
@@ -104,7 +103,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var returnResult = await TagFileHelper.SendTagFileToTRex(request,
         tRexTagFileProxy, log, customHeaders, false).ConfigureAwait(false);
 
-      log.LogInformation($"PostTagFile (NonDirect TRex): result: {JsonConvert.SerializeObject(returnResult)}");
+      log.LogInformation($"{nameof(CallTRexEndpoint)}  (NonDirect): result: {JsonConvert.SerializeObject(returnResult)}");
 
       // should the return be split as in CallRaptorEndpoint()
       //     Valid = TagFilePostResult
@@ -126,7 +125,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
               ? RaptorConverters.ConvertWGS84Fence(tfRequest.Boundary)
               : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
 
-        log.LogInformation($"PostTagFile (NonDirect Raptor): result {resultCode} {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");
+        log.LogInformation($"{nameof(CallRaptorEndpoint)} (NonDirect): result {resultCode} {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");
 
         if (resultCode == TTAGProcServerProcessResult.tpsprOK)
         {
@@ -140,7 +139,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
               ContractExecutionStates.GetErrorNumberwithOffset((int)resultCode),
               $"Failed to process tagfile with error: {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");
 
-            log.LogInformation(JsonConvert.SerializeObject(result));
+            log.LogInformation($"{nameof(CallRaptorEndpoint)} (NonDirect): result {JsonConvert.SerializeObject(result)}");
 
             // Serialize the request ignoring the Data property so not to overwhelm the logs.
             var serializedRequest = JsonConvert.SerializeObject(
@@ -152,7 +151,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
                 ContractResolver = new JsonContractPropertyResolver("Data")
               });
 
-            log.LogInformation("TAG file submission request with file data omitted:" +
+            log.LogInformation($"{nameof(CallRaptorEndpoint)} (NonDirect): TAG file submission request with file data omitted:" +
                                JsonConvert.SerializeObject(serializedRequest));
 
             return result;

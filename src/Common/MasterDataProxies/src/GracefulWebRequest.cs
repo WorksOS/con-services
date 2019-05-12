@@ -22,7 +22,7 @@ namespace VSS.MasterData.Proxies
     private const int DefaultLogMaxChar = 1000;
 
     private readonly ILogger log;
-    private readonly int logMaxChar;
+    private readonly int _logMaxChar;
 
     static HttpClientHandler handler = new HttpClientHandler()
     {
@@ -40,14 +40,7 @@ namespace VSS.MasterData.Proxies
     public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore)
     {
       log = logger.CreateLogger<GracefulWebRequest>();
-      logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR");
-
-      // Config Store may return -1 if the variable doesn't exist
-      if (logMaxChar <= 0)
-      {
-        log.LogInformation($"Missing environment variable LOG_MAX_CHAR, defaulting to {DefaultLogMaxChar}");
-        logMaxChar = DefaultLogMaxChar;
-      }
+      _logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
     }
 
 
@@ -215,7 +208,7 @@ namespace VSS.MasterData.Proxies
             throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
           }
 
-          log.LogDebug($"Request returned {contents.Truncate(logMaxChar)} with status {result.StatusCode}");
+          log.LogDebug($"Request returned {contents.Truncate(_logMaxChar)} with status {result.StatusCode}");
           if (typeof(T) == typeof(string)) return (T) Convert.ChangeType(contents, typeof(T));
           return JsonConvert.DeserializeObject<T>(contents);
         });

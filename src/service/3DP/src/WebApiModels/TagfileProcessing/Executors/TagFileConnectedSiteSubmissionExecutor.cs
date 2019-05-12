@@ -25,18 +25,18 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
           DEFAULT_ERROR_MESSAGE);
 
-        log.LogDebug("Sending tag file to connected site gateway");
+        log.LogDebug($"{nameof(ProcessAsyncEx)}: Sending tag file to connected site gateway");
         request.Validate();
         result = await CallConnectedSiteEndpoint(request).ConfigureAwait(false);
 
         if (result.Code == 0)
         {
-          log.LogDebug($"PostTagFile (NonDirect TRex): Successfully sent TAG file to connected site gateay '{request.FileName}'.");
+          log.LogDebug($"{nameof(ProcessAsyncEx)}: Successfully sent TAG file to connected site gateway '{request.FileName}'.");
         }
         else
         {
           log.LogDebug(
-            $"PostTagFile (NonDirect TRex): Failed to send TAG file to connected site gateway'{request.FileName}', {result.Message}");
+            $"{nameof(ProcessAsyncEx)}: Failed to send TAG file to connected site gateway'{request.FileName}', {result.Message}");
         }
       }
       return result;
@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
       var connectedSiteResult = await tRexTagFileProxy.SendTagFileNonDirectToConnectedSite(request, customHeaders).ConfigureAwait(false);
 
-      log.LogInformation($"PostTagFile (NonDirect TRex): result: {JsonConvert.SerializeObject(connectedSiteResult)}");
+      log.LogInformation($"{nameof(CallConnectedSiteEndpoint)}: result: {JsonConvert.SerializeObject(connectedSiteResult)}");
 
       return connectedSiteResult;
     }

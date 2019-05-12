@@ -20,26 +20,26 @@ namespace VSS.MasterData.Proxies
 
     public async Task<ContractExecutionResult> SendTagFileDirect(model.CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"TRexTagFileProxy.SendTagFile: compactionTagFileRequest.Filename: {compactionTagFileRequest.FileName}");
+      log.LogDebug($"{nameof(SendTagFileDirect)}: Filename: {compactionTagFileRequest.FileName}");
       return await SendTagFilePost(TREX_TAGFILE_API_URL_KEY, JsonConvert.SerializeObject(compactionTagFileRequest), customHeaders, "/direct");
     }
 
     public async Task<ContractExecutionResult> SendTagFileNonDirect(model.CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"TRexTagFileProxy.SendTagFile: compactionTagFileRequest.Filename: {compactionTagFileRequest.FileName}");
+      log.LogDebug($"{nameof(SendTagFileNonDirect)}: Filename: {compactionTagFileRequest.FileName}");
       return await SendTagFilePost(TREX_TAGFILE_API_URL_KEY, JsonConvert.SerializeObject(compactionTagFileRequest), customHeaders, null);
     }
 
     public async Task<ContractExecutionResult> SendTagFileNonDirectToConnectedSite(model.CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"TRexTagFileProxy.SendTagFileNonDirectToConnectedSite: compactionTagFileRequest.Filename: {compactionTagFileRequest.FileName}");
+      log.LogDebug($"{nameof(SendTagFileNonDirectToConnectedSite)}: Filename: {compactionTagFileRequest.FileName}");
       return await SendTagFilePost(CONNECTED_SITE_GATEWAY_URL_KEY, JsonConvert.SerializeObject(compactionTagFileRequest), customHeaders, null);
     }
 
     private async Task<ContractExecutionResult> SendTagFilePost(string urlKey, string payload, IDictionary<string, string> customHeaders, string route)
     {
       var response = await SendRequest<ContractExecutionResult>(urlKey, payload, customHeaders, route, HttpMethod.Post, string.Empty);
-      log.LogDebug("TRexTagFileProxy.SendTagFilePost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(SendTagFilePost)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
       return response;
     }
