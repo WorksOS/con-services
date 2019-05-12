@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Abstractions.FileAccess.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.DataOcean.Client
