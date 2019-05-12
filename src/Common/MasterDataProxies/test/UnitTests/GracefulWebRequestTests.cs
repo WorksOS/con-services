@@ -21,6 +21,7 @@ using uhttpsharp.Headers;
 using uhttpsharp.Listeners;
 using uhttpsharp.Logging;
 using uhttpsharp.RequestProviders;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;

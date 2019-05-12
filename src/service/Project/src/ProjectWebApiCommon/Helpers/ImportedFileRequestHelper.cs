@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Jaeger.Thrift;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
