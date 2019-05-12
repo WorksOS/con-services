@@ -11,6 +11,7 @@ using VSS.DataOcean.Client.ResultHandling;
 using VSS.DataOcean.Client.Models;
 using System.Collections.Generic;
 using System.Net.Http;
+using VSS.Common.Abstractions.Configuration;
 
 namespace VSS.DataOcean.Client.UnitTests
 {

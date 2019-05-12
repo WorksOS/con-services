@@ -1,6 +1,7 @@
 ﻿using System;
 using Hangfire;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Scheduler.Abstractions;

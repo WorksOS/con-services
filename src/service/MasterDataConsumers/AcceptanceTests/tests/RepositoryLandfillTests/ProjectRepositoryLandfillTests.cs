@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryLandfillTests;
 using System;
 using System.Linq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;

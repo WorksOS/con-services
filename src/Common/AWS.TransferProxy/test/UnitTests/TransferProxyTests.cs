@@ -3,6 +3,7 @@ using Moq;
 using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 
 namespace VSS.AWS.TransferProxy.UnitTests

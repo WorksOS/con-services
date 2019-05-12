@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;

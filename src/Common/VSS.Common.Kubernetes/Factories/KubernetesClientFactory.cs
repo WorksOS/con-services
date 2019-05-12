@@ -2,6 +2,7 @@
 using k8s;
 using k8s.Exceptions;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Kubernetes.Interfaces;
 using VSS.ConfigurationStore;
 using YamlDotNet.Core;
