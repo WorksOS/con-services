@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -25,5 +26,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// requiring the site model to be reloaded
     /// </summary>
     void SiteModelAttributesHaveChanged(ISiteModelAttributesChangedEvent message);
+
+    List<ISiteModel> GetSiteModels();
   }
 }

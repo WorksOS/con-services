@@ -14,6 +14,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
     Task<bool> CustomerProjectExists(string projectUid);
     Task<ImportedFile> GetImportedFile(string importedFileUid);
     Task<IEnumerable<ImportedFile>> GetImportedFiles(string projectUid);
+    Task<IEnumerable<ImportedFile>> GetReferencedImportedFiles(string importedFileUid);
     Task<Models.DatabaseModels.Project> GetProject(long legacyProjectID);
     Task<Models.DatabaseModels.Project> GetProject(string projectUid);
     Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectAndSubscriptions(long legacyProjectID, DateTime validAtDate);

@@ -16,7 +16,6 @@ using TestUtility.Model.WebApi;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -39,7 +38,6 @@ namespace TestUtility
     public string CustomerId { get; set; }
     public CreateProjectEvent CreateProjectEvt { get; set; }
     public UpdateProjectEvent UpdateProjectEvt { get; set; }
-    public DeleteProjectEvent DeleteProjectEvt { get; set; }
     public AssociateProjectCustomer AssociateCustomerProjectEvt { get; set; }
     public DissociateProjectCustomer DissociateCustomerProjectEvt { get; set; }
     public AssociateProjectGeofence AssociateProjectGeofenceEvt { get; set; }
@@ -265,7 +263,6 @@ namespace TestUtility
       }
     }
 
-
     public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray, int row)
     {
       msg.DisplayEventsToConsoleWeb(importFileArray);
@@ -280,13 +277,11 @@ namespace TestUtility
     /// <summary>
     /// Call the version 4 of the project master data
     /// </summary>
-    /// <param name="jsonString"></param>
-    /// <param name="eventType"></param>
-    /// <param name="customerUid"></param>
     private string CallWebApiWithProject(string jsonString, string eventType, string customerUid)
     {
       var response = string.Empty;
       Thread.Sleep(500);
+
       switch (eventType)
       {
         case "CreateProjectEvent":
@@ -595,7 +590,7 @@ namespace TestUtility
     {
       var response = CallProjectWebApiV4("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
       ProjectV4DescriptorsSingleResult projectDescriptorResult = null;
-      Log.Info($"GetProjectDetailsViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+      Console.WriteLine($"GetProjectDetailsViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       if (!string.IsNullOrEmpty(response))
       {
@@ -609,11 +604,11 @@ namespace TestUtility
       return projectDescriptorResult?.ProjectDescriptor;
     }
 
-    public GeofenceV4DescriptorsListResult GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString )
+    public GeofenceV4DescriptorsListResult GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString)
     {
       var routeSuffix = "api/v4/geofences" + geofenceTypeString + projectUidString;
       var response = CallProjectWebApiV4(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
-      Log.Info($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+      Console.WriteLine($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       if (!string.IsNullOrEmpty(response))
       {
@@ -629,7 +624,7 @@ namespace TestUtility
             (ProjectUid = Guid.Parse(projectUid), geofenceTypes, geofenceGuids);
       var messagePayload = JsonConvert.SerializeObject(updateProjectGeofenceRequest);
       var response = CallProjectWebApiV4("api/v4/geofences", HttpMethod.Put.ToString(), messagePayload, customerUid);
-      Log.Info($"AssociateProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+      Console.WriteLine($"AssociateProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       if (!string.IsNullOrEmpty(response))
       {
@@ -742,15 +737,15 @@ namespace TestUtility
         }
       }
     }
-   
-    public void CompareTheActualImportFileWithExpectedV4(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
+
+    public void CompareActualImportFileWithExpected<T>(T actualFile, T expectedFile, bool ignoreZeros) where T : ContractExecutionResult
     {
-      CompareTheActualImportFileWithExpected<ImportedFileDescriptor>(actualFile, expectedFile, ignoreZeros);
+      CompareTheActualImportFileWithExpected(actualFile, expectedFile, ignoreZeros);
     }
 
-    public void CompareTheActualImportFileWithExpectedV2(DesignDetailV2Result actualFile, DesignDetailV2Result expectedFile, bool ignoreZeros)
+    public void CompareTheActualImportFileWithExpectedV4(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
     {
-      CompareTheActualImportFileWithExpected< DesignDetailV2Result>(actualFile, expectedFile, ignoreZeros);
+      CompareTheActualImportFileWithExpected(actualFile, expectedFile, ignoreZeros);
     }
 
     /// <summary>
@@ -1498,6 +1493,14 @@ namespace TestUtility
           {
             importedFileDescriptor.SurveyedUtc = DateTime.Parse(eventObject.SurveyedUtc);
           }
+          if (HasProperty(eventObject, "ParentUid"))
+          {
+            importedFileDescriptor.ParentUid = Guid.Parse(eventObject.ParentUid);
+          }
+          if (HasProperty(eventObject, "Offset"))
+          {
+            importedFileDescriptor.Offset = double.Parse(eventObject.Offset);
+          }
           if (HasProperty(eventObject, "IsActivated"))
           {
             importedFileDescriptor.IsActivated = eventObject.IsActivated.ToLower() == "true";
@@ -1521,28 +1524,28 @@ namespace TestUtility
           switch (eventObject.ImportedFileType)
           {
             case "0":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Linework;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.Linework;
               break;
             case "1":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.DesignSurface;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.DesignSurface;
               break;
             case "2":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.SurveyedSurface;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.SurveyedSurface;
               break;
             case "3":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.Alignment;
               break;
             case "4":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.MobileLinework;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.MobileLinework;
               break;
             case "5":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.SiteBoundary;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.SiteBoundary;
               break;
             case "6":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.ReferenceSurface;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.ReferenceSurface;
               break;
             case "7":
-              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.MassHaulPlan;
+              importedFileDescriptor.ImportedFileType = ImportedFileType.MassHaulPlan;
               break;
           }
           jsonString = JsonConvert.SerializeObject(importedFileDescriptor, JsonSettings);
@@ -1598,9 +1601,9 @@ namespace TestUtility
                       '{eventObject.fk_CustomerUID}','{eventObject.UserUID}','{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "ImportedFile":
-          sqlCmd += $@"(fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated, LastActionedUTC) VALUES 
+          sqlCmd += $@"(fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_ReferenceImportedFileUid, Offset, IsDeleted, IsActivated, LastActionedUTC) VALUES 
                      ('{eventObject.ProjectUID}', '{eventObject.ImportedFileUID}', {eventObject.ImportedFileID}, '{eventObject.CustomerUID}', {eventObject.ImportedFileType}, '{eventObject.Name}', 
-                      '{eventObject.FileDescriptor}', {eventObject.FileCreatedUTC}, {eventObject.FileUpdatedUTC}, '{eventObject.ImportedBy}', {eventObject.SurveyedUTC}, {eventObject.IsDeleted}, {eventObject.IsActivated}, {eventObject.LastActionedUTC});";
+                      '{eventObject.FileDescriptor}', {eventObject.FileCreatedUTC}, {eventObject.FileUpdatedUTC}, '{eventObject.ImportedBy}', {eventObject.SurveyedUTC}, {eventObject.ParentUid}, {eventObject.Offset}, {eventObject.IsDeleted}, {eventObject.IsActivated}, {eventObject.LastActionedUTC});";
           break;
         case "Project":
           var formattedPolygon = string.Format("ST_GeomFromText('{0}')", eventObject.GeometryWKT);
@@ -1868,39 +1871,22 @@ namespace TestUtility
     /// <summary>
     /// Call the version 4 of the web api
     /// </summary>
-    /// <param name="routeSuffix"></param>
-    /// <param name="method"></param>
-    /// <param name="configJson"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="jwt"></param>
-    /// <returns></returns>
     public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null)
     {
-      var uri = GetBaseUri() + routeSuffix;  // "http://localhost:20979/"
-      Console.WriteLine("URI=" + uri);
+      var uri = GetBaseUri() + routeSuffix;
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
-      return response;
+      return restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
     }
 
     /// <summary>
     /// Call the version 2 of the web api - used for BCC integration
     /// </summary>
-    /// <param name="requestJson"></param>
-    /// <param name="routeSuffix"></param>
-    /// <param name="what"></param>
-    /// <param name="method"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="jwt"></param>
-    /// <param name="endPoint"></param>
-    /// <param name="statusCode"></param>
     /// <returns></returns>
     public string CallProjectWebApiV2(string requestJson, string routeSuffix, string endPoint, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null, string jwt = null)
     {
       var uri = GetBaseUri() + endPoint + routeSuffix;
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, requestJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
-      return response;
+      return restClient.DoHttpRequest(uri, method, requestJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
     }
 
     #endregion

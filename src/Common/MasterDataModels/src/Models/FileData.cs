@@ -135,6 +135,16 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     public int MaxZoomLevel { get; set; }
 
+    /// <summary>
+    /// The UID of the parent design surface for a reference surface
+    /// </summary>
+    public string ParentUid { get; set; }
+    
+    /// <summary>
+    /// The offset from the parent design surface for a reference surface
+    /// </summary>
+    public double? Offset { get; set; }
+
     public List<string> GetIdentifiers() => new List<string>
     {
       CustomerUid,

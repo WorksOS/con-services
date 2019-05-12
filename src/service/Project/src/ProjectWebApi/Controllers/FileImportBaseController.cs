@@ -17,9 +17,7 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TCCFileAccess;
@@ -34,9 +32,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class FileImportBaseController : BaseController
   {
     protected ITransferProxy persistantTransferProxy;
-
     protected IFilterServiceProxy filterServiceProxy;
-
     protected ITRexImportFileProxy tRexImportFileProxy;
 
     protected string FileSpaceId;
@@ -45,45 +41,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected bool UseRaptorGatewayDesignImport;
 
     /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
-    /// <summary>
     /// The request factory
     /// </summary>
     private readonly IRequestFactory requestFactory;
 
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
     /// </summary>
-    /// <param name="producer">The producer.</param>
-    /// <param name="projectRepo">The project repo.</param>
-    /// <param name="configStore">The configStore.</param>
-    /// <param name="raptorProxy">The raptorServices proxy.</param>
-    /// <param name="persistantTransferProxy"></param>
-    /// <param name="filterServiceProxy"></param>
-    /// <param name="tRexImportFileProxy"></param>
-    /// <param name="logger">The logger.</param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="fileRepo">For TCC file transfer</param>
-    /// <param name="serviceExceptionHandler">For correctly throwing ServiceException errors</param>
-    /// <param name="requestFactory"></param>
-    /// <param name="log"></param>
-    /// <param name="dataOceanClient"></param>
-    /// <param name="tileServiceProxy"></param>
-    /// <param name="authn"></param>
     public FileImportBaseController(IKafka producer,
-      IConfigurationStore configStore, ILoggerFactory logger, ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      IConfigurationStore configStore, ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
-      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
+      : base(loggerFactory, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo,
         subscriptionRepo, fileRepo, dataOceanClient, authn)
     {
-      this.logger = logger;
       this.requestFactory = requestFactory;
 
       this.persistantTransferProxy = persistantTransferProxy(TransferProxyType.DesignImport);
@@ -92,10 +66,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       FileSpaceId = configStore.GetValueString("TCCFILESPACEID");
       DataOceanRootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
-    UseTrexGatewayDesignImport = false;
-    UseRaptorGatewayDesignImport = true;
-    bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"),
-        out UseTrexGatewayDesignImport);
+      UseTrexGatewayDesignImport = false;
+      UseRaptorGatewayDesignImport = true;
+      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"),
+          out UseTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
         out UseRaptorGatewayDesignImport);
 
@@ -117,7 +91,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
 
-      log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
+      logger.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
     }
 
     /// <summary>
@@ -127,7 +101,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       var notificationResult = await raptorProxy.UpdateFiles(projectUid, updatedFileUids, Request.Headers.GetCustomHeaders());
 
-      log.LogDebug(
+      logger.LogDebug(
         $"FileImport UpdateFiles in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
 
       if (notificationResult != null && notificationResult.Code != 0)
@@ -141,10 +115,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected async Task<IEnumerable<Guid>> SetFileActivatedState(string projectUid, Dictionary<Guid, bool> fileUids)
     {
-      log.LogDebug($"SetFileActivatedState: projectUid={projectUid}, {fileUids.Keys.Count} files with changed state");
+      logger.LogDebug($"SetFileActivatedState: projectUid={projectUid}, {fileUids.Keys.Count} files with changed state");
 
       var deactivatedFileList = await ImportedFileRequestDatabaseHelper.GetImportedFileProjectSettings(projectUid, userId, projectRepo).ConfigureAwait(false) ?? new List<ActivatedFileDescriptor>();
-      log.LogDebug($"SetFileActivatedState: originally {deactivatedFileList.Count} deactivated files");
+      logger.LogDebug($"SetFileActivatedState: originally {deactivatedFileList.Count} deactivated files");
 
       var missingUids = new List<Guid>();
       foreach (var key in fileUids.Keys)
@@ -162,17 +136,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           else
           {
             missingUids.Add(key);
-            log.LogInformation($"SetFileActivatedState: ImportFile '{key}' not found in project settings.");
+            logger.LogInformation($"SetFileActivatedState: ImportFile '{key}' not found in project settings.");
           }
         }
         else
         {
-          deactivatedFileList.Add(new ActivatedFileDescriptor{ImportedFileUid = key.ToString(), IsActivated = false});
+          deactivatedFileList.Add(new ActivatedFileDescriptor { ImportedFileUid = key.ToString(), IsActivated = false });
         }
       }
-      log.LogDebug($"SetFileActivatedState: now {deactivatedFileList.Count} deactivated files, {missingUids.Count} missingUids");
+      logger.LogDebug($"SetFileActivatedState: now {deactivatedFileList.Count} deactivated files, {missingUids.Count} missingUids");
 
-      ProjectSettingsRequest projectSettingsRequest = 
+      ProjectSettingsRequest projectSettingsRequest =
         requestFactory.Create<ProjectSettingsRequestHelper>(r => r
           .CustomerUid(customerUid))
         .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
@@ -180,7 +154,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
+          .Build<UpsertProjectSettingsExecutor>(loggerFactory, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
             raptorProxy, null, null, null, null,
@@ -189,7 +163,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ) as ProjectSettingsResult;
 
       var changedUids = fileUids.Keys.Except(missingUids);
-      log.LogDebug($"SetFileActivatedState: {changedUids.Count()} changedUids");
+      logger.LogDebug($"SetFileActivatedState: {changedUids.Count()} changedUids");
       return changedUids;
     }
 
@@ -198,7 +172,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return importedFileType == ImportedFileType.DesignSurface ||
              importedFileType == ImportedFileType.SurveyedSurface ||
              importedFileType == ImportedFileType.Alignment;
+      //Don't save reference surface to s3 (The original design file will have been saved).
     }
-     
+
   }
 }

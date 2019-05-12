@@ -192,7 +192,7 @@ namespace VSS.TRex.SubGridTrees.Server
       // Add the new created segment into the segment list for the sub grid
       PassesData.Add(NewSegment);
 
-      // Tidy up, marking both segments as dirty, and not existing in the persistent data store!
+      // Tidy up, marking both segments as dirty, and not existing in the persistent data store
       CleavingSegment.Dirty = true;
       CleavingSegment.SegmentInfo.ExistsInPersistentStore = false;
 

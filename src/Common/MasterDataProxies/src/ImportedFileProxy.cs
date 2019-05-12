@@ -65,7 +65,6 @@ namespace VSS.MasterData.Proxies
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null, HttpMethod method = null)
     {
-
       var queryParams = new Dictionary<string,string>();
       queryParams.Add("projectUid", projectUid.ToString());
       queryParams.Add("importedFileType", importedFileType.ToString());

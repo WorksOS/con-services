@@ -196,9 +196,6 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       // Verify the existence map has the correct number of sub grids
       siteModel.ExistenceMap.CountBits().Should().Be(expectedSubgrids);
 
-      // Verify the expected number of sub grids are present in the grid
-      siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubgrids);
-
       // Ensure there are two appropriate elevation mapping mode events
       siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(expectedEvents);
       siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetStateAtIndex(0, out var eventDate, out var eventState);
@@ -207,12 +204,16 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Count the number of non-null elevation cells per the sub grid pass dta existence maps
       long totalCells = 0;
-      siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(),
-        subGrid =>
-        {
-          totalCells += ((IServerLeafSubGrid)subGrid).Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
-          return true;
-        });
+
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(addr =>
+      {
+        var subGrid = TRex.SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(
+          siteModel.PrimaryStorageProxy, siteModel.Grid,
+          addr.X, addr.Y, siteModel.Grid.NumLevels, false, false);
+
+       totalCells += ((IServerLeafSubGrid)subGrid).Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
+       });
+
       totalCells.Should().Be(expectedNonNullCells);
 
       siteModel.SiteModelExtent.MinX.Should().BeApproximately(376735.98, 0.001);

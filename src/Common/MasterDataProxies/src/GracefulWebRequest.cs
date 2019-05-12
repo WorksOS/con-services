@@ -24,8 +24,13 @@ namespace VSS.MasterData.Proxies
     private readonly ILogger log;
     private readonly int logMaxChar;
 
+    static HttpClientHandler handler = new HttpClientHandler()
+    {
+      AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+    };
+
     ///TODO since our apps is a mix of netcore 2.0, netcore 2.1 and net 4.7.1 this should be replaced with httpclient factory once all services are using the same target
-    private static readonly HttpClient httpClient = new HttpClient() {Timeout = TimeSpan.FromMinutes(30)};
+    private static readonly HttpClient httpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMinutes(30)};
 
     //Any 200 code is ok.
     private static List<HttpStatusCode> okCodes = new List<HttpStatusCode>

@@ -20,7 +20,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// <summary>
     /// Validate the Create request e.g that the file has been uploaded and parameters are as expected.
     /// </summary>
-    public static void ValidateUpsertImportedFileRequest(Guid projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy, DateTime? surveyedUtc, string filename)
+    public static void ValidateUpsertImportedFileRequest(Guid projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, 
+      DateTime fileUpdatedUtc, string importedBy, DateTime? surveyedUtc, string filename, Guid? parentUid, double? offset)
     {
       if (projectUid == Guid.Empty)
       {
@@ -36,22 +37,27 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             ProjectErrorCodesProvider.FirstNameWithOffset(30)));
       }
 
-      if (!(importedFileType >= ImportedFileType.Linework && importedFileType <= ImportedFileType.Alignment))
+      var validType = (importedFileType >= ImportedFileType.Linework && importedFileType <= ImportedFileType.Alignment)
+                      || importedFileType == ImportedFileType.ReferenceSurface;
+      if (!validType)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(30),
             ProjectErrorCodesProvider.FirstNameWithOffset(31)));
       }
 
-      var fileExtension = Path.GetExtension(filename).ToLower();
-      if (!(importedFileType == ImportedFileType.Linework && fileExtension == ".dxf" ||
-            importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm" ||
-            importedFileType == ImportedFileType.SurveyedSurface && fileExtension == ".ttm" ||
-            importedFileType == ImportedFileType.Alignment && fileExtension == ".svl"))
+      if (importedFileType != ImportedFileType.ReferenceSurface)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(32),
-            ProjectErrorCodesProvider.FirstNameWithOffset(32)));
+        var fileExtension = Path.GetExtension(filename).ToLower();
+        if (!(importedFileType == ImportedFileType.Linework && fileExtension == ".dxf" ||
+              importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm" ||
+              importedFileType == ImportedFileType.SurveyedSurface && fileExtension == ".ttm" ||
+              importedFileType == ImportedFileType.Alignment && fileExtension == ".svl"))
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(32),
+              ProjectErrorCodesProvider.FirstNameWithOffset(32)));
+        }
       }
 
       if (!Enum.IsDefined(typeof(DxfUnitsType), dxfUnitsType))
@@ -94,6 +100,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(36),
             ProjectErrorCodesProvider.FirstNameWithOffset(36)));
+      }
+
+      if (importedFileType == ImportedFileType.ReferenceSurface && (parentUid == null || offset == null || offset.Value == 0))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(118),
+            ProjectErrorCodesProvider.FirstNameWithOffset(118)));
       }
     }
   }

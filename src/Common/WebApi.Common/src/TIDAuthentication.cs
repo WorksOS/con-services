@@ -106,9 +106,7 @@ namespace VSS.WebApi.Common
           return;
         }
 
-        // Temporary until service discovery is in use by all services; set the internal flag on GetCustomHeaders
-        // So we retain the X-JWT-Assertion header and leave it to internal controllers to drop the header if necessary.
-        var customHeaders = context.Request.Headers.GetCustomHeaders(true);
+        var customHeaders = context.Request.Headers.GetCustomHeaders();
 
         //If this is an application context do not validate user-customer
         if (isApplicationContext)

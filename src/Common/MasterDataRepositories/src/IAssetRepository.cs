@@ -17,6 +17,6 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Asset>> GetAssets(IEnumerable<Guid> assetUids);
     Task<IEnumerable<Asset>> GetAssets(IEnumerable<long> assetIds);
     Task<int> StoreEvent(IAssetEvent filterEvent);
-    Task<MatchingAssets> GetMatching3D2DAssets(Guid assetUid);
+    Task<MatchingAssets> GetMatching3D2DAssets(MatchingAssets asset);
   }
 }

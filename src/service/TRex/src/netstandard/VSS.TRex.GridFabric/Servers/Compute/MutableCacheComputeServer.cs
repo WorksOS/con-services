@@ -20,6 +20,7 @@ using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Logging;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
@@ -49,12 +50,10 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
     public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
-      //cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
       base.ConfigureTRexGrid(cfg);
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
-      cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
       cfg.JvmMaxMemoryMb = 2 * 1024; // Set max to 2Gb
       cfg.UserAttributes = new Dictionary<string, object>
             {
@@ -105,7 +104,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.JvmOptions = new List<string>() {
         "-DIGNITE_QUIET=false",
-        "-Djava.net.preferIPv4Stack=true"
+        "-Djava.net.preferIPv4Stack=true",
+        "-XX:+UseG1GC"
       };
 
 
@@ -276,6 +276,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //InstantiateTAGFileBufferQueueCacheReference(CacheCfg);
       var tagCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.TAGFileBufferQueueCacheName()));
       InstantiateTAGFileBufferQueueCacheReference(tagCacheConfiguration);
+
+      // Create the SiteModel MetaData Manager so later DI context references wont need to create the cache etc for it at an inappropriate time
+      var _ = DIContext.Obtain<ISiteModelMetadataManager>();
     }
 
   }

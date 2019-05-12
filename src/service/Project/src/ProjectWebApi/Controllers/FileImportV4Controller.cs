@@ -15,7 +15,6 @@ using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -27,15 +26,11 @@ using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.MasterData.Project.WebAPI.Internal.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Pegasus.Client;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
@@ -50,26 +45,22 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportV4Controller : FileImportBaseController
   {
-    private readonly ILoggerFactory logger;
     private readonly INotificationHubClient notificationHubClient;
 
     /// <summary>
     /// File import controller v4
     /// </summary>
-    /// <param name="tileServiceProxy"></param>
-    /// <param name="authn"></param>
     public FileImportV4Controller(IKafka producer,
-      IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
+      IConfigurationStore store, ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
       ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient)
-      : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
+      : base(producer, store, loggerFactory, serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
         projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, authn)
     {
-      this.logger = logger;
       this.notificationHubClient = notificationHubClient;
     }
 
@@ -80,11 +71,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)
     {
-      log.LogInformation("GetImportedFilesV4");
+      logger.LogInformation("GetImportedFilesV4");
 
       return new ImportedFileDescriptorListResult
       {
-        ImportedFileDescriptors = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, log, userId, projectRepo).ConfigureAwait(false)
+        ImportedFileDescriptors = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, logger, userId, projectRepo).ConfigureAwait(false)
       };
     }
 
@@ -118,30 +109,32 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime? surveyedUtc
     )
     {
+      if (importedFileType == ImportedFileType.ReferenceSurface)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 122);
+      }
+
       // Validate the file
-      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file,
-        projectUid,
-        importedFileType,
-        dxfUnitsType,
-        fileCreatedUtc,
-        fileUpdatedUtc, userEmailAddress, surveyedUtc);
+      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(
+        file, projectUid, importedFileType, dxfUnitsType,fileCreatedUtc, fileUpdatedUtc, userEmailAddress, surveyedUtc, null, null);
+
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
-      log.LogInformation(
+      logger.LogInformation(
         $"SyncUploadV4. file: {file.flowFilename} path {file.path} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
-      ValidateFileDoesNotExist(projectUid.ToString(), file.flowFilename, importedFileType, surveyedUtc);
+      ValidateFileDoesNotExist(projectUid.ToString(), file.flowFilename, importedFileType, surveyedUtc, null, null);
 
       ContractExecutionResult importedFileResult;
 
       using (var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read))
       {
         importedFileResult = await UpsertFileInternal(file.flowFilename, fileStream, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, null, null);
       }
 
-      log.LogInformation(
-        $"SyncUploadV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
+      logger.LogInformation(
+        $"SyncUploadV4. Completed successfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
 
       return importedFileResult as ImportedFileDescriptorSingleResult;
     }
@@ -170,27 +163,31 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromServices] ISchedulerProxy scheduler,
       [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc)
     {
-      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
-        fileUpdatedUtc, userEmailAddress, surveyedUtc);
-      log.LogInformation(
+      if (importedFileType == ImportedFileType.ReferenceSurface)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 122);
+      }
+
+      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(
+        file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, userEmailAddress, surveyedUtc, null, null);
+      logger.LogInformation(
         $"BackgroundUploadV4. file: {file.flowFilename} path {file.path} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (string.Equals(Request.Method, HttpMethod.Post.ToString(), StringComparison.OrdinalIgnoreCase))
       {
-        ValidateFileDoesNotExist(projectUid.ToString(), file.flowFilename, importedFileType, surveyedUtc);
+        ValidateFileDoesNotExist(projectUid.ToString(), file.flowFilename, importedFileType, surveyedUtc, null, null);
       }
 
       var s3Path = $"project/importedfile/{Guid.NewGuid()}.dat";
       var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read);
       var transferProxy = transferProxyFunc(TransferProxyType.Default);
       transferProxy.Upload(fileStream, s3Path);
-
+      
       var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
       // The QueryString will have values in it, so it's safe to add extra queries with the & as opposed to ?, then &
       var callbackUrl = $"{baseUrl}/internal/v4/importedfile{Request.QueryString}";
-      callbackUrl += $"&filename={WebUtility.UrlEncode(file.flowFilename)}";
-      callbackUrl += $"&awsFilePath={WebUtility.UrlEncode(s3Path)}";
+      callbackUrl += $"&filename={WebUtility.UrlEncode(file.flowFilename)}&awsFilePath={WebUtility.UrlEncode(s3Path)}";
 
       var executionTimeout = configStore.GetValueInt("PEGASUS_EXECUTION_TIMEOUT_MINS", 5) * 60000;//minutes converted to millisecs
       var request = new ScheduleJobRequest
@@ -237,9 +234,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc,
       [FromServices] ISchedulerProxy schedulerProxy)
     {
+      if (importedFileType == ImportedFileType.ReferenceSurface)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 122);
+      }
+
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
+
+      ImportedFileDescriptorSingleResult importedFileResult = null;
       var transferProxy = transferProxyFunc(TransferProxyType.Default);
-      log.LogInformation(
+      logger.LogInformation(
         $"InternalImportedFileV4. filename: {filename} awspath {awsFilePath} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
@@ -259,15 +263,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         // Not the best solution for extra large files, but TCC doesn't support uploading without file size AFAIK
         fileResult.FileStream.CopyTo(ms);
 
-        var importedFileResult = await UpsertFileInternal(filename, ms, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
-
-        log.LogInformation(
-          $"InternalImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
+        importedFileResult = await UpsertFileInternal(filename, ms, projectUid, importedFileType, dxfUnitsType,
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, null, null);
+      }
+      
+      logger.LogInformation(
+          $"InternalImportedFileV4. Completed successfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
 
         return importedFileResult;
-      }
     }
+    
 
     /// <summary>
     /// Upsert imported file
@@ -295,12 +300,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime? surveyedUtc = null
       )
     {
-      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
-        fileUpdatedUtc, userEmailAddress, surveyedUtc);
-      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
-      log.LogInformation(
-        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+      if (importedFileType == ImportedFileType.ReferenceSurface)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 122);
+      }
 
+      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
+        fileUpdatedUtc, userEmailAddress, surveyedUtc, null, null);
+      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
+      logger.LogInformation(
+        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
       return UpsertFile(file.path, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
     }
 
@@ -325,21 +334,26 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DateTime fileUpdatedUtc,
       DateTime? surveyedUtc = null)
     {
+      if (importedFileType == ImportedFileType.ReferenceSurface)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 122);
+      }
+
       FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
-        fileUpdatedUtc, userEmailAddress, surveyedUtc, filename);
+        fileUpdatedUtc, userEmailAddress, surveyedUtc, filename, null, null);
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
-      log.LogInformation(
+      logger.LogInformation(
         $"{nameof(CreateImportedFileDirectV4)}: ProjectUid: `{projectUid}`, Filename: `{filename}` ImportedFileType: `{importedFileType}`, DxfUnitsType: `{dxfUnitsType}`, SurveyedUTC: `{(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}`");
 
       //When debugging locally using Postman, remove this check so can do an update
-      ValidateFileDoesNotExist(projectUid.ToString(), filename, importedFileType, surveyedUtc);
+      ValidateFileDoesNotExist(projectUid.ToString(), filename, importedFileType, surveyedUtc, null, null);
 
       if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58, $"Expected a multipart request, but got '{Request.ContentType}'");
       }
 
-      var targetFilePath = await HttpContext.Request.StreamFile(filename, log);
+      var targetFilePath = await HttpContext.Request.StreamFile(filename, logger);
 
       var result = await UpsertFile(targetFilePath, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
 
@@ -359,11 +373,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] Guid importedFileUid,
       [FromServices] IPegasusClient pegasusClient)
     {
-      log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
+      logger.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
 
       await ValidateProjectId(projectUid.ToString());
 
-      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid.ToString(), log, projectRepo).ConfigureAwait(false);
+      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid.ToString(), logger, projectRepo).ConfigureAwait(false);
       ImportedFile existing = null;
       if (importedFiles.Count > 0)
         existing = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
@@ -382,14 +396,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<DeleteImportedFileExecutor>(
-            logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
+            loggerFactory, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
             producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
             projectRepo, null, fileRepo, null, null, dataOceanClient, authn, null, pegasusClient)
           .ProcessAsync(deleteImportedFile)
       );
 
-      log.LogInformation(
-        $"DeleteImportedFileV4. Completed succesfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
+      logger.LogInformation(
+        $"DeleteImportedFileV4. Completed successfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
       return result;
     }
 
@@ -415,9 +429,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       using (var fileStream = new FileStream(filePath, FileMode.Open))
       {
-        return await UpsertFileInternal(fileName, fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType, fileCreatedUtc,
-          fileUpdatedUtc, surveyedUtc, schedulerProxy);
-      }
+        return await UpsertFileInternal(fileName, fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType,
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, null, null);
+      }    
     }
 
     /// <summary>
@@ -432,69 +446,78 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DateTime fileCreatedUtc,
       DateTime fileUpdatedUtc,
       DateTime? surveyedUtc,
-      ISchedulerProxy schedulerProxy)
+      ISchedulerProxy schedulerProxy,
+      Guid? parentUid,
+      double? offset)
     {
       var existing = await ImportedFileRequestDatabaseHelper
         .GetImportedFileForProject
           (projectUid.ToString(), filename, importedFileType, surveyedUtc,
-           log, projectRepo)
+           logger, projectRepo, offset, parentUid)
         .ConfigureAwait(false);
 
       bool creating = existing == null;
-      log.LogInformation(
+      logger.LogInformation(
         creating
-          ? $"UpdateImportedFileExecutor. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}"
+          ? $"UpdateImportedFileExecutor. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
           : $"UpdateImportedFileExecutor. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
       ImportedFileDescriptorSingleResult importedFile;
 
       FileDescriptor fileDescriptor = null;
 
-      if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileType))
+      if (importedFileType == ImportedFileType.ReferenceSurface)
       {
-        fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-          fileStream, projectUid.ToString(), filename,
-          importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
-          log, serviceExceptionHandler, persistantTransferProxy);
+        fileDescriptor = FileDescriptor.CreateFileDescriptor(string.Empty, string.Empty, filename);
+      }
+      else
+      {
+        if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileType))
+        {
+          fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
+            fileStream, projectUid.ToString(), filename,
+            importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
+            logger, serviceExceptionHandler, persistantTransferProxy);
+        }
+
+        if (UseRaptorGatewayDesignImport)
+        {
+          fileDescriptor = await TccHelper.WriteFileToTCCRepository(
+              fileStream, customerUid, projectUid.ToString(), filename,
+              importedFileType == ImportedFileType.SurveyedSurface,
+              surveyedUtc, FileSpaceId, logger, serviceExceptionHandler, fileRepo)
+            .ConfigureAwait(false);
+
+          //save copy to DataOcean      
+          await DataOceanHelper.WriteFileToDataOcean(
+              fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), filename,
+              importedFileType == ImportedFileType.SurveyedSurface,
+              surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn)
+            .ConfigureAwait(false);
+        }
       }
 
-      if (UseRaptorGatewayDesignImport)
-      {
-        fileDescriptor = await TccHelper.WriteFileToTCCRepository(
-            fileStream, customerUid, projectUid.ToString(), filename,
-            importedFileType == ImportedFileType.SurveyedSurface,
-            surveyedUtc, FileSpaceId, log, serviceExceptionHandler, fileRepo)
-          .ConfigureAwait(false);
-
-        //save copy to DataOcean      
-        await DataOceanHelper.WriteFileToDataOcean(
-            fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), filename,
-            importedFileType == ImportedFileType.SurveyedSurface,
-            surveyedUtc, log, serviceExceptionHandler, dataOceanClient, authn)
-          .ConfigureAwait(false);
-      }
-      
       if (creating)
       {
-        var createImportedFile = CreateImportedFile.Create(projectUid, filename,
-          fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder);
+        var createImportedFile = CreateImportedFile.Create(
+          projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
             .Build<CreateImportedFileExecutor>(
-              logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
+              loggerFactory, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
               projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
-        log.LogInformation(
-          $"UpdateImportedFileV4. Create completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
+        logger.LogInformation(
+          $"UpdateImportedFileV4. Create completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       }
       else
       {
         // this also validates that this customer has access to the projectUid
-        var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
+        var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo);
 
         var importedFileUpsertEvent = UpdateImportedFile.Create(
           projectUid, project.LegacyProjectID, importedFileType,
@@ -503,20 +526,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             : null,
           dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
           Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolder
+          DataOceanRootFolder, offset
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
             .Build<UpdateImportedFileExecutor>(
-              logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
+              loggerFactory, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName, raptorProxy, null, null, null, tRexImportFileProxy,
               projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
 
-        log.LogInformation(
-          $"UpdateImportedFileV4. Update completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
+        logger.LogInformation(
+          $"UpdateImportedFileV4. Update completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       }
 
       await notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
@@ -529,28 +552,89 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Validate that the uploaded file doesn't already exist in the database.
     /// Should only be called from create methods where there's an expectation the file isn't already present.
     /// </summary>
-    private void ValidateFileDoesNotExist(string projectUid, string filename, ImportedFileType importedFileType, DateTime? surveyedUtc)
+    private void ValidateFileDoesNotExist(string projectUid, string filename, ImportedFileType importedFileType, DateTime? surveyedUtc, Guid? parentUid, double? offset)
     {
-      var importedFileList = ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, log, userId, projectRepo)
+      var importedFileList = ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, logger, userId, projectRepo)
         .ConfigureAwait(false)
         .GetAwaiter()
         .GetResult();
 
       ImportedFileDescriptor importedFileDescriptor = null;
       if (importedFileList.Count > 0)
-        importedFileDescriptor = importedFileList.FirstOrDefault(
-          f => string.Equals(f.Name, filename, StringComparison.OrdinalIgnoreCase)
-               && f.ImportedFileType == importedFileType
-               && (importedFileType != ImportedFileType.SurveyedSurface || f.SurveyedUtc == surveyedUtc));
+      {
+        if (importedFileType == ImportedFileType.ReferenceSurface)
+        {
+          importedFileDescriptor = importedFileList.FirstOrDefault(
+            f => f.ImportedFileType == ImportedFileType.ReferenceSurface &&
+                 f.ParentUid == parentUid && Math.Round(f.Offset ?? 0, 3) == Math.Round(offset ?? 0));
+        }
+        else
+        {
+          importedFileDescriptor = importedFileList.FirstOrDefault(
+            f => string.Equals(f.Name, filename, StringComparison.OrdinalIgnoreCase)
+                 && f.ImportedFileType == importedFileType
+                 && (importedFileType != ImportedFileType.SurveyedSurface || f.SurveyedUtc == surveyedUtc));
+        }
+      }
 
       if (importedFileDescriptor != null)
       {
         var message = $"CreateImportedFileDirectV4. File: {filename} has already been imported.";
-        log.LogError(message);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58);
+        logger.LogError(message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, importedFileType == ImportedFileType.ReferenceSurface ? 121 : 58);
       }
     }
 
+    /// <summary>
+    /// Import a reference surface
+    /// </summary>
+    [Route("api/v4/importedfile/referencesurface")]
+    [HttpPost]
+    public async Task<ContractExecutionResult> CreateReferenceSurface(
+      [FromQuery] Guid projectUid,
+      [FromQuery] string filename,
+      [FromQuery] DateTime fileCreatedUtc,
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] Guid parentUid,
+      [FromQuery] double offset,
+      [FromServices] ISchedulerProxy schedulerProxy)
+    {
+      logger.LogInformation($"CreateReferenceSurface. projectUid {projectUid} filename: {filename} parentUid: {parentUid} offset: {offset}");
+
+      await ValidateProjectId(projectUid.ToString());
+
+      ImportedFileUtils.ValidateEnvironmentVariables(ImportedFileType.ReferenceSurface, configStore, serviceExceptionHandler);
+
+      //Check parent design does exist
+      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid.ToString(), logger, userId, projectRepo);
+      var parent = importedFiles.FirstOrDefault(i => i.ImportedFileUid == parentUid.ToString());
+      if (parent == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 120);
+      }
+
+      //Fill in file name if not provided
+      if (string.IsNullOrEmpty(filename))
+      {
+        var sign = offset > 0 ? "+" : "-";
+        filename = $"{Path.GetFileNameWithoutExtension(parent.Name)} {sign}{offset:F3}";
+      }
+
+      //Validate parameters
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.Meters, fileCreatedUtc,
+        fileUpdatedUtc, userEmailAddress, null, filename, parentUid, offset);
+
+      //Check reference surface does not exist
+      ValidateFileDoesNotExist(projectUid.ToString(), filename, ImportedFileType.ReferenceSurface, null, parentUid, offset);
+
+      var importedFileResult = await UpsertFileInternal(filename, null, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.Meters,
+        fileCreatedUtc, fileUpdatedUtc, null, schedulerProxy, parentUid, offset);
+
+      logger.LogInformation(
+        $"CreateReferenceSurface. Completed successfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
+
+      return importedFileResult;
+    }
 
     #region fileActivation
 
@@ -564,7 +648,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<IActionResult> UpdateImportedFileActivationStateV4(string projectUid, [FromBody] ActivatedImportFilesRequest request)
     {
       const string functionId = "SetImportedFileActivatedStateV4";
-      log.LogInformation("ActivateFiles");
+      logger.LogInformation("ActivateFiles");
 
       await ValidateProjectId(projectUid).ConfigureAwait(false);
 
@@ -577,12 +661,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         return Ok(new { Code = HttpStatusCode.BadRequest, Message = "Request contains no imported file IDs." });
       }
 
-      log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
+      logger.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
 
-      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, log, userId, projectRepo).ConfigureAwait(false);
+      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, logger, userId, projectRepo).ConfigureAwait(false);
       if (!importedFiles.Any())
       {
-        log.LogInformation($"{functionId}. Attempt to set file activation state when project contains no files");
+        logger.LogInformation($"{functionId}. Attempt to set file activation state when project contains no files");
 
         return Ok(new { Code = HttpStatusCode.BadRequest, Message = "Project contains no imported files." });
       }
@@ -594,26 +678,26 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         var existingFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == activatedFileDescriptor.ImportedFileUid);
         if (existingFile == null)
         {
-          log.LogError(
+          logger.LogError(
             $"{functionId}. File doesn't exist. projectUid {projectUid}, fileUid: {activatedFileDescriptor.ImportedFileUid}");
           continue;
         }
 
         if (existingFile.IsActivated == activatedFileDescriptor.IsActivated)
         {
-          log.LogDebug(
+          logger.LogDebug(
             $"{functionId}. File activation state is already set to {existingFile.IsActivated}. No changes required. {existingFile.ImportedFileUid}");
           continue;
         }
 
-        log.LogInformation(
+        logger.LogInformation(
           $"{functionId}. File queued for updating: {JsonConvert.SerializeObject(existingFile)}");
         filesToUpdate.Add(new Guid(activatedFileDescriptor.ImportedFileUid), activatedFileDescriptor.IsActivated);
       }
 
       if (!filesToUpdate.Any())
       {
-        log.LogInformation($"{functionId}. No files eligible for activation state change.");
+        logger.LogInformation($"{functionId}. No files eligible for activation state change.");
 
         return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }

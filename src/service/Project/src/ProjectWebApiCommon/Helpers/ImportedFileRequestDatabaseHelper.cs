@@ -73,20 +73,30 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     public static async Task<ImportedFile> GetImportedFileForProject
       (string projectUid, string fileName, ImportedFileType importedFileType, DateTime? surveyedUtc,
-      ILogger log, IProjectRepository projectRepo)
+      ILogger log, IProjectRepository projectRepo, double? offset, Guid? parentUid)
     {
       var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid, log, projectRepo).ConfigureAwait(false);
       ImportedFile existing = null;
       if (importedFiles.Count > 0)
       {
-        existing = importedFiles.FirstOrDefault(
-          f => string.Equals(f.Name, fileName, StringComparison.OrdinalIgnoreCase)
-               && f.ImportedFileType == importedFileType
-               && (
-                 importedFileType == ImportedFileType.SurveyedSurface &&
-                 f.SurveyedUtc == surveyedUtc ||
-                 importedFileType != ImportedFileType.SurveyedSurface
-               ));
+        if (importedFileType == ImportedFileType.ReferenceSurface)
+        {
+          existing = importedFiles.FirstOrDefault
+          (f => f.ImportedFileType == ImportedFileType.ReferenceSurface &&
+                f.ParentUid == parentUid.ToString() &&
+                Math.Round(f.Offset, 3) == Math.Round(offset ?? 0, 3));
+        }
+        else
+        {
+          existing = importedFiles.FirstOrDefault(
+            f => string.Equals(f.Name, fileName, StringComparison.OrdinalIgnoreCase)
+                 && f.ImportedFileType == importedFileType
+                 && (
+                   importedFileType == ImportedFileType.SurveyedSurface &&
+                   f.SurveyedUtc == surveyedUtc ||
+                   importedFileType != ImportedFileType.SurveyedSurface
+                 ));
+        }
       }
       return existing;
     }
@@ -112,7 +122,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static async Task<CreateImportedFileEvent> CreateImportedFileinDb(Guid customerUid, Guid projectUid,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo,
+      Guid? parentUid, double? offset)
     {
       log.LogDebug($"Creating the ImportedFile {filename} for project {projectUid}.");
       var nowUtc = DateTime.UtcNow;
@@ -130,7 +141,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         ImportedBy = importedBy,
         SurveyedUTC = surveyedUtc,
         ActionUTC = nowUtc, // aka importedUtc
-        ReceivedUTC = nowUtc
+        ReceivedUTC = nowUtc,
+        ParentUID = parentUid,
+        Offset = offset ?? 0
       };
 
       var isCreated = await projectRepo.StoreEvent(createImportedFileEvent).ConfigureAwait(false);
@@ -263,6 +276,26 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
 
       return filterDescriptors.Select(f => JsonConvert.DeserializeObject<Filter>(f.FilterJson)).ToList();
+    }
+
+    /// <summary>
+    /// Check if parent design exists for a reference surface
+    /// </summary>
+    public static async Task<ImportedFile> CheckIfParentSurfaceExistsAsync(ImportedFileType importedFileType, Guid? parentUid, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    {
+      //Check parent exists for a reference design
+      if (importedFileType == ImportedFileType.ReferenceSurface)
+      {
+        var parent = await projectRepo.GetImportedFile(parentUid?.ToString());
+        if (parent == null)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 120);
+        }
+
+        return parent;
+      }
+
+      return null;
     }
   }
 }

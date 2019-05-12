@@ -40,5 +40,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// Updates the version of the segment to reflect the current date time
     /// </summary>
     void Touch();
+
+    string ToString();
   }
 }

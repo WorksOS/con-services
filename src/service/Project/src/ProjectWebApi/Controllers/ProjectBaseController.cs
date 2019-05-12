@@ -11,7 +11,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -39,26 +39,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectBaseController"/> class.
     /// </summary>
-    /// <param name="producer">The producer.</param>
-    /// <param name="projectRepo">The project repo.</param>
-    /// <param name="subscriptionRepo">The subscriptions repo.</param>
-    /// <param name="fileRepo"></param>
-    /// <param name="configStore">The configStore.</param>
-    /// <param name="subscriptionProxy">The subs proxy.</param>
-    /// <param name="raptorProxy">The raptorServices proxy.</param>
-    /// <param name="logger">The logger.</param>
-    /// <param name="serviceExceptionHandler">The ServiceException handler</param>
-    /// <param name="log"></param>
-    /// <param name="dataOceanClient"></param>
-    /// <param name="authn"></param>
     public ProjectBaseController(IKafka producer, 
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore configStore, 
       ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
-      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log, 
+      ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,  
       IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
-      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
+      : base(loggerFactory, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
         subscriptionRepo, fileRepo, dataOceanClient, authn)
     {
       this.subscriptionProxy = subscriptionProxy;
@@ -73,7 +61,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var customerUid = LogCustomerDetails("GetProjectList", "");
       var projects = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
-      log.LogInformation($"Project list contains {projects.Count} projects");
+      logger.LogInformation($"Project list contains {projects.Count} projects");
       return projects;
     }
 

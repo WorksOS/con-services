@@ -61,7 +61,7 @@ function ProcessConfigFile {
         $key = $key.Trim()
         $value = $value.Trim().Trim('"')
 
-        if ($environmentVars.ContainsKey($key)) { $environmentVars.Remove($key) }
+        IF ($environmentVars.ContainsKey($key)) { $environmentVars.Remove($key) }
 
         $environmentVars.Add($key, $value)
     }
@@ -77,18 +77,5 @@ Write-Host "`nSetting environment variables..."
 FOREACH ($config in $environmentVars.GetEnumerator() | Sort-Object -Property Name) {
     SetEnvironmentVariable $config.Name $config.Value
 }
-
-# Machine variable values
-Write-Host "`nSetting environment variables specific to the caller"
-
-# Get the IP address from the network adaptor and set KAFKA_ADVERTISED_HOST_NAME. Doing so allows any containerized Kafka instance to correctly find the host.
-$ipV4 = ( Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway -ne $null -and  $_.NetAdapter.Status -ne "Disconnected"}).IPv4Address.IPAddress
-
-# Update the Docker-Compose file, if present.
-IF (Test-Path docker-compose-local.env) {
-    (Get-Content docker-compose-local.env) | Foreach-Object {$_ -replace "LOCALIPADDRESS", $ipV4} | Set-Content docker-compose-local.env
-}
-
-SetEnvironmentVariable "KAFKA_ADVERTISED_HOST_NAME" $ipV4
 
 Write-Host "`nFinished loading configuration settings" -ForegroundColor Green

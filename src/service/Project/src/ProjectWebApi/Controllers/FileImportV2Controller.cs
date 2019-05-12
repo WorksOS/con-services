@@ -16,15 +16,11 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
-using VSS.Productivity3D.Scheduler.Abstractions;
-using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -37,26 +33,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class FileImportV2Controller : FileImportBaseController
   {
     /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
-
-    /// <summary>
     /// Default constructor.
     /// </summary>
     public FileImportV2Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
+      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
-      : base(producer, store, logger, logger.CreateLogger<FileImportV2Controller>(), serviceExceptionHandler,
+      : base(producer, store, logger, serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
         projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, authn)
-    {
-      this.logger = logger;
-    }
+    { }
 
     // PUT: api/v2/projects/{id}/importedfiles
     /// <summary>
@@ -87,14 +76,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //     however we won't have a LegacyFileId to return - hmmm hope Business centre ignores this
       if (importedFileTbc.ImportedFileTypeId == ImportedFileType.MobileLinework)
       {
-        log.LogInformation(
+        logger.LogInformation(
           $"UpsertImportedFileV2. Ignore MobileLinework from BusinessCentre. projectId {projectId} importedFile: {JsonConvert.SerializeObject(importedFileTbc)}");
 
         return ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, -1);
       }
 
       importedFileTbc = FileImportV2DataValidator.ValidateUpsertImportedFileRequest(projectId, importedFileTbc);
-      log.LogInformation(
+      logger.LogInformation(
         $"UpsertImportedFileV2. projectId {projectId} importedFile: {JsonConvert.SerializeObject(importedFileTbc)}");
 
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileTbc.ImportedFileTypeId, configStore, serviceExceptionHandler);
@@ -103,34 +92,34 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var project = await GetProject(projectId);
 
       var fileEntry = await TccHelper.GetFileInfoFromTccRepository(importedFileTbc,
-        FileSpaceId, log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
+        FileSpaceId, logger, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
       var fileDescriptor = await TccHelper.CopyFileWithinTccRepository(importedFileTbc,
         customerUid, project.ProjectUID, FileSpaceId,
-        log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
+        logger, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
       // TRex needs a copy of design file in S3. Will BusinessCenter survive until Trex switchover?
       if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileTbc.ImportedFileTypeId))
       {
-        var memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
-        
+        var memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, logger, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
+
         fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-          memStream, project.ProjectUID, importedFileTbc.Name, 
+          memStream, project.ProjectUID, importedFileTbc.Name,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
             ? importedFileTbc.SurfaceFile.SurveyedUtc
             : (DateTime?)null,
-          log, serviceExceptionHandler, persistantTransferProxy);
+          logger, serviceExceptionHandler, persistantTransferProxy);
         memStream?.Dispose();
       }
 
       var existing = await ImportedFileRequestDatabaseHelper
         .GetImportedFileForProject
         (project.ProjectUID, importedFileTbc.Name, importedFileTbc.ImportedFileTypeId, null,
-        log, projectRepo)
+        logger, projectRepo, 0, null)
         .ConfigureAwait(false);
       bool creating = existing == null;
-      log.LogInformation(
+      logger.LogInformation(
         creating
           ? $"UpsertImportedFileV2. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
           : $"UpsertImportedFileV2. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
@@ -148,11 +137,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
-          DataOceanRootFolder);
+          DataOceanRootFolder, null, 0);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
-            .Build<CreateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
+            .Build<CreateImportedFileExecutor>(loggerFactory, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
               raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
@@ -160,7 +149,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
-        log.LogInformation(
+        logger.LogInformation(
           $"UpsertImportedFileV2. Create completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       }
       else
@@ -170,18 +159,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
             ? importedFileTbc.SurfaceFile.SurveyedUtc
-            : (DateTime?) null,
+            : (DateTime?)null,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
           fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolder
+          DataOceanRootFolder, 0
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
-            .Build<UpdateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
+            .Build<UpdateImportedFileExecutor>(loggerFactory, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
               raptorProxy, null, null, null, tRexImportFileProxy,
@@ -192,13 +181,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
 
       // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to Raptor and used to ref via TCC
-      var response = importedFile?.ImportedFileDescriptor != null 
-        ? ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId) 
+      var response = importedFile?.ImportedFileDescriptor != null
+        ? ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId)
         : ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.InternalServerError, -1);
 
-      log.LogInformation(
+      logger.LogInformation(
         $"UpsertImportedFileV2. Completed succesfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
-      
+
       return response;
     }
 
@@ -212,16 +201,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ImmutableList<DesignDetailV2Result>> GetImportedFilesV2([FromRoute] long projectId, [FromRoute] long? id = null)
     {
-      log.LogInformation("GetImportedFilesV2");
+      logger.LogInformation("GetImportedFilesV2");
 
       var project = await GetProject(projectId);
 
-      var files = await ImportedFileRequestDatabaseHelper.GetImportedFileList(project.ProjectUID, log, userId, projectRepo)
+      var files = await ImportedFileRequestDatabaseHelper.GetImportedFileList(project.ProjectUID, logger, userId, projectRepo)
         .ConfigureAwait(false);
 
       var selected = id.HasValue ? files.Where(x => x.LegacyFileId == id.Value) : files;
-      return selected.Select(x => new DesignDetailV2Result{id = x.LegacyFileId, name = x.Name,  fileType = (int)x.ImportedFileType, insertUTC = x.ImportedUtc}).ToImmutableList();
-      
+      return selected.Select(x => new DesignDetailV2Result { id = x.LegacyFileId, name = x.Name, fileType = (int)x.ImportedFileType, insertUTC = x.ImportedUtc }).ToImmutableList();
     }
   }
 }

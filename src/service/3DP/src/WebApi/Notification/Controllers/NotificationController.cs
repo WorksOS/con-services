@@ -243,7 +243,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
       //Cannot delete a design or alignment file that is used in a filter
       //TODO: When scheduled reports are implemented, extend this check to them as well.
-      if (fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.Alignment)
+      if (fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.Alignment || fileType == ImportedFileType.ReferenceSurface)
       {
         var filters = await GetFilters(projectUid, Request.Headers.GetCustomHeaders(true));
         if (filters != null)
@@ -253,7 +253,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Cannot delete a design surface or alignment file used in a filter"));
+                "Cannot delete a design surface, reference surface or alignment file used in a filter"));
           }
         }
       }
