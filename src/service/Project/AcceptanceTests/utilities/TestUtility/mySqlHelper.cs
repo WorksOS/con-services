@@ -10,7 +10,6 @@ namespace TestUtility
   {
     private readonly TestConfig appConfig = new TestConfig();
     private readonly Msg msg = new Msg();
-    public readonly TestConfig TsCfg = new TestConfig();
 
     /// <summary>
     /// Read a my sql table and return records/columns 
@@ -46,8 +45,6 @@ namespace TestUtility
       string queryResult = null;
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
-        Console.WriteLine($"Opening MySQL connection: {connectionString}");
-
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
         var mySqlDataReader = mySqlCommand.ExecuteReader();
@@ -68,8 +65,6 @@ namespace TestUtility
       Console.WriteLine(sqlCommand);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
-        Console.WriteLine($"Opening MySQL connection: {connectionString}");
-
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(sqlCommand, mySqlConnection);
         var result = mySqlCommand.ExecuteNonQuery();
