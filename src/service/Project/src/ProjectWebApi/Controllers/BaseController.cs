@@ -20,7 +20,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -37,7 +37,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets or sets the local logger provider.
     /// </summary>
-    protected readonly ILogger log;
+    protected readonly ILogger logger;
+
+    /// <summary>
+    /// Gets or sets the injected logger factory.
+    /// </summary>
+    protected readonly ILoggerFactory loggerFactory;
 
     /// <summary>
     /// Gets or sets the Service exception handler.
@@ -116,26 +121,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected string userEmailAddress => GetUserEmailAddress();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="VSS.MasterData.Project.WebAPI.Controllers.BaseController"/> class.
+    /// Default constructor.
     /// </summary>
-    /// <param name="log"></param>
-    /// <param name="configStore">The configStore.</param>
-    /// <param name="serviceExceptionHandler">The ServiceException handler</param>
-    /// <param name="producer">The producer.</param>
-    /// <param name="raptorProxy">The raptorServices proxy.</param>
-    /// <param name="projectRepo">The project repo.</param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="fileRepo"></param>
-    /// <param name="dataOceanClient"></param>
-    /// <param name="tileServiceProxy"></param>
-    /// <param name="authn"></param>
-    protected BaseController(ILogger log, IConfigurationStore configStore,
+    protected BaseController(ILoggerFactory loggerFactory, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IRaptorProxy raptorProxy, IProjectRepository projectRepo, 
       ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null)
     {
-      this.log = log;
+      this.loggerFactory = loggerFactory;
+      this.logger = loggerFactory.CreateLogger(GetType());
+
       this.configStore = configStore;
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.producer = producer;
@@ -170,12 +166,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       try
       {
         result = await action.Invoke().ConfigureAwait(false);
-        if (log.IsTraceEnabled())
-          log.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
+        if (logger.IsTraceEnabled())
+          logger.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
       }
       catch (ServiceException se)
       {
-        log.LogError(se, $"Execution failed for: {action.GetMethodInfo().Name}. ");
+        logger.LogError(se, $"Execution failed for: {action.GetMethodInfo().Name}. ");
         throw;
       }
       catch (Exception ex)
@@ -185,7 +181,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       finally
       {
-        log.LogInformation($"Executed {action.GetMethodInfo().Name} with the result {result?.Code}");
+        logger.LogInformation($"Executed {action.GetMethodInfo().Name} with the result {result?.Code}");
       }
 
       return result;
@@ -249,11 +245,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       if (project == null)
       {
-        log.LogWarning($"User doesn't have access to legacyProjectId: {legacyProjectId}");
+        logger.LogWarning($"User doesn't have access to legacyProjectId: {legacyProjectId}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
       }
 
-      log.LogInformation($"Project legacyProjectId: {legacyProjectId} retrieved");
+      logger.LogInformation($"Project legacyProjectId: {legacyProjectId} retrieved");
       return project;
     }
 
@@ -265,7 +261,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>Returns <see cref="TIDCustomPrincipal.CustomerUid"/></returns>
     protected string LogCustomerDetails(string functionName, string projectUid = "")
     {
-      log.LogInformation(
+      logger.LogInformation(
         $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and projectUid={projectUid}");
 
       return customerUid;
@@ -279,7 +275,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>Returns <see cref="TIDCustomPrincipal.CustomerUid"/></returns>
     protected string LogCustomerDetails(string functionName, long legacyProjectId = 0)
     {
-      log.LogInformation(
+      logger.LogInformation(
         $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and legacyProjectId={legacyProjectId}");
 
       return customerUid;

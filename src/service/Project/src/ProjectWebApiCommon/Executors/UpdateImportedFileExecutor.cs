@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;
@@ -30,10 +31,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   {
     /// <summary>
     /// Processes the Upsert
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ContractExecutionResult if successful</returns>     
+    /// </summary>  
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       UpdateImportedFile updateImportedFile = item as UpdateImportedFile;
@@ -50,28 +48,31 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                              updateImportedFile.ImportedFileType == ImportedFileType.Alignment ||
                              updateImportedFile.ImportedFileType == ImportedFileType.ReferenceSurface;
 
-      var existing = await projectRepo.GetImportedFile(updateImportedFile.ImportedFileUid.ToString())
-        .ConfigureAwait(false);
+      ImportedFile existingImportedFile = null;
+
+      var existingImportedFileTask = 
+        projectRepo.GetImportedFile(updateImportedFile.ImportedFileUid.ToString())
+                   .ContinueWith(t => existingImportedFile = t.Result);
 
       if (useTrexGatewayDesignImport && isDesignFileType)
       {
         await ImportedFileRequestHelper.NotifyTRexUpdateFile(updateImportedFile.ProjectUid,
           updateImportedFile.ImportedFileType, updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileUid,
-          updateImportedFile.SurveyedUtc,  
+          updateImportedFile.SurveyedUtc,
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy, projectRepo).ConfigureAwait(false);
       }
 
       if (useRaptorGatewayDesignImport)
       {
-        var addFileResult = await ImportedFileRequestHelper.NotifyRaptorAddFile(
-            updateImportedFile.LegacyProjectId, Guid.Parse(updateImportedFile.ProjectUid.ToString()),
-            updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
-            updateImportedFile.FileDescriptor, updateImportedFile.ImportedFileId,
-            Guid.Parse(updateImportedFile.ImportedFileUid.ToString()), false, log, customHeaders,
-            serviceExceptionHandler, raptorProxy,
-            projectRepo)
-          .ConfigureAwait(false);
+        await ImportedFileRequestHelper.NotifyRaptorAddFile(
+                                         updateImportedFile.LegacyProjectId, Guid.Parse(updateImportedFile.ProjectUid.ToString()),
+                                         updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
+                                         updateImportedFile.FileDescriptor, updateImportedFile.ImportedFileId,
+                                         Guid.Parse(updateImportedFile.ImportedFileUid.ToString()), false, log, customHeaders,
+                                         serviceExceptionHandler, raptorProxy,
+                                         projectRepo)
+                                       .ConfigureAwait(false);
 
         var dxfFileName = updateImportedFile.FileDescriptor.FileName;
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment)
@@ -86,9 +87,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             updateImportedFile.ImportedFileType == ImportedFileType.Linework)
         {
           //Generate DXF tiles
-          var project =
-            await ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log,
-              serviceExceptionHandler, projectRepo);
+          var projectTask = ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
+
+          Task.WhenAll(existingImportedFileTask, projectTask).Wait();
 
           var jobRequest = new JobRequest
           {
@@ -97,10 +98,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             {
               CustomerUid = Guid.Parse(customerUid),
               ProjectUid = updateImportedFile.ProjectUid,
-              ImportedFileUid = Guid.Parse(existing.ImportedFileUid),
+              ImportedFileUid = Guid.Parse(existingImportedFile.ImportedFileUid),
               DataOceanRootFolder = updateImportedFile.DataOceanRootFolder,
               DxfFileName = dxfFileName,
-              DcFileName = project.CoordinateSystemFileName,
+              DcFileName = projectTask.Result.CoordinateSystemFileName,
               DxfUnitsType = updateImportedFile.DxfUnitsTypeId
             }
           };
@@ -108,20 +109,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         }
       }
 
+      Task.WhenAll(existingImportedFileTask).Wait();
+
       // if all succeeds, update Db and  put update to kafka que
-      var updateImportedFileEvent = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
-          JsonConvert.SerializeObject(existing.FileDescriptor),
-          updateImportedFile.SurveyedUtc, existing.MinZoomLevel, existing.MaxZoomLevel,
+      var updateImportedFileEvent = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existingImportedFile,
+          existingImportedFile.FileDescriptor,
+          updateImportedFile.SurveyedUtc, existingImportedFile.MinZoomLevel, existingImportedFile.MaxZoomLevel,
           updateImportedFile.FileCreatedUtc, updateImportedFile.FileUpdatedUtc, userEmailAddress,
           log, serviceExceptionHandler, projectRepo)
         .ConfigureAwait(false);
 
       var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
-        producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>
-          {
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>
+        {
             new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-          });
+        });
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await ImportedFileRequestDatabaseHelper.GetImportedFileList(updateImportedFile.ProjectUid.ToString(), log, userId, projectRepo).ConfigureAwait(false))
@@ -139,6 +142,5 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       throw new NotImplementedException();
     }
-
   }
 }
