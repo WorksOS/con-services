@@ -187,32 +187,27 @@ namespace VSS.MasterData.ProjectTests
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah" };
 
-      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
-        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUid, offset);
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
+        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, "deblah", parentUid, offset);
     }
 
     [TestMethod]
     public void ValidateImportFile_ReferenceSurfaceMissingParent()
     {
-      var file = new FlowFile { path = "\\*", flowFilename = "deblah" };
-
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, null, offset));
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, "deblah", null, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(118)));
     }
 
     [TestMethod]
     public void ValidateImportFile_ReferenceSurfaceMissingOffset()
     {
-      var file = new FlowFile { path = "\\*", flowFilename = "deblah" };
-
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUid, 0));
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, "deblah", parentUid, 0));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(118)));
     }
-
 
     [TestMethod]
     public void ValidateImportFile_SurveyedSurfaceHappyPath()

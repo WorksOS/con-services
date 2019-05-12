@@ -33,7 +33,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void DeAllocateLatestPassGrid();
     bool SavePayloadToStream(BinaryWriter writer);
 
-    bool LoadPayloadFromStream_v2p0(BinaryReader reader,
+    bool LoadPayloadFromStream(BinaryReader reader,
       bool loadLatestData,
       bool loadAllPasses);
 

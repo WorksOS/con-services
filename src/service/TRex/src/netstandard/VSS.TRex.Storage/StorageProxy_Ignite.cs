@@ -86,8 +86,9 @@ namespace VSS.TRex.Storage
 
         return FileSystemErrorStatus.OK;
       }
-      catch
+      catch (Exception e)
       {
+        Log.LogError(e, $"Exception writing stream {streamName} to persistent store");
         return FileSystemErrorStatus.UnknownErrorWritingToFS;
       }
     }
@@ -138,8 +139,9 @@ namespace VSS.TRex.Storage
 
         return FileSystemErrorStatus.OK;
       }
-      catch
+      catch (Exception e)
       {
+        Log.LogError(e, $"Exception writing spatial stream {streamName} to persistent store");
         return FileSystemErrorStatus.UnknownErrorWritingToFS;
       }
     }
@@ -264,8 +266,9 @@ namespace VSS.TRex.Storage
 
         return FileSystemErrorStatus.OK;
       }
-      catch
+      catch (Exception e)
       {
+        Log.LogError(e, $"Exception removing stream {streamName} from persistent store");
         return FileSystemErrorStatus.UnknownErrorWritingToFS;
       }
     }

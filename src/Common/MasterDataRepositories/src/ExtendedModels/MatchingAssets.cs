@@ -6,26 +6,26 @@ namespace VSS.MasterData.Repositories.ExtendedModels
 {
   public class MatchingAssets
   {
-    public string AssetUID { get; set; }
-    public string MatchingAssetUID { get; set; }
+    public string AssetUID2D { get; set; }
+    public string AssetUID3D { get; set; }
     public string Name { get; set; }
-    public string SerialNumber { get; set; }
-    public string MatchingSerialNumber { get; set; }
-    public string MakeCode { get; set; }
-    public string MatchingMakeCode { get; set; }
+    public string SerialNumber2D { get; set; }
+    public string SerialNumber3D { get; set; }
+    public string MakeCode2D { get; set; }
+    public string MakeCode3D { get; set; }
     public string Model { get; set; }
     public string CustomerName { get; set; }
 
     public override bool Equals(object obj)
     {
       if (!(obj is MatchingAssets otherAsset)) return false;
-      return otherAsset.AssetUID == AssetUID
-             && otherAsset.MatchingAssetUID == MatchingAssetUID
+      return otherAsset.AssetUID2D == AssetUID2D
+             && otherAsset.AssetUID3D == AssetUID3D
              && otherAsset.Name == Name
-             && otherAsset.SerialNumber == SerialNumber
-             && otherAsset.MatchingSerialNumber == MatchingSerialNumber
-             && otherAsset.MakeCode == MakeCode
-             && otherAsset.MatchingMakeCode == MatchingMakeCode
+             && otherAsset.SerialNumber2D == SerialNumber2D
+             && otherAsset.SerialNumber3D == SerialNumber3D
+             && otherAsset.MakeCode2D == MakeCode2D
+             && otherAsset.MakeCode3D == MakeCode3D
              && otherAsset.Model == Model
              && otherAsset.CustomerName == CustomerName;
     }

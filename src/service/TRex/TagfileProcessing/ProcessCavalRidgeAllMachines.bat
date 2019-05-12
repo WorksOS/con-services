@@ -1,0 +1,1 @@
+dotnet "..\src\tools\VSS.TRex.Tools.TAGfileSubmitter\bin\debug\netcoreapp2.1\VSS.TRex.Tools.TAGFileSubmittor.dll" "{BEAB1A26-DF33-4BF3-AA42-5BAF8718F780}" "C:\Test Data\TAG Files\Caval Ridge\AllTAGFiles"

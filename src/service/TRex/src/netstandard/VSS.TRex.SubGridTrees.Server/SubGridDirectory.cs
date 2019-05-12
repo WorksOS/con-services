@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -8,6 +9,8 @@ namespace VSS.TRex.SubGridTrees.Server
 { 
   public class SubGridDirectory : ISubGridDirectory
   {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridDirectory>();
+
         /// <summary>
         /// Controls whether segment and cell pass information held within this sub grid is represented
         /// in the mutable or immutable forms supported by TRex
@@ -44,6 +47,14 @@ namespace VSS.TRex.SubGridTrees.Server
         {
         }
 
+        public void DumpSegmentDirectoryToLog()
+        {
+          Log.LogInformation($"Segment directory contains {SegmentDirectory.Count} segments");
+
+          foreach (var si in SegmentDirectory)
+            Log.LogInformation(si.ToString());
+        }
+
         public void CreateDefaultSegment()
         {
             if (SegmentDirectory.Count == 0)
@@ -61,43 +72,42 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void Write(BinaryWriter writer)
         {
-            if (GlobalLatestCells == null)  
-              throw new TRexSubGridIOException("Cannot write sub grid directory without global latest values available");
-
-            GlobalLatestCells.Write(writer, new byte[10000]);
+            writer.Write(GlobalLatestCells != null);
+            GlobalLatestCells?.Write(writer, new byte[50000]);
 
             // Write out the directory of segments
-            if (SegmentDirectory.Count == 0)
-              throw new TRexSubGridIOException("Writing a segment directory with no segments");
-
             writer.Write(SegmentDirectory.Count);
 
             foreach (var Segment in SegmentDirectory)
             {
-                Segment.Write(writer);
+              Segment.Write(writer);
             }
+
+            ExistsInPersistentStore = true;
         }
 
         public void Read(BinaryReader reader)
         {
+          if (reader.ReadBoolean())
+          {
             if (GlobalLatestCells == null)
               throw new TRexSubGridIOException("Cannot read sub grid directory without global latest values available");
-         
-            GlobalLatestCells.Read(reader, new byte[10000]);
-         
-            // Read in the directory of segments
-            int SegmentCount = reader.ReadInt32();
-         
-            for (int I = 0; I < SegmentCount; I++)
-            {
-              SubGridCellPassesDataSegmentInfo segmentInfo = new SubGridCellPassesDataSegmentInfo();
-              segmentInfo.Read(reader);
-         
-              segmentInfo.ExistsInPersistentStore = true;
-              SegmentDirectory.Add(segmentInfo);
-            }
-         
-            ExistsInPersistentStore = true;
+            GlobalLatestCells.Read(reader, new byte[50000]);
+          }
+
+          // Read in the directory of segments
+          int SegmentCount = reader.ReadInt32();
+
+          for (int I = 0; I < SegmentCount; I++)
+          {
+            var segmentInfo = new SubGridCellPassesDataSegmentInfo();
+            segmentInfo.Read(reader);
+
+            segmentInfo.ExistsInPersistentStore = true;
+            SegmentDirectory.Add(segmentInfo);
+          }
+
+          ExistsInPersistentStore = true;
         }
   }
 }

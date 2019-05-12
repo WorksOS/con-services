@@ -26,6 +26,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     private readonly ITAGFileBufferQueue queue = DIContext.Obtain<ITAGFileBufferQueue>();
 
+    private bool OutputInformationalRequestLogging = false;
 
     /// <summary>
     /// Receive a TAG file to be processed, validate TAG File Authorization for the file, and add it to the 
@@ -39,9 +40,10 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <returns></returns>
     public SubmitTAGFileResponse Execute(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
     {
-      Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}");
+      if (OutputInformationalRequestLogging)
+        Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}");
       
-      SubmitTAGFileResponse response = new SubmitTAGFileResponse
+      var response = new SubmitTAGFileResponse
       {
         FileName = tagFileName,
         Success = false,
@@ -54,7 +56,7 @@ namespace VSS.TRex.TAGFiles.Executors
         try
         {
           // wrap up details into obj
-          TagFileDetail td = new TagFileDetail()
+          TagFileDetail td = new TagFileDetail
           {
             assetId = assetId,
             projectId = projectId,
@@ -82,9 +84,11 @@ namespace VSS.TRex.TAGFiles.Executors
             Guid validProjectId = td.projectId ?? Guid.Empty;
             Guid validAssetId = td.assetId ?? Guid.Empty;
 
-            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectUID:{validProjectId}, AssetUID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe:{td.IsJohnDoe} ");
-            TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectId, validAssetId);
-            TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
+            if (OutputInformationalRequestLogging)
+              Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectUID:{validProjectId}, AssetUID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe:{td.IsJohnDoe} ");
+
+            var tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectId, validAssetId);
+            var tagItem = new TAGFileBufferQueueItem
             {
               InsertUTC = DateTime.UtcNow,
               ProjectID = validProjectId,
@@ -120,7 +124,8 @@ namespace VSS.TRex.TAGFiles.Executors
       }
       finally
       {
-        Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Message} Code:{response.Code}");
+        if (OutputInformationalRequestLogging)
+          Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Message} Code:{response.Code}");
       }
       return response;
     }

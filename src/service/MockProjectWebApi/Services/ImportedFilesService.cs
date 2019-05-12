@@ -119,7 +119,7 @@ namespace MockProjectWebApi.Services
           },
           new FileData
           {
-            Name = "Section 1 IFC Rev J (1.5)",
+            Name = "Large Sites Road - Trimble Road +0.5m",
             ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
             CustomerUid = "ImportFileProxyTest",
             ImportedFileType = ImportedFileType.ReferenceSurface,
@@ -128,12 +128,12 @@ namespace MockProjectWebApi.Services
             IsActivated = true,
             MinZoomLevel = 16,
             MaxZoomLevel = 19,
-            ParentUid = "eb798b46-c927-4fdd-b998-b11011ee7365",
-            Offset = 1.5
+            ParentUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
+            Offset = 0.5
           },
           new FileData
           {
-            Name = "Section 1 IFC Rev J (-2.5)",
+            Name = "Large Sites Road - Trimble Road -0.75m",
             ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
             CustomerUid = "ImportFileProxyTest",
             ImportedFileType = ImportedFileType.ReferenceSurface,
@@ -142,8 +142,8 @@ namespace MockProjectWebApi.Services
             IsActivated = true,
             MinZoomLevel = 16,
             MaxZoomLevel = 19,
-            ParentUid = "eb798b46-c927-4fdd-b998-b11011ee7365",
-            Offset = -2.5
+            ParentUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
+            Offset = -0.75
           }
       };
 
@@ -359,7 +359,7 @@ namespace MockProjectWebApi.Services
       {
         new FileData
         {
-          Name = "Large Sites Road - Trimble Road +1.5m",
+          Name = "Large Sites Road - Trimble Road +0.5m",
           ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
           CustomerUid = "ReferenceSurfaceAcceptanceTest",
           ImportedFileType = ImportedFileType.ReferenceSurface,
@@ -369,11 +369,11 @@ namespace MockProjectWebApi.Services
           MinZoomLevel = 15,
           MaxZoomLevel = 18,
           ParentUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
-          Offset = 1.5
+          Offset = 0.5
         },
         new FileData
         {
-          Name = "Large Sites Road - Trimble Road +2.8m",
+          Name = "Large Sites Road - Trimble Road +0.75m",
           ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
           CustomerUid = "ReferenceSurfaceAcceptanceTest",
           ImportedFileType = ImportedFileType.ReferenceSurface,
@@ -383,11 +383,11 @@ namespace MockProjectWebApi.Services
           MinZoomLevel = 15,
           MaxZoomLevel = 18,
           ParentUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
-          Offset = 2.8
+          Offset = 0.75
         },
         new FileData
         {
-          Name = "Milling - Milling -1.75m",
+          Name = "Milling - Milling -0.75m",
           ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
           CustomerUid = "ReferenceSurfaceAcceptanceTest",
           ImportedFileType = ImportedFileType.ReferenceSurface,
@@ -397,11 +397,11 @@ namespace MockProjectWebApi.Services
           MinZoomLevel = 16,
           MaxZoomLevel = 17,
           ParentUid = "220e12e5-ce92-4645-8f01-1942a2d5a57f",
-          Offset = -1.75
+          Offset = -0.75
         },
         new FileData
         {
-          Name = "Topcon Road - Topcon -3.2m",
+          Name = "Topcon Road - Topcon -0.25m",
           ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
           CustomerUid = "ReferenceSurfaceAcceptanceTest",
           ImportedFileType = ImportedFileType.ReferenceSurface,
@@ -411,7 +411,7 @@ namespace MockProjectWebApi.Services
           MinZoomLevel = 16,
           MaxZoomLevel = 18,
           ParentUid = "ea97efb9-c0c4-4a7f-9eee-e2b0ef0b0916",
-          Offset = -3.2
+          Offset = -0.25
         }
       };
   }

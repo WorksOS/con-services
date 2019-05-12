@@ -73,51 +73,43 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                         continue;
                     }
                 
-                    // TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
                     if (!Result.Dirty && !ReturnCachedItemsOnly && 
                         (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
                       {
-                        // This additional check to determine if the required storage classes
-                        // are present is necessary to check if an earlier thread through this code has
-                        // already allocated them
-                
-                        if (!Result.Dirty && (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
+                        if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
+                            (StorageProxy,
+                             new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
+                             RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
+                             IterationState.SubGrid,
+                             Result))
                         {
-                            if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
-                                (StorageProxy,
-                                 new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
-                                 RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
-                                 IterationState.SubGrid,
-                                 Result))
+                            /* TODO: no separate cache - it is in ignite
+                            // The segment is now loaded and available for use and should be touched
+                            // to link it into the cache segment MRU management
+                            if (Result != null && Result.Owner.PresentInCache)
                             {
-                                /* TODO: no separate cache - it is in ignite
-                                // The segment is now loaded and available for use and should be touched
-                                // to link it into the cache segment MRU management
-                                if (Result != null && Result.Owner.PresentInCache)
-                                {
-                                   DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
-                                }
-                                */
+                               DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
                             }
-                            else
+                            */
+                        }
+                        else
+                        {
+                            /* TODO: no separate cache - it is in ignite
+                            // The segment is failed to load, however it may have been created
+                            // to hold the data being read. The failure handling will have backtracked
+                            // out any allocations made within the segment, but it is safer to include
+                            // it into the cache and allow it to be managed there than to
+                            // independently remove it here
+                            if (Result != null && Result.Owner.PresentInCache)
                             {
-                                /* TODO: no separate cache - it is in ignite
-                                // The segment is failed to load, however it may have been created
-                                // to hold the data being read. The failure handling will have backtracked
-                                // out any allocations made within the segment, but it is safer to include
-                                // it into the cache and allow it to be managed there than to
-                                // independently remove it here
-                                if (Result != null && Result.Owner.PresentInCache)
-                                {
-                                    DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
-                                }
-                                */
+                                DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
+                            }
+                            */
                 
-                                // Segment failed to be loaded. Multiple messages will have been posted to the log.
-                                // Move to the next item in the iteration
-                                Result = null; 
-                                continue;
-                            }
+                            // Segment failed to be loaded. Multiple messages will have been posted to the log.
+                            // Move to the next item in the iteration
+                            Result = null; 
+                            continue;
                         }
                     }
                 }
@@ -184,7 +176,18 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public void SetTimeRange(DateTime startTime, DateTime endTime) => IterationState.SetTimeRange(startTime, endTime);
 
-        public bool MoveNext() => CurrentSubGridSegment == null ? MoveToFirstSubGridSegment() : MoveToNextSubGridSegment();
+        public bool MoveNext()
+        {
+          var result = CurrentSubGridSegment == null ? MoveToFirstSubGridSegment() : MoveToNextSubGridSegment();
+
+          if (CurrentSubGridSegment != null && CurrentSubGridSegment.PassesData == null)
+          {
+            if (RetrieveAllPasses)
+              Log.LogError("Segment retrieved by iterator requiring all cell passes returned a segment with null cell passes");
+          }
+
+          return result;
+        }
 
         // MoveToFirstSubGridSegment moves to the first segment in the sub grid
         public bool MoveToFirstSubGridSegment()
@@ -199,7 +202,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // MoveToNextSubGridSegment moves to the next segment in the sub grid
         public bool MoveToNextSubGridSegment()
         {
-            ISubGridCellPassesDataSegment SubGridSegment = LocateNextSubGridSegmentInIteration();
+            var SubGridSegment = LocateNextSubGridSegmentInIteration();
 
             if (SubGridSegment == null) // We are at the end of the iteration
             {

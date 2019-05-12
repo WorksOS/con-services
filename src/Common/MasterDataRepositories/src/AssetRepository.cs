@@ -102,10 +102,10 @@ namespace VSS.MasterData.Repositories
       var upsertedCount = 0;
 
       var existing = (await QueryWithAsyncPolicy<Asset>(@"SELECT 
-                              AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, 
+                              AssetUID2D, Name, LegacyAssetID, SerialNumber2D, MakeCode2D, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, 
                               LastActionedUTC AS LastActionedUtc
                             FROM Asset
-                            WHERE AssetUID = @AssetUID", new {AssetUID = asset.AssetUID})).FirstOrDefault();
+                            WHERE AssetUID2D = @AssetUID2D", new {AssetUID = asset.AssetUID})).FirstOrDefault();
 
       if (existing == null || existing.IsDeleted == false)
       {
@@ -131,9 +131,9 @@ namespace VSS.MasterData.Repositories
         asset.AssetType = asset.AssetType ?? "Unassigned";
         const string upsert =
           @"INSERT Asset
-                    (AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
+                    (AssetUID2D, Name, LegacyAssetID, SerialNumber2D, MakeCode2D, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
                   VALUES
-                   (@AssetUID, @Name, @LegacyAssetID, @SerialNumber, @MakeCode, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
+                   (@AssetUID2D, @Name, @LegacyAssetID, @SerialNumber2D, @MakeCode2D, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
         return await ExecuteWithAsyncPolicy(upsert, asset);
       }
 
@@ -154,8 +154,8 @@ namespace VSS.MasterData.Repositories
           @"UPDATE Asset                
                     SET Name = @Name,
                         LegacyAssetID = @LegacyAssetID,
-                        SerialNumber = @SerialNumber,
-                        MakeCode = @MakeCode,
+                        SerialNumber2D = @SerialNumber2D,
+                        MakeCode2D = @MakeCode2D,
                         Model = @Model,
                         ModelYear = @ModelYear,
                         AssetType = @AssetType,
@@ -163,7 +163,7 @@ namespace VSS.MasterData.Repositories
                         OwningCustomerUID = @OwningCustomerUID,
                         EquipmentVIN = @EquipmentVIN,      
                         LastActionedUTC = @LastActionedUtc
-                  WHERE AssetUID = @AssetUID";
+                  WHERE AssetUID2D = @AssetUID2D";
         return await ExecuteWithAsyncPolicy(update, asset);
       }
 
@@ -171,9 +171,9 @@ namespace VSS.MasterData.Repositories
       {
         const string update =
           @"UPDATE Asset                
-                  SET MakeCode = @MakeCode,
-                    SerialNumber = @SerialNumber
-                  WHERE AssetUID = @AssetUID";
+                  SET MakeCode2D = @MakeCode2D,
+                    SerialNumber2D = @SerialNumber2D
+                  WHERE AssetUID2D = @AssetUID2D";
         return await ExecuteWithAsyncPolicy(update, asset);
       }
 
@@ -190,7 +190,7 @@ namespace VSS.MasterData.Repositories
             @"UPDATE Asset                
                           SET IsDeleted = 1,
                             LastActionedUTC = @LastActionedUtc
-                          WHERE AssetUID = @AssetUID";
+                          WHERE AssetUID2D = @AssetUID2D";
           return await ExecuteWithAsyncPolicy(update, asset);
         }
 
@@ -205,9 +205,9 @@ namespace VSS.MasterData.Repositories
 
         var upsert = string.Format(
           "INSERT Asset " +
-          "    (AssetUID, IsDeleted, LastActionedUTC, AssetType) " +
+          "    (AssetUID2D, IsDeleted, LastActionedUTC, AssetType) " +
           "  VALUES " +
-          "   (@AssetUID, @IsDeleted, @LastActionedUtc, \"Unassigned\")");
+          "   (@AssetUID2D, @IsDeleted, @LastActionedUtc, \"Unassigned\")");
         return await ExecuteWithAsyncPolicy(upsert, asset);
       }
 
@@ -240,7 +240,7 @@ namespace VSS.MasterData.Repositories
                               OwningCustomerUID = @OwningCustomerUID,
                               EquipmentVIN = @EquipmentVIN,
                               LastActionedUTC = @LastActionedUtc
-                            WHERE AssetUID = @AssetUID";
+                            WHERE AssetUID2D = @AssetUID2D";
           return await ExecuteWithAsyncPolicy(update, asset);
         }
 
@@ -256,9 +256,9 @@ namespace VSS.MasterData.Repositories
         asset.AssetType = asset.AssetType ?? "Unassigned";
         const string upsert =
           @"INSERT Asset
-                    (AssetUID, Name, LegacyAssetId, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
+                    (AssetUID2D, Name, LegacyAssetId, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
                   VALUES
-                    (@AssetUID, @Name, @LegacyAssetID, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
+                    (@AssetUID2D, @Name, @LegacyAssetID, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
         return await ExecuteWithAsyncPolicy(upsert, asset);
       }
 
@@ -272,17 +272,17 @@ namespace VSS.MasterData.Repositories
     public async Task<Asset> GetAsset(string assetUid)
     {
       return (await QueryWithAsyncPolicy<Asset>(@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        AssetUID2D AS AssetUid, Name, LegacyAssetId, SerialNumber2D, MakeCode2D, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
-                      WHERE AssetUID = @AssetUID 
+                      WHERE AssetUID2D = @AssetUID2D 
                         AND IsDeleted = 0", new {AssetUID = assetUid})).FirstOrDefault();
     }
 
     public async Task<Asset> GetAsset(long legacyAssetId)
     {
       return (await QueryWithAsyncPolicy<Asset>(@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        AssetUID2D AS AssetUid, Name, LegacyAssetId, SerialNumber2D, MakeCode2D, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE LegacyAssetId = @LegacyAssetID 
@@ -295,7 +295,7 @@ namespace VSS.MasterData.Repositories
     {
       return (await QueryWithAsyncPolicy<Asset>
       (@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        AssetUID2D AS AssetUid, Name, LegacyAssetId, SerialNumber2D, MakeCode2D, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE IsDeleted = 0"
@@ -308,57 +308,72 @@ namespace VSS.MasterData.Repositories
       var assetsArray = assetUids.ToArray();
       return (await QueryWithAsyncPolicy<Asset>
       (@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        AssetUID2D AS AssetUid, Name, LegacyAssetId, SerialNumber2D, MakeCode2D, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
-                      WHERE IsDeleted = 0 AND AssetUID IN @assets"
+                      WHERE IsDeleted = 0 AND AssetUID2D IN @assets"
       , new { assets = assetsArray} )).ToList();
     }
 
-    public async Task<MatchingAssets> GetMatching3D2DAssets(Guid assetUid)
+
+
+    public async Task<MatchingAssets> GetMatching3D2DAssets(MatchingAssets asset)
     {
-     var asset = (await QueryWithAsyncPolicy<MatchingAssets>
-                 //3d to 2d
-                 (@"Select
-                a.AssetUID
-                ,a2.AssetUID MatchingAssetUID
+      MatchingAssets result=null;
+      if (Guid.TryParse(asset.AssetUID3D, out var a))
+      {
+        result =
+          (await QueryWithAsyncPolicy<MatchingAssets>
+            //3d to 2d
+            (@"Select
+                a.AssetUID AssetUID2D
+                ,a2.AssetUID AssetUID3D
                 ,a.Name
-                ,a.SerialNumber
-                ,a.MakeCode
+                ,a.SerialNumber SerialNumber2D
+                ,a.MakeCode MakeCode2D
                 ,a.Model
                 ,c.Name CustomerName
-                ,a2.SerialNumber MatchingSerialNumber
-                ,a2.MakeCode MatchingMakeCode
+                ,a2.SerialNumber SerialNumber3D
+                ,a2.MakeCode MakeCode3D
                 from
 	                Asset a
                     inner join AssetSubscription asu on asu.fk_AssetUID=a.AssetUID and asu.fk_AssetUID = @asset
-	                inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 13 and sp.EndDate  >= Utc_Timestamp()
+	                  inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 13 and sp.EndDate  >= Utc_Timestamp()
                     inner join Customer c on c.CustomerUID = sp.fk_CustomerUID and fk_CustomertypeID=1
                     left join Asset a2 on a2.SerialNumber = left(a.SerialNumber,locate('-',concat(replace(a.SerialNumber,' ','-'),'-'))-1)
                 where
 	                a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID "
-                   , new {asset = assetUid})).FirstOrDefault() ?? (await QueryWithAsyncPolicy<MatchingAssets>
-                 //2d to 3d
-                 (@" Select
-            a.AssetUID
-            ,a2.AssetUID MatchingAssetUID
-            ,a.Name
-            ,a.SerialNumber
-            ,a.MakeCode
-            ,a.Model
-            ,c.Name CustomerName
-            ,a2.SerialNumber MatchingSerialNumber
-            ,a2.MakeCode MatchingMakeCode
+              , new {asset = asset.AssetUID3D})).FirstOrDefault();
+      }
+
+      if (Guid.TryParse(asset.AssetUID2D, out var b))
+      {
+        result =
+          (await QueryWithAsyncPolicy<MatchingAssets>
+            //2d to 3d
+            (@" Select
+                a.AssetUID AssetUID2D
+                ,a2.AssetUID AssetUID3D
+                ,a.Name
+                ,a.SerialNumber SerialNumber2D
+                ,a.MakeCode MakeCode2D
+                ,a.Model
+                ,c.Name CustomerName
+                ,a2.SerialNumber SerialNumber3D
+                ,a2.MakeCode MakeCode3D
             from
 	            Asset a
                 inner join AssetSubscription asu on asu.fk_AssetUID=a.AssetUID and asu.fk_AssetUID=@asset
-	            inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 1
+	              inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 1
                 inner join Customer c on c.CustomerUID = sp.fk_CustomerUID and fk_CustomertypeID=1
                 left join Asset a2 on a.SerialNumber = left(a2.SerialNumber,locate('-',concat(replace(a2.SerialNumber,' ','-'),'-'))-1)
             where
 	            a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID "
-                   , new { asset = assetUid })).FirstOrDefault();
-      return asset;
+              , new {asset = asset.AssetUID2D})).FirstOrDefault();
+      }
+
+      if (result == null) return asset;
+      return result;
     }
 
     public async Task<IEnumerable<Asset>> GetAssets(IEnumerable<long> assetIds)
@@ -366,7 +381,7 @@ namespace VSS.MasterData.Repositories
       var assetsArray = assetIds.ToArray();
       return (await QueryWithAsyncPolicy<Asset>
       (@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        AssetUID2D AS AssetUid, Name, LegacyAssetId, SerialNumber2D, MakeCode2D, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE IsDeleted = 0 AND LegacyAssetId IN @assets"
@@ -381,7 +396,7 @@ namespace VSS.MasterData.Repositories
     {
       return (await QueryWithAsyncPolicy<Asset>
       (@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        AssetUID2D AS AssetUid, Name, LegacyAssetId, SerialNumber2D, MakeCode2D, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset"
       )).ToList();
@@ -391,7 +406,7 @@ namespace VSS.MasterData.Repositories
     {
       return (await QueryWithAsyncPolicy<Asset>
       (@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        AssetUID2D AS AssetUid, Name, LegacyAssetId, SerialNumber2D, MakeCode2D, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset 
                       WHERE AssetType IN @families
