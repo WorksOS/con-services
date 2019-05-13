@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Kubernetes.Interfaces;

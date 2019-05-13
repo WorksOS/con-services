@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;

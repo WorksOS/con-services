@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.Log4NetExtensions;
 

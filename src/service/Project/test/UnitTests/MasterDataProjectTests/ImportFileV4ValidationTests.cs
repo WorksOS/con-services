@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.Common.Abstractions;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.FlowJSHandler;
