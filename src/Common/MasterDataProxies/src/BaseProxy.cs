@@ -28,9 +28,7 @@ namespace VSS.MasterData.Proxies
     protected readonly IConfigurationStore configurationStore;
     protected readonly ILogger log;
     protected readonly ILoggerFactory logger;
-    /// <summary>
-    /// If there is no provided LOG_MAX_CHAR env variable, then we will default to this
-    /// </summary>
+    
     private const int DefaultLogMaxChar = 1000;
     private readonly int _logMaxChar;
 

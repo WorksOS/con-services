@@ -16,12 +16,8 @@ namespace VSS.MasterData.Proxies
 {
   public class GracefulWebRequest : IWebRequest
   {
-    /// <summary>
-    /// If there is no provided LOG_MAX_CHAR env variable, then we will default to this
-    /// </summary>
-    private const int DefaultLogMaxChar = 1000;
-
     private readonly ILogger log;
+    private const int DefaultLogMaxChar = 1000;
     private readonly int _logMaxChar;
 
     static HttpClientHandler handler = new HttpClientHandler()
