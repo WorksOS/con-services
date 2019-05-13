@@ -93,6 +93,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
+      services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
 
       services.AddOpenTracing(builder =>
       {
