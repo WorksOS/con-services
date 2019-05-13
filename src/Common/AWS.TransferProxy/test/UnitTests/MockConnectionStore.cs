@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 
 namespace VSS.AWS.TransferProxy.UnitTests

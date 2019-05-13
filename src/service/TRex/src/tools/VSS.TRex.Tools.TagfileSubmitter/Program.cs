@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.DI;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common.Utilities;

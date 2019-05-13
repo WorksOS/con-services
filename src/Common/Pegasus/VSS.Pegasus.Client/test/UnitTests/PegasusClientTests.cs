@@ -34,7 +34,7 @@ namespace VSS.Pegasus.Client.UnitTests
       serviceCollection = new ServiceCollection();
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddSingleton<ConfigurationStore.IConfigurationStore, GenericConfiguration>();
+      serviceCollection.AddSingleton<VSS.Common.Abstractions.Configuration.IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddTransient<IPegasusClient, PegasusClient>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
@@ -132,7 +132,7 @@ namespace VSS.Pegasus.Client.UnitTests
         ExecutionStatus = ExecutionStatus.NOT_READY
       };
 
-      var config = serviceProvider.GetRequiredService<ConfigurationStore.IConfigurationStore>();
+      var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
       var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
       var baseRoute = "/api/executions";
       var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";
@@ -202,7 +202,7 @@ namespace VSS.Pegasus.Client.UnitTests
         ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = ExecutionStatus.EXECUTING }
       };
 
-      var config = serviceProvider.GetRequiredService<ConfigurationStore.IConfigurationStore>();
+      var config = serviceProvider.GetRequiredService<VSS.Common.Abstractions.Configuration.IConfigurationStore>();
       var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
       var baseRoute = "/api/executions";
       var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";
@@ -345,7 +345,7 @@ namespace VSS.Pegasus.Client.UnitTests
         ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = ExecutionStatus.EXECUTING }
       };
 
-      var config = serviceProvider.GetRequiredService<ConfigurationStore.IConfigurationStore>();
+      var config = serviceProvider.GetRequiredService<VSS.Common.Abstractions.Configuration.IConfigurationStore>();
       var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
       var baseRoute = "/api/executions";
       var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";
