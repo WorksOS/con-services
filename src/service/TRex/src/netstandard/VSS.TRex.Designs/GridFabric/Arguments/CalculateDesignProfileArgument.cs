@@ -56,7 +56,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{ReferenceDesign.DesignID}, Offset: {ReferenceDesign.Offset}, {ProfilePath.Length} vertices";
+      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{ReferenceDesign?.DesignID}, Offset: {ReferenceDesign?.Offset}, {ProfilePath.Length} vertices";
     }
 
     /// <summary>

@@ -31,7 +31,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> SiteModel:{ProjectID}, Design:{ReferenceDesign.DesignID}, Offset:{ReferenceDesign.Offset}";
+      return base.ToString() + $" -> SiteModel:{ProjectID}, Design:{ReferenceDesign?.DesignID}, Offset:{ReferenceDesign?.Offset}";
     }
 
   }

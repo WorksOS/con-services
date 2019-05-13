@@ -1286,7 +1286,7 @@ namespace VSS.TRex.Filters
       // Elevation Range
       if (HasElevationRangeFilter)
       {
-        if (ElevationRangeDesign.DesignID != Guid.Empty)
+        if ((ElevationRangeDesign?.DesignID ?? Guid.Empty) != Guid.Empty)
           sb.Append($"ER:{ElevationRangeDesign.DesignID}-{ElevationRangeDesign.Offset}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
         else
           sb.Append($"ER:{ElevationRangeLevel:F3}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
