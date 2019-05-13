@@ -8,6 +8,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.FileAccess;
+using VSS.Common.Abstractions.FileAccess.Interfaces;
 using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -70,6 +72,7 @@ namespace VSS.WebApi.Common
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddSingleton<IVirtualFileSystemFactory, DefaultVirtualFileSystemFactory>();
 
       return services;
     }
