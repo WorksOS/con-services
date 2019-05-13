@@ -21,6 +21,7 @@ using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.SiteModels;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;

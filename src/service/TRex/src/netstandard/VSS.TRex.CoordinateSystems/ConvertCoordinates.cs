@@ -16,6 +16,7 @@ using VSS.TRex.HttpClients;
 using VSS.TRex.Types;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Configuration;
 
 namespace VSS.TRex.CoordinateSystems
 {

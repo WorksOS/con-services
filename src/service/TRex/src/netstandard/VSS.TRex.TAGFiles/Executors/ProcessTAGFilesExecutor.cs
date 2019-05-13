@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;

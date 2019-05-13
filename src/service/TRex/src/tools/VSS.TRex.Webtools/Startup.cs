@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.TRex.Alignments;

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
