@@ -379,6 +379,11 @@ namespace VSS.TRex.SubGridTrees.Server
         //***                 Write the sub grid directory file              ***
         //**********************************************************************
 
+        /*
+        There is no need to add the sub grid directory stream to the segment retirement
+        queue as this will be automatically be replaced when the new version of the 
+        sub grid directory is written to persistent store.
+
         // Add the stream representing the sub grid directory file to the list of
         // invalidated streams as this stream will be replaced with the stream
         // containing the updated directory information. Note: This only needs to
@@ -393,6 +398,7 @@ namespace VSS.TRex.SubGridTrees.Server
             invalidatedSpatialStreams.Add(subGrid.AffinityKey());
           }
         }
+        */
 
         if (subGrid.SaveDirectoryToFile(storageProxy, GetLeafSubGridFullFileName(OriginAddress)))
         {
