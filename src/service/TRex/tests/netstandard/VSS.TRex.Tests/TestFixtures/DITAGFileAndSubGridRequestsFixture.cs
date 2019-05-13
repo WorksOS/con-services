@@ -208,6 +208,65 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
     }
 
+    public static void AddMultipleCellsWithPasses(ISiteModel siteModel, uint cellX, uint cellY,
+      List<CellPass[]> passesList, int expectedCellCount = -1, int expectedPassCount = -1)
+    {
+      // Construct the sub grid to hold the cell being tested
+      IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+      leaf.Should().NotBeNull();
+
+      leaf.AllocateLeafFullPassStacks();
+      leaf.CreateDefaultSegment();
+      leaf.AllocateFullPassStacks(leaf.Directory.SegmentDirectory.First());
+      leaf.AllocateLeafLatestPassGrid();
+
+      // Add the leaf to the site model existence map
+      siteModel.ExistenceMap[leaf.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, leaf.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
+
+      long totalCells = 0;
+
+      for (var i = 0; i < passesList.Count; i++)
+      {
+        //CellPass[] _passes = passes.ToArray();
+
+        byte subGridX = (byte) (cellX & SubGridTreeConsts.SubGridLocalKeyMask);
+        byte subGridY = (byte) (cellY & SubGridTreeConsts.SubGridLocalKeyMask);
+
+        foreach (var pass in passesList[i])
+          leaf.AddPass(subGridX, subGridY, pass);
+
+        var cellPasses = leaf.Cells.PassesData[i].PassesData.ExtractCellPasses(subGridX, subGridY);
+        if (expectedPassCount > -1)
+          cellPasses.Length.Should().Be(expectedPassCount);
+
+        // Assign global latest cell pass to the appropriate pass
+        leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Last();
+
+        // Ensure the pass data existence map records the existence of a non null value in the cell
+        leaf.Directory.GlobalLatestCells.PassDataExistenceMap[subGridX, subGridY] = true;
+        
+        if (expectedCellCount > -1)
+        {
+          // Count the number of non-null elevation cells to verify a correct setup
+          siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(), x =>
+          {
+            totalCells += leaf.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
+            return true;
+          });
+        }
+
+        siteModel.SiteModelExtent.Include(siteModel.Grid.GetCellExtents(cellX, cellY));
+      }
+
+      totalCells.Should().Be(expectedCellCount);
+
+      // Save the leaf information just created
+      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
+
+      // Save the site model metadata to preserve the site model extent information across a site model change notification event
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
+    }
+
     public static void AddSingleSubGridWithPasses(ISiteModel siteModel, uint cellX, uint cellY, IEnumerable<CellPass>[,] passes)
     {
       // Construct the sub grid to hold the cell being tested
