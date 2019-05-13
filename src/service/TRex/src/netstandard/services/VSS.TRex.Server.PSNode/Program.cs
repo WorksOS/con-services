@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;

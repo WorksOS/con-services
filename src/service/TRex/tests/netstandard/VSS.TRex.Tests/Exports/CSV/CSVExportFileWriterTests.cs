@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.TRex.DI;
 using Moq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
