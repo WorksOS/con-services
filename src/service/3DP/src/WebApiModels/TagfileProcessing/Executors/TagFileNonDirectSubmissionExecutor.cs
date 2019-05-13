@@ -157,9 +157,11 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
             return result;
           }
 
+          var errorMessage =
+            $"{nameof(CallRaptorEndpoint)} (NonDirect): Failed to process tagfile with error: {ContractExecutionStates.FirstNameWithOffset((int) resultCode)}";
+          log.LogError(errorMessage);
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int) resultCode),
-              $"Failed to process tagfile with error: {ContractExecutionStates.FirstNameWithOffset((int) resultCode)}"));
+            new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int) resultCode), errorMessage));
         }
       }
       finally

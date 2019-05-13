@@ -84,7 +84,7 @@ namespace VSS.MasterData.Proxies
           result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get,customHeaders: customHeaders, timeout:timeout, retries:retries);
         }
 
-        log.LogDebug($"{nameof(SendRequestInternal)}: Result of send to master data request: {result}");
+        log.LogDebug($"{nameof(SendRequestInternal)}: Result of send to master data request: {JsonConvert.SerializeObject(result).Truncate(_logMaxChar)}");
         BaseProxyHealthCheck.SetStatus(true,this.GetType());
       }
       catch (Exception ex)
