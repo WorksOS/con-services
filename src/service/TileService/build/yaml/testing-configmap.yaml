@@ -4,6 +4,7 @@ metadata:
   name: tileservice-testing
 data:
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
+  ALK_BASE_URL: http://localhost:5001/api/v1/mock/alk
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
   DATA_OCEAN_ROOT_FOLDER: dev
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "1"

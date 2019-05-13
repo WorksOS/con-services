@@ -22,16 +22,18 @@ namespace VSS.Tile.Service.Common.Services
     private readonly IMemoryCache alkCache;
 
     private readonly string alkKey;
+    private readonly string baseUrl;
 
     public MapTileService(IConfigurationStore configuration, IMemoryCache cache, ILoggerFactory logger)
     {
       config = configuration;
       log = logger.CreateLogger<MapTileService>();
       alkKey = config.GetValueString("ALK_KEY");
+      baseUrl = config.GetValueString("ALK_BASE_URL");
       alkCache = cache;
-      if (string.IsNullOrEmpty(alkKey))
+      if (string.IsNullOrEmpty(alkKey) || string.IsNullOrEmpty(baseUrl))
       {
-        var message = "Missing environment variable ALK_KEY for ALK maps";
+        var message = "Missing environment variable ALK_KEY or ALK_BASE_URL for ALK maps";
         log.LogError(message);
         throw new InvalidOperationException(message);
       }
@@ -47,7 +49,6 @@ namespace VSS.Tile.Service.Common.Services
     public byte[] GetMapBitmap(MapParameters parameters, MapType mapType, string locale)
     {
       log.LogInformation($"GetMapBitmap: mapType={mapType}");
-      string mapURL = null;
 
       string alkMapType;
       switch (mapType)
@@ -77,9 +78,8 @@ namespace VSS.Tile.Service.Common.Services
 
       var dataset = "PCM_" + region; //"current";
       var mapLayers = "Cities,Labels,Roads,Commercial,Borders,Areas";
-      var baseUrl = "http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc/map";
-      mapURL =
-        $"{baseUrl}?AuthToken={alkKey}&pt1={parameters.bbox.minLngDegrees:F6},{parameters.bbox.minLatDegrees:F6}&pt2={parameters.bbox.maxLngDegrees:F6},{parameters.bbox.maxLatDegrees:F6}&width={parameters.mapWidth}&height={parameters.mapHeight}&drawergroups={mapLayers}&style={alkMapType}&srs=EPSG:900913&region={region}&dataset={dataset}&language={locale}&imgSrc=Sat1";
+      var mapURL =
+        $"{baseUrl}/map?AuthToken={alkKey}&pt1={parameters.bbox.minLngDegrees:F6},{parameters.bbox.minLatDegrees:F6}&pt2={parameters.bbox.maxLngDegrees:F6},{parameters.bbox.maxLatDegrees:F6}&width={parameters.mapWidth}&height={parameters.mapHeight}&drawergroups={mapLayers}&style={alkMapType}&srs=EPSG:900913&region={region}&dataset={dataset}&language={locale}&imgSrc=Sat1";
       if (mapType == MapType.SATELLITE)
       {
         mapURL += "&imgOption=BACKGROUND";
@@ -115,7 +115,7 @@ namespace VSS.Tile.Service.Common.Services
       string[] REGIONS = { "EU", "AF", "AS", "EU", "NA", "OC", "SA", "ME" };
 
       string geocodeUrl =
-        $"http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc/locations?coords={lng},{lat}&AuthToken={alkKey}";
+        $"{baseUrl}/locations?coords={lng},{lat}&AuthToken={alkKey}";
       using (var client = new WebClient())
       {
         string jsonresult = client.DownloadString(geocodeUrl);
