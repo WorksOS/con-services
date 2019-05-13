@@ -1,4 +1,6 @@
 ﻿using System;
+using VSS.Common.Abstractions;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 

@@ -3,6 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using VSS.Common.Abstractions.Configuration;
+using VSS.ConfigurationStore;
+using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
@@ -19,64 +24,93 @@ namespace VSS.TRex.TAGFiles.Executors
 
         public static ProcessTAGFileResponse Execute(Guid ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
         {
-            Log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
+            var _TAGFiles = TAGFiles.ToArray(); // Enumerate collection just once
 
-            ProcessTAGFileResponse response = new ProcessTAGFileResponse();
+            Log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {_TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
 
-            const int batchSize = 20;
+            var response = new ProcessTAGFileResponse();
+
+            int batchSize = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
             int batchCount = 0;
 
-            // Create the integration machinery responsible for tracking tasks and integrating them into the database
-            AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
-            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
-            List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
+            // Create the machinery responsible for tracking tasks and integrating them into the database
+            var integrator = new AggregatedDataIntegrator();
+            var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, ProjectID);
+            var ProcessedTasks = new List<AggregatedDataIntegratorTask>();
 
             // Create the site model and machine etc to aggregate the processed TAG file into
             // Note: This creates these elements within the project itself, not just class instances...
             // SiteModel siteModel = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(ProjectUID, true);
             // Machine machine = new Machine(null, "TestName", "TestHardwareID",  0, 0, Guid.NewGuid(), 0, false);
 
-            // Process each file into a task, and batch tasks into groups for integration to reduce the number of cache 
-            // updates made for sub grid changes
-            foreach (ProcessTAGFileRequestFileItem item in TAGFiles)
+            // Create a list of tasks to represent conversion of each of the TAGFiles into a min-model
+
+            Log.LogInformation($"#Progress# Initiating task based conversion of TAG files into project {ProjectID}");
+            var tagFileConversions = _TAGFiles.Select(x => Task.Run(() =>
             {
-                try
+                Log.LogInformation($"#Progress# Processing TAG file {x.FileName} into project {ProjectID}");
+
+                var converter = new TAGFileConverter();
+
+                using (var fs = new MemoryStream(x.TagFileContent))
                 {
-                    Log.LogInformation($"#Progress# Processing TAG file {item.FileName} into project {ProjectID}");
-
-                    TAGFileConverter converter = new TAGFileConverter();
-
-                    using (MemoryStream fs = new MemoryStream(item.TagFileContent))
-                    {
-                        converter.Execute(fs);
-
-                        Log.LogInformation($"#Progress# TAG file {item.FileName} generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
-                    }
-
-                    converter.SiteModel.ID = ProjectID;
-                    converter.Machine.ID = AssetID;
-                    converter.Machine.IsJohnDoeMachine = item.IsJohnDoe;
-
-                    integrator.AddTaskToProcessList(converter.SiteModel, ProjectID, converter.Machine, AssetID, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
-
-                    if (++batchCount >= batchSize)
-                    {
-                        worker.ProcessTask(ProcessedTasks);
-                        batchCount = 0;
-                    }
-
-                    response.Results.Add(new ProcessTAGFileResponseItem { FileName = item.FileName, Success = true });
+                  converter.Execute(fs);
+                
+                  Log.LogInformation(
+                    $"#Progress# TAG file {x.FileName} generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
                 }
-                catch (Exception E)
+
+                return (x, converter);
+            })).ToList();
+
+            // Pick off the tasks as they complete and pass the results into the integrator processor
+            while (tagFileConversions.Count > 0)
+            {
+              async Task<(ProcessTAGFileRequestFileItem, TAGFileConverter)> nextTaskCompleted()
+              {
+                var theTask = await Task.WhenAny(tagFileConversions);
+                tagFileConversions.Remove(theTask);
+                return await theTask;
+              };
+
+              var convertedTask = nextTaskCompleted();
+
+              var converter = convertedTask.Result.Item2;
+              var TAGFile = convertedTask.Result.Item1;
+              try
+              {
+                converter.SiteModel.ID = ProjectID;
+                converter.Machine.ID = AssetID;
+                converter.Machine.IsJohnDoeMachine = TAGFile.IsJohnDoe;
+
+                integrator.AddTaskToProcessList(converter.SiteModel, ProjectID,
+                  converter.Machine, AssetID,
+                  converter.SiteModelGridAggregator,
+                  converter.ProcessedCellPassCount,
+                  converter.MachineTargetValueChangesAggregator);
+
+                if (++batchCount >= batchSize)
                 {
-                    response.Results.Add(new ProcessTAGFileResponseItem { FileName = item.FileName, Success = false, Exception = E.ToString() });
+                  worker.ProcessTask(ProcessedTasks);
+                  batchCount = 0;
                 }
+
+                response.Results.Add(new ProcessTAGFileResponseItem { FileName = TAGFile.FileName, Success = true });
+              }
+              catch (Exception E)
+              {
+                response.Results.Add(new ProcessTAGFileResponseItem { FileName = TAGFile.FileName, Success = false, Exception = E.ToString() });
+              }
             }
 
             if (batchCount > 0)
             {
                 worker.ProcessTask(ProcessedTasks);
             }
+
+            worker.CompleteTaskProcessing();
+
+            Log.LogInformation($"#Progress# Completed task based conversion of TAG files into project {ProjectID}");
 
             return response;
         }

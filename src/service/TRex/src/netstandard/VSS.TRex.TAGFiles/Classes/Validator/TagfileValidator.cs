@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -22,6 +23,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
   public static class TagfileValidator
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
+    private static bool WarnOnTFAServiceDisabled = false;
 
     /// <summary>
     /// Calls the TFA service via the nuget Proxy,
@@ -180,7 +183,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Tagfile contents are OK so proceed
       if (!tfaServiceEnabled) // allows us to bypass a TFA service
       {
-        Log.LogWarning($"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
+        if (WarnOnTFAServiceDisabled)
+          Log.LogWarning("SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
         if (tagDetail.projectId != Guid.Empty) // do we have what we need
         {
           if (tagDetail.assetId == null || tagDetail.assetId == Guid.Empty)

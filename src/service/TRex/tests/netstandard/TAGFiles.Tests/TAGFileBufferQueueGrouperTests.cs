@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.Common.Abstractions.Configuration;
+using VSS.ConfigurationStore;
+using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Queues;
@@ -62,8 +66,9 @@ namespace TAGFiles.Tests
             Guid projectID = Guid.NewGuid();
             Guid assetID = Guid.NewGuid();
 
+            var kMaxNumberOfTAGFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
             // Add twice the limit of TAG files to the same project/asset combination to the grouper and ensure there are two full buckets returned
-            for (int i = 0; i < 2 * TAGFileBufferQueueGrouper.kMaxNumberOfTAGFilesPerBucket; i++)
+            for (int i = 0; i < 2 * kMaxNumberOfTAGFilesPerBucket; i++)
             {
                 grouper.Add(new TAGFileBufferQueueKey($"{i} - {tagFileName}", projectID, assetID));
             }
@@ -75,11 +80,11 @@ namespace TAGFiles.Tests
             // Test there are two full groups, and no more
             var tagFilesGroup = grouper.Extract(new List<Guid>(), out Guid _)?.ToList();
             Assert.True(null != tagFilesGroup, "Returned list of grouped tag files is null");
-            Assert.True(TAGFileBufferQueueGrouper.kMaxNumberOfTAGFilesPerBucket == tagFilesGroup.Count, $"First returned list of grouped tag files does not have the grouper limit of TAG files {tagFilesGroup.Count} vs {TAGFileBufferQueueGrouper.kMaxNumberOfTAGFilesPerBucket}");
+            Assert.True(kMaxNumberOfTAGFilesPerBucket == tagFilesGroup.Count, $"First returned list of grouped tag files does not have the grouper limit of TAG files {tagFilesGroup.Count} vs {kMaxNumberOfTAGFilesPerBucket}");
 
             tagFilesGroup = grouper.Extract(new List<Guid>(), out Guid _)?.ToList();
             Assert.True(null != tagFilesGroup, "Returned list of grouped tag files is null");
-            Assert.True(TAGFileBufferQueueGrouper.kMaxNumberOfTAGFilesPerBucket == tagFilesGroup.Count, $"Second returned list of grouped tag files does not have the grouper limit of TAG files {tagFilesGroup.Count} vs {TAGFileBufferQueueGrouper.kMaxNumberOfTAGFilesPerBucket}");
+            Assert.True(kMaxNumberOfTAGFilesPerBucket == tagFilesGroup.Count, $"Second returned list of grouped tag files does not have the grouper limit of TAG files {tagFilesGroup.Count} vs {kMaxNumberOfTAGFilesPerBucket}");
 
             //Test there are no more TAG files to extract from the grouper
             var tagFiles2 = grouper.Extract(new List<Guid>(), out Guid _)?.ToList();

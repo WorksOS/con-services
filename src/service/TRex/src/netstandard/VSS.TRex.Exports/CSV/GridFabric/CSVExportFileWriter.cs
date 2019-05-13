@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -26,8 +27,9 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     private readonly CSVExportRequestArgument requestArgument;
     private readonly string awsBucketNameKey = "AWS_BUCKET_NAME"; // vss-exports-stg/prod
     private readonly string awsBucketName;
+    private readonly bool retainLocalCopyForTesting = false;
 
-    public CSVExportFileWriter(CSVExportRequestArgument requestArgument)
+    public CSVExportFileWriter(CSVExportRequestArgument requestArgument, bool retainLocalCopyForTesting = false)
     {
       this.requestArgument = requestArgument;
       awsBucketName = DIContext.Obtain<IConfigurationStore>().GetValueString(awsBucketNameKey);
@@ -37,6 +39,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             $"Environment variable is missing: {awsBucketNameKey}"));
       }
+
+      this.retainLocalCopyForTesting = retainLocalCopyForTesting;
     }
 
     public string PersistResult(List<string> dataRows)
@@ -55,8 +59,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
         // zip the directory
         var zipFullPath = Path.Combine(localExportPath, uniqueFileName) + ZIP_extension;
-        if (FileSystem.Exists(zipFullPath))
-          FileSystem.Delete(zipFullPath);
 
         ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false);
         // copy zip to S3
@@ -65,7 +67,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
         // delete the export folder
         localExportPath = FilePathHelper.GetTempFolderForExport(requestArgument.ProjectID, "");
-        if (Directory.Exists(localExportPath))
+        if (Directory.Exists(localExportPath) && !retainLocalCopyForTesting)
           Directory.Delete(localExportPath, true);
       }
       catch (Exception e)

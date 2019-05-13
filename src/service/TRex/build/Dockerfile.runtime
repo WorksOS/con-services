@@ -52,6 +52,7 @@ COPY --from=build_container /trex/libs/ /trex/libs/
 ARG COMPONENT
 COPY --from=build_container /trex/${COMPONENT}/ /trex/
 WORKDIR /trex
+RUN touch prometheusConfig.yaml
 
 
 

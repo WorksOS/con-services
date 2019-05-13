@@ -477,7 +477,7 @@ namespace VSS.TRex.Tests.SubGridTrees
                     if (numCalls >= 2) return new NodeSubGrid()
                     {
                       Owner = tree,
-                      Level = (byte)(level + 1) // Need to create the subgrid at the lower level
+                      Level = (byte)(level + 1) // Need to create the sub grid at the lower level
                     }; ;
 
                     return null; // Should never get here

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
@@ -313,50 +315,65 @@ namespace VSS.MasterData.Repositories
       , new { assets = assetsArray} )).ToList();
     }
 
-    public async Task<MatchingAssets> GetMatching3D2DAssets(Guid assetUid)
+
+
+    public async Task<MatchingAssets> GetMatching3D2DAssets(MatchingAssets asset)
     {
-     var asset = (await QueryWithAsyncPolicy<MatchingAssets>
-                 //3d to 2d
-                 (@"Select
-                a.AssetUID
-                ,a2.AssetUID MatchingAssetUID
+      MatchingAssets result=null;
+      if (Guid.TryParse(asset.AssetUID3D, out var a))
+      {
+        result =
+          (await QueryWithAsyncPolicy<MatchingAssets>
+            //3d to 2d
+            (@"Select
+                a.AssetUID AssetUID2D
+                ,a2.AssetUID AssetUID3D
                 ,a.Name
-                ,a.SerialNumber
-                ,a.MakeCode
+                ,a.SerialNumber SerialNumber2D
+                ,a.MakeCode MakeCode2D
                 ,a.Model
                 ,c.Name CustomerName
-                ,a2.SerialNumber MatchingSerialNumber
-                ,a2.MakeCode MatchingMakeCode
+                ,a2.SerialNumber SerialNumber3D
+                ,a2.MakeCode MakeCode3D
                 from
 	                Asset a
                     inner join AssetSubscription asu on asu.fk_AssetUID=a.AssetUID and asu.fk_AssetUID = @asset
-	                inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 13 and sp.EndDate  >= Utc_Timestamp()
+	                  inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 13 and sp.EndDate  >= Utc_Timestamp()
                     inner join Customer c on c.CustomerUID = sp.fk_CustomerUID and fk_CustomertypeID=1
                     left join Asset a2 on a2.SerialNumber = left(a.SerialNumber,locate('-',concat(replace(a.SerialNumber,' ','-'),'-'))-1)
                 where
 	                a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID "
-                   , new {asset = assetUid})).FirstOrDefault() ?? (await QueryWithAsyncPolicy<MatchingAssets>
-                 //2d to 3d
-                 (@" Select
-            a.AssetUID
-            ,a2.AssetUID MatchingAssetUID
-            ,a.Name
-            ,a.SerialNumber
-            ,a.MakeCode
-            ,a.Model
-            ,c.Name CustomerName
-            ,a2.SerialNumber MatchingSerialNumber
-            ,a2.MakeCode MatchingMakeCode
+              , new {asset = asset.AssetUID3D})).FirstOrDefault();
+      }
+
+      if (Guid.TryParse(asset.AssetUID2D, out var b))
+      {
+        result =
+          (await QueryWithAsyncPolicy<MatchingAssets>
+            //2d to 3d
+            (@" Select
+                a.AssetUID AssetUID2D
+                ,a2.AssetUID AssetUID3D
+                ,a.Name
+                ,a.SerialNumber SerialNumber2D
+                ,a.MakeCode MakeCode2D
+                ,a.Model
+                ,c.Name CustomerName
+                ,a2.SerialNumber SerialNumber3D
+                ,a2.MakeCode MakeCode3D
             from
 	            Asset a
                 inner join AssetSubscription asu on asu.fk_AssetUID=a.AssetUID and asu.fk_AssetUID=@asset
-	            inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 1
+	              inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 1
                 inner join Customer c on c.CustomerUID = sp.fk_CustomerUID and fk_CustomertypeID=1
                 left join Asset a2 on a.SerialNumber = left(a2.SerialNumber,locate('-',concat(replace(a2.SerialNumber,' ','-'),'-'))-1)
             where
 	            a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID "
-                   , new { asset = assetUid })).FirstOrDefault();
-      return asset;
+              , new {asset = asset.AssetUID2D})).FirstOrDefault();
+      }
+
+      if (result == null) return asset;
+      return result;
     }
 
     public async Task<IEnumerable<Asset>> GetAssets(IEnumerable<long> assetIds)

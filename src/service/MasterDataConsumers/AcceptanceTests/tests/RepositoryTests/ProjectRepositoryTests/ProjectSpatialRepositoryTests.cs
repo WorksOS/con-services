@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests.Internal;
 using System;
 using System.Linq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;

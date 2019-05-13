@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Query;
@@ -28,7 +27,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Configure the parameters of the existence map cache
     /// </summary>
-    public CacheConfiguration ConfigureCache()
+    private CacheConfiguration ConfigureCache()
     {
       return new CacheConfiguration
       {
@@ -54,7 +53,7 @@ namespace VSS.TRex.SiteModels
     public SiteModelMetadataManager(StorageMutability mutability)
     {
       // Obtain the ignite reference for the primary grid orientation of SiteModels
-      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(mutability);
+      var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(mutability);
 
       metaDataCache = ignite?.GetOrCreateCache<Guid, ISiteModelMetadata>(ConfigureCache());
 

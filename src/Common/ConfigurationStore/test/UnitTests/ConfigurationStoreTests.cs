@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Log4Net.Extensions;
 
 namespace VSS.ConfigurationStore.UnitTests

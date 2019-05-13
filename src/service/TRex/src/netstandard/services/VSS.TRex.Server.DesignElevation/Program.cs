@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;

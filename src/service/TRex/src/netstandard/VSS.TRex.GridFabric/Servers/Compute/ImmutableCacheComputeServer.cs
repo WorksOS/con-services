@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
@@ -56,10 +57,10 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.JvmOptions = new List<string>() {
         "-DIGNITE_QUIET=false",
-        "-Djava.net.preferIPv4Stack=true"};
+        "-Djava.net.preferIPv4Stack=true",
+        "-XX:+UseG1GC"
+      };
 
-
-      cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
       cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
       cfg.UserAttributes = new Dictionary<string, object>
             {
@@ -82,7 +83,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
           Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
           InitialSize = 128 * 1024 * 1024,  // 128 MB
           MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
-
           PersistenceEnabled = true
         }
       };
@@ -120,6 +120,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       {
         LocalPort = 47100,
       };
+
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
+
       return cfg;
     }
 

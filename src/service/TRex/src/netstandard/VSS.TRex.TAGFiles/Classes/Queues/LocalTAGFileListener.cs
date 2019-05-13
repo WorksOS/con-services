@@ -13,6 +13,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         public readonly TAGFileBufferQueueItemHandler handler;
 
+        private bool OutputInformationalMessagesToLog = false;
+
         public LocalTAGFileListener(TAGFileBufferQueueItemHandler handler)
         {
             this.handler = handler;
@@ -41,7 +43,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 try
                 {
                     handler.Add(evt.Key);
-                    Log.LogInformation($"#Progress# Added TAG file item [{evt.Key}] to the grouper");
+                    if (OutputInformationalMessagesToLog)
+                      Log.LogInformation($"#Progress# Added TAG file item [{evt.Key}] to the grouper");
                 }
                 catch (Exception e)
                 {
@@ -51,6 +54,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             if (countOfCreatedEvents > 0)
             {
+              if (OutputInformationalMessagesToLog)
                 Log.LogInformation($"#Progress# Added {countOfCreatedEvents} TAG file items to the grouper");
             }
         }

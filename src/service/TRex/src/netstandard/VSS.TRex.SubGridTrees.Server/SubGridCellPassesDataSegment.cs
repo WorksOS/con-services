@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -107,7 +108,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       // Segments may not have any defined latest pass information
       writer.Write(LatestPasses != null);
-      LatestPasses?.Write(writer, new byte[10000]);
+      LatestPasses?.Write(writer, new byte[50000]);
 
       CellStacksOffset = (int) writer.BaseStream.Position;
 
@@ -124,7 +125,7 @@ namespace VSS.TRex.SubGridTrees.Server
       return true;
     }
 
-    public bool LoadPayloadFromStream_v2p0(BinaryReader reader,
+    public bool LoadPayloadFromStream(BinaryReader reader,
       bool loadLatestData,
       bool loadAllPasses)
     {
@@ -134,9 +135,14 @@ namespace VSS.TRex.SubGridTrees.Server
       if (HasLatestData && loadLatestData)
       {
         if (reader.ReadBoolean())
-          LatestPasses.Read(reader, new byte[10000]);
+          LatestPasses.Read(reader, new byte[50000]);
         else
           LatestPasses = null;
+      }
+
+      if (!HasAllPasses && loadAllPasses)
+      {
+        Log.LogError("LoadPayloadFromStream asked to load all passes but segment does not have all passes store allocated");
       }
 
       if (HasAllPasses && loadAllPasses)
@@ -173,7 +179,7 @@ namespace VSS.TRex.SubGridTrees.Server
       bool Result = false;
 
       if (Header.Version == 1)
-        Result = LoadPayloadFromStream_v2p0(reader, loadLatestData, loadAllPasses);
+        Result = LoadPayloadFromStream(reader, loadLatestData, loadAllPasses);
       else
         Log.LogError($"Sub grid segment file version mismatch (expected {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
 
