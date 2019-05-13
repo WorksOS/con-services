@@ -13,6 +13,7 @@ using TAGProcServiceDecls;
 using VLPDDecls;
 #endif
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;

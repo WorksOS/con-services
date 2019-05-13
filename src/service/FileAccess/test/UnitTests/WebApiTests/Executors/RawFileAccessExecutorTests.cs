@@ -13,6 +13,7 @@ using VSS.Productivity3D.FileAccess.WebAPI.Models.Models;
 using VSS.Productivity3D.FileAccess.WebAPI.Models.ResultHandling;
 using VSS.TCCFileAccess;
 using Moq;
+using VSS.Common.Abstractions.Configuration;
 
 namespace WebApiTests.Executors
 {

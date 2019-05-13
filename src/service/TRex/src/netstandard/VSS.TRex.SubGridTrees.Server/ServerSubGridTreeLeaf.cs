@@ -157,7 +157,9 @@ namespace VSS.TRex.SubGridTrees.Server
                 Segment.PassesData.AddPass(cellX, cellY, Pass, PassIndex);
                 CellPassAdded(Pass);
             }
-        }
+
+          Segment.Dirty = true;
+    }
 
         /// <summary>
         /// Creates the default segment metadata within the segment directory. This is only called to create the first 

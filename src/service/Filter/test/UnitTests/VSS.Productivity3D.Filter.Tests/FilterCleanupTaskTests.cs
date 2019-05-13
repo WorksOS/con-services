@@ -5,6 +5,7 @@ using Moq;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;

@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions;
+using VSS.Common.Abstractions.Configuration;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
@@ -24,7 +26,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
@@ -40,11 +41,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class ProjectV4Controller : ProjectBaseController
   {
     /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory _logger;
-
-    /// <summary>
     /// Gets or sets the httpContextAccessor.
     /// </summary>
     protected readonly IHttpContextAccessor HttpContextAccessor;
@@ -52,31 +48,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private readonly INotificationHubClient notificationHubClient;
 
     /// <summary>
-    /// 
+    /// Default constructor.
     /// </summary>
-    /// <param name="producer"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="store"></param>
-    /// <param name="subscriptionProxy"></param>
-    /// <param name="raptorProxy"></param>
-    /// <param name="fileRepo"></param>
-    /// <param name="logger"></param>
-    /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
-    /// <param name="httpContextAccessor"></param>
-    /// <param name="dataOceanClient"></param>
-    /// <param name="authn"></param>
     public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore store,
       ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
-      ILoggerFactory logger,
+      ILoggerFactory loggerFactory,
       IServiceExceptionHandler serviceExceptionHandler,
       IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient, INotificationHubClient notificationHubClient,ITPaaSApplicationAuthentication authn)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>(), dataOceanClient, authn)
+        loggerFactory, serviceExceptionHandler, dataOceanClient, authn)
     {
-      this._logger = logger;
       this.HttpContextAccessor = httpContextAccessor;
       this.notificationHubClient = notificationHubClient;
     }
@@ -107,7 +90,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ProjectV4DescriptorsListResult> GetAllProjectsV4()
     {
-      log.LogInformation("GetAllProjectsV4");
+      logger.LogInformation("GetAllProjectsV4");
 
       var projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
 
@@ -127,9 +110,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4(string projectUid)
     {
-      log.LogInformation("GetProjectV4");
+      logger.LogInformation("GetProjectV4");
 
-      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
       return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project));
     }
 
@@ -152,7 +135,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
 
-      log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
+      logger.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(customerUid);
       if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid();
@@ -164,11 +147,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
       }
-      await ProjectDataValidator.ValidateProjectName(customerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), log, serviceExceptionHandler, projectRepo);
+      await ProjectDataValidator.ValidateProjectName(customerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), logger, serviceExceptionHandler, projectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<CreateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
+          .Build<CreateProjectExecutor>(loggerFactory, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders, producer, kafkaTopicName, raptorProxy, 
             subscriptionProxy, null, null, null, projectRepo, subscriptionRepo, fileRepo, 
             null, HttpContextAccessor, dataOceanClient, authn)
@@ -176,12 +159,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       var result = new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, log, serviceExceptionHandler, projectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false)));
 
       await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
-      log.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
+      logger.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return result;
     }
 
@@ -238,17 +221,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
 
-      log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
+      logger.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
-      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), log, serviceExceptionHandler, projectRepo);
+      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), logger, serviceExceptionHandler, projectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpdateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
+          .Build<UpdateProjectExecutor>(loggerFactory, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
             raptorProxy, subscriptionProxy, null, null, null,
@@ -258,15 +241,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       //invalidate cache in Raptor
-      log.LogInformation("UpdateProjectV4. Invalidating 3D PM cache");
+      logger.LogInformation("UpdateProjectV4. Invalidating 3D PM cache");
       var notificationTask = notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
       var raptorTask = raptorProxy.InvalidateCache(projectRequest.ProjectUid.ToString(), customHeaders);
 
       await Task.WhenAll(notificationTask, raptorTask);
 
-      log.LogInformation("UpdateProjectV4. Completed successfully");
+      logger.LogInformation("UpdateProjectV4. Completed successfully");
       return new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, log, serviceExceptionHandler, projectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false)));
     }
 
@@ -290,7 +273,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
-      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), log, serviceExceptionHandler, projectRepo);
+      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), logger, serviceExceptionHandler, projectRepo);
 
       var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
       var callbackUrl = $"{baseUrl}/internal/v4/project";
@@ -347,9 +330,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if(Guid.TryParse(customerUid, out var c))
         await notificationHubClient.Notify(new CustomerChangedNotification(c));
 
-      log.LogInformation("DeleteProjectV4. Completed succesfully");
+      logger.LogInformation("DeleteProjectV4. Completed succesfully");
       return new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, log, serviceExceptionHandler, projectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false)));
 
     }
@@ -402,12 +385,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<GeofenceV4DescriptorsListResult> GetAssociatedGeofencesV4([FromQuery] List<GeofenceType> geofenceType, [FromQuery] Guid? projectUid = null)
     {
-      log.LogInformation("GetAssociatedGeofencesV4");
+      logger.LogInformation("GetAssociatedGeofencesV4");
 
       if (projectUid != null)
       {
         var project = await ProjectRequestHelper
-          .GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
+          .GetProject(projectUid.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
         if (project.ProjectType != ProjectType.LandFill)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 102);
@@ -420,7 +403,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       var geofences =
-        (await ProjectRequestHelper.GetGeofenceList(customerUid, projectUid != null ? projectUid.ToString() : string.Empty, geofenceType, log, projectRepo));
+        (await ProjectRequestHelper.GetGeofenceList(customerUid, projectUid != null ? projectUid.ToString() : string.Empty, geofenceType, logger, projectRepo));
       return new GeofenceV4DescriptorsListResult
       {
         GeofenceDescriptors = geofences.Select(geofence =>
@@ -439,14 +422,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ContractExecutionResult> UpdateProjectGeofencesV4(
       [FromBody] UpdateProjectGeofenceRequest updateProjectGeofenceRequest)
     {
-      log.LogInformation("UpdateProjectGeofencesV4");
+      logger.LogInformation("UpdateProjectGeofencesV4");
 
       updateProjectGeofenceRequest.Validate();
-      log.LogInformation($"UpdateProjectGeofencesV4 validation passed: {updateProjectGeofenceRequest}");
+      logger.LogInformation($"UpdateProjectGeofencesV4 validation passed: {updateProjectGeofenceRequest}");
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpdateProjectGeofenceExecutor>(_logger, configStore, serviceExceptionHandler,
+          .Build<UpdateProjectGeofenceExecutor>(loggerFactory, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
             raptorProxy, subscriptionProxy, null, null, null,
@@ -454,7 +437,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(updateProjectGeofenceRequest)
       );
 
-      log.LogInformation("UpdateProjectGeofencesV4. Completed successfully");
+      logger.LogInformation("UpdateProjectGeofencesV4. Completed successfully");
       return new ContractExecutionResult();
     }
 
