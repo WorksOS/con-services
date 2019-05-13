@@ -26,12 +26,12 @@ namespace VSS.TRex.SubGridTrees.Server
     public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTreeLeaf>();
-      
+
         /// <summary>
         /// The version number of this segment when it is stored in the persistent layer, defined
         /// as the number of ticks in DateTime.UtcNow at the time it is written.
         /// </summary>
-        public long Version { get; set; }
+        public long Version { get; set; } = 1;
           
         /// <summary>
         /// Controls whether segment and cell pass information held within this sub grid is represented
@@ -708,8 +708,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
         {
-            if (Version == 0)
-                Log.LogError($"Version for {Moniker()} is 0");
+           if (Version == 0)
+             Log.LogError($"Version for {Moniker()} is 0");
 
             var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty, Version,
                                                                        FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
