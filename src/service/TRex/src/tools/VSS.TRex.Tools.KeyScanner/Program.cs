@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;

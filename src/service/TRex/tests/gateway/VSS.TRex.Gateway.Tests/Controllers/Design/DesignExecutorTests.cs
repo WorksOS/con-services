@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Models;

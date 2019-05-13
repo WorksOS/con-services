@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;

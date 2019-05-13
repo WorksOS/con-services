@@ -124,6 +124,9 @@
     <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Common\TestTAGFile-MDP.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.%24DesignSpatialIndex%24">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

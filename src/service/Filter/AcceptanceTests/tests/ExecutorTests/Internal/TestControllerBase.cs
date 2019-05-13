@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;

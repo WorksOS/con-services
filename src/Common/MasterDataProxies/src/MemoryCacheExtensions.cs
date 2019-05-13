@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.Log4NetExtensions;
 
