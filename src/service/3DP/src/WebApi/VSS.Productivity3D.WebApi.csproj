@@ -113,7 +113,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.localhost.json.json">
+    <Content Update="appsettings.localhost.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="web.config">
