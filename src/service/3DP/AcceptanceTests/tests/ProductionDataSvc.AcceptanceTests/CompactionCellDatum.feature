@@ -31,6 +31,7 @@ Scenario Outline: CompactionCellDatum - Good Request
   | HeightFilter        | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 |                                      | 0           | 36.20696541        | -115.02021047      | HeightFilter               | 200      |
   | MinElevation        | 0583c019-f92a-4762-94c1-ad13a98ecab6 | 6c7c899c-7320-446d-a525-d7ed1f285c5c |                                      | 0           | -43.51319782982183 | 172.43847067342602 | MinimumElevationMultiMode  | 200      |
   | MinElevation(Last)  | 0583c019-f92a-4762-94c1-ad13a98ecab6 | 6c7c899c-7320-446d-a525-d7ed1f285c5d |                                      | 0           | -43.51319947106771 | 172.4384703381499  | MinimumElevationLatestMode | 200      |
+  | CutFillRefSurface   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | 3bb94403-9d42-46ae-85e0-9261c8682a0d | 8           | 36.20735707        | -115.01959313      | CutFillRefSurface          | 200      |
 
 
 Scenario Outline: CompactionCellDatum - Bad Request 

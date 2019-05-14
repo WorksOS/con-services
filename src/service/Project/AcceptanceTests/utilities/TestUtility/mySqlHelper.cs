@@ -10,15 +10,10 @@ namespace TestUtility
   {
     private readonly TestConfig appConfig = new TestConfig();
     private readonly Msg msg = new Msg();
-    public readonly TestConfig TsCfg = new TestConfig();
 
     /// <summary>
     /// Read a my sql table and return records/columns 
     /// </summary>
-    /// <param name="connectionString"></param>
-    /// <param name="queryString"></param>
-    /// <param name="fields"></param>
-    /// <returns></returns>
     public string ExecuteMySqlQueryAndReturnColumns(string connectionString, string queryString, string fields)
     {
       var allFields = fields.Split(',');
@@ -45,9 +40,6 @@ namespace TestUtility
     /// <summary>
     /// Read the my sql database and return a record count
     /// </summary>
-    /// <param name="connectionString"></param>
-    /// <param name="queryString"></param>
-    /// <returns></returns>
     public string ExecuteMySqlQueryAndReturnRecordCountResult(string connectionString, string queryString)
     {
       string queryResult = null;
@@ -68,18 +60,15 @@ namespace TestUtility
     /// <summary>
     /// Used for updating the database
     /// </summary>
-    /// <param name="connectionString">Connection string</param>
-    /// <param name="sqlCommand">SQL command to execute</param>
-    /// <returns>Count of records effected</returns>
     public int ExecuteMySqlInsert(string connectionString, string sqlCommand)
     {
-      Log.Info(sqlCommand, Log.ContentType.DbQuery);
+      Console.WriteLine(sqlCommand);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(sqlCommand, mySqlConnection);
         var result = mySqlCommand.ExecuteNonQuery();
-        Log.Info(result.ToString(), Log.ContentType.DbQuery);
+        Console.WriteLine(result.ToString());
         return result;
       }
     }
@@ -124,36 +113,9 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Verify the value of fields in the table for the given uid (not equal)
-    /// </summary>
-    /// <param name="table">Database table name</param>
-    /// <param name="column">Database column name for the uid</param>
-    /// <param name="fields"></param>
-    /// <param name="expectedData"></param>
-    /// <param name="uid">The uid to use</param>
-    public void VerifyTestResultDatabaseFieldsAreNotEqualAsExpected(string table, string column, string fields, string expectedData, Guid uid)
-    {
-      var sqlQuery = @"SELECT {4} FROM `{0}`.{1} WHERE {2}='{3}'";
-      var allActualData = GetDatabaseFieldsForQuery(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid, fields), fields);
-      var fldArray = fields.Split(',');
-      var actualDataArray = allActualData.Split(',');
-      var expectedDataArray = expectedData.Split(',');
-      var idx = 0;
-      msg.DisplayResults(expectedData, allActualData);
-      foreach (var col in fldArray)
-      {
-        Assert.AreNotEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(), "Expected results for " + col + " do not match actual");
-        idx++;
-      }
-    }
-
-    /// <summary>
     /// Check the database to see if the records injected into kafka have reached there. This
     /// Will loop for 10 times or until it finds the correct answer.
     /// </summary>
-    /// <param name="query"></param>
-    /// <param name="eventCount"></param>
-    /// <returns>Count of records</returns>
     public int GetDatabaseCountForEvents(string query, int eventCount)
     {
       var retryCount = 0;
@@ -178,9 +140,6 @@ namespace TestUtility
     /// <summary>
     /// Read the database for records
     /// </summary>
-    /// <param name="query"></param>
-    /// <param name="fields"></param>
-    /// <returns></returns>
     private string GetDatabaseFieldsForQuery(string query, string fields)
     {
       var mysqlHelper = new MySqlHelper();
@@ -191,10 +150,6 @@ namespace TestUtility
     /// <summary>
     /// Used to update the dbSchema name which will be used when performing database actions
     /// </summary>
-    /// <param name="dbSchemaName"></param>
-    public void UpdateDbSchemaName(string dbSchemaName)
-    {
-      appConfig.SetMySqlDbSchema(dbSchemaName);
-    }
+    public void UpdateDbSchemaName(string dbSchemaName) => appConfig.SetMySqlDbSchema(dbSchemaName);
   }
 }

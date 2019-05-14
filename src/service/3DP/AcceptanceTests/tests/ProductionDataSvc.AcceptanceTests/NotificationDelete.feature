@@ -57,9 +57,7 @@ Scenario: Notification Delete File - Alignment in Filter
   And with parameter "fileUid" with value "6ece671b-7959-4a14-86fa-6bfe6ef4dd62"
   When I send the GET request I expect response code 400
   Then the response should contain message "Cannot delete a design surface, reference surface or alignment file used in a filter" and code "-1"
-
-#This will be in step 3 for reference surfaces as it requires a new mockwebapi (Master) image
-@ignore    
+  
 Scenario: Notification Delete File - Reference in Filter 
   Given only the service route "/api/v2/notification/deletefile"
   And with parameter "projectUid" with value "7925f179-013d-4aaf-aff4-7b9833bb06d6"

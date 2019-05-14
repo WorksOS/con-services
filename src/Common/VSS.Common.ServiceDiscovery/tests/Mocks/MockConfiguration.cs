@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 
 namespace VSS.Common.ServiceDiscovery.UnitTests.Mocks

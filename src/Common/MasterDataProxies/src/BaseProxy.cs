@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Cache.Models;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -89,8 +91,7 @@ namespace VSS.MasterData.Proxies
       }
       catch (Exception ex)
       {
-        LogWebRequestException(ex);
-        BaseProxyHealthCheck.SetStatus(false,this.GetType());
+        LogWebRequestExceptionAndSetHealth(ex);
         throw;
       }
 
@@ -183,8 +184,7 @@ namespace VSS.MasterData.Proxies
       }
       catch (Exception ex)
       {
-        LogWebRequestException(ex);
-        BaseProxyHealthCheck.SetStatus(false, this.GetType());
+        LogWebRequestExceptionAndSetHealth(ex);
         throw;
       }
 
@@ -239,8 +239,7 @@ namespace VSS.MasterData.Proxies
       }
       catch (Exception ex)
       {
-        LogWebRequestException(ex);
-        BaseProxyHealthCheck.SetStatus(false, this.GetType());
+        LogWebRequestExceptionAndSetHealth(ex);
         throw;
       }
 
@@ -510,7 +509,7 @@ namespace VSS.MasterData.Proxies
     ///   Check exception for Web Request details and log a warning
     /// </summary>
     /// <param name="ex">Exception to be logged</param>
-    private void LogWebRequestException(Exception ex)
+    private void LogWebRequestExceptionAndSetHealth(Exception ex)
     {
       var message = ex.Message;
       var stacktrace = ex.StackTrace;
@@ -523,6 +522,12 @@ namespace VSS.MasterData.Proxies
 
       log.LogWarning($"{nameof(LogWebRequestException)}: Error sending data from master data: ", message);
       log.LogWarning($"{nameof(LogWebRequestException)}:Stacktrace: ", stacktrace);
+
+      //WE want to exclude business exceptions as they are valid cases for health monitoring
+      if (ex.InnerException != null && ex.InnerException is ServiceException serviceException &&
+          serviceException.Code == HttpStatusCode.BadRequest)
+        return;
+      BaseProxyHealthCheck.SetStatus(false, this.GetType());
     }
 
     /// <summary>

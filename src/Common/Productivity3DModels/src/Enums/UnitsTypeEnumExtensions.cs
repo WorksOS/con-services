@@ -1,8 +1,7 @@
 ﻿using System;
-using VSS.Productivity3D.Models.Enums;
 
-namespace VSS.Productivity3D.Common.Models
-{ 
+namespace VSS.Productivity3D.Models.Enums
+{
   public static class UnitsTypeEnumExtensions
   {
     /// <summary>

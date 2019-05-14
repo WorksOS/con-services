@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;

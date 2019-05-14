@@ -79,20 +79,24 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ImportedFile existing = null;
       if (importedFiles.Count > 0)
       {
-        existing = importedFiles.FirstOrDefault(
-          f => string.Equals(f.Name, fileName, StringComparison.OrdinalIgnoreCase)
-               && f.ImportedFileType == importedFileType
-               && (
-                 importedFileType == ImportedFileType.SurveyedSurface &&
-                 f.SurveyedUtc == surveyedUtc ||
-                 importedFileType != ImportedFileType.SurveyedSurface
-               )
-               && (
-                 importedFileType == ImportedFileType.ReferenceSurface &&
-                 f.Offset == offset &&
-                 f.ParentUid == parentUid.ToString() ||
-                 importedFileType != ImportedFileType.ReferenceSurface
-               ));
+        if (importedFileType == ImportedFileType.ReferenceSurface)
+        {
+          existing = importedFiles.FirstOrDefault
+          (f => f.ImportedFileType == ImportedFileType.ReferenceSurface &&
+                f.ParentUid == parentUid.ToString() &&
+                Math.Round(f.Offset, 3) == Math.Round(offset ?? 0, 3));
+        }
+        else
+        {
+          existing = importedFiles.FirstOrDefault(
+            f => string.Equals(f.Name, fileName, StringComparison.OrdinalIgnoreCase)
+                 && f.ImportedFileType == importedFileType
+                 && (
+                   importedFileType == ImportedFileType.SurveyedSurface &&
+                   f.SurveyedUtc == surveyedUtc ||
+                   importedFileType != ImportedFileType.SurveyedSurface
+                 ));
+        }
       }
       return existing;
     }

@@ -13,7 +13,7 @@ namespace TestUtility
     public RdKafkaDriver()
     {
       var appConfig = new TestConfig();
-      Log.Info($"Kafka Server: {appConfig.kafkaServer} ", Log.ContentType.URI);
+      Console.WriteLine($"Kafka Server: {appConfig.kafkaServer} ");
       var producerConfig = new Dictionary<string, string>
       {
         {"bootstrap.servers", appConfig.kafkaServer},
@@ -37,22 +37,20 @@ namespace TestUtility
     {
       try
       {
-        Log.Info($"Publish: {topicName} Message: {message} ", Log.ContentType.KafkaSend);
         Console.WriteLine($"Publish: {topicName} Message: {message} ");
         var data = Encoding.UTF8.GetBytes(message);
         var key = Encoding.UTF8.GetBytes(message);
         var deliveryReport = kafkaProducer.ProduceAsync(topicName, new Message<byte[], byte[]> {Key = key, Value = data}).ContinueWith(task =>
         {
-          Log.Info(
-            $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {task.Status.ToString()}",
-            Log.ContentType.KafkaResponse);
+          Console.WriteLine(
+            $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {task.Status.ToString()}");
           return 1;
         }).Result;
 
       }
       catch (Exception ex)
       {
-        Log.Error(ex, Log.ContentType.Error);
+        Console.WriteLine(ex);
       }
     }
   }

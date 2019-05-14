@@ -5,6 +5,7 @@ using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.WebAPI.JobRunner;
 using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Scheduler.Abstractions;

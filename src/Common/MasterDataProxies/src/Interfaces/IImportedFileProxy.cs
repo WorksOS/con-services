@@ -12,7 +12,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<FileDataSingleResult> CreateImportedFile(
       string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
-      DateTime? surveyedUtc, Guid? parentUid, double? offset, IDictionary<string, string> customHeaders = null);
+      DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null);
 
     Task<FileDataSingleResult> UpdateImportedFile(
       string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
