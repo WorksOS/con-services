@@ -381,7 +381,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         /*
         There is no need to add the sub grid directory stream to the segment retirement
-        queue as this will be automatically be replaced when the new version of the 
+        queue as this will be automatically replaced when the new version of the 
         sub grid directory is written to persistent store.
 
         // Add the stream representing the sub grid directory file to the list of

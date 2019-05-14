@@ -73,7 +73,7 @@ namespace VSS.TRex.Common
     /// <summary>
     /// The number of passes to increment a cell pass array by, when constructing filtered cell pass arrays
     /// </summary>
-    public const int VLPDPSNODE_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT = 100; // override with:  VLPDPSNODE_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT
+    public const int VLPDPSNODE_CELL_PASS_AGGREGATOR_LIST_SIZE_INCREMENT_DEFAULT = 100; // override with:  VLPDPSNODE_CELL_PASS_AGGREGATOR_LIST_SIZE_INCREMENT_DEFAULT
 
     /// <summary>
     /// Defines the maximum number of cell passes permitted in a sub grid segment before that segment will be split

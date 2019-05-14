@@ -89,9 +89,9 @@ namespace VSS.TRex.Tests.Filters
     {
       var info = new FilteredMultiplePassInfo();
 
-      for (int i = 0; i < Consts.VLPDPSNODE_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT + 1; i++)
+      for (int i = 0; i < Consts.VLPDPSNODE_CELL_PASS_AGGREGATOR_LIST_SIZE_INCREMENT_DEFAULT + 1; i++)
         info.AddPass(ATestCellPass());
-      info.PassCount.Should().Be(Consts.VLPDPSNODE_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT + 1);
+      info.PassCount.Should().Be(Consts.VLPDPSNODE_CELL_PASS_AGGREGATOR_LIST_SIZE_INCREMENT_DEFAULT + 1);
       info.FilteredPassData.Should().NotBeNull();
     }
 
