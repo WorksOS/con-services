@@ -16,39 +16,23 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
       var request = CastRequestObjectTo<CompactionTagFileRequest>(item);
       
-      var result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully,
-        DISABLED_MESSAGE);
-      //Send the tagfile to the connected site gateway if enabled first, no project/subscription validation is required.
+      var result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, DISABLED_MESSAGE);
+      
+      // Send the tagfile to the connected site gateway if enabled first, no project/subscription validation is required.
       bool.TryParse(configStore.GetValueString("ENABLE_CONNECTED_SITE_GATEWAY"), out var enableConnectedSiteGateway);
       if (enableConnectedSiteGateway)
       {
-        result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          DEFAULT_ERROR_MESSAGE);
-
-        log.LogDebug($"{nameof(ProcessAsyncEx)}: Sending tag file to connected site gateway");
         request.Validate();
         result = await CallConnectedSiteEndpoint(request).ConfigureAwait(false);
-
-        if (result.Code == 0)
-        {
-          log.LogDebug($"{nameof(ProcessAsyncEx)}: Successfully sent TAG file to connected site gateway '{request.FileName}'.");
-        }
-        else
-        {
-          log.LogDebug(
-            $"{nameof(ProcessAsyncEx)}: Failed to send TAG file to connected site gateway'{request.FileName}', {result.Message}");
-        }
       }
       return result;
     }
 
     private async Task<ContractExecutionResult> CallConnectedSiteEndpoint(CompactionTagFileRequest request)
     {
-
+      // connectedSite is in tRexTagFileProxy because it uses some tRex code
       var connectedSiteResult = await tRexTagFileProxy.SendTagFileNonDirectToConnectedSite(request, customHeaders).ConfigureAwait(false);
-
       log.LogInformation($"{nameof(CallConnectedSiteEndpoint)}: result: {JsonConvert.SerializeObject(connectedSiteResult)}");
-
       return connectedSiteResult;
     }
 

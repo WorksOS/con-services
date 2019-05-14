@@ -40,13 +40,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       if (useTrexGateway)
       {
 #endif
-      request.Validate();
 
+        request.Validate();
         result = await CallTRexEndpoint(request).ConfigureAwait(false);
 
-        log.LogDebug(result.Code == 0
-          ? $"{nameof(ProcessAsyncEx)} (TRex): Successfully imported TAG file '{request.FileName}'."
-          : $"{nameof(ProcessAsyncEx)} (TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
 #if RAPTOR
       }
 
@@ -63,14 +60,6 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         }
 
         result = CallRaptorEndpoint(tfRequest);
-        if (result.Code == 0)
-        {
-          log.LogDebug($"{nameof(ProcessAsyncEx)} (Raptor): Successfully imported TAG file '{request.FileName}'.");
-        }
-        else
-        {
-          log.LogDebug($"{nameof(ProcessAsyncEx)} (Raptor): Failed to import TAG file '{request.FileName}', {result.Message}");
-        }
       }
 
       // For direct endpoint, tag files are archived to s3, mainly for support.
@@ -99,10 +88,14 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var returnResult = await TagFileHelper.SendTagFileToTRex(request,
         tRexTagFileProxy, log, customHeaders, true).ConfigureAwait(false);
 
-      log.LogInformation($"{nameof(CallTRexEndpoint)} (Direct): result: {JsonConvert.SerializeObject(returnResult)}");
+      log.LogInformation($"{nameof(CallTRexEndpoint)} completed: filename {request.FileName} result {JsonConvert.SerializeObject(returnResult)}");
 
-      return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper((TRexTagFileResultCode)returnResult.Code));
+      var convertedResult = TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper((TRexTagFileResultCode)returnResult.Code));
+      if (convertedResult.Code != 0)
+        log.LogDebug($"{nameof(CallTRexEndpoint)}: Failed to import TAG file '{request.FileName}', {convertedResult.Message}");
+      return convertedResult;
     }
+
 #if RAPTOR
     private TagFileDirectSubmissionResult CallRaptorEndpoint(TagFileRequestLegacy tfRequest)
     {
@@ -118,12 +111,17 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
               ? RaptorConverters.ConvertWGS84Fence(tfRequest.Boundary)
               : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
 
-        log.LogInformation($"{nameof(CallRaptorEndpoint)} (Direct): result: {JsonConvert.SerializeObject(returnResult)}");
-        return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(returnResult));
+        log.LogInformation($"{nameof(CallRaptorEndpoint)} completed: filename '{tfRequest.FileName}' result {returnResult} {ContractExecutionStates.FirstNameWithOffset((int)returnResult)}");
+
+        var convertedResult = TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(returnResult));
+        if (convertedResult.Code != 0)
+          log.LogDebug($"{nameof(CallRaptorEndpoint)}: Failed to process tagfile '{tfRequest.FileName}', {convertedResult.Message}");
+
+        return convertedResult;
       }
       catch (Exception ex)
       {
-        log.LogError(ex, $"{nameof(CallRaptorEndpoint)} (Direct)");
+        log.LogError(ex, $"{nameof(CallRaptorEndpoint)}");
         return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.Unknown));
       }
       finally
@@ -133,7 +131,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     }
 
     /// <summary>
-    /// Save the tagfile to an S3 bucket. Mirrors the folder struucture in the tagfile harvester.
+    /// Save the tagfile to an S3 bucket. Mirrors the folder structure in the tagfile harvester.
     /// </summary>
     /// <param name="resultCode">Code from Raptor</param>
     /// <param name="data">Tagfile contents to archive</param>
@@ -277,7 +275,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var tccPath = path.StartsWith("/") ? path : $"/{path}"; 
       var tccFileSpaceId = configStore.GetValueString(TCC_FILESPACE_CONFIG_KEY);
 
-      log.LogDebug($"{nameof(UploadTagFile)} (Direct) : Moving file {tagFileName} for org {tccOrgId} to {folderName} folder. Path: {path}, S3 Path: {s3FullPath}, TCC FilespaceID: {tccFileSpaceId}");
+      log.LogDebug($"{nameof(UploadTagFile)}: Moving file {tagFileName} for org {tccOrgId} to {folderName} folder. Path: {path}, S3 Path: {s3FullPath}, TCC FilespaceID: {tccFileSpaceId}");
 
       
       using (var s3Stream = new MemoryStream())
@@ -309,7 +307,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       }
       else
       {
-        log.LogWarning($"{nameof(UploadTagFile)} (Direct): Failed to upload tag file {tagFileName} to TCC due to missing key {TCC_FILESPACE_CONFIG_KEY}");
+        log.LogWarning($"{nameof(UploadTagFile)}: Failed to upload tag file {tagFileName} to TCC due to missing key {TCC_FILESPACE_CONFIG_KEY}");
       }
     }
 

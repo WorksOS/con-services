@@ -52,18 +52,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       if (useTrexGateway)
       {
 #endif
+
         request.Validate();
-
         result = await CallTRexEndpoint(request).ConfigureAwait(false);
-
-        if (result.Code == 0)
-        {
-          log.LogDebug($"{nameof(ProcessAsyncEx)} (TRex): Successfully imported TAG file '{request.FileName}'.");
-        }
-        else
-        {
-          log.LogDebug($"{nameof(ProcessAsyncEx)} (TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
-        }
+        
 #if RAPTOR
       }
 
@@ -103,14 +95,17 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var returnResult = await TagFileHelper.SendTagFileToTRex(request,
         tRexTagFileProxy, log, customHeaders, false).ConfigureAwait(false);
 
-      log.LogInformation($"{nameof(CallTRexEndpoint)}  (NonDirect): result: {JsonConvert.SerializeObject(returnResult)}");
-
+      log.LogInformation($"{nameof(CallTRexEndpoint)} completed: filename {request.FileName}  result {JsonConvert.SerializeObject(returnResult)}");
+      if (returnResult.Code != 0)
+        log.LogDebug($"{nameof(CallTRexEndpoint)}: Failed to import tagfile '{request.FileName}', {returnResult.Message}");
+  
       // should the return be split as in CallRaptorEndpoint()
       //     Valid = TagFilePostResult
       //     tpsprOnChooseMachineInvalidSubscriptions (etal) ContractExecutionResult
       //     else exception
       return returnResult;
     }
+
 #if RAPTOR
     private ContractExecutionResult CallRaptorEndpoint(TagFileRequestLegacy tfRequest)
     {
@@ -125,7 +120,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
               ? RaptorConverters.ConvertWGS84Fence(tfRequest.Boundary)
               : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
 
-        log.LogInformation($"{nameof(CallRaptorEndpoint)} (NonDirect): result {resultCode} {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");
+        log.LogInformation($"{nameof(CallRaptorEndpoint)} completed: filename '{tfRequest.FileName}' result {resultCode} {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");
 
         if (resultCode == TTAGProcServerProcessResult.tpsprOK)
         {
@@ -137,28 +132,14 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
           {
             var result = new ContractExecutionResult(
               ContractExecutionStates.GetErrorNumberwithOffset((int)resultCode),
-              $"Failed to process tagfile with error: {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");
+              $"Failed to process tagfile '{tfRequest.FileName}', with error: {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");
 
-            log.LogInformation($"{nameof(CallRaptorEndpoint)} (NonDirect): result {JsonConvert.SerializeObject(result)}");
-
-            // Serialize the request ignoring the Data property so not to overwhelm the logs.
-            var serializedRequest = JsonConvert.SerializeObject(
-              tfRequest,
-              Formatting.None,
-              new JsonSerializerSettings
-              {
-                StringEscapeHandling = StringEscapeHandling.EscapeNonAscii,
-                ContractResolver = new JsonContractPropertyResolver("Data")
-              });
-
-            log.LogInformation($"{nameof(CallRaptorEndpoint)} (NonDirect): TAG file submission request with file data omitted:" +
-                               JsonConvert.SerializeObject(serializedRequest));
-
+            log.LogInformation($"{nameof(CallRaptorEndpoint)}: result {JsonConvert.SerializeObject(result)}");
             return result;
           }
 
           var errorMessage =
-            $"{nameof(CallRaptorEndpoint)} (NonDirect): Failed to process tagfile with error: {ContractExecutionStates.FirstNameWithOffset((int) resultCode)}";
+            $"{nameof(CallRaptorEndpoint)}: Failed to process tagfile '{tfRequest.FileName}', {ContractExecutionStates.FirstNameWithOffset((int) resultCode)}";
           log.LogError(errorMessage);
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int) resultCode), errorMessage));

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -78,9 +79,9 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     public async Task<IActionResult> PostTagFileNonDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
-      _log.LogDebug($"{nameof(PostTagFileNonDirectSubmission)}: serializedRequest {serializedRequest}");
+      _log.LogDebug($"{nameof(PostTagFileNonDirectSubmission)}: request {serializedRequest}");
 
-      //Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
+      // Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
 #pragma warning disable 4014
       RequestExecutorContainerFactory
         .Build<TagFileConnectedSiteSubmissionExecutor>(_logger,
@@ -157,7 +158,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     public async Task<ObjectResult> PostTagFileDirectSubmission([FromBody] CompactionTagFileRequest request)
     {
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
-      _log.LogDebug($"{nameof(PostTagFileDirectSubmission)}: serializedRequest {serializedRequest}");
+      _log.LogDebug($"{nameof(PostTagFileDirectSubmission)}: request {serializedRequest}");
 
       var result = await RequestExecutorContainerFactory
         .Build<TagFileDirectSubmissionExecutor>(_logger,
