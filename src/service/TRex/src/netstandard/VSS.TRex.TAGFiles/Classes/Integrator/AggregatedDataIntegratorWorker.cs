@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -329,7 +330,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           });
 
           // ... then integrate them
-          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes into primary data model for {SiteModelFromDM.ID}");
+          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes (spanning {Task.AggregatedCellPasses.CountLeafSubGridsInMemory()} sub grids) into primary data model for {SiteModelFromDM.ID} spanning {SiteModelFromDM.ExistenceMap.CountBits()} sub grids");
 
           var subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
           if (!subGridIntegrator.IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
@@ -349,6 +350,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           storageProxy_Mutable.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
           Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
 
+          /* TODO: Re-add segment retirement service when versioning issues have been resolved.
           // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
           Log.LogInformation($"Aggregation Task Process --> Updating segment retirement queue for {SiteModelFromDM.ID}");
           if (subGridIntegrator.InvalidatedSpatialStreams.Count > 0)
@@ -388,6 +390,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 Log.LogCritical($"{invalidatedItem}");
             }
           }
+          */
 
           if (_adviseOtherServicesOfDataModelChanges)
           {

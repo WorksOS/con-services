@@ -11,6 +11,8 @@ Scenario Outline: Compaction Get Cut-Fill Details - No Design Filter
   | RequestName     | ProjectUID                           | CutFillDesignUID                     | ResultName                | HttpCode |
   |                 | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | NoDesignFilter_Details    | 200      |
   | ProjectSettings | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | NoDesignFilter_Details_PS | 200      |
+  | RefSurface      | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | c91e56cf-6d5f-436d-9655-cf4f919523f4 | NoDesignFilter_Details_Ref| 200      |
+
 
 Scenario Outline: Compaction Get Cut-Fill Details
   Given the service route "/api/v2/cutfill/details" and result repo "CompactionGetCutFillDataResponse.json"

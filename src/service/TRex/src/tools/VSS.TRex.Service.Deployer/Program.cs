@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
@@ -50,6 +51,10 @@ namespace VSS.TRex.Service.Deployer
         Log.LogError(e, "Exception occurred deploying service:");
       }
 
+      Log.LogInformation("****** Segment retirement service deployment temporarily suspended pending fixes for element versioning *******");
+
+      /* Todo: Reenable retirement queue service deployment
+
       Log.LogInformation("Completed service deployment for TAG file buffer queue service");
 
       var segmentRetirementProxyMutable = new SegmentRetirementQueueServiceProxyMutable();
@@ -64,6 +69,7 @@ namespace VSS.TRex.Service.Deployer
       }
 
       Log.LogInformation("Completed service deployment for mutable segment retirement queue service");
+      */
     }
   }
 }

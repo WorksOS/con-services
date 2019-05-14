@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -167,53 +168,58 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromServices] IEnqueueItem<ProjectFileDescriptor> fileQueue)
     {
       log.LogDebug("GetAddFile: " + Request.QueryString);
-      ProjectData projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
-      string coordSystem = projectDescr.CoordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
-      FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
 
-      if (fileType == ImportedFileType.Alignment)
+      if (fileType != ImportedFileType.ReferenceSurface)
       {
-        var preferences = await userPreferences.GetUserPreferences(Request.Headers.GetCustomHeaders());
-        if (preferences == null)
+        ProjectData projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
+        string coordSystem = projectDescr.CoordinateSystemFileName;
+        FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
+
+        if (fileType == ImportedFileType.Alignment)
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to retrieve preferences for current user"));
+          var preferences = await userPreferences.GetUserPreferences(Request.Headers.GetCustomHeaders());
+          if (preferences == null)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+                "Failed to retrieve preferences for current user"));
+          }
+
+          var units = preferences.Units.UnitsType();
+
+          switch (units)
+          {
+            case UnitsTypeEnum.Metric:
+              dxfUnitsType = DxfUnitsType.Meters;
+              break;
+            case UnitsTypeEnum.Imperial:
+              dxfUnitsType = DxfUnitsType.ImperialFeet;
+              break;
+            case UnitsTypeEnum.US:
+              dxfUnitsType = DxfUnitsType.UsSurveyFeet;
+              break;
+          }
         }
 
-        var units = preferences.Units.UnitsType();
-
-        switch (units)
-        {
-          case UnitsTypeEnum.Metric:
-            dxfUnitsType = DxfUnitsType.Meters;
-            break;
-          case UnitsTypeEnum.Imperial:
-            dxfUnitsType = DxfUnitsType.ImperialFeet;
-            break;
-          case UnitsTypeEnum.US:
-            dxfUnitsType = DxfUnitsType.UsSurveyFeet;
-            break;
-        }
-      }
-
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
-        projectDescr.LegacyProjectId,
-        projectUid, fileDes,
-        coordSystem,
-        dxfUnitsType,
-        fileId,
-        fileType,
-        fileUid,
-        userEmailAddress
+        var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
+          projectDescr.LegacyProjectId,
+          projectUid, fileDes,
+          coordSystem,
+          dxfUnitsType,
+          fileId,
+          fileType,
+          fileUid,
+          userEmailAddress
         );
 
-      request.Validate();
-      /*var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, RaptorClient, null, configStore, fileRepo, tileGenerator);
-      var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;*/
-      //Instead, leverage the service
-      fileQueue.EnqueueItem(request);
+        request.Validate();
+        /*var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, RaptorClient, null, configStore, fileRepo, tileGenerator);
+        var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;*/
+        //Instead, leverage the service
+        fileQueue.EnqueueItem(request);
+      }
+
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, customHeaders);
       dataCache.RemoveByTag(projectUid.ToString());
@@ -257,13 +263,25 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
           }
         }
       }
-      FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
-        projectDescr.LegacyProjectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType, fileUid, userEmailAddress, legacyFileId);
-      request.Validate();
 #if RAPTOR
-      var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
-      var result = await executor.ProcessAsync(request);
+      ContractExecutionResult result = null;
+      if (fileType == ImportedFileType.ReferenceSurface)
+      {
+        result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Delete file notification successful");
+      }
+      else
+      {
+        FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
+        var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
+          projectDescr.LegacyProjectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType, fileUid,
+          userEmailAddress, legacyFileId);
+        request.Validate();
+
+        var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null,
+          configStore, fileRepo, tileGenerator);
+        result = await executor.ProcessAsync(request);
+      }
+
       await ClearFilesCaches(projectUid, customHeaders);
       dataCache.RemoveByTag(projectUid.ToString());
       cache.InvalidateReponseCacheForProject(projectUid);

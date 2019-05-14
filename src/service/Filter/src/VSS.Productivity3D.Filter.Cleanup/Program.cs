@@ -2,6 +2,7 @@
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Log4Net.Extensions;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;

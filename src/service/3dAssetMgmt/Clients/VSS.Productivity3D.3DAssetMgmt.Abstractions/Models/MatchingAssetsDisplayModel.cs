@@ -30,7 +30,14 @@ namespace VSS.Productivity3D.AssetMgmt3D.Abstractions.Models
 
     public List<string> GetIdentifiers()
     {
-      return new List<string>(){ AssetUID2D.ToString() };
+      var results = new List<string>();
+      if (!string.IsNullOrEmpty(AssetUID2D))
+        results.Add(AssetUID2D);
+
+      if (!string.IsNullOrEmpty(AssetUID3D))
+        results.Add(AssetUID3D);
+
+      return results;
     }
   }
 }

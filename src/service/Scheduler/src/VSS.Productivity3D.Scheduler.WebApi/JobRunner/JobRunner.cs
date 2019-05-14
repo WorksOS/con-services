@@ -6,6 +6,7 @@ using App.Metrics.Health;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;

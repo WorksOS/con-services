@@ -28,15 +28,16 @@ namespace TestUtility
     /// <returns></returns>
     public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, HttpStatusCode httpResponseCode = HttpStatusCode.OK, string mediaType = "application/json", string customerUid = null, string jwt=null)
     {
-      Log.Info(resourceUri, Log.ContentType.ApiSend);
+      Console.WriteLine($"{nameof(DoHttpRequest)}: [{httpMethod}] {resourceUri}, expected response code: {httpResponseCode}");
+
       var msg = new Msg();
-      var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid, jwt);                   //Initialize the Http Request
+      var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid, jwt);
+
       if (payloadData != null)
       {
         request.ContentType = mediaType;
         var writeStream = request.GetRequestStreamAsync().Result;
-        UTF8Encoding encoding = new UTF8Encoding();
-        byte[] bytes = encoding.GetBytes(payloadData);
+        byte[] bytes =  new UTF8Encoding().GetBytes(payloadData);
         writeStream.Write(bytes, 0, bytes.Length);
       }
 
@@ -44,13 +45,14 @@ namespace TestUtility
       try
       {
         string responseString = null;
-        Console.WriteLine("Call Web API=" + resourceUri);
+
         using (var response = (HttpWebResponse) request.GetResponseAsync().Result)
         {
           responseString = GetStringFromResponseStream(response);
           msg.DisplayWebApi(httpMethod, resourceUri, responseString, payloadData);
           Assert.AreEqual(httpResponseCode, response.StatusCode, "Expected this response code, " + httpResponseCode + ", but the actual response code was this instead, " + response.StatusCode);
         }
+
         return responseString;
       }
       catch (AggregateException ex)
@@ -74,8 +76,6 @@ namespace TestUtility
     /// <summary>
     /// Get the HTTP Response from the response stream and store in a string variable
     /// </summary>
-    /// <param name="response"></param>
-    /// <returns></returns>
     private string GetStringFromResponseStream(HttpWebResponse response)
     {
         var readStream = response.GetResponseStream();

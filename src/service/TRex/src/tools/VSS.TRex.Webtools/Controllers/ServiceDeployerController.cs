@@ -46,6 +46,10 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpPut("segmentretirement/mutable")]
     public string DeployMutableSegmentRetirementService()
     {
+      Log.LogInformation("****** Segment retirement service deployment temporarily suspended pending fixes for element versioning *******");
+      return "****** Segment retirement service deployment temporarily suspended pending fixes for element versioning *******";
+
+      /* Todo: Reenable retirement queue service deployment
       Log.LogInformation("Obtaining proxy for mutable segment retirement service");
 
       try
@@ -62,6 +66,7 @@ namespace VSS.TRex.Webtools.Controllers
 
       Log.LogInformation("Completed service deployment for mutable segment retirement service");
       return "Completed service deployment for mutable segment retirement service";
+      */
     }
   }
 }

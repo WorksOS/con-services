@@ -9,36 +9,43 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// The design currently loaded on the machine.
     /// </summary>
+    [JsonProperty(Required = Required.Default)]
     public string lastKnownDesignName { get; private set; }
 
     /// <summary>
     /// The layer number currently loaded on the machine.
     /// </summary>
+    [JsonProperty(Required = Required.Default)]
     public ushort? lastKnownLayerId { get; private set; }
 
     /// <summary>
     /// The time the machine last reported.
     /// </summary>
+    [JsonProperty(Required = Required.Default)]
     public DateTime? lastKnownTimeStamp { get; private set; }
 
     /// <summary>
     /// The last reported position of the machine in radians.
     /// </summary>
+    [JsonProperty(Required = Required.Default)]
     public double? lastKnownLatitude { get; set; }
 
     /// <summary>
     /// The last reported position of the machine in radians.
     /// </summary>
+    [JsonProperty(Required = Required.Default)]
     public double? lastKnownLongitude { get; set; }
 
     /// <summary>
     /// The last reported position of the machine in grid coordinates.
     /// </summary>
+    [JsonProperty(Required = Required.Default)]
     public double? lastKnownX { get; private set; }
 
     /// <summary>
     /// The last reported position of the machine in grid coordinates.
     /// </summary>
+    [JsonProperty(Required = Required.Default)]
     public double? lastKnownY { get; private set; }
 
     /// <summary>

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Abstractions.ServiceDiscovery;
 using VSS.Common.Exceptions;
