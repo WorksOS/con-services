@@ -44,7 +44,7 @@ namespace VSS.TRex.Filters.Models
       PassCount = filteredPasses.Length;
     }
 
-    private int CellPassAggregationListSizeIncrement() => DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT", Consts.VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT);
+    private int CellPassAggregationListSizeIncrement() => DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDPSNODE_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT", Consts.VLPDPSNODE_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT);
 
     private void CheckArrayCapacity()
     {
