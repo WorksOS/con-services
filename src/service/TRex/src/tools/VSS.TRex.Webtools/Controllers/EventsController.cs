@@ -75,9 +75,9 @@ namespace VSS.TRex.Webtools.Controllers
       IMachine machine = siteModel?.Machines.Locate(Guid.Parse(machineID));
 
       if (siteModel == null || machine == null)
-        return new JsonResult($"Sitemodel {siteModelID} and/or machine {machineID} unknown");
+        return new JsonResult($"Site model {siteModelID} and/or machine {machineID} unknown");
 
-      return new JsonResult(siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].GetEventList((ProductionEventType)eventType).ToStrings(startDate, endDate, maxEventsToReturn));
+      return new JsonResult(siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].GetEventList((ProductionEventType)eventType).ToStrings(startDate.ToUniversalTime(), endDate.ToUniversalTime(), maxEventsToReturn));
     }
   }
 }
