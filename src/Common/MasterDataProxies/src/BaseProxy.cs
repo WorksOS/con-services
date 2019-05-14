@@ -520,8 +520,8 @@ namespace VSS.MasterData.Proxies
         stacktrace = ex.InnerException.StackTrace;
       }
 
-      log.LogWarning($"{nameof(LogWebRequestException)}: Error sending data from master data: ", message);
-      log.LogWarning($"{nameof(LogWebRequestException)}:Stacktrace: ", stacktrace);
+      log.LogWarning($"{nameof(LogWebRequestExceptionAndSetHealth)}: Error sending data from master data: ", message);
+      log.LogWarning($"{nameof(LogWebRequestExceptionAndSetHealth)}:Stacktrace: ", stacktrace);
 
       //WE want to exclude business exceptions as they are valid cases for health monitoring
       if (ex.InnerException != null && ex.InnerException is ServiceException serviceException &&

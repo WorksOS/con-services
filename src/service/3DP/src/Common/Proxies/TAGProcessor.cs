@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
         if (hostIdentifier.Length == 0)
         {
-          throw new ArgumentNullException($"Missing PDS TAG Processor IPAddress in configuration file");
+          throw new ArgumentNullException("Missing PDS TAG Processor IPAddress in configuration file");
         }
 
         if (!IPAddress.TryParse(hostIdentifier, out var PDSAddress))

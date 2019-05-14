@@ -472,7 +472,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
-        fileDescriptor = FileDescriptor.CreateFileDescriptor(string.Empty, string.Empty, filename);
+        //FileDescriptor not used for reference surface but validation requires values
+        fileDescriptor = FileDescriptor.CreateFileDescriptor("Not applicable", "Not applicable", filename);
       }
       else
       {
