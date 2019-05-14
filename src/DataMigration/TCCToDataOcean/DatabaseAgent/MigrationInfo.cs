@@ -8,11 +8,9 @@ namespace TCCToDataOcean.DatabaseAgent
     public DateTime EndTime { get; set; }
     public string Duration { get; set; }
     public int ProjectsTotal { get; set; }
-    public int EligibleProjects { get; set; }
     public int ProjectsCompleted { get; set; }
     public int FilesTotal { get; set; }
-    public int FilesEligible { get; set; }
-    public int Errors { get; set; }
+    public int FilesUploaded { get; set; }
 
     public MigrationInfo()
     {

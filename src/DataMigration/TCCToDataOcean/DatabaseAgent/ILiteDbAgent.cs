@@ -14,7 +14,7 @@ namespace TCCToDataOcean.DatabaseAgent
     void SetMigrationState(string tableName, Project project, MigrationState migrationState);
     void SetMigrationState(string tableName, FileData file, MigrationState migrationState);
     void SetFileSize(string tableName, FileData file, long length);
-    void SetProjectCoordinateSystemDetails(string tableName, Project project, bool isValid);
+    void SetProjectCoordinateSystemDetails(string tableName, Project project);
     void SetProjectFilesDetails(string tableName, Project project, int totalFileCount, int eligibleFileCount);
     void SetCanResolveCSIB(string tableName, string key, bool canResolveCsib);
     void SetResolveCSIBMessage(string tableName, string key, string message);
@@ -23,7 +23,8 @@ namespace TCCToDataOcean.DatabaseAgent
     void InitDatabase();
     void SetMigationInfo_EndTime();
     void SetMigationInfo_SetProjectCount(int projectCount);
-    void SetMigationInfo_SetEligibleProjectCount(int projectCount);
     void SetMigationInfo_IncrementProjectsProcessed();
+    void SetMigrationFilesTotal(int fileCount);
+    void SetMigrationFilesUploaded(int fileCount);
   }
 }

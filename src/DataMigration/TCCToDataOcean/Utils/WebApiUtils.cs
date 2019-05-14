@@ -47,7 +47,7 @@ namespace TCCToDataOcean.Utils
         ActionUTC = project.LastActionedUTC
       };
 
-      var jsonString = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvt }, JsonSettings);
+      var jsonString = JsonConvert.SerializeObject(updateProjectEvt, JsonSettings);
 
       return RestClient.SendHttpClientRequest<ProjectDataSingleResult>(uriRoot, HttpMethod.Put, Types.MediaType.APPLICATION_JSON, Types.MediaType.APPLICATION_JSON, project.CustomerUID, jsonString);
     }

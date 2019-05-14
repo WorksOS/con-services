@@ -58,16 +58,7 @@ namespace TCCToDataOcean.DatabaseAgent
       dbObj.ProjectsTotal = projectCount;
       objs.Update(dbObj);
     }
-
-    public void SetMigationInfo_SetEligibleProjectCount(int projectCount)
-    {
-      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
-      var dbObj = objs.Find(x => x.Id == 1).First();
-
-      dbObj.EligibleProjects = projectCount;
-      objs.Update(dbObj);
-    }
-
+    
     public void SetMigationInfo_IncrementProjectsProcessed()
     {
       var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
@@ -109,6 +100,24 @@ namespace TCCToDataOcean.DatabaseAgent
       projects.Update(dbObj);
     }
 
+    public void SetMigrationFilesTotal(int fileCount)
+    {
+      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
+      var dbObj = objs.Find(x => x.Id == 1).First();
+
+      dbObj.FilesTotal += fileCount;
+      objs.Update(dbObj);
+    }
+
+    public void SetMigrationFilesUploaded(int fileCount)
+    {
+      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
+      var dbObj = objs.Find(x => x.Id == 1).First();
+
+      dbObj.FilesUploaded += fileCount;
+      objs.Update(dbObj);
+    }
+
     public void WriteRecord(string tableName, FileData file)
     {
       var objs = db.GetCollection<MigrationFile>(tableName);
@@ -147,13 +156,13 @@ namespace TCCToDataOcean.DatabaseAgent
       files.Update(dbObj);
     }
 
-    public void SetProjectCoordinateSystemDetails(string tableName, Project project, bool isValid)
+    public void SetProjectCoordinateSystemDetails(string tableName, Project project)
     {
       var projects = db.GetCollection<MigrationProject>(tableName);
       var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
       dbObj.DcFilename = project.CoordinateSystemFileName;
-      dbObj.HasValidDcFile = isValid;
+      dbObj.HasValidDcFile = !string.IsNullOrEmpty(project.CoordinateSystemFileName);
       dbObj.DateTimeUpdated = DateTime.UtcNow;
 
       projects.Update(dbObj);

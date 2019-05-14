@@ -215,7 +215,7 @@ namespace TCCToDataOcean
 
           if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
           {
-            _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, true);
+            _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project);
 
             // DIAGNOSTIC RUNTIME SWITCH
             if (_updateProjectCoordinateSystemFile)
@@ -237,7 +237,7 @@ namespace TCCToDataOcean
         }
         else
         {
-          _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, false);
+          _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project);
         }
 
         var importedFilesResult = false;
@@ -307,7 +307,12 @@ namespace TCCToDataOcean
 
       if (!Directory.Exists(dcFilePath)) Directory.CreateDirectory(dcFilePath);
 
-      var tempFileName = Path.Combine(dcFilePath, project.CoordinateSystemFileName);
+      string coordinateSystemFilename = project.CoordinateSystemFileName;
+
+      if (string.IsNullOrEmpty(coordinateSystemFilename)) coordinateSystemFilename = "ProjectCalibrationFile.dc";
+      if (coordinateSystemFilename.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) coordinateSystemFilename = "ProjectCalibrationFile.dc";
+
+      var tempFileName = Path.Combine(dcFilePath, coordinateSystemFilename);
 
       Log.LogInformation($"{Method.Info()} Creating DC file '{tempFileName}' for project {project.ProjectUID}");
 
@@ -431,6 +436,7 @@ namespace TCCToDataOcean
       }
       else
       {
+        _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Skipped);
         Log.LogDebug($"{Method.Info()} Skipped uploading file {file.ImportedFileUid}");
       }
 

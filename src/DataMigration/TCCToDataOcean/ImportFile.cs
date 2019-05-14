@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
@@ -24,6 +25,7 @@ namespace TCCToDataOcean
   {
     private readonly IRestClient RestClient;
     private readonly ILogger Log;
+    private readonly ILiteDbAgent _migrationDb;
 
     private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
     private const string NEWLINE = "\r\n";
@@ -32,11 +34,12 @@ namespace TCCToDataOcean
     private const int CHUNK_SIZE = 1024 * 1024;
     private readonly string BearerToken;
 
-    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient)
+    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient, ILiteDbAgent databaseAgent)
     {
       Log = loggerFactory.CreateLogger<ImportFile>();
       BearerToken = "Bearer " + authentication.GetApplicationBearerToken();
       RestClient = restClient;
+      _migrationDb = databaseAgent;
     }
 
     /// <summary>
@@ -148,6 +151,8 @@ namespace TCCToDataOcean
     {
       Log.LogInformation($"{Method.In()} | {httpMethod.Method}, Uri: {resourceUri}");
 
+      _migrationDb.SetMigrationFilesTotal(1);
+
       if (!(WebRequest.Create(resourceUri) is HttpWebRequest request)) { return string.Empty; }
 
       request.Method = httpMethod.Method;
@@ -188,6 +193,8 @@ namespace TCCToDataOcean
           return GetStringFromResponseStream(response);
         }
       }
+
+      _migrationDb.SetMigrationFilesUploaded(1);
 
       return responseString;
     }

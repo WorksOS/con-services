@@ -7,6 +7,7 @@
     InProgress,
     Completed,
     Failed,
-    FileNotFound
+    FileNotFound,
+    Skipped
   }
 }
