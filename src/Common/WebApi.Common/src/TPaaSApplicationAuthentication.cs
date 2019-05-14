@@ -52,7 +52,7 @@ namespace VSS.WebApi.Common
             {"Content-Type", ContentTypeConstants.ApplicationFormUrlEncoded},
             {"Authorization", string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
-          TPaasOauthResult tPaasOauthResult;
+          TPaasOauthResult tPaasOauthResult; 
 
           try
           {
