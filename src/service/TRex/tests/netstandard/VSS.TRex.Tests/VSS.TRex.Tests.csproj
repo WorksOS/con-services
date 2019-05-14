@@ -121,6 +121,9 @@
     <None Update="TestData\Common\Bug36372.ttm.%24DesignSubgridIndex%24">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Common\TestTAGFile-MDP.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Common\TestTAGFile.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

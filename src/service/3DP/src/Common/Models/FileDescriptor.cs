@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 #if RAPTOR
 using VLPDDecls;
 #endif

@@ -9,6 +9,7 @@ using Moq;
 using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using VLPDDecls;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
