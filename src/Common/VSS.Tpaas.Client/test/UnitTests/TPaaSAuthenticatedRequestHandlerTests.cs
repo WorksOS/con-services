@@ -46,7 +46,8 @@ namespace VSS.Tpaas.Client.UnitTests
          })
          .Verifiable();
 
-      var authHandler = new TPaaSAuthenticatedRequestHandler(handlerMock.Object, mockTPaaSClient.Object);
+      var authHandler = new TPaaSAuthenticatedRequestHandler(handlerMock.Object);
+      authHandler.TPaaSClient = mockTPaaSClient.Object;
 
       // use real http client with mocked handler here
       var httpClient = new HttpClient(authHandler)
@@ -99,7 +100,7 @@ namespace VSS.Tpaas.Client.UnitTests
          })
          .Verifiable();
 
-      var authHandler = new TPaaSAuthenticatedRequestHandler(handlerMock.Object, null);
+      var authHandler = new TPaaSAuthenticatedRequestHandler(handlerMock.Object);
 
       // use real http client with mocked handler here
       var httpClient = new HttpClient(authHandler)
