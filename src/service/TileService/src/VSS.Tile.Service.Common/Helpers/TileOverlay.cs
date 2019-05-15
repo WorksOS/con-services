@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -11,20 +10,11 @@ namespace VSS.Tile.Service.Common.Helpers
 {
   public class TileOverlay
   {
-    private readonly ILogger Logger;
-
-    public TileOverlay(ILogger logger)
-    {
-      Logger = logger;
-    }
-
     /// <summary>
     /// Overlay the tiles. Return an empty tile if none to overlay.
     /// </summary>
-    public byte[] OverlayTiles(List<byte[]> tileList)
+    public static byte[] OverlayTiles(List<byte[]> tileList)
     {
-      Logger.LogDebug($"DxfTileExecutor: Overlaying {tileList.Count} tiles");
-
       using (var bitmap = new Image<Rgba32>(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
       {
         foreach (var tileData in tileList)

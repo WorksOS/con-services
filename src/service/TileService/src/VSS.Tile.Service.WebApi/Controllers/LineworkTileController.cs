@@ -45,14 +45,6 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
     /// The tiles for the supplied list of files are overlaid and a single tile returned.
     /// </summary>
-    /// <param name="service">WMS parameter - value WMS</param>
-    /// <param name="version">WMS parameter - value 1.3.0</param>
-    /// <param name="request">WMS parameter - value GetMap</param>
-    /// <param name="format">WMS parameter - value image/png</param>
-    /// <param name="transparent">WMS parameter - value true</param>
-    /// <param name="layers">WMS parameter - value Layers</param>
-    /// <param name="crs">WMS parameter - value EPSG:4326</param>
-    /// <param name="styles">WMS parameter - value null</param>
     /// <param name="width">The width, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="height">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
@@ -63,6 +55,14 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [ValidateWidthAndHeight]
     [HttpGet("api/v1/lineworktiles")]
     public async Task<TileResult> GetLineworkTile(
+      [FromQuery] string service,
+      [FromQuery] string version,
+      [FromQuery] string request,
+      [FromQuery] string format,
+      [FromQuery] string transparent,
+      [FromQuery] string layers,
+      [FromQuery] string crs,
+      [FromQuery] string styles,
       [FromQuery] int width,
       [FromQuery] int height,
       [FromQuery] string bbox,
@@ -86,11 +86,22 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [ValidateTileParameters]
     [HttpGet("api/v1/lineworktiles/png")]
     public async Task<FileResult> GetLineworkTileRaw(
+      [FromQuery] string service,
+      [FromQuery] string version,
+      [FromQuery] string request,
+      [FromQuery] string format,
+      [FromQuery] string transparent,
+      [FromQuery] string layers,
+      [FromQuery] string crs,
+      [FromQuery] string styles,
+      [FromQuery] int width,
+      [FromQuery] int height,
       [FromQuery] string bbox,
       [FromQuery] Guid projectUid,
       [FromQuery] string fileType)
     {
       Log.LogDebug($"{nameof(GetLineworkTileRaw)}: {Request.QueryString}");
+
       var result = await GetDxfTileResult(projectUid, fileType, bbox);
 
       return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);

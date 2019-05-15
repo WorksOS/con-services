@@ -25,10 +25,7 @@ namespace VSS.Tile.Service.Common.Executors
   /// </summary>
   public class DxfTileExecutor : RequestExecutorContainer
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
+    protected override ContractExecutionResult ProcessEx<T>(T item) => throw new NotImplementedException("Use the asynchronous form of this method");
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -64,12 +61,12 @@ namespace VSS.Tile.Service.Common.Executors
         ThrowRequestTypeCastException<DxfTileRequest>();
       }
 
-      log.LogDebug($"DxfTileExecutor: {files?.Count} files");
+      log.LogDebug($"DxfTileExecutor: {files?.Count ?? 0} files");
 
       //Short circuit overlaying if there no files to overlay as ForAll is an expensive operation
       if (files == null || !files.Any())
       {
-        byte[] emptyOverlayData = null;
+        byte[] emptyOverlayData;
         using (var bitmap = new Image<Rgba32>(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
         {
           emptyOverlayData = bitmap.BitmapToByteArray();
@@ -119,7 +116,8 @@ namespace VSS.Tile.Service.Common.Executors
 
       await Task.WhenAll(fileTasks);
 
-      byte[] overlayData = new TileOverlay(log).OverlayTiles(tileList);
+      log.LogDebug($"DxfTileExecutor: Overlaying {tileList.Count} tiles");
+      byte[] overlayData = TileOverlay.OverlayTiles(tileList);
 
       return new TileResult(overlayData);
     }
