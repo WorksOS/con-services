@@ -12,7 +12,7 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     [Route("api/oauth2/token")]
     [HttpPost]
-    public TPaasOauthResult DummyBearerTokenPost(
+    public TPaasOauthResult DummyGetBearerTokenPost(
       [FromForm] string grantType)
     {
       var res = new TPaasOauthResult()
@@ -25,7 +25,24 @@ namespace MockProjectWebApi.Controllers
           token_type = "Bearer"
         }
       };
-      var message = $"DummyBearerTokenPost: res {JsonConvert.SerializeObject(res)}. grantType {grantType}";
+      var message = $"DummyGetBearerTokenPost: res {JsonConvert.SerializeObject(res)}. grantType {grantType}";
+      Console.WriteLine(message);
+      return res;
+    }
+
+    /// <summary>
+    /// Dummies revoking a bearer token from TPaaS Oauth
+    /// </summary>
+    [Route("api/oauth2/revoke")]
+    [HttpPost]
+    public BaseDataResult DummyREvokeBearerTokenPost(
+      [FromForm] string token)
+    {
+      var res = new BaseDataResult()
+      {
+        Code = 0
+      };
+      var message = $"DummyRevokeBearerTokenPost: res {JsonConvert.SerializeObject(res)}. token {token}";
       Console.WriteLine(message);
       return res;
     }

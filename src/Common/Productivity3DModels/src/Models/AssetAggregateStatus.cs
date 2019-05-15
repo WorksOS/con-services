@@ -11,13 +11,19 @@ namespace VSS.Productivity3D.Models.Models
 
     public Guid ProjectUid { get; set; }
 
-    public Guid AssetUid { get; set; } 
+    public Guid? AssetUid { get; set; } 
 
-    public AssetDetails Details { get; set; }
+    public DateTime? LocationLastUpdatedUtc { get; set; }
 
-    public AssetSummary Summary { get; set; }
+    public double? Longitude { get; set; }
 
-    public MachineStatus Machine3D { get; set; }
+    public double? Latitude { get; set; }
+
+    public string Design { get; set; }
+
+    public double? FuelLevel { get; set; }
+
+    public DateTime? FuelLevelLastUpdatedUtc { get; set; }
 
     public List<string> GetIdentifiers()
     {
