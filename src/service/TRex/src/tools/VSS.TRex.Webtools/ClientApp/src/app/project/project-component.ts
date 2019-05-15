@@ -789,7 +789,7 @@ constructor(
     this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
 
     if (this.showCellDatum) {
-        this.projectService.getCellDatum(this.projectUid, this.designUID, this.mouseWorldX, this.mouseWorldY, this.mode)
+        this.projectService.getCellDatum(this.projectUid, this.designUid, this.designOffset, this.mouseWorldX, this.mouseWorldY, this.mode)
             .subscribe(result => {
                 //TODO: display nicely
                 //for now just display raw value
