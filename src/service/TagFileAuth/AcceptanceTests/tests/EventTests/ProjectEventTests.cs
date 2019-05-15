@@ -8,10 +8,14 @@ namespace EventTests
   [TestClass]
   public class ProjectEventTests
   {
-    private const string GEOMETRY_WKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
-    private const string GEOMETRY_WKT2 = "POLYGON((-77.0740531243794 42.8482755151629,-77.0812927509093 42.8470654333548,-77.0881228590397 42.8463941030527,-77.0940464342951 42.8508641955719,-77.0947275746861 42.8576235270907,-77.0905709567355 42.861567039969,-77.0795818211823 42.8641102732199,-77.0697542276039 42.8641987499805,-77.0650585590246 42.8535441075047,-77.0740531243794 42.8482755151629,-77.0740531243794 42.8482755151629))";
+    private const string GEOMETRY_WKT =
+      "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
+    private const string GEOMETRY_WKT2 =
+      "POLYGON((-77.0740531243794 42.8482755151629,-77.0812927509093 42.8470654333548,-77.0881228590397 42.8463941030527,-77.0940464342951 42.8508641955719,-77.0947275746861 42.8576235270907,-77.0905709567355 42.861567039969,-77.0795818211823 42.8641102732199,-77.0697542276039 42.8641987499805,-77.0650585590246 42.8535441075047,-77.0740531243794 42.8482755151629,-77.0740531243794 42.8482755151629))";
 
     [TestMethod]
+    // note that this may not work on windows container due to date diffs
     public void CreateProjectEvent()
     {
       var msg = new Msg();
@@ -21,18 +25,23 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       var legacyProjectId = ts.SetLegacyProjectId();
       var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
-      // use Unspecified to make test pass locally (otherwise it converts to local TZ). However on linux, specifyKind sets century to current.
-      var endDate = DateTime.SpecifyKind(new DateTime(9999, 12, 31), DateTimeKind.Unspecified);
-      endDate = endDate.AddYears(9999 - endDate.Year);
-      var eventArray = new[] {
-       "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
-      $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GEOMETRY_WKT} |" };
+      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00", ts.FirstEventDate);
+      endDate = endDate.AddYears(9999 - endDate.Year).AddMonths(12 - endDate.Month).AddDays(31- endDate.Day);
+      var eventArray = new[]
+      {
+        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |",
+        $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GEOMETRY_WKT} |"
+      };
       ts.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project","ProjectUID","Name,LegacyProjectID,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT",$"testProject1,{legacyProjectId},{(int)ProjectType.ProjectMonitoring},{startDate},{endDate},{GEOMETRY_WKT}",projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
+        "Name,LegacyProjectID,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT",
+        $"testProject1,{legacyProjectId},{(int) ProjectType.ProjectMonitoring},{startDate},{endDate},{GEOMETRY_WKT}",
+        projectGuid);
     }
 
     [TestMethod]
+    // note that this may not work on windows container due to date diffs
     public void UpdateProject_Change_ProjectType()
     {
       var msg = new Msg();
@@ -43,21 +52,25 @@ namespace EventTests
       var legacyProjectId = ts.SetLegacyProjectId();
       string projectName = "testProject2";
       var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
-      var endDate = startDate;
-      var eventArray = new[] {
-       "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |" ,
-      $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT}  |" ,
+      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00", ts.FirstEventDate);
+      var eventArray = new[]
+      {
+        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |",
+        $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT}  |",
       };
 
       ts.PublishEventCollection(eventArray);
-      var updateEventArray = new[] {
-       "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |" ,
-      $"| UpdateProjectEvent | 0d+09:01:00 | {legacyProjectId} | {projectGuid} |               | {ProjectType.Standard} | Atlantic Standard Time    |                  | {endDate}      |{GEOMETRY_WKT2} |"
+      var updateEventArray = new[]
+      {
+        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |",
+        $"| UpdateProjectEvent | 0d+09:01:00 | {legacyProjectId} | {projectGuid} |               | {ProjectType.Standard} | Atlantic Standard Time    |                  | {endDate}      |{GEOMETRY_WKT2} |"
       };
 
       ts.PublishEventCollection(updateEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT", $"{projectName},{(int)ProjectType.Standard},{startDate},{endDate},{GEOMETRY_WKT2}", projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
+        "Name,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT",
+        $"{projectName},{(int) ProjectType.Standard},{startDate},{endDate},{GEOMETRY_WKT2}", projectGuid);
     }
 
     [TestMethod]
@@ -72,27 +85,31 @@ namespace EventTests
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 3";
       var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
-      var endDate = DateTime.SpecifyKind(new DateTime(9999, 12, 31), DateTimeKind.Unspecified);
-      endDate = endDate.AddYears(9999 - endDate.Year);
-      var customerEventArray = new[] {
-      "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
-     $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerGuid} |"};
+      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00", ts.FirstEventDate);
+      var customerEventArray = new[]
+      {
+        "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
+        $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerGuid} |"
+      };
 
-      ts.PublishEventCollection(customerEventArray); 
-      var projectEventArray = new[] {
-       "| EventType          | EventDate   | ProjectID         | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
-      $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT} |" };
+      ts.PublishEventCollection(customerEventArray);
+      var projectEventArray = new[]
+      {
+        "| EventType          | EventDate   | ProjectID         | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |",
+        $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT} |"
+      };
       ts.PublishEventCollection(projectEventArray);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      var associateEventArray = new[] {
-       "| EventType                | EventDate   | ProjectUID    | CustomerUID    | ",
-      $"| AssociateProjectCustomer | 0d+09:00:00 | {projectGuid} | {customerGuid} | "};
-      
+      var associateEventArray = new[]
+      {
+        "| EventType                | EventDate   | ProjectUID    | CustomerUID    | ",
+        $"| AssociateProjectCustomer | 0d+09:00:00 | {projectGuid} | {customerGuid} | "
+      };
+
       ts.PublishEventCollection(associateEventArray);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID","fk_CustomerUID, fk_ProjectUID",$"{customerGuid}, {projectGuid}",projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
+        "fk_CustomerUID, fk_ProjectUID", $"{customerGuid}, {projectGuid}", projectGuid);
     }
-
-
   }
 }
