@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
-using VSS.Common.Abstractions.ServiceDiscovery;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -22,8 +19,7 @@ namespace VSS.WebApi.Common
   {
 
     private string _applicationBearerToken;
-    private const int _refreshPeriodMinutes = 180;
-    private DateTime _lastTPaasTokenObtainedUtc = DateTime.UtcNow;
+    private DateTime _tPaasTokenExpiryUtc = DateTime.MinValue;
     private IConfigurationStore configuration;
     private ITPaasProxy tpaas;
     private ILogger<TPaaSApplicationAuthentication> Log;
@@ -42,10 +38,13 @@ namespace VSS.WebApi.Common
     /// </summary>
     public string GetApplicationBearerToken()
     {
+      const int TOKEN_EXPIRY_GRACE_SECONDS = 60;
+      const string grantType = "client_credentials";
+
       lock (_lock)
       {
         if (string.IsNullOrEmpty(_applicationBearerToken) ||
-            (DateTime.UtcNow - _lastTPaasTokenObtainedUtc).TotalMinutes > _refreshPeriodMinutes)
+            _tPaasTokenExpiryUtc < DateTime.UtcNow)
         {
           var customHeaders = new Dictionary<string, string>
           {
@@ -53,18 +52,29 @@ namespace VSS.WebApi.Common
             {"Content-Type", ContentTypeConstants.ApplicationFormUrlEncoded},
             {"Authorization", string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
-          string grantType = "client_credentials";
-          TPaasOauthResult tPaasOauthResult;
+          TPaasOauthResult tPaasOauthResult; 
 
           try
           {
+            //Revoke expired or expiring token
+            if (!string.IsNullOrEmpty(_applicationBearerToken))
+            {
+              var revokeResult = tpaas.RevokeApplicationBearerToken(_applicationBearerToken, customHeaders).Result;
+              if (revokeResult.Code != 0)
+              {
+                Log.LogInformation($"GetApplicationBearerToken failed to revoke token: {revokeResult.Message}");
+                throw new ServiceException(HttpStatusCode.InternalServerError,
+                  new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+                    $"Failed to revoke application bearer token: {revokeResult.Message}"));
+              }
 
-            var tPaasUrl = configuration.GetValueString("TPAAS_OAUTH_URL") == null
-              ? "null"
-              : configuration.GetValueString("TPAAS_OAUTH_URL");
-
+              _applicationBearerToken = null;
+              _tPaasTokenExpiryUtc = DateTime.MinValue;
+            }
+            //Authenticate to get a token
             tPaasOauthResult = tpaas.GetApplicationBearerToken(grantType, customHeaders).Result;
 
+            var tPaasUrl = configuration.GetValueString("TPAAS_OAUTH_URL") ?? "null";
             Log.LogInformation(
               $"GetApplicationBearerToken() Got new bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
           }
@@ -88,7 +98,7 @@ namespace VSS.WebApi.Common
           }
 
           _applicationBearerToken = tPaasOauthResult.tPaasOauthRawResult.access_token;
-          _lastTPaasTokenObtainedUtc = DateTime.UtcNow;
+          _tPaasTokenExpiryUtc = DateTime.UtcNow.AddSeconds(tPaasOauthResult.tPaasOauthRawResult.expires_in - TOKEN_EXPIRY_GRACE_SECONDS);
         }
 
         Log.LogInformation(

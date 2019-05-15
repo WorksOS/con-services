@@ -6,9 +6,9 @@ Scenario Outline: TagFile - Bad Tag File
   When I POST with parameter "<Code>" I expect response code <HttpCode>
   Then the response should contain the message "<ErrorMessage>"
   Examples: 
-  | Code | ErrorMessage                                                                                             | HttpCode |
-  | 2005 | Failed to process tagfile with error: The TAG file was found to be corrupted on its pre-processing scan. | 400      |
-  | 2008 | Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Invalid.                    | 400      |
+  | Code | ErrorMessage                                                                                                                                                      | HttpCode |
+  | 2005 | CallRaptorEndpoint: Failed to process tagfile '1112J010SW--B LHR934 S33251--120712065808.tag', The TAG file was found to be corrupted on its pre-processing scan. | 400      |
+  | 2008 | Failed to process tagfile '0523J019SW--CB54XW  JLM00885--140826174539.tag', with error: OnChooseMachine. Machine Subscriptions Invalid.                           | 400      |
 
 Scenario Outline: TagFile - Archived Project
   Given the service route "/api/v2/tagfiles" and request repo "CompactionTagFileRequest.json"

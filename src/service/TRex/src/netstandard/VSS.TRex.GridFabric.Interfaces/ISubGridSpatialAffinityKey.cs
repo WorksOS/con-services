@@ -5,23 +5,29 @@ namespace VSS.TRex.GridFabric.Interfaces
   public interface ISubGridSpatialAffinityKey
   {
     /// <summary>
-    /// The GUID for the project the subgrid data belongs to.
+    /// The version number of this spatial element when it is stored in the persistent layer, defined
+    /// as the number of ticks in DateTime.UtcNow at the time it is written.
+    /// </summary>
+    long Version { get; set; }
+
+    /// <summary>
+    /// The GUID for the project the sub grid data belongs to.
     /// </summary>
     Guid ProjectUID { get; set; }
 
     /// <summary>
-    /// The X ordinate cell address of the origin cell for the subgrid
+    /// The X ordinate cell address of the origin cell for the sub grid
     /// </summary>
     uint SubGridX { get; set; }
 
     /// <summary>
-    /// The Y ordinate cell address of the origin cell for the subgrid
+    /// The Y ordinate cell address of the origin cell for the sub grid
     /// </summary>
     uint SubGridY { get; set; }
 
     /// <summary>
-    /// The segment identifier for the subgrid data. If the segment identifier is empty then the element represents
-    /// the subgrid directory (or SGL file). Otherwise, the segment identifier is a string representation of the start
+    /// The segment identifier for the sub grid data. If the segment identifier is empty then the element represents
+    /// the sub grid directory (or SGL file). Otherwise, the segment identifier is a string representation of the start
     /// and end times of the segment and the time duration the segment contains data for.
     /// </summary>
     string SegmentIdentifier { get; set; }

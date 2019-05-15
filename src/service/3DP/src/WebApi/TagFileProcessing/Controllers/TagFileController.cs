@@ -5,11 +5,11 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -35,16 +35,16 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
   public class TagFileController : Controller
   {
 #if RAPTOR
-    private readonly ITagProcessor tagProcessor;
-    private readonly IASNodeClient raptorClient;
+    private readonly ITagProcessor _tagProcessor;
+    private readonly IASNodeClient _raptorClient;
 #endif
-    private readonly ILogger log;
-    private readonly ILoggerFactory logger;
-    private readonly ITransferProxy transferProxy;
-    private readonly IConfigurationStore configStore;
-    private readonly ITRexTagFileProxy tRexTagFileProxy;
-    private readonly IFileRepository tccRepository;
-    private IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
+    private readonly ILogger _log;
+    private readonly ILoggerFactory _logger;
+    private readonly ITransferProxy _transferProxy;
+    private readonly IConfigurationStore _configStore;
+    private readonly ITRexTagFileProxy _tRexTagFileProxy;
+    private readonly IFileRepository _tccRepository;
+    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Default constructor.
@@ -57,15 +57,15 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       ILoggerFactory logger, ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IConfigurationStore configStore, IFileRepository tccRepository)
     {
 #if RAPTOR
-      this.raptorClient = raptorClient;
-      this.tagProcessor = tagProcessor;
+      _raptorClient = raptorClient;
+      _tagProcessor = tagProcessor;
 #endif
-      this.logger = logger;
-      log = logger.CreateLogger<TagFileController>();
-      this.transferProxy = transferProxy;
-      this.tRexTagFileProxy = tRexTagFileProxy;
-      this.configStore = configStore;
-      this.tccRepository = tccRepository;
+      _logger = logger;
+      _log = logger.CreateLogger<TagFileController>();
+      _transferProxy = transferProxy;
+      _tRexTagFileProxy = tRexTagFileProxy;
+      _configStore = configStore;
+      _tccRepository = tccRepository;
     }
 
     /// <summary>
@@ -80,22 +80,22 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     public async Task<IActionResult> PostTagFileNonDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
-      log.LogDebug("PostTagFile: " + serializedRequest);
+      _log.LogDebug($"{nameof(PostTagFileNonDirectSubmission)}: request {serializedRequest}");
 
-      //Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
+      // Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
 #pragma warning disable 4014
       RequestExecutorContainerFactory
-        .Build<TagFileConnectedSiteSubmissionExecutor>(logger,
+        .Build<TagFileConnectedSiteSubmissionExecutor>(_logger,
 #if RAPTOR
-          raptorClient, 
-          tagProcessor, 
+          _raptorClient, 
+          _tagProcessor, 
 #endif
-          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders: customHeaders)
+          _configStore, null, null, null, null, _transferProxy, _tRexTagFileProxy, null, customHeaders: CustomHeaders)
         .ProcessAsync(request).ContinueWith((task) =>
         {
           if (task.IsFaulted)
           {
-            log.LogError(task.Exception,"Error Sending to Connected Site", null);
+            _log.LogError(task.Exception, $"{nameof(PostTagFileNonDirectSubmission)}: Error Sending to Connected Site", null);
           }
         }, TaskContinuationOptions.OnlyOnFaulted);
 #pragma warning restore 4014
@@ -129,12 +129,12 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, boundary);
 
       var responseObj = await RequestExecutorContainerFactory
-        .Build<TagFileNonDirectSubmissionExecutor>(logger,
+        .Build<TagFileNonDirectSubmissionExecutor>(_logger,
 #if RAPTOR
-          raptorClient, 
-          tagProcessor, 
+          _raptorClient, 
+          _tagProcessor, 
 #endif
-          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders: customHeaders)
+          _configStore, null, null, null, null, _transferProxy, _tRexTagFileProxy, null, customHeaders: CustomHeaders)
         .ProcessAsync(requestExt).ConfigureAwait(false);
 
       // when we disable Raptor, allowing Trex response to return to harvester,
@@ -159,22 +159,19 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     public async Task<ObjectResult> PostTagFileDirectSubmission([FromBody] CompactionTagFileRequest request)
     {
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
-      log.LogDebug("PostTagFile (Direct): " + serializedRequest);
+      _log.LogDebug($"{nameof(PostTagFileDirectSubmission)}: request {serializedRequest}");
 
       var result = await RequestExecutorContainerFactory
-        .Build<TagFileDirectSubmissionExecutor>(logger,
+        .Build<TagFileDirectSubmissionExecutor>(_logger,
 #if RAPTOR
-          raptorClient, 
-          tagProcessor, 
+          _raptorClient, 
+          _tagProcessor, 
 #endif
-          configStore, tccRepository, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders: customHeaders)
+          _configStore, _tccRepository, null, null, null, _transferProxy, _tRexTagFileProxy, null, customHeaders: CustomHeaders)
         .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
 
       if (result.Code == 0)
-      {
         return StatusCode((int)HttpStatusCode.OK, result);
-      }
-
       return StatusCode((int)HttpStatusCode.BadRequest, result);
     }
 

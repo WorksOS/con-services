@@ -39,7 +39,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
         {
           throw new ArgumentException("Argument for ComputeFunc must be provided");
         }
-        return request.Execute(Argument, new SubGridSpatialAffinityKey(Argument.ProjectID, Argument.OTGCellX, Argument.OTGCellY));
+        return request.Execute(Argument, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, Argument.ProjectID, Argument.OTGCellX, Argument.OTGCellY));
       }
       finally
       {
