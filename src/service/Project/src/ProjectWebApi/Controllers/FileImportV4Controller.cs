@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
@@ -31,6 +32,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
@@ -600,7 +602,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] Guid parentUid,
       [FromQuery] double offset,
-      [FromServices] ISchedulerProxy schedulerProxy)
+      [FromServices] ISchedulerProxy schedulerProxy,
+      [FromServices] IPreferenceProxy prefProxy)
     {
       logger.LogInformation($"CreateReferenceSurface. projectUid {projectUid} filename: {filename} parentUid: {parentUid} offset: {offset}");
 
@@ -619,8 +622,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //Fill in file name if not provided
       if (string.IsNullOrEmpty(filename))
       {
-        var sign = offset > 0 ? "+" : "-";
-        filename = $"{Path.GetFileNameWithoutExtension(parent.Name)} {sign}{offset:F3}";
+        filename = await DefaultReferenceSurfaceName(prefProxy, offset, Path.GetFileNameWithoutExtension(parent.Name));
       }
 
       //Validate parameters
@@ -637,6 +639,41 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         $"CreateReferenceSurface. Completed successfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
 
       return importedFileResult;
+    }
+
+    /// <summary>
+    /// Construct the default reference surface name
+    /// e.g. if the parent design file is bob.ttm, the offset 1.5 meters and the user units meters then the reference surface name is "bob +1.5m"
+    /// </summary>
+    /// <param name="prefProxy"></param>
+    /// <param name="offset"></param>
+    /// <param name="parentName"></param>
+    /// <returns></returns>
+    private async Task<string> DefaultReferenceSurfaceName(IPreferenceProxy prefProxy, double offset, string parentName)
+    {
+      const double ImperialFeetToMetres = 0.3048;
+      const double USFeetToMetres = 0.304800609601;
+
+      var displayOffset = offset;
+      var unitsString = string.Empty;
+      var userPreferences = await prefProxy.GetUserPreferences(Request.Headers.GetCustomHeaders());
+      switch (userPreferences.Units.UnitsType())
+      {
+        case UnitsTypeEnum.Metric:
+          displayOffset = offset;
+          unitsString = "m";
+          break;
+        case UnitsTypeEnum.Imperial:
+          displayOffset = offset / ImperialFeetToMetres;
+          unitsString = "ft";
+          break;
+        case UnitsTypeEnum.US:
+          displayOffset = offset / USFeetToMetres;
+          unitsString = "ft";
+          break;
+      }
+      var sign = offset > 0 ? "+" : "-";
+      return $"{parentName} {sign}{displayOffset:F3}{unitsString}";
     }
 
     #region fileActivation

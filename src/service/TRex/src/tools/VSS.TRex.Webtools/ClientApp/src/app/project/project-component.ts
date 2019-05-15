@@ -783,6 +783,21 @@ constructor(
     }
 
     this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+
+    if (this.showCellDatum) {
+        this.projectService.getCellDatum(this.projectUid, this.designUID, this.mouseWorldX, this.mouseWorldY, this.mode)
+            .subscribe(result => {
+                //TODO: display nicely
+                //for now just display raw value
+                this.cellDatum = result.returnCode == 0 ? result.value.toFixed(1) : "";
+                this.cellDatum += " (" + result.timestamp + ")";
+            });
+        
+        this.prevMousePixelX = this.mousePixelX;
+        this.prevMousePixelY = this.mousePixelY;
+    } else {
+        this.cellDatum = "";
+    }
   }
 
   public drawProfileLineFromStartToEndPointsForDesign(): void {

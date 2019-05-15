@@ -43,7 +43,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>                        
         public bool GetCell(uint CellX, uint CellY)
         {
-            ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
+            var SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
 
             if (SubGrid == null)
                 return false;
@@ -64,7 +64,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>     
         public void SetCell(uint CellX, uint CellY, bool Value)
         {
-            ISubGrid SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.CreateLeaf);
+            var SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.CreateLeaf);
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
             ((SubGridTreeLeafBitmapSubGrid)SubGrid).Bits.SetBitValue(SubGridX, SubGridY, Value);
@@ -77,7 +77,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         private BoundingIntegerExtent2D ComputeCellsExtents()
         {
-            BoundingIntegerExtent2D SubGridCellsExtents = new BoundingIntegerExtent2D();
+            var SubGridCellsExtents = new BoundingIntegerExtent2D();
             SubGridCellsExtents.SetInverted();
 
             ScanAllSubGrids(x => 
@@ -109,7 +109,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellY"></param>
         public void RemoveLeafOwningCell(uint CellX, uint CellY)
         {
-            ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, (byte)(NumLevels - 1));
+            var SubGrid = LocateSubGridContaining(CellX, CellY, (byte)(NumLevels - 1));
 
             if (SubGrid == null)
                 return;
@@ -144,7 +144,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public BoundingWorldExtent3D ComputeCellsWorldExtents()
         {
-            BoundingIntegerExtent2D SubGridCellsExtents = ComputeCellsExtents();
+            var SubGridCellsExtents = ComputeCellsExtents();
 
             if (SubGridCellsExtents.IsValidExtent)
             {
@@ -255,12 +255,12 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool ClearCellIfSet(uint CellX, uint CellY)
         {
-            ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
+            var SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
 
             if (SubGrid == null)
                 return false;
 
-            SubGridTreeLeafBitmapSubGrid bitmapSubGrid = (SubGridTreeLeafBitmapSubGrid)SubGrid;
+            var bitmapSubGrid = (SubGridTreeLeafBitmapSubGrid)SubGrid;
 
             bitmapSubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 

@@ -19,6 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.Extensions
       {
         case ImportedFileType.DesignSurface:
         case ImportedFileType.SurveyedSurface:
+        case ImportedFileType.ReferenceSurface:
           return true;
         default:
           return false;

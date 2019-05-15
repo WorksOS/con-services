@@ -54,9 +54,23 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     ISubGridTreeBitMask ExistenceMap { get; }
 
+/* VersionMap commented out in interim pending consistency scope review
+/// <summary>
+/// Gets the loaded state of the existence map. This permits testing if an existence map is loaded without forcing
+/// the existence map to be loaded via the ExistenceMap property
+/// </summary>
+bool VersionMapLoaded { get; }
+
+/// <summary>
+/// Returns a reference to the version map for the site model. If the map is not yet present
+/// load it from storage/cache
+/// </summary>
+IGenericSubGridTree_Long VersionMap { get; }
+*/
+
     /// <summary>
-    /// Gets the loaded state of the existence map. This permits testing if an existence map is loaded without forcing
-    /// the existence map to be loaded via the ExistenceMap property
+    /// Gets the loaded state of the version map. This permits testing if an map is loaded without forcing
+    /// the map to be loaded via the VersionMap property
     /// </summary>
     bool ExistenceMapLoaded { get; }
 
@@ -73,6 +87,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// Designs records all the design surfaces that have been imported into the site model
     /// </summary>
     IDesigns Designs { get; }
+
     bool DesignsLoaded { get; }
 
     ISurveyedSurfaces SurveyedSurfaces { get; }
@@ -96,7 +111,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// The event is stored with the index into the site model list.
     /// </summary>
     ISiteModelMachineDesignList SiteModelMachineDesigns { get; }
-    
+
     bool SiteModelMachineDesignsLoaded { get; }
 
     IMachinesList Machines { get; }
