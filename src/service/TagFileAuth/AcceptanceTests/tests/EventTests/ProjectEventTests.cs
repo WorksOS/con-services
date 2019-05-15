@@ -12,7 +12,6 @@ namespace EventTests
     private const string GEOMETRY_WKT2 = "POLYGON((-77.0740531243794 42.8482755151629,-77.0812927509093 42.8470654333548,-77.0881228590397 42.8463941030527,-77.0940464342951 42.8508641955719,-77.0947275746861 42.8576235270907,-77.0905709567355 42.861567039969,-77.0795818211823 42.8641102732199,-77.0697542276039 42.8641987499805,-77.0650585590246 42.8535441075047,-77.0740531243794 42.8482755151629,-77.0740531243794 42.8482755151629))";
 
     [TestMethod]
-    // note that this may not work on windows container due to date diffs
     public void CreateProjectEvent()
     {
       var msg = new Msg();
@@ -22,8 +21,9 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       var legacyProjectId = ts.SetLegacyProjectId();
       var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
-      var eDate = DateTime.Parse(new DateTime(9999, 12, 31).Date.ToString("yyyy-MM-dd"));
-      var endDate  = DateTime.SpecifyKind(eDate, DateTimeKind.Unspecified);
+      // use Unspecified to make test pass locally (otherwise it converts to local TZ). However on linux, specifyKind sets century to current.
+      var endDate = DateTime.SpecifyKind(new DateTime(9999, 12, 31), DateTimeKind.Unspecified);
+      endDate = endDate.AddYears(9999 - endDate.Year);
       var eventArray = new[] {
        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GEOMETRY_WKT} |" };
@@ -33,7 +33,6 @@ namespace EventTests
     }
 
     [TestMethod]
-    // note that this may not work on windows container due to date diffs
     public void UpdateProject_Change_ProjectType()
     {
       var msg = new Msg();
@@ -61,8 +60,6 @@ namespace EventTests
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT", $"{projectName},{(int)ProjectType.Standard},{startDate},{endDate},{GEOMETRY_WKT2}", projectGuid);
     }
 
-
-
     [TestMethod]
     public void Associate_Customer_With_Project()
     {
@@ -75,8 +72,8 @@ namespace EventTests
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 3";
       var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
-      var eDate = DateTime.Parse(new DateTime(9999, 12, 31).Date.ToString("yyyy-MM-dd"));
-      var endDate = DateTime.SpecifyKind(eDate, DateTimeKind.Unspecified);
+      var endDate = DateTime.SpecifyKind(new DateTime(9999, 12, 31), DateTimeKind.Unspecified);
+      endDate = endDate.AddYears(9999 - endDate.Year);
       var customerEventArray = new[] {
       "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
      $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerGuid} |"};
