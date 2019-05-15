@@ -4,7 +4,7 @@ using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
 using Xunit;
 
-namespace VSS.Tile.Service.Common.Tests
+namespace VSS.Tile.Service.UnitTests.Service.Common
 {
   public class BoundingBoxServiceTests
   {

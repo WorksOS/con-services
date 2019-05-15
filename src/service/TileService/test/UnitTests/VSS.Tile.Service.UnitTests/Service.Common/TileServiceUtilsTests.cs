@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Point = VSS.MasterData.Models.Models.Point;
-using VSS.MasterData.Models.Models;
-using Xunit;
-using VSS.Tile.Service.Common.Helpers;
-using VSS.Tile.Service.Common.Models;
-using VSS.Tile.Service.Common.Extensions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
+using VSS.MasterData.Models.Models;
+using VSS.Tile.Service.Common.Extensions;
+using VSS.Tile.Service.Common.Helpers;
+using VSS.Tile.Service.Common.Models;
+using Xunit;
+using Point = VSS.MasterData.Models.Models.Point;
 
-namespace VSS.Tile.Service.Common.Tests
+namespace VSS.Tile.Service.UnitTests.Service.Common
 {
   public class TileServiceUtilsTests
   {

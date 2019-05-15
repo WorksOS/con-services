@@ -10,7 +10,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Tile.Service.Common.Services;
 using Xunit;
 
-namespace VSS.Tile.Service.Common.Tests
+namespace VSS.Tile.Service.UnitTests.Service.Common
 {
   public class MapOverlayTests 
   {

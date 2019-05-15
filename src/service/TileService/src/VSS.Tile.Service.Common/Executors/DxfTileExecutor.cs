@@ -25,10 +25,7 @@ namespace VSS.Tile.Service.Common.Executors
   /// </summary>
   public class DxfTileExecutor : RequestExecutorContainer
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
+    protected override ContractExecutionResult ProcessEx<T>(T item) => throw new NotImplementedException("Use the asynchronous form of this method");
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -36,10 +33,11 @@ namespace VSS.Tile.Service.Common.Executors
       int zoomLevel = 0;
       Point topLeftTile = null;
       int numTiles = 0;
-      if (item is DxfTileRequest)
+
+      if (item is DxfTileRequest request)
       {
-        var request = item as DxfTileRequest;
         files = request.files?.ToList();
+
         //Calculate zoom level
         zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.TopRightLat - request.bbox.BottomLeftLat,
           request.bbox.TopRightLon - request.bbox.BottomLeftLon);
@@ -49,12 +47,10 @@ namespace VSS.Tile.Service.Common.Executors
         Point topLeftLatLng = new Point(request.bbox.TopRightLat.LatRadiansToDegrees(),
           request.bbox.BottomLeftLon.LonRadiansToDegrees());
         topLeftTile = WebMercatorProjection.LatLngToTile(topLeftLatLng, numTiles);
-        log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, xtile={2}, ytile={3}", zoomLevel, numTiles,
-          topLeftTile.x, topLeftTile.y);
+        log.LogDebug($"DxfTileExecutor: zoomLevel={zoomLevel}, numTiles={numTiles}, xtile={topLeftTile.x}, ytile={topLeftTile.y}");
       }
-      else if (item is DxfTile3dRequest)
+      else if (item is DxfTile3dRequest request3d)
       {
-        var request3d = item as DxfTile3dRequest;
         files = request3d.files?.ToList();
         zoomLevel = request3d.zoomLevel;
         numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
@@ -65,12 +61,12 @@ namespace VSS.Tile.Service.Common.Executors
         ThrowRequestTypeCastException<DxfTileRequest>();
       }
 
-      log.LogDebug("DxfTileExecutor: {0} files", files?.Count());
+      log.LogDebug($"DxfTileExecutor: {files?.Count ?? 0} files");
 
       //Short circuit overlaying if there no files to overlay as ForAll is an expensive operation
       if (files == null || !files.Any())
       {
-        byte[] emptyOverlayData = null;
+        byte[] emptyOverlayData;
         using (var bitmap = new Image<Rgba32>(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
         {
           emptyOverlayData = bitmap.BitmapToByteArray();
@@ -110,7 +106,7 @@ namespace VSS.Tile.Service.Common.Executors
               log.LogDebug(
                 "DxfTileExecutor: difference between requested and maximum zooms too large; not even going to try to scale tile");
             }
-            if (tileData != null)
+            if (tileData != null && tileData.Length > 0)
             {
               tileList.Add(tileData);
             }
@@ -120,33 +116,8 @@ namespace VSS.Tile.Service.Common.Executors
 
       await Task.WhenAll(fileTasks);
 
-      //Overlay the tiles. Return an empty tile if none to overlay.
-      log.LogDebug("DxfTileExecutor: Overlaying {0} tiles", tileList.Count);
-      byte[] overlayData = null;
-      using (var bitmap = new Image<Rgba32>(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
-      {
-        foreach (var tileData in tileList)
-        {
-          using (var tileStream = new MemoryStream(tileData))
-          {
-            var image = Image.Load<Rgba32>(tileStream);
-            bitmap.Mutate(ctx => ctx.DrawImage(image, 1f));
-          }
-        }
-
-        /*
-        //Remove transparency from drawn lines
-        for (var i = 0; i < WebMercatorProjection.TILE_SIZE; i++)
-          for (var j = 0; j < WebMercatorProjection.TILE_SIZE; j++)
-          {
-            if (bitmap[i, j].A > 0)
-            {
-              bitmap[i, j] = new Rgba32(bitmap[i, j].R, bitmap[i, j].G, bitmap[i, j].B, byte.MaxValue);
-            }
-          }
-          */
-        overlayData = bitmap.BitmapToByteArray();
-      }
+      log.LogDebug($"DxfTileExecutor: Overlaying {tileList.Count} tiles");
+      byte[] overlayData = TileOverlay.OverlayTiles(tileList);
 
       return new TileResult(overlayData);
     }
@@ -159,15 +130,13 @@ namespace VSS.Tile.Service.Common.Executors
     /// <param name="path">The file path</param>
     /// <param name="fileName">The name of the DXF file</param>
     /// <returns>A generated tile</returns>
-    protected async Task<byte[]> GetTileAtRequestedZoom(Point topLeftTile, int zoomLevel, string path,
-    string fileName)
+    protected Task<byte[]> GetTileAtRequestedZoom(Point topLeftTile, int zoomLevel, string path, string fileName)
     {
       //Work out tile location
-      string fullTileName = GetFullTileName(topLeftTile, zoomLevel, path, fileName);
-      log.LogDebug("DxfTileExecutor: looking for requested tile {0}", fullTileName);
+      var fullTileName = GetFullTileName(topLeftTile, zoomLevel, path, fileName);
+      log.LogDebug($"DxfTileExecutor: looking for requested tile {fullTileName}");
 
-      //Download the tile
-      return await DownloadTile(fullTileName, "requested");
+      return DownloadTile(fullTileName, "requested");
     }
 
     /// <summary>
@@ -300,16 +269,9 @@ namespace VSS.Tile.Service.Common.Executors
     /// <summary>
     /// Gets the full file name for a tile
     /// </summary>
-    /// <param name="topLeftTile">The top left tile coordinates</param>
-    /// <param name="zoomLevel">The zoom level of the tile</param>
-    /// <param name="path">The file path</param>
-    /// <param name="fileName">The name of the DXF file</param>
-    /// <returns></returns>
-    private string GetFullTileName(Point topLeftTile, int zoomLevel, string path, string fileName)
+    private static string GetFullTileName(Point topLeftTile, int zoomLevel, string path, string fileName)
     {
-      var dataOceanFileUtil = new DataOceanFileUtil(fileName, path);
-      return dataOceanFileUtil.GetTileFileName(zoomLevel, (int)topLeftTile.y, (int)topLeftTile.x);
+      return new DataOceanFileUtil(fileName, path).GetTileFileName(zoomLevel, (int)topLeftTile.y, (int)topLeftTile.x);
     }
-
   }
 }
