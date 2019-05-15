@@ -73,6 +73,10 @@ namespace VSS.MasterData.Proxies
 
     #region Protected Methods
 
+    /// <summary>
+    /// Execute a Post to an endpoint, and cache the result
+    /// NOTE: Must have a uid or userid for cache key
+    /// </summary>
     protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
         IDictionary<string, string> queryParameters = null) 
       where T : class, IMasterDataModel
@@ -81,12 +85,30 @@ namespace VSS.MasterData.Proxies
         () => RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters));
     }
 
+    /// <summary>
+    /// Execute a Post to an endpoint, and cache the result
+    /// NOTE: Must have a uid or userid for cache key
+    /// </summary>
     protected Task<T> PostMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
       IDictionary<string, string> queryParameters = null, Stream payload = null)
       where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
         () => RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload));
+    }
+
+    protected Task<T> GetMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
+      IDictionary<string, string> queryParameters = null) 
+      where T : class, IMasterDataModel
+    {
+        return RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters);
+    }
+
+    protected Task<T> PostMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
+      IDictionary<string, string> queryParameters = null, Stream payload = null)
+      where T : class, IMasterDataModel
+    {
+      return RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload);
     }
 
     #endregion
