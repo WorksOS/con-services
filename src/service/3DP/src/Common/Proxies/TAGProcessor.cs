@@ -26,8 +26,7 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       try
       {
-        log.LogInformation("PDS server location  {0}:{1}", VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPAddress,
-            (short)VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPPort);
+        log.LogInformation($"{nameof(ProjectDataServerTAGProcessorClient)}: PDS server location  {VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPAddress}:{(short)VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPPort}");
 
         var hostIdentifier = VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPAddress;
 
@@ -39,11 +38,11 @@ namespace VSS.Productivity3D.Common.Proxies
         if (!IPAddress.TryParse(hostIdentifier, out var PDSAddress))
         {
           var host = Dns.GetHostEntry(VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPAddress);
-          log.LogInformation("Have got {0} addresses for PDS server", host.AddressList.Length);
+          log.LogInformation($"{nameof(ProjectDataServerTAGProcessorClient)}: Have got {host.AddressList.Length} addresses for PDS server");
 
           foreach (var address in host.AddressList)
           {
-            log.LogInformation("Checking PDS Server address {0}", address);
+            log.LogInformation($"{nameof(ProjectDataServerTAGProcessorClient)}: Checking PDS Server address {address}");
             if (address.AddressFamily == AddressFamily.InterNetwork)
             {
               PDSAddress = address;
@@ -57,13 +56,13 @@ namespace VSS.Productivity3D.Common.Proxies
           throw new ArgumentException("Invalid PDS TAG Processor IPAddress in configuration file");
         }
 
-        log.LogInformation("PDS Server address ok, creating TAG Processor Client with address {0}", PDSAddress);
+        log.LogInformation($"{nameof(ProjectDataServerTAGProcessorClient)}: PDS Server address ok, creating TAG Processor Client with address {PDSAddress}");
 
         return new TAGProcessorClient(PDSAddress, (short)VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPPort);
       }
       catch (Exception ex)
       {
-        log.LogWarning(ex, "Exception creating PDS TAG processor client");
+        log.LogWarning(ex, $"{nameof(ProjectDataServerTAGProcessorClient)}: Exception creating PDS TAG processor client");
         return null;
       }
     }

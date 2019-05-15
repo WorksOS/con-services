@@ -498,7 +498,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Code == (int) TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions + 2000);
-      Assert.AreEqual("Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Invalid.",
+      Assert.AreEqual("Failed to process tagfile 'Machine Name--whatever --161230235959', with error: OnChooseMachine. Machine Subscriptions Invalid.",
         result.Message);
     }
 
@@ -551,7 +551,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       Assert.AreEqual((int) TTAGProcServerProcessResult.tpsprFileReaderCorruptedTAGFileData + 2000, result.Code,
         "executor threw exception but incorrect code");
       Assert.AreEqual(
-        "Failed to process tagfile with error: The TAG file was found to be corrupted on its pre-processing scan.",
+        "CallRaptorEndpoint: Failed to process tagfile 'Machine Name--whatever --161230235959', The TAG file was found to be corrupted on its pre-processing scan.",
         result.Message, "executor threw exception but incorrect message");
     }
 

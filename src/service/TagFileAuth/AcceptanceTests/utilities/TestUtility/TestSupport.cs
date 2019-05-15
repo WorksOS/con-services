@@ -187,7 +187,7 @@ namespace TestUtility
     private static void WaitForTimeBasedOnNumberOfRecords(int count)
     {
       if (count < 7)
-      { Thread.Sleep(1000); }
+      { Thread.Sleep(1500); }
       if (count > 6)
       { Thread.Sleep(1000); }
       if (count > 13)
