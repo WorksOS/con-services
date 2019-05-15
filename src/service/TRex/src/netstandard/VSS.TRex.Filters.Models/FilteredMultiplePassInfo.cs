@@ -44,20 +44,20 @@ namespace VSS.TRex.Filters.Models
       PassCount = filteredPasses.Length;
     }
 
-    private int CellPassAggregationListSizeIncrement() => DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT", Consts.VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT);
+    private int CellPassAggregationListSizeIncrement = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDPSNODE_CELL_PASS_AGGREGATOR_LIST_SIZE_INCREMENT_DEFAULT", Consts.VLPDPSNODE_CELL_PASS_AGGREGATOR_LIST_SIZE_INCREMENT_DEFAULT);
 
     private void CheckArrayCapacity()
     {
       // Increase the length of the passes array
       if (filteredPassData == null)
       {
-        filteredPassData = new FilteredPassData[CellPassAggregationListSizeIncrement()];
+        filteredPassData = new FilteredPassData[CellPassAggregationListSizeIncrement];
       }
       else
       {
         if (PassCount == filteredPassData.Length)
         {
-          Array.Resize(ref filteredPassData, PassCount + CellPassAggregationListSizeIncrement());
+          Array.Resize(ref filteredPassData, PassCount + CellPassAggregationListSizeIncrement);
         }
       }
     }

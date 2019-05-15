@@ -54,7 +54,7 @@ data:
   assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
   assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
 #TPaaS
-  TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2/token
+  TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2
 #Misc stuff
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"
   TILE_RENDER_MAX_ZOOM_RANGE: "14"

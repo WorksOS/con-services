@@ -248,6 +248,7 @@ namespace VSS.TRex.SubGridTrees.Server
             FileName,
             Owner.OriginX, Owner.OriginY,
             FileName,
+            SegmentInfo.Version,
             FileSystemStreamType.SubGridSegment,
             MStream,
             this);

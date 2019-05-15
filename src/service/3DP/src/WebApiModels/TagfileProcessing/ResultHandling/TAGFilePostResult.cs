@@ -3,7 +3,7 @@
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
 {
   /// <summary>
-  /// REpresents response from the service after TAG file POST request
+  /// Represents response from the service after TAG file POST request
   /// </summary>
   public class TagFilePostResult : ContractExecutionResult
   {
