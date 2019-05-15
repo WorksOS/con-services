@@ -20,11 +20,11 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var designUid = Guid.NewGuid();
       var ss = new TRex.SurveyedSurfaces.SurveyedSurfaces();
 
-      ss.AddSurveyedSurfaceDetails(guids?[0] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date, BoundingWorldExtent3D.Full());
-      ss.AddSurveyedSurfaceDetails(guids?[1] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date.AddMinutes(1), BoundingWorldExtent3D.Full());
-      ss.AddSurveyedSurfaceDetails(guids?[2] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date.AddMinutes(2), BoundingWorldExtent3D.Full());
-      ss.AddSurveyedSurfaceDetails(guids?[3] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date.AddMinutes(3), BoundingWorldExtent3D.Full());
-      ss.AddSurveyedSurfaceDetails(guids?[4] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date.AddMinutes(4), BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(guids?[0] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date, BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(guids?[1] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date.AddMinutes(1), BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(guids?[2] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date.AddMinutes(2), BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(guids?[3] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date.AddMinutes(3), BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(guids?[4] ?? Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date.AddMinutes(4), BoundingWorldExtent3D.Full());
 
       return ss;
     }
@@ -33,11 +33,11 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
     {
       var designUid = Guid.NewGuid();
 
-      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date, BoundingWorldExtent3D.Full());
-      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date.AddMinutes(1), BoundingWorldExtent3D.Full());
-      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date.AddMinutes(2), BoundingWorldExtent3D.Full());
-      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date.AddMinutes(3), BoundingWorldExtent3D.Full());
-      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date.AddMinutes(4), BoundingWorldExtent3D.Full());
+      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date, BoundingWorldExtent3D.Full());
+      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date.AddMinutes(1), BoundingWorldExtent3D.Full());
+      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date.AddMinutes(2), BoundingWorldExtent3D.Full());
+      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date.AddMinutes(3), BoundingWorldExtent3D.Full());
+      siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(designUid, "Folder", "FileName"), date.AddMinutes(4), BoundingWorldExtent3D.Full());
     }
     
     [Fact]
@@ -55,10 +55,10 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var designUid = Guid.NewGuid();
       var date = DateTime.UtcNow;
       var ss = new TRex.SurveyedSurfaces.SurveyedSurfaces();
-      ss.AddSurveyedSurfaceDetails(surveyedSurfaceUid, new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date, BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(surveyedSurfaceUid, new DesignDescriptor(designUid, "Folder", "FileName"), date, BoundingWorldExtent3D.Full());
 
       ss.Count.Should().Be(1);
-      ss[0].Should().BeEquivalentTo(new SurveyedSurface(surveyedSurfaceUid, new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date, BoundingWorldExtent3D.Full()));
+      ss[0].Should().BeEquivalentTo(new SurveyedSurface(surveyedSurfaceUid, new DesignDescriptor(designUid, "Folder", "FileName"), date, BoundingWorldExtent3D.Full()));
     }
 
     [Fact]
@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var surveyedSurfaceUid = Guid.NewGuid();
       var designUid = Guid.NewGuid();
       var ss = new TRex.SurveyedSurfaces.SurveyedSurfaces();
-      ss.AddSurveyedSurfaceDetails(surveyedSurfaceUid, new DesignDescriptor(designUid, "Folder", "FileName", 12.34), DateTime.UtcNow, BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(surveyedSurfaceUid, new DesignDescriptor(designUid, "Folder", "FileName"), DateTime.UtcNow, BoundingWorldExtent3D.Full());
 
       ss.Count.Should().Be(1);
 
@@ -90,8 +90,8 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var designUid = Guid.NewGuid();
       var ss = new TRex.SurveyedSurfaces.SurveyedSurfaces();
       var date = DateTime.UtcNow;
-      ss.AddSurveyedSurfaceDetails(surveyedSurfaceUid1, new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date, BoundingWorldExtent3D.Full());
-      ss.AddSurveyedSurfaceDetails(surveyedSurfaceUid2, new DesignDescriptor(designUid, "Folder", "FileName", 12.34), date.AddMinutes(1), BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(surveyedSurfaceUid1, new DesignDescriptor(designUid, "Folder", "FileName"), date, BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(surveyedSurfaceUid2, new DesignDescriptor(designUid, "Folder", "FileName"), date.AddMinutes(1), BoundingWorldExtent3D.Full());
 
       ss.SortChronologically(true);
 
@@ -108,7 +108,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
     public void BinaryReadWrite()
     {
       var ss = new TRex.SurveyedSurfaces.SurveyedSurfaces();
-      ss.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName", 12.34), DateTime.UtcNow, BoundingWorldExtent3D.Full());
+      ss.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName"), DateTime.UtcNow, BoundingWorldExtent3D.Full());
 
       TestBinary_ReaderWriterHelper.RoundTripSerialise(ss);
     }
@@ -383,7 +383,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       ss.IsSameAs(ss3).Should().BeFalse();
 
       var ss4 = new TRex.SurveyedSurfaces.SurveyedSurfaces();
-      ss4.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName", 12.34), date, BoundingWorldExtent3D.Full());
+      ss4.AddSurveyedSurfaceDetails(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName"), date, BoundingWorldExtent3D.Full());
       ss.IsSameAs(ss4).Should().BeFalse();
     }
   }

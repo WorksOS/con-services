@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -19,7 +20,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <param name="gridDataType"></param>
     /// <param name="response"></param>
     /// <param name="filters"></param>
-    /// <param name="cutFillDesignID"></param>
+    /// <param name="cutFillDesign"></param>
     /// <param name="task"></param>
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
@@ -31,7 +32,7 @@ namespace VSS.TRex.Pipelines.Interfaces
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
       IFilterSet filters,
-      Guid cutFillDesignID,
+      DesignOffset cutFillDesign,
       ITRexTask task,
       ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,
@@ -48,7 +49,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <param name="gridDataType"></param>
     /// <param name="response"></param>
     /// <param name="filters"></param>
-    /// <param name="cutFillDesignID"></param>
+    /// <param name="cutFillDesign"></param>
     /// <param name="task"></param>
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
@@ -60,7 +61,7 @@ namespace VSS.TRex.Pipelines.Interfaces
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
       IFilterSet filters,
-      Guid cutFillDesignID,
+      DesignOffset cutFillDesign,
       ITRexTask task,
       ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,

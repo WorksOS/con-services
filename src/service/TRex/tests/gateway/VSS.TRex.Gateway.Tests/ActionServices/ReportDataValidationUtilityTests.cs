@@ -18,8 +18,8 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
   public class ReportDataValidationUtilityTests : IDisposable
   {
     [Theory]
-    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", "27e6bd66-54d8-4651-8907-88b15d81b2d7", null)]
-    public void ValidateReportData_GriddedSuccess(Guid projectUid, Guid cutFillDesignUid, Guid? alignmentDesignUid)
+    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", "27e6bd66-54d8-4651-8907-88b15d81b2d7", 1.5, null)]
+    public void ValidateReportData_GriddedSuccess(Guid projectUid, Guid cutFillDesignUid, double? cutFillDesignOffset, Guid? alignmentDesignUid)
     {
       var mockSiteModel = new Mock<ISiteModel>();
       var mockSiteModels = new Mock<ISiteModels>();
@@ -48,7 +48,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
       var request = new CompactionReportGridTRexRequest(
         projectUid, null,
         true, true, true, true, true, true,
-        cutFillDesignUid, 
+        cutFillDesignUid, cutFillDesignOffset,
         null, GridReportOption.Automatic,
         800000, 400000, 800001, 400001, 2);
 
@@ -58,8 +58,8 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
     }
 
     [Theory]
-    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", null, "27e6bd66-54d8-4651-8907-88b15d81b2d7")]
-    public void ValidateReportData_AlignmentSuccess(Guid projectUid, Guid? cutFillDesignUid, Guid alignmentDesignUid)
+    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", null, null, "27e6bd66-54d8-4651-8907-88b15d81b2d7")]
+    public void ValidateReportData_AlignmentSuccess(Guid projectUid, Guid? cutFillDesignUid, double? cutFillDesignOffset, Guid alignmentDesignUid)
     {
       var mockSiteModel = new Mock<ISiteModel>();
       var mockSiteModels = new Mock<ISiteModels>();
@@ -88,7 +88,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
       var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
         projectUid, null,
         true, true, true, true, true, true,
-        cutFillDesignUid, alignmentDesignUid,
+        cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
         2.0, 100, 200, new[] { -1.0, 0, 1.3 });
 
       var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_AlignmentSuccess), projectUid, request);
@@ -96,8 +96,8 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
     }
 
     [Theory]
-    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", "27e6bd66-54d8-4651-8907-88b15d81b2d7", "37e6bd66-54d8-4651-8907-88b15d81b2d7")]
-    public void ValidateReportData_AlignmentIncludingCutFill_Success(Guid projectUid, Guid cutFillDesignUid, Guid alignmentDesignUid)
+    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", "27e6bd66-54d8-4651-8907-88b15d81b2d7", 1.5, "37e6bd66-54d8-4651-8907-88b15d81b2d7")]
+    public void ValidateReportData_AlignmentIncludingCutFill_Success(Guid projectUid, Guid cutFillDesignUid, double? cutFillDesignOffset, Guid alignmentDesignUid)
     {
       var mockSiteModel = new Mock<ISiteModel>();
       var mockSiteModels = new Mock<ISiteModels>();
@@ -127,7 +127,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
       var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
         projectUid, null,
         true, true, true, true, true, true,
-        cutFillDesignUid, alignmentDesignUid,
+        cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
         2.0, 100, 200, new[] { -1.0, 0, 1.3 });
 
       var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_AlignmentIncludingCutFill_Success), request.ProjectUid, request);
@@ -135,8 +135,8 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
     }
 
     [Theory]
-    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", "27e6bd66-54d8-4651-8907-88b15d81b2d7", null)]
-    public void ValidateReportData_GriddedNoDesign_Fail(Guid projectUid, Guid cutFillDesignUid, Guid? alignmentDesignUid)
+    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", "27e6bd66-54d8-4651-8907-88b15d81b2d7", 1.5, null)]
+    public void ValidateReportData_GriddedNoDesign_Fail(Guid projectUid, Guid cutFillDesignUid, double? cutFillDesignOffset, Guid? alignmentDesignUid)
     {
       var mockSiteModel = new Mock<ISiteModel>();
       var mockSiteModels = new Mock<ISiteModels>();
@@ -164,7 +164,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
       var request = new CompactionReportGridTRexRequest(
         projectUid, null,
         true, true, true, true, true, true,
-        cutFillDesignUid,
+        cutFillDesignUid, cutFillDesignOffset,
         null, GridReportOption.Automatic,
         800000, 400000, 800001, 400001, 2);
 
@@ -175,8 +175,8 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
     }
 
     [Theory]
-    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", null, "27e6bd66-54d8-4651-8907-88b15d81b2d7")]
-    public void ValidateReportData_AlignmentFailed(Guid projectUid, Guid? cutFillDesignUid, Guid alignmentDesignUid)
+    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", null, null, "27e6bd66-54d8-4651-8907-88b15d81b2d7")]
+    public void ValidateReportData_AlignmentFailed(Guid projectUid, Guid? cutFillDesignUid, double? cutFillDesignOffset, Guid alignmentDesignUid)
     {
       var mockSiteModel = new Mock<ISiteModel>();
       var mockSiteModels = new Mock<ISiteModels>();
@@ -204,7 +204,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
       var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
         projectUid, null,
         true, true, true, true, true, true,
-        cutFillDesignUid, alignmentDesignUid,
+        cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
         2.0, 100, 200, new[] { -1.0, 0, 1.3 });
 
       var ex = Assert.Throws<ServiceException>(() => DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_AlignmentFailed), request.ProjectUid, request));

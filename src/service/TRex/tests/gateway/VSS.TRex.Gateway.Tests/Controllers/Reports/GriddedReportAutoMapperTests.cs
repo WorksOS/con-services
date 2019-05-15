@@ -22,25 +22,25 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
     [Theory]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       true, false, true, false, true, false,
-      null,
+      null, null,
       null, GridReportOption.Automatic,
       800000, 400000, 800001, 400001, 2)]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       false, true, false, true, false, true,
-      null,
+      null, null,
       null, GridReportOption.Automatic,
       800000, 400000, 800001, 400001, 2)]
     public void MapGriddedRequestToResult(
       Guid projectUid, FilterResult filter,
       bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
-      Guid? cutFillDesignUid,
+      Guid? cutFillDesignUid, double? cutfillDesignOffset,
       double? gridInterval, GridReportOption gridReportOption,
       double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth)
     {
       var request = new CompactionReportGridTRexRequest(
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
-        cutFillDesignUid,
+        cutFillDesignUid, cutfillDesignOffset,
         gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
 
       var result = AutoMapperUtility.Automapper.Map<GriddedReportData>(request);
@@ -58,32 +58,33 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
     [Theory]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       true, false, true, false, true, false,
-      null,
+      null, null,
       null, GridReportOption.Automatic,
       800000, 400000, 800001, 400001, 2)]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       false, true, false, true, false, true,
-      null,
+      null, null,
       null, GridReportOption.Automatic,
       800000, 400000, 800001, 400001, 2)]
     public void MapGriddedRequestToArgument(
       Guid projectUid, FilterResult filter,
       bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
-      Guid? cutFillDesignUid,
+      Guid? cutFillDesignUid, double? cutfillDesignOffset,
       double? gridInterval, GridReportOption gridReportOption,
       double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth)
     {
       var request = new CompactionReportGridTRexRequest(
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
-        cutFillDesignUid,
+        cutFillDesignUid, cutfillDesignOffset,
         gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
 
       var result = AutoMapperUtility.Automapper.Map<GriddedReportRequestArgument>(request);
 
       Assert.Equal(request.ProjectUid, result.ProjectID);
       Assert.Null(result.Filters);
-      Assert.Equal(request.CutFillDesignUid ?? Guid.Empty, result.ReferenceDesignUID);
+      Assert.Equal(request.CutFillDesignUid ?? Guid.Empty, result.ReferenceDesign.DesignID);
+      Assert.Equal(request.CutFillDesignOffset ?? 0, result.ReferenceDesign.Offset);
       Assert.Equal(request.ReportElevation, result.ReportElevation);
       Assert.Equal(request.ReportCutFill, result.ReportCutFill);
       Assert.Equal(request.ReportCmv, result.ReportCmv);
@@ -95,20 +96,20 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
     [Theory]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       true, false, false, false, false, false,
-      null, 
+      null, null,
       null, GridReportOption.Automatic,
       800000, 400000, 800001, 400001, 4)]
     public void GriddedTRexRequest_Successful(
       Guid projectUid, FilterResult filter,
       bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
-      Guid? cutFillDesignUid, 
+      Guid? cutFillDesignUid, double? cutfillDesignOffset, 
       double? gridInterval, GridReportOption gridReportOption, 
       double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth)
     {
       var request = new CompactionReportGridTRexRequest(
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
-        cutFillDesignUid,
+        cutFillDesignUid, cutfillDesignOffset,
         gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
       request.Validate();
     }
@@ -116,14 +117,14 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
     [Theory]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       true, false, false, false, false, false,
-      null,
+      null, null,
       null, GridReportOption.Automatic,
       800000, 400000, 800001, 400001, 66,
       "Azimuth must be in the range 0..2*PI radians. Actual value: 66")]
     public void GriddedTRexRequest_Unsuccessful(
       Guid projectUid, FilterResult filter,
       bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
-      Guid? cutFillDesignUid,
+      Guid? cutFillDesignUid, double? cutfillDesignOffset,
       double? gridInterval, GridReportOption gridReportOption,
       double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth,
       string errorMessage)
@@ -131,7 +132,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       var request = new CompactionReportGridTRexRequest(
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
-        cutFillDesignUid,
+        cutFillDesignUid, cutfillDesignOffset,
         gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
 
       var ex = Assert.Throws<ServiceException>(() => request.Validate());
@@ -144,11 +145,13 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
     public void GriddedReportDataResult()
     {
       var projectUid = Guid.NewGuid();
+      //Set these for testing Automapper - they're not actually used in the gridded data
       var cutFillDesignUid = Guid.NewGuid();
+      var cutFillDesignOffset = 1.5;
       var request = new CompactionReportGridTRexRequest(
         projectUid, null,
         true, true, true, true, true, true,
-        cutFillDesignUid,
+        cutFillDesignUid, cutFillDesignOffset,
         null, GridReportOption.Automatic,
         800000, 400000, 800001, 400001, 2);
 

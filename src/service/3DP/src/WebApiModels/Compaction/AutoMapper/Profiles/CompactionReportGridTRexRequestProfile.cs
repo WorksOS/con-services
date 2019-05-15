@@ -12,6 +12,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
         .ForMember(x => x.CutFillDesignUid, 
           opt => opt.MapFrom(ps => 
            (ps.DesignFile != null && ps.DesignFile.FileUid.HasValue) ? ps.DesignFile.FileUid : null))
+        .ForMember(x => x.CutFillDesignOffset,
+          opt => opt.MapFrom(ps =>
+            (ps.DesignFile != null) ? ps.DesignFile.Offset : (double?) null))
         ;
     }
   }

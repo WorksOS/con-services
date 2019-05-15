@@ -71,6 +71,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
       bool reportTemperature,
       bool reportCutFill,
       Guid? cutFillDesignUid,
+      double? cutFillDesignOffset,
       double? gridInterval,
       GridReportOption gridReportOption,
       double startNorthing,
@@ -88,6 +89,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
       ReportTemperature = reportTemperature;
       ReportCutFill = reportCutFill;
       CutFillDesignUid = cutFillDesignUid;
+      CutFillDesignOffset = cutFillDesignOffset;
       GridInterval = gridInterval ?? ValidationConstants3D.DEFAULT_SPACING_INTERVAL;
       GridReportOption = gridReportOption;
       StartNorthing = startNorthing;

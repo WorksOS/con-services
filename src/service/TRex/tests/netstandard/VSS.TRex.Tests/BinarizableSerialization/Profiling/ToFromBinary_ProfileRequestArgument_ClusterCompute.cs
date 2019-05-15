@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling.GridFabric.Arguments;
@@ -28,7 +29,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
         ProfileTypeRequired = GridDataType.Height,
         NEECoords = coords,
         ReturnAllPassesAndLayers = false,

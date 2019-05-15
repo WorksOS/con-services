@@ -68,10 +68,6 @@ namespace VSS.TRex.Alignments
       get
       {
         BoundingWorldExtent3D result = new BoundingWorldExtent3D(extents);
-
-        // Incorporate any vertical offset from the underlying design the Alignment is based on
-        result.Offset(DesignDescriptor.Offset);
-
         return result;
       }
     }
@@ -122,7 +118,7 @@ namespace VSS.TRex.Alignments
     public override string ToString()
     {
       return
-        $"ID:{ID}, DesignID:{DesignDescriptor.DesignID}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{Extents}]";
+        $"ID:{ID}, DesignID:{DesignDescriptor.DesignID}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} [{Extents}]";
     }
 
     /// <summary>

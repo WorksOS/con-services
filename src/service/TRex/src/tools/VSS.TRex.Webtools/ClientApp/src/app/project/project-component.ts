@@ -58,7 +58,6 @@ export class ProjectComponent {
 
   public surveyedSurfaceFileName: string = "";
   public surveyedSurfaceAsAtDate: Date = new Date();
-  public surveyedSurfaceOffset: number = 0;
 
   public newSurveyedSurfaceGuid: string = "";
   public surveyedSurfaces: SurveyedSurface[] = [];
@@ -70,7 +69,7 @@ export class ProjectComponent {
   public designs: DesignSurface[] = [];
   public designFileName: string = "";
   public designOffset: number = 0.0;
-  public designUID: string = "";
+  public designUid: string = "";
 
   public newDesignGuid: string = "";
   public machineDesigns: MachineDesign[] = [];
@@ -183,8 +182,6 @@ export class ProjectComponent {
   public mouseProfilePixelLocation: string = '';
   public mouseProfileWorldLocation: string = '';
 
-  public designProfileUid: string = "";
-
   public cellDatum: string = "";
   private showCellDatum: boolean = false;
   
@@ -225,6 +222,9 @@ constructor(
   public setProjectToZero(): void {
     this.projectUid = "00000000-0000-0000-0000-000000000000";
     localStorage.setItem("projectUid", undefined);
+    localStorage.setItem("designUid", undefined);
+    localStorage.setItem("designOffset", undefined);
+
   }
 
   public getProjectExtents(): void {
@@ -247,10 +247,12 @@ constructor(
     mode: number,
     pixelsX: number,
     pixelsY: number,
-    tileExtents: ProjectExtents): Promise<string> {
+    tileExtents: ProjectExtents,
+    designUid: string,
+    designOffset: number): Promise<string> {
 
     var vm = this;
-    return new Promise<string>((resolve) => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents)
+    return new Promise<string>((resolve) => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents, designUid, designOffset)
         .subscribe(tile => {
           vm.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
           resolve();
@@ -269,7 +271,7 @@ constructor(
 
   public testAsync() {
     this.tileExtents = new ProjectExtents(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
-    this.performNTimesSync(() => this.getTileAsync(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents), 10);
+    this.performNTimesSync(() => this.getTileAsync(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents, this.designUid, this.designOffset), 10);
   }
 
   public getTile() : void {
@@ -279,7 +281,7 @@ constructor(
 
     // Make sure the displayed tile extents is updated
     this.tileExtents = new ProjectExtents(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
-    this.projectService.getTile(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents)
+    this.projectService.getTile(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents, this.designUid, this.designOffset)
       .subscribe(tile => {
         this.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
         this.updateTimerCompletionTime();      
@@ -404,7 +406,7 @@ constructor(
     //if user pauses then get cell datum value
     if (this.showCellDatum) {
       if (this.prevMousePixelX == this.mousePixelX && this.prevMousePixelY == this.mousePixelY) {
-        this.projectService.getCellDatum(this.projectUid, this.designUID, this.mouseWorldX, this.mouseWorldY, this.mode)
+        this.projectService.getCellDatum(this.projectUid, this.designUid, this.designOffset, this.mouseWorldX, this.mouseWorldY, this.mode)
           .subscribe(result => {
             //TODO: display nicely
             //for now just display raw value
@@ -474,7 +476,6 @@ constructor(
   public addADummySurveyedSurface(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = "C:/temp/SomeFile.ttm";
-    descriptor.offset = 0;
     this.projectService.addSurveyedSurface(this.projectUid, descriptor, new Date(), this.tileExtents).subscribe(
       uid => {
         this.newSurveyedSurfaceGuid = uid.designId;
@@ -485,7 +486,6 @@ constructor(
   public addNewSurveyedSurface(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.surveyedSurfaceFileName;
-    descriptor.offset = this.surveyedSurfaceOffset;
     this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveyedSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
       uid => {
         this.newSurveyedSurfaceGuid = uid.designId;
@@ -510,7 +510,6 @@ constructor(
   public addADummyDesignSurface(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = "C:/temp/SomeFile.ttm";
-    descriptor.offset = 0;
     this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
@@ -521,7 +520,6 @@ constructor(
   public addNewDesignSurface(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.designFileName;
-    descriptor.offset = 0;
     this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
@@ -543,10 +541,14 @@ constructor(
       uid => this.designs.splice(this.designs.indexOf(design), 1));
   }
 
+  public selectDesign(): void {
+      localStorage.setItem("designUid", this.designUid);
+      localStorage.setItem("designOffset", this.designOffset.toString());
+  }
+
   public addADummyAlignment(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = "C:/temp/SomeFile.svl";
-    descriptor.offset = 0;
     this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
       uid => {
         this.newAlignmentGuid = uid.designId;
@@ -557,7 +559,6 @@ constructor(
   public addNewAlignment(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.alignmentFileName;
-    descriptor.offset = 0;
     this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
       uid => {
         this.newAlignmentGuid = uid.designId;
@@ -630,6 +631,9 @@ constructor(
     }
 
     localStorage.setItem("projectUid", undefined);
+    localStorage.setItem("designUid", undefined);
+    localStorage.setItem("designOffset", undefined);
+
 
     return -1;
   }
@@ -698,7 +702,7 @@ constructor(
     var result: string = "";
     var first: boolean = true;
 
-    return this.projectService.drawProfileLineForDesign(this.projectUid, this.designProfileUid, startX, startY, endX, endY)
+    return this.projectService.drawProfileLineForDesign(this.projectUid, this.designUid, this.designOffset, startX, startY, endX, endY)
       .subscribe(points =>
       {
         var stationRange:number = points[points.length - 1].station - points[0].station;
@@ -785,7 +789,7 @@ constructor(
     this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
 
     if (this.showCellDatum) {
-        this.projectService.getCellDatum(this.projectUid, this.designUID, this.mouseWorldX, this.mouseWorldY, this.mode)
+        this.projectService.getCellDatum(this.projectUid, this.designUid, this.designOffset, this.mouseWorldX, this.mouseWorldY, this.mode)
             .subscribe(result => {
                 //TODO: display nicely
                 //for now just display raw value

@@ -18,6 +18,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 using System.Drawing;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
@@ -60,9 +61,10 @@ namespace VSS.TRex.Rendering.Executors
     private IFilterSet Filters;
 
     /// <summary>
-    /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
+    /// The identifier for the design held in the designs list of the project to be used to calculate cut/fill values
+    /// together with the offset if it's a reference surface
     /// </summary>
-    public Guid CutFillDesignID { get; set; }
+    public DesignOffset CutFillDesign { get; set; }
 
     // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
     private IPlanViewPalette ColourPalettes;
@@ -80,7 +82,7 @@ namespace VSS.TRex.Rendering.Executors
     /// <param name="ANPixelsX"></param>
     /// <param name="ANPixelsY"></param>
     /// <param name="filters"></param>
-    /// <param name="ACutFillDesignID"></param>
+    /// <param name="ACutFillDesign"></param>
     /// <param name="ARepresentColor"></param>
     /// <param name="requestingTRexNodeId"></param>
     public RenderOverlayTile(Guid ADataModelID,
@@ -92,7 +94,7 @@ namespace VSS.TRex.Rendering.Executors
       ushort ANPixelsX,
       ushort ANPixelsY,
       IFilterSet filters,
-      Guid ACutFillDesignID, //DesignDescriptor ACutFillDesign,
+      DesignOffset ACutFillDesign, 
                              //AReferenceVolumeType : TComputeICVolumesType;
       IPlanViewPalette AColourPalettes,
                              //AICOptions: TSVOICOptions;
@@ -109,7 +111,7 @@ namespace VSS.TRex.Rendering.Executors
       NPixelsX = ANPixelsX;
       NPixelsY = ANPixelsY;
       Filters = filters;
-      CutFillDesignID = ACutFillDesignID; // CutFillDesign = ACutFillDesign;
+      CutFillDesign = ACutFillDesign; 
       //ReferenceVolumeType = AReferenceVolumeType;
       ColourPalettes = AColourPalettes;
       //ICOptions = AICOptions;
@@ -512,7 +514,7 @@ namespace VSS.TRex.Rendering.Executors
           dataModelID: DataModelID,
           gridDataType: GridDataFromModeConverter.Convert(Mode),
           response: new SubGridsPipelinedResponseBase(),
-          cutFillDesignID: CutFillDesignID,
+          cutFillDesign: CutFillDesign,
           filters: Filters,
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),

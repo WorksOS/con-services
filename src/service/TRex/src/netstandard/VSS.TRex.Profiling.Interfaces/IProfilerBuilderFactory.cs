@@ -30,12 +30,12 @@ namespace VSS.TRex.Profiling.Interfaces
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="filterSet"></param>
-    /// <param name="cutFillDesign"></param>
+    /// <param name="cutFillDesignWrapper"></param>
     /// <param name="slicerToolUsed"></param>
     /// <returns></returns>
     ICellProfileBuilder<T> NewCellProfileBuilder(ISiteModel siteModel,
       IFilterSet filterSet,
-      IDesign cutFillDesign,
+      IDesignWrapper cutFillDesignWrapper,
       bool slicerToolUsed);
 
     /// <summary>
@@ -45,16 +45,16 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesign"></param>
-    /// <param name="referenceDesign"></param>
+    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
+    /// <param name="referenceDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <returns></returns>
     ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
       ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
-      IDesign cellPassFilter_ElevationRangeDesign,
-      IDesign referenceDesign,
+      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
+      IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder);
   }
 }

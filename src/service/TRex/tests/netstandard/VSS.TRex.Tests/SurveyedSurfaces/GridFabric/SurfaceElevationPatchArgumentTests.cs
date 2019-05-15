@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       var arg = new SurfaceElevationPatchArgument(id, 1, 2, 3.0, SurveyedSurfacePatchType.EarliestSingleElevation,
         SubGridTreeBitmapSubGridBits.FullMask, new TRex.SurveyedSurfaces.SurveyedSurfaces
         {
-          new SurveyedSurface(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName", 1.0), DateTime.UtcNow, BoundingWorldExtent3D.Full())
+          new SurveyedSurface(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName"), DateTime.UtcNow, BoundingWorldExtent3D.Full())
         });
 
       arg.Should().NotBeNull();
@@ -60,7 +60,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       var arg = new SurfaceElevationPatchArgument(id, 1, 2, 3.0, SurveyedSurfacePatchType.EarliestSingleElevation,
         SubGridTreeBitmapSubGridBits.FullMask, new TRex.SurveyedSurfaces.SurveyedSurfaces
         {
-          new SurveyedSurface(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName", 1.0), DateTime.UtcNow, BoundingWorldExtent3D.Full())
+          new SurveyedSurface(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName"), DateTime.UtcNow, BoundingWorldExtent3D.Full())
         });
 
       TestBinarizable_ReaderWriterHelper.RoundTripSerialise(arg);
@@ -81,7 +81,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       var arg = new SurfaceElevationPatchArgument(id, 1, 2, 3.0, SurveyedSurfacePatchType.EarliestSingleElevation,
         SubGridTreeBitmapSubGridBits.FullMask, new TRex.SurveyedSurfaces.SurveyedSurfaces
         {
-          new SurveyedSurface(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName", 1.0), DateTime.UtcNow, BoundingWorldExtent3D.Full())
+          new SurveyedSurface(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "Folder", "FileName"), DateTime.UtcNow, BoundingWorldExtent3D.Full())
         });
 
       arg.CacheFingerprint().Should().NotBeNullOrEmpty();

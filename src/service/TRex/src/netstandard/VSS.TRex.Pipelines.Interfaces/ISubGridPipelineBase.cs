@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -102,6 +103,6 @@ namespace VSS.TRex.Pipelines.Interfaces
 
         long SubGridsRemainingToProcess { get; }
 
-        Guid ReferenceDesignID { get; set; }
+        DesignOffset ReferenceDesign { get; set; }
     }
 }

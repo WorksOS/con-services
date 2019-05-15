@@ -36,6 +36,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// <param name="baseFilter"></param>
     /// <param name="topFilter"></param>
     /// <param name="referenceDesignUid"></param>
+    /// <param name="referenceDesignOffset"></param>
     /// <param name="volumeCalcType"></param>
     /// <param name="positionsAreGrid"></param>
     /// <param name="startX"></param>
@@ -46,14 +47,15 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       Guid projectUid, 
       FilterResult baseFilter, 
       FilterResult topFilter, 
-      Guid? referenceDesignUid, 
+      Guid? referenceDesignUid,
+      double? referenceDesignOffset,
       VolumesType volumeCalcType,
       bool positionsAreGrid,
       double  startX,
       double startY,
       double endX,
       double endY
-      ) : base (projectUid, baseFilter, referenceDesignUid, positionsAreGrid, startX, startY, endX, endY)
+      ) : base (projectUid, baseFilter, referenceDesignUid, referenceDesignOffset, positionsAreGrid, startX, startY, endX, endY)
     {
       TopFilter = topFilter;
       VolumeCalcType = volumeCalcType;

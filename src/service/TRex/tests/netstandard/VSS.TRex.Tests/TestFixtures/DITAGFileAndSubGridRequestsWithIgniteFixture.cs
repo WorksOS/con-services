@@ -138,7 +138,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the design surface in the site model
       var designSurface = DIContext.Obtain<IDesignManager>().Add(siteModel.ID,
-        new DesignDescriptor(designUid, filePath, fileName, 0), extents);
+        new DesignDescriptor(designUid, filePath, fileName), extents);
       existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
 
       // Tell the site models collection the site model has changed 
@@ -193,7 +193,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the design surface in the site model
       var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(siteModel.ID,
-        new DesignDescriptor(surveyedSurfaceUid, filePath, fileName, 0), asAtDate, extents);
+        new DesignDescriptor(surveyedSurfaceUid, filePath, fileName), asAtDate, extents);
       existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubGridOverlayIndex());
 
       // Tell the site models collection the site model has changed 

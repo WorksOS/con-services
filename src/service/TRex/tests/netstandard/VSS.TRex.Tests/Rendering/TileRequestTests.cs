@@ -7,6 +7,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
@@ -47,7 +48,7 @@ namespace VSS.TRex.Tests.Rendering
       if (attributeFilter != null)
         filter.Filters[0].AttributeFilter = attributeFilter;
 
-      return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256, filter, Guid.Empty);
+      return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256, filter, new DesignOffset());
     }
 
     private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement,
@@ -304,9 +305,11 @@ namespace VSS.TRex.Tests.Rendering
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_CutFill(bool usePalette)
+    [InlineData(false, -25)]
+    [InlineData(true, -25)]
+    [InlineData(false, 0)]
+    [InlineData(true, 0)]
+    public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_CutFill(bool usePalette, double offset)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -326,20 +329,22 @@ namespace VSS.TRex.Tests.Rendering
       var palette = usePalette ? PVMPaletteFactory.GetPallete(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent) : null;
 
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
+      var referenceDesign = new DesignOffset(designUid, offset);
 
       var request = new TileRenderRequest();
       var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette);
 
       // Add the cut/fill design reference to the request, and set the rendering extents to the cell in question,
       // with an additional 1 meter border around the cell
-      arg.ReferenceDesignUID = designUid;
+      arg.ReferenceDesign = referenceDesign;
       arg.Extents = siteModel.Grid.GetCellExtents(cellX, cellY);
       arg.Extents.Expand(1.0, 1.0);
 
       var response = request.Execute(arg);
       CheckSimpleRenderTileResponse(response);
 
-      // File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //The tile for 0 offset is red, for -25 it is blue
+      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }
   }
 }

@@ -6,6 +6,7 @@ using VSS.TRex.Rendering.Executors;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using System.Drawing;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Tests.Rendering
 {
@@ -22,7 +23,7 @@ namespace VSS.TRex.Tests.Rendering
         100, //PixelsX
         100, // PixelsY
         null, // Filters
-        Guid.Empty, // DesignDescriptor.Null(),
+        new DesignOffset(), // DesignDescriptor.Null(),
         null,
         Color.Black,
         string.Empty);
