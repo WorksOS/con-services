@@ -21,7 +21,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Extensions
 
     public static bool EqualsToNearestMillimeter(this double offset1, double offset2)
     {
-      return Math.Round(offset1, 3) == Math.Round(offset2, 3);
+      const double ONE_MM = 0.001;
+      return Math.Abs(offset1 - offset2) < ONE_MM;
     }
   }
 }
