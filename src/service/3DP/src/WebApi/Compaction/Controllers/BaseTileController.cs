@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;

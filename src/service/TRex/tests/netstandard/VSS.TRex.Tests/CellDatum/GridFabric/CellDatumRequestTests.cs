@@ -148,7 +148,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
 
       var request = new CellDatumRequest_ClusterCompute();
       var arg = CreateCellDatumRequestArgument_ClusterCompute(siteModel, designUid, mode);
-      var response = request.Execute(arg, new SubGridSpatialAffinityKey(arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
+      var response = request.Execute(arg, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
 
       response.Should().NotBeNull();
       Assert.Equal(CellDatumReturnCode.ValueFound, response.ReturnCode);
@@ -184,7 +184,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
 
       var request = new CellDatumRequest_ClusterCompute();
       var arg = CreateCellDatumRequestArgument_ClusterCompute(siteModel, designUid, mode);
-      var response = request.Execute(arg, new SubGridSpatialAffinityKey(arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
+      var response = request.Execute(arg, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
 
       response.Should().NotBeNull();
       //Only elevation and pass count

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -16,15 +16,11 @@ namespace VSS.MasterData.Proxies
 {
   public class GracefulWebRequest : IWebRequest
   {
-    /// <summary>
-    /// If there is no provided LOG_MAX_CHAR env variable, then we will default to this
-    /// </summary>
+    private readonly ILogger _log;
     private const int DefaultLogMaxChar = 1000;
+    private readonly int _logMaxChar;
 
-    private readonly ILogger log;
-    private readonly int logMaxChar;
-
-    static HttpClientHandler handler = new HttpClientHandler()
+    static readonly HttpClientHandler handler = new HttpClientHandler()
     {
       AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
     };
@@ -33,21 +29,14 @@ namespace VSS.MasterData.Proxies
     private static readonly HttpClient httpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMinutes(30)};
 
     //Any 200 code is ok.
-    private static List<HttpStatusCode> okCodes = new List<HttpStatusCode>
+    private static readonly List<HttpStatusCode> okCodes = new List<HttpStatusCode>
     { HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted, HttpStatusCode.NonAuthoritativeInformation,
       HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent};
 
     public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore)
     {
-      log = logger.CreateLogger<GracefulWebRequest>();
-      logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR");
-
-      // Config Store may return -1 if the variable doesn't exist
-      if (logMaxChar <= 0)
-      {
-        log.LogInformation($"Missing environment variable LOG_MAX_CHAR, defaulting to {DefaultLogMaxChar}");
-        logMaxChar = DefaultLogMaxChar;
-      }
+      _log = logger.CreateLogger<GracefulWebRequest>();
+      _logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
     }
 
 
@@ -60,13 +49,13 @@ namespace VSS.MasterData.Proxies
         {
           foreach (var customHeader in dictionary)
             if (!x.Headers.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
-              log.LogWarning($"Can't add header {customHeader.Key}");
+              _log.LogWarning($"Can't add header {customHeader.Key}");
         }
 
         if (!x.Headers.Contains("Accept"))
         {
           if (!x.Headers.TryAddWithoutValidation("Accept", "*/*"))
-            log.LogWarning("Can't add Accept header");
+            _log.LogWarning("Can't add Accept header");
         }
       }
 
@@ -76,14 +65,14 @@ namespace VSS.MasterData.Proxies
         requestStream.Seek(0, SeekOrigin.Begin);
 
       if (method == HttpMethod.Get)
-        return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
+        return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, _log);
 
       if (method == HttpMethod.Post || method == HttpMethod.Put)
         return httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
-          x => { ApplyHeaders(customHeaders, x); }, log);
+          x => { ApplyHeaders(customHeaders, x); }, _log);
 
       if (method == HttpMethod.Delete)
-        return httpClient.DeleteAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
+        return httpClient.DeleteAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, _log);
 
       throw new ArgumentException($"Unknown HTTP method {method}");
     }
@@ -107,7 +96,7 @@ namespace VSS.MasterData.Proxies
       IDictionary<string, string> customHeaders = null, Stream payloadStream = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
-      log.LogDebug(
+      _log.LogDebug(
         $"ExecuteRequest() Stream: endpoint {endpoint} " +
         $"method {method}, " +
         $"customHeaders {customHeaders.LogHeaders()} " +
@@ -116,7 +105,7 @@ namespace VSS.MasterData.Proxies
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payloadStream != null && !payloadStream.CanSeek && retries > 0)
       {
-        log.LogWarning(
+        _log.LogWarning(
           $"Attempting a HTTP {method} with a Stream ({payloadStream.GetType().Name}) that doesn't not support seeking, disabling retries");
         retries = 0; 
       }
@@ -124,15 +113,15 @@ namespace VSS.MasterData.Proxies
       var policyResult = await Policy
         .Handle<Exception>(exception =>
         {
-          log.LogWarning($"Polly failed to execute the request {endpoint} with exception {exception.Message}");
+          _log.LogWarning($"Polly failed to execute the request {endpoint} with exception {exception.Message}");
           return true;
         })
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute {method} request {endpoint}");
+          _log.LogDebug($"Trying to execute {method} request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
-          log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
+          _log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
 
           if (!okCodes.Contains(result.StatusCode))
           {
@@ -149,7 +138,7 @@ namespace VSS.MasterData.Proxies
       {
         if (!suppressExceptionLogging)
         {
-          log.LogDebug(
+          _log.LogDebug(
             $"ExecuteRequest() Stream: exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint} method: {method}");
         }
 
@@ -186,13 +175,13 @@ namespace VSS.MasterData.Proxies
       if (method == null)
         method = HttpMethod.Post;
 
-      log.LogDebug(
+      _log.LogDebug(
         $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)
       {
-        log.LogWarning(
+        _log.LogWarning(
           $"Attempting a HTTP {method} with a Stream ({payload.GetType().Name}) that doesn't not support seeking, disabling retries");
         retries = 0;
       }
@@ -202,20 +191,20 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute {method} request {endpoint}");
+          _log.LogDebug($"Trying to execute {method} request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
-          log.LogDebug($"Request to {endpoint} completed");
+          _log.LogDebug($"Request to {endpoint} completed");
 
           var contents = await result.Content.ReadAsStringAsync();
           if (!okCodes.Contains(result.StatusCode))
           {
-            log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
+            _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
            
             var serviceException = ParseServiceError(result.StatusCode, contents);
             throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
           }
 
-          log.LogDebug($"Request returned {contents.Truncate(logMaxChar)} with status {result.StatusCode}");
+          _log.LogDebug($"Request returned {contents.Truncate(_logMaxChar)} with status {result.StatusCode}");
           if (typeof(T) == typeof(string)) return (T) Convert.ChangeType(contents, typeof(T));
           return JsonConvert.DeserializeObject<T>(contents);
         });
@@ -224,7 +213,7 @@ namespace VSS.MasterData.Proxies
       {
         if (!suppressExceptionLogging)
         {
-          log.LogDebug(
+          _log.LogDebug(
             "ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
             policyResult.FinalException.ToString(), endpoint, customHeaders);
         }
@@ -261,13 +250,13 @@ namespace VSS.MasterData.Proxies
       if (method == null)
         method = HttpMethod.Post;
 
-      log.LogDebug(
+      _log.LogDebug(
         $"ExecuteRequest() ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)
       {
-        log.LogWarning(
+        _log.LogWarning(
           $"Attempting a HTTP {method} with a Stream ({payload.GetType().Name}) that doesn't not support seeking, disabling retries");
         retries = 0;
       }
@@ -277,26 +266,26 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute {method} request {endpoint}");
+          _log.LogDebug($"Trying to execute {method} request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
-          log.LogDebug($"Request to {endpoint} completed");
+          _log.LogDebug($"Request to {endpoint} completed");
 
           if (!okCodes.Contains(result.StatusCode))
           {
             var contents = await result.Content.ReadAsStringAsync();
-            log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
+            _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
             var serviceException = ParseServiceError(result.StatusCode, contents);
             throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
           }
 
-          log.LogDebug($"Request returned status {result.StatusCode}");
+          _log.LogDebug($"Request returned status {result.StatusCode}");
         });
 
       if (policyResult.FinalException != null)
       {
         if (!suppressExceptionLogging)
         {
-          log.LogDebug(
+          _log.LogDebug(
             "ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
             policyResult.FinalException.ToString(), endpoint, customHeaders);
         }

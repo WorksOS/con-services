@@ -7,5 +7,6 @@ namespace VSS.MasterData.Proxies.Interfaces
   public interface ITPaasProxy
   {
     Task<TPaasOauthResult> GetApplicationBearerToken(string grantType, Dictionary<string, string> customHeaders);
+    Task<BaseDataResult> RevokeApplicationBearerToken(string token, Dictionary<string, string> customHeaders);
   }
 }

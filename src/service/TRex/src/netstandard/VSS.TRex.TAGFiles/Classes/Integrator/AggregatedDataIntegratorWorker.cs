@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -349,7 +350,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           storageProxy_Mutable.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
           Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
 
-          /* TODO: Re-add segment retirement service when versioning issues have been resolved.
           // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
           Log.LogInformation($"Aggregation Task Process --> Updating segment retirement queue for {SiteModelFromDM.ID}");
           if (subGridIntegrator.InvalidatedSpatialStreams.Count > 0)
@@ -369,11 +369,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
               var insertUTC = DateTime.UtcNow;
 
-              retirementQueue.Add(new SegmentRetirementQueueKey
-                {
-                  ProjectUID = SiteModelFromDM.ID,
-                  InsertUTCAsLong = insertUTC.Ticks
-                },
+              retirementQueue.Add(
+                new SegmentRetirementQueueKey {ProjectUID = SiteModelFromDM.ID, InsertUTCAsLong = insertUTC.Ticks},
                 new SegmentRetirementQueueItem
                 {
                   InsertUTCAsLong = insertUTC.Ticks,
@@ -383,13 +380,13 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             }
             catch (Exception e)
             {
-              Log.LogCritical(e, "Unable to add segment invalidation list to segment retirement queue due to exception:");
+              Log.LogCritical(e,
+                "Unable to add segment invalidation list to segment retirement queue due to exception:");
               Log.LogCritical("The following segments will NOT be retired as a result:");
               foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
                 Log.LogCritical($"{invalidatedItem}");
             }
           }
-          */
 
           if (_adviseOtherServicesOfDataModelChanges)
           {

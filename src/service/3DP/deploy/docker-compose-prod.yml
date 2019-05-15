@@ -17,7 +17,7 @@ services:
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
      - AWS_SECRET_KEY=qQAEmtYOcn0PCzSfpqIgmNFpyMclrZllnOnY1Ecx
      - AWS_TAGFILE_BUCKET_NAME=vss-prod-directtagfile-archives
-     - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.prod.k8s.services.myvisionlink.com/api/status
+     - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.prod.prod-eks.services.myvisionlink.com/api/status
      - CUSTOMERSERVICE_API_URL=https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
      - CUSTOMER_CACHE_LIFE=00:30:00
      - DEFAULT_CONNECTION_LIMIT=64
@@ -51,7 +51,7 @@ services:
      - KAFKA_TOPIC_NAME_SUFFIX=-3dpm
      - KAFKA_URI=kafka
      - LIBUV_THREAD_COUNT=32
-     - LOG_MAX_CHAR=100000
+     - LOG_MAX_CHAR=1000
      - MAX_IO_THREADS=1024
      - MAX_WORKER_THREADS=512
      - MIN_IO_THREADS=1024

@@ -25,8 +25,14 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid
     {
-      private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTreeLeaf>();
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTreeLeaf>();
 
+        /// <summary>
+        /// The version number of this segment when it is stored in the persistent layer, defined
+        /// as the number of ticks in DateTime.UtcNow at the time it is written.
+        /// </summary>
+        public long Version { get; set; } = 1;
+          
         /// <summary>
         /// Controls whether segment and cell pass information held within this sub grid is represented
         /// in the mutable or immutable forms supported by TRex
@@ -151,7 +157,9 @@ namespace VSS.TRex.SubGridTrees.Server
                 Segment.PassesData.AddPass(cellX, cellY, Pass, PassIndex);
                 CellPassAdded(Pass);
             }
-        }
+
+          Segment.Dirty = true;
+    }
 
         /// <summary>
         /// Creates the default segment metadata within the segment directory. This is only called to create the first 
@@ -589,7 +597,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
              var FSError = storageProxy.ReadSpatialStreamFromPersistentStore
-                         (Owner.ID, FileName, OriginX, OriginY, FileName, FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
+                         (Owner.ID, FileName, OriginX, OriginY, FileName, Segment.SegmentInfo.Version, FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
 
              bool Result = FSError == FileSystemErrorStatus.OK;
 
@@ -643,7 +651,7 @@ namespace VSS.TRex.SubGridTrees.Server
             SaveDirectoryToStream(MStream);
 
             bool Result = storage.WriteSpatialStreamToPersistentStore
-             (Owner.ID, FileName, OriginX, OriginY, string.Empty,
+             (Owner.ID, FileName, OriginX, OriginY, string.Empty, Version,
               FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
 
             if (!Result)
@@ -656,7 +664,7 @@ namespace VSS.TRex.SubGridTrees.Server
       /// Generates the affinity key for this sub grid that identifies this element in the persistent data store
       /// </summary>
       /// <returns></returns>
-      public ISubGridSpatialAffinityKey AffinityKey() => new SubGridSpatialAffinityKey(Owner.ID, OriginX, OriginY);
+      public ISubGridSpatialAffinityKey AffinityKey() => new SubGridSpatialAffinityKey(Version, Owner.ID, OriginX, OriginY);
 
       public bool LoadDirectoryFromStream(Stream stream)
         {
@@ -700,7 +708,10 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
         {
-            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty,
+           if (Version == 0)
+             Log.LogError($"Version for {Moniker()} is 0");
+
+            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty, Version,
                                                                        FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
 
             if (FSError != FileSystemErrorStatus.OK || SMS == null)

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -247,6 +248,7 @@ namespace VSS.TRex.SubGridTrees.Server
             FileName,
             Owner.OriginX, Owner.OriginY,
             FileName,
+            SegmentInfo.Version,
             FileSystemStreamType.SubGridSegment,
             MStream,
             this);

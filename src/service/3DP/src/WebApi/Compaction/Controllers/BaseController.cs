@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Log4NetExtensions;
@@ -282,10 +284,29 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                       Path.GetExtension(tccFileName);
       }
 
+#if RAPTOR
+      //For Raptor, need the parent design if it's a reference surface
+      if (file.ImportedFileType == ImportedFileType.ReferenceSurface)
+      {
+        var parent = fileList.FirstOrDefault(f => f.ImportedFileUid == file.ParentUid);
+        if (parent == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Unable to access parent design file."));
+        }
+
+        fileUid = Guid.Parse(parent.ImportedFileUid);
+        file.LegacyFileId = parent.LegacyFileId;
+        tccFileName = parent.Name;
+        //The file.Path is CustomerUid + ProjectUid which should be the same for both
+      }
+#endif
+
       var fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
-      return new DesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0, fileUid);
+      return new DesignDescriptor(file.LegacyFileId, fileDescriptor, file.Offset ?? 0.0, fileUid);
     }
 
     /// <summary>

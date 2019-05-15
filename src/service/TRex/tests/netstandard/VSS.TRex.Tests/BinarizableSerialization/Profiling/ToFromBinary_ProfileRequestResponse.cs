@@ -2,12 +2,13 @@
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Responses;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
 {
-  public class ToFromBinary_ProfileRequestResponse
+  public class ToFromBinary_ProfileRequestResponse : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_ProfileRequestArgument_ProfileRequestResponse_Simple()

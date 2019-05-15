@@ -23,6 +23,7 @@ namespace VSS.TRex.Storage.Interfaces
       string streamName,
       uint subGridX, uint subGridY,
       string segmentIdentifier,
+      long version,
       FileSystemStreamType streamType,
       MemoryStream mutableStream,
       object source);
@@ -36,6 +37,7 @@ namespace VSS.TRex.Storage.Interfaces
       string streamName,
       uint subGridX, uint subGridY,
       string segmentIdentifier,
+      long version,
       FileSystemStreamType streamType,
       out MemoryStream stream);
 
