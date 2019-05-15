@@ -62,6 +62,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       var tasks = subscriptions.Select(ProcessSubscription).ToList();
       await Task.WhenAll(tasks);
     }
+
     public Task TearDown(object o)
     {
       return Task.CompletedTask;
@@ -113,27 +114,21 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       return (assetDetailsTask.Result, assetSummaryTask.Result);
     }
 
-
     private async Task ProcessAssetEvents(MachineStatus machine, Guid projectUid, Guid customerUid,
       IDictionary<string, string> headers)
     {
-      var assetAggregateStatus = new AssetAggregateStatus
-      {
-        Machine3D = machine,
-        ProjectUid = projectUid,
-        CustomerUid = customerUid
-      };
 
+      AssetAggregateStatus statusEvent = null;
       var assets = await assetResolverProxy.GetMatchingAssets(new List<long>
       {
-        machine.AssetId
+        machine.AssetId,
       }, headers);
 
       // Prevent multiple iterations of the IEnumerable
       var assetList = assets?.ToList();
       if (assetList != null && assetList.Any())
       {
-        var matchingAsset = await assetResolverProxy.GetMatching3D2DAssets(new MatchingAssetsDisplayModel(){AssetUID3D = assetList.First().Key.ToString()}, headers);
+        var matchingAsset = await assetResolverProxy.GetMatching3D2DAssets(new MatchingAssetsDisplayModel() {AssetUID3D = assetList.First().Key.ToString()}, headers);
         //Change that for the actual matched asset. Since we supplied 3d asset get data for the matching 2d asset.
         //if there is no 2d asset we should try using SNM asset
 
@@ -145,14 +140,70 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
 
         var (details, summary) = await GetAssetData(uid, headers);
 
-        assetAggregateStatus.Details = details;
-        assetAggregateStatus.Summary = summary;
-        assetAggregateStatus.AssetUid = Guid.Parse(uid);
-        
+        var assetUid = Guid.Parse(uid);
+
+        statusEvent = GenerateEvent(customerUid, projectUid, assetUid, machine, details, summary);
+      }
+      else
+      {
+        // Cant find some information, build a cut down event
+        statusEvent = GenerateEvent(customerUid, projectUid, null, machine, null, null);
       }
 
-      await assetStatusServerHubClient.UpdateAssetLocationsForClient(assetAggregateStatus);
+      if(statusEvent != null)
+        await assetStatusServerHubClient.UpdateAssetLocationsForClient(statusEvent);
     }
 
+    /// <summary>
+    /// Generate a UI Event based on the information passed in
+    /// Add any new fields that need populating to this method
+    /// </summary>
+    private AssetAggregateStatus GenerateEvent(Guid customerUid, Guid projectUid, Guid? assetUid, MachineStatus machineStatus, AssetDetails details, AssetSummary summary)
+    {
+      var result = new AssetAggregateStatus
+      {
+        ProjectUid = projectUid,
+        CustomerUid = customerUid,
+        AssetUid =  assetUid,
+        Design = machineStatus.lastKnownDesignName
+      };
+
+      // This is where all the magic happens, in terms of mapping data we have from 3d / 2d endpoints into an event for the UI
+      // details / summary can be null, machineStatus won't be.
+      var lastLocationTimeUtc = machineStatus.lastKnownTimeStamp;
+      // These values are in radians, where the AssetDetails values are in degrees
+      result.Latitude = machineStatus.lastKnownLatitude?.LatRadiansToDegrees();
+      result.Longitude = machineStatus.lastKnownLongitude?.LonRadiansToDegrees();
+
+      // Extract data from Asset Details
+      if (details != null)
+      {
+        // Do we have a newer location?
+        if (lastLocationTimeUtc == null || details.LastLocationUpdateUtc > lastLocationTimeUtc)
+        {
+          result.Latitude = details.LastReportedLocationLatitude;
+          result.Longitude = details.LastReportedLocationLongitude;
+          lastLocationTimeUtc = details.LastLocationUpdateUtc;
+        }
+
+        result.FuelLevel = details.FuelLevelLastReported;
+        result.FuelLevelLastUpdatedUtc = details.FuelReportedTimeUtc;
+      }
+      
+      // Clear the values if we don't have everything
+      if (lastLocationTimeUtc == null || result.Latitude == null || result.Longitude == null)
+      {
+        log.LogWarning($"Clearing event information due to missing data. Lat: {result.Latitude}, Lon: {result.Longitude}, Time: {result.LocationLastUpdatedUtc}");
+        result.LocationLastUpdatedUtc = null;
+        result.Latitude = null;
+        result.Longitude = null;
+      }
+      else
+      {
+        result.LocationLastUpdatedUtc = lastLocationTimeUtc;
+      }
+
+      return result;
+    }
   }
 }

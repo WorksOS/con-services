@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.Models
@@ -9,6 +10,13 @@ namespace VSS.Productivity3D.Models.Models
     {
       MachineStatuses = new List<MachineStatus>();
     }
+
+    public Machine3DStatuses(int code) : base(code)
+    {
+      MachineStatuses = new List<MachineStatus>();
+    }
+
+    [JsonProperty(Required = Required.Default)]
     public List<MachineStatus> MachineStatuses { get; set; }
   }
 }
