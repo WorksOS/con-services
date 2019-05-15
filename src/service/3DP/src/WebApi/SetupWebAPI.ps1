@@ -23,7 +23,7 @@ Write-host "RAPTORUSERNAME=$RAPTORUSERNAME"
 
 
 if ($RAPTORUSERNAME -eq $null)
-{ $RAPTORUSERNAME = "ad-vspengg\svcRaptor" }
+{ $RAPTORUSERNAME = ".\svcRaptor" }
 
 if ($ASNIP -eq $null)
   { Write-host "Error! Environment variable ASNODEIP is not set"  -ForegroundColor Red; $OKTORUN = "Bad"}
