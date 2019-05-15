@@ -9,6 +9,7 @@
     <PackageId>TileServiceWebApi</PackageId>
     <RootNamespace>VSS.Tile.Service.WebApi</RootNamespace>
     <PackageTags>vss-tile-service</PackageTags>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
