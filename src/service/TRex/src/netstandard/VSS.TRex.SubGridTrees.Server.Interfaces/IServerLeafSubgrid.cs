@@ -10,6 +10,12 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     public interface IServerLeafSubGrid : ILeafSubGrid
     {
         /// <summary>
+        /// The version number of this spatial element when it is stored in the persistent layer, defined
+        /// as the number of ticks in DateTime.UtcNow at the time it is written.
+        /// </summary>
+        long Version { get; set; }
+       
+        /// <summary>
         /// Controls whether segment and cell pass information held within this sub grid is represented
         /// in the mutable or immutable forms supported by TRex
         /// </summary>
@@ -27,7 +33,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         DateTime LeafStartTime { get; }
 
         /// <summary>
-        /// The date time of the last observed cell pass within this subgrid
+        /// The date time of the last observed cell pass within this sub grid
         /// </summary>
         DateTime LeafEndTime { get; }
 
