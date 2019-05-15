@@ -53,7 +53,7 @@ data:
   assetdetails-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
   assetsummary-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
 #TPaaS
-  TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2/token
+  TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
 #CAP configuration  
   MYSQL_CAP_DATABASE_NAME: VSS-Productivity3D-CAP-Alpha
   MYSQL_CAP_TABLE_PREFIX: Project
