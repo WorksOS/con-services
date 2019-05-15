@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           }
 
           projectCustomerSubs =
-            (await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow)).ToList();
+            (await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow));
           log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded ProjectCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
         }
         else
@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
           if (string.IsNullOrEmpty(request.ProjectUid) || project.ProjectType == ProjectType.Standard)
           {
-            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
+            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow));
             log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
           }
         }
@@ -148,7 +148,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
           if (string.IsNullOrEmpty(request.ProjectUid) || project.ProjectType == ProjectType.Standard)
           {
-            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
+            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow));
             log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
           }
         }
@@ -179,8 +179,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //   Must have current a)  Manual Sub for standard or b) Landfill/Civil (for those projects)
       //   i.e. Can only view and therefore manuallyImport a LandfillProject IF you have a current Landfill sub
 
-      var intersectingProjects = (await dataRepository.GetIntersectingProjects(project.CustomerUID, request.Latitude,
-        request.Longitude, new int[] {(int) project.ProjectType}, null)).ToList();
+      var intersectingProjects = await dataRepository.GetIntersectingProjects(project.CustomerUID, request.Latitude,
+        request.Longitude, new int[] {(int) project.ProjectType}, null);
       log.LogDebug(
         $"{nameof(HandleManualImport)}: Projects which intersect with manually imported project {JsonConvert.SerializeObject(intersectingProjects)}");
 
@@ -198,7 +198,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           {
             // we need assetOwningCustomer to determine if assetCustomer == projectCustomer 
             var assetCustomerSubs =
-              (await dataRepository.LoadManual3DCustomerBasedSubs(assetOwningCustomerUid, DateTime.UtcNow)).ToList();
+              (await dataRepository.LoadManual3DCustomerBasedSubs(assetOwningCustomerUid, DateTime.UtcNow));
             log.LogDebug(
               $"{nameof(HandleManualImport)}: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(assetCustomerSubs)}");
 
@@ -292,11 +292,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       List<Subscriptions> projectCustomerSubs, List<Subscriptions> assetCustomerSubs, List<Subscriptions> assetSubs)
     {
       var serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
-      var subs = new List<Subscriptions>();
-      if (projectCustomerSubs.Any()) subs = subs.Concat(projectCustomerSubs.Select(s => s)).ToList();
-      if (assetCustomerSubs.Any()) subs = subs.Concat(assetCustomerSubs.Select(s => s)).ToList();
-      if (assetSubs.Any()) subs = subs.Concat(assetSubs.Select(s => s)).ToList();
 
+      var subs = new List<Subscriptions>();
+      if (projectCustomerSubs != null && projectCustomerSubs.Any()) subs.AddRange(projectCustomerSubs.Select(s => s));
+      if (assetCustomerSubs != null && assetCustomerSubs.Any()) subs.AddRange(assetCustomerSubs.Select(s => s));
+      if (assetSubs != null && assetSubs.Any()) subs.AddRange(assetSubs.Select(s => s));
+      
       log.LogDebug($"{nameof(GetMostSignificantServiceType)}: assetUid: {assetUid} projectCustomer: {projectCustomerUid}, subs: {JsonConvert.SerializeObject(subs)})");
 
       if (subs.Any())
@@ -356,7 +357,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(assetOwningCustomerUid) && assetSubs.Any())
       {
         potentialProjects.AddRange((await dataRepository.GetIntersectingProjects(assetOwningCustomerUid,
-          request.Latitude, request.Longitude, new[] {(int) ProjectType.Standard}, request.TimeOfPosition)).ToList());
+          request.Latitude, request.Longitude, new[] {(int) ProjectType.Standard}, request.TimeOfPosition)));
       }
 
       if (!string.IsNullOrEmpty(tccCustomerUid))
@@ -367,9 +368,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //  does not require an asset has been identified
         potentialProjects.AddRange(
           (await dataRepository.GetIntersectingProjects(tccCustomerUid, request.Latitude,
-            request.Longitude, new int[] {(int) (int) ProjectType.ProjectMonitoring, (int) ProjectType.LandFill},
+            request.Longitude, new[] {(int) ProjectType.ProjectMonitoring, (int) ProjectType.LandFill},
             request.TimeOfPosition))
-          .ToList()
           .Where(pm => (pm.ServiceTypeID == (int) ServiceTypeEnum.ProjectMonitoring
                         || pm.ServiceTypeID == (int) ServiceTypeEnum.Landfill)));
       }

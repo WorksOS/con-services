@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2-runtime-jessie
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk as builder
 
 # Set the Working Directory
 WORKDIR /app

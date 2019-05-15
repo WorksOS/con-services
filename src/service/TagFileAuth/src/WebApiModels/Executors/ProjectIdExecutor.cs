@@ -93,14 +93,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         if (customerAssetOwner != null && assetSubs != null && assetSubs.Any())
         {
           var standardProjects = await dataRepository.GetStandardProject(customerAssetOwner.CustomerUID,
-            request.latitude,
-            request.longitude,
-            request.timeOfPosition);
-          var standardProjectsList = standardProjects as IList<Project.Abstractions.Models.DatabaseModels.Project> ??
-                                     standardProjects.ToList();
-          if (standardProjectsList.Any())
+            request.latitude, request.longitude, request.timeOfPosition);
+          if (standardProjects.Any())
           {
-            potentialProjects.AddRange(standardProjectsList);
+            potentialProjects.AddRange(standardProjects);
             log.LogDebug(
               $"{nameof(ProjectIdExecutor)}: Loaded standardProjects which lat/long is within {JsonConvert.SerializeObject(standardProjects)}");
           }
@@ -119,13 +115,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           var pmProjects = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
             (int) ProjectType.ProjectMonitoring, (int) ServiceTypeEnum.ProjectMonitoring);
-          var pmProjectsList = pmProjects as IList<Project.Abstractions.Models.DatabaseModels.Project> ??
-                               pmProjects.ToList();
-          if (pmProjectsList.Any())
+          if (pmProjects.Any())
           {
-            potentialProjects.AddRange(pmProjectsList);
+            potentialProjects.AddRange(pmProjects);
             log.LogDebug(
-              $"{nameof(ProjectIdExecutor)}: Loaded pmProjects which lat/long is within {JsonConvert.SerializeObject(pmProjectsList)}");
+              $"{nameof(ProjectIdExecutor)}: Loaded pmProjects which lat/long is within {JsonConvert.SerializeObject(pmProjects)}");
           }
           else
           {
@@ -142,11 +136,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           var landfillProjects = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
             (int) ProjectType.LandFill, (int) ServiceTypeEnum.Landfill);
-          var landfillProjectsList = landfillProjects as IList<Project.Abstractions.Models.DatabaseModels.Project> ??
-                                     landfillProjects.ToList();
-          if (landfillProjectsList.Any())
+          if (landfillProjects.Any())
           {
-            potentialProjects.AddRange(landfillProjectsList);
+            potentialProjects.AddRange(landfillProjects);
             log.LogDebug(
               $"{nameof(ProjectIdExecutor)}: Loaded landfillProjects which lat/long is within {JsonConvert.SerializeObject(landfillProjects)}");
           }

@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 #endif
         request.Validate();
 
-        result = await CallTRexEndpoint(request).ConfigureAwait(false);
+        result = await CallTRexEndpoint(request);
 
         if (result.Code == 0)
         {
@@ -102,7 +102,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     private async Task<ContractExecutionResult> CallTRexEndpoint(CompactionTagFileRequest request)
     {
       var returnResult = await TagFileHelper.SendTagFileToTRex(request,
-        tRexTagFileProxy, log, customHeaders, false).ConfigureAwait(false);
+        tRexTagFileProxy, log, customHeaders, false);
 
       log.LogInformation($"PostTagFile (NonDirect TRex): result: {JsonConvert.SerializeObject(returnResult)}");
 

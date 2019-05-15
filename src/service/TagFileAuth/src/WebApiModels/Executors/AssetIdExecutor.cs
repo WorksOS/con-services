@@ -31,9 +31,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var result = false;
 
       Project.Abstractions.Models.DatabaseModels.Project project = null;
-      IEnumerable<Subscriptions> projectCustomerSubs = new List<Subscriptions>();
-      IEnumerable<Subscriptions> assetCustomerSubs = new List<Subscriptions>();
-      IEnumerable<Subscriptions> assetSubs = new List<Subscriptions>();
+      var projectCustomerSubs = new List<Subscriptions>();
+      var assetCustomerSubs = new List<Subscriptions>();
+      var assetSubs = new List<Subscriptions>();
 
       // legacyProjectId can exist with and without a radioSerial so set this up early
       if (request.projectId > 0)
@@ -43,8 +43,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         if (project != null)
         {
-          projectCustomerSubs =
-            await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow);
+          projectCustomerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow);
           log.LogDebug(
             $"{nameof(AssetIdExecutor)}: Loaded projectsCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
         }
@@ -85,13 +84,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
 
           // should this append to any assetCustomerSubs which may have come from Project.CustomerUID above?
-          assetCustomerSubs =
-            await dataRepository.LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID, DateTime.UtcNow);
-          log.LogDebug(
-            $"{nameof(AssetIdExecutor)}: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(assetCustomerSubs)}");
+          assetCustomerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID, DateTime.UtcNow);
+          log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(assetCustomerSubs)}");
 
-          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, projectCustomerSubs,
-            assetCustomerSubs, assetSubs);
+          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, projectCustomerSubs, assetCustomerSubs, assetSubs);
         }
         else
         {
@@ -110,7 +106,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
 
     private void CheckForManual3DCustomerBasedSub(long legacyProjectId,
-      IEnumerable<Subscriptions> projectCustomerSubs,
+      List<Subscriptions> projectCustomerSubs,
       out long legacyAssetId, out int serviceType)
     {
       // these are CustomerBased and no legacyAssetID will be returned
@@ -134,39 +130,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
     private int GetMostSignificantServiceType(string assetUid,
       Project.Abstractions.Models.DatabaseModels.Project project,
-      IEnumerable<Subscriptions> projectCustomerSubs, IEnumerable<Subscriptions> assetCustomerSubs,
-      IEnumerable<Subscriptions> assetSubs)
+      List<Subscriptions> projectCustomerSubs, List<Subscriptions> assetCustomerSubs,
+      List<Subscriptions> assetSubs)
     {
       log.LogDebug($"{nameof(GetMostSignificantServiceType)}: asset UID {assetUid}");
 
       var serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
 
-      IEnumerable<Subscriptions> subs = new List<Subscriptions>();
-      if (projectCustomerSubs != null)
-      {
-        var projectCustomerSubscriptions = projectCustomerSubs.ToList();
-        if (projectCustomerSubscriptions.Any()) subs = subs.Concat(projectCustomerSubscriptions.Select(s => s));
-      }
-
-      if (assetCustomerSubs != null)
-      {
-        var assetCustomerSubscriptions = assetCustomerSubs.ToList();
-        if (assetCustomerSubscriptions.Any()) subs = subs.Concat(assetCustomerSubscriptions.Select(s => s));
-      }
-
-      if (assetSubs != null)
-      {
-        var assetSubscriptions = assetSubs.ToList();
-        if (assetSubscriptions.Any()) subs = subs.Concat(assetSubscriptions.Select(s => s));
-      }
+      var subs = new List<Subscriptions>();
+      if (projectCustomerSubs != null && projectCustomerSubs.Any()) subs.AddRange(projectCustomerSubs.Select(s => s));
+      if (assetCustomerSubs != null && assetCustomerSubs.Any()) subs.AddRange(assetCustomerSubs.Select(s => s));
+      if (assetSubs != null && assetSubs.Any()) subs.AddRange(assetSubs.Select(s => s));
 
       log.LogDebug($"{nameof(GetMostSignificantServiceType)}: subs being checked {JsonConvert.SerializeObject(subs)}");
 
-      var subscriptions = subs.ToList();
-      if (subscriptions.Any())
+      if (subs.Any())
       {
         //Look for highest level machine subscription which is current
-        foreach (var sub in subscriptions)
+        foreach (var sub in subs)
         {
           // Manual3d is least significant
           if (sub.serviceTypeId == (int) ServiceTypeEnum.Manual3DProjectMonitoring)
