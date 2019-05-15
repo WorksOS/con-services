@@ -524,18 +524,16 @@ namespace TestUtility
           break;
         case "CreateProjectEvent":
           topicName = SetKafkaTopicName("IProjectEvent");
-          var sDate = DateTime.Parse(eventObject.ProjectStartDate);
-          DateTime eDate = DateTime.Parse(eventObject.ProjectEndDate);
           var createProjectEvent = new CreateProjectEvent()
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            ProjectEndDate = DateTime.SpecifyKind(eDate, DateTimeKind.Unspecified),
+            ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
             ProjectID = Int32.Parse(eventObject.ProjectID),
             ProjectName = eventObject.ProjectName,
-            ProjectStartDate = DateTime.SpecifyKind(sDate, DateTimeKind.Unspecified),
+            ProjectStartDate = DateTime.Parse(eventObject.ProjectStartDate),
             ProjectTimezone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             ProjectUID = new Guid(eventObject.ProjectUID),
             ProjectBoundary = eventObject.GeometryWKT
           };
