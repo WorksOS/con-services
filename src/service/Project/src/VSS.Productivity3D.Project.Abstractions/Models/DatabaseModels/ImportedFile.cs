@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Productivity3D.Project.Abstractions.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
@@ -54,7 +55,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
              && otherImportedFile.MaxZoomLevel == MaxZoomLevel
              && otherImportedFile.ImportedFileHistory == ImportedFileHistory
              && otherImportedFile.ParentUid == ParentUid 
-             && Math.Round(otherImportedFile.Offset, 3) == Math.Round(Offset, 3);
+             && otherImportedFile.Offset.EqualsToNearestMillimeter(Offset);
     }
 
     public override int GetHashCode()
