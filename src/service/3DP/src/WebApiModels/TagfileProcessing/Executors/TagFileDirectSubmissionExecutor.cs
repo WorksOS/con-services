@@ -40,9 +40,8 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       if (useTrexGateway)
       {
 #endif
-
         request.Validate();
-        result = await CallTRexEndpoint(request).ConfigureAwait(false);
+        result = await CallTRexEndpoint(request);
 
 #if RAPTOR
       }
@@ -86,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     private async Task<ContractExecutionResult> CallTRexEndpoint(CompactionTagFileRequest request)
     {
       var returnResult = await TagFileHelper.SendTagFileToTRex(request,
-        tRexTagFileProxy, log, customHeaders, true).ConfigureAwait(false);
+        tRexTagFileProxy, log, customHeaders, true);
 
       log.LogInformation($"{nameof(CallTRexEndpoint)} completed: filename {request.FileName} result {JsonConvert.SerializeObject(returnResult)}");
 

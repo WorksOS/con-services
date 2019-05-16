@@ -187,7 +187,7 @@ namespace TestUtility
     private static void WaitForTimeBasedOnNumberOfRecords(int count)
     {
       if (count < 7)
-      { Thread.Sleep(1000); }
+      { Thread.Sleep(1500); }
       if (count > 6)
       { Thread.Sleep(1000); }
       if (count > 13)
@@ -533,7 +533,7 @@ namespace TestUtility
             ProjectName = eventObject.ProjectName,
             ProjectStartDate = DateTime.Parse(eventObject.ProjectStartDate),
             ProjectTimezone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             ProjectUID = new Guid(eventObject.ProjectUID),
             ProjectBoundary = eventObject.GeometryWKT
           };

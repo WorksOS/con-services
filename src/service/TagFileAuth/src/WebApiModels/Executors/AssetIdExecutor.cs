@@ -3,15 +3,12 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -29,29 +26,26 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as GetAssetIdRequest;
-      log.LogDebug("AssetIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
-
       long legacyAssetId = -1;
       var serviceType = 0;
       var result = false;
 
       Project.Abstractions.Models.DatabaseModels.Project project = null;
-      IEnumerable<Subscriptions> projectCustomerSubs = new List<Subscriptions>();
-      IEnumerable<Subscriptions> assetCustomerSubs = new List<Subscriptions>();
-      IEnumerable<Subscriptions> assetSubs = new List<Subscriptions>();
+      var projectCustomerSubs = new List<Subscriptions>();
+      var assetCustomerSubs = new List<Subscriptions>();
+      var assetSubs = new List<Subscriptions>();
 
       // legacyProjectId can exist with and without a radioSerial so set this up early
       if (request.projectId > 0)
       {
         project = await dataRepository.LoadProject(request.projectId);
-        log.LogDebug("AssetIdExecutor: Loaded project? {0}", JsonConvert.SerializeObject(project));
+        log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded project? {JsonConvert.SerializeObject(project)}");
 
         if (project != null)
         {
-          projectCustomerSubs =
-            await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow);
-          log.LogDebug("AssetIdExecutor: Loaded projectsCustomerSubs? {0}",
-            JsonConvert.SerializeObject(projectCustomerSubs));
+          projectCustomerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow);
+          log.LogDebug(
+            $"{nameof(AssetIdExecutor)}: Loaded projectsCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
         }
       }
 
@@ -77,31 +71,23 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
         if (assetDevice == null && (DeviceTypeEnum) request.deviceType == DeviceTypeEnum.SNM940)
         {
-          log.LogDebug("AssetIdExecutor: Failed for SNM940 trying again as Device Type SNM941");
+          log.LogDebug($"{nameof(AssetIdExecutor)}: Failed for SNM940. Trying again as Device Type SNM941");
           assetDevice = await dataRepository.LoadAssetDevice(request.radioSerial, DeviceTypeEnum.SNM941.ToString());
         }
 
-        log.LogDebug("AssetIdExecutor: Loaded assetDevice? {0}", JsonConvert.SerializeObject(assetDevice));
+        log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded assetDevice? {JsonConvert.SerializeObject(assetDevice)}");
 
         if (assetDevice != null)
         {
           legacyAssetId = assetDevice.LegacyAssetID;
           assetSubs = await dataRepository.LoadAssetSubs(assetDevice.AssetUID, DateTime.UtcNow);
-          log.LogDebug("AssetIdExecutor: Loaded assetSubs? {0}", JsonConvert.SerializeObject(assetSubs));
+          log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
 
           // should this append to any assetCustomerSubs which may have come from Project.CustomerUID above?
-          assetCustomerSubs =
-            await dataRepository.LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID, DateTime.UtcNow);
-          log.LogDebug("AssetIdExecutor: Loaded assetsCustomerSubs? {0}",
-            JsonConvert.SerializeObject(assetCustomerSubs));
+          assetCustomerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID, DateTime.UtcNow);
+          log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(assetCustomerSubs)}");
 
-          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, projectCustomerSubs,
-            assetCustomerSubs, assetSubs);
-          log.LogDebug(
-            "AssetIdExecutor: after GetMostSignificantServiceType(). AssetUID {0} project{1} custSubs {2} assetSubs {3}",
-            assetDevice.AssetUID, JsonConvert.SerializeObject(project),
-            JsonConvert.SerializeObject(projectCustomerSubs),
-            JsonConvert.SerializeObject(assetSubs));
+          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, projectCustomerSubs, assetCustomerSubs, assetSubs);
         }
         else
         {
@@ -110,19 +96,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       result = !((legacyAssetId == -1) && (serviceType == 0));
-      log.LogDebug("AssetIdExecutor: All done. result {0} legacyAssetId {1} serviceType {2}", result, legacyAssetId,
-        serviceType);
-
-      try
-      {
-        return GetAssetIdResult.CreateGetAssetIdResult(result, legacyAssetId, serviceType);
-      }
-      catch
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0,
-            ContractExecutionStatesEnum.InternalProcessingError, 15));
-      }
+      return GetAssetIdResult.CreateGetAssetIdResult(result, legacyAssetId, serviceType);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
@@ -132,21 +106,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
 
     private void CheckForManual3DCustomerBasedSub(long legacyProjectId,
-      IEnumerable<Subscriptions> projectCustomerSubs,
+      List<Subscriptions> projectCustomerSubs,
       out long legacyAssetId, out int serviceType)
     {
       // these are CustomerBased and no legacyAssetID will be returned
       legacyAssetId = -1;
       serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").CGEnum;
-      log.LogDebug("AssetIdExecutor: CheckForManual3DCustomerBasedSub(). projectId {0} custSubs {1}", legacyProjectId,
-        JsonConvert.SerializeObject(projectCustomerSubs));
+      log.LogDebug(
+        $"{nameof(CheckForManual3DCustomerBasedSub)}: legacyProjectId {legacyProjectId} serviceType {serviceType}");
 
       if (legacyProjectId > 0)
       {
-        log.LogDebug(
-          "AssetIdExecutor: project ID non-zero so manual import for project - about to check for manual 3D subscription. legacyProjectId {0}",
-          legacyProjectId);
-
         if (projectCustomerSubs != null && projectCustomerSubs.Any())
         {
           legacyAssetId = -1; //Raptor needs to know it's a John Doe machine i.e. not a VL asset
@@ -154,27 +124,25 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      log.LogDebug("AssetIdExecutor: CheckForManual3DCustomerBasedSub(). legacyAssetId {0} serviceType {1}",
-        legacyAssetId, serviceType);
+      log.LogDebug(
+        $"{nameof(CheckForManual3DCustomerBasedSub)}: CheckForManual3DCustomerBasedSub(). legacyAssetId {legacyAssetId} serviceType {serviceType}");
     }
 
-    private int GetMostSignificantServiceType(string assetUID, Project.Abstractions.Models.DatabaseModels.Project project,
-      IEnumerable<Subscriptions> projectCustomerSubs, IEnumerable<Subscriptions> assetCustomerSubs,
-      IEnumerable<Subscriptions> assetSubs)
+    private int GetMostSignificantServiceType(string assetUid,
+      Project.Abstractions.Models.DatabaseModels.Project project,
+      List<Subscriptions> projectCustomerSubs, List<Subscriptions> assetCustomerSubs,
+      List<Subscriptions> assetSubs)
     {
-      log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset UID {0} and project UID {1}", assetUID,
-        JsonConvert.SerializeObject(project));
+      log.LogDebug($"{nameof(GetMostSignificantServiceType)}: asset UID {assetUid}");
 
       var serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
 
-      IEnumerable<Subscriptions> subs = new List<Subscriptions>();
-      if (projectCustomerSubs != null && projectCustomerSubs.Any())
-        subs = subs.Concat(projectCustomerSubs.Select(s => s));
-      if (assetCustomerSubs != null && assetCustomerSubs.Any()) subs = subs.Concat(assetCustomerSubs.Select(s => s));
-      if (assetSubs != null && assetSubs.Any()) subs = subs.Concat(assetSubs.Select(s => s));
+      var subs = new List<Subscriptions>();
+      if (projectCustomerSubs != null && projectCustomerSubs.Any()) subs.AddRange(projectCustomerSubs.Select(s => s));
+      if (assetCustomerSubs != null && assetCustomerSubs.Any()) subs.AddRange(assetCustomerSubs.Select(s => s));
+      if (assetSubs != null && assetSubs.Any()) subs.AddRange(assetSubs.Select(s => s));
 
-      log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() subs being checked {0}",
-        JsonConvert.SerializeObject(subs));
+      log.LogDebug($"{nameof(GetMostSignificantServiceType)}: subs being checked {JsonConvert.SerializeObject(subs)}");
 
       if (subs.Any())
       {
@@ -187,8 +155,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             if (serviceType != (int) ServiceTypeEnum.ThreeDProjectMonitoring)
             {
               log.LogDebug(
-                "AssetIdExecutor: GetProjectServiceType found ServiceTypeEnum.Manual3DProjectMonitoring for asset UID {0}",
-                assetUID);
+                $"{nameof(GetMostSignificantServiceType)}: found ServiceTypeEnum.Manual3DProjectMonitoring for asset UID {assetUid}");
               serviceType = (int) ServiceTypeEnum.Manual3DProjectMonitoring;
             }
           }
@@ -202,7 +169,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
               //Allow manual tag file import for customer who has the 3D subscription for the asset
               //and allow automatic tag file processing in all cases (can't tell customer for automatic)
               log.LogDebug(
-                $"AssetIdExecutor: GetProjectServiceType found ServiceTypeEnum.e3DProjectMonitoring for asset UID {assetUID} sub.customerUid {sub.customerUid}");
+                $"{nameof(GetMostSignificantServiceType)}: found ServiceTypeEnum.e3DProjectMonitoring for asset {assetUid} sub.customerUid {sub.customerUid}");
               if (project == null || sub.customerUid == project.CustomerUID)
               {
                 serviceType = (int) ServiceTypeEnum.ThreeDProjectMonitoring;
@@ -213,11 +180,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      var CGenServiceTypeID = serviceTypeMappings.serviceTypes.Find(st => st.NGEnum == serviceType).CGEnum;
+      var cGenServiceTypeId = serviceTypeMappings.serviceTypes.Find(st => st.NGEnum == serviceType).CGEnum;
       log.LogDebug(
-        "AssetIdExecutor: GetMostSignificantServiceType() for asset ID {0}, returning serviceTypeNG {1} actually serviceTypeCG {2}",
-        assetUID, serviceType, CGenServiceTypeID);
-      return CGenServiceTypeID;
+        $"{nameof(GetMostSignificantServiceType)}: for asset {assetUid} , returning serviceTypeNG {serviceType} actually serviceTypeCG (i.e Raptor) {cGenServiceTypeId}");
+
+      return cGenServiceTypeId;
     }
   }
 }
