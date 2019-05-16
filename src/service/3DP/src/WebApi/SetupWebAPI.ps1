@@ -47,12 +47,23 @@ else
    & sc.exe qc lanmanworkstation
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
-   & sc.exe start lanmanworkstation
+   & sc.exe stop lanmanworkstation
+   Write-Host "stop lanmanworkstation. Wait for 5 seconds"
+   Start-Sleep -Second 5
+   Write-Host "Start lanmanworkstation after waiting"
+   & sc.exe stop lanmanworkstation
+   
    Write-Host "Mapping Raptor ProductionData folder to Z: drive"
+   Start-Sleep -Second 5
    $mappedDrivePassword = ConvertTo-SecureString "v3L0c1R^pt0R!" -AsPlainText -Force
    $mappedDriveUsername = $RAPTORUSERNAME
    $mappedDriveCredentials = New-Object System.Management.Automation.PSCredential ($mappedDriveUsername, $mappedDrivePassword)
+   Start-Sleep -Second 5
+   Write-Host "The user=$mappedDriveUsername"
+   
    New-PSDrive -Name "Z" -PSProvider FileSystem -Root $SHAREUNC -Persist -Credential $mappedDriveCredentials
+   Write-Host "Mapped Raptor ProductionData folder to Z: drive"
+   Start-Sleep -Second 5
    #New-SmbGlobalMapping -RemotePath $SHAREUNC -Credential $mappedDriveCredentials -LocalPath Z: 
    
    & Z:
