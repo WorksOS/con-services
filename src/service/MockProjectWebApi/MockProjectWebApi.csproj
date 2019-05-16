@@ -42,12 +42,21 @@
 
   <ItemGroup>
     <Content Remove="Json\ALK\CutFillVolumeReportTile.json" />
+    <Content Remove="Json\ALK\Hybrid1024x1024-cfv1.json" />
+    <Content Remove="Json\ALK\Hybrid1024x1024-cfv2.json" />
+    <Content Remove="Json\ALK\Hybrid1024x1024-cfv3.json" />
+    <Content Remove="Json\ALK\Hybrid421x420.json" />
+    <Content Remove="Json\ALK\Hybrid439x438.json" />
     <Content Remove="Json\ALK\LargeReportTile.json" />
+    <Content Remove="Json\ALK\Map1024x1024-cfv1.json" />
+    <Content Remove="Json\ALK\Map1024x1024.json" />
+    <Content Remove="Json\ALK\Map399x398.json" />
     <Content Remove="Json\ALK\ProjectThumbnail.json" />
     <Content Remove="Json\ALK\ReportTile1.json" />
     <Content Remove="Json\ALK\ReportTile2.json" />
     <Content Remove="Json\ALK\ReportTile4.json" />
     <Content Remove="Json\ALK\ReportTile5.json" />
+    <Content Remove="Json\ALK\Satellite439x438.json" />
     <Content Remove="Json\ALK\SatelliteReportTile.json" />
     <Content Remove="Json\DummyUserPreferences.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter0to200.json" />
@@ -104,21 +113,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Json\ALK\Map1024x1024-cfv1.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv1.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv2.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv3.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid421x420.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid439x438.json" />
     <EmbeddedResource Include="Json\ALK\LargeReportTile.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Json\ALK\CutFillVolumeReportTile.json" />
-    <EmbeddedResource Include="Json\ALK\SatelliteReportTile.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Json\ALK\ReportTile4.json" />
-    <EmbeddedResource Include="Json\ALK\ReportTile5.json" />
-    <EmbeddedResource Include="Json\ALK\ReportTile2.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Json\ALK\ReportTile1.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Json\ALK\Map1024x1024.json" />
+    <EmbeddedResource Include="Json\ALK\Map399x398.json" />
+    <EmbeddedResource Include="Json\ALK\Satellite439x438.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
     <EmbeddedResource Include="Json\Filters\KettlewellDrive\LastElevationSingleCellMultiMode.json" />
@@ -210,15 +216,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Json\ALK\CutFillVolumeReportTile.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Json\ALK\ReportTile4.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Json\ALK\ReportTile5.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
