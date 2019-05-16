@@ -42,9 +42,9 @@ namespace MockProjectWebApi.Controllers
       //Note: No ALK base map is required for the following Report Tile acceptance tests
       //#1, #2, #6, #7, #8, #9, #10, #11, #12, #13
       //Cutfill and Volumes Explicit #1, #2
-      //Cuutfill and Volumes #1, #5, #6, #7
+      //Cutfill and Volumes #1, #5, #6, #7
 
-      if (pt1 == "-115.027483,36.203400" && pt2 == "-115.016497,36.212264" && style == "satellite" && imgOption == "BACKGROUND")//1024x1024
+      else if (pt1 == "-115.027483,36.203400" && pt2 == "-115.016497,36.212264" && style == "satellite" && imgOption == "BACKGROUND")//1024x1024
         tileData = JsonResourceHelper.GetBaseMap("LargeReportTile");
 
       //#14, #15, #16, #17, #18, #19, #20, #21, #22, #23 satellite BACKGROUND (Satellite)
@@ -89,6 +89,9 @@ namespace MockProjectWebApi.Controllers
         tileData = JsonResourceHelper.GetBaseMap("GeofenceMultiple1");
       else if (pt1 == "-115.023150,36.206403" && pt2 == "-115.019850,36.208597" && width == 307 && height == 253)
         tileData = JsonResourceHelper.GetBaseMap("GeofenceMultiple2");
+
+      else
+        throw new NotImplementedException("Requested ALK tile not supported by mocking");
 
       return new FileStreamResult(new MemoryStream(tileData), ContentTypeConstants.ImagePng);
     }
