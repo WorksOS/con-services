@@ -41,6 +41,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Json\ALK\GeofenceGoodPolygon1.json" />
+    <Content Remove="Json\ALK\GeofenceGoodPolygon2.json" />
+    <Content Remove="Json\ALK\GeofenceMultiple1.json" />
+    <Content Remove="Json\ALK\GeofenceMultiple2.json" />
+    <Content Remove="Json\ALK\GeofencePoint.json" />
+    <Content Remove="Json\ALK\Hybrid1024x1024-cfv1.json" />
+    <Content Remove="Json\ALK\Hybrid1024x1024-cfv2.json" />
+    <Content Remove="Json\ALK\Hybrid1024x1024-cfv3.json" />
+    <Content Remove="Json\ALK\Hybrid421x420.json" />
+    <Content Remove="Json\ALK\Hybrid439x438.json" />
+    <Content Remove="Json\ALK\LargeReportTile.json" />
+    <Content Remove="Json\ALK\Map1024x1024-cfv1.json" />
+    <Content Remove="Json\ALK\Map1024x1024.json" />
+    <Content Remove="Json\ALK\Map399x398.json" />
+    <Content Remove="Json\ALK\ProjectThumbnail.json" />
+    <Content Remove="Json\ALK\Satellite439x438.json" />
     <Content Remove="Json\DummyUserPreferences.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter100to200.json" />
@@ -96,6 +112,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Json\ALK\GeofenceGoodPolygon1.json" />
+    <EmbeddedResource Include="Json\ALK\GeofenceGoodPolygon2.json" />
+    <EmbeddedResource Include="Json\ALK\GeofenceMultiple1.json" />
+    <EmbeddedResource Include="Json\ALK\GeofenceMultiple2.json" />
+    <EmbeddedResource Include="Json\ALK\GeofencePoint.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv1.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv2.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv3.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid421x420.json" />
+    <EmbeddedResource Include="Json\ALK\Hybrid439x438.json" />
+    <EmbeddedResource Include="Json\ALK\LargeReportTile.json" />
+    <EmbeddedResource Include="Json\ALK\Map1024x1024-cfv1.json" />
+    <EmbeddedResource Include="Json\ALK\Map1024x1024.json" />
+    <EmbeddedResource Include="Json\ALK\Map399x398.json" />
+    <EmbeddedResource Include="Json\ALK\ProjectThumbnail.json" />
+    <EmbeddedResource Include="Json\ALK\Satellite439x438.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
     <EmbeddedResource Include="Json\Filters\KettlewellDrive\LastElevationSingleCellMultiMode.json" />
