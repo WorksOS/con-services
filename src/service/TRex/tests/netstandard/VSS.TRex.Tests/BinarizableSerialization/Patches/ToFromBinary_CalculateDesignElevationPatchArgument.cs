@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
@@ -23,8 +24,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Patches
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
         CellSize = TestConsts.CELL_SIZE,
-        ReferenceDesignUID = Guid.Empty,
-        Offset = 0.0,
+        ReferenceDesign = new DesignOffset(),
         OriginX = 12345,
         OriginY = 67890
       };

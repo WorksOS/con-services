@@ -15,7 +15,6 @@ namespace VSS.TRex.Designs.Models
     public Guid DesignID { get; private set; }
     public string Folder { get; private set; } = string.Empty;
     public string FileName { get; private set; } = string.Empty;
-    public double Offset { get; private set; }
 
     public DesignDescriptor()
     {
@@ -23,24 +22,20 @@ namespace VSS.TRex.Designs.Models
 
     public DesignDescriptor(Guid designID,
                             string folder,
-                            string fileName,
-                            double offset) : this()
+                            string fileName) : this()
     {
       DesignID = designID;
       Folder = folder;
       FileName = fileName;
-      Offset = offset;
     }
 
     public void Init(Guid designID,
                      string folder,
-                     string fileName,
-                     double offset)
+                     string fileName)
     {
       DesignID = designID;
       Folder = folder;
       FileName = fileName;
-      Offset = offset;
     }
 
     public string FullPath => Folder != null && FileName != null ? Path.Combine(Folder, FileName) : Folder ?? "" + FileName ?? "";
@@ -51,17 +46,16 @@ namespace VSS.TRex.Designs.Models
     /// Overloaded ToString detailing the state of the Design Descriptor
     /// </summary>
     /// <returns></returns>
-    public override string ToString() => $"[{DesignID}:'{Folder}', '{FileName}', '{Offset}']";
+    public override string ToString() => $"[{DesignID}:'{Folder}', '{FileName}']";
 
     public bool Equals(DesignDescriptor other)
     {
       return DesignID == other.DesignID &&
              Folder == other.Folder &&
-             FileName == other.FileName &&
-             Offset == other.Offset;
+             FileName == other.FileName;
     }
 
-    public void Clear() => Init(Guid.Empty, "", "", 0.0);
+    public void Clear() => Init(Guid.Empty, "", "");
 
     public static DesignDescriptor Null() => new DesignDescriptor();
 
@@ -72,7 +66,6 @@ namespace VSS.TRex.Designs.Models
       writer.Write(DesignID.ToByteArray());
       writer.Write(Folder);
       writer.Write(FileName);
-      writer.Write(Offset);
     }
 
     public void Read(BinaryReader reader)
@@ -80,7 +73,6 @@ namespace VSS.TRex.Designs.Models
       DesignID = reader.ReadGuid();
       Folder = reader.ReadString();
       FileName = reader.ReadString();
-      Offset = reader.ReadDouble();
     }
 
     /// <summary>
@@ -94,7 +86,6 @@ namespace VSS.TRex.Designs.Models
       writer.WriteGuid(DesignID);
       writer.WriteString(Folder);
       writer.WriteString(FileName);
-      writer.WriteDouble(Offset);
     }
 
     /// <summary>
@@ -108,7 +99,6 @@ namespace VSS.TRex.Designs.Models
       DesignID = reader.ReadGuid() ?? Guid.Empty;
       Folder = reader.ReadString();
       FileName = reader.ReadString();
-      Offset = reader.ReadDouble();
     }
 
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());

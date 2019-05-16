@@ -53,7 +53,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         {
           ProjectID = arg.ProjectID,
           Filters = arg.Filters,
-          ReferenceDesignUID = arg.ReferenceDesignUID,
+          ReferenceDesign = arg.ReferenceDesign,
           TRexNodeID = arg.TRexNodeID,
           ReportElevation = arg.ReportElevation,
           ReportCmv = arg.ReportCmv,

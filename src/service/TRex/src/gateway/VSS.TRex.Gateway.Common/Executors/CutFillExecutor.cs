@@ -9,6 +9,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
@@ -52,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        DesignID = request.DesignDescriptor.FileUid ?? Guid.Empty,
+        ReferenceDesign = new DesignOffset(request.DesignDescriptor.FileUid ?? Guid.Empty, request.DesignDescriptor.Offset),
         Offsets = request.CutFillTolerances
       });
 

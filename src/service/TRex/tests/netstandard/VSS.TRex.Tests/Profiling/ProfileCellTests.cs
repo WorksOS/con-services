@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
+﻿using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Profiling
 {
-    public class ProfileCellTests
+    public class ProfileCellTests : IClassFixture<DILoggingFixture>
     {
       [Fact]
       public void Test_ProfileCell_Creation()

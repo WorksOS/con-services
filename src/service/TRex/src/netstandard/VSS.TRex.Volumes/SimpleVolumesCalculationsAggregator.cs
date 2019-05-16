@@ -42,6 +42,10 @@ namespace VSS.TRex.Volumes
         /// The design being used to compare heights derived from production data against to calculate per-cell volumes
         /// </summary>
         public IDesign ActiveDesign { get; set; }
+        /// <summary>
+        /// The offset if the design is a reference surface
+        /// </summary>
+        public double ActiveDesignOffset;
 
         // References necessary for correct summarization of aggregated state
 
@@ -162,7 +166,7 @@ namespace VSS.TRex.Volumes
               // Query the patch of elevations from the surface model for this sub grid
             if (ActiveDesign != null)
             {
-                ActiveDesign.GetDesignHeights(SiteModelID, BaseScanSubGrid.OriginAsCellAddress(), CellSize, out DesignHeights, out ProfilerRequestResult);
+                ActiveDesign.GetDesignHeights(SiteModelID, ActiveDesignOffset, BaseScanSubGrid.OriginAsCellAddress(), CellSize, out DesignHeights, out ProfilerRequestResult);
              
                 if (ProfilerRequestResult != DesignProfilerRequestResult.OK &&
                     ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)

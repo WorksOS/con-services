@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Filters;
@@ -33,7 +34,7 @@ namespace VSS.TRex.Tests.Pipelines
         gridDataType: GridDataType.Height,
         response: new PatchRequestResponse(), 
         filters: new FilterSet(new CombinedFilter()), 
-        cutFillDesignID: Guid.Empty,
+        cutFillDesign: new DesignOffset(), 
         task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
         pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
         requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
@@ -54,7 +55,7 @@ namespace VSS.TRex.Tests.Pipelines
         gridDataType: GridDataType.Height,
         response: new PatchRequestResponse(),
         filters: new FilterSet(new CombinedFilter()),
-        cutFillDesignID: Guid.Empty,
+        cutFillDesign: new DesignOffset(), 
         task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
         pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
         requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),

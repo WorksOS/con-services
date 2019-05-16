@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 
 namespace VSS.TRex.GridFabric.Arguments
@@ -30,9 +31,9 @@ namespace VSS.TRex.GridFabric.Arguments
     public IFilterSet Filters { get; set; }
 
     /// <summary>
-    /// The design to be used in cases of cut/fill or DesignHeights sub grid requests
+    /// The design to be used in cases of cut/fill or DesignHeights sub grid requests  together with its offset for a reference surface.
     /// </summary>
-    public Guid ReferenceDesignUID { get; set; } = Guid.Empty;
+    public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
 
@@ -44,7 +45,9 @@ namespace VSS.TRex.GridFabric.Arguments
 
       writer.WriteString(TRexNodeID);
       writer.WriteGuid(ProjectID);
-      writer.WriteGuid(ReferenceDesignUID);
+
+      writer.WriteBoolean(ReferenceDesign != null);
+      ReferenceDesign?.ToBinary(writer);
 
       writer.WriteBoolean(Filters != null);
 
@@ -59,7 +62,10 @@ namespace VSS.TRex.GridFabric.Arguments
 
       TRexNodeID = reader.ReadString();
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
-      ReferenceDesignUID = reader.ReadGuid() ?? Guid.Empty;
+
+      ReferenceDesign = new DesignOffset();
+      if (reader.ReadBoolean())
+        ReferenceDesign.FromBinary(reader);
 
       if (reader.ReadBoolean())
       {

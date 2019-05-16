@@ -54,7 +54,7 @@ namespace VSS.TRex.Profiling
     private List<T> ProfileCells;
     private XYZ[] NEECoords;
     private ICellSpatialFilter CellFilter;
-    private IDesign CutFillDesign;
+    private IDesignWrapper CutFillDesignWrapper;
 
     public double GridDistanceBetweenProfilePoints { get; set; }
 
@@ -75,16 +75,16 @@ namespace VSS.TRex.Profiling
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="filterSet"></param>
-    /// <param name="cutFillDesign"></param>
+    /// <param name="cutFillDesignWrapper"></param>
     /// <param name="slicerToolUsed"></param>
     public CellProfileBuilder(ISiteModel siteModel,
       IFilterSet filterSet,
-      IDesign cutFillDesign,
+      IDesignWrapper cutFillDesignWrapper,
       bool slicerToolUsed)
     {
       SiteModel = siteModel;
       CellFilter = filterSet?.Filters[0].SpatialFilter;
-      CutFillDesign = cutFillDesign;
+      CutFillDesignWrapper = cutFillDesignWrapper;
       SlicerToolUsed = slicerToolUsed;
 
       Initialise();
@@ -234,7 +234,7 @@ namespace VSS.TRex.Profiling
 
       CurrentSubgridOrigin = new SubGridCellAddress(int.MaxValue, int.MaxValue);
       GridDistanceBetweenProfilePoints = 0;
-      ReturnDesignElevation = CutFillDesign != null;
+      ReturnDesignElevation = CutFillDesignWrapper?.Design != null;
       DesignElevations = null;
 
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
@@ -309,9 +309,9 @@ namespace VSS.TRex.Profiling
             SurfaceDesignMaskDesign))
             continue;
 
-          if (ReturnDesignElevation && CutFillDesign != null) // cut fill profile request then get elevation at same spot along design
+          if (ReturnDesignElevation && CutFillDesignWrapper?.Design != null) // cut fill profile request then get elevation at same spot along design
           {
-            CutFillDesign.GetDesignHeights(SiteModel.ID, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize, out DesignElevations, out DesignResult);
+            CutFillDesignWrapper.Design.GetDesignHeights(SiteModel.ID, CutFillDesignWrapper.Offset, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize, out DesignElevations, out DesignResult);
 
             if (DesignResult != DesignProfilerRequestResult.OK &&
                 DesignResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)

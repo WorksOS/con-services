@@ -16,6 +16,13 @@ namespace VSS.TRex.GridFabric.Affinity
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
+    /// The version number of this spatial element when it is stored in the persistent layer, defined
+    /// as the number of ticks in DateTime.UtcNow at the time it is written.
+    /// </summary>
+    public long Version { get; set; }
+
+    public const long DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER = 1; // tick
+    /// <summary>
     /// The GUID for the project the sub grid data belongs to.
     /// </summary>
     public Guid ProjectUID { get; set; }
@@ -41,12 +48,14 @@ namespace VSS.TRex.GridFabric.Affinity
     /// A constructor for the sub grid spatial affinity key that accepts the project and sub grid origin location
     /// and returns an instance of the spatial affinity key
     /// </summary>
+    /// <param name="version"></param>
     /// <param name="projectID"></param>
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
     /// <param name="segmentIdentifier"></param>
-    public SubGridSpatialAffinityKey(Guid projectID, uint subGridX, uint subGridY, string segmentIdentifier)
+    public SubGridSpatialAffinityKey(long version, Guid projectID, uint subGridX, uint subGridY, string segmentIdentifier)
     {
+      Version = version;
       ProjectUID = projectID;
       SubGridX = subGridX;
       SubGridY = subGridY;
@@ -57,11 +66,13 @@ namespace VSS.TRex.GridFabric.Affinity
     /// A constructor for the sub grid spatial affinity key that accepts the project and a cell address structure for
     /// the sub grid origin location and returns an instance of the spatial affinity key
     /// </summary>
+    /// <param name="version"></param>
     /// <param name="projectID"></param>
     /// <param name="address"></param>
     /// <param name="segmentIdentifier"></param>
-    public SubGridSpatialAffinityKey(Guid projectID, SubGridCellAddress address, string segmentIdentifier)
+    public SubGridSpatialAffinityKey(long version, Guid projectID, SubGridCellAddress address, string segmentIdentifier)
     {
+      Version = version;
       ProjectUID = projectID;
       SubGridX = address.X;
       SubGridY = address.Y;
@@ -72,10 +83,11 @@ namespace VSS.TRex.GridFabric.Affinity
     /// A constructor supplying a null segment identifier semantic for contexts that do not require a segment such
     /// as the sub grid directory element
     /// </summary>
+    /// <param name="version"></param>
     /// <param name="projectID"></param>
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
-    public SubGridSpatialAffinityKey(Guid projectID, uint subGridX, uint subGridY) : this(projectID, subGridX, subGridY, "")
+    public SubGridSpatialAffinityKey(long version, Guid projectID, uint subGridX, uint subGridY) : this(version, projectID, subGridX, subGridY, "")
     {
     }
 
@@ -83,9 +95,10 @@ namespace VSS.TRex.GridFabric.Affinity
     /// A constructor supplying a null segment identifier semantic for contexts that do not require a segment such
     /// as the sub grid directory element
     /// </summary>
+    /// <param name="version"></param>
     /// <param name="projectID"></param>
     /// <param name="address"></param>
-    public SubGridSpatialAffinityKey(Guid projectID, SubGridCellAddress address) : this(projectID, address.X, address.Y, "")
+    public SubGridSpatialAffinityKey(long version, Guid projectID, SubGridCellAddress address) : this(version, projectID, address.X, address.Y, "")
     {
     }
 

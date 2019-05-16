@@ -77,7 +77,6 @@ export class DesignDescriptor {
   fileSpaceID: string = "";
   folder: string = "";
   fileName: string = "";
-  offset:number = 0;
 }
 
 export class SurveyedSurface {

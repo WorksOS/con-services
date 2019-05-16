@@ -59,13 +59,13 @@ namespace VSS.TRex.Profiling
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesign"></param>
+    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
     public CellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
-      IDesign cellPassFilter_ElevationRangeDesign,
-      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign)
+      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
+      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
     {
       CellLiftBuilder = cellLiftBuilder;
 
@@ -474,7 +474,7 @@ namespace VSS.TRex.Profiling
           }
 
           if (!LiftFilterMask<ProfileCell>.InitialiseFilterContext(SiteModel, PassFilter, PassFilterAnnex, ProfileCell,
-            CellPassFilter_ElevationRangeDesign, out DesignProfilerRequestResult FilterDesignErrorCode))
+            CellPassFilter_ElevationRangeDesignWrapper.Design, out DesignProfilerRequestResult FilterDesignErrorCode))
           {
             if (FilterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
               IgnoreSubGrid = true;

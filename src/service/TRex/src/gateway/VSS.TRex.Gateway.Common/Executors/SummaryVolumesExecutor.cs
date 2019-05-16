@@ -16,6 +16,7 @@ using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -58,8 +59,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         BaseFilter = baseFilter,
         TopFilter = topFilter,
         AdditionalSpatialFilter = additionalSpatialFilter,
-        BaseDesignID = request.BaseDesignUid ?? Guid.Empty,
-        TopDesignID = request.TopDesignUid ?? Guid.Empty,
+        BaseDesign = new DesignOffset(request.BaseDesignUid ?? Guid.Empty, request.BaseDesignOffset ?? 0),
+        TopDesign = new DesignOffset(request.TopDesignUid ?? Guid.Empty, request.TopDesignOffset ?? 0),
         VolumeType = ConvertVolumesType(request.VolumeCalcType),
         CutTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_CUT_TOLERANCE,
         FillTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE

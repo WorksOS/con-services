@@ -9,7 +9,7 @@
         SubGridDirectory,
         Events,
         ProductionDataXML,
-        SubgridExistenceMap,
+        SubGridExistenceMap,
         CoordinateSystemCSIB,
         SurveyedSurfaces,
         Designs,
@@ -17,6 +17,7 @@
         MachineDesigns,
         MachineDesignNames,
         ProofingRuns,
-        Alignments
+        Alignments,
+        SubGridVersionMap
     }
 }

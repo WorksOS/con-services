@@ -16,6 +16,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     PreserveMachineDesigns = 0x80,
     PreserveSiteModelDesigns = 0x100,
     PreserveProofingRuns = 0x200,
-    PreserveAlignments = 0x400
+    PreserveAlignments = 0x400,
+    PreserveVersionMap = 0x800
   }
 }

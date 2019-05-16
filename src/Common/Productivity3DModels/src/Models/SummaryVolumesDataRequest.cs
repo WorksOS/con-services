@@ -42,10 +42,22 @@ namespace VSS.Productivity3D.Models.Models
     public Guid? BaseDesignUid { get; private set; }
 
     /// <summary>
+    /// The offset for the base design if it is a reference surface
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public double? BaseDesignOffset { get; private set; }
+
+    /// <summary>
     /// The unique identifier of the design surface to be used as the top or latest surface for filter-design volumes
     /// </summary>
     [JsonProperty(Required = Required.Default)]
     public Guid? TopDesignUid { get; private set; }
+
+    /// <summary>
+    /// The offset for the top design if it is a reference surface
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public double? TopDesignOffset { get; private set; }
 
     /// <summary>
     /// Sets the cut tolerance to calculate Summary Volumes in meters
@@ -78,21 +90,27 @@ namespace VSS.Productivity3D.Models.Models
     /// <param name="baseFilter"></param>
     /// <param name="topFilter"></param>
     /// <param name="baseDesignUid"></param>
+    /// <param name="baseDesignOffset"></param>
     /// <param name="topDesignUid"></param>
+    /// <param name="topDesignOffset"></param>
     /// <param name="volumeCalcType"></param>
     public SummaryVolumesDataRequest(
       Guid? projectUid, 
       FilterResult baseFilter, 
       FilterResult topFilter, 
       Guid? baseDesignUid, 
-      Guid? topDesignUid, 
+      double? baseDesignOffset,
+      Guid? topDesignUid,
+      double? topDesignOffset,
       VolumesType volumeCalcType)
     {
       ProjectUid = projectUid;
       BaseFilter = baseFilter;
       TopFilter = topFilter;
       BaseDesignUid = baseDesignUid;
+      BaseDesignOffset = baseDesignOffset;
       TopDesignUid = topDesignUid;
+      TopDesignOffset = topDesignOffset;
       VolumeCalcType = volumeCalcType;
     }
 

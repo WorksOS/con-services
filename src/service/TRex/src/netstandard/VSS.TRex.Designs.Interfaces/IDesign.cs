@@ -62,11 +62,12 @@ namespace VSS.TRex.Designs.Interfaces
     /// Calculates a spot elevation designated location on this design
     /// </summary>
     /// <param name="siteModelID"></param>
+    /// <param name="offset"></param>
     /// <param name="spotX"></param>
     /// <param name="spotY"></param>
     /// <param name="spotHeight"></param>
     /// <param name="errorCode"></param>
-    void GetDesignSpotHeight(Guid siteModelID,
+    void GetDesignSpotHeight(Guid siteModelID, double offset,
       double spotX, double spotY,
       out double spotHeight,
       out DesignProfilerRequestResult errorCode);
@@ -75,12 +76,13 @@ namespace VSS.TRex.Designs.Interfaces
     /// Calculates an elevation sub grid for a design sub grid on this design
     /// </summary>
     /// <param name="siteModelID"></param>
+    /// <param name="offset"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
     /// <param name="designHeights"></param>
     /// <param name="errorCode"></param>
     /// <returns></returns>
-    void GetDesignHeights(Guid siteModelID,
+    void GetDesignHeights(Guid siteModelID, double offset,
       SubGridCellAddress originCellAddress,
       double cellSize,
       out IClientHeightLeafSubGrid designHeights,
@@ -103,6 +105,6 @@ namespace VSS.TRex.Designs.Interfaces
 
     DesignDescriptor DesignDescriptor { get; }
 
-    List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode);
+    List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset, out DesignProfilerRequestResult errorCode);
   }
 }

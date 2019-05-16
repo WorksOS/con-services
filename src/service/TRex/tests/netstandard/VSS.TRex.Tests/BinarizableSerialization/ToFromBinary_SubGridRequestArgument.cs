@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
@@ -25,7 +26,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
         RequestID = Guid.NewGuid(),
         GridDataType = GridDataType.CCV,
         ProdDataMaskBytes = new byte[]{ 1, 5, 3, 7 },

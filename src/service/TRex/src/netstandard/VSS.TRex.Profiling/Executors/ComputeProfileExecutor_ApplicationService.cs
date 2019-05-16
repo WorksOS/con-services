@@ -46,7 +46,7 @@ namespace VSS.TRex.Profiling.Executors
           ProfileStyle = arg.ProfileStyle,
           ProjectID = arg.ProjectID,
           Filters = arg.Filters,
-          ReferenceDesignUID = arg.ReferenceDesignUID,
+          ReferenceDesign = arg.ReferenceDesign,
           ReturnAllPassesAndLayers = arg.ReturnAllPassesAndLayers,
           TRexNodeID = arg.TRexNodeID,
           VolumeType = arg.VolumeType          

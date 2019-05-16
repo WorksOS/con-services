@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
@@ -20,11 +21,6 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
     public double[] Offsets { get; set; }
 
     /// <summary>
-    /// The ID of the design to compute cut fill values between it and the production data elevatoins
-    /// </summary>
-    public Guid DesignID { get; set; }
-
-    /// <summary>
     /// Serialises content to the writer
     /// </summary>
     /// <param name="writer"></param>
@@ -35,7 +31,6 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteDoubleArray(Offsets);
-      writer.WriteGuid(DesignID);
     }
 
     /// <summary>
@@ -49,7 +44,6 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Offsets = reader.ReadDoubleArray();
-      DesignID = reader.ReadGuid() ?? Guid.Empty;
     }
   }
 }
