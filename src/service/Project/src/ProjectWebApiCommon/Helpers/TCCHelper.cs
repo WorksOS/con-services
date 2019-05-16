@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.FileAccess.Interfaces;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -21,6 +22,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// <summary>
   ///
   /// </summary>
+  [Obsolete("Use IVirtualFileSystemFactory instead.")]
   public class TccHelper
   {
     /// <summary>

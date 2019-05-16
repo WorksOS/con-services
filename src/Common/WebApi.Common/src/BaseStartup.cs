@@ -17,11 +17,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.FileAccess.Enums;
+using VSS.Common.Abstractions.FileAccess.Interfaces;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
+using VSS.TCCFileAccess.VirtualFileSystem;
 
 namespace VSS.WebApi.Common
 {
@@ -178,6 +181,9 @@ namespace VSS.WebApi.Common
           metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
       });
 
+      services.AddMetricsReportingHostedService();
+      services.AddHealthReportingHostedService();
+
       Services = services;
 
       ServiceProvider = Services.BuildServiceProvider();
@@ -185,10 +191,8 @@ namespace VSS.WebApi.Common
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
       Configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
-      services.AddMetricsReportingHostedService();
-      services.AddHealthReportingHostedService();
-
       StartServices(ServiceProvider);
+      RegisterVirtualFileSystems(ServiceProvider);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -217,6 +221,38 @@ namespace VSS.WebApi.Common
       ConfigureAdditionalAppSettings(app, env, loggerFactory);
 
       app.UseMvc();
+    }
+
+    protected virtual void RegisterVirtualFileSystems(IServiceProvider serviceProvider)
+    {
+      var factory = serviceProvider.GetService<IVirtualFileSystemFactory>();
+
+      foreach (FileSystemEntries entry in Enum.GetValues(typeof(FileSystemEntries)))
+      {
+        IVirtualFileSystemRegistryEntry virtualFileSystem = null;
+
+        switch (entry)
+        {
+          case FileSystemEntries.DesignFiles:
+            virtualFileSystem = ActivatorUtilities.CreateInstance<TccVirtualFileSystemRegistryEntry>(ServiceProvider, entry);
+            break;
+          case FileSystemEntries.DirectTagFile:
+            virtualFileSystem = ActivatorUtilities.CreateInstance<TccVirtualFileSystemRegistryEntry>(ServiceProvider, entry);
+            break;
+          case FileSystemEntries.MapTiles:
+            virtualFileSystem = ActivatorUtilities.CreateInstance<TccVirtualFileSystemRegistryEntry>(ServiceProvider, entry);
+            break;
+
+
+          default:
+            throw new NotImplementedException($"No File System registered for type {entry}.");
+        }
+
+        if(virtualFileSystem == null)
+          throw new NotImplementedException($"No File System registered for type {entry}.");
+
+        factory.RegisterFileSystem(virtualFileSystem);
+      }
     }
 
     /// <summary>

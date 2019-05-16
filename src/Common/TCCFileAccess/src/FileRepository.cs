@@ -64,21 +64,23 @@ namespace VSS.TCCFileAccess
     /// </summary>
     private CacheLookup cacheLookup = new CacheLookup();
 
-    private string Ticket
+    private async Task<string> GetLoginToken()
     {
-      get
+      if (!string.IsNullOrEmpty(ticket) && lastLoginTimestamp >= DateTime.UtcNow.AddMinutes(-30)) return ticket;
+
+      var result = await Login();
+      if (!string.IsNullOrEmpty(result))
       {
-        lock (ticketLockObj)
-        {
-          if (!string.IsNullOrEmpty(ticket) && lastLoginTimestamp >= DateTime.UtcNow.AddMinutes(-30)) return ticket;
-          ticket = Login().Result;
-          lastLoginTimestamp = DateTime.UtcNow;
-          return ticket;
-        }
+        ticket = result;
+        lastLoginTimestamp = DateTime.UtcNow;
+        return ticket;
       }
+
+      // TODO real exception
+      throw new Exception("Failed to login to TCC");
     }
 
-    public FileRepository(IConfigurationStore configuration, ILoggerFactory logger)
+   public FileRepository(IConfigurationStore configuration, ILoggerFactory logger)
     {
       tccBaseUrl = configuration.GetValueString("TCCBASEURL");
       tccUserName = configuration.GetValueString("TCCUSERNAME");
@@ -106,7 +108,8 @@ namespace VSS.TCCFileAccess
       try
       {
         GetFileSpacesParams fileSpaceParams = new GetFileSpacesParams { };
-        var filespacesResult = await ExecuteRequest<GetFileSpacesResult>(Ticket, "GetFileSpaces", fileSpaceParams);
+        var token = await GetLoginToken();
+        var filespacesResult = await ExecuteRequest<GetFileSpacesResult>(token, "GetFileSpaces", fileSpaceParams);
         if (filespacesResult != null)
         {
           if (filespacesResult.success)
@@ -187,8 +190,9 @@ namespace VSS.TCCFileAccess
       if (String.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
+      var token = await GetLoginToken();
       var gracefulClient = new GracefulWebRequest(logFactory, configStore);
-      var (requestString, headers) = FormRequest(sendFileParams, "PutFile");
+      var (requestString, headers) = FormRequest(sendFileParams, "PutFile", token);
 
       headers.Add("X-File-Name", WebUtility.UrlEncode(filename));
       headers.Add("X-File-Size", sizeOfContents.ToString());
@@ -271,8 +275,9 @@ namespace VSS.TCCFileAccess
         throw new Exception("Configuration Error - no TCC url specified");
       }
 
+      var token = await GetLoginToken();
       var gracefulClient = new GracefulWebRequest(logFactory, configStore);
-      var (requestString, headers) = FormRequest(getFileParams, "GetFile");
+      var (requestString, headers) = FormRequest(getFileParams, "GetFile", token);
 
       try
       {
@@ -345,7 +350,8 @@ namespace VSS.TCCFileAccess
           merge = false,
           replace = true
         };
-        var renResult = await ExecuteRequest<RenResult>(Ticket, "Ren", renParams);
+        var token = await GetLoginToken();
+        var renResult = await ExecuteRequest<RenResult>(token, "Ren", renParams);
         if (renResult != null)
         {
           if (renResult.success || renResult.errorid.Contains("INVALID_OPERATION_FILE_IS_LOCKED"))
@@ -399,7 +405,8 @@ namespace VSS.TCCFileAccess
           merge = false,
           replace = true//Not sure if we want true or false here
         };
-        var copyResult = await ExecuteRequest<ApiResult>(Ticket, "Copy", copyParams);
+        var token = await GetLoginToken();
+        var copyResult = await ExecuteRequest<ApiResult>(token, "Copy", copyParams);
         if (copyResult != null)
         {
           if (copyResult.success || copyResult.errorid.Contains("INVALID_OPERATION_FILE_IS_LOCKED"))
@@ -434,7 +441,8 @@ namespace VSS.TCCFileAccess
           recursive = false,
           filterfolders = true,
         };
-        var dirResult = await ExecuteRequest<DirResult>(Ticket, "Dir", dirParams);
+        var token = await GetLoginToken();
+        var dirResult = await ExecuteRequest<DirResult>(token, "Dir", dirParams);
         if (dirResult != null)
         {
           if (dirResult.success)
@@ -468,7 +476,8 @@ namespace VSS.TCCFileAccess
         };
         if (!string.IsNullOrEmpty(fileMasks))
           dirParams.filemasks = fileMasks;
-        var dirResult = await ExecuteRequest<DirResult>(Ticket, "Dir", dirParams);
+        var token = await GetLoginToken();
+        var dirResult = await ExecuteRequest<DirResult>(token, "Dir", dirParams);
         if (dirResult != null)
         {
           if (dirResult.success)
@@ -499,8 +508,9 @@ namespace VSS.TCCFileAccess
           path = path,//WebUtility.UrlEncode(path),
           recursive = true
         };
+        var token = await GetLoginToken();
         var lastDirChangeResult =
-          await ExecuteRequest<LastDirChangeResult>(Ticket, "LastDirChange", lastDirChangeParams);
+          await ExecuteRequest<LastDirChangeResult>(token, "LastDirChange", lastDirChangeParams);
         if (lastDirChangeResult != null)
         {
           if (lastDirChangeResult.success)
@@ -545,8 +555,9 @@ namespace VSS.TCCFileAccess
           filespaceid = filespaceId,
           path = path,//WebUtility.UrlEncode(path)
         };
+        var token = await GetLoginToken();
         var getFileAttrResult =
-          await ExecuteRequestWithAllowedError<GetFileAttributesResult>(Ticket, "GetFileAttributes", getFileAttrParams);
+          await ExecuteRequestWithAllowedError<GetFileAttributesResult>(token, "GetFileAttributes", getFileAttrParams);
         if (getFileAttrResult != null)
         {
           if (getFileAttrResult.success)
@@ -586,7 +597,8 @@ namespace VSS.TCCFileAccess
           path = fullName,//WebUtility.UrlEncode(fullName),
           recursive = isFolder
         };
-        var deleteResult = await ExecuteRequest<DeleteFileResult>(Ticket, "Del", deleteParams);
+        var token = await GetLoginToken();
+        var deleteResult = await ExecuteRequest<DeleteFileResult>(token, "Del", deleteParams);
         if (deleteResult != null)
         {
           if (deleteResult.success)
@@ -615,7 +627,8 @@ namespace VSS.TCCFileAccess
           path = path,//WebUtility.UrlEncode(path),
           force = true
         };
-        var mkDirResult = await ExecuteRequest<MkDirResult>(Ticket, "MkDir", mkDirParams);
+        var token = await GetLoginToken();
+        var mkDirResult = await ExecuteRequest<MkDirResult>(token, "MkDir", mkDirParams);
         if (mkDirResult != null)
         {
           if (mkDirResult.success)
@@ -686,7 +699,7 @@ namespace VSS.TCCFileAccess
     }
 
 
-    private (string, Dictionary<string, string>) FormRequest(object request, string endpoint, string token = null)
+    private (string, Dictionary<string, string>) FormRequest(object request, string endpoint, string token)
     {
       var requestString = $"{tccBaseUrl}/tcc/{endpoint}?";
       var headers = new Dictionary<string, string>();
@@ -695,7 +708,8 @@ namespace VSS.TCCFileAccess
                        select new { p.Name, Value = p.GetValue(request) };*/
       var dProperties = request.GetType().GetRuntimeFields().Where(p => p.GetValue(request) != null).Select(p=> new { p.Name, Value = p.GetValue(request) })
         .ToDictionary(d => d.Name, v => v.Value.ToString());
-      dProperties.Add("ticket", token ?? Ticket);
+      if(string.IsNullOrEmpty(token))
+      dProperties.Add("ticket", token);
 
 //      foreach (var p in properties)
       {
@@ -813,7 +827,8 @@ namespace VSS.TCCFileAccess
           type = "GEOFILEINFO",
           forcerender = false
         };
-        var jobResult = await ExecuteRequest<CreateFileJobResult>(Ticket, "CreateFileJob", jobParams);
+        var token = await GetLoginToken();
+        var jobResult = await ExecuteRequest<CreateFileJobResult>(token, "CreateFileJob", jobParams);
         if (jobResult != null)
         {
           if (jobResult.success)
@@ -851,7 +866,8 @@ namespace VSS.TCCFileAccess
         {
           jobid = jobId
         };
-        var statusResult = await ExecuteRequest<CheckFileJobStatusResult>(Ticket, "CheckFileJobStatus", statusParams);
+        var token = await GetLoginToken();
+        var statusResult = await ExecuteRequest<CheckFileJobStatusResult>(token, "CheckFileJobStatus", statusParams);
         if (statusResult != null)
         {
           if (statusResult.success)
@@ -878,7 +894,8 @@ namespace VSS.TCCFileAccess
         {
           fileid = fileId
         };
-        var resultResult = await ExecuteRequest<GetFileJobResultResult>(Ticket, "GetFileJobResult", resultParams);
+        var token = await GetLoginToken();
+        var resultResult = await ExecuteRequest<GetFileJobResultResult>(token, "GetFileJobResult", resultParams);
         //TODO: Check if graceful request works here. It's a stream of bytes returned which we want to process as text
         //(see ApiCallBase.ProcessResponseAsText)
         return resultResult;
@@ -909,7 +926,8 @@ namespace VSS.TCCFileAccess
           maxzoomlevel = zoomLevel,
           imageformat = "png"
         };
-        var exportResult = await ExecuteRequest<ExportToWebFormatResult>(Ticket, "ExportToWebFormat", exportParams);
+        var token = await GetLoginToken();
+        var exportResult = await ExecuteRequest<ExportToWebFormatResult>(token, "ExportToWebFormat", exportParams);
         if (exportResult != null)
         {
           if (exportResult.success)
@@ -936,7 +954,8 @@ namespace VSS.TCCFileAccess
         {
           jobid = jobId
         };
-        var checkResult = await ExecuteRequest<CheckExportJobResult>(Ticket, "CheckExportJob", checkParams);
+        var token = await GetLoginToken();
+        var checkResult = await ExecuteRequest<CheckExportJobResult>(token, "CheckExportJob", checkParams);
         if (checkResult != null)
         {
           if (checkResult.success)

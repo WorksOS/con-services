@@ -55,6 +55,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\TCCFileAccess\src\VSS.TCCFileAccess.csproj" />
     <ProjectReference Include="..\..\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj" />
   </ItemGroup>
 

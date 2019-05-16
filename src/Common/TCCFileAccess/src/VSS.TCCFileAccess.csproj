@@ -31,6 +31,10 @@
     <ProjectReference Include="..\..\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Virtual\" />
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
