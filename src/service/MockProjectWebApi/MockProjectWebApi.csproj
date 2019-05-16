@@ -42,6 +42,11 @@
 
   <ItemGroup>
     <Content Remove="Json\ALK\CutFillVolumeReportTile.json" />
+    <Content Remove="Json\ALK\GeofenceGoodPolygon1.json" />
+    <Content Remove="Json\ALK\GeofenceGoodPolygon2.json" />
+    <Content Remove="Json\ALK\GeofenceMultiple1.json" />
+    <Content Remove="Json\ALK\GeofenceMultiple2.json" />
+    <Content Remove="Json\ALK\GeofencePoint.json" />
     <Content Remove="Json\ALK\Hybrid1024x1024-cfv1.json" />
     <Content Remove="Json\ALK\Hybrid1024x1024-cfv2.json" />
     <Content Remove="Json\ALK\Hybrid1024x1024-cfv3.json" />
@@ -113,6 +118,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Json\ALK\GeofenceGoodPolygon2.json" />
+    <EmbeddedResource Include="Json\ALK\GeofenceGoodPolygon1.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Json\ALK\GeofenceMultiple1.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Json\ALK\GeofenceMultiple2.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Json\ALK\Map1024x1024-cfv1.json" />
     <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv1.json" />
     <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv2.json" />
@@ -124,6 +139,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Json\ALK\Map1024x1024.json" />
     <EmbeddedResource Include="Json\ALK\Map399x398.json" />
+    <EmbeddedResource Include="Json\ALK\GeofencePoint.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Json\ALK\Satellite439x438.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
@@ -216,6 +234,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Json\ALK\GeofenceGoodPolygon2.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
