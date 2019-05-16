@@ -52,8 +52,8 @@ else
    $mappedDrivePassword = ConvertTo-SecureString "v3L0c1R^pt0R!" -AsPlainText -Force
    $mappedDriveUsername = $RAPTORUSERNAME
    $mappedDriveCredentials = New-Object System.Management.Automation.PSCredential ($mappedDriveUsername, $mappedDrivePassword)
-   #New-PSDrive -Name "Z" -PSProvider FileSystem -Root $SHAREUNC -Persist -Credential $mappedDriveCredentials
-   New-SmbGlobalMapping -RemotePath $SHAREUNC -Credential $mappedDriveCredentials -LocalPath Z: 
+   New-PSDrive -Name "Z" -PSProvider FileSystem -Root $SHAREUNC -Persist -Credential $mappedDriveCredentials
+   #New-SmbGlobalMapping -RemotePath $SHAREUNC -Credential $mappedDriveCredentials -LocalPath Z: 
    
    & Z:
    $DL = (get-location).Drive.Name
