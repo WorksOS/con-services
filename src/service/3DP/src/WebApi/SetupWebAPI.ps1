@@ -44,14 +44,14 @@ if ($SHAREUNC -eq $null)
   { Write-host "Error! Environment variable SHAREUNC is not set"  -ForegroundColor Red; $OKTORUN = "Bad"}
 else 
   { 
-   & sc.exe qc lanmanworkstation
-   & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
-   & sc.exe qc lanmanworkstation
-   & sc.exe stop lanmanworkstation
+   & sc.exe qc lanmanworkstation | Out-Null
+   & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI" | Out-Null
+   & sc.exe qc lanmanworkstation | Out-Null
+   & sc.exe stop lanmanworkstation | Out-Null
    Write-Host "stop lanmanworkstation. Wait for 5 seconds"
    Start-Sleep -Second 5
    Write-Host "Start lanmanworkstation after waiting"
-   & sc.exe stop lanmanworkstation
+   & sc.exe start lanmanworkstation | Out-Null
    
    Write-Host "Mapping Raptor ProductionData folder to Z: drive"
    Start-Sleep -Second 5
