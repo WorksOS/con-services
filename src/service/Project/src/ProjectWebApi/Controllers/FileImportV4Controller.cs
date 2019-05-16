@@ -674,6 +674,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           break;
       }
       var sign = offset > 0 ? "+" : "-";
+      displayOffset = Math.Abs(displayOffset);
       return $"{parentName} {sign}{displayOffset:F3}{unitsString}";
     }
 
