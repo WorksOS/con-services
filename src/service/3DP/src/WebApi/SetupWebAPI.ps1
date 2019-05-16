@@ -35,6 +35,10 @@ if ($IONIP -eq $null)
 else 
   { (Get-Content velociraptor.config.xml).replace('[IONodeIP]', $IONIP) | Set-Content velociraptor.config.xml}
 
+  
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+Write-Host "Is powershell an administrator"
+$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 # now we need to mount a share for the design files and reports
 if ($SHAREUNC -eq $null)
   { Write-host "Error! Environment variable SHAREUNC is not set"  -ForegroundColor Red; $OKTORUN = "Bad"}
@@ -48,7 +52,9 @@ else
    $mappedDrivePassword = ConvertTo-SecureString "v3L0c1R^pt0R!" -AsPlainText -Force
    $mappedDriveUsername = $RAPTORUSERNAME
    $mappedDriveCredentials = New-Object System.Management.Automation.PSCredential ($mappedDriveUsername, $mappedDrivePassword)
-   New-PSDrive -Name "Z" -PSProvider FileSystem -Root $SHAREUNC -Persist -Credential $mappedDriveCredentials
+   #New-PSDrive -Name "Z" -PSProvider FileSystem -Root $SHAREUNC -Persist -Credential $mappedDriveCredentials
+   New-SmbGlobalMapping -RemotePath $SHAREUNC -Credential $mappedDriveCredentials -LocalPath Z: 
+   
    & Z:
    $DL = (get-location).Drive.Name
    Write-host "Current Drive=$DL"
