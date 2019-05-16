@@ -61,7 +61,7 @@ else
    Start-Sleep -Second 5
    Write-Host "The user=$mappedDriveUsername"
    
-   New-PSDrive -Name "Z" -PSProvider FileSystem -Root $SHAREUNC -Persist -Credential $mappedDriveCredentials
+   New-PSDrive -Name "Z" -PSProvider FileSystem -Root "$SHAREUNC" -Persist -Credential $mappedDriveCredentials
    Write-Host "Mapped Raptor ProductionData folder to Z: drive"
    Start-Sleep -Second 5
    #New-SmbGlobalMapping -RemotePath $SHAREUNC -Credential $mappedDriveCredentials -LocalPath Z: 
