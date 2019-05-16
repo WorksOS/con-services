@@ -32,13 +32,15 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="startY"></param>
     /// <param name="endX"></param>
     /// <param name="endY"></param>
+    /// <param name="offset"></param>
     /// <returns></returns>
     [HttpGet("design/{siteModelID}/{designID}")]
     public JsonResult ComputeDesignProfile(string siteModelID, string designID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
-      [FromQuery] double endY)
+      [FromQuery] double endY,
+      [FromQuery] double? offset)
     {
       Guid siteModelUid = Guid.Parse(siteModelID);
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelUid);
@@ -47,7 +49,7 @@ namespace VSS.TRex.Webtools.Controllers
       if (design == null)
         return new JsonResult($"Unable to locate design {designID} in project {siteModelID}");
 
-      var result = design.ComputeProfile(siteModelUid, new[] {new XYZ(startX, startY, 0), new XYZ(endX, endY, 0)}, siteModel.CellSize, out DesignProfilerRequestResult errCode);
+      var result = design.ComputeProfile(siteModelUid, new[] {new XYZ(startX, startY, 0), new XYZ(endX, endY, 0)}, siteModel.CellSize, offset ?? 0, out DesignProfilerRequestResult errCode);
 
       return new JsonResult(result);
     }
@@ -77,7 +79,7 @@ namespace VSS.TRex.Webtools.Controllers
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
         Filters = new FilterSet(new[] {new CombinedFilter()}),
-        ReferenceDesignUID = Guid.Empty,
+        ReferenceDesign = new DesignOffset(),
         StartPoint = new WGS84Point(lon: startX, lat: startY),
         EndPoint = new WGS84Point(lon: endX, lat: endY),
         ReturnAllPassesAndLayers = false,
@@ -133,7 +135,7 @@ namespace VSS.TRex.Webtools.Controllers
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
         Filters = new FilterSet(new [] { new CombinedFilter() }),
-        ReferenceDesignUID = Guid.Empty,
+        ReferenceDesign = new DesignOffset(),
         StartPoint = new WGS84Point(lon: startX, lat: startY),
         EndPoint = new WGS84Point(lon: endX, lat: endY),
         ReturnAllPassesAndLayers = false,
@@ -170,7 +172,6 @@ namespace VSS.TRex.Webtools.Controllers
         ProfileStyle = ProfileStyle.SummaryVolume,
         PositionsAreGrid = true,
         Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
-        ReferenceDesignUID = Guid.Empty,
         StartPoint = new WGS84Point(lon: startX, lat: startY),
         EndPoint = new WGS84Point(lon: endX, lat: endY),
         ReturnAllPassesAndLayers = false,

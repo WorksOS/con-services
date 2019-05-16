@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using Xunit;
 
@@ -21,8 +22,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
-        DesignID = Guid.NewGuid(),
+        ReferenceDesign = new DesignOffset(),
         Offsets = new[] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 }
       };
 

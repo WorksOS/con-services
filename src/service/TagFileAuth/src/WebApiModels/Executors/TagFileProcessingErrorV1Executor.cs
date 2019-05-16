@@ -37,20 +37,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         var errorMessage =
           string.Format(
-            $"OnTagFileProcessingError: assetID = {request.assetId}, tagFileName = {request.tagFileName}, errorNumber = {(int)request.error}, error = {Enum.GetName(typeof(TagFileErrorsEnum), request.error)}");
+            $"OnTagFileProcessingErrorV1: assetID = {request.assetId}, tagFileName = {request.tagFileName}, errorNumber = {(int)request.error}, error = {Enum.GetName(typeof(TagFileErrorsEnum), request.error)}");
         log.LogDebug(errorMessage);
       }
 
-      try
-      {
-        return TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(result);
-      }
-      catch
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 12));
-      }
+      return TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(result);
     }
     protected override Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {

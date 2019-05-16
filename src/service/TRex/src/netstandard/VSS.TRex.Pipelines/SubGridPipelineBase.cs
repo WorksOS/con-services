@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.Types;
 using VSS.TRex.Filters.Interfaces;
@@ -85,7 +86,7 @@ namespace VSS.TRex.Pipelines
 
         public int MaxNumberOfPassesToReturn = 0;
 
-        public Guid ReferenceDesignID { get; set; } = Guid.Empty;
+        public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 
         // public float FNoChangeVolumeTolerance;
 
@@ -217,7 +218,7 @@ namespace VSS.TRex.Pipelines
                 ProdDataMask = RequestAnalyser.ProdDataMask,
                 SurveyedSurfaceOnlyMask = RequestAnalyser.SurveyedSurfaceOnlyMask,
                 Filters = FilterSet,
-                ReferenceDesignID = ReferenceDesignID,
+                ReferenceDesign = ReferenceDesign,
                 AreaControlSet = AreaControlSet
               })
               {

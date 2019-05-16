@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -30,6 +29,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
   public class LineworkTileController : BaseController<LineworkTileController>
   {
     private readonly IDataOceanClient dataOceanClient;
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -45,25 +45,15 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
     /// The tiles for the supplied list of files are overlaid and a single tile returned.
     /// </summary>
-    /// <param name="service">WMS parameter - value WMS</param>
-    /// <param name="version">WMS parameter - value 1.3.0</param>
-    /// <param name="request">WMS parameter - value GetMap</param>
-    /// <param name="format">WMS parameter - value image/png</param>
-    /// <param name="transparent">WMS parameter - value true</param>
-    /// <param name="layers">WMS parameter - value Layers</param>
-    /// <param name="crs">WMS parameter - value EPSG:4326</param>
-    /// <param name="styles">WMS parameter - value null</param>
     /// <param name="width">The width, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="height">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>DxfTileExecutor</executor> 
     [ValidateTileParameters]
     [ValidateWidthAndHeight]
-    [Route("api/v1/lineworktiles")]
-    [HttpGet]
+    [HttpGet("api/v1/lineworktiles")]
     public async Task<TileResult> GetLineworkTile(
       [FromQuery] string service,
       [FromQuery] string version,
@@ -79,16 +69,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] string fileType)
     {
-      Log.LogDebug("GetLineworkTile: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetLineworkTile)}: {Request.QueryString}");
 
-      var requiredFiles = await ValidateFileType(projectUid, fileType);
-      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
-
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor, LineworkTileController>(
-        Log, configStore, CustomHeaders, dataOceanClient, authn);
-      var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
-
-      return result;
+      return await GetDxfTileResult(projectUid, fileType, bbox);
     }
 
     /// <summary>
@@ -96,24 +79,12 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
     /// The tiles for the supplied list of files are overlaid and a single tile returned.
     /// </summary>
-    /// <param name="service">WMS parameter - value WMS</param>
-    /// <param name="version">WMS parameter - value 1.3.0</param>
-    /// <param name="request">WMS parameter - value GetMap</param>
-    /// <param name="format">WMS parameter - value image/png</param>
-    /// <param name="transparent">WMS parameter - value true</param>
-    /// <param name="layers">WMS parameter - value Layers</param>
-    /// <param name="crs">WMS parameter - value EPSG:4326</param>
-    /// <param name="styles">WMS parameter - value null</param>
-    /// <param name="width">The width, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="height">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>DxfTileExecutor</executor> 
     [ValidateTileParameters]
-    [Route("api/v1/lineworktiles/png")]
-    [HttpGet]
+    [HttpGet("api/v1/lineworktiles/png")]
     public async Task<FileResult> GetLineworkTileRaw(
       [FromQuery] string service,
       [FromQuery] string version,
@@ -129,14 +100,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] string fileType)
     {
-      Log.LogDebug("GetLineworkTileRaw: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetLineworkTileRaw)}: {Request.QueryString}");
 
-      var requiredFiles = await ValidateFileType(projectUid, fileType);
-      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
-
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor, LineworkTileController>(
-        Log, configStore, CustomHeaders, dataOceanClient, authn);
-      var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
+      var result = await GetDxfTileResult(projectUid, fileType, bbox);
 
       return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
     }
@@ -177,6 +143,17 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var result = await executor.ProcessAsync(dxfTile3dRequest) as TileResult;
 
       return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
+    }
+
+    private async Task<TileResult> GetDxfTileResult(Guid projectUid, string fileType, string bbox)
+    {
+      var requiredFiles = await ValidateFileType(projectUid, fileType);
+      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
+
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor, LineworkTileController>(
+        Log, configStore, CustomHeaders, dataOceanClient, authn);
+
+      return await executor.ProcessAsync(dxfTileRequest) as TileResult;
     }
 
     /// <summary>

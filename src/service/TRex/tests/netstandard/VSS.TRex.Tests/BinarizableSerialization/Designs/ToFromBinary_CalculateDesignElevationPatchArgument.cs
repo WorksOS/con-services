@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Designs
@@ -21,9 +22,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
         CellSize = 0.34,
         OriginX = 1234,
         OriginY = 2345,
-        Offset = 999.9,
         Filters = null,
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 999.9),
         TRexNodeID = "NodeID"        
       };
 

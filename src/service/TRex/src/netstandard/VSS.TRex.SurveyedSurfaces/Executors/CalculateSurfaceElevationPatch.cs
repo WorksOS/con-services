@@ -123,7 +123,6 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
               continue;
 
             long AsAtDate = ThisSurveyedSurface.AsAtDate.Ticks;
-            double Offset = ThisSurveyedSurface.DesignDescriptor.Offset;
 
             // Walk across the sub grid checking for a design elevation for each appropriate cell
             // based on the processing bit mask passed in
@@ -134,7 +133,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
               if (Design.InterpolateHeight(ref Hint,
                 OriginXPlusHalfCellSize + CellSize * x, OriginYPlusHalfCellSize + CellSize * y,
-                Offset, out double z))
+                0, out double z))
               {
                 // Check for composite elevation processing
                 if (Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations)

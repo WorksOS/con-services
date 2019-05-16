@@ -479,7 +479,8 @@ namespace VSS.TRex.Filters
       ElevationRangeLevel = Consts.NullDouble;
       ElevationRangeOffset = Consts.NullDouble;
       ElevationRangeThickness = Consts.NullDouble;
-      ElevationRangeDesignUID = Guid.Empty;
+      ElevationRangeDesign.DesignID = Guid.Empty;
+      ElevationRangeDesign.Offset = 0;
     }
 
     public void ClearElevationType()
@@ -582,7 +583,8 @@ namespace VSS.TRex.Filters
       ElevationRangeLevel = Source.ElevationRangeLevel;
       ElevationRangeOffset = Source.ElevationRangeOffset;
       ElevationRangeThickness = Source.ElevationRangeThickness;
-      ElevationRangeDesignUID = Source.ElevationRangeDesignUID;
+      ElevationRangeDesign.DesignID = Source.ElevationRangeDesign.DesignID;
+      ElevationRangeDesign.Offset = Source.ElevationRangeDesign.Offset;
 
       LayerID = Source.LayerID;
 
@@ -1284,8 +1286,8 @@ namespace VSS.TRex.Filters
       // Elevation Range
       if (HasElevationRangeFilter)
       {
-        if (ElevationRangeDesignUID != Guid.Empty)
-          sb.Append($"ER:{ElevationRangeDesignUID}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
+        if ((ElevationRangeDesign?.DesignID ?? Guid.Empty) != Guid.Empty)
+          sb.Append($"ER:{ElevationRangeDesign.DesignID}-{ElevationRangeDesign.Offset}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
         else
           sb.Append($"ER:{ElevationRangeLevel:F3}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
       }

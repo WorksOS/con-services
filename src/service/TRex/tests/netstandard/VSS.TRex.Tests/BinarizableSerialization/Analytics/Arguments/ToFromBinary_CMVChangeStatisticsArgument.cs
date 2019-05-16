@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using Xunit;
 
@@ -21,7 +22,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
         CMVChangeDetailsDataValues = new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }
       };
 

@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       if (enableConnectedSiteGateway)
       {
         request.Validate();
-        result = await CallConnectedSiteEndpoint(request).ConfigureAwait(false);
+        result = await CallConnectedSiteEndpoint(request);
       }
       return result;
     }
@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     private async Task<ContractExecutionResult> CallConnectedSiteEndpoint(CompactionTagFileRequest request)
     {
       // connectedSite is in tRexTagFileProxy because it uses some tRex code
-      var connectedSiteResult = await tRexTagFileProxy.SendTagFileNonDirectToConnectedSite(request, customHeaders).ConfigureAwait(false);
+      var connectedSiteResult = await tRexTagFileProxy.SendTagFileNonDirectToConnectedSite(request, customHeaders);
       log.LogInformation($"{nameof(CallConnectedSiteEndpoint)}: result: {JsonConvert.SerializeObject(connectedSiteResult)}");
       return connectedSiteResult;
     }

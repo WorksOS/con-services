@@ -2,6 +2,7 @@
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Requests
 {
@@ -15,13 +16,13 @@ namespace VSS.TRex.Designs.GridFabric.Requests
       return Compute.Apply(func, arg);
     }
 
-    public static AlignmentDesignFilterBoundaryResponse Execute(Guid referenceDesignUID, double startStation, double endStation, double leftOffset, double rightOffset)
+    public static AlignmentDesignFilterBoundaryResponse Execute(DesignOffset referenceDesign, double startStation, double endStation, double leftOffset, double rightOffset)
     {
       var request = new AlignmentDesignFilterBoundaryRequest();
 
       return request.Execute(new AlignmentDesignFilterBoundaryArgument
       {
-        ReferenceDesignUID = referenceDesignUID,
+        ReferenceDesign = referenceDesign,
         StartStation = startStation,
         EndStation = endStation,
         LeftOffset = leftOffset,

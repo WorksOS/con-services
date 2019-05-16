@@ -8,11 +8,12 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
+using XYZS = VSS.Productivity3D.Models.ResultHandling.XYZS;
 
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -45,11 +46,12 @@ namespace VSS.TRex.Gateway.Common.Executors
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var designProfileRequest = new VSS.TRex.Designs.GridFabric.Requests.DesignProfileRequest();
+      var referenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, request.Offset ?? 0);
 
       CalculateDesignProfileResponse designProfileResponse = designProfileRequest.Execute(new CalculateDesignProfileArgument
       {
         ProjectID = siteModel.ID,
-        ReferenceDesignUID = request.DesignUid ?? Guid.Empty, 
+        ReferenceDesign = referenceDesign,
         CellSize = siteModel.CellSize,
         ProfilePath = new XYZ[] {new XYZ(request.StartX.Value, request.StartY.Value), new XYZ (request.EndX.Value, request.EndY.Value)}
       });

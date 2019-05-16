@@ -2,9 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -27,9 +25,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       var request = item as GetProjectUidRequest;
       string projectUid = string.Empty;
-      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> potentialProjects = new List<Project.Abstractions.Models.DatabaseModels.Project>();
-
-      log.LogDebug($"ProjectUidExecutor: Going to process request {JsonConvert.SerializeObject(request)}");
+      var potentialProjects = new List<Project.Abstractions.Models.DatabaseModels.Project>();
 
       // get the owningCustomer of the device-Asset
       var assetDevice =
@@ -38,39 +34,36 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // If fails on SNM940 try as again SNM941 
       if (assetDevice == null && (DeviceTypeEnum) request.deviceType == DeviceTypeEnum.SNM940)
       {
-        log.LogDebug("ProjectUidExecutor: Failed for SNM940 trying again as Device Type SNM941");
+        log.LogDebug($"{nameof(ProjectUidExecutor)}: Failed for SNM940 trying again as Device Type SNM941");
         assetDevice = await dataRepository.LoadAssetDevice(request.radioSerial, DeviceTypeEnum.SNM941.ToString());
       }
 
       if (assetDevice == null)
       {
-        log.LogDebug("ProjectUidExecutor: Unable to find device-asset association.");
+        log.LogDebug($"{nameof(ProjectUidExecutor)}: Unable to find device-asset association.");
         return ProjectUidHelper.FormatResult(projectUid, 33);
       }
 
-      log.LogDebug($"ProjectUidExecutor: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
+      log.LogDebug($"{nameof(ProjectUidExecutor)}: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
 
       // get the owningCustomer 3dpm subscriptions
       var assetSubs = await dataRepository.LoadAssetSubs(assetDevice.AssetUID, request.timeOfPosition);
-      log.LogDebug($"ProjectUidExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
+      log.LogDebug($"{nameof(ProjectUidExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
 
       //  standard 2d / 3d project aka construction project
       //    must have valid assetID, which must have a 3d sub.
-      List<Project.Abstractions.Models.DatabaseModels.Project> enumerable;
       if (assetSubs != null && assetSubs.Any())
       {
         var standardProjects = await dataRepository.GetStandardProject(assetDevice.OwningCustomerUID, request.latitude,
           request.longitude, request.timeOfPosition);
-        enumerable = standardProjects.ToList();
-        if (standardProjects != null && enumerable.Any())
+        if (standardProjects.Any())
         {
-          potentialProjects = potentialProjects.Concat(enumerable);
-          log.LogDebug(
-            $"ProjectUidExecutor: Loaded standardProjects which lat/long is within {JsonConvert.SerializeObject(enumerable)}");
+          potentialProjects.AddRange(standardProjects);
+          log.LogDebug($"{nameof(ProjectUidExecutor)}: Loaded standardProjects which lat/long is within {JsonConvert.SerializeObject(standardProjects)}");
         }
         else
         {
-          log.LogDebug("ProjectUidExecutor: No standardProjects loaded");
+          log.LogDebug($"{nameof(ProjectUidExecutor)}: No standardProjects loaded");
         }
       }
 
@@ -79,16 +72,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var pmProjects = await dataRepository.GetProjectMonitoringProject(assetDevice.OwningCustomerUID,
         request.latitude, request.longitude, request.timeOfPosition,
         (int) ProjectType.ProjectMonitoring, (int) ServiceTypeEnum.ProjectMonitoring);
-      enumerable = pmProjects.ToList();
-      if (pmProjects != null && enumerable.Any())
+      if (pmProjects.Any())
       {
-        potentialProjects = potentialProjects.Concat(enumerable);
-        log.LogDebug(
-          $"ProjectUidExecutor: Loaded pmProjects which lat/long is within {JsonConvert.SerializeObject(enumerable)}");
+        potentialProjects.AddRange(pmProjects);
+        log.LogDebug($"{nameof(ProjectUidExecutor)}: Loaded pmProjects which lat/long is within {JsonConvert.SerializeObject(pmProjects)}");
       }
       else
       {
-        log.LogDebug("ProjectUidExecutor: No pmProjects loaded");
+        log.LogDebug($"{nameof(ProjectUidExecutor)}: No pmProjects loaded");
       }
 
       // Landfill project
@@ -96,45 +87,33 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var landfillProjects = await dataRepository.GetProjectMonitoringProject(assetDevice.OwningCustomerUID,
         request.latitude, request.longitude, request.timeOfPosition,
         (int) ProjectType.LandFill, (int) ServiceTypeEnum.Landfill);
-      enumerable = landfillProjects.ToList();
-      if (landfillProjects != null && enumerable.Any())
+      if (landfillProjects.Any())
       {
-        potentialProjects = potentialProjects.Concat(enumerable);
-        log.LogDebug(
-          $"ProjectUidExecutor: Loaded landfillProjects which lat/long is within {JsonConvert.SerializeObject(enumerable)}");
+        potentialProjects.AddRange(landfillProjects);
+        log.LogDebug($"{nameof(ProjectUidExecutor)}: Loaded landfillProjects which lat/long is within {JsonConvert.SerializeObject(landfillProjects)}");
       }
       else
       {
-        log.LogDebug("ProjectUidExecutor: No landfillProjects loaded");
+        log.LogDebug($"{nameof(ProjectUidExecutor)}: No landfillProjects loaded");
       }
 
       int uniqueCode = 0;
-      var projects = potentialProjects.ToList();
-      switch (projects.Count)
+      switch (potentialProjects.Count)
       {
         case 0:
           uniqueCode = 29;
           break;
         case 1:
           uniqueCode = 0;
-          projectUid = projects[0].ProjectUID;
+          projectUid = potentialProjects[0].ProjectUID;
           break;
         default:
           uniqueCode = 32;
           break;
       }
 
-      log.LogDebug($"ProjectUidExecutor: returning uniqueCode: {uniqueCode} projectUid {projectUid}.");
-
-      try
-      {
-        return ProjectUidHelper.FormatResult(projectUid, uniqueCode);
-      }
-      catch
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          ProjectUidHelper.FormatResult(projectUid, 35));
-      }
+      log.LogDebug($"{nameof(ProjectUidExecutor)}: returning uniqueCode: {uniqueCode} projectUid {projectUid}.");
+      return ProjectUidHelper.FormatResult(projectUid, uniqueCode);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

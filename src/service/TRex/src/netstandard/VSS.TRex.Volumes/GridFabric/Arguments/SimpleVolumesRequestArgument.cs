@@ -4,6 +4,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Volumes.GridFabric.Arguments
 {
@@ -30,8 +31,8 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     public ICombinedFilter BaseFilter { get; set; }
     public ICombinedFilter TopFilter { get; set; }
 
-    public Guid BaseDesignID { get; set; } = Guid.Empty;
-    public Guid TopDesignID { get; set; } = Guid.Empty;
+    public DesignOffset BaseDesign { get; set; } = new DesignOffset();
+    public DesignOffset TopDesign { get; set; } = new DesignOffset();
 
     /// <summary>
     /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
@@ -96,8 +97,10 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
       WriteFilter(writer, BaseFilter);
       WriteFilter(writer, TopFilter);
 
-      writer.WriteGuid(BaseDesignID);
-      writer.WriteGuid(TopDesignID);
+      writer.WriteBoolean(BaseDesign != null);
+      BaseDesign?.ToBinary(writer);
+      writer.WriteBoolean(TopDesign != null);
+      TopDesign?.ToBinary(writer);
 
       WriteFilter(writer, AdditionalSpatialFilter);
 
@@ -121,8 +124,16 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
       BaseFilter = ReadFilter(reader);
       TopFilter = ReadFilter(reader);
 
-      BaseDesignID = reader.ReadGuid() ?? Guid.Empty;
-      TopDesignID = reader.ReadGuid() ?? Guid.Empty;
+      if (reader.ReadBoolean())
+      {
+        BaseDesign = new DesignOffset();
+        BaseDesign.FromBinary(reader);
+      }
+      if (reader.ReadBoolean())
+      {
+        TopDesign = new DesignOffset();
+        TopDesign.FromBinary(reader);
+      }
 
       AdditionalSpatialFilter = ReadFilter(reader);
 

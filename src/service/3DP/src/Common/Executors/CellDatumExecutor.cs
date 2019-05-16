@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.Common.Executors
     protected virtual async Task<CellDatumResult> GetTRexCellDatumData(CellDatumRequest request)
     {
       var trexRequest = new CellDatumTRexRequest(request.ProjectUid.Value, request.DisplayMode, request.LLPoint,
-        request.GridPoint, request.Filter, request.Design?.FileUid);
+        request.GridPoint, request.Filter, request.Design?.FileUid, request.Design?.Offset);
       return await trexCompactionDataProxy.SendDataPostRequest<CompactionCellDatumResult, CellDatumTRexRequest>(trexRequest, "/cells/datum", customHeaders);
     }
 #if RAPTOR

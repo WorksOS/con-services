@@ -87,9 +87,10 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="projectUID"></param>
     /// <param name="profilePath"></param>
     /// <param name="cellSize"></param>
+    /// <param name="offset"></param>
     /// <param name="errorCode"></param>
     /// <returns></returns>
-    public List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode)
+    public List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset, out DesignProfilerRequestResult errorCode)
     {
       // Query the DesignProfiler service to get the patch of elevations calculated
       errorCode = DesignProfilerRequestResult.OK;
@@ -99,7 +100,7 @@ namespace VSS.TRex.Designs.Storage
         if (profileRequest == null)
           profileRequest = new DesignProfileRequest();
 
-        var profile = profileRequest.Execute(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor.DesignID, profilePath));
+        var profile = profileRequest.Execute(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor.DesignID, offset, profilePath));
 
         return profile.Profile;
       }
@@ -134,9 +135,6 @@ namespace VSS.TRex.Designs.Storage
       {
         BoundingWorldExtent3D result = new BoundingWorldExtent3D(extents);
 
-        // Incorporate any vertical offset from the underlying design the surveyed surface is based on
-        result.Offset(DesignDescriptor.Offset);
-
         return result;
       }
     }
@@ -168,7 +166,7 @@ namespace VSS.TRex.Designs.Storage
     /// <returns></returns>
     public override string ToString()
     {
-      return $"ID:{ID}, DesignID:{DesignDescriptor.DesignID};{DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{Extents}]";
+      return $"ID:{ID}, DesignID:{DesignDescriptor.DesignID};{DesignDescriptor.Folder};{DesignDescriptor.FileName} [{Extents}]";
     }
 
     /// <summary>
@@ -188,11 +186,12 @@ namespace VSS.TRex.Designs.Storage
     /// Calculates a spot elevation designated location on this design
     /// </summary>
     /// <param name="siteModelID"></param>
+    /// <param name="offset"></param>
     /// <param name="spotX"></param>
     /// <param name="spotY"></param>
     /// <param name="spotHeight"></param>
     /// <param name="errorCode"></param>
-    public void GetDesignSpotHeight(Guid siteModelID,
+    public void GetDesignSpotHeight(Guid siteModelID, double offset,
       double spotX, double spotY,
       out double spotHeight,
       out DesignProfilerRequestResult errorCode)
@@ -204,18 +203,19 @@ namespace VSS.TRex.Designs.Storage
         elevSpotRequest = new DesignElevationSpotRequest();
 
       spotHeight = elevSpotRequest.Execute(new CalculateDesignElevationSpotArgument
-        (siteModelID, spotX, spotY, DesignDescriptor.DesignID, DesignDescriptor.Offset));
+        (siteModelID, spotX, spotY, new DesignOffset(DesignDescriptor.DesignID, offset)));
     }
 
     /// <summary>
     /// Calculates an elevation sub grid for a designated sub grid on this design
     /// </summary>
     /// <param name="siteModelID"></param>
+    /// <param name="offset"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
     /// <param name="designHeights"></param>
     /// <param name="errorCode"></param>
-    public void GetDesignHeights(Guid siteModelID,
+    public void GetDesignHeights(Guid siteModelID, double offset,
       SubGridCellAddress originCellAddress,
       double cellSize,
       out IClientHeightLeafSubGrid designHeights,
@@ -231,7 +231,7 @@ namespace VSS.TRex.Designs.Storage
       var response = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
       {
         CellSize = cellSize,
-        ReferenceDesignUID = DesignDescriptor.DesignID,
+        ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, offset),
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
         // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
@@ -265,7 +265,7 @@ namespace VSS.TRex.Designs.Storage
       var maskResponse = filterMaskRequest.Execute(new DesignSubGridFilterMaskArgument
       {
         CellSize = cellSize,
-        ReferenceDesignUID = DesignDescriptor.DesignID,
+        ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, 0),
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
         ProjectID = siteModelID

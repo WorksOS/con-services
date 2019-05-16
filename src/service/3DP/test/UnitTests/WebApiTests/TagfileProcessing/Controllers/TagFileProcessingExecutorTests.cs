@@ -126,7 +126,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #endif
           mockConfigStore.Object, transferProxy: mockTransferProxy.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders, fileRepo: mockTccFileRepo.Object);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage);
@@ -193,7 +193,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #endif
           mockConfigStore.Object, transferProxy: mockTransferProxy.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Message == "The TAG file was found to be corrupted on its pre-processing scan.");
@@ -243,7 +243,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
           mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object, null,
           customHeaders:_customHeaders);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Code == (int) TTAGProcServerProcessResult.tpsprFileReaderCorruptedTAGFileData);
@@ -289,7 +289,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
           mockRaptorClient.Object, mockTagProcessor.Object,
           mockConfigStore.Object, transferProxy: mockTransferProxy.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage);
@@ -338,7 +338,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
           mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object, null,
           customHeaders: _customHeaders);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Code == (int) TTAGProcServerProcessResult.tpsprUnknown);
@@ -390,7 +390,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #endif
           mockConfigStore.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage);
@@ -443,7 +443,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #endif
           mockConfigStore.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Code == (int)TRexTagFileResultCode.TFAManualProjectNotFound);
@@ -494,7 +494,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         .Build<TagFileNonDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
           mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, null, customHeaders: _customHeaders);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Code == (int) TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions + 2000);
@@ -545,8 +545,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         .Build<TagFileNonDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
           mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, null, customHeaders: _customHeaders);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await submitter.ProcessAsync(request))
-        .ConfigureAwait(false);
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await submitter.ProcessAsync(request));
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code, "executor threw exception but incorrect httpStatus");
       var result = ex.GetResult;
       Assert.AreEqual((int) TTAGProcServerProcessResult.tpsprFileReaderCorruptedTAGFileData + 2000, result.Code,
@@ -597,8 +596,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var submitter = RequestExecutorContainerFactory.Build<TagFileNonDirectSubmissionExecutor>(_logger,
         mockRaptorClient.Object, mockTagProcessor.Object, mockConfigStore.Object);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await submitter.ProcessAsync(request))
-        .ConfigureAwait(false);
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await submitter.ProcessAsync(request));
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code, "executor threw exception but incorrect httpStatus");
       var result = ex.GetResult;
       Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, result.Code,

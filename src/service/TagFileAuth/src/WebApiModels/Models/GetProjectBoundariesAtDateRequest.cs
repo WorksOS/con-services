@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
@@ -52,14 +53,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       if (assetId <= 0)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new ProjectBoundaryPackage[0],
+          GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new List<ProjectBoundaryPackage>(0),
             ContractExecutionStatesEnum.ValidationError, 9));
       }
 
       if (!(tagFileUTC > DateTime.UtcNow.AddYears(-50) && tagFileUTC <= DateTime.UtcNow.AddDays(30)))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new ProjectBoundaryPackage[0],
+          GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new List<ProjectBoundaryPackage>(0),
             ContractExecutionStatesEnum.ValidationError, 17));
       }
     }

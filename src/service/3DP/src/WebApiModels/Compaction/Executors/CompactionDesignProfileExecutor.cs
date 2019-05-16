@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out WGSPoint startPt, out var endPt);
 
-      var designProfileRequest = new DesignProfileRequest(request.ProjectUid ?? Guid.Empty, request.DesignDescriptor?.FileUid ?? Guid.Empty, startPt.Lon, startPt.Lat, endPt.Lon, endPt.Lat);
+      var designProfileRequest = new DesignProfileRequest(request.ProjectUid ?? Guid.Empty, request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0, startPt.Lon, startPt.Lat, endPt.Lon, endPt.Lat);
 
       var trexResult = await trexCompactionDataProxy.SendDataPostRequest<DesignProfileResult, DesignProfileRequest>(designProfileRequest, "/profile/design", customHeaders);
 

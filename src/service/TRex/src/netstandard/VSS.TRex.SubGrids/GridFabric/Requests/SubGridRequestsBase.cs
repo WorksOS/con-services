@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Requests;
@@ -78,9 +79,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         public bool IncludeSurveyedSurfaceInformation { get; set; }
 
         /// <summary>
-        /// The design to be used in cases of cut/fill sub grid requests
+        /// The design to be used in cases of cut/fill sub grid requests together with its offset for a reference surface
         /// </summary>
-        public Guid ReferenceDesignID { get; set; } = Guid.Empty;
+        public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 
         public AreaControlSet AreaControlSet { get; set; } = AreaControlSet.CreateAreaControlSet();
 
@@ -104,7 +105,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// <param name="prodDataMask"></param>
         /// <param name="surveyedSurfaceOnlyMask"></param>
         /// <param name="filters"></param>
-        /// <param name="referenceDesignId"></param>
+        /// <param name="referenceDesign"></param>
         public SubGridRequestsBase(ITRexTask tRexTask,
                                    Guid siteModelID, 
                                    Guid requestID, 
@@ -114,7 +115,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                                    ISubGridTreeBitMask prodDataMask,
                                    ISubGridTreeBitMask surveyedSurfaceOnlyMask,
                                    IFilterSet filters,
-                                   Guid referenceDesignId,
+                                   DesignOffset referenceDesign,
                                    AreaControlSet areaControlSet) : this()
         {
             TRexTask = tRexTask;
@@ -126,7 +127,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             ProdDataMask = prodDataMask;
             SurveyedSurfaceOnlyMask = surveyedSurfaceOnlyMask;
             Filters = filters;
-            ReferenceDesignID = referenceDesignId;
+            ReferenceDesign = referenceDesign;
             AreaControlSet = areaControlSet;
         }
 
@@ -149,7 +150,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 Filters = Filters,
                 MessageTopic = $"SubGridRequest:{RequestID}",
                 TRexNodeID = TRexNodeId,
-                ReferenceDesignUID = ReferenceDesignID,
+                ReferenceDesign = ReferenceDesign,
                 AreaControlSet = AreaControlSet
             };
         }

@@ -1,4 +1,5 @@
-﻿using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+﻿using System.Collections.Generic;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
@@ -11,20 +12,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     /// <summary>
     /// The boundaries of the projects. Empty if none.
     /// </summary>
+
     public ProjectBoundaryPackage[] projectBoundaries { get; set; }
 
     /// <summary>
     /// Create instance of GetProjectBoundariesAtDateResult
     /// </summary>
     public static GetProjectBoundariesAtDateResult CreateGetProjectBoundariesAtDateResult(bool result,
-      ProjectBoundaryPackage[] projectBoundaries,
+      List<ProjectBoundaryPackage> projectBoundaries,
       int code = 0,
       int customCode = 0, string errorMessage1 = null, string errorMessage2 = null)
     {
       return new GetProjectBoundariesAtDateResult
       {
         Result = result,
-        projectBoundaries = projectBoundaries,
+        projectBoundaries = projectBoundaries.ToArray(),
         Code = code,
         Message = code == 0 ? DefaultMessage : string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(customCode), errorMessage1 ?? "null", errorMessage2 ?? "null")
       };

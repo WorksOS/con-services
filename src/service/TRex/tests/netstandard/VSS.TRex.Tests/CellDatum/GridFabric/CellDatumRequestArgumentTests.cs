@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -25,15 +26,16 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       bool coordsAreGrid = false;
       XYZ latLngPoint = new XYZ(12345.6789, 98765.4321);
       IFilterSet filters = new FilterSet();
-      Guid referenceDesignUid = Guid.NewGuid();
-      var arg = new CellDatumRequestArgument_ApplicationService(siteModelID, mode, coordsAreGrid, latLngPoint, filters, referenceDesignUid);
+      var referenceDesign = new DesignOffset(Guid.NewGuid(), 12.34);
+      var arg = new CellDatumRequestArgument_ApplicationService(siteModelID, mode, coordsAreGrid, latLngPoint, filters, referenceDesign);
       Assert.NotNull(arg);
       Assert.Equal(siteModelID, arg.ProjectID);
       Assert.Equal(mode, arg.Mode);
       Assert.Equal(coordsAreGrid, arg.CoordsAreGrid);
       Assert.Equal(latLngPoint, arg.Point);
       Assert.Equal(filters, arg.Filters);
-      Assert.Equal(referenceDesignUid, arg.ReferenceDesignUID);
+      Assert.Equal(referenceDesign.DesignID, arg.ReferenceDesign.DesignID);
+      Assert.Equal(referenceDesign.Offset, arg.ReferenceDesign.Offset);
     }
 
     [Fact]
@@ -52,8 +54,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       uint otgCellX = 16234;
       uint otgCellY = 55236;
       IFilterSet filters = new FilterSet();
-      Guid referenceDesignUid = Guid.NewGuid();
-      var arg = new CellDatumRequestArgument_ClusterCompute(siteModelID, mode, neeCoords, otgCellX, otgCellY, filters, referenceDesignUid);
+      var referenceDesign = new DesignOffset(Guid.NewGuid(), 12.34);
+      var arg = new CellDatumRequestArgument_ClusterCompute(siteModelID, mode, neeCoords, otgCellX, otgCellY, filters, referenceDesign);
       Assert.NotNull(arg);
       Assert.Equal(siteModelID, arg.ProjectID);
       Assert.Equal(mode, arg.Mode);
@@ -61,7 +63,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(otgCellX, arg.OTGCellX);
       Assert.Equal(otgCellY, arg.OTGCellY);
       Assert.Equal(filters, arg.Filters);
-      Assert.Equal(referenceDesignUid, arg.ReferenceDesignUID);
+      Assert.Equal(referenceDesign.DesignID, arg.ReferenceDesign.DesignID);
+      Assert.Equal(referenceDesign.Offset, arg.ReferenceDesign.Offset);
     }
   }
 }

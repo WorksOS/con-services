@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
@@ -31,14 +32,11 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <param name="siteModelID"></param>
     /// <param name="spotX"></param>
     /// <param name="spotY"></param>
-    /// <param name="designUid"></param>
-    /// <param name="offset"></param>
-    // /// <param name="processingMap"></param>
+    /// <param name="referenceDesign"></param>
     public CalculateDesignElevationSpotArgument(Guid siteModelID,
       double spotX,
       double spotY,
-      Guid designUid,
-      double offset) : base(siteModelID, designUid, offset)
+      DesignOffset referenceDesign) : base(siteModelID, referenceDesign)
     {
       SpotX = spotX;
       SpotY = spotY;
@@ -50,7 +48,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> SiteModel:{ProjectID}, Location:{SpotX}/{SpotY}, Design:{ReferenceDesignUID}, Offset:{Offset}";
+      return base.ToString() + $" -> SiteModel:{ProjectID}, Location:{SpotX}/{SpotY}, Design:{ReferenceDesign?.DesignID}, Offset:{ReferenceDesign?.Offset}";
     }
 
     /// <summary>

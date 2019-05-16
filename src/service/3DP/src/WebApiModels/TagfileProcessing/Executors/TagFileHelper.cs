@@ -30,11 +30,11 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       {
         if (isDirectSubmission)
         {
-          tRexResult = await tagFileProxy.SendTagFileDirect(compactionTagFileRequest, customHeaders).ConfigureAwait(false);
+          tRexResult = await tagFileProxy.SendTagFileDirect(compactionTagFileRequest, customHeaders);
         }
         else
         {
-          tRexResult = await tagFileProxy.SendTagFileNonDirect(compactionTagFileRequest, customHeaders).ConfigureAwait(false);
+          tRexResult = await tagFileProxy.SendTagFileNonDirect(compactionTagFileRequest, customHeaders);
         }
         
         return tRexResult;
