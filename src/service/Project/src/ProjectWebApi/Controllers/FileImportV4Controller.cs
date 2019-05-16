@@ -33,6 +33,7 @@ using VSS.Pegasus.Client;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Project.Abstractions.Extensions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
@@ -571,7 +572,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         {
           importedFileDescriptor = importedFileList.FirstOrDefault(
             f => f.ImportedFileType == ImportedFileType.ReferenceSurface &&
-                 f.ParentUid == parentUid && Math.Round(f.Offset ?? 0, 3) == Math.Round(offset ?? 0));
+                 f.ParentUid == parentUid && f.Offset.EqualsToNearestMillimeter(offset));
         }
         else
         {
