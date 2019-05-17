@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
@@ -107,6 +109,11 @@ namespace WebApiTests
     [TestMethod]
     public void GetBoundaries()
     {
+      var SouthernMotorWayFavoriteGeofenceUid = Guid.Parse("ffdabc61-7ee9-4054-a3e1-f182dd1abec9");
+      var WalnutCreekFavoriteGeofenceUid = Guid.Parse("09097669-34e7-4b34-b921-680018388505");
+      var ZieglerBloomingtonFavoriteGeofenceUid = Guid.Parse("69de1f67-1b2a-413a-8936-659892379fd9");
+      var favoriteGeofences = new List<Guid> { SouthernMotorWayFavoriteGeofenceUid, WalnutCreekFavoriteGeofenceUid, ZieglerBloomingtonFavoriteGeofenceUid };
+
       ts.DeleteAllBoundariesAndAssociations();
 
       const string boundaryName = "Boundary Web test 5";
@@ -126,9 +133,14 @@ namespace WebApiTests
 
       var responseGet = ts.CallFilterWebApi($"api/v1/boundaries/{ProjectUid}", "GET");
       var boundaryResponseGet = JsonConvert.DeserializeObject<GeofenceDataListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(2, boundaryResponseGet.GeofenceData.Count);
+      //2 boundaries and 3 favorites
+      Assert.AreEqual(5, boundaryResponseGet.GeofenceData.Count);
       Assert.IsNotNull(boundaryResponseGet.GeofenceData.Single(g => g.GeofenceUID == boundaryUid1), "Missing boundary 1");
       Assert.IsNotNull(boundaryResponseGet.GeofenceData.Single(g => g.GeofenceUID == boundaryUid2), "Missing boundary 2");
+      foreach (var geofenceUid in favoriteGeofences)
+      {
+        Assert.IsNotNull(boundaryResponseGet.GeofenceData.Single(g => g.GeofenceUID == geofenceUid), "Missing favorite geofence");
+      }
     }
   }
 }

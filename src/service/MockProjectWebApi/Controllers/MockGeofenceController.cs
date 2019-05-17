@@ -5,14 +5,58 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Repositories.DBModels;
 
 namespace MockProjectWebApi.Controllers
 {
   public class MockGeofenceController : Controller
   {
     private static List<GeofenceData> GeofenceData = null;
+    private static List<GeofenceData> Favorites = null;
 
     public MockGeofenceController()
+    {
+      InitGeofenceData();
+      InitFavorites();
+    }
+
+    [Route("api/v1/mock/geofences")]
+    [HttpGet]
+    public GeofenceDataResult GetMockGeofences(long[] geofenceTypeIds)
+    {
+      Console.WriteLine($"GetMockGeofences: {JsonConvert.SerializeObject(geofenceTypeIds)}");
+      return new GeofenceDataResult { Geofences = GeofenceData };
+    }
+
+
+    [Route("api/v1/mock/geofences/favorite")]
+    [HttpGet]
+    public GeofenceDataResult GetMockFavoriteGeofences()
+    {
+      Console.WriteLine("GetMockFavoriteGeofences");
+      return new GeofenceDataResult { Geofences = Favorites };
+    }
+
+    [Route("api/v1/mock/geofences")]
+    [HttpPost]
+    public GeofenceCreateResult CreateMockGeofence([FromBody] GeofenceData geofenceData)
+    {
+      Console.WriteLine("CreateMockGeofence");
+      GeofenceData.Add(geofenceData);
+      return new GeofenceCreateResult(){geofenceUID = geofenceData.GeofenceUID.ToString()};
+    }
+
+    [Route("api/v1/mock/geofences")]
+    [HttpPut]
+    public OkResult UdpateMockGeofence([FromBody] GeofenceData geofenceData)
+    {
+      Console.WriteLine("UdpateMockGeofence");
+      GeofenceData.Remove(GeofenceData.FirstOrDefault(g => g.GeofenceUID == geofenceData.GeofenceUID));
+      GeofenceData.Add(geofenceData);
+      return Ok();
+    }
+
+    private void InitGeofenceData()
     {
       if (GeofenceData == null)
       {
@@ -54,32 +98,42 @@ namespace MockProjectWebApi.Controllers
       }
     }
 
-    [Route("api/v1/mock/geofences")]
-    [HttpGet]
-    public GeofenceDataResult GetMockGeofences(long[] geofenceTypeIds)
+    private void InitFavorites()
     {
-      Console.WriteLine($"GetMockGeofences: {JsonConvert.SerializeObject(geofenceTypeIds)}");
-      var geofences = GeofenceData;
-      return new GeofenceDataResult { Geofences = geofences };
-    }
-
-    [Route("api/v1/mock/geofences")]
-    [HttpPost]
-    public GeofenceCreateResult CreateMockGeofence([FromBody] GeofenceData geofenceData)
-    {
-      Console.WriteLine("GetMockGeofences");
-      GeofenceData.Add(geofenceData);
-      return new GeofenceCreateResult(){geofenceUID = geofenceData.GeofenceUID.ToString()};
-    }
-
-    [Route("api/v1/mock/geofences")]
-    [HttpPut]
-    public OkResult UdpateMockGeofence([FromBody] GeofenceData geofenceData)
-    {
-      Console.WriteLine("GetMockGeofences");
-      GeofenceData.Remove(GeofenceData.FirstOrDefault(g => g.GeofenceUID == geofenceData.GeofenceUID));
-      GeofenceData.Add(geofenceData);
-      return Ok();
+      if (Favorites == null)
+      {
+        Favorites = new List<GeofenceData>
+        {
+          new GeofenceData
+          {
+            GeofenceName = "Southern Motorway",
+            GeofenceUID = Guid.Parse("ffdabc61-7ee9-4054-a3e1-f182dd1abec9"),
+            GeometryWKT =
+              "POLYGON((172.525733009204 -43.5613699555099,172.527964607104 -43.5572026751871,172.539980903491 -43.5602504159773,172.553370490893 -43.5555232419366,172.571652427539 -43.5466276854031,172.566760078295 -43.542086090904,172.571652427539 -43.5402195830085,172.583067909106 -43.5438281128051,172.594998374804 -43.5441391828477,172.621777549609 -43.5459433574412,172.621949210986 -43.5494271279847,172.611220374926 -43.5504846613456,172.597916618212 -43.548929458806,172.588217750415 -43.5476852678816,172.585556999072 -43.5501114163959,172.568133369311 -43.5580112745029,172.563412681445 -43.5617431307312,172.552254691943 -43.5703255228523,172.544444099292 -43.5696414639818,172.53328610979 -43.567091721564,172.525733009204 -43.5613699555099))",
+            FillColor = 16744448,
+            IsTransparent = true,
+            GeofenceType = GeofenceType.Generic.ToString()
+          },
+          new GeofenceData
+          {
+            GeofenceName = "Walnut Creek",
+            GeofenceUID = Guid.Parse("09097669-34e7-4b34-b921-680018388505"),
+            GeometryWKT = "POLYGON((-96.6672726884766 31.102645603119,-96.6748257890625 31.0986769551086,-96.6792889848633 31.1014697247005,-96.6943951860352 31.0992649134258,-96.7016049638672 31.0975010275558,-96.7031499162598 31.0933851664818,-96.7012616411133 31.0894161315677,-96.6955968156738 31.0850058983233,-96.6897603288574 31.0817715971976,-96.6768857255859 31.0798603675266,-96.6676160112305 31.0766258913085,-96.6602345720215 31.0742734758456,-96.654741407959 31.0738323914664,-96.6495915666504 31.0735383340767,-96.6418668046875 31.0711858422196,-96.6410084978027 31.0692743997297,-96.6339703813477 31.0626575713579,-96.6286488786621 31.0614811981213,-96.5977498308106 31.0619223397898,-96.5987797990723 31.0819186132729,-96.5986081376953 31.1022046504182,-96.6672726884766 31.102645603119))",
+            FillColor = 16777011,
+            IsTransparent = true,
+            GeofenceType = GeofenceType.Generic.ToString()
+          },
+          new GeofenceData
+          {
+            GeofenceName = "Ziegler Bloomington",
+            GeofenceUID = Guid.Parse("69de1f67-1b2a-413a-8936-659892379fd9"),
+            GeometryWKT = "POLYGON((-93.293819224884 44.8334583624534,-93.2899139285583 44.8334887962539,-93.2899139285583 44.8316170876231,-93.2889054179687 44.8316323050115,-93.2887981296082 44.8314344786485,-93.2920382380981 44.8295474853646,-93.2928536296387 44.8308714306678,-93.2930682063599 44.8313431739442,-93.293819224884 44.8334583624534))",
+            FillColor = 65535, 
+            IsTransparent = true,
+            GeofenceType = GeofenceType.Generic.ToString()
+          }
+        };
+      }
     }
   }
 }

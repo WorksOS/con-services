@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <returns><see cref="GeofenceDataListResult"/></returns>
     [Route("api/v1/boundaries/{ProjectUid}")]
     [HttpGet]
-    public async Task<GeofenceDataListResult> GetProjectBoundaries(string projectUid)
+    public async Task<GeofenceDataListResult> GetProjectBoundaries(string projectUid, [FromServices] IGeofenceProxy geofenceProxy)
     {
       Log.LogInformation(
         $"{ToString()}.GetProjectBoundaries: CustomerUID={CustomerUid} IsApplication={IsApplication} UserUid={GetUserId} ProjectUid: {projectUid}");
@@ -144,7 +144,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
 
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler,
-        _geofenceRepository, _projectRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName);
+        _geofenceRepository, _projectRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, geofenceProxy:geofenceProxy);
 
       var result = await executor.ProcessAsync(requestFull);
 
