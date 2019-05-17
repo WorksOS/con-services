@@ -68,6 +68,15 @@ namespace VSS.MasterData.Proxies
       return result.Geofences;
     }
 
+    /// <summary>
+    /// Gets the list of favorite geofences for the user
+    /// </summary>
+    public async Task<List<GeofenceData>> GetFavoriteGeofences(string customerUid, string userId, IDictionary<string, string> customHeaders = null)
+    {
+      var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, userId, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders, null, "/favorite");
+      return result.Geofences;
+    }
+
     public async Task<Guid> CreateGeofence(Guid customerGuid, string geofenceName, string description,
         string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
         IDictionary<string, string> customHeaders = null)

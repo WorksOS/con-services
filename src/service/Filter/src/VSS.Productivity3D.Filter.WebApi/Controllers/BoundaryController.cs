@@ -59,13 +59,13 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     public async Task<GeofenceDataSingleResult> UpsertBoundary(string projectUid, [FromBody] BoundaryRequest request)
     {
       Log.LogInformation(
-        $"{ToString()}.{nameof(UpsertBoundary)}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} BoundaryRequest: {JsonConvert.SerializeObject(request)}");
+        $"{ToString()}.{nameof(UpsertBoundary)}: CustomerUID={CustomerUid} BoundaryRequest: {JsonConvert.SerializeObject(request)}");
 
       var requestFull = BoundaryRequestFull.Create(
-        (User as TIDCustomPrincipal)?.CustomerUid,
-        ((TIDCustomPrincipal) User).IsApplication,
-        await ((FilterPrincipal) User).GetProject(projectUid),
-        ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
+        CustomerUid,
+        IsApplication,
+        await GetProject(projectUid),
+        GetUserId,
         request);
 
       requestFull.Validate(ServiceExceptionHandler);
@@ -98,13 +98,13 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     public async Task<ContractExecutionResult> DeleteBoundary(string projectUid, [FromQuery] string boundaryUid)
     {
       Log.LogInformation(
-        $"{ToString()}.DeleteBoundary: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} ProjectUid: {projectUid} BoundaryUid: {boundaryUid}");
+        $"{ToString()}.DeleteBoundary: CustomerUID={CustomerUid} ProjectUid: {projectUid} BoundaryUid: {boundaryUid}");
 
       var requestFull = BoundaryUidRequestFull.Create(
-        (User as TIDCustomPrincipal)?.CustomerUid,
-        ((TIDCustomPrincipal) User).IsApplication,
-        await ((FilterPrincipal) User).GetProject(projectUid),
-        ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
+        CustomerUid,
+        IsApplication,
+        await GetProject(projectUid),
+        GetUserId,
         boundaryUid);
 
       requestFull.Validate(ServiceExceptionHandler);
@@ -131,13 +131,13 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     public async Task<GeofenceDataListResult> GetProjectBoundaries(string projectUid)
     {
       Log.LogInformation(
-        $"{ToString()}.GetProjectBoundaries: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} ProjectUid: {projectUid}");
+        $"{ToString()}.GetProjectBoundaries: CustomerUID={CustomerUid} IsApplication={IsApplication} UserUid={GetUserId} ProjectUid: {projectUid}");
 
       var requestFull = BaseRequestFull.Create(
-        (User as TIDCustomPrincipal)?.CustomerUid,
-        ((TIDCustomPrincipal) User).IsApplication,
-        await ((FilterPrincipal) User).GetProject(projectUid),
-        ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name);
+        CustomerUid,
+        IsApplication,
+        await GetProject(projectUid),
+        GetUserId);
 
       requestFull.Validate(ServiceExceptionHandler);
 
@@ -162,13 +162,13 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     public async Task<GeofenceDataSingleResult> GetProjectBoundary(string projectUid, [FromQuery] string boundaryUid)
     {
       Log.LogInformation(
-        $"{ToString()}.GetProjectBoundary: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} ProjectUid: {projectUid} BoundaryUid: {boundaryUid}");
+        $"{ToString()}.GetProjectBoundary: CustomerUID={CustomerUid} IsApplication={IsApplication} UserUid={GetUserId} ProjectUid: {projectUid} BoundaryUid: {boundaryUid}");
 
       var requestFull = BoundaryUidRequestFull.Create(
-        (User as TIDCustomPrincipal)?.CustomerUid,
-        ((TIDCustomPrincipal) User).IsApplication,
-        await ((FilterPrincipal) User).GetProject(projectUid),
-        ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
+        CustomerUid,
+        IsApplication,
+        await GetProject(projectUid),
+        GetUserId,
         boundaryUid);
 
       requestFull.Validate(ServiceExceptionHandler);
