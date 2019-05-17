@@ -717,7 +717,7 @@ constructor(
         var zRatio = profileCanvasHeight / zRange;
 
         points.forEach(point => {
-          if (point.z < -100000) {
+          if (point.z <= -100000) {
             // It's a gap...
             first = true;
           }
@@ -828,7 +828,7 @@ constructor(
 
     points.forEach(point => {
       var value: number = getValue(point);
-      if (value < -100000) {
+      if (value <= -100000) {
         // It's a gap...
         first = true;
       }
@@ -837,6 +837,8 @@ constructor(
         first = false;
       }
     });
+
+    this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
 
     return result;
   }
@@ -900,7 +902,7 @@ constructor(
         var zRatio = profileCanvasHeight / zRange;
 
         points.forEach(point => {
-          if (point.z < -100000) {
+          if (point.z <= -100000) {
             // It's a gap...
             first = true;
           }
