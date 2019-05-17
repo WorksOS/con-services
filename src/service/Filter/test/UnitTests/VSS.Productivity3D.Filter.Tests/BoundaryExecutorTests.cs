@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -103,52 +105,80 @@ namespace VSS.Productivity3D.Filter.Tests
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string boundaryUid = Guid.NewGuid().ToString();
-      string name = "blah";
-      string geometryWKT = "whatever";
+      string boundaryName = "blah";
+      string boundaryGeometryWKT = "whatever";
+      Guid favoriteUid = Guid.NewGuid();
+      string favoriteName = "favorite blah";
+      string favoriteGeometryWKT = "who cares";
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
-      var geofence = new Geofence
+      var geofenceBoundary = new Geofence
       {
         CustomerUID = custUid,
         UserUID = userUid,
         GeofenceUID = boundaryUid,
-        Name = name,
-        GeometryWKT = geometryWKT,
+        Name = boundaryName,
+        GeometryWKT = boundaryGeometryWKT,
         GeofenceType = GeofenceType.Filter,
         LastActionedUTC = DateTime.UtcNow
       };
-      geofenceRepo.As<IGeofenceRepository>().Setup(g => g.GetGeofences(It.IsAny<IEnumerable<string>>())).ReturnsAsync(new List<Geofence>{geofence});
+      geofenceRepo.As<IGeofenceRepository>().Setup(g => g.GetGeofences(It.IsAny<IEnumerable<string>>())).ReturnsAsync(new List<Geofence>{geofenceBoundary});
+
+      var favoriteGeofence = new GeofenceData
+      {
+        GeofenceUID = favoriteUid,
+        GeofenceName = favoriteName,
+        GeometryWKT = favoriteGeometryWKT,
+        GeofenceType = GeofenceType.Generic.ToString(),
+        CustomerUID = Guid.Parse(custUid)
+      };
+      var favorites = new List<GeofenceData>{favoriteGeofence};
+      var geofenceProxy = new Mock<IGeofenceProxy>();
+      geofenceProxy.Setup(g => g.GetFavoriteGeofences(custUid, userUid, null)).ReturnsAsync(favorites);
 
       var projectRepo = new Mock<ProjectRepository>(configStore, logger);
       var projectGeofence = new ProjectGeofence { GeofenceUID = boundaryUid, ProjectUID = projectUid };
       projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence> { projectGeofence });
 
-      var geofenceToTest = AutoMapperUtility.Automapper.Map<GeofenceData>(geofence);
+      var geofenceToTest = AutoMapperUtility.Automapper.Map<GeofenceData>(geofenceBoundary);
 
       var request = BaseRequestFull.Create
       (
         custUid,
         false,
         new ProjectData() { ProjectUid = projectUid },
-        userUid
+        userUid,
+        null
       );
 
       var executor =
         RequestExecutorContainer.Build<GetBoundariesExecutor>(configStore, logger, serviceExceptionHandler,
-          geofenceRepo.Object, projectRepo.Object);
+          geofenceRepo.Object, projectRepo.Object, geofenceProxy: geofenceProxy.Object);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
       Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(1, result.GeofenceData.Count, "executor returned wrong boundary count");
-      Assert.AreEqual(geofenceToTest.GeofenceUID, result.GeofenceData[0].GeofenceUID,
-        "executor returned incorrect GeofenceUID");
-      Assert.AreEqual(geofenceToTest.GeofenceName, result.GeofenceData[0].GeofenceName,
-        "executor returned incorrect GeofenceName");
-      Assert.AreEqual(geofenceToTest.GeometryWKT, result.GeofenceData[0].GeometryWKT,
-        "executor returned incorrect GeometryWKT");
+      Assert.AreEqual(2, result.GeofenceData.Count, "executor returned wrong boundary count");
+      var actualBoundary = result.GeofenceData.SingleOrDefault(g => g.GeofenceUID == geofenceToTest.GeofenceUID);
+      Assert.AreEqual(geofenceToTest.GeofenceUID, actualBoundary.GeofenceUID,
+        "executor returned incorrect boundary GeofenceUID");
+      Assert.AreEqual(geofenceToTest.GeofenceName, actualBoundary.GeofenceName,
+        "executor returned incorrect boundary GeofenceName");
+      Assert.AreEqual(geofenceToTest.GeometryWKT, actualBoundary.GeometryWKT,
+        "executor returned incorrect boundary GeometryWKT");
+      Assert.AreEqual(geofenceToTest.GeofenceType, actualBoundary.GeofenceType,
+        "executor returned incorrect boundary GeofenceType");
+      var actualFavorite = result.GeofenceData.SingleOrDefault(g => g.GeofenceUID == favoriteGeofence.GeofenceUID);
+      Assert.AreEqual(favoriteGeofence.GeofenceUID, actualFavorite.GeofenceUID,
+        "executor returned incorrect favorite GeofenceUID");
+      Assert.AreEqual(favoriteGeofence.GeofenceName, actualFavorite.GeofenceName,
+        "executor returned incorrect favorite GeofenceName");
+      Assert.AreEqual(favoriteGeofence.GeometryWKT, actualFavorite.GeometryWKT,
+        "executor returned incorrect favorite GeometryWKT");
+      Assert.AreEqual(favoriteGeofence.GeofenceType, actualFavorite.GeofenceType,
+        "executor returned incorrect favorite GeofenceType");
     }
 
     [TestMethod]
