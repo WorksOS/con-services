@@ -710,8 +710,10 @@ constructor(
 
         var minZ:number = 100000.0;
         var maxZ:number = -100000.0;
-        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
-        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
+          points.forEach(pt => {
+              if (pt.z > -100000 && pt.z < minZ) minZ = pt.z;
+              if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z;
+          });
 
         var zRange = maxZ - minZ;
         var zRatio = profileCanvasHeight / zRange;
@@ -820,8 +822,11 @@ constructor(
 
     var minZ: number = 100000.0;
     var maxZ: number = -100000.0;
-    points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
-    points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
+      points.forEach(pt => {
+          var value: number = getValue(pt);
+          if (value > -100000 && value < minZ) minZ = value;
+          if (value > -100000 && value > maxZ) maxZ = value;
+      });
 
     var zRange = maxZ - minZ;
     var zRatio = profileCanvasHeight / zRange;
@@ -846,8 +851,12 @@ constructor(
   public ProcessProfileDataVectorToSVGPolyLine(points: any[], getValue: (point: any) => number, setResult: (theResult: string) => void) {
       var minZ: number = 100000.0;
       var maxZ: number = -100000.0;
-      points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
-      points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
+      points.forEach(pt =>
+      {
+          var value: number = getValue(pt);
+          if (value > -100000 && value < minZ) minZ = value;
+          if (value > -100000 && value > maxZ) maxZ = value;
+      });
 
       this.SetProfileViewExtents(points, minZ, maxZ);
       setResult(this.ComputeSVGForProfileValueVector(points, getValue));
@@ -895,8 +904,10 @@ constructor(
 
         var minZ: number = 100000.0;
         var maxZ: number = -100000.0;
-        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
-        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
+          points.forEach(pt => {
+              if (pt.z > -100000 && pt.z < minZ) minZ = pt.z;
+              if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z;
+          });
 
         var zRange = maxZ - minZ;
         var zRatio = profileCanvasHeight / zRange;
