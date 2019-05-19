@@ -38,7 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Services
       DxfTileNotificationParameters result;
       try
       {
-        result = (parameters as JObject).ToObject<DxfTileNotificationParameters>();
+          result = JObject.FromObject(parameters).ToObject<DxfTileNotificationParameters>();
       }
       catch (Exception e)
       {
