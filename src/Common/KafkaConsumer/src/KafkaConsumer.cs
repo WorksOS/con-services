@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Nito.AsyncEx.Synchronous;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Interfaces;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4NetExtensions;
@@ -18,51 +16,52 @@ namespace VSS.KafkaConsumer
 {
   public class KafkaConsumer<T> : IKafkaConsumer<T>
   {
-    private ILogger log;
-    private readonly ILoggerFactory LoggerFactory;
-    private readonly IKafka kafkaDriver;
-    private readonly IConfigurationStore configurationStore;
-    private readonly IRepositoryFactory dbRepositoryFactory;
-    private readonly IMessageTypeResolver messageResolver;
+    private ILogger _log;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly IKafka _kafkaDriver;
+    private readonly IConfigurationStore _configurationStore;
+    private readonly IRepositoryFactory _dbRepositoryFactory;
+    private readonly IMessageTypeResolver _messageResolver;
 
-    private string topicName;
-    private CancellationTokenSource stopToken;
-    private int requestTime = 1000;
+    private string _topicName;
+    private CancellationTokenSource _stopToken;
+    private readonly int _requestTime = 1000;
 
     public KafkaConsumer(IConfigurationStore config, IKafka driver, IRepositoryFactory repositoryFactory,
       IMessageTypeResolver resolver, ILoggerFactory logger)
     {
-      kafkaDriver = driver;
-      configurationStore = config;
-      dbRepositoryFactory = repositoryFactory;
-      messageResolver = resolver;
-      if (configurationStore.GetValueInt("KAFKA_REQUEST_TIME") > 0)
-        requestTime = configurationStore.GetValueInt("KAFKA_REQUEST_TIME");
-      log = logger.CreateLogger<KafkaConsumer<T>>();
-      LoggerFactory = logger;
+      _kafkaDriver = driver;
+      _configurationStore = config;
+      _dbRepositoryFactory = repositoryFactory;
+      _messageResolver = resolver;
+      if (_configurationStore.GetValueInt("KAFKA_REQUEST_TIME") > 0)
+        _requestTime = _configurationStore.GetValueInt("KAFKA_REQUEST_TIME");
+      _log = logger.CreateLogger<KafkaConsumer<T>>();
+      _loggerFactory = logger;
     }
 
     public void OverrideLogger(ILogger logger)
     {
-      log = logger;
+      _log = logger;
     }
 
 
     public void SetTopic(string topic, string consumerGroup = null)
     {
-      topicName = topic;
-      kafkaDriver.InitConsumer(configurationStore, groupName: consumerGroup, logger: LoggerFactory.CreateLogger<IKafka>());
-      log.LogDebug("KafkaConsumer: " + topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX"));
-      kafkaDriver.Subscribe(new List<string>()
+      _topicName = topic;
+      _kafkaDriver.InitConsumer(_configurationStore, groupName: consumerGroup,
+        logger: _loggerFactory.CreateLogger<IKafka>());
+      _log.LogDebug($"{nameof(SetTopic)}: {topic} {_configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")}");
+      _kafkaDriver.Subscribe(new List<string>()
       {
-        (topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim()
+        (topic + _configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim()
       });
     }
 
     public async Task<Task> StartProcessingAsync(CancellationTokenSource token)
     {
-      log.LogDebug("KafkaConsumer: StartProcessingAsync");
-      stopToken = token;
+      _log.LogDebug($"{nameof(StartProcessingAsync)} Topic {_topicName}: StartProcessingAsync");
+      _stopToken = token;
 
       return await Task.Factory.StartNew(async () =>
         {
@@ -74,17 +73,19 @@ namespace VSS.KafkaConsumer
             }
             catch (Exception ex)
             {
-              log.LogError($"Unhandled error occured {ex.Message} in {ex.StackTrace}");
+              _log.LogError(
+                $"{nameof(StartProcessingAsync)} Topic {_topicName}: Unhandled error occured {ex.Message} in {ex.StackTrace}");
             }
           }
         }, TaskCreationOptions.LongRunning)
         .ContinueWith((o) =>
         {
-          log.LogWarning("KafkaConsumer: StartProcessingAsync has been cancelled");
+          _log.LogWarning($"{nameof(StartProcessingAsync)} Topic {_topicName}: StartProcessingAsync has been cancelled");
           if (o.Exception != null)
           {
-            log.LogCritical($"Exception: {o.Exception.Message}");
+            _log.LogCritical($"{nameof(StartProcessingAsync)} Topic {_topicName}: Exception: {o.Exception.Message}");
           }
+
           return Task.FromResult(1);
         });
     }
@@ -94,28 +95,30 @@ namespace VSS.KafkaConsumer
     /// </summary>
     public void StartProcessingSync()
     {
-      if (log.IsTraceEnabled())
-        log.LogTrace("Processing synchronous poll");
-      int i= ProcessMessage().Result;
+      if (_log.IsTraceEnabled())
+        _log.LogTrace($"{nameof(StartProcessingSync)} Topic {_topicName}: Processing synchronous poll");
+      int i = ProcessMessage().Result;
     }
 
     private async Task<int> ProcessMessage()
     {
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Polling with {requestTime} timeout");
-      var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(requestTime));
+      if (_log.IsTraceEnabled())
+        _log.LogTrace($"{nameof(ProcessMessage)} Topic {_topicName}: SyncPolling with {_requestTime} timeout");
+      var messages = _kafkaDriver.Consume(TimeSpan.FromMilliseconds(_requestTime));
 
       if (messages.message == Error.NO_ERROR)
       {
         await ProcessAllMessages(messages);
       }
+
       return 0;
     }
 
     public void SubscribeObserverConsumer()
     {
-      log.LogDebug("KafkaConsumer: Subscribing to consumer for message processing");
-      kafkaDriver.SubscribeConsumer(OnMessagesArrived,null);
+      _log.LogDebug(
+        $"{nameof(SubscribeObserverConsumer)} Topic {_topicName}: Subscribing to consumer for message processing");
+      _kafkaDriver.SubscribeConsumer(OnMessagesArrived, null);
     }
 
     private int OnMessagesArrived(Message messages)
@@ -129,58 +132,63 @@ namespace VSS.KafkaConsumer
       bool success = true;
       foreach (var message in messages.payload)
       {
-
         try
         {
           await ProcessSingleMessage(message);
         }
         catch (Exception ex)
         {
-          log.LogError("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
-            ex.Message, ex.StackTrace);
+          _log.LogError(
+            $"{nameof(ProcessAllMessages)} Topic {_topicName}: An unexpected error occured: {ex.Message}; stacktrace: {ex.StackTrace}");
           success = false;
           if (ex.InnerException != null)
           {
-            log.LogError("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
-              ex.InnerException.StackTrace);
+            _log.LogError(
+              $"{nameof(ProcessAllMessages)} Topic {_topicName}: Reason: {ex.InnerException.Message}; stacktrace: {ex.InnerException.StackTrace}");
           }
         }
       }
 
       if (success)
       {
-        log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
-        kafkaDriver.Commit();
+        if (_log.IsTraceEnabled())
+          _log.LogTrace($"{nameof(ProcessAllMessages)} Topic {_topicName}: Kafka Commiting Partition {messages.partition} Offset: {messages.offset}");
+        _kafkaDriver.Commit();
       }
     }
 
     private async Task ProcessSingleMessage(byte[] message)
     {
       string bytesAsString = Encoding.UTF8.GetString(message, 0, message.Length);
-      //Debugging only
-      log.LogDebug("KafkaConsumer: " + typeof(T) + " : " + bytesAsString);
-      var r_messageResolver = messageResolver.GetConverter<T>();
-      if (r_messageResolver == null)
+      _log.LogDebug(
+        $"{nameof(ProcessSingleMessage)} Topic {_topicName}: messageType: {typeof(T)} content: {bytesAsString}");
+
+      var converter = _messageResolver.GetConverter<T>();
+      if (converter == null)
       {
-        log.LogWarning("KafkaConsumer: unrecognized message type.");
+        _log.LogError($"{nameof(ProcessSingleMessage)} Topic {_topicName}: unsupported topic");
       }
       else
       {
-        var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString, r_messageResolver);
-        log.LogDebug($"KafkaConsumer: Saving type {deserializedObject.GetType()}");
-        await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
+        var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString, converter);
+        // we don't support all message within a kafka type
+        if (deserializedObject != null)
+        {
+          _log.LogDebug(
+            $"{nameof(ProcessSingleMessage)} Topic {_topicName}: Saving data type {deserializedObject.GetType()}");
+          await _dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
+        }
       }
-
     }
 
     public void StopProcessing()
     {
-      stopToken.Cancel();
+      _stopToken.Cancel();
     }
 
     public void Dispose()
     {
-      kafkaDriver?.Dispose();
+      _kafkaDriver?.Dispose();
     }
 
   }
