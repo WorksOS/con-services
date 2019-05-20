@@ -21,14 +21,6 @@ namespace VSS.KafkaConsumer.JsonConverters
       {
         return jObject["DeleteGeofenceEvent"].ToObject<DeleteGeofenceEvent>();
       }
-      //if (jObject["FavoriteGeofenceEvent"] != null)
-      //{
-      //  return jObject["FavoriteGeofenceEvent"].ToObject<FavoriteGeofenceEvent>();
-      //}
-      //if (jObject["UnfavoriteGeofenceEvent"] != null)
-      //{
-      //  return jObject["UnfavoriteGeofenceEvent"].ToObject<UnfavoriteGeofenceEvent>();
-      //}
 
       return null;
     }
