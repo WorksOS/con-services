@@ -3,6 +3,7 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer;
@@ -12,6 +13,7 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.MasterDataConsumer.Tests
 {
@@ -124,6 +126,66 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       subscriptionConsumer.SetTopic("VSS.Interfaces.Events.MasterData.ISubscriptionEvent");
       var subscriptionReturn = subscriptionConsumer.StartProcessingAsync(new CancellationTokenSource());
       Assert.IsNotNull(subscriptionReturn);
+    }
+
+    [TestMethod]
+    public void CanHandleUnsupportedMessageType()
+    {
+      var messageResolver = serviceProvider.GetService<IMessageTypeResolver>();
+      var converter = messageResolver.GetConverter<ISalesModelEvent>();
+      Assert.IsNull(converter, "Unsupported message Type should not be found");
+    }
+
+    [TestMethod]
+    public void SupportedEventType()
+    {
+      var messageResolver = serviceProvider.GetService<IMessageTypeResolver>();
+      var converter = messageResolver.GetConverter<IAssetEvent>();
+      Assert.IsNotNull(converter, "Unable to locate IAssetEvent converter");
+
+      var createAssetEvent = new CreateAssetEvent() { AssetUID = Guid.NewGuid() };
+      var createAssetEventSer = JsonConvert.SerializeObject(new { CreateAssetEvent = createAssetEvent });
+      var deserializedObject = JsonConvert.DeserializeObject<IAssetEvent>(createAssetEventSer, converter);
+      Assert.IsNotNull(deserializedObject);
+    }
+
+    [TestMethod]
+    public void SupportedSharedEventType()
+    {
+      var messageResolver = serviceProvider.GetService<IMessageTypeResolver>();
+      var converter = messageResolver.GetConverter<ICustomerEvent>();
+      Assert.IsNotNull(converter, "Unable to locate ICustomerEvent converter");
+
+      var associateCustomerUserEvent = new AssociateCustomerUserEvent() { CustomerUID = Guid.NewGuid() };
+      var associateCustomerUserEventSer = JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = associateCustomerUserEvent });
+      var deserializedObject = JsonConvert.DeserializeObject<ICustomerEvent>(associateCustomerUserEventSer, converter);
+      Assert.IsNotNull(deserializedObject);
+    }
+
+    [TestMethod]
+    public void SupportedCustomerAssetEventType()
+    {
+      var messageResolver = serviceProvider.GetService<IMessageTypeResolver>();
+      var converter = messageResolver.GetConverter<ICustomerEvent>();
+      Assert.IsNotNull(converter, "Unable to locate ICustomerEvent converter");
+
+      var associateCustomerAssetEvent = new AssociateCustomerAssetEvent() { CustomerUID = Guid.NewGuid() };
+      var associateCustomerAssetEventSer = JsonConvert.SerializeObject(new { AssociateCustomerAssetEvent = associateCustomerAssetEvent });
+      var deserializedObject = JsonConvert.DeserializeObject<ICustomerEvent>(associateCustomerAssetEventSer, converter);
+      Assert.IsNull(deserializedObject);
+    }
+
+    [TestMethod]
+    public void UnsupportedEventType()
+    {
+      var messageResolver = serviceProvider.GetService<IMessageTypeResolver>();
+      var converter = messageResolver.GetConverter<IGeofenceEvent>();
+      Assert.IsNotNull(converter, "Unable to locate IGeofenceEvent converter");
+
+      var favoriteGeofenceEventEvent = new FavoriteGeofenceEvent() { CustomerUID = Guid.NewGuid(), GeofenceUID = Guid.NewGuid() };
+      var favoriteGeofenceEventEventSer = JsonConvert.SerializeObject(new { FavoriteGeofenceEventEvent = favoriteGeofenceEventEvent });
+      var deserializedObject = JsonConvert.DeserializeObject<IGeofenceEvent>(favoriteGeofenceEventEventSer, converter);
+      Assert.IsNull(deserializedObject, "unhandled event type should return null");
     }
 
   }

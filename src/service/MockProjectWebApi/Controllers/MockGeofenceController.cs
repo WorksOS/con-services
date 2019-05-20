@@ -43,7 +43,7 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine("CreateMockGeofence");
       GeofenceData.Add(geofenceData);
-      return new GeofenceCreateResult(){geofenceUID = geofenceData.GeofenceUID.ToString()};
+      return new GeofenceCreateResult() { geofenceUID = geofenceData.GeofenceUID.ToString() };
     }
 
     [Route("api/v1/mock/geofences")]
@@ -128,7 +128,7 @@ namespace MockProjectWebApi.Controllers
             GeofenceName = "Ziegler Bloomington",
             GeofenceUID = Guid.Parse("69de1f67-1b2a-413a-8936-659892379fd9"),
             GeometryWKT = "POLYGON((-93.293819224884 44.8334583624534,-93.2899139285583 44.8334887962539,-93.2899139285583 44.8316170876231,-93.2889054179687 44.8316323050115,-93.2887981296082 44.8314344786485,-93.2920382380981 44.8295474853646,-93.2928536296387 44.8308714306678,-93.2930682063599 44.8313431739442,-93.293819224884 44.8334583624534))",
-            FillColor = 65535, 
+            FillColor = 65535,
             IsTransparent = true,
             GeofenceType = GeofenceType.Generic.ToString()
           }
