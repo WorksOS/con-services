@@ -67,6 +67,7 @@ data:
   SCHEDULER_FILTER_CLEANUP_TASK_AGE_MINUTES: "720"
   DOWNLOAD_FOLDER: C:/temp/
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
+  ALK_BASE_URL: http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc
   AWS_TAGFILE_BUCKET_NAME: vss-stg-directtagfile-archives
   ENVIRONMENT: ALPHA
 #AWS configuration  

@@ -207,7 +207,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public static TASNodeUserPreferences ConvertToRaptorUserPreferences(UserPreferenceData userPref, string projectTimezone)
     {
       var timezone = projectTimezone ?? userPref.Timezone;
-      TimeZoneInfo projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+      TimeZoneInfo projectTimeZone = ConvertTimezone(timezone);
       double projectTimeZoneOffset = projectTimeZone?.GetUtcOffset(DateTime.Now).TotalHours ?? 0;
 
       var languageIndex = Array.FindIndex(LanguageLocales.LanguageLocaleStrings, s => s.Equals(userPref.Language, StringComparison.OrdinalIgnoreCase));
@@ -246,7 +246,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public static UserPreferences ConvertUserPreferences(UserPreferenceData userPref, string projectTimezone)
     {
       var timezone = projectTimezone ?? userPref.Timezone;
-      TimeZoneInfo projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+      var projectTimeZone = ConvertTimezone(timezone);
       double projectTimeZoneOffset = projectTimeZone?.GetUtcOffset(DateTime.Now).TotalHours ?? 0;
 
       var languageIndex = Array.FindIndex(LanguageLocales.LanguageLocaleStrings, s => s.Equals(userPref.Language, StringComparison.OrdinalIgnoreCase));
@@ -272,6 +272,24 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         Preferences.DefaultNumberFormat,
         (int)userPref.TemperatureUnit.TemperatureUnitType(),
         Preferences.DefaultAssetLabelTypeId);
+    }
+
+    private static TimeZoneInfo ConvertTimezone(string timezone)
+    {
+      // For some reason, some timezones aren't always found by ID, See:
+      // https://stackoverflow.com/questions/31589491/time-zone-issue-with-malay-peninsula-standard-time
+      // This will find them by name or id
+      TimeZoneInfo projectTimeZone = null;
+      try
+      {
+        projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+      }
+      catch (TimeZoneNotFoundException)
+      {
+        projectTimeZone = TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(t => t.StandardName == timezone || t.DaylightName == timezone);
+      }
+
+      return projectTimeZone;
     }
   }
 }
