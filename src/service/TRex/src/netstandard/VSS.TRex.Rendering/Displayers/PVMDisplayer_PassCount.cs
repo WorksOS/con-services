@@ -16,6 +16,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      if (!(SubGrid is ClientPassCountLeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       var value = ((ClientPassCountLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       return value.MeasuredPassCount == CellPassConsts.NullPassCountValue ? Color.Empty : Palette.ChooseColour(value.MeasuredPassCount);

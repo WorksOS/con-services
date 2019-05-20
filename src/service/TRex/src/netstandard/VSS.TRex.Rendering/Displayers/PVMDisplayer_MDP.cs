@@ -16,7 +16,13 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      if (!(SubGrid is ClientMDPLeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       var cellValue = ((ClientMDPLeafSubGrid)SubGrid).Cells[east_col, north_row];
+
+      if (!(Palette is MDPPalette))
+        ThrowTRexColorPaletteException();
 
       return cellValue.MeasuredMDP == CellPassConsts.NullMDP ? Color.Empty : ((MDPPalette)Palette).ChooseColour(cellValue.MeasuredMDP, cellValue.TargetMDP);
     }

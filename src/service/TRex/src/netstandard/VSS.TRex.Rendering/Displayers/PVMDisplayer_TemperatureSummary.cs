@@ -17,8 +17,14 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      if (!(SubGrid is ClientTemperatureLeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       var cellValue = ((ClientTemperatureLeafSubGrid)SubGrid).Cells[east_col, north_row];
-      
+
+      if (!(Palette is TemperatureSummaryPalette))
+        ThrowTRexColorPaletteException();
+
       return cellValue.MeasuredTemperature == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : ((TemperatureSummaryPalette)Palette).ChooseColour(cellValue.MeasuredTemperature, cellValue.TemperatureLevels.Min, cellValue.TemperatureLevels.Max);
     }
   }

@@ -16,7 +16,13 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      if (!(SubGrid is ClientCMVLeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       var cellValue = ((ClientCMVLeafSubGrid)SubGrid).Cells[east_col, north_row];
+
+      if (!(Palette is CMVPalette))
+        ThrowTRexColorPaletteException();
 
       return cellValue.MeasuredCMV == CellPassConsts.NullCCV ? Color.Empty : ((CMVPalette) Palette).ChooseColour(cellValue);
     }

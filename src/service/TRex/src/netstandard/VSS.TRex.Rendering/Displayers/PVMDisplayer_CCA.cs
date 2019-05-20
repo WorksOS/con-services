@@ -1,9 +1,7 @@
-﻿using VSS.Productivity3D.Models.Enums;
+﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Interfaces;
-using System.Drawing;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -18,9 +16,27 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      const byte HALF_PASS_FACTOR = 2;
+
+      if (!(SubGrid is ClientCCALeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       var cellValue = ((ClientCCALeafSubGrid)SubGrid).Cells[east_col, north_row];
 
-      return cellValue.MeasuredCCA == CellPassConsts.NullCCA || cellValue.TargetCCA == CellPassConsts.NullCCATarget ? Color.Empty : ((CCASummaryPalette)Palette).ChooseColour(cellValue);
+      if (cellValue.MeasuredCCA == CellPassConsts.NullCCA)
+        return Color.Empty;
+
+      if (!(Palette is CCAPalette))
+        ThrowTRexColorPaletteException();
+
+      var ccaPalette = (CCAPalette)Palette;
+
+      var ccaValue = cellValue.MeasuredCCA / HALF_PASS_FACTOR;
+
+      if (ccaValue <= ccaPalette.PaletteTransitions.Length - 1)
+        return ccaPalette.PaletteTransitions[ccaValue].Color;
+
+      return ccaValue >= CellPassConsts.THICK_LIFT_CCA_VALUE / HALF_PASS_FACTOR ? Color.Empty : ccaPalette.PaletteTransitions[ccaPalette.PaletteTransitions.Length - 1].Color;
     }
   }
 }

@@ -15,6 +15,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      if (!(SubGrid is ClientTemperatureLeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       ushort value = ((ClientTemperatureLeafSubGrid)SubGrid).Cells[east_col, north_row].MeasuredTemperature;
 
       return value == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : Palette.ChooseColour(value);

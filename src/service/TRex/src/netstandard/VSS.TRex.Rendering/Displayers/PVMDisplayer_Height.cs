@@ -17,7 +17,13 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      if (!(SubGrid is ClientHeightLeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       float Height = ((ClientHeightLeafSubGrid)SubGrid).Cells[east_col, north_row];
+
+      if (!(Palette is HeightPalette))
+        ThrowTRexColorPaletteException();
 
       return Height == Consts.NullHeight ? Color.Empty : ((HeightPalette)Palette).ChooseColour(Height);
     }

@@ -16,6 +16,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      if (!(SubGrid is ClientMachineSpeedLeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       var value = ((ClientMachineSpeedLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       return value == CellPassConsts.NullMachineSpeed ? Color.Empty : Palette.ChooseColour(value);

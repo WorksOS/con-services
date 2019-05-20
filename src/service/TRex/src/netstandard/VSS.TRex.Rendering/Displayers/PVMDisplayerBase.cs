@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Rendering.Palettes.Interfaces;
+﻿using VSS.TRex.Common.Exceptions.Exceptions;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -15,6 +16,16 @@ namespace VSS.TRex.Rendering.Displayers
     /// </summary>
     /// <returns></returns>
     protected override bool SupportsCellStripRendering() => true;
+
+    protected void ThrowTRexClientLeafSubGridException()
+    {
+      throw new TRexClientLeafSubGridException($"Invalid ClientLeafSubGrid type: {nameof(SubGrid)}");
+    }
+
+    protected void ThrowTRexColorPaletteException()
+    {
+      throw new TRexColorPaletteException($"Invalid Palette type: {nameof(Palette)}");
+    }
 
     public PVMDisplayerBase()
     {

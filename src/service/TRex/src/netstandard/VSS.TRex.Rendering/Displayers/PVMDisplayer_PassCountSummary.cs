@@ -17,8 +17,14 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      if (!(SubGrid is ClientPassCountLeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       var cellValue = ((ClientPassCountLeafSubGrid)SubGrid).Cells[east_col, north_row];
-      
+
+      if (!(Palette is PassCountSummaryPalette))
+        ThrowTRexColorPaletteException();
+
       return cellValue.MeasuredPassCount == CellPassConsts.NullPassCountValue ? Color.Empty : ((PassCountSummaryPalette)Palette).ChooseColour(cellValue.MeasuredPassCount, cellValue.TargetPassCount, cellValue.TargetPassCount);
     }
   }

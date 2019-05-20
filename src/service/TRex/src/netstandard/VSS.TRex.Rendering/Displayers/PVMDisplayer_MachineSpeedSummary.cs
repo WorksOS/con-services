@@ -16,7 +16,13 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
+      if (!(SubGrid is ClientMachineTargetSpeedLeafSubGrid))
+        ThrowTRexClientLeafSubGridException();
+
       var value = ((ClientMachineTargetSpeedLeafSubGrid)SubGrid).Cells[east_col, north_row];
+
+      if (!(Palette is SpeedSummaryPalette))
+        ThrowTRexColorPaletteException();
 
       return value.Max == CellPassConsts.NullMachineSpeed ? Color.Empty : ((SpeedSummaryPalette) Palette).ChooseColour(value);
     }
