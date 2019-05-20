@@ -73,8 +73,7 @@ namespace VSS.KafkaConsumer
             }
             catch (Exception ex)
             {
-              _log.LogError(
-                $"{nameof(StartProcessingAsync)} Topic {_topicName}: Unhandled error occured {ex.Message} in {ex.StackTrace}");
+              _log.LogError(ex, $"{nameof(StartProcessingAsync)} Topic {_topicName}: Unhandled exception occured: ");
             }
           }
         }, TaskCreationOptions.LongRunning)
@@ -83,7 +82,7 @@ namespace VSS.KafkaConsumer
           _log.LogWarning($"{nameof(StartProcessingAsync)} Topic {_topicName}: StartProcessingAsync has been cancelled");
           if (o.Exception != null)
           {
-            _log.LogCritical($"{nameof(StartProcessingAsync)} Topic {_topicName}: Exception: {o.Exception.Message}");
+            _log.LogCritical(o.Exception, $"{nameof(StartProcessingAsync)} Topic {_topicName}: Exception: ");
           }
 
           return Task.FromResult(1);
@@ -138,14 +137,8 @@ namespace VSS.KafkaConsumer
         }
         catch (Exception ex)
         {
-          _log.LogError(
-            $"{nameof(ProcessAllMessages)} Topic {_topicName}: An unexpected error occured: {ex.Message}; stacktrace: {ex.StackTrace}");
+          _log.LogError(ex, $"{nameof(ProcessAllMessages)} Topic {_topicName}: An unexpected exception occured: ");
           success = false;
-          if (ex.InnerException != null)
-          {
-            _log.LogError(
-              $"{nameof(ProcessAllMessages)} Topic {_topicName}: Reason: {ex.InnerException.Message}; stacktrace: {ex.InnerException.StackTrace}");
-          }
         }
       }
 
