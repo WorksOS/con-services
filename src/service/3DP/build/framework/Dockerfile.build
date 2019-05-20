@@ -1,0 +1,4 @@
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2-windowsservercore-ltsc2019
+COPY . /building
+WORKDIR /building/src/service/3DP
+RUN ./build471.ps1
