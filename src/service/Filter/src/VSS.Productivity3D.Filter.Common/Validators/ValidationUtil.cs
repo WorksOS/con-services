@@ -42,16 +42,16 @@ namespace VSS.Productivity3D.Filter.Common.Validators
         return filterRequestFull.FilterJson;
       }
 
-      //Handle old boundaries without the type in the json
-      var polygonType = filterTempForHydration.PolygonType ?? GeofenceType.Filter;
-
       //Get polygon boundary to add to filter
       Geofence filterBoundary = null;
       try
       {
-        filterBoundary = polygonType == GeofenceType.Filter
-          ? await geofenceRepository.GetGeofence(filterTempForHydration.PolygonUid)
-          : await geofenceProxy.GetFavorite(filterTempForHydration.PolygonUid);
+        if (!filterTempForHydration.PolygonType.HasValue ||
+            filterTempForHydration.PolygonType.Value == GeofenceType.Filter)
+          filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.PolygonUid);
+
+        if (filterBoundary == null)
+          filterBoundary = geofenceProxy.GetFavorite(filterTempForHydration.PolygonUid);
       }
       catch (Exception e)
       {
