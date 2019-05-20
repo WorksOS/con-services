@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using VSS.ConfigurationStore;
+using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 
 namespace TCCToDataOcean.Utils

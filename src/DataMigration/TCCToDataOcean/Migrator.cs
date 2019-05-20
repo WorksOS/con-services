@@ -11,7 +11,7 @@ using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
 using TCCToDataOcean.Utils;
-using VSS.ConfigurationStore;
+using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;

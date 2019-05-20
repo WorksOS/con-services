@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using LiteDB;
 using TCCToDataOcean.Utils;
-using VSS.ConfigurationStore;
+using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
