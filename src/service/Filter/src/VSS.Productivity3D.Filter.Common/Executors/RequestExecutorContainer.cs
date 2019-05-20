@@ -75,6 +75,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected RepositoryBase auxRepository;
 
+    protected IGeofenceProxy GeofenceProxy;
+
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
     /// </summary>
@@ -154,7 +156,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected RequestExecutorContainer(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileListProxy fileListProxy, RepositoryBase repository,
-      IKafka producer, string kafkaTopicName, RepositoryBase auxRepository) : this()
+      IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy) : this()
     {
       this.configStore = configStore;
       if (logger != null)
@@ -168,6 +170,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       this.kafkaTopicName = kafkaTopicName;
       this.auxRepository = auxRepository;
       FileListProxy = fileListProxy;
+      GeofenceProxy = geofenceProxy;
     }
 
     /// <summary>
@@ -188,7 +191,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       RepositoryBase repository, RepositoryBase auxRepository,
       IProjectListProxy projectListProxy = null, IRaptorProxy raptorProxy = null, IAssetResolverProxy assetResolverProxy = null,
-      IKafka producer = null, string kafkaTopicName = null, IFileListProxy fileListProxy = null)
+      IKafka producer = null, string kafkaTopicName = null, IFileListProxy fileListProxy = null, IGeofenceProxy geofenceProxy = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor
@@ -203,7 +206,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         Repository = repository,
         producer = producer,
         kafkaTopicName = kafkaTopicName,
-        auxRepository = auxRepository
+        auxRepository = auxRepository,
+        GeofenceProxy = geofenceProxy
       };
 
       return executor;
