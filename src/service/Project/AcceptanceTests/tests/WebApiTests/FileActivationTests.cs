@@ -377,12 +377,15 @@ namespace WebApiTests
     {
       var importFile = new ImportFile();
 
+      var descrList = string.IsNullOrEmpty(importedFileUid)
+        ? new List<ActivatedFileDescriptor>()
+        : new List<ActivatedFileDescriptor>
+        {
+          new ActivatedFileDescriptor {ImportedFileUid = importedFileUid, IsActivated = activated}
+        };
       var requestBody = JsonConvert.SerializeObject(new ActivatedImportFilesRequest
       {
-        ImportedFileDescriptors = new List<ActivatedFileDescriptor>
-        {
-          new ActivatedFileDescriptor { ImportedFileUid = importedFileUid, IsActivated = activated }
-        }
+        ImportedFileDescriptors = descrList
       });
 
       var jsonResponse = importFile.DoHttpRequest(
@@ -394,8 +397,8 @@ namespace WebApiTests
 
       var response = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
 
-      Assert.AreEqual(expectedCode, response.code.Value);
-      Assert.AreEqual(expectedMessage, response.message.Value);
+      Assert.AreEqual(expectedCode, response.Code.Value);
+      Assert.AreEqual(expectedMessage, response.Message.Value);
     }
   }
 }
