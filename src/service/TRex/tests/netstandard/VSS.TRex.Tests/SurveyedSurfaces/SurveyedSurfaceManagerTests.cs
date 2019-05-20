@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
 
       var siteModelUid = Guid.NewGuid();
       var designUid = Guid.NewGuid();
-      var newSS = manager.Add(siteModelUid, new DesignDescriptor(designUid, "", "", 0.0), DateTime.UtcNow, BoundingWorldExtent3D.Null());
+      var newSS = manager.Add(siteModelUid, new DesignDescriptor(designUid, "", ""), DateTime.UtcNow, BoundingWorldExtent3D.Null());
 
       var results = manager.List(siteModelUid);
 
@@ -42,7 +42,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var siteModelUid = Guid.NewGuid();
       var designUid = Guid.NewGuid();
 
-      Action act = () => manager.Add(siteModelUid, new DesignDescriptor(designUid, "", "", 0.0), DateTime.Now, BoundingWorldExtent3D.Null());
+      Action act = () => manager.Add(siteModelUid, new DesignDescriptor(designUid, "", ""), DateTime.Now, BoundingWorldExtent3D.Null());
       act.Should().Throw<ArgumentException>().WithMessage("AsAtDate must be a UTC date time");
     }
 

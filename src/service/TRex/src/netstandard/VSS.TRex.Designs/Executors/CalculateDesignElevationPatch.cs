@@ -27,24 +27,23 @@ namespace VSS.TRex.Designs.Executors
       /// <summary>
       /// Performs the donkey work of the elevation patch calculation
       /// </summary>
-      /// <param name="offset"></param>
       /// <param name="CalcResult"></param>
       /// <param name="projectUID"></param>
-      /// <param name="referenceDesignUID"></param>
+      /// <param name="referenceDesign"></param>
       /// <param name="cellSize"></param>
       /// <param name="originX"></param>
       /// <param name="originY"></param>
       /// <returns></returns>
-      private IClientHeightLeafSubGrid Calc(Guid projectUID, Guid referenceDesignUID, double cellSize, uint originX, uint originY, double offset,
+      private IClientHeightLeafSubGrid Calc(Guid projectUID, DesignOffset referenceDesign, double cellSize, uint originX, uint originY,
           out DesignProfilerRequestResult CalcResult)
         {
             CalcResult = DesignProfilerRequestResult.UnknownError;
 
-            IDesignBase Design = Designs.Lock(referenceDesignUID, projectUID, cellSize, out DesignLoadResult LockResult);
+            IDesignBase Design = Designs.Lock(referenceDesign.DesignID, projectUID, cellSize, out DesignLoadResult LockResult);
 
             if (Design == null)
             {
-                Log.LogWarning($"Failed to read design file for design {referenceDesignUID}");
+                Log.LogWarning($"Failed to read design file for design {referenceDesign.DesignID}");
 
                 CalcResult = LockResult == DesignLoadResult.DesignDoesNotExist 
                 ? DesignProfilerRequestResult.DesignDoesNotExist
@@ -70,7 +69,7 @@ namespace VSS.TRex.Designs.Executors
                                                  (uint)(originY & ~SubGridTreeConsts.SubGridLocalKeyMask));
                 Result.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
 
-                CalcResult = Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, cellSize, offset) 
+                CalcResult = Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, cellSize, referenceDesign.Offset) 
                   ? DesignProfilerRequestResult.OK 
                   : DesignProfilerRequestResult.NoElevationsInRequestedPatch;
 
@@ -78,7 +77,7 @@ namespace VSS.TRex.Designs.Executors
             }
             finally
             {
-                Designs.UnLock(referenceDesignUID, Design);
+                Designs.UnLock(referenceDesign.DesignID, Design);
             }
         }
 
@@ -86,7 +85,7 @@ namespace VSS.TRex.Designs.Executors
         /// Performs execution business logic for this executor
         /// </summary>
         /// <returns></returns>
-        public IClientHeightLeafSubGrid Execute(Guid projectUID, Guid referenceDesignUID, double cellSize, uint originX, uint originY, double offset, out DesignProfilerRequestResult calcResult)
+        public IClientHeightLeafSubGrid Execute(Guid projectUID, DesignOffset referenceDesign, double cellSize, uint originX, uint originY, out DesignProfilerRequestResult calcResult)
         {
             calcResult = DesignProfilerRequestResult.UnknownError;
 
@@ -100,7 +99,7 @@ namespace VSS.TRex.Designs.Executors
                 */
 
                 // Calculate the patch of elevations and return it
-                return Calc(projectUID, referenceDesignUID, cellSize, originX, originY, offset, out calcResult);
+                return Calc(projectUID, referenceDesign, cellSize, originX, originY, out calcResult);
             }
             finally
             {

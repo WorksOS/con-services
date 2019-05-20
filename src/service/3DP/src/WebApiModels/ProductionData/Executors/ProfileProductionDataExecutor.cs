@@ -41,6 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         request.ProjectUid ?? Guid.Empty,
         request.Filter,
         request.AlignmentDesign?.FileUid,
+        request.AlignmentDesign?.Offset,
         request.GridPoints != null,
         request.GridPoints?.x1 ?? request.WGS84Points.lon1,
         request.GridPoints?.x2 ?? request.WGS84Points.lon2,

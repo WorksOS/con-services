@@ -34,16 +34,19 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <param name="projectUid"></param>
     /// <param name="cellSize"></param>
     /// <param name="designUid"></param>
+    /// <param name="offset"></param>
     /// <param name="profilePath"></param>
     // /// <param name="processingMap"></param>
     public CalculateDesignProfileArgument(Guid projectUid,
                                           double cellSize,
                                           Guid designUid,
+                                          double offset,
                                           XYZ[] profilePath) : this()
     {
       ProjectID = projectUid;
       CellSize = cellSize;
-      ReferenceDesignUID = designUid;
+      ReferenceDesign.DesignID = designUid;
+      ReferenceDesign.Offset = offset;
       ProfilePath = profilePath;
     }
 
@@ -53,7 +56,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{ReferenceDesignUID}, {ProfilePath.Length} vertices";
+      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{ReferenceDesign?.DesignID}, Offset: {ReferenceDesign?.Offset}, {ProfilePath.Length} vertices";
     }
 
     /// <summary>

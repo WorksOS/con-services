@@ -49,16 +49,16 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
     {
       if (assetUids.Count == 0)
         return new List<KeyValuePair<Guid, long>>();
-      
-      var result =
-        await PostMasterDataItemServiceDiscovery<AssetDisplayModel>("/assets/assetuids", null, null, customHeaders,
-          payload: new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(assetUids))));
-      if (result.Code == 0)
+
+      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(assetUids))))
       {
-        return result.assetIdentifiers;
+        var result = await PostMasterDataItemServiceDiscoveryNoCache<AssetDisplayModel>("/assets/assetuids", customHeaders, payload: ms);
+        if (result.Code == 0)
+          return result.assetIdentifiers;
+
+        log.LogDebug($"Failed to get list of assets (Guid list): {result.Code}, {result.Message}");
       }
 
-      log.LogDebug($"Failed to get list of assets (Guid list): {result.Code}, {result.Message}");
       return null;
     }
 
@@ -68,15 +68,14 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
       if (assetIds.Count == 0)
         return new List<KeyValuePair<Guid, long>>();
 
-      var result =
-        await PostMasterDataItemServiceDiscovery<AssetDisplayModel>("/assets/assetids", null, null, customHeaders,
-          payload: new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(assetIds))));
-      if (result.Code == 0)
+      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(assetIds))))
       {
-        return result.assetIdentifiers;
-      }
+        var result = await PostMasterDataItemServiceDiscoveryNoCache<AssetDisplayModel>("/assets/assetids", customHeaders, payload: ms);
+        if (result.Code == 0)
+          return result.assetIdentifiers;
 
-      log.LogDebug($"Failed to get list of assets (long list): {result.Code}, {result.Message}");
+        log.LogDebug($"Failed to get list of assets (long list): {result.Code}, {result.Message}");
+      }
       return null;
     }
 
@@ -86,17 +85,11 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
       MatchingAssetsDisplayModel result = null;
 
       if (!string.IsNullOrEmpty(asset.AssetUID2D))
-        result =
-          await GetMasterDataItemServiceDiscovery<MatchingAssetsDisplayModel>(
-            $"/assets/match2dasset/{asset.AssetUID2D}",
-            null, null, customHeaders);
+        result = await GetMasterDataItemServiceDiscoveryNoCache<MatchingAssetsDisplayModel>($"/assets/match2dasset/{asset.AssetUID2D}", customHeaders);
 
       if (!string.IsNullOrEmpty(asset.AssetUID3D))
-        result =
-          await GetMasterDataItemServiceDiscovery<MatchingAssetsDisplayModel>(
-            $"/assets/match3dasset/{asset.AssetUID3D}",
-            null, null, customHeaders);
-
+        result = await GetMasterDataItemServiceDiscoveryNoCache<MatchingAssetsDisplayModel>($"/assets/match3dasset/{asset.AssetUID3D}", customHeaders);
+      
       if (result == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No assert to process provided"));
@@ -110,7 +103,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
 
     public void ClearCacheItem(string uid, string userId = null)
     {
-      throw new NotImplementedException();
+      // Nothing to do - handled by cache invaldiation
     }
   }
 }

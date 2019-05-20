@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Common.Records;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
 using Xunit;
@@ -23,7 +24,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignUID = Guid.NewGuid(),
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
         MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
         OverrideMachineMDP = false,
         OverridingMachineMDP = 1000

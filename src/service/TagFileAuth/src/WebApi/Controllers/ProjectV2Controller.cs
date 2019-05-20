@@ -61,17 +61,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetProjectUidResult> GetProjectUid([FromBody]GetProjectUidRequest request)
     {
-      _log.LogDebug($"GetProjectUid: request:{JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(GetProjectUid)}: request: {JsonConvert.SerializeObject(request)}");
       var errorCodeResult = request.Validate();
       if (errorCodeResult > 0)
-      {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult("", "", errorCodeResult));
-      }
 
       var executor = RequestExecutorContainer.Build<ProjectUidExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectUidResult;
 
-      _log.LogResult(ToString(), request, result);
+      _log.LogResult(nameof(GetProjectUid), request, result);
       return result;
     }
 
@@ -99,17 +97,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUids([FromBody]GetProjectAndAssetUidsRequest request)
     {
-      _log.LogDebug($"GetProjectAndAssetUids: request:{JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(GetProjectAndAssetUids)}: request:{JsonConvert.SerializeObject(request)}");
       var errorCodeResult = request.Validate();
       if (errorCodeResult > 0)
-      {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult("", "", errorCodeResult));
-      }
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
-      _log.LogResult(ToString(), request, result);
+      _log.LogResult(nameof(GetProjectAndAssetUids), request, result);
       return result;
     }
 

@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #endif
           mockConfigStore.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
   
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       result.Should().NotBeNull();
       result.Message.Should().Be(TagFileConnectedSiteSubmissionExecutor.DISABLED_MESSAGE);
@@ -138,7 +138,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #endif
           mockConfigStore.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       result.Should().NotBeNull();
       result.Message.Should().Be(TagFileConnectedSiteSubmissionExecutor.DEFAULT_ERROR_MESSAGE);
@@ -176,7 +176,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #endif
           mockConfigStore.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
 
-      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+      var result = await submitter.ProcessAsync(request);
 
       result.Should().NotBeNull();
       result.Message.Should().Be(ContractExecutionResult.DefaultMessage);

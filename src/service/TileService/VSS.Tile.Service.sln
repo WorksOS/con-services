@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2042
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{5D07E2A5-76C2-4E86-88FB-BEA0E8813762}"
 EndProject
@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\Common\ITask\src\VSS.ITask.csproj", "{480E14AB-EB27-4FD0-9256-D731689599F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Tile.Service.Common.Tests", "test\UnitTests\VSS.Tile.Service.Common.Tests\VSS.Tile.Service.Common.Tests.csproj", "{5613B30E-C603-4786-8FF6-9F45CBD0ACE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Tile.Service.UnitTests", "test\UnitTests\VSS.Tile.Service.UnitTests\VSS.Tile.Service.UnitTests.csproj", "{5613B30E-C603-4786-8FF6-9F45CBD0ACE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{1CDE03A4-F231-4E43-9346-CBF514EB2C2C}"
 EndProject
@@ -80,6 +80,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\..\Common\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{3287ABB5-DB9B-466E-B80E-8A4C6B4969F7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "..\..\Common\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj", "{D5F075A0-8579-437A-BBE5-F12C1A067450}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FDDB44E3-7F49-4988-8CF8-0C471437ECF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -227,7 +229,7 @@ Global
 		{E71D02C2-4969-4A1C-8268-CA1A5D94660A} = {1EEFA0EC-0C75-4621-85A4-9B9829905675}
 		{ECBFB24F-A6CD-4E4B-BE0B-4377EC43053B} = {1EEFA0EC-0C75-4621-85A4-9B9829905675}
 		{480E14AB-EB27-4FD0-9256-D731689599F4} = {1EEFA0EC-0C75-4621-85A4-9B9829905675}
-		{5613B30E-C603-4786-8FF6-9F45CBD0ACE5} = {230C4666-ED6E-4FA4-A70F-0AAF81E1E1CF}
+		{5613B30E-C603-4786-8FF6-9F45CBD0ACE5} = {FDDB44E3-7F49-4988-8CF8-0C471437ECF0}
 		{1EEFA0EC-0C75-4621-85A4-9B9829905675} = {1CDE03A4-F231-4E43-9346-CBF514EB2C2C}
 		{1EC007C6-506B-427D-89F4-70CD5475F36A} = {1CDE03A4-F231-4E43-9346-CBF514EB2C2C}
 		{927828D7-B098-4256-AAEF-EB908254A9F2} = {1EC007C6-506B-427D-89F4-70CD5475F36A}

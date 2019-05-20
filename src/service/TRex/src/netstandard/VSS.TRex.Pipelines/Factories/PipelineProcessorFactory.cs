@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
@@ -23,7 +24,7 @@ namespace VSS.TRex.Pipelines.Factories
     /// <param name="gridDataType"></param>
     /// <param name="response"></param>
     /// <param name="filters"></param>
-    /// <param name="cutFillDesignID"></param>
+    /// <param name="cutFillDesign"></param>
     /// <param name="task"></param>
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
@@ -35,7 +36,7 @@ namespace VSS.TRex.Pipelines.Factories
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
       IFilterSet filters,
-      Guid cutFillDesignID,
+      DesignOffset cutFillDesign,
       ITRexTask task,
       ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,
@@ -44,7 +45,7 @@ namespace VSS.TRex.Pipelines.Factories
       BoundingIntegerExtent2D overrideSpatialCellRestriction)
     {
       var pipelineProcessor = NewInstanceNoBuild
-        (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesignID, 
+        (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesign, 
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
         overrideSpatialCellRestriction);
 
@@ -66,7 +67,7 @@ namespace VSS.TRex.Pipelines.Factories
     /// <param name="gridDataType"></param>
     /// <param name="response"></param>
     /// <param name="filters"></param>
-    /// <param name="cutFillDesignID"></param>
+    /// <param name="cutFillDesign"></param>
     /// <param name="task"></param>
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
@@ -78,7 +79,7 @@ namespace VSS.TRex.Pipelines.Factories
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
       IFilterSet filters,
-      Guid cutFillDesignID,
+      DesignOffset cutFillDesign,
       ITRexTask task,
       ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,
@@ -87,7 +88,7 @@ namespace VSS.TRex.Pipelines.Factories
       BoundingIntegerExtent2D overrideSpatialCellRestriction)
     {
       return new PipelineProcessor
-        (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesignID,
+        (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesign,
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
         overrideSpatialCellRestriction);
     }

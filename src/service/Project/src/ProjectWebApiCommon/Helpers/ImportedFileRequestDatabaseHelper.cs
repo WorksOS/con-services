@@ -15,6 +15,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Filter=VSS.Productivity3D.Filter.Abstractions.Models.Filter;
+using VSS.Productivity3D.Project.Abstractions.Extensions;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -84,7 +85,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           existing = importedFiles.FirstOrDefault
           (f => f.ImportedFileType == ImportedFileType.ReferenceSurface &&
                 f.ParentUid == parentUid.ToString() &&
-                Math.Round(f.Offset, 3) == Math.Round(offset ?? 0, 3));
+                f.Offset.EqualsToNearestMillimeter(offset));
         }
         else
         {

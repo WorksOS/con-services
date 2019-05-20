@@ -9,6 +9,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -36,6 +37,8 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="minX"></param>
     /// <param name="minY"></param>
     /// <param name="maxX"></param>
+    /// <param name="cutFillDesignUid"></param>
+    /// <param name="offset"></param>
     /// <returns></returns>
     [HttpGet("{siteModelID}")]
     public async Task<JsonResult> GetTile(string siteModelID,
@@ -45,7 +48,9 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double maxY,
       [FromQuery] int mode,
       [FromQuery] ushort pixelsX,
-      [FromQuery] ushort pixelsY)
+      [FromQuery] ushort pixelsY,
+      [FromQuery] Guid? cutFillDesignUid,
+      [FromQuery] double? offset)
     {
       var request = new TileRenderRequest();
       var response = await request.ExecuteAsync(new TileRenderRequestArgument(
@@ -57,7 +62,7 @@ namespace VSS.TRex.Webtools.Controllers
         extents: new BoundingWorldExtent3D(minX, minY, maxX, maxY),
         mode: (DisplayMode) mode,
         filters: new FilterSet(new CombinedFilter(), new CombinedFilter()),
-        referenceDesignUid: Guid.Empty
+        referenceDesign: new DesignOffset(cutFillDesignUid ?? Guid.Empty, offset ?? 0.0)
       )) as TileRenderResponse_Core2;
 
       return new JsonResult(new TileResult(response?.TileBitmapData));

@@ -284,51 +284,62 @@ namespace VSS.MasterData.Proxies
     {
       if (dataCache == null)
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
-      var cacheKey = GetCacheKey<T>(uid, userId);
-      var opts = new MemoryCacheEntryOptions();
 
-      switch (cacheLifeKey)
+      if (string.IsNullOrEmpty(uid) && string.IsNullOrEmpty(userId))
       {
-        case string s:
-          opts.GetCacheOptions(s, configurationStore, log);
-          break;
-        case TimeSpan t:
-          opts.SlidingExpiration = t;
-          break;
-        default:
-          throw new InvalidOperationException("Incorrect expiration time parameter");
+        log.LogWarning($"Attempting to execute method with cache, but cannot generate a cache key - not caching the result.");
+        var noCacheResult = await action.Invoke();
+        if (noCacheResult != null)
+          return noCacheResult;
       }
-
-      T result = default(T);
-
-      using (await memCacheLock.LockAsync(cacheKey))
+      else
       {
-        if (!IfCacheNeedsToBeInvalidated(customHeaders))
+        var cacheKey = GetCacheKey<T>(uid, userId);
+        var opts = new MemoryCacheEntryOptions();
+
+        switch (cacheLifeKey)
         {
-          return await dataCache.GetOrCreate(cacheKey, async entry =>
-          {
-            entry.SetOptions(opts);
-            log.LogDebug($"{nameof(WithMemoryCacheExecute)}: Item for key {cacheKey} not found in cache, getting from web api");
-            result = await action.Invoke();
-            if (result != null)
-              return new CacheItem<T>(result, result.GetIdentifiers());
-
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                "Unable to request data from a webapi"));
-
-          });
+          case string s:
+            opts.GetCacheOptions(s, configurationStore, log);
+            break;
+          case TimeSpan t:
+            opts.SlidingExpiration = t;
+            break;
+          default:
+            throw new InvalidOperationException("Incorrect expiration time parameter");
         }
 
-        log.LogDebug($"{nameof(WithMemoryCacheExecute)}: Item for key {cacheKey} is requested to be invalidated, getting from web api");
-        result = await action.Invoke();
-        if (result != null)
-          return dataCache.Set(cacheKey, result, result.GetIdentifiers(), opts); 
-          
-        throw new ServiceException(HttpStatusCode.BadRequest,
+        T result = default(T);
+
+        using (await memCacheLock.LockAsync(cacheKey))
+        {
+          if (!IfCacheNeedsToBeInvalidated(customHeaders))
+          {
+            return await dataCache.GetOrCreate(cacheKey, async entry =>
+            {
+              entry.SetOptions(opts);
+              log.LogDebug($"{nameof(WithMemoryCacheExecute)}: Item for key {cacheKey} not found in cache, getting from web api");
+              result = await action.Invoke();
+              if (result != null)
+                return new CacheItem<T>(result, result.GetIdentifiers());
+
+              throw new ServiceException(HttpStatusCode.BadRequest,
+                new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+                  "Unable to request data from a webapi"));
+
+            });
+          }
+
+          log.LogDebug($"{nameof(WithMemoryCacheExecute)}: Item for key {cacheKey} is requested to be invalidated, getting from web api");
+          result = await action.Invoke();
+          if (result != null)
+            return dataCache.Set(cacheKey, result, result.GetIdentifiers(), opts);
+        }
+      }
+
+      throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Unable to request data from a webapi"));
-      }
     }
 
 

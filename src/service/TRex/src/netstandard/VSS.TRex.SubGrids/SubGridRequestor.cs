@@ -119,9 +119,9 @@ namespace VSS.TRex.SubGrids
             SubGridCacheContext = subGridCacheContext;
         
             FilteredSurveyedSurfaces = filteredSurveyedSurfaces;
-            
-            if (Filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
-              ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignUID);
+
+            if (Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty)
+              ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesign.DesignID);
 
             if (Filter.SpatialFilter.IsDesignMask)
               SurfaceDesignMaskDesign = SiteModel.Designs.Locate(Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
@@ -143,10 +143,10 @@ namespace VSS.TRex.SubGrids
                 // If the elevation range filter uses a design then the design elevations
                 // for the sub grid need to be calculated and supplied to the filter
 
-                if (Filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
+                if (Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty)
                 {
                   // Query the design get the patch of elevations calculated
-                  ElevationRangeDesign.GetDesignHeights(SiteModel.ID,
+                  ElevationRangeDesign.GetDesignHeights(SiteModel.ID, Filter.AttributeFilter.ElevationRangeDesign.Offset,
                     ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize,
                     out DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
 
@@ -163,7 +163,8 @@ namespace VSS.TRex.SubGrids
                 // SIGLogMessage.PublishNoODS(Nil, Format('#D# InitialiseFilterContext RequestDesignElevationPatch for Design %s',[CellFilter.DesignFilter.FileName]), ...);
                 // Query the DesignProfiler service to get the patch of elevations calculated
 
-                SurfaceDesignMaskDesign.GetDesignHeights(SiteModel.ID, ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize,
+                //Spatial design filter - don't care about offset
+                SurfaceDesignMaskDesign.GetDesignHeights(SiteModel.ID, 0, ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize,
                   out SurfaceDesignMaskElevations, out DesignProfilerRequestResult ProfilerRequestResult);
                
                 if ((ProfilerRequestResult != DesignProfilerRequestResult.OK && ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)

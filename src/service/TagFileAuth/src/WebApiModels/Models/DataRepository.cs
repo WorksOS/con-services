@@ -71,9 +71,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (legacyProjectId > 0)
-        {
-          project = await ProjectRepository.GetProject(legacyProjectId).ConfigureAwait(false);
-        }
+          project = await ProjectRepository.GetProject(legacyProjectId);
       }
       catch (Exception e)
       {
@@ -91,9 +89,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(projectUid))
-        {
-          project = await ProjectRepository.GetProject(projectUid).ConfigureAwait(false);
-        }
+          project = await ProjectRepository.GetProject(projectUid);
       }
       catch (Exception e)
       {
@@ -105,20 +101,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return project;
     }
 
-    public async Task<IEnumerable<ProjectDataModel>> LoadProjects(string customerUid, DateTime validAtDate)
+    public async Task<List<ProjectDataModel>> LoadProjects(string customerUid, DateTime validAtDate)
     {
-      IEnumerable<ProjectDataModel> projects = null;
-
+      var projects = new List<ProjectDataModel>();
       try
       {
         if (customerUid != null)
         {
-          var p = await ProjectRepository.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
+          var p = await ProjectRepository.GetProjectsForCustomer(customerUid);
 
           if (p != null)
           {
-            projects = p.ToList()
-              .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsDeleted);
+            projects = p
+              .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsDeleted)
+              .ToList();
           }
         }
       }
@@ -132,17 +128,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<ProjectDataModel>> GetStandardProject(string customerUid, double latitude,
+    public async Task<List<ProjectDataModel>> GetStandardProject(string customerUid, double latitude,
       double longitude, DateTime timeOfPosition)
     {
-      IEnumerable<ProjectDataModel> projects = null;
+      var projects = new List<ProjectDataModel>();
 
       try
       {
         if (customerUid != null)
         {
-          projects = await ProjectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition)
-            .ConfigureAwait(false);
+          var p = (await ProjectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition));
+          if (p != null)
+            projects = p.ToList();
         }
       }
       catch (Exception e)
@@ -155,19 +152,22 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<ProjectDataModel>> GetProjectMonitoringProject(string customerUid, double latitude,
+    public async Task<List<ProjectDataModel>> GetProjectMonitoringProject(string customerUid, double latitude,
       double longitude, DateTime timeOfPosition,
       int projectType, int serviceType)
     {
-      IEnumerable<ProjectDataModel> projects = null;
+      var projects = new List<ProjectDataModel>();
       try
       {
         if (customerUid != null)
         {
-          projects = await ProjectRepository.GetProjectMonitoringProject(customerUid,
+          var p = await ProjectRepository.GetProjectMonitoringProject(customerUid,
             latitude, longitude, timeOfPosition,
             projectType,
-            serviceType).ConfigureAwait(false);
+            serviceType);
+
+          if (p != null)
+            projects = p.ToList();
         }
       }
       catch (Exception e)
@@ -180,15 +180,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<ProjectDataModel>> GetIntersectingProjects(string customerUid,
+    public async Task<List<ProjectDataModel>> GetIntersectingProjects(string customerUid,
       double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition = null)
     {
-      IEnumerable<ProjectDataModel> projects = null;
+      var projects = new List<ProjectDataModel>();
       try
       {
         if (customerUid != null)
         {
-          projects = await ProjectRepository.GetIntersectingProjects(customerUid, latitude, longitude, projectTypes, timeOfPosition).ConfigureAwait(false);
+          var p = await ProjectRepository.GetIntersectingProjects(customerUid, latitude, longitude, projectTypes,
+              timeOfPosition);
+          if (p != null)
+            projects = p.ToList();
         }
       }
       catch (Exception e)
@@ -207,9 +210,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(radioSerial) && !string.IsNullOrEmpty(deviceType))
-        {
-          assetDevice = await DeviceRepository.GetAssociatedAsset(radioSerial, deviceType).ConfigureAwait(false);
-        }
+          assetDevice = await DeviceRepository.GetAssociatedAsset(radioSerial, deviceType);
       }
       catch (Exception e)
       {
@@ -225,12 +226,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     {
       // TFA is only interested in customer and dealer types
       Customer customer = null;
-
       try
       {
         if (!string.IsNullOrEmpty(customerUid))
         {
-          var a = await CustomerRepository.GetCustomer(new Guid(customerUid)).ConfigureAwait(false);
+          var a = await CustomerRepository.GetCustomer(new Guid(customerUid));
           if (a != null &&
               (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
                a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
@@ -256,7 +256,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(tccOrgUid))
         {
-          var customerTccOrg = await CustomerRepository.GetCustomerWithTccOrg(tccOrgUid).ConfigureAwait(false);
+          var customerTccOrg = await CustomerRepository.GetCustomerWithTccOrg(tccOrgUid);
           if (customerTccOrg != null &&
               (customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
                customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
@@ -278,12 +278,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     {
       // TFA is only interested in customer and dealer types
       CustomerTccOrg customer = null;
-
       try
       {
         if (customerUid != null)
         {
-          var a = await CustomerRepository.GetCustomerWithTccOrg(new Guid(customerUid)).ConfigureAwait(false);
+          var a = await CustomerRepository.GetCustomerWithTccOrg(new Guid(customerUid));
           if (a != null &&
               (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
                a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
@@ -304,14 +303,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     public async Task<Asset> LoadAsset(long legacyAssetId)
     {
       Asset asset = null;
-
       try
       {
-
         if (legacyAssetId > 0)
-        {
-          asset = await AssetRepository.GetAsset(legacyAssetId).ConfigureAwait(false);
-        }
+          asset = await AssetRepository.GetAsset(legacyAssetId);
       }
       catch (Exception e)
       {
@@ -325,22 +320,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     // customer Man3Dpm(18-15)
     // this may be from the Projects CustomerUID OR the Assets OwningCustomerUID
-    public async Task<IEnumerable<Subscriptions>> LoadManual3DCustomerBasedSubs(string customerUid,
+    public async Task<List<Subscriptions>> LoadManual3DCustomerBasedSubs(string customerUid,
       DateTime validAtDate)
     {
-      IEnumerable<Subscriptions> subs = null;
-
+      var subs = new List<Subscriptions>();
       try
       {
         if (!string.IsNullOrEmpty(customerUid))
         {
-          var s = await SubscriptionsRepository.GetProjectBasedSubscriptionsByCustomer(customerUid, validAtDate)
-            .ConfigureAwait(false);
+          var s = await SubscriptionsRepository.GetProjectBasedSubscriptionsByCustomer(customerUid, validAtDate);
           if (s != null)
           {
-            subs = s.ToList()
+            subs = s
               .Where(x => x.ServiceTypeID == (int)ServiceTypeEnum.Manual3DProjectMonitoring)
-              .Select(x => new Subscriptions("", "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));
+              .Select(x => new Subscriptions("", "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate))
+              .ToList();
           }
         }
       }
@@ -355,16 +349,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     // asset:3dProjMon (16 --> 13) 
-    public async Task<IEnumerable<Subscriptions>> LoadAssetSubs(string assetUid, DateTime validAtDate)
+    public async Task<List<Subscriptions>> LoadAssetSubs(string assetUid, DateTime validAtDate)
     {
-      IEnumerable<Subscriptions> subs = null;
-
+      var subs = new List<Subscriptions>();
       try
       {
         if (!string.IsNullOrEmpty(assetUid))
         {
-          var s = await SubscriptionsRepository.GetSubscriptionsByAsset(assetUid, validAtDate.Date)
-            .ConfigureAwait(false);
+          var s = await SubscriptionsRepository.GetSubscriptionsByAsset(assetUid, validAtDate.Date);
           if (s != null)
           {
             subs = s

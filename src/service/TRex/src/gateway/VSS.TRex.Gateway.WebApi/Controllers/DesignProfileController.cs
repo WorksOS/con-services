@@ -50,6 +50,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     /// <param name="projectUID"></param>
     /// <param name="designUID"></param>
+    /// <param name="offset"></param>
     /// <param name="startX"></param>
     /// <param name="startY"></param>
     /// <param name="endX"></param>
@@ -60,12 +61,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public DesignProfileResult GetDesignProfile(
       [FromQuery] Guid projectUID,
       [FromQuery] Guid designUID,
+      [FromQuery] double offset,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
       [FromQuery] double endY)
     {
-      var designProfileRequest = new DesignProfileRequest(projectUID, designUID, startX, startY, endX, endY);
+      var designProfileRequest = new DesignProfileRequest(projectUID, designUID, offset, startX, startY, endX, endY);
       return PostDesignProfile(designProfileRequest);
     }
   }

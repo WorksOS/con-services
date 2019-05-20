@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
@@ -448,17 +449,18 @@ namespace VSS.TRex.Tests.Caching
     {
       Guid designGuid = Guid.Parse("12345678-1234-1234-1234-123456781234");
 
+
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasElevationRangeFilter = true;
-        x.AttributeFilter.ElevationRangeDesignUID = designGuid;
+        x.AttributeFilter.ElevationRangeDesign = new DesignOffset(designGuid, 0.39);
         x.AttributeFilter.ElevationRangeOffset = 123.456;
         x.AttributeFilter.ElevationRangeThickness = 1.234;
       });
 
       var s = filter.AttributeFilter.SpatialCacheFingerprint();
 
-      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("ER:12345678-1234-1234-1234-123456781234-123.456-1.234", StringComparison.OrdinalIgnoreCase),
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("ER:12345678-1234-1234-1234-123456781234-0.39-123.456-1.234", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain elevation range filter ID");
 
       filter = CombinedFilter.MakeFilterWith(x =>

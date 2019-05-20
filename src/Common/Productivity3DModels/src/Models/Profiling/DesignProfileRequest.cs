@@ -15,6 +15,12 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     public Guid? DesignUid { get; private set; }
 
     /// <summary>
+    /// The offset from the design for a reference surface
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public double? Offset { get; private set; }
+
+    /// <summary>
     /// Sets the StartX location of the profile line in meters
     /// </summary>
     /// <value>
@@ -64,10 +70,11 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// <param name="startY"></param>
     /// <param name="endX"></param>
     /// <param name="endY"></param>
-    public DesignProfileRequest(Guid projectUid, Guid designUid, double startX, double startY, double endX, double endY)
+    public DesignProfileRequest(Guid projectUid, Guid designUid, double offset, double startX, double startY, double endX, double endY)
     {
       ProjectUid = projectUid;
       DesignUid = designUid;
+      Offset = offset;
       StartX = startX;
       StartY = startY;
       EndX = endX;

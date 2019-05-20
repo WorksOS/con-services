@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.CSV.GridFabric;
@@ -56,7 +57,7 @@ namespace VSS.TRex.Exports.CSV.Executors
           gridDataType: gridDataType,
           response: new SubGridsPipelinedResponseBase(),
           filters: _CSVExportRequestArgument.Filters,
-          cutFillDesignID: Guid.Empty,
+          cutFillDesign: new DesignOffset(), 
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.CSVExport),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),

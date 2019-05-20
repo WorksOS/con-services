@@ -21,7 +21,10 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       CalcResult = (DesignProfilerRequestResult) reader.ReadByte();
 
       if (reader.ReadBoolean())
+      {
+        Heights = new ClientHeightLeafSubGrid();
         Heights.FromBytes(reader.ReadByteArray());
+      }
     }
 
     public override void ToBinary(IBinaryRawWriter writer)

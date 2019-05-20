@@ -21,7 +21,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         var Executor = new CalculateAlignmentDesignFilterBoundary();
 
-        var fence = Executor.Execute(args.ProjectID, args.ReferenceDesignUID, args.StartStation, args.EndStation, args.LeftOffset, args.RightOffset);
+        var fence = Executor.Execute(args.ProjectID, args.ReferenceDesign.DesignID, args.StartStation, args.EndStation, args.LeftOffset, args.RightOffset);
 
         if (fence == null || !fence.HasVertices)
           return new AlignmentDesignFilterBoundaryResponse

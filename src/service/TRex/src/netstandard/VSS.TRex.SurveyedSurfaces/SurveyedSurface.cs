@@ -79,10 +79,6 @@ namespace VSS.TRex.SurveyedSurfaces
       get
       {
         BoundingWorldExtent3D result = new BoundingWorldExtent3D(extents);
-
-        // Incorporate any vertical offset from the underlying design the surveyed surface is based on
-        result.Offset(DesignDescriptor.Offset);
-
         return result;
       }
     }
@@ -126,7 +122,7 @@ namespace VSS.TRex.SurveyedSurfaces
     public override string ToString()
     {
       return
-        $"ID:{ID}, DesignID:{DesignDescriptor.DesignID} {AsAtDate}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{extents}]";
+        $"ID:{ID}, DesignID:{DesignDescriptor.DesignID} {AsAtDate}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} [{extents}]";
     }
 
     /// <summary>

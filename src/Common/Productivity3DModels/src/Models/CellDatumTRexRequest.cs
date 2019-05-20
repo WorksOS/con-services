@@ -57,6 +57,12 @@ namespace VSS.Productivity3D.Models.Models
     public Guid? DesignUid { get; private set; }
 
     /// <summary>
+    /// The offset for the design for a reference surface.
+    /// </summary>
+    [JsonProperty(PropertyName = "offset", Required = Required.Default)]
+    public double? Offset { get; private set; }
+
+    /// <summary>
     /// Flag to indicate if using grid coordinates or latitude/longitude
     /// </summary>
     [JsonIgnore]
@@ -77,7 +83,8 @@ namespace VSS.Productivity3D.Models.Models
       WGSPoint llPoint,
       Point gridPoint,
       FilterResult filter,
-      Guid? designUid)
+      Guid? designUid,
+      double? offset)
     {
       ProjectUid = projectUid;
       DisplayMode = displayMode;
@@ -85,6 +92,7 @@ namespace VSS.Productivity3D.Models.Models
       GridPoint = gridPoint;
       Filter = filter;
       DesignUid = designUid;
+      Offset = offset;
     }
 
 

@@ -19,19 +19,18 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var ssID = Guid.NewGuid();
       var ddID = Guid.NewGuid();
       var date = DateTime.UtcNow;
-      double offset = 12.34;
 
       var ss2 = new SurveyedSurface(
         ssID,
-        new DesignDescriptor(ddID, "Folder", "FileName", offset),
+        new DesignDescriptor(ddID, "Folder", "FileName"),
         date,
         new BoundingWorldExtent3D(1, 2, 3, 4, 0, 10));
 
       ss2.Should().NotBeNull();
       ss2.ID.Should().NotBe(Guid.Empty);
       ss2.AsAtDate.Should().Be(date);
-      ss2.DesignDescriptor.Should().BeEquivalentTo(new DesignDescriptor(ddID, "Folder", "FileName", offset));
-      ss2.Extents.Should().BeEquivalentTo(new BoundingWorldExtent3D(1, 2, 3, 4, 0 + offset, 10 + offset));
+      ss2.DesignDescriptor.Should().BeEquivalentTo(new DesignDescriptor(ddID, "Folder", "FileName"));
+      ss2.Extents.Should().BeEquivalentTo(new BoundingWorldExtent3D(1, 2, 3, 4, 0, 10));
     }
 
     [Fact]
@@ -40,11 +39,10 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var ssID = Guid.NewGuid();
       var ddID = Guid.NewGuid();
       var date = DateTime.UtcNow;
-      double offset = 12.34;
 
       var ss = new SurveyedSurface(
         ssID,
-        new DesignDescriptor(ddID, "Folder", "FileName", offset),
+        new DesignDescriptor(ddID, "Folder", "FileName"),
         date,
         new BoundingWorldExtent3D(1, 2, 3, 4, 0, 10));
 
@@ -66,11 +64,10 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var ssID = Guid.NewGuid();
       var ddID = Guid.NewGuid();
       var date = DateTime.UtcNow;
-      double offset = 12.34;
 
       var ss = new SurveyedSurface(
         ssID,
-        new DesignDescriptor(ddID, "Folder", "FileName", offset),
+        new DesignDescriptor(ddID, "Folder", "FileName"),
         date,
         new BoundingWorldExtent3D(1, 2, 3, 4, 0, 10));
 

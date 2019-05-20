@@ -49,7 +49,17 @@ namespace MockProjectWebApi.Json
       return GetJsonFromEmbeddedResource($"ColorSettings.{projectUid}");
     }
 
+    public static byte[] GetBaseMap(string resourceName)
+    {
+      return GetJsonFromEmbeddedResource<byte[]>($"ALK.{resourceName}");
+    }
+
     private static JObject GetJsonFromEmbeddedResource(string resourceName)
+    {
+      return GetJsonFromEmbeddedResource<JObject>(resourceName);
+    }
+
+    private static T GetJsonFromEmbeddedResource<T>(string resourceName)
     {
       resourceName = $".Json.{resourceName}.json";
 
@@ -67,19 +77,19 @@ namespace MockProjectWebApi.Json
           throw new Exception($"Error attempting to load resource '{resourceName}', stream cannot be null. Is the file marked as 'Embedded Resource'?");
         }
 
-        var json = DeserializeFromStream(stream);
+        var json = DeserializeFromStream<T>(stream);
         return json;
       }
     }
 
-    private static JObject DeserializeFromStream(Stream stream)
+    private static T DeserializeFromStream<T>(Stream stream)
     {
       var serializer = new JsonSerializer();
 
       using (var sr = new StreamReader(stream))
       using (var jsonTextReader = new JsonTextReader(sr))
       {
-        return serializer.Deserialize<JObject>(jsonTextReader);
+        return serializer.Deserialize<T>(jsonTextReader);
       }
     }
   }

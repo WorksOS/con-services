@@ -80,6 +80,13 @@ namespace VSS.Productivity3D.Models.Models.Reports
     public Guid? CutFillDesignUid { get; protected set; }
 
     /// <summary>
+    /// Sets the design offset to be used for cut/fill calculations
+    /// </summary>
+    /// 
+    [JsonProperty(Required = Required.Default)]
+    public double? CutFillDesignOffset { get; protected set; }
+
+    /// <summary>
     /// Validates properties.
     /// </summary>
     /// 

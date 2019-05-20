@@ -10,6 +10,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Common.RequestStatistics;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Patches.Executors
@@ -41,9 +42,10 @@ namespace VSS.TRex.Exports.Patches.Executors
     private int DataPatchPageSize;
 
     /// <summary>
-    /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
+    /// The identifier for the design held in the designs list of the project to be used to calculate cut/fill values
+    /// together with the offset if it's a reference surface
     /// </summary>
-    public Guid CutFillDesignID { get; set; }
+    public DesignOffset CutFillDesign { get; set; }
 
     /// <summary>
     /// The pipeline processor used to coordinate construction, coordinate and orchestration of the pipelined request
@@ -56,7 +58,7 @@ namespace VSS.TRex.Exports.Patches.Executors
     /// <param name="dataModelID"></param>
     /// <param name="mode"></param>
     /// <param name="filters"></param>
-    /// <param name="cutFillDesignID"></param>
+    /// <param name="cutFillDesign"></param>
     /// <param name="requestingTRexNodeId"></param>
     /// <param name="dataPatchPageNumber"></param>
     /// <param name="dataPatchPageSize"></param>
@@ -64,7 +66,7 @@ namespace VSS.TRex.Exports.Patches.Executors
       //AExternalDescriptor :TASNodeRequestDescriptor;
       DisplayMode mode,
       IFilterSet filters,
-      Guid cutFillDesignID, //DesignDescriptor ACutFillDesign,
+      DesignOffset cutFillDesign, 
       //AReferenceVolumeType : TComputeICVolumesType;
       string requestingTRexNodeId,
       int dataPatchPageNumber,
@@ -75,7 +77,7 @@ namespace VSS.TRex.Exports.Patches.Executors
       // ExternalDescriptor = AExternalDescriptor
       Mode = mode;
       Filters = filters;
-      CutFillDesignID = cutFillDesignID; // CutFillDesign = ACutFillDesign;
+      CutFillDesign = cutFillDesign; 
       //ReferenceVolumeType = AReferenceVolumeType;
       RequestingTRexNodeID = requestingTRexNodeId;
       DataPatchPageNumber = dataPatchPageNumber;
@@ -99,7 +101,7 @@ namespace VSS.TRex.Exports.Patches.Executors
         gridDataType: GridDataFromModeConverter.Convert(Mode),
         response: PatchSubGridsResponse,
         filters: Filters,
-        cutFillDesignID: CutFillDesignID,
+        cutFillDesign: CutFillDesign,
         task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
         pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
         requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),

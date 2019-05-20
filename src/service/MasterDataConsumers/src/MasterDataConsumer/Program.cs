@@ -24,8 +24,6 @@ namespace VSS.Productivity3D.MasterDataConsumer
   {
     public static void Main(string[] args)
     {
-
-
 #if NET_4_7
       HostFactory.Run(x =>
       {
@@ -72,9 +70,9 @@ namespace VSS.Productivity3D.MasterDataConsumer
 
     public void StopAndDispose()
     {
-      _log.LogInformation("MasterDataConsumer: Stopping all consumers.");
+      _log.LogInformation($"{nameof(StopAndDispose)}: Stopping all consumers.");
       consumers.ForEach(c => c.StopProcessing());
-      _log.LogInformation("MasterDataConsumer: Cancelling all consumers.");
+      _log.LogInformation($"{nameof(StopAndDispose)}: Cancelling all consumers.");
       token.Cancel();
     }
 
@@ -132,20 +130,18 @@ namespace VSS.Productivity3D.MasterDataConsumer
       string loggerRepoName = "MDC " + kafkaTopics[0].Split('.').Last();
 
       Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName);
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4net.xml");
 
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      loggerFactory.AddProvider(new Log4NetProvider());
-      //loggerFactory.AddConsole(configStore.GetLoggingConfig());
       loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
 
-     _log = loggerFactory.CreateLogger(loggerRepoName);
-
-      _log.LogDebug("MasterDataConsumer is starting....");
+      _log = loggerFactory.CreateLogger(loggerRepoName);
+      _log.LogDebug($"{nameof(Initialize)}: consumers are starting....");
 
       foreach (var kafkaTopic in kafkaTopics)
       {
-        _log.LogInformation("MasterDataConsumer topic: " + kafkaTopic);
+        _log.LogInformation($"{nameof(Initialize)}: Starting consumer topic: {kafkaTopic}");
         if (serviceConverter.Any(s => kafkaTopic.Contains(s.Key)))
         {
           var consumer =
@@ -157,17 +153,18 @@ namespace VSS.Productivity3D.MasterDataConsumer
         }
         else
         {
-          _log.LogDebug("MasterDataConsumer: Kafka topic consumer not recognized: {0}", kafkaTopic);
+          _log.LogDebug($"{nameof(Initialize)}: Consumer topic not recognized: {kafkaTopic}");
           continue;
         }
-        _log.LogDebug("MasterDataConsumer: Kafka topic consumer to be started: {0}", kafkaTopic);
+
+        _log.LogDebug($"{nameof(Initialize)}: Consumer to be started: {kafkaTopic}");
       }
 
 #if !NET_4_7
       if (tasks.Count > 0)
         Task.WaitAll(tasks.ToArray());
       else
-        _log.LogCritical("MasterDataConsumer: No consumers started.");
+        _log.LogCritical($"{nameof(Initialize)}: No consumers started.");
 #endif
     }
   }

@@ -17,7 +17,7 @@ namespace EventTests
     {
       var msg = new Msg();
       msg.Title("Project test 1", "Create one project");
-      var ts = new TestSupport {IsPublishToKafka = true};
+      var ts = new TestSupport { IsPublishToKafka = true };
       var mysql = new MySqlHelper();
       var projectGuid = Guid.NewGuid();
       var legacyProjectId = ts.SetLegacyProjectId();
@@ -27,10 +27,10 @@ namespace EventTests
        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GEOMETRY_WKT} |" };
       ts.PublishEventCollection(eventArray);
-      var startDt = ts.FirstEventDate.Date.ToString("M/d/yy hh:mm:ss tt"); 
+      var startDt = ts.FirstEventDate.Date.ToString("M/d/yy hh:mm:ss tt");
       var endDt = new DateTime(9999, 12, 31).Date.ToString("M/d/yy hh:mm:ss tt");
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project","ProjectUID","Name,LegacyProjectID,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT",$"testProject1,{legacyProjectId},{(int)ProjectType.ProjectMonitoring},{startDt},{endDt},{GEOMETRY_WKT}",projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,LegacyProjectID,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT", $"testProject1,{legacyProjectId},{(int)ProjectType.ProjectMonitoring},{startDt},{endDt},{GEOMETRY_WKT}", projectGuid);
     }
 
     [TestMethod]
@@ -39,14 +39,14 @@ namespace EventTests
     {
       var msg = new Msg();
       msg.Title("Project test 2", "UpdateProject_Change_ProjectType");
-      var ts = new TestSupport {IsPublishToKafka = true};
+      var ts = new TestSupport { IsPublishToKafka = true };
       var mysql = new MySqlHelper();
       var projectGuid = Guid.NewGuid();
       var legacyProjectId = ts.SetLegacyProjectId();
       string projectName = "testProject2";
-      var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate).ToString("MM/dd/yyyy hh:mm:ss tt"); 
+      var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate).ToString("MM/dd/yyyy hh:mm:ss tt");
       var eDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00", ts.FirstEventDate);
-      var endDate = eDate.ToString("MM/dd/yyyy hh:mm:ss tt"); 
+      var endDate = eDate.ToString("MM/dd/yyyy hh:mm:ss tt");
       var eventArray = new[] {
        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT}  |" ,
@@ -72,20 +72,20 @@ namespace EventTests
     {
       var msg = new Msg();
       msg.Title("Project test 3", "Associate customer with project");
-      var ts = new TestSupport {IsPublishToKafka = true};
+      var ts = new TestSupport { IsPublishToKafka = true };
       var mysql = new MySqlHelper();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 3";
       var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate).ToString("M/d/yyyy hh:mm:ss tt");
-      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate).ToString("M/d/yyyy hh:mm:ss tt");
+      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00", ts.FirstEventDate).ToString("M/d/yyyy hh:mm:ss tt");
 
       var customerEventArray = new[] {
       "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
      $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerGuid} |"};
 
-      ts.PublishEventCollection(customerEventArray); 
+      ts.PublishEventCollection(customerEventArray);
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectID         | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT} |" };
@@ -95,9 +95,9 @@ namespace EventTests
       var associateEventArray = new[] {
        "| EventType                | EventDate   | ProjectUID    | CustomerUID    | ",
       $"| AssociateProjectCustomer | 0d+09:00:00 | {projectGuid} | {customerGuid} | "};
-      
+
       ts.PublishEventCollection(associateEventArray);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID","fk_CustomerUID, fk_ProjectUID",$"{customerGuid}, {projectGuid}",projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID", "fk_CustomerUID, fk_ProjectUID", $"{customerGuid}, {projectGuid}", projectGuid);
     }
 
 

@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -40,14 +41,14 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       bool coordsAreGrid,
       XYZ point,
       IFilterSet filters,
-      Guid referenceDesignUid)
+      DesignOffset referenceDesign)
     {
       ProjectID = siteModelID;
       Mode = mode;
       CoordsAreGrid = coordsAreGrid;
       Point = point;
       Filters = filters;
-      ReferenceDesignUID = referenceDesignUid;
+      ReferenceDesign = referenceDesign;
     }
 
     /// <summary>

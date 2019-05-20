@@ -87,12 +87,12 @@ namespace VSS.TRex.Reports.StationOffset.Executors
       }
 
       IDesign cutFillDesign = null;
-      if (requestArgument.ReferenceDesignUID != Guid.Empty)
+      if (requestArgument.ReferenceDesign != null && requestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
-        cutFillDesign = siteModel.Designs.Locate(requestArgument.ReferenceDesignUID);
+        cutFillDesign = siteModel.Designs.Locate(requestArgument.ReferenceDesign.DesignID);
         if (cutFillDesign == null)
         {
-          throw new ArgumentException($"Design {requestArgument.ReferenceDesignUID} not a recognized design in project {requestArgument.ProjectID}");
+          throw new ArgumentException($"Design {requestArgument.ReferenceDesign.DesignID} not a recognized design in project {requestArgument.ProjectID}");
         }
       }
 
@@ -150,9 +150,9 @@ namespace VSS.TRex.Reports.StationOffset.Executors
       var result = new StationOffsetRow(point.Station, point.Offset, cell.CellYOffset + subgridWorldOriginY, cell.CellXOffset + subgridWorldOriginX);
       IClientHeightLeafSubGrid designHeights = null;
 
-      if (requestArgument.ReferenceDesignUID != Guid.Empty)
+      if (requestArgument.ReferenceDesign != null && requestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
-        cutFillDesign.GetDesignHeights(requestArgument.ProjectID, clientGrid.OriginAsCellAddress(),
+        cutFillDesign.GetDesignHeights(requestArgument.ProjectID, requestArgument.ReferenceDesign.Offset, clientGrid.OriginAsCellAddress(),
           clientGrid.CellSize, out designHeights, out var errorCode);
 
         if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)

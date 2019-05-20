@@ -78,7 +78,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
         project = await dataRepository.LoadProject(request.ProjectUid);
-        log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded project? {JsonConvert.SerializeObject(project)}");
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded project? {JsonConvert.SerializeObject(project)}");
 
         if (project != null)
         {
@@ -93,8 +93,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           }
 
           projectCustomerSubs =
-            (await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow)).ToList();
-          log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded ProjectCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
+            (await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow));
+          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded ProjectCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
         }
         else
         {
@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
         if (assetDevice == null && (DeviceTypeEnum) request.DeviceType == DeviceTypeEnum.SNM940)
         {
-          log.LogDebug("ProjectAndAssetUidsExecutor: Failed for SNM940 trying again as Device Type SNM941");
+          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Failed for SNM940 trying again as Device Type SNM941");
           assetDevice = await dataRepository.LoadAssetDevice(request.RadioSerial, DeviceTypeEnum.SNM941.ToString());
         }
 
@@ -119,17 +119,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           assetUid = assetDevice.AssetUID;
           assetOwningCustomerUid = assetDevice.OwningCustomerUID;
-          log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
+          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
 
           if (string.IsNullOrEmpty(request.ProjectUid) || project.ProjectType == ProjectType.Standard)
           {
-            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
-            log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
+            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow));
+            log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
           }
         }
         else
         {
-          log.LogDebug($"ProjectAndAssetUidsExecutor: Unable to locate SNM assetDevice for radioSerial: {request.RadioSerial} and deviceType: {request.DeviceType}");
+          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Unable to locate SNM assetDevice for radioSerial: {request.RadioSerial} and deviceType: {request.DeviceType}");
         }
       }
 
@@ -144,17 +144,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           assetUid = assetDevice.AssetUID;
           assetOwningCustomerUid = assetDevice.OwningCustomerUID;
-          log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
+          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
 
           if (string.IsNullOrEmpty(request.ProjectUid) || project.ProjectType == ProjectType.Standard)
           {
-            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
-            log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
+            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow));
+            log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
           }
         }
         else
         {
-          log.LogDebug($"ProjectAndAssetUidsExecutor: Unable to locate EC520 assetDevice for ec520serial: {request.Ec520Serial}");
+          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Unable to locate EC520 assetDevice for ec520serial: {request.Ec520Serial}");
         }
       }
 
@@ -179,10 +179,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //   Must have current a)  Manual Sub for standard or b) Landfill/Civil (for those projects)
       //   i.e. Can only view and therefore manuallyImport a LandfillProject IF you have a current Landfill sub
 
-      var intersectingProjects = (await dataRepository.GetIntersectingProjects(project.CustomerUID, request.Latitude,
-        request.Longitude, new int[] {(int) project.ProjectType}, null)).ToList();
+      var intersectingProjects = await dataRepository.GetIntersectingProjects(project.CustomerUID, request.Latitude,
+        request.Longitude, new int[] {(int) project.ProjectType}, null);
       log.LogDebug(
-        $"ProjectAndAssetUidsExecutor: Projects which intersect with manually imported project {JsonConvert.SerializeObject(intersectingProjects)}");
+        $"{nameof(HandleManualImport)}: Projects which intersect with manually imported project {JsonConvert.SerializeObject(intersectingProjects)}");
 
       if (!intersectingProjects.Any())
       {
@@ -198,16 +198,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           {
             // we need assetOwningCustomer to determine if assetCustomer == projectCustomer 
             var assetCustomerSubs =
-              (await dataRepository.LoadManual3DCustomerBasedSubs(assetOwningCustomerUid, DateTime.UtcNow)).ToList();
+              (await dataRepository.LoadManual3DCustomerBasedSubs(assetOwningCustomerUid, DateTime.UtcNow));
             log.LogDebug(
-              $"ProjectAndAssetUidsExecutor: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(assetCustomerSubs)}");
+              $"{nameof(HandleManualImport)}: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(assetCustomerSubs)}");
 
             // if only a 3dpm sub avail then this will be tossed out if customers !=
             var mostSignificantServiceType =
               GetMostSignificantServiceType(assetUid, project.CustomerUID, projectCustomerSubs,
                 assetCustomerSubs, assetSubs);
             log.LogDebug(
-              $"ProjectAndAssetUidsExecutor: after GetMostSignificantServiceType(). mostSignificantServiceType: {mostSignificantServiceType}");
+              $"{nameof(HandleManualImport)}: after GetMostSignificantServiceType(). mostSignificantServiceType: {mostSignificantServiceType}");
 
             if (mostSignificantServiceType == serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum)
             {
@@ -262,7 +262,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         var customerTccOrg = await dataRepository.LoadCustomerByTccOrgId(request.TccOrgUid);
         log.LogDebug(
-          $"ProjectAndAssetUidsExecutor: Loaded CustomerByTccOrgId? {JsonConvert.SerializeObject(customerTccOrg)}");
+          $"{nameof(HandleAutoImport)}: Loaded CustomerByTccOrgId? {JsonConvert.SerializeObject(customerTccOrg)}");
         tccCustomerUid = customerTccOrg?.CustomerUID ?? string.Empty;
       }
 
@@ -273,7 +273,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       var potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, assetSubs, tccCustomerUid, request);
       log.LogDebug(
-        $"ProjectAndAssetUidsExecutor: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
+        $"{nameof(HandleAutoImport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.Any())
       {
@@ -292,13 +292,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       List<Subscriptions> projectCustomerSubs, List<Subscriptions> assetCustomerSubs, List<Subscriptions> assetSubs)
     {
       var serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
-      var subs = new List<Subscriptions>();
-      if (projectCustomerSubs.Any()) subs = subs.Concat(projectCustomerSubs.Select(s => s)).ToList();
-      if (assetCustomerSubs.Any()) subs = subs.Concat(assetCustomerSubs.Select(s => s)).ToList();
-      if (assetSubs.Any()) subs = subs.Concat(assetSubs.Select(s => s)).ToList();
 
-      log.LogDebug(
-        $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() for assetUid: {assetUid} projectCustomer: {projectCustomerUid}, subs: {JsonConvert.SerializeObject(subs)})");
+      var subs = new List<Subscriptions>();
+      if (projectCustomerSubs != null && projectCustomerSubs.Any()) subs.AddRange(projectCustomerSubs.Select(s => s));
+      if (assetCustomerSubs != null && assetCustomerSubs.Any()) subs.AddRange(assetCustomerSubs.Select(s => s));
+      if (assetSubs != null && assetSubs.Any()) subs.AddRange(assetSubs.Select(s => s));
+      
+      log.LogDebug($"{nameof(GetMostSignificantServiceType)}: assetUid: {assetUid} projectCustomer: {projectCustomerUid}, subs: {JsonConvert.SerializeObject(subs)})");
 
       if (subs.Any())
       {
@@ -310,8 +310,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           {
             if (serviceType != (int) ServiceTypeEnum.ThreeDProjectMonitoring)
             {
-              log.LogDebug(
-                $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found Manual3DProjectMonitoring for assetUid {assetUid}");
+              log.LogDebug($"{nameof(GetMostSignificantServiceType)}: found Manual3DProjectMonitoring for assetUid {assetUid}");
               serviceType = (int) ServiceTypeEnum.Manual3DProjectMonitoring;
             }
           }
@@ -324,8 +323,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             {
               //Allow manual tag file import for customer who has the 3D subscription for the asset
               //and allow automatic tag file processing in all cases (can't tell customer for automatic)
-              log.LogDebug(
-                $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found e3DProjectMonitoring for assetUid {assetUid} sub.customerUid {sub.customerUid}");
+              log.LogDebug($"{nameof(GetMostSignificantServiceType)}: found e3DProjectMonitoring for assetUid {assetUid} sub.customerUid {sub.customerUid}");
               if (string.IsNullOrEmpty(projectCustomerUid) || sub.customerUid == projectCustomerUid)
               {
                 serviceType = (int) ServiceTypeEnum.ThreeDProjectMonitoring;
@@ -336,8 +334,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      log.LogDebug(
-        $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() for assetUid {assetUid}, returning serviceTypeNG {serviceType}.");
+      log.LogDebug($"{nameof(GetMostSignificantServiceType)}:for assetUid {assetUid}, returning serviceTypeNG {serviceType}.");
       return serviceType;
     }
 
@@ -360,7 +357,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(assetOwningCustomerUid) && assetSubs.Any())
       {
         potentialProjects.AddRange((await dataRepository.GetIntersectingProjects(assetOwningCustomerUid,
-          request.Latitude, request.Longitude, new[] {(int) ProjectType.Standard}, request.TimeOfPosition)).ToList());
+          request.Latitude, request.Longitude, new[] {(int) ProjectType.Standard}, request.TimeOfPosition)));
       }
 
       if (!string.IsNullOrEmpty(tccCustomerUid))
@@ -368,12 +365,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         // ProjectMonitoring and Landfill projects
         //  MUST have a TCCOrgID
         //  project must have a PM/LF sub 
-        //  does not require an asset has been identied
+        //  does not require an asset has been identified
         potentialProjects.AddRange(
           (await dataRepository.GetIntersectingProjects(tccCustomerUid, request.Latitude,
-            request.Longitude, new int[] {(int) (int) ProjectType.ProjectMonitoring, (int) ProjectType.LandFill},
+            request.Longitude, new[] {(int) ProjectType.ProjectMonitoring, (int) ProjectType.LandFill},
             request.TimeOfPosition))
-          .ToList()
           .Where(pm => (pm.ServiceTypeID == (int) ServiceTypeEnum.ProjectMonitoring
                         || pm.ServiceTypeID == (int) ServiceTypeEnum.Landfill)));
       }

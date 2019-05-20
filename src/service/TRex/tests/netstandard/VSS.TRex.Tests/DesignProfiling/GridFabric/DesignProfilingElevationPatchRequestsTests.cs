@@ -41,6 +41,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
+      var referenceDesign = new DesignOffset(designUid, 0);
 
       // Get the cell location of the probe position. Note that the request will return the sub grid
       // that contains this cell, so the origin location of the sub grid may not be the same as the cell location
@@ -51,8 +52,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var argument = new CalculateDesignElevationPatchArgument
       {
         ProjectID = siteModel.ID,
-        ReferenceDesignUID = designUid,
-        Offset = 0,
+        ReferenceDesign = referenceDesign,
         CellSize = siteModel.CellSize,
         Filters = new FilterSet(new CombinedFilter()),
         OriginX = cellX,
@@ -83,7 +83,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       if (patchExists)
       {
         // Check a request with an offset provides the expected answer
-        argument.Offset = offset;
+        argument.ReferenceDesign.Offset = offset;
 
         var response2 = request.Execute(argument);
 

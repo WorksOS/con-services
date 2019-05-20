@@ -44,7 +44,7 @@ namespace VSS.TRex.Profiling
 
     private bool IntermediaryFilterRequired = false;
 
-    private IDesign svDesign;
+    private IDesignWrapper svDesignWrapper;
 
     private int cellCounter;
 
@@ -57,17 +57,17 @@ namespace VSS.TRex.Profiling
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesign"></param>
-    /// <param name="referenceDesign"></param>
+    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
+    /// <param name="referenceDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
     public SummaryVolumesCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
-      IDesign cellPassFilter_ElevationRangeDesign,
-      IDesign referenceDesign,
-      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign)
+      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
+      IDesignWrapper referenceDesignWrapper,
+      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
     {
-      svDesign = referenceDesign;
+      svDesignWrapper = referenceDesignWrapper;
     }
 
     /// <summary>
@@ -163,10 +163,10 @@ namespace VSS.TRex.Profiling
       if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
       {
 
-        if (svDesign != null)
+        if (svDesignWrapper?.Design != null)
         {
 
-          svDesign.GetDesignHeights(SiteModel.ID, address, SiteModel.CellSize, out designHeights, out var errorCode);
+          svDesignWrapper.Design.GetDesignHeights(SiteModel.ID, svDesignWrapper.Offset, address, SiteModel.CellSize, out designHeights, out var errorCode);
           if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
           {
             if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)

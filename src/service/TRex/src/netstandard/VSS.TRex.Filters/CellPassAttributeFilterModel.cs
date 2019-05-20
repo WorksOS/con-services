@@ -4,6 +4,7 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
 using ElevationType = VSS.TRex.Common.Types.ElevationType;
@@ -315,9 +316,9 @@ namespace VSS.TRex.Filters
     public double ElevationRangeThickness { get; set; } = Consts.NullDouble;
 
     /// <summary>
-    /// The design to be used as the benchmark for a surface based elevation range filter
+    /// The design to be used as the benchmark for a surface based elevation range filter  together with its offset for a reference surface
     /// </summary>
-    public Guid ElevationRangeDesignUID { get; set; } = Guid.Empty;
+    public DesignOffset ElevationRangeDesign { get; set; } = new DesignOffset();
 
     /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
@@ -413,7 +414,8 @@ namespace VSS.TRex.Filters
       writer.WriteDouble(ElevationRangeOffset);
       writer.WriteDouble(ElevationRangeThickness);
 
-      writer.WriteGuid(ElevationRangeDesignUID);
+      writer.WriteBoolean(ElevationRangeDesign != null);
+      ElevationRangeDesign?.ToBinary(writer);
 
       writer.WriteByte((byte)LayerState);
       writer.WriteInt(LayerID);
@@ -486,7 +488,9 @@ namespace VSS.TRex.Filters
       ElevationRangeOffset = reader.ReadDouble();
       ElevationRangeThickness = reader.ReadDouble();
 
-      ElevationRangeDesignUID = reader.ReadGuid() ?? Guid.Empty;
+      ElevationRangeDesign = new DesignOffset();
+      if (reader.ReadBoolean())
+        ElevationRangeDesign.FromBinary(reader);
 
       LayerState = (LayerState)reader.ReadByte();
       LayerID = reader.ReadInt();
