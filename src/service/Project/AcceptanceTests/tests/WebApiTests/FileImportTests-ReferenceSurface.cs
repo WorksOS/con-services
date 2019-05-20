@@ -69,7 +69,7 @@ namespace WebApiTests
 
     [TestMethod]
     [DataRow("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
-    //[DataRow("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
+    [DataRow("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
     public void TestImportReferenceSurfaceFileFromDeactivatedDesign(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 24";
