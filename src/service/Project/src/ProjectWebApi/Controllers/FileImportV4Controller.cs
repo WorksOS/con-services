@@ -8,11 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
@@ -636,6 +633,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var importedFileResult = await UpsertFileInternal(filename, null, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.Meters,
         fileCreatedUtc, fileUpdatedUtc, null, schedulerProxy, parentUid, offset);
 
+      //If parent design is deactivated then deactivate reference surface
+      if (!parent.IsActivated)
+      {
+        var filesToUpdate = new Dictionary<Guid, bool>();
+        filesToUpdate.Add(new Guid(importedFileResult.ImportedFileDescriptor.ImportedFileUid), false);
+        await DoActivation(projectUid.ToString(), filesToUpdate);
+        importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid.ToString(), logger, userId, projectRepo);
+        importedFileResult.ImportedFileDescriptor = importedFiles.SingleOrDefault(i =>
+          i.ImportedFileUid == importedFileResult.ImportedFileDescriptor.ImportedFileUid);
+      }
+
       logger.LogInformation(
         $"CreateReferenceSurface. Completed successfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
 
@@ -725,6 +733,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           continue;
         }
 
+        if (existingFile.ImportedFileType == ImportedFileType.ReferenceSurface)
+        {
+          logger.LogError(
+            $"{functionId}. Attempt to set file activation on a reference surface. projectUid {projectUid}, fileUid: {activatedFileDescriptor.ImportedFileUid}");
+          continue;
+        }
+
         if (existingFile.IsActivated == activatedFileDescriptor.IsActivated)
         {
           logger.LogDebug(
@@ -735,6 +750,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         logger.LogInformation(
           $"{functionId}. File queued for updating: {JsonConvert.SerializeObject(existingFile)}");
         filesToUpdate.Add(new Guid(activatedFileDescriptor.ImportedFileUid), activatedFileDescriptor.IsActivated);
+
+        //If user is activating or deactivating a design which has reference surfaces, do as a group
+        if (existingFile.ImportedFileType == ImportedFileType.DesignSurface)
+        {
+          var children = importedFiles
+            .Where(f => f.ParentUid.HasValue && f.ParentUid.ToString() == existingFile.ImportedFileUid).ToList();
+          if (children.Count > 0)
+          {
+            logger.LogInformation(
+              $"{functionId}. Setting file activation state of reference surfaces for design {existingFile.ImportedFileUid}");
+            foreach (var child in children)
+            {
+              if (child.IsActivated != activatedFileDescriptor.IsActivated)
+                filesToUpdate.Add(new Guid(child.ImportedFileUid), activatedFileDescriptor.IsActivated);
+            }
+          }
+        }
       }
 
       if (!filesToUpdate.Any())
@@ -746,11 +778,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       try
       {
-        var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
-        var notificationTask = notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
-        var raptorTask = NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult);
-
-        await Task.WhenAll(notificationTask, raptorTask);
+        await DoActivation(projectUid, filesToUpdate);
 
         return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }
@@ -758,6 +786,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         return new JsonResult(new { Code = HttpStatusCode.InternalServerError, exception.GetBaseException().Message });
       }
+    }
+
+    private async Task DoActivation(string projectUid, Dictionary<Guid, bool> filesToUpdate)
+    {
+      var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
+      var notificationTask = notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
+      var raptorTask = NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult);
+
+      await Task.WhenAll(notificationTask, raptorTask);
     }
 
     #endregion fileActivation
