@@ -18,10 +18,8 @@ namespace VSS.TRex.Rendering.Displayers
     protected override Color DoGetDisplayColour()
     {
       var cellValue = ((ClientPassCountLeafSubGrid)SubGrid).Cells[east_col, north_row];
-
-      var passTargetRange = new PassCountRangeRecord(cellValue.TargetPassCount, cellValue.TargetPassCount);
-
-      return cellValue.MeasuredPassCount == CellPassConsts.NullPassCountValue ? Color.Empty : ((PassCountSummaryPalette)Palette).ChooseColour(cellValue.MeasuredPassCount, passTargetRange);
+      
+      return cellValue.MeasuredPassCount == CellPassConsts.NullPassCountValue ? Color.Empty : ((PassCountSummaryPalette)Palette).ChooseColour(cellValue.MeasuredPassCount, cellValue.TargetPassCount, cellValue.TargetPassCount);
     }
   }
 }

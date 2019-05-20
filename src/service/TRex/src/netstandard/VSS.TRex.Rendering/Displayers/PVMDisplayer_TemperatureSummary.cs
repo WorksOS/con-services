@@ -18,10 +18,8 @@ namespace VSS.TRex.Rendering.Displayers
     protected override Color DoGetDisplayColour()
     {
       var cellValue = ((ClientTemperatureLeafSubGrid)SubGrid).Cells[east_col, north_row];
-
-      var temperatureLevels = new TemperatureWarningLevelsRecord(cellValue.TemperatureLevels.Min, cellValue.TemperatureLevels.Max);
-
-      return cellValue.MeasuredTemperature == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : ((TemperatureSummaryPalette)Palette).ChooseColour(cellValue.MeasuredTemperature, temperatureLevels);
+      
+      return cellValue.MeasuredTemperature == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : ((TemperatureSummaryPalette)Palette).ChooseColour(cellValue.MeasuredTemperature, cellValue.TemperatureLevels.Min, cellValue.TemperatureLevels.Max);
     }
   }
 }

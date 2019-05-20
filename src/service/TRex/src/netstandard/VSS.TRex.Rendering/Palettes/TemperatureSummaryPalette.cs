@@ -46,18 +46,21 @@ namespace VSS.TRex.Rendering.Palettes
       // ...
     }
 
-    public Color ChooseColour(ushort measuredTemperature, TemperatureWarningLevelsRecord temperatureLevels)
+    public Color ChooseColour(ushort measuredTemperature, ushort minTemperatureLevel, ushort maxTemperatureLevel)
     {
       if (!UseMachineTempWarningLevels)
-        temperatureLevels = TemperatureLevels;
+      {
+        minTemperatureLevel = TemperatureLevels.Min;
+        maxTemperatureLevel = TemperatureLevels.Max;
+      }
 
-      if (temperatureLevels.Min == CellPassConsts.NullMaterialTemperatureValue || temperatureLevels.Max == CellPassConsts.NullMaterialTemperatureValue)
+      if (minTemperatureLevel == CellPassConsts.NullMaterialTemperatureValue || maxTemperatureLevel == CellPassConsts.NullMaterialTemperatureValue)
         return Color.Empty;
 
-      if (measuredTemperature > temperatureLevels.Max)
+      if (measuredTemperature > maxTemperatureLevel)
         return AboveMaxLevelColour;
 
-      if (measuredTemperature < temperatureLevels.Min)
+      if (measuredTemperature < minTemperatureLevel)
         return BelowMinLevelColour;
 
       return WithinLevelsColour;
