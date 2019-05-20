@@ -318,19 +318,17 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    [DataRow(FilterType.Persistent, GeofenceType.Filter)]
-    [DataRow(FilterType.Report, GeofenceType.Filter)]
-    [DataRow(FilterType.Transient, GeofenceType.Filter)]
-    [DataRow(FilterType.Persistent, GeofenceType.Generic)]
-    [DataRow(FilterType.Report, GeofenceType.Generic)]
-    [DataRow(FilterType.Transient, GeofenceType.Generic)]
-    public async Task HydrateJsonWithBoundary_NoGeofence(FilterType filterType, GeofenceType geofenceType)
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task HydrateJsonWithBoundary_NoGeofence(FilterType filterType)
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync((Geofence) null);
       var geofenceProxy = new Mock<IGeofenceProxy>();
-      geofenceRepo.Setup(g => g.GetFavorite(It.IsAny<string>())).ReturnsAsync((Geofence)null);
+      geofenceProxy.Setup(g => g.GetFavoriteGeofence(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(
+        (GeofenceData)null);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData {ProjectUid = projectUid},
         new FilterRequest
@@ -349,20 +347,18 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    [DataRow(FilterType.Persistent, GeofenceType.Filter)]
-    [DataRow(FilterType.Report, GeofenceType.Filter)]
-    [DataRow(FilterType.Transient, GeofenceType.Filter)]
-    [DataRow(FilterType.Persistent, GeofenceType.Generic)]
-    [DataRow(FilterType.Report, GeofenceType.Generic)]
-    [DataRow(FilterType.Transient, GeofenceType.Generic)]
-    public async Task HydrateJsonWithBoundary_InvalidBoundary(FilterType filterType, GeofenceType geofenceType)
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task HydrateJsonWithBoundary_InvalidBoundary(FilterType filterType)
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
-      var geofenceProxy = new Mock<IGeofenceProxy>();
-      var geofence = new Geofence {GeometryWKT = "This is not a valid polygon WKT", GeofenceType = geofenceType};
+      var geofence = new Geofence {GeometryWKT = "This is not a valid polygon WKT", GeofenceType = GeofenceType.Filter};
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
-      geofenceProxy.Setup(g => g.GetFavorite(It.IsAny<string>())).ReturnsAsync(geofence);
+      var geofenceProxy = new Mock<IGeofenceProxy>();
+      var geofenceData = new GeofenceData { GeometryWKT =geofence.GeometryWKT, GeofenceType = GeofenceType.Generic.ToString() };
+      geofenceProxy.Setup(g => g.GetFavoriteGeofence(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofenceData);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData {ProjectUid = projectUid},
         new FilterRequest
@@ -382,22 +378,22 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    [DataRow(FilterType.Transient, GeofenceType.Filter)]
-    [DataRow(FilterType.Transient, GeofenceType.Generic)]
-    public async Task HydrateJsonWithBoundary_InvalidBoundary2(FilterType filterType, GeofenceType geofenceType)
+    [DataRow(FilterType.Transient)]
+    public async Task HydrateJsonWithBoundary_InvalidBoundary2(FilterType filterType)
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
-      var geofenceProxy = new Mock<IGeofenceProxy>();
       var geofence = new Geofence
       {
-        GeofenceType = geofenceType,
+        GeofenceType = GeofenceType.Filter,
         GeometryWKT =
           "POLYGON((-115.0200886019198 36.20745605916501,-115.02005976817289 36.20734622441246,-115.01992699882665 36.2073559634608,-115.0198176988093 36.207342978062755,-115.01973320922532 36.20734027277125,-115.01974729082266 36.20738950906242,-115.01975466689743 36.2074300884,-115.01996052643932 36.20746201079744))"
       };
       // var geofence = new Geofence { GeometryWKT = "POLYGON((-115.02022874734084 36.20751287018342,-115.02025556943099 36.207300775504265,-115.02001953503766 36.20729428280093,-115.01966816565673 36.20726506562927,-115.01945493004004 36.20714170411769,-115.0192846097676 36.20734189594616,-115.01962927362601 36.20748581732266,-115.02022874734084 36.20751287018342))" };
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
-      geofenceProxy.Setup(g => g.GetFavorite(It.IsAny<string>())).ReturnsAsync(geofence);
+      var geofenceProxy = new Mock<IGeofenceProxy>();
+      var geofenceData = new GeofenceData {GeofenceType = GeofenceType.Generic.ToString(), GeometryWKT = geofence.GeometryWKT};
+      geofenceProxy.Setup(g => g.GetFavoriteGeofence(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofenceData);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData {ProjectUid = projectUid},
         new FilterRequest
@@ -559,29 +555,16 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    [DataRow(FilterType.Persistent, GeofenceType.Filter)]
-    [DataRow(FilterType.Report, GeofenceType.Filter)]
-    [DataRow(FilterType.Transient, GeofenceType.Filter)]
-    [DataRow(FilterType.Persistent, GeofenceType.Generic)]
-    [DataRow(FilterType.Report, GeofenceType.Generic)]
-    [DataRow(FilterType.Transient, GeofenceType.Generic)]
-    [DataRow(FilterType.Persistent, GeofenceType.CutZone)]
-    [DataRow(FilterType.Report, GeofenceType.FillZone)]
-    [DataRow(FilterType.Transient, GeofenceType.Landfill)]
-    [DataRow(FilterType.Persistent, GeofenceType.Project)]
-    [DataRow(FilterType.Report, GeofenceType.Borrow)]
-    [DataRow(FilterType.Transient, GeofenceType.Waste)]
-    [DataRow(FilterType.Persistent, GeofenceType.AvoidanceZone)]
-    [DataRow(FilterType.Report, GeofenceType.Stockpile)]
-
-    public async Task HydrateJsonWithBoundary_HappyPath(FilterType filterType, GeofenceType geofenceType)
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public async Task HydrateJsonWithBoundary_HappyPath_Custom(FilterType filterType)
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
-      var geofenceProxy = new Mock<IGeofenceProxy>();
-      var geofence = new Geofence {GeofenceUID = boundaryUid, Name = Name, GeometryWKT = GeometryWKT, GeofenceType = geofenceType};
+      var geofence = new Geofence {GeofenceUID = boundaryUid, Name = Name, GeometryWKT = GeometryWKT, GeofenceType = GeofenceType.Filter};
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
-      geofenceProxy.Setup(g => g.GetFavorite(It.IsAny<string>())).ReturnsAsync(geofence);
+      var geofenceProxy = new Mock<IGeofenceProxy>();
       var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData {ProjectUid = projectUid},
         new FilterRequest
         {
@@ -600,6 +583,47 @@ namespace VSS.Productivity3D.Filter.Tests
         "\",\"polygonName\":\"" + geofence.Name +
         "\",\"polygonLL\":[{\"Lat\":12.677856,\"Lon\":80.257874},{\"Lat\":13.039345,\"Lon\":79.856873},{\"Lat\":13.443052,\"Lon\":80.375977}]," +
         "\"polygonType\":" + (int)geofence.GeofenceType + "}";
+
+      Assert.AreEqual(expectedResult, result, "Wrong hydrated json");
+    }
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent, GeofenceType.Generic)]
+    [DataRow(FilterType.Persistent, GeofenceType.CutZone)]
+    [DataRow(FilterType.Persistent, GeofenceType.FillZone)]
+    [DataRow(FilterType.Persistent, GeofenceType.Landfill)]
+    [DataRow(FilterType.Persistent, GeofenceType.Project)]
+    [DataRow(FilterType.Persistent, GeofenceType.Borrow)]
+    [DataRow(FilterType.Persistent, GeofenceType.Waste)]
+    [DataRow(FilterType.Persistent, GeofenceType.AvoidanceZone)]
+    [DataRow(FilterType.Persistent, GeofenceType.Stockpile)]
+
+    public async Task HydrateJsonWithBoundary_HappyPath_Favorite(FilterType filterType, GeofenceType geofenceType)
+    {
+      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
+      var geofenceRepo = new Mock<IGeofenceRepository>();
+      geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync((Geofence)null);
+      var geofenceProxy = new Mock<IGeofenceProxy>();
+      var geofenceData = new GeofenceData { GeofenceUID = new Guid(boundaryUid), GeofenceName = Name, GeometryWKT = GeometryWKT, GeofenceType = geofenceType.ToString() };
+      geofenceProxy.Setup(g => g.GetFavoriteGeofence(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofenceData);
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        new FilterRequest
+        {
+          FilterUid = filterUid,
+          Name = "a filter",
+          FilterType = filterType,
+          FilterJson = "{\"designUid\": \"id\", \"vibeStateOn\": true, \"polygonUid\": \"" + geofenceData.GeofenceUID +
+                       "\"}"
+        });
+
+      var result = await ValidationUtil
+        .HydrateJsonWithBoundary(geofenceProxy.Object, geofenceRepo.Object, log, serviceExceptionHandler, request).ConfigureAwait(false);
+
+      var expectedResult =
+        "{\"designUid\":\"id\",\"vibeStateOn\":true,\"polygonUid\":\"" + geofenceData.GeofenceUID +
+        "\",\"polygonName\":\"" + geofenceData.GeofenceName +
+        "\",\"polygonLL\":[{\"Lat\":12.677856,\"Lon\":80.257874},{\"Lat\":13.039345,\"Lon\":79.856873},{\"Lat\":13.443052,\"Lon\":80.375977}]," +
+        "\"polygonType\":" + (int)geofenceType + "}";
 
       Assert.AreEqual(expectedResult, result, "Wrong hydrated json");
     }

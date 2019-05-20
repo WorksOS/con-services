@@ -51,7 +51,19 @@ namespace VSS.Productivity3D.Filter.Common.Validators
           filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.PolygonUid);
 
         if (filterBoundary == null)
-          filterBoundary = geofenceProxy.GetFavorite(filterTempForHydration.PolygonUid);
+        {
+          var favorite = await geofenceProxy.GetFavoriteGeofence(
+            filterRequestFull.CustomerUid, filterRequestFull.UserId, filterTempForHydration.PolygonUid, filterRequestFull.CustomHeaders);
+          if (favorite != null)
+            //TODO: use Automapper
+            filterBoundary = new Geofence
+            {
+              GeofenceUID = favorite.GeofenceUID.ToString(),
+              Name = favorite.GeofenceName,
+              GeometryWKT = favorite.GeometryWKT,
+              GeofenceType = (GeofenceType)Enum.Parse(typeof(GeofenceType), favorite.GeofenceType, true)
+            };
+        }
       }
       catch (Exception e)
       {
@@ -62,7 +74,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       if (filterBoundary == null)
       {
         log.LogError(
-          $"{nameof(HydrateJsonWithBoundary)}: boundary not found, or not valid: projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}. boundaryType: {polygonType} returned no boundary match");
+          $"{nameof(HydrateJsonWithBoundary)}: boundary not found, or not valid: projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}. boundaryType: {filterTempForHydration.PolygonType} returned no boundary match");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 40);
       }
 
