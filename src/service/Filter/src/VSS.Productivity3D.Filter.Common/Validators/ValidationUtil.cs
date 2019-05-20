@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Models;
@@ -30,7 +31,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
     /// <summary>
     /// Hydrates the filterJson string with the boundary data and uses the MasterData Models filter model to do so - to isolate logic there
     /// </summary>
-    public static async Task<string> HydrateJsonWithBoundary(IGeofenceRepository geofenceRepository,
+    public static async Task<string> HydrateJsonWithBoundary(IGeofenceProxy geofenceProxy, IGeofenceRepository geofenceRepository,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, FilterRequestFull filterRequestFull)
     {
       var filterTempForHydration = filterRequestFull.FilterModel(serviceExceptionHandler);
@@ -41,11 +42,16 @@ namespace VSS.Productivity3D.Filter.Common.Validators
         return filterRequestFull.FilterJson;
       }
 
+      //Handle old boundaries without the type in the json
+      var polygonType = filterTempForHydration.PolygonType ?? GeofenceType.Filter;
+
       //Get polygon boundary to add to filter
       Geofence filterBoundary = null;
       try
       {
-        filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.PolygonUid).ConfigureAwait(false);
+        filterBoundary = polygonType == GeofenceType.Filter
+          ? await geofenceRepository.GetGeofence(filterTempForHydration.PolygonUid)
+          : await geofenceProxy.GetFavorite(filterTempForHydration.PolygonUid);
       }
       catch (Exception e)
       {
@@ -56,7 +62,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       if (filterBoundary == null)
       {
         log.LogError(
-          $"{nameof(HydrateJsonWithBoundary)}: boundary not found, or not valid: projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}. returned no boundary match");
+          $"{nameof(HydrateJsonWithBoundary)}: boundary not found, or not valid: projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}. boundaryType: {polygonType} returned no boundary match");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 40);
       }
 
@@ -66,7 +72,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
       }
-      filterTempForHydration.AddBoundary(filterBoundary.GeofenceUID, filterBoundary.Name, polygonPoints);
+      filterTempForHydration.AddBoundary(filterBoundary.GeofenceUID, filterBoundary.Name, polygonPoints, filterBoundary.GeofenceType);
 
       string newFilterJson = null;
       try

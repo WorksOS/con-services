@@ -9,6 +9,7 @@ using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
+using VSS.MasterData.Repositories.DBModels;
 
 namespace VSS.Productivity3D.Filter.Abstractions.Models
 {
@@ -118,6 +119,12 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// </summary>
     [JsonProperty(PropertyName = "polygonLL", Required = Required.Default)]
     public List<WGSPoint> PolygonLL { get; private set; }
+
+    /// <summary>
+    /// The type of polygon. 'Filter' is 3dpm custom boundary. Other types are geofences.
+    /// </summary>
+    [JsonProperty(PropertyName = "polygonType", Required = Required.Default)]
+    public GeofenceType? PolygonType { get; private set; }
 
     /// <summary>
     /// Only use cell passes recorded when the machine was driving in the forwards direction. 
@@ -278,6 +285,10 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     {
       return PolygonLL != null;
     }
+    public bool ShouldSerializePolygonType()
+    {
+      return PolygonType != null;
+    }
     public bool ShouldSerializeForwardDirection()
     {
       return ForwardDirection != null;
@@ -361,11 +372,12 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
       PassCountRangeMin.HasValue ||
       PassCountRangeMax.HasValue;
 
-    public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL)
+    public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL, GeofenceType polygonType)
     {
       PolygonUid = polygonUID;
       PolygonName = polygonName;
       PolygonLL = polygonLL;
+      PolygonType = polygonType;
     }
 
     /// <summary>
@@ -412,7 +424,8 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
       double? temperatureRangeMax = null,
       int? passCountRangeMin = null,
       int? passCountRangeMax = null,
-      string onMachineDesignName = null)
+      string onMachineDesignName = null,
+      GeofenceType? polygonType = null)
     {
       StartUtc = startUtc;
       EndUtc = endUtc;
@@ -428,6 +441,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
       LayerNumber = layerNumber;
       PolygonUid = polygonUid;
       PolygonName = polygonName;
+      PolygonType = polygonType;
       AlignmentUid = alignmentUid;
       AlignmentFileName = alignmentFileName;
       StartStation = startStation;
@@ -578,8 +592,8 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
              string.Equals(DesignFileName, other.DesignFileName) &&
              ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
              OnMachineDesignId == other.OnMachineDesignId && string.Equals(OnMachineDesignName, other.OnMachineDesignName) &&
-             ElevationType == other.ElevationType &&
-             VibeStateOn == other.VibeStateOn && string.Equals(PolygonUid, other.PolygonUid) &&
+             ElevationType == other.ElevationType && VibeStateOn == other.VibeStateOn && 
+             string.Equals(PolygonUid, other.PolygonUid) && PolygonType == other.PolygonType &&
              string.Equals(PolygonName, other.PolygonName) && PolygonLL.ScrambledEquals(other.PolygonLL) &&
              ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber &&
              string.Equals(AlignmentUid, other.AlignmentUid) &&
@@ -616,6 +630,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
         hashCode = (hashCode * 397) ^ (PolygonUid != null ? PolygonUid.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (PolygonName != null ? PolygonName.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (PolygonLL != null ? PolygonLL.GetListHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (PolygonType != null ? PolygonType.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (ForwardDirection != null ? ForwardDirection.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (LayerNumber != null ? LayerNumber.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (AlignmentUid != null ? AlignmentUid.GetHashCode() : 397);

@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
       // Hydrate the polygon filter if present.
-      filterRequest.FilterJson = await ValidationUtil.HydrateJsonWithBoundary(auxRepository as GeofenceRepository, log, serviceExceptionHandler, filterRequest);
+      filterRequest.FilterJson = await ValidationUtil.HydrateJsonWithBoundary(geofenceProxy, auxRepository as GeofenceRepository, log, serviceExceptionHandler, filterRequest);
 
       if (filterRequest.FilterType == FilterType.Transient)
       {
