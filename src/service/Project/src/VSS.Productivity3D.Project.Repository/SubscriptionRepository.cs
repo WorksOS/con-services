@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
@@ -42,7 +40,7 @@ namespace VSS.Productivity3D.Project.Repository
 
       if (evt is CreateProjectSubscriptionEvent)
       {
-        var subscriptionEvent = (CreateProjectSubscriptionEvent) evt;
+        var subscriptionEvent = (CreateProjectSubscriptionEvent)evt;
         if (!(await IsServiceTypeValidAsync(subscriptionEvent.SubscriptionType, "Project")))
         {
           return 0;
@@ -65,7 +63,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
       else if (evt is UpdateProjectSubscriptionEvent)
       {
-        var subscriptionEvent = (UpdateProjectSubscriptionEvent) evt;
+        var subscriptionEvent = (UpdateProjectSubscriptionEvent)evt;
         var subscription = new Subscription
         {
           SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString(),
@@ -88,7 +86,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
       else if (evt is AssociateProjectSubscriptionEvent)
       {
-        var subscriptionEvent = (AssociateProjectSubscriptionEvent) evt;
+        var subscriptionEvent = (AssociateProjectSubscriptionEvent)evt;
         var projectSubscription =
           new ProjectSubscription
           {
@@ -102,7 +100,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
       else if (evt is DissociateProjectSubscriptionEvent)
       {
-        var subscriptionEvent = (DissociateProjectSubscriptionEvent) evt;
+        var subscriptionEvent = (DissociateProjectSubscriptionEvent)evt;
         var projectSubscription =
           new ProjectSubscription
           {
@@ -116,7 +114,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
       else if (evt is CreateCustomerSubscriptionEvent)
       {
-        var subscriptionEvent = (CreateCustomerSubscriptionEvent) evt;
+        var subscriptionEvent = (CreateCustomerSubscriptionEvent)evt;
         if (!(await IsServiceTypeValidAsync(subscriptionEvent.SubscriptionType, "Customer")))
         {
           return 0;
@@ -139,7 +137,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
       else if (evt is UpdateCustomerSubscriptionEvent)
       {
-        var subscriptionEvent = (UpdateCustomerSubscriptionEvent) evt;
+        var subscriptionEvent = (UpdateCustomerSubscriptionEvent)evt;
         var subscription = new Subscription
         {
           SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString(),
@@ -151,7 +149,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
       else if (evt is CreateAssetSubscriptionEvent)
       {
-        var subscriptionEvent = (CreateAssetSubscriptionEvent) evt;
+        var subscriptionEvent = (CreateAssetSubscriptionEvent)evt;
         if (!(await IsServiceTypeValidAsync(subscriptionEvent.SubscriptionType, "Asset")))
         {
           return 0;
@@ -186,7 +184,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
       else if (evt is UpdateAssetSubscriptionEvent)
       {
-        var subscriptionEvent = (UpdateAssetSubscriptionEvent) evt;
+        var subscriptionEvent = (UpdateAssetSubscriptionEvent)evt;
         if (!(await IsServiceTypeValidAsync(subscriptionEvent.SubscriptionType, "Asset")))
         {
           return 0;
@@ -235,7 +233,7 @@ namespace VSS.Productivity3D.Project.Repository
             SubscriptionUID, fk_CustomerUID AS CustomerUID, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID, LastActionedUTC 
           FROM Subscription
           WHERE SubscriptionUID = @SubscriptionUID",
-        new {SubscriptionUID = subscription.SubscriptionUID}
+        new { SubscriptionUID = subscription.SubscriptionUID }
       )).FirstOrDefault();
 
       if (eventType == "CreateProjectSubscriptionEvent" || eventType == "CreateCustomerSubscriptionEvent" ||
@@ -329,7 +327,7 @@ namespace VSS.Productivity3D.Project.Repository
             fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
           FROM ProjectSubscription
           WHERE fk_ProjectUID = @ProjectUID AND fk_SubscriptionUID = @SubscriptionUID",
-        new {ProjectUID = projectSubscription.ProjectUID, SubscriptionUID = projectSubscription.SubscriptionUID}
+        new { ProjectUID = projectSubscription.ProjectUID, SubscriptionUID = projectSubscription.SubscriptionUID }
       )).FirstOrDefault();
 
       if (eventType == "AssociateProjectSubscriptionEvent")
@@ -409,7 +407,7 @@ namespace VSS.Productivity3D.Project.Repository
           FROM AssetSubscription
           WHERE fk_AssetUID = @AssetUID 
             AND fk_SubscriptionUID = @SubscriptionUID",
-        new {AssetUID = assetSubscription.AssetUID, SubscriptionUID = assetSubscription.SubscriptionUID}
+        new { AssetUID = assetSubscription.AssetUID, SubscriptionUID = assetSubscription.SubscriptionUID }
       )).FirstOrDefault();
 
       upsertedCount = await AssociateAssetSubscription(assetSubscription, existing);
@@ -462,12 +460,8 @@ namespace VSS.Productivity3D.Project.Repository
         ServiceTypes = (await GetServiceTypes()).ToDictionary(k => k.Name, v => v);
 
       ServiceType serviceType;
-      var doesServiceTypeExist = ServiceTypes.TryGetValue(subscriptionType, out serviceType);
-      if (!doesServiceTypeExist)
-      {
-        Log.LogWarning($"Unsupported SubscriptionType: {subscriptionType}");
+      if (!ServiceTypes.TryGetValue(subscriptionType, out serviceType))
         return false;
-      }
 
       if (serviceType.ServiceTypeFamilyName != subscriptionFamily)
       {
@@ -490,7 +484,7 @@ namespace VSS.Productivity3D.Project.Repository
             SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
           FROM Subscription
           WHERE SubscriptionUID = @SubscriptionUID"
-        , new {SubscriptionUID = subscriptionUid}
+        , new { SubscriptionUID = subscriptionUid }
       )).FirstOrDefault();
 
       return subscription;
@@ -504,7 +498,7 @@ namespace VSS.Productivity3D.Project.Repository
               FROM Subscription
               WHERE fk_CustomerUID = @CustomerUID
                 AND @validAtDate BETWEEN StartDate AND EndDate"
-        , new {CustomerUID = customerUid, validAtDate}
+        , new { CustomerUID = customerUid, validAtDate }
       );
 
       return subscription;
@@ -521,7 +515,7 @@ namespace VSS.Productivity3D.Project.Repository
         $"    AND fk_ServiceTypeID IN ({(int)ServiceTypeEnum.ThreeDProjectMonitoring}, {(int)ServiceTypeEnum.Manual3DProjectMonitoring}, {(int)ServiceTypeEnum.Landfill}, {(int)ServiceTypeEnum.ProjectMonitoring}) " +
         "    AND @validAtDate BETWEEN StartDate AND EndDate";
 
-      var subscription = QueryWithAsyncPolicy<Subscription>(select, new {CustomerUID = customerUid, validAtDate});
+      var subscription = QueryWithAsyncPolicy<Subscription>(select, new { CustomerUID = customerUid, validAtDate });
 
       return subscription;
     }
@@ -540,7 +534,7 @@ namespace VSS.Productivity3D.Project.Repository
         $"   AND fk_ServiceTypeID IN ({(int)ServiceTypeEnum.Landfill}, {(int)ServiceTypeEnum.ProjectMonitoring}) " +
         "   AND ps.fk_SubscriptionUID IS NULL";
 
-      var subscription = QueryWithAsyncPolicy<Subscription>(select, new {CustomerUID = customerUid, validAtDate}
+      var subscription = QueryWithAsyncPolicy<Subscription>(select, new { CustomerUID = customerUid, validAtDate }
       );
 
       return subscription;
@@ -557,7 +551,7 @@ namespace VSS.Productivity3D.Project.Repository
         $"   AND fk_ServiceTypeID = {(int)ServiceTypeEnum.ThreeDProjectMonitoring} " +
         "   AND @validAtDate BETWEEN s.StartDate AND s.EndDate";
 
-      var subscription = QueryWithAsyncPolicy<Subscription>(select, new {assetUid, validAtDate});
+      var subscription = QueryWithAsyncPolicy<Subscription>(select, new { assetUid, validAtDate });
 
       return subscription;
     }
@@ -569,7 +563,7 @@ namespace VSS.Productivity3D.Project.Repository
             SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
           FROM Subscription
           WHERE SubscriptionUID = @SubscriptionUID"
-        , new {SubscriptionUID = subscriptionUid}
+        , new { SubscriptionUID = subscriptionUid }
       );
 
       return subscriptions;
@@ -582,7 +576,7 @@ namespace VSS.Productivity3D.Project.Repository
               fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
             FROM ProjectSubscription
             WHERE fk_SubscriptionUID = @SubscriptionUID"
-        , new {SubscriptionUID = subscriptionUid}
+        , new { SubscriptionUID = subscriptionUid }
       );
 
       return projectSubscriptions;
