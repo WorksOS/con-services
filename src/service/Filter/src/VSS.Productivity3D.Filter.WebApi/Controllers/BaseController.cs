@@ -1,11 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
@@ -60,6 +65,26 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// </summary>
     protected readonly IServiceExceptionHandler ServiceExceptionHandler;
 
+    /// <summary>
+    /// Gets the User uid/applicationID from the context.
+    /// </summary>
+    protected string GetUserId => ((User as FilterPrincipal)?.Identity as GenericIdentity)?.Name;
+
+    /// <summary>
+    /// Gets the customer UID from the context
+    /// </summary>
+    protected string CustomerUid => (User as FilterPrincipal)?.CustomerUid;
+
+    /// <summary>
+    /// Gets the application flag from the context
+    /// </summary>
+    protected bool IsApplication => (User as FilterPrincipal)?.IsApplication ?? false;
+
+    /// <summary>
+    /// Gets the project data for the specified project
+    /// </summary>
+    protected Task<ProjectData> GetProject(string projectUid) => (User as FilterPrincipal)?.GetProject(projectUid);
+ 
     /// <summary>
     /// Default constructor.
     /// </summary>
