@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity.Push.Models.Notifications.Changes;
@@ -38,6 +40,7 @@ namespace VSS.Productivity3D.Push.UnitTests
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton<IConfigurationStore>(new Mock<IConfigurationStore>().Object);
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton<IServiceResolution>(new Mock<IServiceResolution>().Object);
       serviceCollection.AddTransient<INotificationHubClient, NotificationHubClient>();
 
       // This is the main test object
@@ -77,13 +80,16 @@ namespace VSS.Productivity3D.Push.UnitTests
       var notificationHub = ServiceProvider.GetService<INotificationHubClient>() as NotificationHubClient;
 
       Assert.IsNotNull(notificationHub);
-      notificationHub.ProcessNotification(new CustomerChangedNotification(tag)); // one
+      var tasks = notificationHub.ProcessNotificationAsTasks(new CustomerChangedNotification(tag)); // one
+      Task.WaitAll(tasks.ToArray());
 
       mockCache.Verify(m => m.RemoveByTag(tag.ToString()), Times.Once);
 
-      notificationHub.ProcessNotification(new ProjectChangedNotification(tag)); // two
+      tasks = notificationHub.ProcessNotificationAsTasks(new ProjectChangedNotification(tag)); // two
+      Task.WaitAll(tasks.ToArray());
 
-      notificationHub.ProcessNotification(new UserChangedNotification(tag)); // three
+      tasks = notificationHub.ProcessNotificationAsTasks(new UserChangedNotification(tag)); // three
+      Task.WaitAll(tasks.ToArray());
 
       // We should have called invalidate cache 3 times (once per notification).
       mockCache.Verify(m => m.RemoveByTag(tag.ToString()), Times.Exactly(3));

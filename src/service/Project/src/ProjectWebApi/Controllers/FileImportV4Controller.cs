@@ -407,6 +407,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(deleteImportedFile)
       );
 
+      await notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+
       logger.LogInformation(
         $"DeleteImportedFileV4. Completed successfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
       return result;
