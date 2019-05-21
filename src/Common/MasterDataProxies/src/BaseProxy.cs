@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Cache.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Proxies
@@ -26,13 +24,13 @@ namespace VSS.MasterData.Proxies
   public class BaseProxy
   {
     private readonly IDataCache dataCache;
-    private readonly static AsyncDuplicateLock memCacheLock = new AsyncDuplicateLock();
+    private static readonly AsyncDuplicateLock memCacheLock = new AsyncDuplicateLock();
     protected readonly IConfigurationStore configurationStore;
     protected readonly ILogger log;
     protected readonly ILoggerFactory logger;
     
     private const int DefaultLogMaxChar = 1000;
-    private readonly int _logMaxChar;
+    private readonly int _logMaxChar = DefaultLogMaxChar;
 
     protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache)
     {
@@ -53,6 +51,7 @@ namespace VSS.MasterData.Proxies
       log = logger.CreateLogger<BaseProxy>();
       this.logger = logger;
       this.configurationStore = configurationStore;
+      _logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
     }
 
     private async Task<T> SendRequestInternal<T>(string url, IDictionary<string, string> customHeaders,
