@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -10,6 +12,22 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_CMV : PVMDisplayerBase
   {
+    protected override void SetSubGrid(ISubGrid value)
+    {
+      base.SetSubGrid(value);
+
+      if (SubGrid != null)
+        CastRequestObjectTo<ClientCMVLeafSubGrid>(SubGrid, ThrowTRexClientLeafSubGridTypeCastException<ClientCMVLeafSubGrid>);
+    }
+
+    protected override void SetPalette(IPlanViewPalette value)
+    {
+      base.SetPalette(value);
+
+      if (Palette != null)
+        CastRequestObjectTo<CMVPalette>(Palette, ThrowTRexColorPaletteTypeCastException<CMVPalette>);
+    }
+
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>

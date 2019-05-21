@@ -46,20 +46,23 @@ namespace VSS.TRex.Rendering.Palettes
       // ...
     }
 
-    public Color ChooseColour(ushort measuredPassCount, PassCountRangeRecord passTargetRange)
+    public Color ChooseColour(ushort measuredPassCount, ushort minPassTargetRange, ushort maxPassTargetRange)
     {
       // If we are not using the machine Pass Target value then we need to replace the
       // Pass Count Target reported from the machine, with the override value specified in the options
       if (!UseMachineTargetPass)
-        passTargetRange = TargetPassCountRange;
+      {
+        minPassTargetRange = TargetPassCountRange.Min;
+        maxPassTargetRange = TargetPassCountRange.Max;
+      }
 
-      if (passTargetRange.Min == CellPassConsts.NullPassCountValue || passTargetRange.Max == CellPassConsts.NullPassCountValue)
+      if (minPassTargetRange == CellPassConsts.NullPassCountValue || maxPassTargetRange == CellPassConsts.NullPassCountValue)
         return Color.Empty;
 
-      if (measuredPassCount < passTargetRange.Min)
+      if (measuredPassCount < minPassTargetRange)
         return BelowPassTargetRangeColour;
 
-      if (measuredPassCount > passTargetRange.Max)
+      if (measuredPassCount > maxPassTargetRange)
         return AbovePassTargetRangeColour;
 
       return WithinPassTargetRangeColour;
