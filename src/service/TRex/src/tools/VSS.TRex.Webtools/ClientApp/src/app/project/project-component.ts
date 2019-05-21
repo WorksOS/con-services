@@ -810,7 +810,7 @@ constructor(
     this.drawProfileLineForDesign(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
   }
 
-  public ComputeSVGForProfileValueVector(points: any[], getValue: (point: any) => number): string {
+  public ComputeSVGForProfileValueVector(points: any[], minZ:number, maxZ:number, getValue: (point: any) => number): string {
     var profileCanvasHeight: number = 500.0;
     var profileCanvasWidth: number = 1000.0;
 
@@ -819,14 +819,6 @@ constructor(
 
     var stationRange: number = points[points.length - 1].station - points[0].station;
     var stationRatio: number = profileCanvasWidth / stationRange;
-
-    var minZ: number = 100000.0;
-    var maxZ: number = -100000.0;
-      points.forEach(pt => {
-          var value: number = getValue(pt);
-          if (value > -100000 && value < minZ) minZ = value;
-          if (value > -100000 && value > maxZ) maxZ = value;
-      });
 
     var zRange = maxZ - minZ;
     var zRatio = profileCanvasHeight / zRange;
@@ -848,18 +840,9 @@ constructor(
     return result;
   }
 
-  public ProcessProfileDataVectorToSVGPolyLine(points: any[], getValue: (point: any) => number, setResult: (theResult: string) => void) {
-      var minZ: number = 100000.0;
-      var maxZ: number = -100000.0;
-      points.forEach(pt =>
-      {
-          var value: number = getValue(pt);
-          if (value > -100000 && value < minZ) minZ = value;
-          if (value > -100000 && value > maxZ) maxZ = value;
-      });
-
+  public ProcessProfileDataVectorToSVGPolyLine(points: any[], minZ : number, maxZ : number, getValue: (point: any) => number, setResult: (theResult: string) => void) {
       this.SetProfileViewExtents(points, minZ, maxZ);
-      setResult(this.ComputeSVGForProfileValueVector(points, getValue));
+      setResult(this.ComputeSVGForProfileValueVector(points, minZ, maxZ, getValue));
   }
 
   public SetProfileViewExtents(points: any[], minZ: number, maxZ: number) {
@@ -876,14 +859,30 @@ constructor(
   // between all others
   public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number,
     getValue: (point: any) => number, setResult: (theResult: string) => void) {
-    return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
-      .subscribe(points => this.ProcessProfileDataVectorToSVGPolyLine(points, getValue, setResult));
-  }
+      return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
+          .subscribe(
+              points => {
+                  // Compute the overall scale factor for the elevation range
+                  var minZ: number = 100000.0;
+                  var maxZ: number = -100000.0;
 
-  public drawProfileLineFromStartToEndPointsForProdData(): void {
-    this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY,
+                  this.updateElevationRange(points,
+                      getValue,
+                      minZ,
+                      maxZ,
+                      (min, max) => {
+                          minZ = min;
+                          maxZ = max;
+                      });
+                  this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, getValue, setResult);
+              });
+  };
+
+    public drawProfileLineFromStartToEndPointsForProdData(): void {
+      this.ClearAllSVGProfilePolylines();
+      this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY,
       pt => pt.z,
-      theResult => {
+        theResult => {
         this.profilePath = theResult;
         this.numPointInProfile = theResult.length;
       });
@@ -930,21 +929,63 @@ constructor(
   }
 
 
-  public drawProfileLineFromStartToEndPointsForSummaryVolumes(): void {
+    public drawProfileLineFromStartToEndPointsForSummaryVolumes(): void {
+     this.ClearAllSVGProfilePolylines();
      this.drawProfileLineForSummaryVolumes(this.svFirstPointX, this.svFirstPointY, this.svSecondPointX, this.svSecondPointY);
   } 
+
+    public updateElevationRange(points: any[], getValue: (point: any) => number, minZ: number, maxZ: number, setValue: (min: number, max: number) => void) {
+        points.forEach(pt => {
+            var value: number = getValue(pt);
+            if (value > -100000 && value < minZ) minZ = value;
+            if (value > -100000 && value > maxZ) maxZ = value;
+        });
+        setValue(minZ, maxZ);
+    }
+
+    public ClearAllSVGProfilePolylines(): void {
+        // Production data profile
+        this.profilePath = "";
+        this.numPointInProfile = 0;
+
+        // Composite elevation profiles
+        this._compositeElevationProfilePath_LastElev = "";
+        this._compositeElevationProfilePath_FirstElev = "";
+        this._compositeElevationProfilePath_LowestElev = "";
+        this._compositeElevationProfilePath_HighestElev = "";
+        this._compositeElevationProfilePath_LastCompositeElev = "";
+        this._compositeElevationProfilePath_FirstCompositeElev = "";
+        this._compositeElevationProfilePath_LowestCompositeElev = "";
+        this._compositeElevationProfilePath_HighestCompositeElev = "";
+    }
 
   public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
   return this.projectService.drawProfileLineForCompositeElevations(this.projectUid, startX, startY, endX, endY)
     .subscribe(points => {
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastElev, theResult => this._compositeElevationProfilePath_LastElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstElev, theResult => this._compositeElevationProfilePath_FirstElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestElev, theResult => this._compositeElevationProfilePath_LowestElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestElev, theResult => this._compositeElevationProfilePath_HighestElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastCompositeElev, theResult => this._compositeElevationProfilePath_LastCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstCompositeElev, theResult => this._compositeElevationProfilePath_FirstCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestCompositeElev, theResult => this._compositeElevationProfilePath_LowestCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestCompositeElev, theResult => this._compositeElevationProfilePath_HighestCompositeElev = theResult);
+        this.ClearAllSVGProfilePolylines();
+
+        // Compute the overall scale factor for the elevation range
+        var minZ: number = 100000.0;
+        var maxZ: number = -100000.0;
+
+        this.updateElevationRange(points, pt => pt.cellLastElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellFirstElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellLowestElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellHighestElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellLastCompositeElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellFirstCompositeElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellLowestCompositeElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellHighestCompositeElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+
+
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLastElev, theResult => this._compositeElevationProfilePath_LastElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellFirstElev, theResult => this._compositeElevationProfilePath_FirstElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLowestElev, theResult => this._compositeElevationProfilePath_LowestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellHighestElev, theResult => this._compositeElevationProfilePath_HighestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLastCompositeElev, theResult => this._compositeElevationProfilePath_LastCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellFirstCompositeElev, theResult => this._compositeElevationProfilePath_FirstCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLowestCompositeElev, theResult => this._compositeElevationProfilePath_LowestCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellHighestCompositeElev, theResult => this._compositeElevationProfilePath_HighestCompositeElev = theResult);
 
         this.compositeElevationProfilePath_LastElev = this._compositeElevationProfilePath_LastElev;
         this.compositeElevationProfilePath_FirstElev = this._compositeElevationProfilePath_FirstElev;
