@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Productivity.Push.Models;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 
@@ -13,18 +14,27 @@ namespace VSS.Productivity3D.Push.Hubs.AssetLocations
   {
     private readonly IAssetStatusState assetState;
 
-    public AssetStatusClientHub(IAssetStatusState assetState)
+    public AssetStatusClientHub(ILoggerFactory loggerFactory, IAssetStatusState assetState) : base(loggerFactory)
     {
       this.assetState = assetState;
     }
 
     public async Task StartProcessingAssets(Guid projectUid)
     {
+      // Handy for debugging, but not needed normally
+      Logger.LogInformation($"Client requesting information for ProjectUID: {projectUid}");
+
+      var token = AuthorizationToken;
+      var jwt = JwtAssertion;
+
+      if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(jwt))
+        throw new UnauthorizedAccessException("Missing Authentication Headers");
+
       // Do we need to check authentication here??? 
       var model = new AssetUpdateSubscriptionModel()
       {
-        AuthorizationHeader = AuthorizationToken,
-        JWTAssertion = JwtAssertion,
+        AuthorizationHeader = token,
+        JWTAssertion = jwt,
         CustomerUid = Guid.Parse(CustomerUid),
         ProjectUid = projectUid
       };
@@ -39,6 +49,5 @@ namespace VSS.Productivity3D.Push.Hubs.AssetLocations
       await assetState.RemoveSubscription(Context.ConnectionId);
       await base.OnDisconnectedAsync(exception);
     }
-    
   }
 }
