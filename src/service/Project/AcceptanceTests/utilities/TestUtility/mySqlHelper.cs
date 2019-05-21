@@ -18,10 +18,12 @@ namespace TestUtility
     {
       var allFields = fields.Split(',');
       var results = string.Empty;
+
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
+
         using (var mySqlDataReader = mySqlCommand.ExecuteReader())
         {
           while (mySqlDataReader.Read())
@@ -34,6 +36,7 @@ namespace TestUtility
           results = results.TrimEnd(',');
         }
       }
+
       return results;
     }
 
@@ -63,12 +66,14 @@ namespace TestUtility
     public int ExecuteMySqlInsert(string connectionString, string sqlCommand)
     {
       Console.WriteLine(sqlCommand);
+
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(sqlCommand, mySqlConnection);
         var result = mySqlCommand.ExecuteNonQuery();
         Console.WriteLine(result.ToString());
+
         return result;
       }
     }
@@ -76,35 +81,28 @@ namespace TestUtility
     /// <summary>
     /// Verify the number of expected records in the table is there for the given uid
     /// </summary>
-    /// <param name="table">Database table name</param>
-    /// <param name="column">Database column name for the uid</param>
-    /// <param name="expectedEventCount">Number of expected events</param>
-    /// <param name="uid">The uid to use</param>
-    public void VerifyTestResultDatabaseRecordCount(string table, string column, int expectedEventCount, Guid uid)
+    public void VerifyTestResultDatabaseRecordCount(string tableName, string columnName, int expectedEventCount, Guid uid)
     {
-      var sqlQuery = @"SELECT COUNT(*) FROM `{0}`.{1} WHERE {2}='{3}'";
-      var result = GetDatabaseCountForEvents(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid), expectedEventCount);
-     // msg.DisplayResults(expectedEventCount + " records", result + " records");
+      const string sqlQuery = @"SELECT COUNT(*) FROM `{0}`.{1} WHERE {2}='{3}'";
+
+      var result = GetDatabaseCountForEvents(string.Format(sqlQuery, appConfig.dbSchema, tableName, columnName, uid), expectedEventCount);
       Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
     }
 
     /// <summary>
     /// Verify the value of fields in the table for the given uid
     /// </summary>
-    /// <param name="table">Database table name</param>
-    /// <param name="column">Database column name for the uid</param>
-    /// <param name="fields"></param>
-    /// <param name="expectedData"></param>
-    /// <param name="uid">The uid to use</param>
-    public void VerifyTestResultDatabaseFieldsAreExpected(string table, string column, string fields, string expectedData, Guid uid)
+    public void VerifyTestResultDatabaseFieldsAreExpected(string tableName, string columnName, string fields, string expectedData, Guid uid)
     {
-      var sqlQuery = @"SELECT {4} FROM `{0}`.{1} WHERE {2}='{3}'";
-      var allActualData = GetDatabaseFieldsForQuery(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid, fields), fields);
+      const string sqlQuery = @"SELECT {4} FROM `{0}`.{1} WHERE {2}='{3}'";
+
+      var allActualData = GetDatabaseFieldsForQuery(string.Format(sqlQuery, appConfig.dbSchema, tableName, columnName, uid, fields), fields);
       var fldArray = fields.Split(',');
       var actualDataArray = allActualData.Split(',');
       var expectedDataArray = expectedData.Split(',');
       var idx = 0;
       msg.DisplayResults(expectedData, allActualData );
+
       foreach (var col in fldArray)
       {
         Assert.AreEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(), "Expected results for " + col + " do not match actual");
@@ -142,9 +140,8 @@ namespace TestUtility
     /// </summary>
     private string GetDatabaseFieldsForQuery(string query, string fields)
     {
-      var mysqlHelper = new MySqlHelper();
       msg.DisplayMySqlQuery(query);
-      return mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.DbConnectionString, query, fields);
+      return new MySqlHelper().ExecuteMySqlQueryAndReturnColumns(appConfig.DbConnectionString, query, fields);
     }
 
     /// <summary>

@@ -16,7 +16,7 @@ namespace VSS.Common.Abstractions.Http
 
     public const string REQUEST_ID = "Request-ID";
 
-    public const string X_JWT_ASSERTION = "X-Jwt-Assertion";
+    public const string X_JWT_ASSERTION = "X-JWT-Assertion";
 
     public const string X_REQUEST_ID = "X-Request-ID";
 

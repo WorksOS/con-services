@@ -48,7 +48,7 @@ namespace WebApiTests
 
       var projSettings1 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings1, ProjectSettingsType.Targets);
       var configJson1 = JsonConvert.SerializeObject(projSettings1, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var putresponse1 = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson1, customerUid.ToString());
+      var putresponse1 = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson1, customerUid.ToString());
       var putobjresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(putresponse1);
 
       var tempSettings = JsonConvert.SerializeObject(putobjresp1.settings).Replace("\"", String.Empty);
@@ -68,7 +68,7 @@ namespace WebApiTests
 
       var projSettings2 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings2, ProjectSettingsType.Targets);
       var configJson2 = JsonConvert.SerializeObject(projSettings2, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var putresponse2 = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString(), RestClientUtil.ANOTHER_JWT);
+      var putresponse2 = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString(), RestClientUtil.ANOTHER_JWT);
       var putobjresp2 = JsonConvert.DeserializeObject<ProjectSettingsResult>(putresponse2);
 
       tempSettings = JsonConvert.SerializeObject(putobjresp2.settings).Replace("\"", String.Empty);
@@ -79,7 +79,7 @@ namespace WebApiTests
       
       
       // get call
-      var getresponse1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var getresponse1 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var getobjresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(getresponse1);
 
       tempSettings = JsonConvert.SerializeObject(getobjresp1.settings).Replace("\"", String.Empty);
@@ -104,10 +104,10 @@ namespace WebApiTests
       var projectSettings = "{ Invalid project UID }";
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      var response = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
       Assert.IsTrue(response == "{\"Code\":2001,\"Message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected") ;
       // Try to get the project that doesn't exist
-      var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response1 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       Assert.IsTrue(response1 == "{\"Code\":2001,\"Message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected");
     }
 
@@ -151,7 +151,7 @@ namespace WebApiTests
 
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      var response = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response);
 
       var tempSettings = JsonConvert.SerializeObject(objresp.settings).Replace("\"", String.Empty);
@@ -160,7 +160,7 @@ namespace WebApiTests
       Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
 
       // get call
-      var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response1 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);
@@ -202,7 +202,7 @@ namespace WebApiTests
       var projectSettings = string.Empty;
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      var response = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response);
 
       var tempSettings = objresp.settings == null ? String.Empty : JsonConvert.SerializeObject(objresp.settings).Replace("\"", String.Empty);
@@ -211,7 +211,7 @@ namespace WebApiTests
       //Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
 
       // get call
-      var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response1 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       tempSettings = objresp1.settings == null ? String.Empty : JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);
@@ -256,7 +256,7 @@ namespace WebApiTests
 
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
 
       var projectSettings1 = "{customTargetPassCountMaximum: 7,useMachineTargetTemperature: false,customTargetTemperatureMinimum: 75}";
 
@@ -264,7 +264,7 @@ namespace WebApiTests
 
       var projSettings1 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings1, ProjectSettingsType.Targets);
       var configJson2 = JsonConvert.SerializeObject(projSettings1, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response1 = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString());
+      var response1 = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       var tempSettings = JsonConvert.SerializeObject(objresp.settings).Replace("\"", String.Empty);
@@ -273,7 +273,7 @@ namespace WebApiTests
       Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
 
       // get call
-      var response2 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response2 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response2);
 
       tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);
@@ -318,7 +318,7 @@ namespace WebApiTests
 
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
 
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ProjectSettings", "fk_ProjectUID", 1, new Guid(projectUid));
       projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectSettings", "fk_ProjectUID", "Settings", $"{projectSettings}", new Guid(projectUid));
@@ -329,7 +329,7 @@ namespace WebApiTests
 
       var projSettings1 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings1, ProjectSettingsType.Targets);
       var configJson2 = JsonConvert.SerializeObject(projSettings1, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response1 = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString());
+      var response1 = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       var tempSettings = JsonConvert.SerializeObject(objresp.settings).Replace("\"", String.Empty);
@@ -337,7 +337,7 @@ namespace WebApiTests
       Assert.AreEqual(projectSettings1, tempSettings, "Actual project settings do not match expected");
       Assert.AreEqual(projectUid, objresp.projectUid, "Actual project Uid for project settings do not match expected");
 
-      var response2 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response2 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response2);
 
       tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", String.Empty);

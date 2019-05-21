@@ -40,6 +40,7 @@ namespace ExecutorTests.Internal
     protected FilterRepository FilterRepo;
     protected ProjectRepository ProjectRepo;
     protected GeofenceRepository GeofenceRepo;
+    protected IGeofenceProxy GeofenceProxy;
     private const string LOGGER_REPO_NAME = "UnitTestLogTest";
 
     public void SetupDI()
@@ -68,6 +69,7 @@ namespace ExecutorTests.Internal
         .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
         .AddMemoryCache()
         .AddSingleton<IDataCache, InMemoryDataCache>()
+        .AddSingleton<IGeofenceProxy, GeofenceProxy>()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -80,6 +82,7 @@ namespace ExecutorTests.Internal
       FileListProxy = ServiceProvider.GetRequiredService<IFileListProxy>();
       RaptorProxy = ServiceProvider.GetRequiredService<IRaptorProxy>();
       AssetResolverProxy = ServiceProvider.GetRequiredService<IAssetResolverProxy>();
+      GeofenceProxy = ServiceProvider.GetRequiredService<IGeofenceProxy>();
 
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
     }

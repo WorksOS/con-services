@@ -64,13 +64,7 @@ namespace TestUtility
     {
       var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid.ToString(), jwt);
       var filesResult = JsonConvert.DeserializeObject<T>(response);
-      return filesResult;
-    }
 
-    public T GetFromWebApi<T>(string uri, Guid customerUid)
-    {
-      var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid.ToString());
-      var filesResult = JsonConvert.DeserializeObject<T>(response);
       return filesResult;
     }
 
@@ -79,26 +73,25 @@ namespace TestUtility
     /// </summary>
     public ImportedFileDescriptorSingleResult SendRequestToFileImportV4(TestSupport ts, string[] importFileArray, int row, ImportOptions importOptions = new ImportOptions(), string expectedExceptionMessage = null)
     {
-      var uri = ts.GetBaseUri();
-      var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
+      var fileDescriptor = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
-      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor = ed;
+      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor = fileDescriptor;
 
-      var createdDt = ed.FileCreatedUtc.ToUniversalTime().ToString("o");
-      var updatedDt = ed.FileUpdatedUtc.ToUniversalTime().ToString("o");
+      var createdDt = fileDescriptor.FileCreatedUtc.ToUniversalTime().ToString("o");
+      var updatedDt = fileDescriptor.FileUpdatedUtc.ToUniversalTime().ToString("o");
 
-      uri = uri + $"{uriRoot}?projectUid={ed.ProjectUid}&importedFileType={ed.ImportedFileTypeName}&fileCreatedUtc={createdDt:yyyy-MM-ddTHH:mm:ss.fffffff}&fileUpdatedUtc={updatedDt:yyyy-MM-ddTHH:mm:ss.fffffff}";
+      var uri = $"{ts.BaseUri}{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
 
-      switch (ed.ImportedFileTypeName)
+      switch (fileDescriptor.ImportedFileTypeName)
       {
         case "SurveyedSurface":
-          uri = $"{uri}&SurveyedUtc={ed.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
+          uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
           break;
         case "Linework":
-          uri = $"{uri}&DxfUnitsType={ed.DxfUnitsType}";
+          uri = $"{uri}&DxfUnitsType={fileDescriptor.DxfUnitsType}";
           break;
         case "ReferenceSurface":
-          uri = $"{uri}&ParentUid={ed.ParentUid}&Offset={ed.Offset}";
+          uri = $"{uri}&ParentUid={fileDescriptor.ParentUid}&Offset={fileDescriptor.Offset}";
           break;
       }
 
@@ -112,18 +105,18 @@ namespace TestUtility
 
       if (importOptions.HttpMethod == HttpMethod.Delete)
       {
-        uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={ImportedFileUid}";
+        uri = ts.BaseUri + $"api/v4/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
 
       string response;
-      if (ed.ImportedFileType == ImportedFileType.ReferenceSurface)
+      if (fileDescriptor.ImportedFileType == ImportedFileType.ReferenceSurface)
       {
-        response = DoHttpRequest(uri, importOptions.HttpMethod, (byte[])null, ed.CustomerUid, "application/json");
+        response = DoHttpRequest(uri, importOptions.HttpMethod, (byte[])null, fileDescriptor.CustomerUid, "application/json");
       }
       else
       {
-        response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod);
-        if (ed.ImportedFileType != ImportedFileType.ReferenceSurface)
+        response = UploadFilesToWebApi(fileDescriptor.Name, uri, fileDescriptor.CustomerUid, importOptions.HttpMethod);
+        if (fileDescriptor.ImportedFileType != ImportedFileType.ReferenceSurface)
           ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
       }
 
@@ -135,7 +128,7 @@ namespace TestUtility
           NullValueHandling = NullValueHandling.Ignore
         });
       }
-      catch (Exception exception)
+      catch
       {
         Console.WriteLine(response);
         if (expectedExceptionMessage != response)
@@ -152,8 +145,7 @@ namespace TestUtility
     /// </summary>
     public string SendImportedFilesToWebApiV2(TestSupport ts, long projectId, string[] importFileArray, int row)
     {
-      var uri = ts.GetBaseUri();
-      uri = uri + $"api/v2/projects/{projectId}/importedfiles";
+      var uri = $"{ts.BaseUri}api/v2/projects/{projectId}/importedfiles";
       var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
       var importedFileTbc = new ImportedFileTbc
@@ -170,6 +162,7 @@ namespace TestUtility
         LineworkFile = ed.ImportedFileType == ImportedFileType.Linework
         ? new LineworkFile { DxfUnitsTypeId = DxfUnitsType.Meters } : null
       };
+
       string requestJson = JsonConvert.SerializeObject(importedFileTbc, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
       var restClient = new RestClientUtil();
@@ -188,10 +181,11 @@ namespace TestUtility
       {
         //For reference surfaces no file to upload
         var name = new DirectoryInfo(fullFileName).Name;
-        Byte[] bytes = File.ReadAllBytes(fullFileName);
-        var fileSize =  bytes.Length;
+        var bytes = File.ReadAllBytes(fullFileName);
+        var fileSize = bytes.Length;
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
         string result = null;
+
         for (var offset = 0; offset < chunks; offset++)
         {
           var startByte = offset * CHUNK_SIZE;
@@ -360,10 +354,7 @@ namespace TestUtility
     /// </summary>
     private static string CallWebApi(string uri, string method, string configJson, string customerUid = null, string jwt = null)
     {
-      var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json",
-        customerUid, jwt);
-      return response;
+      return new RestClientUtil().DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
     }
   }
 }

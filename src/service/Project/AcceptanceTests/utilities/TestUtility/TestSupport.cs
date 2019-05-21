@@ -23,8 +23,6 @@ namespace TestUtility
 {
   public class TestSupport
   {
-    #region Public Properties
-
     public string AssetUid { get; set; }
     public DateTime FirstEventDate { get; set; }
     public DateTime LastEventDate { get; set; }
@@ -50,19 +48,30 @@ namespace TestUtility
       DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
       NullValueHandling = NullValueHandling.Ignore
     };
-
-    public readonly TestConfig TsCfg = new TestConfig();
-
-    #endregion
-
-    #region Private Properties
-
+    
     private readonly Random rndNumber = new Random();
     private readonly object syncLock = new object();
     private const char SEPARATOR = '|';
     private readonly Msg msg = new Msg();
 
-    #endregion
+    private static readonly TestConfig _testConfig;
+    private static readonly string _baseUri;
+
+    public string BaseUri => _baseUri;
+
+    static TestSupport()
+    {
+      _testConfig = new TestConfig();
+
+      if (Debugger.IsAttached || _testConfig.operatingSystem == "Windows_NT")
+      {
+        _baseUri = _testConfig.debugWebApiUri;
+      }
+      else
+      {
+        _baseUri = _testConfig.webApiUri;
+      }
+    }
 
     #region Public Methods
 
@@ -85,7 +94,7 @@ namespace TestUtility
     {
       var mysql = new MySqlHelper();
       var query = "SELECT max(LegacyAssetID) FROM Asset;";
-      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(TsCfg.DbConnectionString, query);
+      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(_testConfig.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
       {
         return 1000;
@@ -103,7 +112,7 @@ namespace TestUtility
       Console.WriteLine("SetLegacyProjectId start");
       var mysql = new MySqlHelper();
       var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
-      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(TsCfg.DbConnectionString, query);
+      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(_testConfig.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
       {
         return 1000;
@@ -116,58 +125,37 @@ namespace TestUtility
     /// <summary>
     /// Set up the first event date for the events to go in. Also used as project start date for project tests.
     /// </summary>
-    public void SetFirstEventDate()
-    {
-      FirstEventDate = DateTime.SpecifyKind(DateTime.UtcNow.Date.AddDays(-RandomNumber(10, 360)), DateTimeKind.Unspecified);
-    }
+    public void SetFirstEventDate() => FirstEventDate = DateTime.SpecifyKind(DateTime.UtcNow.Date.AddDays(-RandomNumber(10, 360)), DateTimeKind.Unspecified);
 
     /// <summary>
     /// Set up the last event date for the events to go in. Also used as project end date for project tests.
     /// </summary>
-    public void SetLastEventDate()
-    {
-      LastEventDate = FirstEventDate.AddYears(2);
-    }
+    public void SetLastEventDate() => LastEventDate = FirstEventDate.AddYears(2);
 
     /// <summary>
     /// Set the asset UID to a random GUID
     /// </summary>
-    public void SetAssetUid()
-    {
-      AssetUid = Guid.NewGuid().ToString();
-    }
+    public void SetAssetUid() => AssetUid = Guid.NewGuid().ToString();
 
     /// <summary>
     /// Set the project UID to a random GUID
     /// </summary>
-    public void SetProjectUid()
-    {
-      ProjectUid = Guid.NewGuid();
-    }
+    public void SetProjectUid() => ProjectUid = Guid.NewGuid();
 
     /// <summary>
     /// Set the customer UID to a random GUID
     /// </summary>
-    public void SetCustomerUid()
-    {
-      CustomerUid = Guid.NewGuid();
-    }
+    public void SetCustomerUid() => CustomerUid = Guid.NewGuid();
 
     /// <summary>
     /// Set the geofence UID to a random GUID
     /// </summary>
-    public void SetGeofenceUid()
-    {
-      GeofenceUid = Guid.NewGuid();
-    }
+    public void SetGeofenceUid() => GeofenceUid = Guid.NewGuid();
 
     /// <summary>
     /// Set the subscription UID to a random GUID
     /// </summary>
-    public void SetSubscriptionUid()
-    {
-      SubscriptionUid = Guid.NewGuid();
-    }
+    public void SetSubscriptionUid() => SubscriptionUid = Guid.NewGuid();
 
     /// <summary>
     /// Set to true if writing to kafka instead of the database
@@ -280,20 +268,19 @@ namespace TestUtility
     private string CallWebApiWithProject(string jsonString, string eventType, string customerUid)
     {
       var response = string.Empty;
-      Thread.Sleep(500);
 
       switch (eventType)
       {
         case "CreateProjectEvent":
         case "CreateProjectRequest":
-          response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Post.ToString(), jsonString, customerUid);
+          response = CallProjectWebApi("api/v4/project/", HttpMethod.Post.ToString(), jsonString, customerUid);
           break;
         case "UpdateProjectEvent":
         case "UpdateProjectRequest":
-          response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Put.ToString(), jsonString, customerUid);
+          response = CallProjectWebApi("api/v4/project/", HttpMethod.Put.ToString(), jsonString, customerUid);
           break;
         case "DeleteProjectEvent":
-          response = CallProjectWebApiV4("api/v4/project/" + ProjectUid, HttpMethod.Delete.ToString(), string.Empty, customerUid);
+          response = CallProjectWebApi("api/v4/project/" + ProjectUid, HttpMethod.Delete.ToString(), string.Empty, customerUid);
           break;
       }
       //Thread.Sleep(500);
@@ -437,64 +424,41 @@ namespace TestUtility
     /// <summary>
     /// Create the project via the web api. 
     /// </summary>
-    /// <param name="projectUid">project UID</param>
-    /// <param name="projectId">legacy project id</param>
-    /// <param name="name">project name</param>
-    /// <param name="startDate">project start date</param>
-    /// <param name="endDate">project end date</param>
-    /// <param name="projectType">project type</param>
-    /// <param name="timezone">project time zone</param>
-    /// <param name="actionUtc">timestamp of the event</param>
-    /// <param name="boundary"></param>
-    /// <param name="statusCode">expected status code from web api call</param>
     public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, List<TBCPoint> boundary, HttpStatusCode statusCode)
     {
       var createProjectV2Request = CreateProjectV2Request.CreateACreateProjectV2Request(
       projectType, startDate, endDate, name, timezone, boundary,
-        new BusinessCenterFile() { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
+        new BusinessCenterFile { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
       );
-      string requestJson;
-      if (createProjectV2Request == null)
-      {
-        requestJson = null;
-      }
-      else
-      {
-        requestJson = JsonConvert.SerializeObject(createProjectV2Request, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      }
-      return CallProjectWebApiV2(requestJson, string.Empty, "api/v2/projects/", statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+
+      var requestJson = createProjectV2Request == null
+        ? null
+        : JsonConvert.SerializeObject(createProjectV2Request, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+      return CallProjectWebApi(string.Empty, HttpMethod.Post.ToString(), requestJson, CustomerUid.ToString(), endPoint: "api/v2/projects/");
     }
 
     /// <summary>
     /// Validate the TBC orgShortName for this customer via the web api. 
     /// </summary>
-    /// <param name="orgShortName"></param>
-    /// <param name="statusCode">expected status code from web api call</param>
-    public string ValidateTbcOrgIdApiV2(string orgShortName, HttpStatusCode statusCode)
+    public string ValidateTbcOrgIdApiV2(string orgShortName)
     {
       var validateTccAuthorizationRequest = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest(orgShortName);
-      string requestJson;
-      if (validateTccAuthorizationRequest == null)
-      {
-        requestJson = null;
-      }
-      else
-      {
-        requestJson = JsonConvert.SerializeObject(validateTccAuthorizationRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      }
-      return CallProjectWebApiV2(requestJson, string.Empty, "api/v2/preferences/tcc", statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
-    }
 
+      var requestJson = validateTccAuthorizationRequest == null
+        ? null
+        : JsonConvert.SerializeObject(validateTccAuthorizationRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+      return CallProjectWebApi(string.Empty, HttpMethod.Post.ToString(), requestJson, CustomerUid.ToString(), endPoint: "api/v2/preferences/tcc");
+    }
 
     /// <summary>
     /// Call web api version 3
     /// </summary>
-    /// <param name="statusCode"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="expectedResultsArray"></param>
     public void GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
     {
       var response = CallProjectWebApiV3(null, string.Empty, statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
+
       if (statusCode == HttpStatusCode.OK)
       {
         if (expectedResultsArray.Length == 0)
@@ -507,7 +471,7 @@ namespace TestUtility
           var actualProjects = JsonConvert.DeserializeObject<ImmutableDictionary<int, ProjectDescriptor>>(response);
           var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid)
             .ToImmutableDictionary(key => key.LegacyProjectId, project =>
-              new ProjectDescriptor()
+              new ProjectDescriptor
               {
                 ProjectType = project.ProjectType,
                 Name = project.Name,
@@ -522,6 +486,7 @@ namespace TestUtility
                 LegacyCustomerId = CustomerId,
                 CoordinateSystemFileName = project.CoordinateSystemFileName
               });
+
           msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
           Assert.IsFalse(expectedResultsArray.Length == actualProjects.Count, " Number of projects return do not match expected");
           CompareTheActualProjectDictionaryWithExpected(actualProjects, expectedProjects, true);
@@ -532,13 +497,9 @@ namespace TestUtility
     /// <summary>
     /// Call web api version 4 
     /// </summary>
-    /// <param name="statusCode"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="expectedResultsArray"></param>
-    /// <param name="ignoreZeros"></param>
     public void GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
     {
-      var response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Get.ToString(), null, customerUid.ToString());
+      var response = CallProjectWebApi("api/v4/project/", HttpMethod.Get.ToString(), null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         if (expectedResultsArray.Length == 0)
@@ -562,14 +523,9 @@ namespace TestUtility
     /// <summary>
     /// Get project details for one project
     /// </summary>
-    /// <param name="statusCode"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="expectedResultsArray"></param>
-    /// <param name="ignoreZeros"></param>
     public void GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
     {
-      var response = CallProjectWebApiV4("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
+      var response = CallProjectWebApi("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
@@ -588,7 +544,7 @@ namespace TestUtility
     /// <param name="projectUid"></param>
     public ProjectV4Descriptor GetProjectDetailsViaWebApiV4(Guid customerUid, string projectUid)
     {
-      var response = CallProjectWebApiV4("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
+      var response = CallProjectWebApi("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
       ProjectV4DescriptorsSingleResult projectDescriptorResult = null;
       Console.WriteLine($"GetProjectDetailsViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
@@ -607,7 +563,7 @@ namespace TestUtility
     public GeofenceV4DescriptorsListResult GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString)
     {
       var routeSuffix = "api/v4/geofences" + geofenceTypeString + projectUidString;
-      var response = CallProjectWebApiV4(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
+      var response = CallProjectWebApi(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
       Console.WriteLine($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       if (!string.IsNullOrEmpty(response))
@@ -623,7 +579,7 @@ namespace TestUtility
         UpdateProjectGeofenceRequest.CreateUpdateProjectGeofenceRequest
             (ProjectUid = Guid.Parse(projectUid), geofenceTypes, geofenceGuids);
       var messagePayload = JsonConvert.SerializeObject(updateProjectGeofenceRequest);
-      var response = CallProjectWebApiV4("api/v4/geofences", HttpMethod.Put.ToString(), messagePayload, customerUid);
+      var response = CallProjectWebApi("api/v4/geofences", HttpMethod.Put.ToString(), messagePayload, customerUid);
       Console.WriteLine($"AssociateProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       if (!string.IsNullOrEmpty(response))
@@ -738,10 +694,6 @@ namespace TestUtility
       }
     }
 
-    public void CompareActualImportFileWithExpected<T>(T actualFile, T expectedFile, bool ignoreZeros) where T : ContractExecutionResult
-    {
-      CompareTheActualImportFileWithExpected(actualFile, expectedFile, ignoreZeros);
-    }
 
     public void CompareTheActualImportFileWithExpectedV4(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
     {
@@ -798,11 +750,11 @@ namespace TestUtility
       };
       var customerTypeId = (int)MockCustomer.CustomerType;
       var deleted = MockCustomer.IsDeleted ? 1 : 0;
-      var query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"Customer"} 
+      var query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"Customer"} 
                             (CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
                             ('{MockCustomer.CustomerUID}','{MockCustomer.Name}',{customerTypeId},{deleted},'{MockCustomer.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
       var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
+      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, query);
     }
 
     /// <summary>
@@ -825,11 +777,11 @@ namespace TestUtility
         EndDate = endDate,
         LastActionedUTC = DateTime.UtcNow
       };
-      var query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"Subscription"} 
+      var query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"Subscription"} 
                             (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
                             ('{MockSubscription.SubscriptionUID}','{MockSubscription.CustomerUID}',{MockSubscription.ServiceTypeID},'{MockSubscription.StartDate:yyyy-MM-dd HH}','{MockSubscription.EndDate:yyyy-MM-dd}','{MockSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
       var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
+      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, query);
 
       MockProjectSubscription = new ProjectSubscription
       {
@@ -838,10 +790,10 @@ namespace TestUtility
         EffectiveDate = effectiveDate,
         LastActionedUTC = DateTime.UtcNow
       };
-      query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"ProjectSubscription"} 
+      query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"ProjectSubscription"} 
                             (fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
                             ('{MockProjectSubscription.SubscriptionUID}','{MockProjectSubscription.ProjectUID}','{MockProjectSubscription.EffectiveDate:yyyy-MM-dd}','{MockProjectSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
+      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, query);
     }
 
     /// <summary>
@@ -853,24 +805,11 @@ namespace TestUtility
     {
       var lastActionedUtc = DateTime.UtcNow;
 
-      var query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"CustomerTccOrg"} 
+      var query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"CustomerTccOrg"} 
                             (CustomerUID,TCCOrgID,LastActionedUTC) VALUES
                             ('{customerUid}','{orgId}','{lastActionedUtc:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
       var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
-    }
-
-    /// <summary>
-    /// Check if the test is being debugged in VS. Set to different endpoind
-    /// </summary>
-    public string GetBaseUri()
-    {
-      var baseUri = TsCfg.webApiUri;
-      if (Debugger.IsAttached || TsCfg.operatingSystem == "Windows_NT")
-      {
-        baseUri = TsCfg.debugWebApiUri;
-      }
-      return baseUri;
+      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, query);
     }
 
     /// <summary>
@@ -884,29 +823,26 @@ namespace TestUtility
     {
       var components = Regex.Split(timeStampAndDayOffSet, @"d+\+");
       var offset = double.Parse(components[0].Trim());
+
       return DateTime.Parse(startEventDateTime.AddDays(offset).ToString("yyyy-MM-dd") + " " + components[1].Trim());
     }
 
     #endregion
 
     #region Private Methods
+
     /// <summary>
     /// Set the full kafka topic name
     /// </summary>
-    /// <param name="masterDataEvent"></param>
-    /// <returns></returns>
     private string SetKafkaTopicName(string masterDataEvent)
     {
-      var topicName = TsCfg.masterDataTopic + masterDataEvent + TsCfg.kafkaTopicSuffix;
+      var topicName = _testConfig.masterDataTopic + masterDataEvent + _testConfig.kafkaTopicSuffix;
       return topicName;
     }
-
 
     /// <summary>
     /// Set the full topic name from the event type
     /// </summary>
-    /// <param name="eventType"></param>
-    /// <returns></returns>
     private string SetTheKafkaTopicFromTheEvent(string eventType)
     {
       var topicName = string.Empty;
@@ -1290,7 +1226,7 @@ namespace TestUtility
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
             createProjectEvent.CoordinateSystemFileName = eventObject.CoordinateSystem;
-            createProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(TsCfg.coordinateSystem);
+            createProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
           }
           if (HasProperty(eventObject, "ProjectID"))
           {
@@ -1331,7 +1267,7 @@ namespace TestUtility
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
             createProjectRequest.CoordinateSystemFileName = eventObject.CoordinateSystem;
-            createProjectRequest.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(TsCfg.coordinateSystem);
+            createProjectRequest.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
           }
           if (HasProperty(eventObject, "ProjectID"))
           {
@@ -1371,7 +1307,7 @@ namespace TestUtility
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
             updateProjectEvent.CoordinateSystemFileName = eventObject.CoordinateSystem;
-            updateProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(TsCfg.coordinateSystem);
+            updateProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
           }
           if (HasProperty(eventObject, "ProjectEndDate") && eventObject.ProjectEndDate != null)
           {
@@ -1403,7 +1339,7 @@ namespace TestUtility
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
             updateProjectRequest.CoordinateSystemFileName = eventObject.CoordinateSystem;
-            updateProjectRequest.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(TsCfg.coordinateSystem);
+            updateProjectRequest.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
           }
           if (HasProperty(eventObject, "ProjectEndDate") && eventObject.ProjectEndDate != null)
           {
@@ -1562,7 +1498,7 @@ namespace TestUtility
     {
       string dbTable = eventObject.TableName;
       var mysqlHelper = new MySqlHelper();
-      var sqlCmd = $@"INSERT INTO `{TsCfg.dbSchema}`.{dbTable} ";
+      var sqlCmd = $@"INSERT INTO `{_testConfig.dbSchema}`.{dbTable} ";
       switch (dbTable)
       {
         case "Asset":
@@ -1624,7 +1560,7 @@ namespace TestUtility
                      ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate}','{eventObject.EndDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
       }
-      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, sqlCmd);
+      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, sqlCmd);
     }
 
     /// <summary>
@@ -1662,7 +1598,7 @@ namespace TestUtility
     /// <returns>Object with all properties from array</returns>
     private ExpandoObject ConvertToExpando(string[] allColumnNames, string[] singleEventRow)
     {
-      var expObj = new ExpandoObject() as IDictionary<string, Object>;
+      var expObj = new ExpandoObject() as IDictionary<string, object>;
       var colIdx = -1;
       foreach (var colName in allColumnNames)
       {
@@ -1851,42 +1787,26 @@ namespace TestUtility
     /// <returns>The web api response</returns>
     private string CallProjectWebApiV3(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
     {
-      string configJson;
-      if (evt == null)
-      {
-        configJson = null;
-      }
-      else
-      {
-        configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      }
-      var uri = GetBaseUri() + "api/v3/project/" + routeSuffix;
-      var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, configJson, statusCode, "application/json", customerUid);
+      var configJson = evt == null
+        ? null
+        : JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+      var response = new RestClientUtil().DoHttpRequest($"{_baseUri}api/v3/project/{routeSuffix}", method, configJson, statusCode, "application/json", customerUid);
+
       if (response.Length > 0)
-      { Console.WriteLine(what + " project response:" + response); }
+      {
+        Console.WriteLine(what + " project response:" + response);
+      }
+
       return response;
     }
 
     /// <summary>
     /// Call the version 4 of the web api
     /// </summary>
-    public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null)
+    public string CallProjectWebApi(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null, string endPoint = null)
     {
-      var uri = GetBaseUri() + routeSuffix;
-      var restClient = new RestClientUtil();
-      return restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
-    }
-
-    /// <summary>
-    /// Call the version 2 of the web api - used for BCC integration
-    /// </summary>
-    /// <returns></returns>
-    public string CallProjectWebApiV2(string requestJson, string routeSuffix, string endPoint, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null, string jwt = null)
-    {
-      var uri = GetBaseUri() + endPoint + routeSuffix;
-      var restClient = new RestClientUtil();
-      return restClient.DoHttpRequest(uri, method, requestJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
+      return new RestClientUtil().DoHttpRequest($"{_baseUri}{endPoint}{routeSuffix}", method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
     }
 
     #endregion

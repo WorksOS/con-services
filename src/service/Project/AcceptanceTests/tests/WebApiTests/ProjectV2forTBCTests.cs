@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -18,7 +18,7 @@ namespace WebApiTests
     [TestInitialize]
     public void Initialize()
     {
-      _boundaryLL = new List<TBCPoint>()
+      _boundaryLL = new List<TBCPoint>
       {
         new TBCPoint(-43.5, 172.6),
         new TBCPoint(-43.5003, 172.6),
@@ -32,13 +32,12 @@ namespace WebApiTests
     {
       var msg = new Msg();
       msg.Title("projects 1 V2", "Create a project");
-      var mysql = new MySqlHelper();
       var ts = new TestSupport();
 
       var serialized = JsonConvert.SerializeObject(_boundaryLL);
       Assert.AreEqual(@"[{""Latitude"":-43.5,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.603},{""Latitude"":-43.5,""Longitude"":172.603}]", serialized, "TBCPoint not serialized correctly.");
 
-      var response = CreateProjectV2(ts, mysql, "project 1", ProjectType.ProjectMonitoring);
+      var response = CreateProjectV2(ts, "project 1", ProjectType.ProjectMonitoring);
       var createProjectV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
       
       Assert.AreEqual(HttpStatusCode.Created, createProjectV2Result.Code, "Not created ok.");
@@ -50,7 +49,6 @@ namespace WebApiTests
     {
       var msg = new Msg();
       msg.Title("TCM validation V2", "Validate OrgShortName");
-      var mysql = new MySqlHelper();
       var ts = new TestSupport();
 
       // from MockFileRepo in service
@@ -66,30 +64,26 @@ namespace WebApiTests
       ts.CreateMockCustomer(ts.CustomerUid, "tbc validate customer", CustomerType.Customer);
       ts.CreateMockCustomerTbcOrgId("u8472cda0-9f59-41c9-a5e2-e19f922f91d8", ts.CustomerUid.ToString());
 
-      var response = ValidateTbcOrgId(ts, mysql, "the sn");
+      var response = ValidateTbcOrgId(ts, "the sn");
      
       Assert.AreEqual(HttpStatusCode.OK, response.Code, "Not validated ok.");
       Assert.IsTrue( response.Success, "Validation not flagged as successful.");
     }
 
-    private ReturnSuccessV2Result ValidateTbcOrgId(TestSupport ts, MySqlHelper mysql, string orgShortName)
+    private ReturnSuccessV2Result ValidateTbcOrgId(TestSupport ts, string orgShortName)
     {
-      var response = ts.ValidateTbcOrgIdApiV2(orgShortName, HttpStatusCode.OK);
+      var response = ts.ValidateTbcOrgIdApiV2(orgShortName);
       Console.WriteLine(response);
       var jsonResponse = JsonConvert.DeserializeObject<ReturnSuccessV2Result>(response);
       return jsonResponse;
     }
 
-    #region privates
-
-    private string CreateProjectV2(TestSupport ts, MySqlHelper mysql, string projectName, ProjectType projectType)
+    private string CreateProjectV2(TestSupport ts, string projectName, ProjectType projectType)
     {
       var response = ts.CreateProjectViaWebApiV2(projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, _boundaryLL, HttpStatusCode.OK);
       Console.WriteLine(response);
 
       return response;
     }
-
-    #endregion
   }
 }
