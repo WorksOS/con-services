@@ -8,7 +8,7 @@ namespace VSS.TRex.Common.Exceptions.Exceptions
     {
     }
 
-    public TRexColorPaletteException(string message, Exception E) : base(message, E)
+    public TRexColorPaletteException(string message, Exception e) : base(message, e)
     {
     }
   }

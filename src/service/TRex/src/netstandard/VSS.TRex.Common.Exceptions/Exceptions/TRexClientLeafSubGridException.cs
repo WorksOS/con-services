@@ -8,7 +8,7 @@ namespace VSS.TRex.Common.Exceptions.Exceptions
     {
     }
 
-    public TRexClientLeafSubGridException(string message, Exception E) : base(message, E)
+    public TRexClientLeafSubGridException(string message, Exception e) : base(message, e)
     {
     }
   }

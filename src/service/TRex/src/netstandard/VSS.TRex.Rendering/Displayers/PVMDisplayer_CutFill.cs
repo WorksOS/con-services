@@ -10,15 +10,20 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_CutFill : PVMDisplayerBase
   {
+    protected override void SetSubGrid(ISubGrid value)
+    {
+      base.SetSubGrid(value);
+
+      if (SubGrid != null)
+        CastRequestObjectTo<ClientHeightLeafSubGrid>(SubGrid, ThrowTRexClientLeafSubGridTypeCastException<ClientHeightLeafSubGrid>);
+    }
+
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
-      if (!(SubGrid is ClientHeightLeafSubGrid))
-        ThrowTRexClientLeafSubGridException();
-
       float value = ((ClientHeightLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       return value == CellPassConsts.NullHeight ? Color.Empty : Palette.ChooseColour(value);
