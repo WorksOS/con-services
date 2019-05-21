@@ -86,16 +86,24 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected readonly IFileRepository fileRepo;
 
+    /// <summary>
+    /// Gets or sets the Data Ocean client agent.
+    /// </summary>
     protected readonly IDataOceanClient dataOceanClient;
+
+    /// <summary>
+    /// Gets or sets the TPaaS application authentication helper.
+    /// </summary>
     protected readonly ITPaaSApplicationAuthentication authn;
 
     /// <summary>
     /// Gets the custom customHeaders for the request.
     /// </summary>
-    /// <value>
-    /// The custom customHeaders.
-    /// </value>
-    protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders(Request.Path.Value.Contains("internal"));
+    /// <remarks>
+    /// Following #83476 we are deliberately passing the x-jwt-assertion header on all requests regardless of whether they're 
+    /// 'internal' or not.
+    /// </remarks>
+    protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
     //protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders(true); //use this when debugging locally and calling other 3dpm services 
 
     /// <summary>

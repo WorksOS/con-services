@@ -201,7 +201,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
       request.SetStringPayload(string.Empty);
 
-      var headers = Request.Headers.GetCustomHeaders(true);
+      var headers = Request.Headers.GetCustomHeaders();
 
       return await scheduler.ScheduleBackgroundJob(request, headers);
     }

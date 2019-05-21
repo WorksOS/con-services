@@ -176,7 +176,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>Scheduler Job Result, containing the Job ID To poll via the Scheduler</returns>
     [Route("api/v4/project/background")]
     [HttpPost]
-    public async Task<ScheduleJobResult> RequestCreateProjectBackgroundJob([FromBody] CreateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
+    public Task<ScheduleJobResult> RequestCreateProjectBackgroundJob([FromBody] CreateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
     {
       if (projectRequest == null)
       {
@@ -198,9 +198,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
       request.SetBinaryPayload(Request.Body);
 
-      var customHeaders = Request.Headers.GetCustomHeaders(true);
+      var customHeaders = Request.Headers.GetCustomHeaders();
 
-      return await scheduler.ScheduleBackgroundJob(request, customHeaders);
+      return scheduler.ScheduleBackgroundJob(request, customHeaders);
     }
 
     // PUT: api/v4/project
@@ -289,7 +289,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
       request.SetBinaryPayload(Request.Body);
 
-      var customHeaders = Request.Headers.GetCustomHeaders(true);
+      var customHeaders = Request.Headers.GetCustomHeaders();
 
       return await scheduler.ScheduleBackgroundJob(request, customHeaders);
     }
