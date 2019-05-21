@@ -570,7 +570,7 @@ namespace IntegrationTests
     }
 
 
-    private void Create_Customer_Then_Project_And_Subscriptions(TestSupport ts, Guid customerGuid, Guid projectGuid, int projectId, string projectName, DateTime startDate, DateTime endDate, int numProjectsForCustomer, string timeZone = "New Zealand Standard Time")
+    private static void Create_Customer_Then_Project_And_Subscriptions(TestSupport ts, Guid customerGuid, Guid projectGuid, int projectId, string projectName, DateTime startDate, DateTime endDate, int numProjectsForCustomer, string timeZone = "New Zealand Standard Time")
     {
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
@@ -585,7 +585,7 @@ namespace IntegrationTests
       Create_And_Subscribe_AdditionalProjects_for_existing_Customer(ts, customerGuid, projectGuid, projectId, projectName, startDate, endDate, numProjectsForCustomer, ProjectType.Standard, timeZone);
     }
 
-    private void Create_And_Subscribe_AdditionalProjects_for_existing_Customer(TestSupport ts, Guid customerGuid, Guid projectGuid, int projectId, string projectName, DateTime startDate, DateTime endDate, int numProjectsForCustomer, ProjectType projectType = ProjectType.Standard, string timeZone = "New Zealand Standard Time")
+    private static void Create_And_Subscribe_AdditionalProjects_for_existing_Customer(TestSupport ts, Guid customerGuid, Guid projectGuid, int projectId, string projectName, DateTime startDate, DateTime endDate, int numProjectsForCustomer, ProjectType projectType = ProjectType.Standard, string timeZone = "New Zealand Standard Time")
     {
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
