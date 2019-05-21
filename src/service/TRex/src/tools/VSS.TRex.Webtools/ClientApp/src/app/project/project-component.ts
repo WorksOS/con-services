@@ -80,6 +80,9 @@ export class ProjectComponent {
 
   public existenceMapSubGridCount: number = 0;
 
+  private kMaxTestElev : number = 100000.0;
+  private kMinTestElev : number = -100000.0;
+
   public machineColumns: string[] =
   [
     "id",
@@ -708,18 +711,18 @@ constructor(
         var stationRange:number = points[points.length - 1].station - points[0].station;
         var stationRatio:number = profileCanvasWidth / stationRange;
 
-        var minZ:number = 100000.0;
-        var maxZ:number = -100000.0;
-          points.forEach(pt => {
-              if (pt.z > -100000 && pt.z < minZ) minZ = pt.z;
-              if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z;
-          });
+        var minZ: number = this.kMaxTestElev;
+        var maxZ: number = this.kMinTestElev;
+        points.forEach(pt => {
+            if (pt.z > this.kMinTestElev && pt.z < minZ) minZ = pt.z;
+            if (pt.z > this.kMinTestElev && pt.z > maxZ) maxZ = pt.z;
+        });
 
         var zRange = maxZ - minZ;
         var zRatio = profileCanvasHeight / zRange;
 
         points.forEach(point => {
-          if (point.z <= -100000) {
+            if (point.z <= this.kMinTestElev) {
             // It's a gap...
             first = true;
           }
@@ -825,7 +828,7 @@ constructor(
 
     points.forEach(point => {
       var value: number = getValue(point);
-      if (value <= -100000) {
+      if (value <= this.kMinTestElev) {
         // It's a gap...
         first = true;
       }
@@ -863,8 +866,8 @@ constructor(
           .subscribe(
               points => {
                   // Compute the overall scale factor for the elevation range
-                  var minZ: number = 100000.0;
-                  var maxZ: number = -100000.0;
+                  var minZ: number = this.kMaxTestElev;
+                  var maxZ: number = this.kMinTestElev;
 
                   this.updateElevationRange(points,
                       getValue,
@@ -901,18 +904,18 @@ constructor(
         var stationRange: number = points[points.length - 1].station - points[0].station;
         var stationRatio: number = profileCanvasWidth / stationRange;
 
-        var minZ: number = 100000.0;
-        var maxZ: number = -100000.0;
-          points.forEach(pt => {
-              if (pt.z > -100000 && pt.z < minZ) minZ = pt.z;
-              if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z;
-          });
-
+        var minZ: number = this.kMaxTestElev;
+        var maxZ: number = this.kMinTestElev;
+        points.forEach(pt => {
+            if (pt.z > this.kMinTestElev && pt.z < minZ) minZ = pt.z;
+            if (pt.z > this.kMinTestElev && pt.z > maxZ) maxZ = pt.z;
+        });
+        
         var zRange = maxZ - minZ;
         var zRatio = profileCanvasHeight / zRange;
 
         points.forEach(point => {
-          if (point.z <= -100000) {
+            if (point.z <= this.kMinTestElev) {
             // It's a gap...
             first = true;
           }
@@ -937,8 +940,8 @@ constructor(
     public updateElevationRange(points: any[], getValue: (point: any) => number, minZ: number, maxZ: number, setValue: (min: number, max: number) => void) {
         points.forEach(pt => {
             var value: number = getValue(pt);
-            if (value > -100000 && value < minZ) minZ = value;
-            if (value > -100000 && value > maxZ) maxZ = value;
+            if (value > this.kMinTestElev && value < minZ) minZ = value;
+            if (value > this.kMinTestElev && value > maxZ) maxZ = value;
         });
         setValue(minZ, maxZ);
     }
@@ -965,8 +968,8 @@ constructor(
         this.ClearAllSVGProfilePolylines();
 
         // Compute the overall scale factor for the elevation range
-        var minZ: number = 100000.0;
-        var maxZ: number = -100000.0;
+        var minZ: number = this.kMaxTestElev;
+        var maxZ: number = this.kMinTestElev;
 
         this.updateElevationRange(points, pt => pt.cellLastElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
         this.updateElevationRange(points, pt => pt.cellFirstElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
