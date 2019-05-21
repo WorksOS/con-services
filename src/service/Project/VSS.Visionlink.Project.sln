@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{160796E4-4ED9-480B-B3D7-044B334F28EE}"
 EndProject
@@ -108,6 +108,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "..\..\Common\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj", "{656FC0C3-1296-4211-8D86-7956608B7530}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\..\Common\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{EC6ED6F7-0D47-4E00-BC7E-033650926D9C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockProjectWebApi", "..\MockProjectWebApi\MockProjectWebApi.csproj", "{74B87A62-5D5D-41A8-A616-DF546E5C5FF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -267,6 +269,10 @@ Global
 		{EC6ED6F7-0D47-4E00-BC7E-033650926D9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC6ED6F7-0D47-4E00-BC7E-033650926D9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC6ED6F7-0D47-4E00-BC7E-033650926D9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74B87A62-5D5D-41A8-A616-DF546E5C5FF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74B87A62-5D5D-41A8-A616-DF546E5C5FF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74B87A62-5D5D-41A8-A616-DF546E5C5FF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74B87A62-5D5D-41A8-A616-DF546E5C5FF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -320,6 +326,7 @@ Global
 		{57027B3C-B756-4BB0-81A9-F4B8FECB2E3D} = {49B7C1A1-7968-428C-B7A0-36BD8A280FA6}
 		{656FC0C3-1296-4211-8D86-7956608B7530} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 		{EC6ED6F7-0D47-4E00-BC7E-033650926D9C} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
+		{74B87A62-5D5D-41A8-A616-DF546E5C5FF5} = {0B171363-3F4B-4614-B74A-AC6155E644FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25C1559E-35F7-42CA-B265-A63D8D5E412C}
