@@ -83,7 +83,7 @@ namespace WebApiTests
       var customerUid = Guid.NewGuid();
 
       DoActivationRequest(ts, customerUid, "INVALID_PROJECT_ID", "1c9e3a93-2bb0-461b-a74e-8091b895f71c", 
-        false, 2001, "No access to the project for a customer or the project does not exist.");
+        false, 2001, "No access to the project for a customer or the project does not exist.", true);
     }
 
     [TestMethod]
@@ -373,7 +373,7 @@ namespace WebApiTests
       return importFile.SendRequestToFileImportV4(testSupport, importFileArray, 1, new ImportOptions(HttpMethod.Post));
     }
 
-    public static void DoActivationRequest(TestSupport ts, Guid customerUid, string projectUid, string importedFileUid, bool activated, int expectedCode, string expectedMessage)
+    public static void DoActivationRequest(TestSupport ts, Guid customerUid, string projectUid, string importedFileUid, bool activated, int expectedCode, string expectedMessage, bool uppercase = false)
     {
       var importFile = new ImportFile();
 
@@ -397,8 +397,8 @@ namespace WebApiTests
 
       var response = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
 
-      Assert.AreEqual(expectedCode, response.Code.Value);
-      Assert.AreEqual(expectedMessage, response.Message.Value);
+      Assert.AreEqual(expectedCode, uppercase ? response.Code.Value : response.code.Value);
+      Assert.AreEqual(expectedMessage, uppercase ? response.Message.Value : response.message.Value);
     }
   }
 }
