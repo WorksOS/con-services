@@ -949,14 +949,14 @@ constructor(
         this.numPointInProfile = 0;
 
         // Composite elevation profiles
-        this._compositeElevationProfilePath_LastElev = "";
-        this._compositeElevationProfilePath_FirstElev = "";
-        this._compositeElevationProfilePath_LowestElev = "";
-        this._compositeElevationProfilePath_HighestElev = "";
-        this._compositeElevationProfilePath_LastCompositeElev = "";
-        this._compositeElevationProfilePath_FirstCompositeElev = "";
-        this._compositeElevationProfilePath_LowestCompositeElev = "";
-        this._compositeElevationProfilePath_HighestCompositeElev = "";
+        this.compositeElevationProfilePath_LastElev = "";
+        this.compositeElevationProfilePath_FirstElev = "";
+        this.compositeElevationProfilePath_LowestElev = "";
+        this.compositeElevationProfilePath_HighestElev = "";
+        this.compositeElevationProfilePath_LastCompositeElev = "";
+        this.compositeElevationProfilePath_FirstCompositeElev = "";
+        this.compositeElevationProfilePath_LowestCompositeElev = "";
+        this.compositeElevationProfilePath_HighestCompositeElev = "";
     }
 
   public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
