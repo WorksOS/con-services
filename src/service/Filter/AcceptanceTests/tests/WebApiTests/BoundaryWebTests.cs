@@ -135,11 +135,11 @@ namespace WebApiTests
       var boundaryResponseGet = JsonConvert.DeserializeObject<GeofenceDataListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       //2 boundaries and 3 favorites
       Assert.AreEqual(5, boundaryResponseGet.GeofenceData.Count);
-      Assert.IsNotNull(boundaryResponseGet.GeofenceData.Single(g => g.GeofenceUID == boundaryUid1), "Missing boundary 1");
-      Assert.IsNotNull(boundaryResponseGet.GeofenceData.Single(g => g.GeofenceUID == boundaryUid2), "Missing boundary 2");
+      Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == boundaryUid1), "Missing boundary 1");
+      Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == boundaryUid2), "Missing boundary 2");
       foreach (var geofenceUid in favoriteGeofences)
       {
-        Assert.IsNotNull(boundaryResponseGet.GeofenceData.Single(g => g.GeofenceUID == geofenceUid), "Missing favorite geofence");
+        Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == geofenceUid), "Missing favorite geofence");
       }
     }
   }
