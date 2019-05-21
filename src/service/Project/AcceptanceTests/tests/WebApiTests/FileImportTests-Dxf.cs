@@ -13,7 +13,7 @@ namespace WebApiTests
     [TestMethod]
     [DataRow("api/v4/importedfile")]
     [DataRow("api/v4/importedfile/direct")]
-    public void TestImportdxfFileUsSurveyFeet(string uriRoot)
+    public void TestImportDxfFileUsSurveyFeet(string uriRoot)
     {
       const string testName = "File Import 17";
       msg.Title(testName, "Create standard project and customer then upload dxf file");
@@ -52,7 +52,7 @@ namespace WebApiTests
     [TestMethod]
     [DataRow("api/v4/importedfile")]
     [DataRow("api/v4/importedfile/direct")]
-    public void TestImportdxfFileImperial(string uriRoot)
+    public void TestImportDxfFileImperial(string uriRoot)
     {
       const string testName = "File Import 18";
       msg.Title(testName, "Create standard project and customer then upload dxf file in imperial");
@@ -91,7 +91,7 @@ namespace WebApiTests
     [TestMethod]
     [DataRow("api/v4/importedfile")]
     [DataRow("api/v4/importedfile/direct")]
-    public void TestImportdxfFileMetric(string uriRoot)
+    public void TestImportDxfFileMetric(string uriRoot)
     {
       const string testName = "File Import 19";
       msg.Title(testName, "Create standard project and customer then upload dxf file in metric");

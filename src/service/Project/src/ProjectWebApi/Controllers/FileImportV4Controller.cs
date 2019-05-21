@@ -638,7 +638,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         var filesToUpdate = new Dictionary<Guid, bool>();
         filesToUpdate.Add(new Guid(importedFileResult.ImportedFileDescriptor.ImportedFileUid), false);
-        await DoActivation(projectUid.ToString(), filesToUpdate);
+        await DoActivationAndNotification(projectUid.ToString(), filesToUpdate);
         importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid.ToString(), logger, userId, projectRepo);
         importedFileResult.ImportedFileDescriptor = importedFiles.SingleOrDefault(i =>
           i.ImportedFileUid == importedFileResult.ImportedFileDescriptor.ImportedFileUid);
@@ -778,7 +778,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       try
       {
-        await DoActivation(projectUid, filesToUpdate);
+        await DoActivationAndNotification(projectUid, filesToUpdate);
 
         return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }
@@ -788,7 +788,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
     }
 
-    private async Task DoActivation(string projectUid, Dictionary<Guid, bool> filesToUpdate)
+    private async Task DoActivationAndNotification(string projectUid, Dictionary<Guid, bool> filesToUpdate)
     {
       var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
       var notificationTask = notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
