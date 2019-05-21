@@ -32,7 +32,7 @@ namespace WebApiTests
         $"| Subscription        | 0d+09:50:00 |               |           |                   | {subscriptionUid2} | {customerUid}  | 20               | {startDate} | {endDate}      |               |          |                    |",
       };
       ts.PublishEventCollection(eventsArray);
-      var response = ts.CallProjectWebApiV4("api/v4/subscriptions", "GET", null, customerUid.ToString());
+      var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
       Assert.AreEqual(objresp.SubscriptionDescriptors.Count, 2, " Expecting 2 subscriptions in the results");
       Assert.AreEqual(objresp.Message, "success", "The message in the response should be success");
@@ -64,7 +64,7 @@ namespace WebApiTests
 
       };
       ts.PublishEventCollection(eventsArray);
-      var response = ts.CallProjectWebApiV4("api/v4/subscriptions", "GET", null, customerUid.ToString());
+      var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
       Assert.AreEqual(objresp.SubscriptionDescriptors.Count, 4, " Expecting 4 subscriptions in the results");
       Assert.AreEqual(objresp.Message, "success", "The message in the response should be success");
@@ -117,7 +117,7 @@ namespace WebApiTests
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 4-2 | ProjectMonitoring | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       ts.PublishEventCollection(projectEventArray);
       //Thread.Sleep(3000);
-      var response = ts.CallProjectWebApiV4("api/v4/subscriptions", "GET", null, customerUid.ToString());
+      var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
       Assert.AreEqual(objresp.SubscriptionDescriptors.Count, 2, " Expecting 2 subscriptions in the results");
       Assert.AreEqual(objresp.Message, "success", "The message in the response should be success");
@@ -171,7 +171,7 @@ namespace WebApiTests
       $"| CreateProjectEvent | 0d+10:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 4-2 | LandFill          | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       ts.PublishEventCollection(projectEventArray);
       //Thread.Sleep(5000);
-      var response = ts.CallProjectWebApiV4("api/v4/subscriptions", "GET", null, customerUid.ToString());
+      var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
       Assert.AreEqual(2, objresp.SubscriptionDescriptors.Count, " Expected subscriptions mismatch");
       Assert.AreEqual("success", objresp.Message, "The message in the response should be success");

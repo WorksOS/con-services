@@ -13,8 +13,6 @@ namespace WebApiTests
   public class FileImportV2forTBCTests
   {
     private readonly Msg msg = new Msg();
-    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
-    
 
     [TestMethod]
     public void TestImportV2ForTbcSvlFile_AlignmentType_OK()
@@ -59,7 +57,7 @@ namespace WebApiTests
       Assert.AreEqual(HttpStatusCode.OK, importFileV2Result.Code, "Not imported ok.");
       Assert.AreNotEqual(-1, importFileV2Result.Id, "LegacyFileID invalid.");
 
-      var importFileList = importFile.GetImportedFilesFromWebApiV2(ts.GetBaseUri() + $"api/v2/projects/{project.LegacyProjectId}/importedfiles", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV2(ts.BaseUri + $"api/v2/projects/{project.LegacyProjectId}/importedfiles", customerUid);
       Assert.IsTrue(importFileList.Count == 1, "Expected 1 imported files but got " + importFileList.Count);
       Assert.AreEqual(importFileV2Result.Id, importFileList[0].id, "Wrong id");
       Assert.AreEqual(Path.GetFileName(TestFile.TestAlignment1), importFileList[0].name, "Wrong name");
