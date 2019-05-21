@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -14,6 +15,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public bool IsApplicationContext { get; set; }
     public string UserUid { get; set; }
     public string ProjectUid { get; set; }
+    public IDictionary<string, string> CustomHeaders { get; set; }
 
     /// <summary>
     /// Determines whether CRUD operations should result in a Kafka message being sent.
@@ -27,14 +29,16 @@ namespace VSS.Productivity3D.Filter.Common.Models
       string customerUid,
       bool isApplicationContext,
       ProjectData projectData,
-      string userUid)
+      string userUid,
+      IDictionary<string, string> customHeaders)
     {
       return new BaseRequestFull
       {
         IsApplicationContext = isApplicationContext,
         ProjectUid = projectData?.ProjectUid,
         CustomerUid = customerUid,
-        UserUid = userUid
+        UserUid = userUid,
+        CustomHeaders = customHeaders
       };
     }
 

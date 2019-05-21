@@ -3,7 +3,6 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -11,9 +10,11 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Common.Models;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using System.Collections.Immutable;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -25,8 +26,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     public GetBoundariesExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileListProxy fileListProxy,
-      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
-      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy, fileListProxy, repository, producer, kafkaTopicName, auxRepository)
+      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy)
+      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy, fileListProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy)
     { }
 
     /// <summary>
@@ -55,10 +56,18 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         return null;
       }
 
-      return await BoundaryHelper.GetProjectBoundaries(
+      var boundaries =  await BoundaryHelper.GetProjectBoundaries(
         log, serviceExceptionHandler,
         request.ProjectUid, (IProjectRepository)auxRepository, (IGeofenceRepository)Repository).ConfigureAwait(false);
-      
+
+      var geofences = await GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
+      geofences.AddRange(boundaries.GeofenceData);
+
+      return new GeofenceDataListResult
+      {
+        GeofenceData = geofences.ToImmutableList()
+      };
+
     }
   }
 }
