@@ -45,14 +45,19 @@ namespace VSS.Productivity3D.Filter.Common.Validators
 
       //Get polygon boundary to add to filter
       Geofence filterBoundary = null;
+      string methodName = null;
       try
       {
         if (!filterTempForHydration.PolygonType.HasValue ||
             filterTempForHydration.PolygonType.Value == GeofenceType.Filter)
+        {
+          methodName = "geofenceRepository.GetGeofence";
           filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.PolygonUid);
+        }
 
         if (filterBoundary == null)
         {
+          methodName = "geofenceProxy.GetFavoriteGeofence";
           var favorite = await geofenceProxy.GetFavoriteGeofence(
             filterRequestFull.CustomerUid, filterRequestFull.UserId, filterTempForHydration.PolygonUid, filterRequestFull.CustomHeaders);
           if (favorite != null)
@@ -61,7 +66,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       }
       catch (Exception e)
       {
-        log.LogError(e, $"{nameof(HydrateJsonWithBoundary)}: geofenceRepository.GetGeofence failed with exception. projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}");
+        log.LogError(e, $"{nameof(HydrateJsonWithBoundary)}: {methodName} failed with exception. projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 41, e.Message);
       }
 
