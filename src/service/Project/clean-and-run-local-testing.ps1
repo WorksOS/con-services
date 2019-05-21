@@ -40,17 +40,17 @@ Copy-Item ./log4net.xml $artifactsWorkingDir
 & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
 
 Write-Host "Building image dependencies" -ForegroundColor DarkGray
+
 Set-Location $PSScriptRoot
 Invoke-Expression "docker-compose --file docker-compose-local.yml pull"
 
 Write-Host "Building Docker containers" -ForegroundColor DarkGray
 
 # This legacy setting suppresses logging to the console by piping it to a file on disk. If you're looking for the application logs from within the container see .artifacts/logs/.
-$logToFile = IF ($args -contains "--no-log") { "" } ELSE { "> C:\Temp\output.log" }
 $detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
 
 Set-Location $PSScriptRoot
-Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach $logToFile"
+Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach"
 
 IF (-not $?) {
     Write-Host "Error: Environment failed to start" -ForegroundColor Red
