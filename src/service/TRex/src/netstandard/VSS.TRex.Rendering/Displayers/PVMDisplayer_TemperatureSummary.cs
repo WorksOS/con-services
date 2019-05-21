@@ -1,8 +1,9 @@
 ﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Common.Records;
 using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -11,6 +12,22 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_TemperatureSummary : PVMDisplayerBase
   {
+    protected override void SetSubGrid(ISubGrid value)
+    {
+      base.SetSubGrid(value);
+
+      if (SubGrid != null)
+        CastRequestObjectTo<ClientTemperatureLeafSubGrid>(SubGrid, ThrowTRexClientLeafSubGridTypeCastException<ClientTemperatureLeafSubGrid>);
+    }
+
+    protected override void SetPalette(IPlanViewPalette value)
+    {
+      base.SetPalette(value);
+
+      if (Palette != null)
+        CastRequestObjectTo<TemperatureSummaryPalette>(Palette, ThrowTRexColorPaletteTypeCastException<TemperatureSummaryPalette>);
+    }
+
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
@@ -19,9 +36,7 @@ namespace VSS.TRex.Rendering.Displayers
     {
       var cellValue = ((ClientTemperatureLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
-      var temperatureLevels = new TemperatureWarningLevelsRecord(cellValue.TemperatureLevels.Min, cellValue.TemperatureLevels.Max);
-
-      return cellValue.MeasuredTemperature == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : ((TemperatureSummaryPalette)Palette).ChooseColour(cellValue.MeasuredTemperature, temperatureLevels);
+      return cellValue.MeasuredTemperature == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : ((TemperatureSummaryPalette)Palette).ChooseColour(cellValue.MeasuredTemperature, cellValue.TemperatureLevels.Min, cellValue.TemperatureLevels.Max);
     }
   }
 }

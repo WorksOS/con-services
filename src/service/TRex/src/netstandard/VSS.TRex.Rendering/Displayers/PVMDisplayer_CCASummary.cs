@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -11,27 +12,31 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_CCASummary : PVMDisplayerBase
   {
+    protected override void SetSubGrid(ISubGrid value)
+    {
+      base.SetSubGrid(value);
+
+      if (SubGrid != null)
+        CastRequestObjectTo<ClientCCALeafSubGrid>(SubGrid, ThrowTRexClientLeafSubGridTypeCastException<ClientCCALeafSubGrid>);
+    }
+
+    protected override void SetPalette(IPlanViewPalette value)
+    {
+      base.SetPalette(value);
+
+      if (Palette != null)
+        CastRequestObjectTo<CCASummaryPalette>(Palette, ThrowTRexColorPaletteTypeCastException<CCASummaryPalette>);
+    }
+
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
-      const byte HALF_PASS_FACTOR = 2;
-
       var cellValue = ((ClientCCALeafSubGrid)SubGrid).Cells[east_col, north_row];
 
-      if (cellValue.MeasuredCCA == CellPassConsts.NullCCA)
-        return Color.Empty;
-
-      var ccaPalette = (CCASummaryPalette)Palette;
-
-      var ccaValue = cellValue.MeasuredCCA / HALF_PASS_FACTOR;
-
-      if (ccaValue <= ccaPalette.PaletteTransitions.Length - 1)
-        return ccaPalette.PaletteTransitions[ccaValue].Color;
-
-      return ccaValue >= CellPassConsts.THICK_LIFT_CCA_VALUE / HALF_PASS_FACTOR ? Color.Empty : ccaPalette.PaletteTransitions[ccaPalette.PaletteTransitions.Length - 1].Color;
+      return cellValue.MeasuredCCA == CellPassConsts.NullCCA || cellValue.TargetCCA == CellPassConsts.NullCCATarget ? Color.Empty : ((CCASummaryPalette)Palette).ChooseColour(cellValue);
     }
   }
 }
