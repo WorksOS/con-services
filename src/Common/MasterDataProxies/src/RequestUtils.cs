@@ -8,8 +8,13 @@ namespace VSS.MasterData.Proxies
 {
   public static class RequestUtils
   {
+    /// <summary>
+    /// Returns a collection of key value pair VSS custom application headers.
+    /// </summary>
+    /// <param name="headers">The input header dictionary to match keys from.</param>
+    /// <param name="internalContext">As part of the fix for #83476 we now ignore internalContext parameter.</param>
     [Obsolete("Use Strip Headers instead, from the Proxy Level rather than Controller Level")]
-    public static IDictionary<string, string> GetCustomHeaders(this IHeaderDictionary headers)
+    public static IDictionary<string, string> GetCustomHeaders(this IHeaderDictionary headers, bool internalContext = false)
     {
       var customHeaders = new Dictionary<string, string>();
 
@@ -53,6 +58,5 @@ namespace VSS.MasterData.Proxies
         headers.Remove(headerKey);
       }
     }
-
   }
 }
