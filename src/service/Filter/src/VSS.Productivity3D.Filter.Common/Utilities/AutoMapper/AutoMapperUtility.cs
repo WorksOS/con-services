@@ -46,6 +46,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper
           cfg.AddProfile<FilterProfile>();
           cfg.AddProfile<FilterBoundaryProfile>();
           cfg.AddProfile<ProjectGeofenceProfile>();
+          cfg.AddProfile<GeofenceProfile>();
         }
       );
 

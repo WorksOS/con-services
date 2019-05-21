@@ -11,6 +11,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Models;
+using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Common.Validators
@@ -55,14 +56,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
           var favorite = await geofenceProxy.GetFavoriteGeofence(
             filterRequestFull.CustomerUid, filterRequestFull.UserId, filterTempForHydration.PolygonUid, filterRequestFull.CustomHeaders);
           if (favorite != null)
-            //TODO: use Automapper
-            filterBoundary = new Geofence
-            {
-              GeofenceUID = favorite.GeofenceUID.ToString(),
-              Name = favorite.GeofenceName,
-              GeometryWKT = favorite.GeometryWKT,
-              GeofenceType = (GeofenceType)Enum.Parse(typeof(GeofenceType), favorite.GeofenceType, true)
-            };
+            filterBoundary = AutoMapperUtility.Automapper.Map<Geofence>(favorite);
         }
       }
       catch (Exception e)
