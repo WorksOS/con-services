@@ -419,7 +419,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Common file processing method used by all importedFile endpoints.
     /// </summary>
-    private Task<ImportedFileDescriptorSingleResult> UpsertFile(
+    private async Task<ImportedFileDescriptorSingleResult> UpsertFile(
        string filePath,
        string projectUid,
        ImportedFileType importedFileType,
@@ -437,7 +437,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       using (var fileStream = new FileStream(filePath, FileMode.Open))
       {
-        return UpsertFileInternal(Path.GetFileName(filePath), fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType,
+        return await UpsertFileInternal(Path.GetFileName(filePath), fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, uploadToTcc: uploadToTcc);
       }
     }
