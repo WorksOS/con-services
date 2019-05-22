@@ -19,14 +19,15 @@ namespace VSS.TRex.Tests.Rendering
 {
   public class PlanViewTileRendererTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const byte CCA_INCREMENT = 1;
     private const byte LAYER_ID = 1;
 
-    private void BuildModelForSingleCellCCA(out ISiteModel siteModel, byte ccaIncrement, byte targetCCA = CellPassConsts.NullCCATarget)
+    private ISiteModel BuildModelForSingleCellCCA(byte ccaIncrement, byte targetCCA = CellPassConsts.NullCCATarget)
     {
       var baseTime = DateTime.UtcNow;
       byte baseCCA = 1;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       if (targetCCA != CellPassConsts.NullCCATarget)
@@ -52,6 +53,8 @@ namespace VSS.TRex.Tests.Rendering
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     [Fact]
@@ -59,7 +62,7 @@ namespace VSS.TRex.Tests.Rendering
     {
       const byte TARGET_CCA = 5;
 
-      BuildModelForSingleCellCCA(out var siteModel, 1, TARGET_CCA);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT, TARGET_CCA);
 
       var renderer = new PlanViewTileRenderer();
 
@@ -98,7 +101,7 @@ namespace VSS.TRex.Tests.Rendering
     {
       const byte TARGET_CCA = 5;
 
-      BuildModelForSingleCellCCA(out var siteModel, 1, TARGET_CCA);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT, TARGET_CCA);
 
       var renderer = new PlanViewTileRenderer();
 
