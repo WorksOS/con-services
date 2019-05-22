@@ -198,7 +198,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
       request.SetBinaryPayload(Request.Body);
 
-      var customHeaders = Request.Headers.GetCustomHeaders(true);
+      var customHeaders = Request.Headers.GetCustomHeaders();
 
       return await scheduler.ScheduleBackgroundJob(request, customHeaders);
     }
@@ -289,7 +289,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
       request.SetBinaryPayload(Request.Body);
 
-      var customHeaders = Request.Headers.GetCustomHeaders(true);
+      var customHeaders = Request.Headers.GetCustomHeaders();
 
       return await scheduler.ScheduleBackgroundJob(request, customHeaders);
     }
