@@ -154,10 +154,14 @@ export class ProjectComponent {
   public showHighestCompositeElevationProfile: boolean = true;
 
   public userProfilePath: string = "";
-  public userProfilePoint1SVG_CX: Number = 0;
-  public userProfilePoint1SVG_CY: Number = 0;
-  public userProfilePoint2SVG_CX: Number = 0;
-  public userProfilePoint2SVG_CY: Number = 0;
+  public userProfilePoint1SVG_CX: number = 0;
+  public userProfilePoint1SVG_CY: number = 0;
+  public userProfilePoint2SVG_CX: number = 0;
+  public userProfilePoint2SVG_CY: number = 0;
+  public userProfilePoint1SVG_WorldX: number = 0;
+  public userProfilePoint1SVG_WorldY: number = 0;
+  public userProfilePoint2SVG_WorldX: number = 0;
+  public userProfilePoint2SVG_WorldY: number = 0;
 
   public numPointInProfile: number = 0;
 
@@ -179,8 +183,8 @@ export class ProjectComponent {
   public svSecondPointY: number = 0.0;
 
   public profileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
-  public mouseProfileWorldStation: Number = 0.0;
-  public mouseProfileWorldZ: Number = 0.0;
+  public mouseProfileWorldStation: number = 0.0;
+  public mouseProfileWorldZ: number = 0.0;
 
   public mouseProfilePixelLocation: string = '';
   public mouseProfileWorldLocation: string = '';
@@ -320,31 +324,37 @@ constructor(
 
   public zoomIn(): void {
     this.tileExtents.shrink(this.zoomFactor, this.zoomFactor);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public zoomOut(): void {
     this.tileExtents.expand(this.zoomFactor, this.zoomFactor);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public panLeft(): void {
     this.tileExtents.panByFactor(-this.zoomFactor, 0.0);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public panRight(): void {
     this.tileExtents.panByFactor(this.zoomFactor, 0.0);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public panUp(): void {
     this.tileExtents.panByFactor(0, this.zoomFactor);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public panDown(): void {
     this.tileExtents.panByFactor(0, -this.zoomFactor);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
@@ -370,7 +380,16 @@ constructor(
 
   public toggleCellDatum(): void {
     this.showCellDatum = !this.showCellDatum;
-  }
+    }
+
+    public UpdateProfileLineOnMap(): void {
+        this.userProfilePoint1SVG_CX = (this.userProfilePoint1SVG_WorldX - this.tileExtents.minX) / (this.tileExtents.sizeX() / this.pixelsX);
+        this.userProfilePoint1SVG_CY = this.pixelsY - (this.userProfilePoint1SVG_WorldY - this.tileExtents.minY) / (this.tileExtents.sizeY() / this.pixelsY);
+        this.userProfilePoint2SVG_CX = (this.userProfilePoint2SVG_WorldX - this.tileExtents.minX) / (this.tileExtents.sizeX() / this.pixelsX);
+        this.userProfilePoint2SVG_CY = this.pixelsY - (this.userProfilePoint2SVG_WorldY - this.tileExtents.minY) / (this.tileExtents.sizeY() / this.pixelsY);
+
+        this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+     }
 
   private updateMouseLocationDetails(offsetX: number, offsetY: number): void {
     this.mousePixelX = offsetX;
@@ -383,27 +402,36 @@ constructor(
     this.mouseWorldLocation = `${this.mouseWorldX.toFixed(3)}, ${this.mouseWorldY.toFixed(3)}`;
 
     if (this.updateFirstPointLocation) {
+      this.userProfilePoint1SVG_WorldX = this.mouseWorldX;
+      this.userProfilePoint1SVG_WorldY = this.mouseWorldY;
+
       this.userProfilePoint1SVG_CX = this.mousePixelX;
       this.userProfilePoint1SVG_CY = this.pixelsY - this.mousePixelY;
     }
 
     if (this.updateSecondPointLocation) {
+      this.userProfilePoint2SVG_WorldX = this.mouseWorldX;
+      this.userProfilePoint2SVG_WorldY = this.mouseWorldY;
+
       this.userProfilePoint2SVG_CX = this.mousePixelX;
       this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
     }
 
     if (this.updateFirstPointLocation || this.updateSecondPointLocation) {
-      this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+      this.UpdateProfileLineOnMap();
     }
 
     // SV Profile
     if (this.updateSecondPointLocationSV) {
+      this.userProfilePoint2SVG_WorldX = this.mouseWorldX;
+        this.userProfilePoint2SVG_WorldY = this.mouseWorldY;
+
       this.userProfilePoint2SVG_CX = this.mousePixelX;
       this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
     }
 
     if (this.updateFirstPointLocationSV || this.updateSecondPointLocationSV) {
-      this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+      this.UpdateProfileLineOnMap();
     }
 
     //if user pauses then get cell datum value
@@ -666,7 +694,7 @@ constructor(
     }
 
     this.projectService.getMachineEvents(this.projectUid, this.machine.id, this.eventType.item1,
-      this.machineEventsStartDate, this.machineEventsEndDate, this.maxMachineEventsToReturn).subscribe(      
+      startDate, endDate, this.maxMachineEventsToReturn).subscribe(      
       events => {
         events.forEach(event => result.push(event));
         this.machineEvents = result;
