@@ -72,13 +72,6 @@ namespace VSS.TRex.Tests.Common
       ex.Message.Should().Be(errorMessage);
       ex.InnerException.Should().NotBeNull();
       ex.InnerException.Message.Should().Be("Not Implemented");
-
-      //var ex = Activator.CreateInstance(type, new object[] { "A message", new NotImplementedException("Not Implemented"),  }) as TRexException;
-
-      //ex.Should().NotBeNull();
-      //ex.Message.Should().Be("A message");
-      //ex.InnerException.Should().NotBeNull();
-      //ex.InnerException.Message.Should().Be("Not Implemented");
     }
 
     [Fact]
