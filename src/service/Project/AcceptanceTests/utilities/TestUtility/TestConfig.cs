@@ -7,7 +7,6 @@ namespace TestUtility
   /// </summary>
   public class TestConfig
   {
-    public string telematicsTopic = "VSS.VisionLink.Interfaces.Events.Telematics.Machine.";
     public string masterDataTopic = "VSS.Interfaces.Events.MasterData.";
 
     public string mySqlServer;
@@ -36,7 +35,6 @@ namespace TestUtility
       dbSchema = Environment.GetEnvironmentVariable("MYSQL_DATABASE_NAME");
       mySqlServer = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB");
       DbConnectionString = $@"server={mySqlServer};database={dbSchema};userid={mySqlUser};password={mySqlPassword};port={mySqlPort};Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4;SslMode=None";
-
     }
 
     public void SetMySqlDbSchema(string dbSchemaName)
@@ -44,14 +42,6 @@ namespace TestUtility
       dbSchema = dbSchemaName;
       UpdateConnectionString();
     }
-
-
-    public void SetMySqlServer(string dbServerName)
-    {
-      mySqlServer = dbServerName;
-      UpdateConnectionString();
-    }
-
 
     private void UpdateConnectionString()
     {

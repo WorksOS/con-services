@@ -11,10 +11,17 @@ namespace VSS.TRex.Rendering.Displayers
 
     private const int MAX_STEP_SIZE = 10000;
 
+    private ISubGrid _subGrid;
+
+    protected virtual void SetSubGrid(ISubGrid value)
+    {
+      _subGrid = value;
+    }
+
     /// <summary>
     /// Production data holder.
     /// </summary>
-    protected ISubGrid SubGrid;
+    protected ISubGrid SubGrid { get => _subGrid; set => SetSubGrid(value); }
 
     // Various quantities useful when displaying a sub grid full of grid data
     private int stepX;
@@ -83,7 +90,7 @@ namespace VSS.TRex.Rendering.Displayers
 
     protected virtual bool DoRenderSubGrid(ISubGrid subGrid)
     {
-      SubGrid = subGrid;
+      _subGrid = subGrid;
 
       bool DrawCellStrips;
 

@@ -474,7 +474,7 @@ namespace VSS.TRex.Profiling
           }
 
           if (!LiftFilterMask<ProfileCell>.InitialiseFilterContext(SiteModel, PassFilter, PassFilterAnnex, ProfileCell,
-            CellPassFilter_ElevationRangeDesignWrapper.Design, out DesignProfilerRequestResult FilterDesignErrorCode))
+            CellPassFilter_ElevationRangeDesignWrapper?.Design, out DesignProfilerRequestResult FilterDesignErrorCode))
           {
             if (FilterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
               IgnoreSubGrid = true;

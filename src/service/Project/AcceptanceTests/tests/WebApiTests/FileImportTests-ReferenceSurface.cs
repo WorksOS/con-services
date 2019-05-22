@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using TestUtility;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 
 namespace WebApiTests
 {
@@ -184,7 +181,7 @@ namespace WebApiTests
       var expectedResult3 = importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult3.ImportedFileDescriptor, expectedResult3, true);
 
-      var importFileList = importFileParent.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFileParent.GetImportedFilesFromWebApiV4(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 3, "Expected 3 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult2, true);

@@ -8,20 +8,25 @@ namespace VSS.MasterData.Proxies
 {
   public static class RequestUtils
   {
+    /// <summary>
+    /// Returns a collection of key value pair VSS custom application headers.
+    /// </summary>
+    /// <param name="headers">The input header dictionary to match keys from.</param>
+    /// <param name="internalContext">As part of the fix for #83476 we now ignore internalContext parameter.</param>
     [Obsolete("Use Strip Headers instead, from the Proxy Level rather than Controller Level")]
-    public static IDictionary<string, string> GetCustomHeaders(this IHeaderDictionary headers, bool internalContext=false)
+    public static IDictionary<string, string> GetCustomHeaders(this IHeaderDictionary headers, bool internalContext = false)
     {
       var customHeaders = new Dictionary<string, string>();
 
-      string[] keys = { 
-        HeaderConstants.X_VISION_LINK_CUSTOMER_UID , 
-        HeaderConstants.X_VISION_LINK_USER_UID, 
-        HeaderConstants.X_VISION_LINK_CLEAR_CACHE, 
-        HeaderConstants.AUTHORIZATION, 
-        HeaderConstants.X_REQUEST_ID, 
-        HeaderConstants.REQUEST_ID, 
-        HeaderConstants.X_VSS_REQUEST_ID, 
-        internalContext ? HeaderConstants.X_JWT_ASSERTION : string.Empty
+      string[] keys = {
+        HeaderConstants.X_VISION_LINK_CUSTOMER_UID,
+        HeaderConstants.X_VISION_LINK_USER_UID,
+        HeaderConstants.X_VISION_LINK_CLEAR_CACHE,
+        HeaderConstants.AUTHORIZATION,
+        HeaderConstants.X_REQUEST_ID,
+        HeaderConstants.REQUEST_ID,
+        HeaderConstants.X_VSS_REQUEST_ID,
+        HeaderConstants.X_JWT_ASSERTION
       };
 
       foreach (var key in keys)
@@ -31,15 +36,15 @@ namespace VSS.MasterData.Proxies
           customHeaders.Add(key, headers[key]);
         }
       }
-      
+
       return customHeaders;
     }
 
     public static void StripHeaders(this IDictionary<string, string> headers, bool isInternal)
     {
       // Depending of if we are internal, or external, we need different headers to persist or be removed
-      var keysToKeep = isInternal 
-        ? HeaderConstants.InternalHeaders 
+      var keysToKeep = isInternal
+        ? HeaderConstants.InternalHeaders
         : HeaderConstants.ExternalHeaders;
 
       // Have to store the keys here, or else we modify the dictionary while iterating
@@ -47,12 +52,11 @@ namespace VSS.MasterData.Proxies
 
       foreach (var headerKey in keys)
       {
-        if(keysToKeep.Any(k => k.Equals(headerKey, StringComparison.OrdinalIgnoreCase)))
+        if (keysToKeep.Any(k => k.Equals(headerKey, StringComparison.OrdinalIgnoreCase)))
           continue;
 
         headers.Remove(headerKey);
       }
     }
-
   }
 }
