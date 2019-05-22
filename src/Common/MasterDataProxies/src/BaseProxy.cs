@@ -608,7 +608,7 @@ namespace VSS.MasterData.Proxies
       var item = await GetItemFromList(listUid, userId, getList, itemSelector, customHeaders);
       if (item == null)
       {
-        ClearCacheItem<T>(listUid, null);
+        ClearCacheItem<T>(listUid, userId);
         item = await GetItemFromList(listUid, userId, getList, itemSelector, customHeaders);
       }
 
