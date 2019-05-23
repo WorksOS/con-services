@@ -1,13 +1,14 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-  public class SiteModelMetadata : IBinarizable, ISiteModelMetadata
+  public class SiteModelMetadata : IBinarizable, IFromToBinary, ISiteModelMetadata
   {
     private const byte VERSION_NUMBER = 1;
 
