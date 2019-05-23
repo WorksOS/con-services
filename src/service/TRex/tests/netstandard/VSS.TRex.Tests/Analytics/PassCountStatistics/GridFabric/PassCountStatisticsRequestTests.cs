@@ -20,6 +20,8 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(PassCountStatisticsRequest_ClusterCompute))]
   public class PassCountStatisticsRequestTests : BaseTests<PassCountStatisticsArgument, PassCountStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const float HEIGHT_INCREMENT_0_5 = 0.5f;
+
     private PassCountStatisticsArgument SimplePassCountStatisticsArgument(ISiteModel siteModel, ushort targetMin, ushort targetMax)
     {
       return new PassCountStatisticsArgument
@@ -31,12 +33,12 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellPassCount(out ISiteModel siteModel, float heightIncrement)
+    private ISiteModel BuildModelForSingleCellPassCount(float heightIncrement)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -51,6 +53,8 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     [Fact]
@@ -82,7 +86,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellPassCount(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellPassCount(HEIGHT_INCREMENT_0_5);
       var operation = new PassCountStatisticsOperation();
 
       var passCountSummaryResult = operation.Execute(SimplePassCountStatisticsArgument(siteModel, 0, 0));
@@ -98,7 +102,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellPassCount(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellPassCount(HEIGHT_INCREMENT_0_5);
       siteModel.MachinesTargetValues[0].TargetPassCountStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, 10);
 
       var operation = new PassCountStatisticsOperation();
@@ -127,7 +131,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellPassCount(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellPassCount(HEIGHT_INCREMENT_0_5);
       var operation = new PassCountStatisticsOperation();
 
       var passCountSummaryResult = operation.Execute(SimplePassCountStatisticsArgument(siteModel, minTarget, maxTarget));
@@ -152,7 +156,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellPassCount(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellPassCount(HEIGHT_INCREMENT_0_5);
       var operation = new PassCountStatisticsOperation();
 
       var arg = SimplePassCountStatisticsArgument(siteModel, minTarget, maxTarget);

@@ -21,6 +21,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CMVStatisticsRequest_ClusterCompute))]
   public class CMVStatisticsRequestTests : BaseTests<CMVStatisticsArgument, CMVStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const short CMV_INCREMENT = 10;
     private const short MACHINE_TARGET_CMV = 300;
 
     private CMVStatisticsArgument SimpleCMVStatisticsArgument(ISiteModel siteModel, short target, double minPercentage, double maxPercentage)
@@ -35,12 +36,12 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellCMV(out ISiteModel siteModel, short cmvIncrement)
+    private ISiteModel BuildModelForSingleCellCMV(short cmvIncrement)
     {
       var baseTime = DateTime.UtcNow;
       short baseCMV = 10;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -55,6 +56,8 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     [Fact]
@@ -86,7 +89,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellCMV(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellCMV(CMV_INCREMENT);
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
       var operation = new CMVStatisticsOperation();
@@ -113,7 +116,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellCMV(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellCMV(CMV_INCREMENT);
       siteModel.MachinesTargetValues[0].TargetCCVStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, TARGET_CMV);
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
@@ -144,7 +147,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellCMV(out var siteModel, cmvIncrement);
+      var siteModel = BuildModelForSingleCellCMV(cmvIncrement);
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
       var operation = new CMVStatisticsOperation();
@@ -172,7 +175,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellCMV(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellCMV(CMV_INCREMENT);
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
       var operation = new CMVStatisticsOperation();

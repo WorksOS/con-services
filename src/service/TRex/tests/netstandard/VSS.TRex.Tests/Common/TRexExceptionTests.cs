@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Exceptions.Exceptions;
 using VSS.TRex.Common.Utilities;
 using Xunit;
 
@@ -10,6 +11,10 @@ namespace VSS.TRex.Tests.Common
 {
   public class TRexExceptionTests
   {
+    private const string ERROR_MESSAGE = "A message";
+    private const string ACTUAL_TYPE_MAME = "An actual type name";
+    private const string EXPECTED_TYPE_MAME = "An expected type name";
+
     public static IEnumerable<object[]> GetTypes()
     {
       // Select all TRexException based exceptions
@@ -20,20 +25,51 @@ namespace VSS.TRex.Tests.Common
     [MemberData(nameof(GetTypes))]
     public void Creation_Message(Type type)
     {
-      var ex = Activator.CreateInstance(type, new object[] { "A message"}) as TRexException;
+      object[] parameters;
+      string errorMessage;
+
+      if (type != typeof(TRexClientLeafSubGridTypeCastException) && type != typeof(TRexColorPaletteTypeCastException))
+      {
+        errorMessage = ERROR_MESSAGE;
+        parameters = new object[] { errorMessage };
+      }
+      else
+      {
+        var typeName = type == typeof(TRexClientLeafSubGridTypeCastException) ? "ClientLeafSubGrid" : "Palette";
+        errorMessage = $"Invalid {typeName} type: {ACTUAL_TYPE_MAME}. Expected type: {EXPECTED_TYPE_MAME}";
+        parameters = new object[] { ACTUAL_TYPE_MAME, EXPECTED_TYPE_MAME };
+      }
+      
+      var ex = Activator.CreateInstance(type, parameters) as TRexException;
 
       ex.Should().NotBeNull();
-      ex.Message.Should().Be("A message");
+      ex.Message.Should().Be(errorMessage);
     }
 
     [Theory]
     [MemberData(nameof(GetTypes))]
     public void Creation_MessageWIthException(Type type)
     {
-      var ex = Activator.CreateInstance(type, new object[] { "A message", new NotImplementedException("Not Implemented"),  }) as TRexException;
+      var parameters = new List<object>();
+      string errorMessage;
 
-      ex.Should().NotBeNull();
-      ex.Message.Should().Be("A message");
+      if (type != typeof(TRexClientLeafSubGridTypeCastException) && type != typeof(TRexColorPaletteTypeCastException))
+      {
+        errorMessage = ERROR_MESSAGE;
+        parameters.Add(errorMessage);
+      }
+      else
+      {
+        var typeName = type == typeof(TRexClientLeafSubGridTypeCastException) ? "ClientLeafSubGrid" : "Palette";
+        errorMessage = $"Invalid {typeName} type: {ACTUAL_TYPE_MAME}. Expected type: {EXPECTED_TYPE_MAME}";
+        parameters.Add(ACTUAL_TYPE_MAME);
+        parameters.Add(EXPECTED_TYPE_MAME);
+      }
+
+      parameters.Add(new NotImplementedException("Not Implemented"));
+
+      var ex = Activator.CreateInstance(type, parameters.ToArray()) as TRexException;
+      ex.Message.Should().Be(errorMessage);
       ex.InnerException.Should().NotBeNull();
       ex.InnerException.Message.Should().Be("Not Implemented");
     }

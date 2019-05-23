@@ -109,9 +109,6 @@ namespace WebApiTests
     [TestMethod]
     public void GetBoundaries()
     {
-      var SouthernMotorWayFavoriteGeofenceUid = Guid.Parse("ffdabc61-7ee9-4054-a3e1-f182dd1abec9");
-      var WalnutCreekFavoriteGeofenceUid = Guid.Parse("09097669-34e7-4b34-b921-680018388505");
-      var ZieglerBloomingtonFavoriteGeofenceUid = Guid.Parse("69de1f67-1b2a-413a-8936-659892379fd9");
       var favoriteGeofences = new List<Guid> { SouthernMotorWayFavoriteGeofenceUid, WalnutCreekFavoriteGeofenceUid, ZieglerBloomingtonFavoriteGeofenceUid };
 
       ts.DeleteAllBoundariesAndAssociations();

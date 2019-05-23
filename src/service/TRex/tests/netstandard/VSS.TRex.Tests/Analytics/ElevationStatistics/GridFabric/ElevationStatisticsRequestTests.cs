@@ -22,6 +22,8 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(ElevationStatisticsRequest_ClusterCompute))]
   public class ElevationStatisticsRequestTests : BaseTests<ElevationStatisticsArgument, ElevationStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const float ELEVATION_INCREMENT_1_0 = 1.0f;
+
     private ElevationStatisticsArgument SimpleElevationStatisticsArgument(ISiteModel siteModel)
     {
       return new ElevationStatisticsArgument
@@ -31,12 +33,12 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellElevation(out ISiteModel siteModel, float elevationIncrement)
+    private ISiteModel BuildModelForSingleCellElevation(float elevationIncrement)
     {
       var baseTime = DateTime.UtcNow;
       var baseElevation = 1.0F;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -51,14 +53,16 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
-    private void BuildModelForCellsElevation(out ISiteModel siteModel, float elevationIncrement)
+    private ISiteModel BuildModelForCellsElevation(float elevationIncrement)
     {
       var baseTime = DateTime.UtcNow;
       var baseElevation = 1.0F;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       CellPass[,][] cellPasses = new CellPass[32, 32][];
@@ -76,6 +80,8 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       });
 
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      return siteModel;
     }
 
     [Fact]
@@ -107,7 +113,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellElevation(out var siteModel, 1.0F);
+      var siteModel = BuildModelForSingleCellElevation(ELEVATION_INCREMENT_1_0);
       var operation = new ElevationStatisticsOperation();
 
       var elevationStatisticsResult = operation.Execute(SimpleElevationStatisticsArgument(siteModel));
@@ -126,7 +132,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForCellsElevation(out var siteModel, 1.0F);
+      var siteModel = BuildModelForCellsElevation(ELEVATION_INCREMENT_1_0);
 
       var operation = new ElevationStatisticsOperation();
 

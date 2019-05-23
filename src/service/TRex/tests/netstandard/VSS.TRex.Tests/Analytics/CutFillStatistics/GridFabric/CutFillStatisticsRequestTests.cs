@@ -25,6 +25,8 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CutFillStatisticsRequest_ClusterCompute))]
   public class CutFillStatisticsRequestTests : BaseTests<CutFillStatisticsArgument, CutFillStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const float HEIGHT_INCREMENT_0_5 = 0.5f;
+
     private void AddDesignProfilerGridRouting()
     {
       IgniteMock.AddApplicationGridRouting<IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
@@ -41,12 +43,12 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellCutFill(out ISiteModel siteModel, float heightIncrement)
+    private ISiteModel BuildModelForSingleCellCutFill(float heightIncrement)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -61,13 +63,15 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
-    private void BuildModelForSingleSubGridCutFill(out ISiteModel siteModel, float heightIncrement, float baseHeight=1.0f)
+    private ISiteModel BuildModelForSingleSubGridCutFill(float heightIncrement, float baseHeight=1.0f)
     {
       var baseTime = DateTime.UtcNow;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       CellPass[,][] cellPasses = new CellPass[32,32][];
@@ -86,6 +90,8 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      return siteModel;
     }
 
     [Fact]
@@ -120,7 +126,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellCutFill(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellCutFill(HEIGHT_INCREMENT_0_5);
 
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid(), 1.5);
@@ -137,7 +143,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddApplicationGridRouting();
       AddDesignProfilerGridRouting();
 
-      BuildModelForSingleCellCutFill(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellCutFill(HEIGHT_INCREMENT_0_5);
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
 
       var operation = new CutFillStatisticsOperation();
@@ -159,7 +165,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddApplicationGridRouting();
       AddDesignProfilerGridRouting();
 
-      BuildModelForSingleSubGridCutFill(out var siteModel, 0.1f);
+      var siteModel = BuildModelForSingleSubGridCutFill(0.1f);
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 2.0f);
 
       var operation = new CutFillStatisticsOperation();
@@ -195,7 +201,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddApplicationGridRouting();
       AddDesignProfilerGridRouting();
 
-      BuildModelForSingleSubGridCutFill(out var siteModel, 0.0f, 1.0f);
+      var siteModel = BuildModelForSingleSubGridCutFill(0.0f);
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.1f);
 
       var operation = new CutFillStatisticsOperation();

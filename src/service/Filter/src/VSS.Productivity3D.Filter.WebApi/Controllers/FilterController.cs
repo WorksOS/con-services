@@ -114,6 +114,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// </summary>
     [HttpPut("api/v1/filter/{ProjectUid}")]
     public async Task<FilterDescriptorSingleResult> PutFilter(
+      [FromServices] IGeofenceProxy geofenceProxy,
       [FromServices] IFileListProxy fileListProxy,
       [FromServices] INotificationHubClient notificationHubClient,
       string projectUid,
@@ -121,7 +122,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     {
       Log.LogInformation($"{nameof(PutFilter)}: CustomerUID={CustomerUid} FilterRequest: {JsonConvert.SerializeObject(request)}");
 
-      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, fileListProxy);
+      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, fileListProxy, geofenceProxy);
       var upsertFilterResult = await UpsertFilter(filterExecutor, await GetProject(projectUid), request);
 
       if (upsertFilterResult.FilterDescriptor.FilterType == FilterType.Persistent && upsertFilterResult.FilterDescriptor.ContainsBoundary)
@@ -139,7 +140,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Only transient filters for now. Supporting batching of permanent filters requires rollback logic when one or more fails.
     /// </remarks>
     [HttpPost("api/v1/filters/{projectUid}")]
-    public async Task<FilterDescriptorListResult> CreateFilters(string projectUid, [FromBody] FilterListRequest request)
+    public async Task<FilterDescriptorListResult> CreateFilters(
+      string projectUid, 
+      [FromBody] FilterListRequest request,
+      [FromServices] IGeofenceProxy geofenceProxy)
     {
       Log.LogInformation($"{nameof(CreateFilters)}: CustomerUID={CustomerUid} FilterListRequest: {JsonConvert.SerializeObject(request)}");
 
@@ -150,7 +154,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     
       var projectTask = GetProject(projectUid);
       var newFilters = new List<FilterDescriptor>();
-      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName);
+      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, null, geofenceProxy);
 
       var project = await projectTask;
 

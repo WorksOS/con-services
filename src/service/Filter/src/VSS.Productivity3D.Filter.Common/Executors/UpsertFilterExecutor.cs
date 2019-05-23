@@ -31,11 +31,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public UpsertFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileListProxy fileListProxy,
-      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
-      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy, fileListProxy, repository, producer, kafkaTopicName, auxRepository)
+      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy)
+      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy, fileListProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy)
     {
-
-      FileListProxy = fileListProxy;
     }
 
     /// <summary>
@@ -57,7 +55,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
       // Hydrate the polygon filter if present.
-      filterRequest.FilterJson = await ValidationUtil.HydrateJsonWithBoundary(auxRepository as GeofenceRepository, log, serviceExceptionHandler, filterRequest);
+      filterRequest.FilterJson = await ValidationUtil.HydrateJsonWithBoundary(GeofenceProxy, auxRepository as GeofenceRepository, log, serviceExceptionHandler, filterRequest);
 
       if (filterRequest.FilterType == FilterType.Transient)
       {

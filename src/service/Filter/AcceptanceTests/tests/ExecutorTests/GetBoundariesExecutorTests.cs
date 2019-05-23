@@ -41,6 +41,7 @@ namespace ExecutorTests
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
+      Assert.AreEqual(3, result.GeofenceData.Count, "Should be 3 favorite geofences returned");
       var boundaries = result.GeofenceData.Where(b => b.GeofenceType == GeofenceType.Filter.ToString()).ToList();
       Assert.AreEqual(0, boundaries.Count, "Shouldn't be any boundaries returned");
     }
