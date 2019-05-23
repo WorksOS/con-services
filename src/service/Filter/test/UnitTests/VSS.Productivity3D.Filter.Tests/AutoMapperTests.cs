@@ -332,5 +332,34 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(request.GeofenceType.ToString(), result.GeofenceType,
         "GeofenceType has not been mapped correctly");
     }
+
+    [TestMethod]
+    public void MapGeofenceDataToGeofence()
+    {
+      var geofenceData = new GeofenceData
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "whatever",
+        GeofenceType = GeofenceType.CutZone.ToString(),
+        GeometryWKT = "blah",
+        CustomerUID = Guid.NewGuid(),
+        UserUID = Guid.NewGuid(),
+        IsTransparent = true,
+        Description = null,
+        AreaSqMeters = 1.234,
+        FillColor = 0,
+      };
+      var result = AutoMapperUtility.Automapper.Map<Geofence>(geofenceData);
+      Assert.AreEqual(geofenceData.GeofenceUID.ToString(), result.GeofenceUID, "GeofenceUID has not been mapped correctly");
+      Assert.AreEqual(geofenceData.GeofenceName, result.Name, "GeofenceName has not been mapped correctly");
+      Assert.AreEqual(geofenceData.GeofenceType, result.GeofenceType.ToString(), "GeofenceType has not been mapped correctly");
+      Assert.AreEqual(geofenceData.GeometryWKT, result.GeometryWKT, "GeometryWKT has not been mapped correctly");
+      Assert.AreEqual(geofenceData.CustomerUID.ToString(), result.CustomerUID, "CustomerUID has not been mapped correctly");
+      Assert.AreEqual(geofenceData.UserUID.ToString(), result.UserUID, "UserUID has not been mapped correctly");
+      Assert.AreEqual(geofenceData.IsTransparent, result.IsTransparent, "IsTransparent has not been mapped correctly");
+      Assert.AreEqual(geofenceData.Description, result.Description, "Description has not been mapped correctly");
+      Assert.AreEqual(geofenceData.AreaSqMeters, result.AreaSqMeters, "AreaSqMeters has not been mapped correctly");
+      Assert.AreEqual(geofenceData.FillColor, result.FillColor, "FillColor has not been mapped correctly");
+    }
   }
 }

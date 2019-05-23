@@ -4,11 +4,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 
 namespace WebApiTests
 {
@@ -143,7 +145,34 @@ namespace WebApiTests
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var hydratedFilterJson = CreateTestFilter(polygonUid: boundaryUid.ToString(), polygonName: boundaryName, polygonPoints: GetPointsFromWkt(boundaryWkt));
+      var hydratedFilterJson = CreateTestFilter(polygonUid: boundaryUid.ToString(), polygonName: boundaryName, polygonPoints: GetPointsFromWkt(boundaryWkt), polygonType:GeofenceType.Filter);
+      Assert.AreEqual(filterRequest.Name, filterResponse.FilterDescriptor.Name, "Filter name doesn't match for PUT request");
+      Assert.AreEqual(hydratedFilterJson, filterResponse.FilterDescriptor.FilterJson, "JSON Filter doesn't match for PUT request");
+      var filterUid = filterResponse.FilterDescriptor.FilterUid;
+      var responseGet = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}?filterUid={filterUid}", "GET");
+      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.AreEqual(filterRequest.Name, filterResponseGet.FilterDescriptor.Name, "Filter name doesn't match for GET request");
+      Assert.AreEqual(hydratedFilterJson, filterResponseGet.FilterDescriptor.FilterJson, "JSON Filter doesn't match for GET request");
+      Assert.AreEqual(filterRequest.FilterType, filterResponseGet.FilterDescriptor.FilterType, "Filter type doesn't match for GET request");
+    }
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void CreateFilterWithFavoriteGeofence(FilterType filterType)
+    {
+      ts.DeleteAllBoundariesAndAssociations();
+
+      const string filterName = "Filter Web test 4b";
+      Msg.Title(filterName, $"Create {filterType } filter with favorite geofence in json string");
+
+      var filterJson = CreateTestFilter(polygonUid: SouthernMotorWayFavoriteGeofenceUid.ToString(), polygonType: SouthernMotorWayFavoriteType);
+      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
+      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
+      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var hydratedFilterJson = CreateTestFilter(polygonUid: SouthernMotorWayFavoriteGeofenceUid.ToString(), polygonName: SouthernMotorWayFavoriteName, polygonPoints: GetPointsFromWkt(SouthernMotorWayFavoriteGeometryWKT), polygonType: SouthernMotorWayFavoriteType);
       Assert.AreEqual(filterRequest.Name, filterResponse.FilterDescriptor.Name, "Filter name doesn't match for PUT request");
       Assert.AreEqual(hydratedFilterJson, filterResponse.FilterDescriptor.FilterJson, "JSON Filter doesn't match for PUT request");
       var filterUid = filterResponse.FilterDescriptor.FilterUid;
@@ -180,7 +209,7 @@ namespace WebApiTests
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var filterUid = filterResponse.FilterDescriptor.FilterUid;
       var hydratedFilterJson = CreateTestFilter(polygonUid: boundaryUid.ToString(), polygonName: boundaryName,
-        polygonPoints: GetPointsFromWkt(boundaryWkt));
+        polygonPoints: GetPointsFromWkt(boundaryWkt), polygonType: GeofenceType.Filter);
 
       var responseDelete = ts.CallFilterWebApi($"api/v1/boundary/{ProjectUid}?boundaryUid={boundaryUid}", "DELETE");
       var filterResponse1 = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseDelete, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -274,13 +303,13 @@ namespace WebApiTests
     private static string CreateTestFilter(ElevationType? elevation = null, bool? vibestate = null, bool? forward = null,
                                     int? layerNo = null, int? onMachineDesignId = null, DateTime? startUtc = null,
                                     DateTime? endUtc = null, string polygonUid = null, string polygonName = null,
-                                    List<WGSPoint> polygonPoints = null)
+                                    List<WGSPoint> polygonPoints = null, GeofenceType? polygonType=null)
     {
       var listMachines = new List<MachineDetails>();
       var machine = new MachineDetails(123456789, "TheMachineName", false);
       listMachines.Add(machine);
       var filter = new Filter(startUtc, endUtc, null, null, listMachines, onMachineDesignId,
-                                       elevation, vibestate, polygonPoints, forward, layerNo, polygonUid, polygonName);
+                                       elevation, vibestate, polygonPoints, forward, layerNo, polygonUid, polygonName, polygonType:polygonType);
       return JsonConvert.SerializeObject(filter);
     }
   }
