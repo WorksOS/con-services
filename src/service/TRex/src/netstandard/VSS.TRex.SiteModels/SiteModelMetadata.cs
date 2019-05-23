@@ -2,13 +2,12 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-  public class SiteModelMetadata : BaseRequestArgument, ISiteModelMetadata
+  public class SiteModelMetadata : IBinarizable, ISiteModelMetadata
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -22,10 +21,8 @@ namespace VSS.TRex.SiteModels
     public int AlignmentCount { get; set; }
 
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public void ToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
-
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(ID);
@@ -41,10 +38,8 @@ namespace VSS.TRex.SiteModels
       writer.WriteInt(AlignmentCount);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public void FromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
-
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ID = reader.ReadGuid() ?? Guid.Empty;
@@ -62,5 +57,9 @@ namespace VSS.TRex.SiteModels
       SurveyedSurfaceCount = reader.ReadInt();
       AlignmentCount = reader.ReadInt();
     }
+
+    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
+
+    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
   }
 }
