@@ -23,13 +23,27 @@ namespace VSS.TRex.Storage
 
     protected readonly IIgnite ignite;
 
-    protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> nonSpatialCache;
-
-    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache => nonSpatialCache;
-
+    protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> generalNonSpatialCache;
     protected IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> spatialCache;
 
-    public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache; 
+    public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
+
+
+    protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> siteModelCache;
+
+    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> SiteModelCache => siteModelCache;
+
+
+    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType)
+    {
+      switch (streamType)
+      {
+        case FileSystemStreamType.ProductionDataXML:
+          return siteModelCache;
+        default:
+          return generalNonSpatialCache;
+      }
+    }
 
     /// <summary>
     /// Controls which grid (Mutable or Immutable) this storage proxy performs reads and writes against.

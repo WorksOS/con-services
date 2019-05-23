@@ -33,7 +33,8 @@ namespace VSS.TRex.Storage
         private void EstablishCaches()
         {
           spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
-          nonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
+          generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
+          siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
         }
       
         /// <summary>
@@ -62,7 +63,7 @@ namespace VSS.TRex.Storage
 
             try
             {
-                nonSpatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+                generalNonSpatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
 
                 numDeleted += _numDeleted;
                 numUpdated += _numUpdated;
@@ -70,11 +71,25 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.LogError(e, "Exception thrown committing changes to Ignite for non spatial cache");
+                Log.LogError(e, "Exception thrown committing changes to Ignite for general non spatial cache");
                 throw;
             }
 
-            return ImmutableProxy?.Commit() ?? true;
+            try
+            {
+                siteModelCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+      
+                numDeleted += _numDeleted;
+                numUpdated += _numUpdated;
+                numBytesWritten += _numBytesWritten;
+            }
+            catch (Exception e)
+            {
+                Log.LogError(e, "Exception thrown committing changes to Ignite for site model cache");
+                throw;
+            }
+
+      return ImmutableProxy?.Commit() ?? true;
         }
 
         public override bool Commit() => Commit(out _, out _, out _);
@@ -96,14 +111,24 @@ namespace VSS.TRex.Storage
 
             try
             {
-                nonSpatialCache.Clear();
+                generalNonSpatialCache.Clear();
             }
             catch (Exception e)
             {
-                Log.LogError(e, "Exception thrown clearing changes for non spatial cache");
+                Log.LogError(e, "Exception thrown clearing changes for general non spatial cache");
                 throw;
             }
 
+            try
+            {
+                siteModelCache.Clear();
+            }
+            catch (Exception e)
+            {
+                Log.LogError(e, "Exception thrown clearing changes for site model cache");
+                throw;
+            }
+      
             ImmutableProxy?.Clear();
         }
     }

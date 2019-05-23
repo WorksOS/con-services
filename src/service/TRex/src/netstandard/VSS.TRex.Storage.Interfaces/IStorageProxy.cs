@@ -8,7 +8,7 @@ namespace VSS.TRex.Storage.Interfaces
 {
   public interface IStorageProxy
   {
-    IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache { get; }
+    IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType);
     IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; }
 
     StorageMutability Mutability { get; set; }
@@ -42,6 +42,7 @@ namespace VSS.TRex.Storage.Interfaces
       out MemoryStream stream);
 
     FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelID,
+      FileSystemStreamType streamType,
       string streamName);
 
     void SetImmutableStorageProxy(IStorageProxy immutableProxy);

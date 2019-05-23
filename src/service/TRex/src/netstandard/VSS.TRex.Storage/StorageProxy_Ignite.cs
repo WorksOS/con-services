@@ -38,7 +38,8 @@ namespace VSS.TRex.Storage
     private void EstablishCaches()
     {
       spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
-      nonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
+      generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
+      siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
     }
 
     /// <summary>
@@ -58,12 +59,12 @@ namespace VSS.TRex.Storage
     {
       try
       {
-        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
+        var cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
 
         using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
           // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}");
-          nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
+          NonSpatialCache(streamType).Put(cacheKey, compressedStream.ToArray());
         }
 
         try
@@ -71,7 +72,7 @@ namespace VSS.TRex.Storage
           // Create the immutable stream from the source data
           if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
           {
-            if (PerformNonSpatialImmutabilityConversion(mutableStream, ImmutableProxy.NonSpatialCache, cacheKey, streamType, source) == null)
+            if (PerformNonSpatialImmutabilityConversion(mutableStream, ImmutableProxy.NonSpatialCache(streamType), cacheKey, streamType, source) == null)
             {
               Log.LogError("Unable to project an immutable stream");
               return FileSystemErrorStatus.MutableToImmutableConversionError;
@@ -168,7 +169,7 @@ namespace VSS.TRex.Storage
 
         try
         {
-          using (MemoryStream MS = new MemoryStream(nonSpatialCache.Get(cacheKey)))
+          using (MemoryStream MS = new MemoryStream(NonSpatialCache(streamType).Get(cacheKey)))
           {
             stream = MemoryStreamCompression.Decompress(MS);
             stream.Position = 0;
@@ -246,9 +247,12 @@ namespace VSS.TRex.Storage
     /// Supports removing a named stream from the persistent store via the grid cache
     /// </summary>
     /// <param name="dataModelID"></param>
+    /// <param name="streamType"></param>
     /// <param name="streamName"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelID, string streamName)
+    public FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelID,
+      FileSystemStreamType streamType, 
+      string streamName)
     {
       try
       {
@@ -259,14 +263,14 @@ namespace VSS.TRex.Storage
         // Remove item from both immutable and mutable caches
         try
         {
-          nonSpatialCache.Remove(cacheKey);
+          NonSpatialCache(streamType).Remove(cacheKey);
         }
         catch (KeyNotFoundException E)
         {
           Log.LogError(E, "Exception occurred:");
         }
 
-        ImmutableProxy?.RemoveStreamFromPersistentStore(dataModelID, streamName);
+        ImmutableProxy?.RemoveStreamFromPersistentStore(dataModelID, streamType, streamName);
 
         return FileSystemErrorStatus.OK;
       }
