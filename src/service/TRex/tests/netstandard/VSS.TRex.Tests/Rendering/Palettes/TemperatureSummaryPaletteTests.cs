@@ -52,7 +52,7 @@ namespace VSS.TRex.Tests.Rendering.Palettes
       for (var i = 0; i < colors.Length; i++)
       {
         data.MeasuredTemperature = (ushort)(MEASURED_TEMPERATURE + i * TEMPERATURE_INCREMENT);
-        palette.ChooseColour(data.MeasuredTemperature, data.TemperatureLevels).Should().Be(colors[i]);
+        palette.ChooseColour(data.MeasuredTemperature, data.TemperatureLevels.Min, data.TemperatureLevels.Max).Should().Be(colors[i]);
       }
     }
 
@@ -76,7 +76,7 @@ namespace VSS.TRex.Tests.Rendering.Palettes
       for (var i = 0; i < colors.Length; i++)
       {
         data.MeasuredTemperature = (ushort)(MEASURED_TEMPERATURE + i * TEMPERATURE_INCREMENT);
-        palette.ChooseColour(data.MeasuredTemperature, data.TemperatureLevels).Should().Be(colors[i]);
+        palette.ChooseColour(data.MeasuredTemperature, data.TemperatureLevels.Min, data.TemperatureLevels.Max).Should().Be(colors[i]);
       }
     }
 
@@ -108,7 +108,7 @@ namespace VSS.TRex.Tests.Rendering.Palettes
       for (var i = 0; i < colors.Length; i++)
       {
         data.MeasuredTemperature = (ushort)(MEASURED_TEMPERATURE + i * TEMPERATURE_INCREMENT);
-        palette.ChooseColour(data.MeasuredTemperature, data.TemperatureLevels).Should().Be(colors[i]);
+        palette.ChooseColour(data.MeasuredTemperature, data.TemperatureLevels.Min, data.TemperatureLevels.Max).Should().Be(colors[i]);
       }
     }
 
@@ -141,7 +141,7 @@ namespace VSS.TRex.Tests.Rendering.Palettes
       for (var i = 0; i < colors.Length; i++)
       {
         data.MeasuredTemperature = (ushort)(MEASURED_TEMPERATURE + i * TEMPERATURE_INCREMENT);
-        palette.ChooseColour(data.MeasuredTemperature, data.TemperatureLevels).Should().Be(colors[i]);
+        palette.ChooseColour(data.MeasuredTemperature, data.TemperatureLevels.Min, data.TemperatureLevels.Max).Should().Be(colors[i]);
       }
     }
   }

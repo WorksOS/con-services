@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity.Push.Models;
 using VSS.Productivity3D.Models.Models;
@@ -16,7 +17,7 @@ namespace VSS.Productivity3D.Push.Hubs.AssetLocations
     private readonly IAssetStatusState assetState;
     private readonly IHubContext<AssetStatusClientHub, IAssetStatusClientHubContext> hub;
 
-    public AssetStatusServerHub(IAssetStatusState assetState, IHubContext<AssetStatusClientHub, IAssetStatusClientHubContext> hub)
+    public AssetStatusServerHub(ILoggerFactory loggerFactory, IAssetStatusState assetState, IHubContext<AssetStatusClientHub, IAssetStatusClientHubContext> hub) : base(loggerFactory)
     {
       this.assetState = assetState;
       this.hub = hub;

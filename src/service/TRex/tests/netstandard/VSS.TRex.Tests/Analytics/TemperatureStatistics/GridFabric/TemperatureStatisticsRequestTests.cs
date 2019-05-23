@@ -21,6 +21,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(TemperatureStatisticsRequest_ClusterCompute))]
   public class TemperatureStatisticsRequestTests : BaseTests<TemperatureStatisticsArgument, TemperatureStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const ushort TEMPERATURE_INCREMENT = 10;
     private const ushort MACHINE_TARGET_MIN = 820;
     private const ushort MACHINE_TARGET_MAX = 1150;
 
@@ -35,12 +36,12 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellTemperature(out ISiteModel siteModel, ushort temperatureIncrement)
+    private ISiteModel BuildModelForSingleCellTemperature(ushort temperatureIncrement)
     {
       var baseTime = DateTime.UtcNow;
       ushort baseTemperature = 10;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -55,6 +56,8 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     [Fact]
@@ -86,7 +89,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellTemperature(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellTemperature(TEMPERATURE_INCREMENT);
       var operation = new TemperatureStatisticsOperation();
 
       var temperatureSummaryResult = operation.Execute(SimpleTemperatureStatisticsArgument(siteModel, 0, 0));
@@ -115,7 +118,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellTemperature(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellTemperature(TEMPERATURE_INCREMENT);
       siteModel.MachinesTargetValues[0].TargetMinMaterialTemperature.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, TARGET_TEMPERATURE_MIN);
       siteModel.MachinesTargetValues[0].TargetMaxMaterialTemperature.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, TARGET_TEMPERATURE_MAX);
 
@@ -147,7 +150,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellTemperature(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellTemperature(TEMPERATURE_INCREMENT);
       var operation = new TemperatureStatisticsOperation();
 
       var temperatureSummaryResult = operation.Execute(SimpleTemperatureStatisticsArgument(siteModel, minTarget, maxTarget));
@@ -174,7 +177,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellTemperature(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellTemperature(TEMPERATURE_INCREMENT);
       var operation = new TemperatureStatisticsOperation();
 
       var arg = SimpleTemperatureStatisticsArgument(siteModel, minTarget, maxTarget);

@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.Filter.Proxy
     public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IDictionary<string, string> customHeaders = null)
     {
       var result = await GetMasterDataItemServiceDiscovery<FilterData>
-      ($"/filter/{projectUid}?filterUid={filterUid}", filterUid, null, customHeaders);
+      ($"/filter/{projectUid}", filterUid, null, customHeaders, new Dictionary<string, string> { { "filterUid", filterUid } });
       if (result.Code == 0)
       {
         return result.filterDescriptor;

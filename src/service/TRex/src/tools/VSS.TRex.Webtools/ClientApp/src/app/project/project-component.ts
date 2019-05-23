@@ -80,6 +80,9 @@ export class ProjectComponent {
 
   public existenceMapSubGridCount: number = 0;
 
+  private kMaxTestElev : number = 100000.0;
+  private kMinTestElev : number = -100000.0;
+
   public machineColumns: string[] =
   [
     "id",
@@ -151,10 +154,14 @@ export class ProjectComponent {
   public showHighestCompositeElevationProfile: boolean = true;
 
   public userProfilePath: string = "";
-  public userProfilePoint1SVG_CX: Number = 0;
-  public userProfilePoint1SVG_CY: Number = 0;
-  public userProfilePoint2SVG_CX: Number = 0;
-  public userProfilePoint2SVG_CY: Number = 0;
+  public userProfilePoint1SVG_CX: number = 0;
+  public userProfilePoint1SVG_CY: number = 0;
+  public userProfilePoint2SVG_CX: number = 0;
+  public userProfilePoint2SVG_CY: number = 0;
+  public userProfilePoint1SVG_WorldX: number = 0;
+  public userProfilePoint1SVG_WorldY: number = 0;
+  public userProfilePoint2SVG_WorldX: number = 0;
+  public userProfilePoint2SVG_WorldY: number = 0;
 
   public numPointInProfile: number = 0;
 
@@ -176,8 +183,8 @@ export class ProjectComponent {
   public svSecondPointY: number = 0.0;
 
   public profileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
-  public mouseProfileWorldStation: Number = 0.0;
-  public mouseProfileWorldZ: Number = 0.0;
+  public mouseProfileWorldStation: number = 0.0;
+  public mouseProfileWorldZ: number = 0.0;
 
   public mouseProfilePixelLocation: string = '';
   public mouseProfileWorldLocation: string = '';
@@ -317,31 +324,37 @@ constructor(
 
   public zoomIn(): void {
     this.tileExtents.shrink(this.zoomFactor, this.zoomFactor);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public zoomOut(): void {
     this.tileExtents.expand(this.zoomFactor, this.zoomFactor);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public panLeft(): void {
     this.tileExtents.panByFactor(-this.zoomFactor, 0.0);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public panRight(): void {
     this.tileExtents.panByFactor(this.zoomFactor, 0.0);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public panUp(): void {
     this.tileExtents.panByFactor(0, this.zoomFactor);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
   public panDown(): void {
     this.tileExtents.panByFactor(0, -this.zoomFactor);
+    this.UpdateProfileLineOnMap();
     this.getTileXTimes(1);
   }
 
@@ -367,7 +380,16 @@ constructor(
 
   public toggleCellDatum(): void {
     this.showCellDatum = !this.showCellDatum;
-  }
+    }
+
+    public UpdateProfileLineOnMap(): void {
+        this.userProfilePoint1SVG_CX = (this.userProfilePoint1SVG_WorldX - this.tileExtents.minX) / (this.tileExtents.sizeX() / this.pixelsX);
+        this.userProfilePoint1SVG_CY = this.pixelsY - (this.userProfilePoint1SVG_WorldY - this.tileExtents.minY) / (this.tileExtents.sizeY() / this.pixelsY);
+        this.userProfilePoint2SVG_CX = (this.userProfilePoint2SVG_WorldX - this.tileExtents.minX) / (this.tileExtents.sizeX() / this.pixelsX);
+        this.userProfilePoint2SVG_CY = this.pixelsY - (this.userProfilePoint2SVG_WorldY - this.tileExtents.minY) / (this.tileExtents.sizeY() / this.pixelsY);
+
+        this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+     }
 
   private updateMouseLocationDetails(offsetX: number, offsetY: number): void {
     this.mousePixelX = offsetX;
@@ -380,27 +402,36 @@ constructor(
     this.mouseWorldLocation = `${this.mouseWorldX.toFixed(3)}, ${this.mouseWorldY.toFixed(3)}`;
 
     if (this.updateFirstPointLocation) {
+      this.userProfilePoint1SVG_WorldX = this.mouseWorldX;
+      this.userProfilePoint1SVG_WorldY = this.mouseWorldY;
+
       this.userProfilePoint1SVG_CX = this.mousePixelX;
       this.userProfilePoint1SVG_CY = this.pixelsY - this.mousePixelY;
     }
 
     if (this.updateSecondPointLocation) {
+      this.userProfilePoint2SVG_WorldX = this.mouseWorldX;
+      this.userProfilePoint2SVG_WorldY = this.mouseWorldY;
+
       this.userProfilePoint2SVG_CX = this.mousePixelX;
       this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
     }
 
     if (this.updateFirstPointLocation || this.updateSecondPointLocation) {
-      this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+      this.UpdateProfileLineOnMap();
     }
 
     // SV Profile
     if (this.updateSecondPointLocationSV) {
+      this.userProfilePoint2SVG_WorldX = this.mouseWorldX;
+        this.userProfilePoint2SVG_WorldY = this.mouseWorldY;
+
       this.userProfilePoint2SVG_CX = this.mousePixelX;
       this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
     }
 
     if (this.updateFirstPointLocationSV || this.updateSecondPointLocationSV) {
-      this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+      this.UpdateProfileLineOnMap();
     }
 
     //if user pauses then get cell datum value
@@ -663,7 +694,7 @@ constructor(
     }
 
     this.projectService.getMachineEvents(this.projectUid, this.machine.id, this.eventType.item1,
-      this.machineEventsStartDate, this.machineEventsEndDate, this.maxMachineEventsToReturn).subscribe(      
+      startDate, endDate, this.maxMachineEventsToReturn).subscribe(      
       events => {
         events.forEach(event => result.push(event));
         this.machineEvents = result;
@@ -708,16 +739,18 @@ constructor(
         var stationRange:number = points[points.length - 1].station - points[0].station;
         var stationRatio:number = profileCanvasWidth / stationRange;
 
-        var minZ:number = 100000.0;
-        var maxZ:number = -100000.0;
-        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
-        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
+        var minZ: number = this.kMaxTestElev;
+        var maxZ: number = this.kMinTestElev;
+        points.forEach(pt => {
+            if (pt.z > this.kMinTestElev && pt.z < minZ) minZ = pt.z;
+            if (pt.z > this.kMinTestElev && pt.z > maxZ) maxZ = pt.z;
+        });
 
         var zRange = maxZ - minZ;
         var zRatio = profileCanvasHeight / zRange;
 
         points.forEach(point => {
-          if (point.z < -100000) {
+            if (point.z <= this.kMinTestElev) {
             // It's a gap...
             first = true;
           }
@@ -808,7 +841,7 @@ constructor(
     this.drawProfileLineForDesign(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
   }
 
-  public ComputeSVGForProfileValueVector(points: any[], getValue: (point: any) => number): string {
+  public ComputeSVGForProfileValueVector(points: any[], minZ:number, maxZ:number, getValue: (point: any) => number): string {
     var profileCanvasHeight: number = 500.0;
     var profileCanvasWidth: number = 1000.0;
 
@@ -818,17 +851,12 @@ constructor(
     var stationRange: number = points[points.length - 1].station - points[0].station;
     var stationRatio: number = profileCanvasWidth / stationRange;
 
-    var minZ: number = 100000.0;
-    var maxZ: number = -100000.0;
-    points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
-    points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
-
     var zRange = maxZ - minZ;
     var zRatio = profileCanvasHeight / zRange;
 
     points.forEach(point => {
       var value: number = getValue(point);
-      if (value < -100000) {
+      if (value <= this.kMinTestElev) {
         // It's a gap...
         first = true;
       }
@@ -838,17 +866,14 @@ constructor(
       }
     });
 
+    this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
+
     return result;
   }
 
-  public ProcessProfileDataVectorToSVGPolyLine(points: any[], getValue: (point: any) => number, setResult: (theResult: string) => void) {
-      var minZ: number = 100000.0;
-      var maxZ: number = -100000.0;
-      points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
-      points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
-
+  public ProcessProfileDataVectorToSVGPolyLine(points: any[], minZ : number, maxZ : number, getValue: (point: any) => number, setResult: (theResult: string) => void) {
       this.SetProfileViewExtents(points, minZ, maxZ);
-      setResult(this.ComputeSVGForProfileValueVector(points, getValue));
+      setResult(this.ComputeSVGForProfileValueVector(points, minZ, maxZ, getValue));
   }
 
   public SetProfileViewExtents(points: any[], minZ: number, maxZ: number) {
@@ -865,14 +890,30 @@ constructor(
   // between all others
   public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number,
     getValue: (point: any) => number, setResult: (theResult: string) => void) {
-    return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
-      .subscribe(points => this.ProcessProfileDataVectorToSVGPolyLine(points, getValue, setResult));
-  }
+      return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
+          .subscribe(
+              points => {
+                  // Compute the overall scale factor for the elevation range
+                  var minZ: number = this.kMaxTestElev;
+                  var maxZ: number = this.kMinTestElev;
 
-  public drawProfileLineFromStartToEndPointsForProdData(): void {
-    this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY,
+                  this.updateElevationRange(points,
+                      getValue,
+                      minZ,
+                      maxZ,
+                      (min, max) => {
+                          minZ = min;
+                          maxZ = max;
+                      });
+                  this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, getValue, setResult);
+              });
+  };
+
+    public drawProfileLineFromStartToEndPointsForProdData(): void {
+      this.ClearAllSVGProfilePolylines();
+      this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY,
       pt => pt.z,
-      theResult => {
+        theResult => {
         this.profilePath = theResult;
         this.numPointInProfile = theResult.length;
       });
@@ -891,16 +932,18 @@ constructor(
         var stationRange: number = points[points.length - 1].station - points[0].station;
         var stationRatio: number = profileCanvasWidth / stationRange;
 
-        var minZ: number = 100000.0;
-        var maxZ: number = -100000.0;
-        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
-        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
-
+        var minZ: number = this.kMaxTestElev;
+        var maxZ: number = this.kMinTestElev;
+        points.forEach(pt => {
+            if (pt.z > this.kMinTestElev && pt.z < minZ) minZ = pt.z;
+            if (pt.z > this.kMinTestElev && pt.z > maxZ) maxZ = pt.z;
+        });
+        
         var zRange = maxZ - minZ;
         var zRatio = profileCanvasHeight / zRange;
 
         points.forEach(point => {
-          if (point.z < -100000) {
+            if (point.z <= this.kMinTestElev) {
             // It's a gap...
             first = true;
           }
@@ -917,21 +960,63 @@ constructor(
   }
 
 
-  public drawProfileLineFromStartToEndPointsForSummaryVolumes(): void {
+    public drawProfileLineFromStartToEndPointsForSummaryVolumes(): void {
+     this.ClearAllSVGProfilePolylines();
      this.drawProfileLineForSummaryVolumes(this.svFirstPointX, this.svFirstPointY, this.svSecondPointX, this.svSecondPointY);
   } 
+
+    public updateElevationRange(points: any[], getValue: (point: any) => number, minZ: number, maxZ: number, setValue: (min: number, max: number) => void) {
+        points.forEach(pt => {
+            var value: number = getValue(pt);
+            if (value > this.kMinTestElev && value < minZ) minZ = value;
+            if (value > this.kMinTestElev && value > maxZ) maxZ = value;
+        });
+        setValue(minZ, maxZ);
+    }
+
+    public ClearAllSVGProfilePolylines(): void {
+        // Production data profile
+        this.profilePath = "";
+        this.numPointInProfile = 0;
+
+        // Composite elevation profiles
+        this.compositeElevationProfilePath_LastElev = "";
+        this.compositeElevationProfilePath_FirstElev = "";
+        this.compositeElevationProfilePath_LowestElev = "";
+        this.compositeElevationProfilePath_HighestElev = "";
+        this.compositeElevationProfilePath_LastCompositeElev = "";
+        this.compositeElevationProfilePath_FirstCompositeElev = "";
+        this.compositeElevationProfilePath_LowestCompositeElev = "";
+        this.compositeElevationProfilePath_HighestCompositeElev = "";
+    }
 
   public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
   return this.projectService.drawProfileLineForCompositeElevations(this.projectUid, startX, startY, endX, endY)
     .subscribe(points => {
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastElev, theResult => this._compositeElevationProfilePath_LastElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstElev, theResult => this._compositeElevationProfilePath_FirstElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestElev, theResult => this._compositeElevationProfilePath_LowestElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestElev, theResult => this._compositeElevationProfilePath_HighestElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastCompositeElev, theResult => this._compositeElevationProfilePath_LastCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstCompositeElev, theResult => this._compositeElevationProfilePath_FirstCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestCompositeElev, theResult => this._compositeElevationProfilePath_LowestCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestCompositeElev, theResult => this._compositeElevationProfilePath_HighestCompositeElev = theResult);
+        this.ClearAllSVGProfilePolylines();
+
+        // Compute the overall scale factor for the elevation range
+        var minZ: number = this.kMaxTestElev;
+        var maxZ: number = this.kMinTestElev;
+
+        this.updateElevationRange(points, pt => pt.cellLastElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellFirstElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellLowestElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellHighestElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellLastCompositeElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellFirstCompositeElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellLowestCompositeElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+        this.updateElevationRange(points, pt => pt.cellHighestCompositeElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+
+
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLastElev, theResult => this._compositeElevationProfilePath_LastElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellFirstElev, theResult => this._compositeElevationProfilePath_FirstElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLowestElev, theResult => this._compositeElevationProfilePath_LowestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellHighestElev, theResult => this._compositeElevationProfilePath_HighestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLastCompositeElev, theResult => this._compositeElevationProfilePath_LastCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellFirstCompositeElev, theResult => this._compositeElevationProfilePath_FirstCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLowestCompositeElev, theResult => this._compositeElevationProfilePath_LowestCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellHighestCompositeElev, theResult => this._compositeElevationProfilePath_HighestCompositeElev = theResult);
 
         this.compositeElevationProfilePath_LastElev = this._compositeElevationProfilePath_LastElev;
         this.compositeElevationProfilePath_FirstElev = this._compositeElevationProfilePath_FirstElev;

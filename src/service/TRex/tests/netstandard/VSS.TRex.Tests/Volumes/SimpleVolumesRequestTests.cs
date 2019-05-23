@@ -24,6 +24,8 @@ namespace VSS.TRex.Tests.Volumes
   [UnitTestCoveredRequest(RequestType = typeof(SimpleVolumesRequest_ClusterCompute))]
   public class SimpleVolumesRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const float ELEVATION_INCREMENT_0_5 = 0.5f;
+
     [Fact]
     public void Test_SimpleVolumesRequest_Creation1()
     {
@@ -177,12 +179,12 @@ namespace VSS.TRex.Tests.Volumes
       response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
     }
 
-    private void BuildModelForSingleCellSummaryVolume(out ISiteModel siteModel, float heightIncrement)
+    private ISiteModel BuildModelForSingleCellSummaryVolume(float heightIncrement)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -197,6 +199,8 @@ namespace VSS.TRex.Tests.Volumes
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Count());
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     [Fact]
@@ -204,7 +208,7 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSummaryVolume(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ClusterCompute();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
@@ -218,7 +222,7 @@ namespace VSS.TRex.Tests.Volumes
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSummaryVolume(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ApplicationService();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
@@ -250,7 +254,7 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSummaryVolume(out var siteModel, -0.5f);
+      var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ClusterCompute();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
@@ -264,7 +268,7 @@ namespace VSS.TRex.Tests.Volumes
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSummaryVolume(out var siteModel, -0.5f);
+      var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ApplicationService();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));

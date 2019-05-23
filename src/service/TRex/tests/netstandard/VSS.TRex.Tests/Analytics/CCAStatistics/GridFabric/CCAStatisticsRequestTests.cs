@@ -19,6 +19,8 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CCAStatisticsRequest_ClusterCompute))]
   public class CCAStatisticsRequestTests : BaseTests<CCAStatisticsArgument, CCAStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const byte CCA_INCREMENT = 1;
+
     private CCAStatisticsArgument SimpleCCAStatisticsArgument(ISiteModel siteModel)
     {
       return new CCAStatisticsArgument
@@ -28,12 +30,12 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellCCA(out ISiteModel siteModel, byte ccaIncrement, byte targetCCA = CellPassConsts.NullCCATarget)
+    private ISiteModel BuildModelForSingleCellCCA(byte ccaIncrement, byte targetCCA = CellPassConsts.NullCCATarget)
     {
       var baseTime = DateTime.UtcNow;
       byte baseCCA = 1;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       if (targetCCA != CellPassConsts.NullCCATarget)
@@ -51,6 +53,8 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     [Fact]
@@ -82,7 +86,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellCCA(out var siteModel, 1);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT);
       var operation = new CCAStatisticsOperation();
 
       var ccaStatisticsResult = operation.Execute(SimpleCCAStatisticsArgument(siteModel));
@@ -108,7 +112,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellCCA(out var siteModel, 1, TARGET_CCA);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT, TARGET_CCA);
       var operation = new CCAStatisticsOperation();
 
       var ccaStatisticsResult = operation.Execute(SimpleCCAStatisticsArgument(siteModel));

@@ -9,7 +9,6 @@ namespace WebApiTests
   public class FileImportTests
   {
     private readonly Msg msg = new Msg();
-    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
 
     [TestMethod]
     [DataRow("api/v4/importedfile")]
@@ -43,7 +42,7 @@ namespace WebApiTests
       ts.PublishEventCollection(projectsArray);
       var importFile = new ImportFile(uriRoot);
       var expectedResults = importFile.ExpectedImportFileDescriptorsListResult;
-      var uri = ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}";
+      var uri = ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}";
 
       var filesResult = importFile.GetImportedFilesFromWebApiV4(uri, customerUid);
       Assert.IsTrue(filesResult.ImportedFileDescriptors.Count == expectedResults.ImportedFileDescriptors.Count, " Expected number of fields does not match actual");
@@ -154,7 +153,7 @@ namespace WebApiTests
 
       _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={TestFile.TestDesignSurface1}" }));
       var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
 
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);

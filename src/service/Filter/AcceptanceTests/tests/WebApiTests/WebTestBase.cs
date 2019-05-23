@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TestUtility;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Repositories.DBModels;
 
 namespace WebApiTests
 {
@@ -13,6 +14,16 @@ namespace WebApiTests
     protected readonly Guid ProjectUid2 = new Guid("86a42bbf-9d0e-4079-850f-835496d715c5");
     protected static readonly Guid CustomerUid = new Guid("48003241-851d-4145-8c2a-7b099bbfd117");
     protected readonly string UserId = new Guid("98cdb619-b06b-4084-b7c5-5dcccc82af3b").ToString();
+    //Favorite geofences
+    protected static readonly Guid SouthernMotorWayFavoriteGeofenceUid = Guid.Parse("ffdabc61-7ee9-4054-a3e1-f182dd1abec9");
+    protected static readonly Guid WalnutCreekFavoriteGeofenceUid = Guid.Parse("09097669-34e7-4b34-b921-680018388505");
+    protected static readonly Guid ZieglerBloomingtonFavoriteGeofenceUid = Guid.Parse("69de1f67-1b2a-413a-8936-659892379fd9");
+
+    //Copied from MockWebApi
+    protected static string SouthernMotorWayFavoriteGeometryWKT =>
+      "POLYGON((172.525733009204 -43.5613699555099,172.527964607104 -43.5572026751871,172.539980903491 -43.5602504159773,172.553370490893 -43.5555232419366,172.571652427539 -43.5466276854031,172.566760078295 -43.542086090904,172.571652427539 -43.5402195830085,172.583067909106 -43.5438281128051,172.594998374804 -43.5441391828477,172.621777549609 -43.5459433574412,172.621949210986 -43.5494271279847,172.611220374926 -43.5504846613456,172.597916618212 -43.548929458806,172.588217750415 -43.5476852678816,172.585556999072 -43.5501114163959,172.568133369311 -43.5580112745029,172.563412681445 -43.5617431307312,172.552254691943 -43.5703255228523,172.544444099292 -43.5696414639818,172.53328610979 -43.567091721564,172.525733009204 -43.5613699555099))";
+    protected static string SouthernMotorWayFavoriteName = "Southern Motorway";
+    protected static GeofenceType SouthernMotorWayFavoriteType = GeofenceType.Generic;
 
     protected static string GenerateWKTPolygon()
     {

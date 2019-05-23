@@ -22,6 +22,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
   public class CMVChangeStatisticsRequestTests : BaseTests<CMVChangeStatisticsArgument, CMVChangeStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private const short LENGTH = 7;
+    private const short CMV_INCREMENT = 10;
 
     private CMVChangeStatisticsArgument SimpleCMVChangeStatisticsArgument(ISiteModel siteModel, double[] cmvChangeValues)
     {
@@ -33,12 +34,12 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellCMV(out ISiteModel siteModel, short cmvIncrement, short targetCMV = CellPassConsts.NullCCV)
+    private ISiteModel BuildModelForSingleCellCMV(short cmvIncrement, short targetCMV = CellPassConsts.NullCCV)
     {
       var baseTime = DateTime.UtcNow;
       short baseCMV = 10;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       if (targetCMV != CellPassConsts.NullCCV)
@@ -56,14 +57,16 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
-    private void BuildModelForCellsCMV(out ISiteModel siteModel, short cmvIncrement, short targetCMV = CellPassConsts.NullCCV)
+    private ISiteModel BuildModelForCellsCMV(short cmvIncrement, short targetCMV = CellPassConsts.NullCCV)
     {
       var baseTime = DateTime.UtcNow;
       short baseCMV = 10;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       if (targetCMV != CellPassConsts.NullCCV)
@@ -84,6 +87,8 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       });
 
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      return siteModel;
     }
 
     [Fact]
@@ -115,7 +120,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellCMV(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellCMV(CMV_INCREMENT);
       var operation = new CMVChangeStatisticsOperation();
 
       var cmvChangeStatisticsResult = operation.Execute(SimpleCMVChangeStatisticsArgument(siteModel, new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));
@@ -147,7 +152,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellCMV(out var siteModel, 10, TARGET_CMV);
+      var siteModel = BuildModelForSingleCellCMV(CMV_INCREMENT, TARGET_CMV);
       var operation = new CMVChangeStatisticsOperation();
 
       var cmvChangeStatisticsResult = operation.Execute(SimpleCMVChangeStatisticsArgument(siteModel, new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));

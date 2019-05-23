@@ -31,12 +31,12 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellSpeed(out ISiteModel siteModel, ushort mdpIncrement)
+    private ISiteModel BuildModelForSingleCellSpeed(ushort mdpIncrement)
     {
       var baseTime = DateTime.UtcNow;
       ushort baseMDP = 10;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -51,6 +51,8 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     [Fact]
@@ -82,7 +84,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellSpeed(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellSpeed(10);
       
       var operation = new SpeedStatisticsOperation();
 
@@ -108,7 +110,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellSpeed(out var siteModel, 5);
+      var siteModel = BuildModelForSingleCellSpeed(5);
       var operation = new SpeedStatisticsOperation();
 
       var speedSummaryResult = operation.Execute(SimpleSpeedStatisticsArgument(siteModel, minTarget, maxTarget));

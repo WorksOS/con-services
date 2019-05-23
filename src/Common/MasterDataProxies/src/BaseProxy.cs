@@ -498,11 +498,11 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    ///   Gets an item from a list.
+    /// Gets an item from a list. (Customer based)
     /// </summary>
     /// <typeparam name="U">The type of item in the list</typeparam>
     /// <param name="listUid">The uid for the get request, also the cache key</param>
-    /// <param name="getList">The methiod to call to get the list of items</param>
+    /// <param name="getList">The method to call to get the list of items</param>
     /// <param name="itemSelector">The predicate to select the required item from the list</param>
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <returns>The item</returns>
@@ -512,6 +512,25 @@ namespace VSS.MasterData.Proxies
       IDictionary<string, string> customHeaders = null)
     {
       var list = await getList(listUid, customHeaders);
+      return list.SingleOrDefault(itemSelector);
+    }
+
+    /// <summary>
+    /// Gets an item from a list. (User based)
+    /// </summary>
+    /// <typeparam name="U">The type of item in the list</typeparam>
+    /// <param name="listUid">The uid for the get request, also the cache key</param>
+    /// <param name="userId">The user uid</param>
+    /// <param name="getList">The method to call to get the list of items</param>
+    /// <param name="itemSelector">The predicate to select the required item from the list</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <returns>The item</returns>
+    private async Task<U> GetItemFromList<U>(string listUid, string userId,
+      Func<string, string, IDictionary<string, string>, Task<List<U>>> getList,
+      Func<U, bool> itemSelector,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var list = await getList(listUid, userId, customHeaders);
       return list.SingleOrDefault(itemSelector);
     }
 
@@ -541,9 +560,9 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    ///   Gets an item from a list. If the item is not in the list then clears the cache and does the get again
-    ///   which will issue the http request to get the list again. This lets us pick up items which have been
-    ///   added since the list was cached (default 15 mins).
+    /// Gets an item from a customer based list. If the item is not in the list then clears the cache and does the get again
+    /// which will issue the http request to get the list again. This lets us pick up items which have been
+    /// added since the list was cached (default 15 mins).
     /// </summary>
     /// <typeparam name="T">The type of the result from the http request</typeparam>
     /// <typeparam name="U">The type of item in the list</typeparam>
@@ -562,6 +581,34 @@ namespace VSS.MasterData.Proxies
       {
         ClearCacheItem<T>(listUid, null);
         item = await GetItemFromList(listUid, getList, itemSelector, customHeaders);
+      }
+
+      return item;
+    }
+
+    /// <summary>
+    /// Gets an item from a user based list. If the item is not in the list then clears the cache and does the get again
+    /// which will issue the http request to get the list again. This lets us pick up items which have been
+    /// added since the list was cached (default 15 mins).
+    /// </summary>
+    /// <typeparam name="T">The type of the result from the http request</typeparam>
+    /// <typeparam name="U">The type of item in the list</typeparam>
+    /// <param name="getList">The method to call to get the list of items.</param>
+    /// <param name="itemSelector">The predicate to select the required item from the list</param>
+    /// <param name="listUid">The uid for the get request, also the cache key</param>
+    /// <param name="userId">The user uid</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <returns></returns>
+    public async Task<U> GetItemWithRetry<T, U>(
+      Func<string, string, IDictionary<string, string>, Task<List<U>>> getList,
+      Func<U, bool> itemSelector, string listUid, 
+      string userId, IDictionary<string, string> customHeaders = null)
+    {
+      var item = await GetItemFromList(listUid, userId, getList, itemSelector, customHeaders);
+      if (item == null)
+      {
+        ClearCacheItem<T>(listUid, userId);
+        item = await GetItemFromList(listUid, userId, getList, itemSelector, customHeaders);
       }
 
       return item;
