@@ -22,6 +22,8 @@ namespace VSS.TRex.Tests.Exports.Patches
   [UnitTestCoveredRequest(RequestType = typeof(PatchRequest))]
   public class PatchRequestTests: IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const float HEIGHT_INCREMENT_0_5 = 0.5f;
+
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<PatchRequestComputeFunc, PatchRequestArgument, PatchRequestResponse>();
 
     private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
@@ -34,12 +36,12 @@ namespace VSS.TRex.Tests.Exports.Patches
       request.Should().NotBeNull();
     }
 
-    private void BuildModelForSingleCellPatch(out ISiteModel siteModel, float heightIncrement)
+    private ISiteModel BuildModelForSingleCellPatch(float heightIncrement)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -54,6 +56,8 @@ namespace VSS.TRex.Tests.Exports.Patches
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     private PatchRequestArgument SimplePatchRequestArgument(Guid projectUid)
@@ -116,7 +120,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellPatch(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellPatch(HEIGHT_INCREMENT_0_5);
 
       var request = new PatchRequest();
       var response = request.Execute(SimplePatchRequestArgument(siteModel.ID));
@@ -135,7 +139,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellPatch(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellPatch(HEIGHT_INCREMENT_0_5);
 
       var request = new PatchRequest();
       var result = request.ExecuteAndConvertToResult(SimplePatchRequestArgument(siteModel.ID));
@@ -154,7 +158,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellPatch(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellPatch(HEIGHT_INCREMENT_0_5);
 
       var request = new PatchRequest();
       var result = request.ExecuteAndConvertToResult(SimplePatchRequestArgument(siteModel.ID));
