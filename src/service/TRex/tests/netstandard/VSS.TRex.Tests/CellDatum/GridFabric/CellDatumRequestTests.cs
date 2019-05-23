@@ -44,9 +44,9 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeSpatialAffinityGridRouting<CellDatumRequestComputeFunc_ClusterCompute, CellDatumRequestArgument_ClusterCompute, CellDatumResponse_ClusterCompute>();
 
   
-    private void BuildModelForSingleCellDatum(out ISiteModel siteModel, DateTime baseTime, bool heightOnly = false)
+    private ISiteModel BuildModelForSingleCellDatum(DateTime baseTime, bool heightOnly = false)
     {
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
       siteModel.MachinesTargetValues[bulldozerMachineIndex].VibrationStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
@@ -77,6 +77,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMDPStateEvents.PutValueAtDate(minUTCDate, 880);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMinMaterialTemperature.PutValueAtDate(minUTCDate, 900);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMaxMaterialTemperature.PutValueAtDate(minUTCDate, 1200);
+
+      return siteModel;
     }
 
     #region Cluster Compute
@@ -144,7 +146,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       AddDesignProfilerGridRouting();
 
       var baseTime = DateTime.UtcNow;
-      BuildModelForSingleCellDatum(out var siteModel, baseTime);
+      var siteModel = BuildModelForSingleCellDatum(baseTime);
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
       var referenceDesign = new DesignOffset(designUid, 1.5);
       var request = new CellDatumRequest_ClusterCompute();
@@ -180,7 +182,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       AddDesignProfilerGridRouting();
 
       var baseTime = DateTime.UtcNow;
-      BuildModelForSingleCellDatum(out var siteModel, baseTime, true);
+      var siteModel = BuildModelForSingleCellDatum(baseTime, true);
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
       var referenceDesign = new DesignOffset(designUid, 0);
       var request = new CellDatumRequest_ClusterCompute();
@@ -294,7 +296,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       AddDesignProfilerGridRouting();
 
       var baseTime = DateTime.UtcNow;
-      BuildModelForSingleCellDatum(out var siteModel, baseTime);
+      var siteModel = BuildModelForSingleCellDatum(baseTime);
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
       var referenceDesign = new DesignOffset(designUid, 1.5);
 
@@ -315,7 +317,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       AddDesignProfilerGridRouting();
 
       var baseTime = DateTime.UtcNow;
-      BuildModelForSingleCellDatum(out var siteModel, baseTime);
+      var siteModel = BuildModelForSingleCellDatum(baseTime);
 
       DITAGFileAndSubGridRequestsWithIgniteFixture.AddCSIBToSiteModel(ref siteModel, DIMENSIONS_2012_DC_CSIB);
       siteModel.CSIB().Should().Be(DIMENSIONS_2012_DC_CSIB);
@@ -341,7 +343,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       AddDesignProfilerGridRouting();
 
       var baseTime = DateTime.UtcNow;
-      BuildModelForSingleCellDatum(out var siteModel, baseTime);
+      var siteModel = BuildModelForSingleCellDatum(baseTime);
 
       var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height);
       arg.Point = new XYZ(123456, 123456);

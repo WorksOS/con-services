@@ -10,6 +10,14 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_MachineSpeed : PVMDisplayerBase
   {
+    protected override void SetSubGrid(ISubGrid value)
+    {
+      base.SetSubGrid(value);
+
+      if (SubGrid != null)
+        CastRequestObjectTo<ClientMachineSpeedLeafSubGrid>(SubGrid, ThrowTRexClientLeafSubGridTypeCastException<ClientMachineSpeedLeafSubGrid>);
+    }
+
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>

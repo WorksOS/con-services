@@ -8,7 +8,8 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.UnitTests.ResultsHandling;
-using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.MasterData.Repositories.DBModels;
+using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 
 namespace VSS.MasterData.Models.UnitTests
 {
@@ -20,6 +21,7 @@ namespace VSS.MasterData.Models.UnitTests
     private List<WGSPoint> _polygonLL;
     private string _boundaryUid = Guid.NewGuid().ToString();
     private string _boundaryName = "myBoundaryName";
+    private GeofenceType _boundaryType = GeofenceType.Filter;
     private IServiceExceptionHandler _serviceExceptionHandler;
     private DataAnnotationsValidator _validator;
 
@@ -295,8 +297,9 @@ namespace VSS.MasterData.Models.UnitTests
         new WGSPoint(8, 150),
         new WGSPoint(1, 170)
       };
+      var boundaryType = GeofenceType.Filter;
 
-      filter.AddBoundary(boundaryUid, boundaryName, newBoundaryPoints);
+      filter.AddBoundary(boundaryUid, boundaryName, newBoundaryPoints, boundaryType);
       var jsonString = JsonConvert.SerializeObject(filter);
       Assert.IsTrue(jsonString != String.Empty);
 
@@ -306,13 +309,14 @@ namespace VSS.MasterData.Models.UnitTests
       Assert.AreEqual(boundaryUid, filter.PolygonUid, "polyUid is wrong.");
       Assert.AreEqual(4, filter.PolygonLL.Count, "point count is wrong.");
       Assert.AreEqual(newBoundaryPoints[2].Lat, filter.PolygonLL[2].Lat, "3rd filter point is invalid");
+      Assert.AreEqual(boundaryType, filter.PolygonType, "polyType is wrong.");
     }
 
     [TestMethod]
     public void HydrateJsonStringWithPolygonTest_Update()
     {
       var filter = new  Filter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
-        ElevationType.Lowest, true, this._polygonLL, true, 1, this._boundaryUid, this._boundaryName);
+        ElevationType.Lowest, true, this._polygonLL, true, 1, this._boundaryUid, this._boundaryName, polygonType: _boundaryType);
       var jsonString = JsonConvert.SerializeObject(filter);
 
       Assert.IsTrue(jsonString != String.Empty);
@@ -323,6 +327,8 @@ namespace VSS.MasterData.Models.UnitTests
       Assert.AreEqual(this._boundaryUid, filter.PolygonUid, "original polyUid is wrong.");
       Assert.AreEqual(3, filter.PolygonLL.Count, "original point count is wrong.");
       Assert.AreEqual(this._polygonLL[1].Lat, filter.PolygonLL[1].Lat, "updated 2nd filter point is invalid");
+      Assert.AreEqual(_boundaryType, filter.PolygonType, "original polyType is wrong.");
+
 
       // now update the polygon
       var boundaryUid = Guid.NewGuid().ToString();
@@ -334,8 +340,9 @@ namespace VSS.MasterData.Models.UnitTests
         new WGSPoint(8, 150),
         new WGSPoint(1, 170)
       };
+      var boundaryType = GeofenceType.Generic;
 
-      filter.AddBoundary(boundaryUid, boundaryName, newBoundaryPoints);
+      filter.AddBoundary(boundaryUid, boundaryName, newBoundaryPoints, boundaryType);
       jsonString = JsonConvert.SerializeObject(filter);
       Assert.IsTrue(jsonString != String.Empty);
 
@@ -345,6 +352,7 @@ namespace VSS.MasterData.Models.UnitTests
       Assert.AreEqual(boundaryUid, filter.PolygonUid, "updated polyUid is wrong.");
       Assert.AreEqual(4, filter.PolygonLL.Count, "updated point count is wrong.");
       Assert.AreEqual(newBoundaryPoints[2].Lat, filter.PolygonLL[2].Lat, "updated 3rd filter point is invalid");
+      Assert.AreEqual(boundaryType, filter.PolygonType, "updated polyType is wrong.");
     }
 
     [TestMethod]

@@ -24,5 +24,11 @@ namespace VSS.MasterData.Proxies.Interfaces
 
     Task<GeofenceData> GetGeofenceForCustomer(string customerUid, string geofenceUid,
       IDictionary<string, string> customHeaders = null);
+
+    Task<List<GeofenceData>> GetFavoriteGeofences(string customerUid, string userId, IDictionary<string, string> customHeaders = null);
+
+    Task<GeofenceData> GetFavoriteGeofence(string customerUid, string userId, string geofenceUid,
+      IDictionary<string, string> customHeaders = null);
+
   }
 }

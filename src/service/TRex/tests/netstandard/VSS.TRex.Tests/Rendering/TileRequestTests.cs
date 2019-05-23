@@ -32,6 +32,8 @@ namespace VSS.TRex.Tests.Rendering
   [UnitTestCoveredRequest(RequestType = typeof(TileRenderRequest))]
   public class TileRequestTests : IClassFixture<DIRenderingFixture>
   {
+    private const float HEIGHT_INCREMENT_0_5 = 0.5f;
+
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
       <TileRenderRequestComputeFunc, TileRenderRequestArgument, TileRenderResponse>();
 
@@ -51,14 +53,14 @@ namespace VSS.TRex.Tests.Rendering
       return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256, filter, new DesignOffset());
     }
 
-    private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement,
+    private ISiteModel BuildModelForSingleCellTileRender(float heightIncrement,
       uint cellX = SubGridTreeConsts.DefaultIndexOriginOffset, uint cellY = SubGridTreeConsts.DefaultIndexOriginOffset)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
       byte baseCCA = 1;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCAStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, 5);
@@ -83,6 +85,8 @@ namespace VSS.TRex.Tests.Rendering
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, cellX, cellY, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     private void CheckSimpleRenderTileResponse(TileRenderResponse response, DisplayMode? displayMode = null)
@@ -197,7 +201,7 @@ namespace VSS.TRex.Tests.Rendering
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellTileRender(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
       
       var request = new TileRenderRequest();
       var filter = new CellPassAttributeFilter() { MachinesList = new[] { siteModel.Machines[0].ID }, LayerID = 1 };
@@ -225,7 +229,7 @@ namespace VSS.TRex.Tests.Rendering
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellTileRender(out var siteModel, 0.5f);
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
 
       var palette = PVMPaletteFactory.GetPallete(siteModel, displayMode, siteModel.SiteModelExtent);
 
@@ -324,7 +328,7 @@ namespace VSS.TRex.Tests.Rendering
         (TTMLocationX, TTMLocationY, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset, out uint cellX, out uint cellY);
 
       // Create the site model containing a single cell and add the design to it for the cut/fill
-      BuildModelForSingleCellTileRender(out var siteModel, 0.5f, cellX, cellY);
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, cellX, cellY);
 
       var palette = usePalette ? PVMPaletteFactory.GetPallete(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent) : null;
 

@@ -14,15 +14,16 @@ namespace VSS.TRex.Tests.SiteModels
 {
   public class SiteModelGetCCAMinimumPassesValueTests: IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const byte CCA_INCREMENT = 1;
     private const byte LAYER_ID = 1;
     private const byte TARGET_CCA = 5;
 
-    private void BuildModelForSingleCellCCA(out ISiteModel siteModel, byte ccaIncrement, byte targetCCA = CellPassConsts.NullCCATarget)
+    private ISiteModel BuildModelForSingleCellCCA(byte ccaIncrement, byte targetCCA = CellPassConsts.NullCCATarget)
     {
       var baseTime = DateTime.UtcNow;
       byte baseCCA = 1;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       if (targetCCA != CellPassConsts.NullCCATarget)
@@ -48,12 +49,14 @@ namespace VSS.TRex.Tests.SiteModels
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     [Fact]
     public void Test_GetCCAMinimumPassesValue_UnknownMachine_WithTarget()
     {
-      BuildModelForSingleCellCCA(out var siteModel, 1, TARGET_CCA);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT, TARGET_CCA);
 
       var passValue = siteModel.GetCCAMinimumPassesValue(Guid.Empty, TRex.Common.Consts.MIN_DATETIME_AS_UTC, TRex.Common.Consts.MAX_DATETIME_AS_UTC, LAYER_ID);
 
@@ -63,7 +66,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_GetCCAMinimumPassesValue_Zero_LayerID_WithTarget()
     {
-      BuildModelForSingleCellCCA(out var siteModel, 1, TARGET_CCA);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT, TARGET_CCA);
 
       var passValue = siteModel.GetCCAMinimumPassesValue(siteModel.Machines[0].ID, TRex.Common.Consts.MIN_DATETIME_AS_UTC, TRex.Common.Consts.MAX_DATETIME_AS_UTC, 0);
 
@@ -73,7 +76,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_GetCCAMinimumPassesValue_NoLayerID_WithTarget()
     {
-      BuildModelForSingleCellCCA(out var siteModel, 1, TARGET_CCA);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT, TARGET_CCA);
 
       var passValue = siteModel.GetCCAMinimumPassesValue(siteModel.Machines[0].ID, TRex.Common.Consts.MIN_DATETIME_AS_UTC, TRex.Common.Consts.MAX_DATETIME_AS_UTC, -1);
 
@@ -83,7 +86,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_GetCCAMinimumPassesValue_UnknownMachine_NoTarget()
     {
-      BuildModelForSingleCellCCA(out var siteModel, 1);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT);
 
       var passValue = siteModel.GetCCAMinimumPassesValue(Guid.Empty, TRex.Common.Consts.MIN_DATETIME_AS_UTC, TRex.Common.Consts.MAX_DATETIME_AS_UTC, LAYER_ID);
 
@@ -93,7 +96,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_GetCCAMinimumPassesValue_Zero_LayerID_NoTarget()
     {
-      BuildModelForSingleCellCCA(out var siteModel, 1);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT);
 
       var passValue = siteModel.GetCCAMinimumPassesValue(siteModel.Machines[0].ID, TRex.Common.Consts.MIN_DATETIME_AS_UTC, TRex.Common.Consts.MAX_DATETIME_AS_UTC, 0);
 
@@ -103,7 +106,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_GetCCAMinimumPassesValue_NoLayerID_NoTarget()
     {
-      BuildModelForSingleCellCCA(out var siteModel, 1);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT);
 
       var passValue = siteModel.GetCCAMinimumPassesValue(siteModel.Machines[0].ID, TRex.Common.Consts.MIN_DATETIME_AS_UTC, TRex.Common.Consts.MAX_DATETIME_AS_UTC, -1);
 
@@ -112,7 +115,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_GetCCAMinimumPassesValue_NoTarget()
     {
-      BuildModelForSingleCellCCA(out var siteModel, 1);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT);
 
       var passValue = siteModel.GetCCAMinimumPassesValue(siteModel.Machines[0].ID, TRex.Common.Consts.MIN_DATETIME_AS_UTC, TRex.Common.Consts.MAX_DATETIME_AS_UTC, LAYER_ID);
 
@@ -122,7 +125,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_GetCCAMinimumPassesValue_WithTarget()
     {
-      BuildModelForSingleCellCCA(out var siteModel, 1, TARGET_CCA);
+      var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT, TARGET_CCA);
 
       var passValue = siteModel.GetCCAMinimumPassesValue(siteModel.Machines[0].ID, TRex.Common.Consts.MIN_DATETIME_AS_UTC, TRex.Common.Consts.MAX_DATETIME_AS_UTC, LAYER_ID);
 

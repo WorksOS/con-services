@@ -21,6 +21,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(MDPStatisticsRequest_ClusterCompute))]
   public class MDPStatisticsRequestTests : BaseTests<MDPStatisticsArgument, MDPStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const short MDP_INCREMENT = 10;
     private const short MACHINE_TARGET_MDP = 1500;
 
     private MDPStatisticsArgument SimpleMDPStatisticsArgument(ISiteModel siteModel, short target, double minPercentage, double maxPercentage)
@@ -35,12 +36,12 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellMDP(out ISiteModel siteModel, short mdpIncrement)
+    private ISiteModel BuildModelForSingleCellMDP(short mdpIncrement)
     {
       var baseTime = DateTime.UtcNow;
       short baseMDP = 10;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -55,6 +56,8 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
 
     [Fact]
@@ -86,7 +89,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellMDP(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellMDP(MDP_INCREMENT);
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
       var operation = new MDPStatisticsOperation();
@@ -114,7 +117,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellMDP(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellMDP(MDP_INCREMENT);
       siteModel.MachinesTargetValues[0].TargetMDPStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, TARGET_MDP);
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
@@ -145,7 +148,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellMDP(out var siteModel, mdpIncrement);
+      var siteModel = BuildModelForSingleCellMDP(mdpIncrement);
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
       var operation = new MDPStatisticsOperation();
@@ -173,7 +176,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellMDP(out var siteModel, 10);
+      var siteModel = BuildModelForSingleCellMDP(MDP_INCREMENT);
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
       var operation = new MDPStatisticsOperation();

@@ -1,6 +1,7 @@
 ﻿using ExecutorTests.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
@@ -37,10 +38,12 @@ namespace ExecutorTests
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId);
 
-      var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
+      var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(0, result.GeofenceData.Count, "Shouldn't be any boundaries returned");
+      Assert.AreEqual(3, result.GeofenceData.Count, "Should be 3 favorite geofences returned");
+      var boundaries = result.GeofenceData.Where(b => b.GeofenceType == GeofenceType.Filter.ToString()).ToList();
+      Assert.AreEqual(0, boundaries.Count, "Shouldn't be any boundaries returned");
     }
 
     [TestMethod]
@@ -75,7 +78,7 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(custUid, projectUid, userId);
 
       var executor =
-        RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
+        RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
       var boundaryToTest = new GeofenceDataSingleResult(
@@ -93,16 +96,17 @@ namespace ExecutorTests
         });
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(1, result.GeofenceData.Count);
-      Assert.AreEqual(boundaryToTest.GeofenceData.GeofenceUID, result.GeofenceData[0].GeofenceUID);
-      Assert.AreEqual(boundaryToTest.GeofenceData.GeofenceName, result.GeofenceData[0].GeofenceName);
-      Assert.AreEqual(boundaryToTest.GeofenceData.UserUID, result.GeofenceData[0].UserUID);
-      Assert.AreEqual(boundaryToTest.GeofenceData.GeometryWKT, result.GeofenceData[0].GeometryWKT);
-      Assert.AreEqual(boundaryToTest.GeofenceData.GeofenceType, result.GeofenceData[0].GeofenceType);
-      Assert.AreEqual(boundaryToTest.GeofenceData.CustomerUID, result.GeofenceData[0].CustomerUID);
-      Assert.AreEqual(boundaryToTest.GeofenceData.FillColor, result.GeofenceData[0].FillColor);
-      Assert.AreEqual(boundaryToTest.GeofenceData.IsTransparent, result.GeofenceData[0].IsTransparent);
-      Assert.AreEqual(boundaryToTest.GeofenceData.Description, result.GeofenceData[0].Description);
+      var boundaries = result.GeofenceData.Where(b => b.GeofenceType == GeofenceType.Filter.ToString()).ToList();
+      Assert.AreEqual(1, boundaries.Count);
+      Assert.AreEqual(boundaryToTest.GeofenceData.GeofenceUID, boundaries[0].GeofenceUID);
+      Assert.AreEqual(boundaryToTest.GeofenceData.GeofenceName, boundaries[0].GeofenceName);
+      Assert.AreEqual(boundaryToTest.GeofenceData.UserUID, boundaries[0].UserUID);
+      Assert.AreEqual(boundaryToTest.GeofenceData.GeometryWKT, boundaries[0].GeometryWKT);
+      Assert.AreEqual(boundaryToTest.GeofenceData.GeofenceType, boundaries[0].GeofenceType);
+      Assert.AreEqual(boundaryToTest.GeofenceData.CustomerUID, boundaries[0].CustomerUID);
+      Assert.AreEqual(boundaryToTest.GeofenceData.FillColor, boundaries[0].FillColor);
+      Assert.AreEqual(boundaryToTest.GeofenceData.IsTransparent, boundaries[0].IsTransparent);
+      Assert.AreEqual(boundaryToTest.GeofenceData.Description, boundaries[0].Description);
     }
 
     [TestMethod]
@@ -137,11 +141,12 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(custUid, projectUid, userId);
 
       var executor =
-        RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
+        RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(1, result.GeofenceData.Count);
+      var boundaries = result.GeofenceData.Where(b => b.GeofenceType == GeofenceType.Filter.ToString()).ToList();
+      Assert.AreEqual(1, boundaries.Count);
     }
 
     private BaseRequestFull CreateAndValidateRequest(Guid custUid, Guid projectUid, Guid userId)
@@ -150,7 +155,7 @@ namespace ExecutorTests
         custUid.ToString(),
         false,
         new ProjectData() { ProjectUid = projectUid.ToString() },
-        userId.ToString());
+        userId.ToString(), null);
       request.Validate(ServiceExceptionHandler);
       return request;
     }

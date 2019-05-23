@@ -21,6 +21,8 @@ namespace VSS.TRex.Tests.Reports.StationOffset
   // Note: further compute tests in: StationOffsetClusterComputeTests
   public class StationOffsetReportRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const float ELEVATION_INCREMENT_1_0 = 1.0f;
+
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
     <IComputeFunc<StationOffsetReportRequestArgument_ApplicationService,
         StationOffsetReportRequestResponse_ApplicationService>, 
@@ -79,7 +81,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellElevationAndCmv(out var siteModel, 1);
+      var siteModel = BuildModelForSingleCellElevationAndCmv(ELEVATION_INCREMENT_1_0);
 
       var request = new StationOffsetReportRequest_ApplicationService();
       var response = request.Execute(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel));
@@ -95,12 +97,12 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       response.StationOffsetReportDataRowList[0].Offsets[0].Elevation.Should().Be(10);
     }
 
-    private void BuildModelForSingleCellElevationAndCmv(out ISiteModel siteModel, float elevationIncrement)
+    private ISiteModel BuildModelForSingleCellElevationAndCmv(float elevationIncrement)
     {
       var baseTime = DateTime.UtcNow;
       byte baseElevation = 1;
 
-      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
       // vibrationState is needed to get cmv values
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(baseTime, VibrationState.On);
@@ -119,6 +121,8 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
     }
   }
 }

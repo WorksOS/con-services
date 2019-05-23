@@ -1,17 +1,13 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
@@ -65,6 +61,15 @@ namespace VSS.MasterData.Proxies
         };
       var queryParams = $"?geofenceTypeIds={string.Join("&geofenceTypeIds=", geofenceTypeIds)}";
       var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, null, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders, queryParams);
+      return result.Geofences;
+    }
+
+    /// <summary>
+    /// Gets the list of favorite geofences for the user
+    /// </summary>
+    public async Task<List<GeofenceData>> GetFavoriteGeofences(string customerUid, string userId, IDictionary<string, string> customHeaders = null)
+    {
+      var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, userId, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders, null, "/favorite");
       return result.Geofences;
     }
 
@@ -150,6 +155,12 @@ namespace VSS.MasterData.Proxies
       IDictionary<string, string> customHeaders = null)
     {
       return await GetItemWithRetry<GeofenceDataResult, GeofenceData>(GetGeofences, g => string.Equals(g.GeofenceUID.ToString(), geofenceUid, StringComparison.OrdinalIgnoreCase), customerUid, customHeaders);
+    }
+
+    public async Task<GeofenceData> GetFavoriteGeofence(string customerUid, string userId, string geofenceUid,
+      IDictionary<string, string> customHeaders = null)
+    {
+      return await GetItemWithRetry<GeofenceDataResult, GeofenceData>(GetFavoriteGeofences, g => string.Equals(g.GeofenceUID.ToString(), geofenceUid, StringComparison.OrdinalIgnoreCase), customerUid, userId, customHeaders);
     }
   }
 }

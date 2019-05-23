@@ -2,12 +2,13 @@
 using System.Globalization;
 using System.Security.Principal;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Http;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Push.Hubs
 {
-  public class AuthenticatedHub<T> : Hub<T> where T : class
+  public abstract class AuthenticatedHub<T> : Hub<T> where T : class
   {
     /// <summary>
     /// If the signalr client uses the built in auth, it will be set in this parameter
@@ -15,6 +16,13 @@ namespace VSS.Productivity3D.Push.Hubs
     private const string SIGNALR_AUTH_HEADER = "access_token";
 
     private const string BEARER_AUTH_TOKEN = "Bearer";
+
+    protected ILogger Logger { get; }
+
+    protected AuthenticatedHub(ILoggerFactory loggerFactory)
+    {
+      Logger = loggerFactory.CreateLogger(GetType());
+    }
 
     public bool IsAuthenticated =>
       Context.User is TIDCustomPrincipal principal && (principal.Identity is GenericIdentity);
@@ -66,11 +74,20 @@ namespace VSS.Productivity3D.Push.Hubs
       if (httpContext?.Request == null)
         return null;
 
+
       if (httpContext.Request.Headers.TryGetValue(header, out var value))
+      {
+        Logger.LogInformation($"Found {header} in Headers");
         return value;
+      }
 
       if (httpContext.Request.Query.TryGetValue(header, out value))
+      {
+        Logger.LogInformation($"Found {header} in Query Parameters");
         return value;
+      }
+
+      Logger.LogInformation($"Failed to find {header} in request / query");
 
       return null;
     }

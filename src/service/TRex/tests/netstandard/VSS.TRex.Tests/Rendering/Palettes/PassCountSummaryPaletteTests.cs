@@ -45,12 +45,10 @@ namespace VSS.TRex.Tests.Rendering.Palettes
       var data = new SubGridCellPassDataPassCountEntryRecord(MEASURED_PASS_COUNT, CellPassConsts.NullPassCountValue);
       var colors = new[] { Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty };
 
-      var targetPassCountRange = new PassCountRangeRecord(data.TargetPassCount, data.TargetPassCount);
-
       for (var i = 0; i < colors.Length; i++)
       {
         data.MeasuredPassCount = (ushort)(MEASURED_PASS_COUNT + i * PASS_COUNT_INCREMENT);
-        palette.ChooseColour(data.MeasuredPassCount, targetPassCountRange).Should().Be(colors[i]);
+        palette.ChooseColour(data.MeasuredPassCount, data.TargetPassCount, data.TargetPassCount).Should().Be(colors[i]);
       }
     }
 
@@ -68,12 +66,10 @@ namespace VSS.TRex.Tests.Rendering.Palettes
       var data = new SubGridCellPassDataPassCountEntryRecord(MEASURED_PASS_COUNT, TARGET_PASS_COUNT);
       var colors = new[] { Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty, Color.Empty };
 
-      var targetPassCountRange = new PassCountRangeRecord(data.TargetPassCount, data.TargetPassCount);
-
       for (var i = 0; i < colors.Length; i++)
       {
         data.MeasuredPassCount = (ushort)(MEASURED_PASS_COUNT + i * PASS_COUNT_INCREMENT);
-        palette.ChooseColour(data.MeasuredPassCount, targetPassCountRange).Should().Be(colors[i]);
+        palette.ChooseColour(data.MeasuredPassCount, data.TargetPassCount, data.TargetPassCount).Should().Be(colors[i]);
       }
     }
 
@@ -101,12 +97,10 @@ namespace VSS.TRex.Tests.Rendering.Palettes
         palette.AbovePassTargetRangeColour
       };
 
-      var targetPassCountRange = new PassCountRangeRecord(data.TargetPassCount, data.TargetPassCount);
-
       for (var i = 0; i < colors.Length; i++)
       {
         data.MeasuredPassCount = (ushort)(MEASURED_PASS_COUNT + i * PASS_COUNT_INCREMENT);
-        palette.ChooseColour(data.MeasuredPassCount, targetPassCountRange).Should().Be(colors[i]);
+        palette.ChooseColour(data.MeasuredPassCount, data.TargetPassCount, data.TargetPassCount).Should().Be(colors[i]);
       }
     }
 
@@ -136,12 +130,10 @@ namespace VSS.TRex.Tests.Rendering.Palettes
         palette.AbovePassTargetRangeColour
       };
 
-      var targetPassCountRange = new PassCountRangeRecord(data.TargetPassCount, data.TargetPassCount);
-
       for (var i = 0; i < colors.Length; i++)
       {
         data.MeasuredPassCount = (ushort)(MEASURED_PASS_COUNT + i * PASS_COUNT_INCREMENT);
-        palette.ChooseColour(data.MeasuredPassCount, targetPassCountRange).Should().Be(colors[i]);
+        palette.ChooseColour(data.MeasuredPassCount, data.TargetPassCount, data.TargetPassCount).Should().Be(colors[i]);
       }
     }
   }
