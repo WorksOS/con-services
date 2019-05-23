@@ -93,13 +93,6 @@ namespace VSS.Productivity3D.Filter.WebApi
           options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
         });
       });
-
-
-
-      // todoJeannie
-      var temp = services.BuildServiceProvider().GetRequiredService<IProjectListProxy>();
-      var gg = temp.GetProjectsV4(Guid.NewGuid().ToString());
-
     }
 
     /// <inheritdoc />
