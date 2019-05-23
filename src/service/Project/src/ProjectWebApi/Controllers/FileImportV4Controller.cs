@@ -300,7 +300,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc = null,
-      [FromQuery] bool? uploadToTcc = true)
+      [FromQuery] bool uploadToTcc = true)
     {
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
