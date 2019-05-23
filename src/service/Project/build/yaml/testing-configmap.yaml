@@ -18,7 +18,7 @@ data:
   DISSOCIATESUBSPROJECT_API_URL: http://localhost:5001/dummy/
   ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
   ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
-  FILTER_API_URL: http://localhost:5001/api/v1/mock
+  FILTER_API_URL: http://localhost:5001
   FILTER_CACHE_LIFE: "00:15:00"
   GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences/
   IMPORTED_FILE_API_URL2: http://localhost:5000/api/v4/importedfile

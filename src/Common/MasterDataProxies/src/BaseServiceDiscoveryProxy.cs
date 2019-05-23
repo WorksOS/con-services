@@ -5,14 +5,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Abstractions.Proxy.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
@@ -97,6 +95,18 @@ namespace VSS.MasterData.Proxies
         () => RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload));
     }
 
+    /// <summary>
+    /// Execute a Put to an endpoint, and cache the result
+    /// NOTE: Must have a uid or userid for cache key
+    /// </summary>
+    protected Task<T> PutMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
+      IDictionary<string, string> queryParameters = null, Stream payload = null)
+      where T : class, IMasterDataModel
+    {
+      return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
+        () => RequestAndReturnData<T>(customHeaders, HttpMethod.Put, route, queryParameters, payload));
+    }
+
     protected Task<T> GetMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
       IDictionary<string, string> queryParameters = null) 
       where T : class, IMasterDataModel
@@ -109,6 +119,13 @@ namespace VSS.MasterData.Proxies
       where T : class, IMasterDataModel
     {
       return RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload);
+    }
+
+    protected Task<T> PutMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
+      IDictionary<string, string> queryParameters = null, Stream payload = null)
+      where T : class, IMasterDataModel
+    {
+      return RequestAndReturnData<T>(customHeaders, HttpMethod.Put, route, queryParameters, payload);
     }
 
     #endregion

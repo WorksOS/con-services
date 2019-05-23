@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -22,9 +23,7 @@ using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -37,16 +36,14 @@ namespace VSS.Productivity3D.Filter.WebApi
   /// </summary>
   public class Startup : BaseStartup
   {
-    /// <inheritdoc />
+    internal const string LoggerRepoName = "WebApi";
+
     public override string ServiceName => "Filter Service API";
 
-    /// <inheritdoc />
     public override string ServiceDescription => "A service to manage Filter related CRUD requests within the 3DP service architecture.";
 
-    /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
-    internal const string LoggerRepoName = "WebApi";
     
     /// <summary>
     /// Gets the configuration.
@@ -73,7 +70,6 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TDI auth for customer/user validation
-      services.AddTransient<IProjectListProxy, ProjectListProxy>(); // used for customer/project validation
       services.AddTransient<IFileListProxy, FileListProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
@@ -85,6 +81,7 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       services.AddServiceDiscovery();
       services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
+      services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
@@ -96,6 +93,13 @@ namespace VSS.Productivity3D.Filter.WebApi
           options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
         });
       });
+
+
+
+      // todoJeannie
+      var temp = services.BuildServiceProvider().GetRequiredService<IProjectListProxy>();
+      var gg = temp.GetProjectsV4(Guid.NewGuid().ToString());
+
     }
 
     /// <inheritdoc />

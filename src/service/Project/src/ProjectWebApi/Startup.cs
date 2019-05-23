@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Internal;
@@ -8,9 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
@@ -79,12 +77,14 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IDataOceanClient, DataOceanClient>();
       services.AddTransient<IPegasusClient, PegasusClient>();
       services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
-      services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
       services.AddTransient<ITRexImportFileProxy, TRexImportFileProxy>();
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
+
+      services.AddServiceDiscovery();
+      services.AddScoped<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
 
       services.AddOpenTracing(builder =>
       {

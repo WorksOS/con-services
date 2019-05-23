@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using MockProjectWebApi.Utils;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
