@@ -1754,7 +1754,7 @@ namespace VSS.Productivity3D.Project.Repository
 
       return projects;
     }
-
+     
     /// <summary>
     ///     Gets any ProjectMonitoring or Landfill (as requested) project which the lat/long is within,
     ///     which satisfies all conditions for the tccOrgid
