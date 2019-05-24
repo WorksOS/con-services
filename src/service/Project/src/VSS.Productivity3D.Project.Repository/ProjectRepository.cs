@@ -4,10 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Repositories;
@@ -1819,6 +1816,24 @@ namespace VSS.Productivity3D.Project.Repository
       return (await QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>(select,
           new {CustomerUID = customerUid, StartDate = startDate.Date, EndDate = endDate.Date, excludeProjectUid}))
         .Any();
+    }
+
+    /// <summary>
+    /// Determines if the given geofence polygon intersects the project polygon
+    /// </summary>
+    public async Task<bool> DoesPolygonOverlap(string projectUid, string geometryWkt)
+    {
+      string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
+
+      var select = $@"SELECT ProjectUID FROM Project  
+                        WHERE IsDeleted = 0
+                          AND ProjectUid == @projectUid
+                          AND st_Intersects({polygonToCheck}, PolygonST) = 1";
+
+      var result = (await QueryWithAsyncPolicy<string>(select,
+        new {ProjectUID = projectUid})).FirstOrDefault();
+
+      return !string.IsNullOrEmpty(result);
     }
 
     /// <summary>
