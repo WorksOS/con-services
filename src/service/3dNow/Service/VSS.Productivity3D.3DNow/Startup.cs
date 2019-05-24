@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
-using VSS.Common.ServiceDiscovery.Resolvers;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -15,9 +14,7 @@ using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
@@ -45,14 +42,14 @@ namespace VSS.Productivity3D.Now3D
 
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
       services.AddTransient<IFileListProxy, FileListProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
-      services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
 
       services.AddServiceDiscovery();
+      services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
+      services.AddTransient<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
 
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, Now3DExecutionStates>();
