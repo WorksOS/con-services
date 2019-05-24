@@ -6,7 +6,7 @@ data:
   assetmgmt3d-service: http://localhost:5001
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
   FILTERSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IFilterEvent
-  FILTER_API_URL: http://localhost:5001/api/v1/mock
+  FILTER_API_URL: http://localhost:5001/api/v1
   GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
   IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/mock/importedfiles
   KAFKA_ADVERTISED_PORT: "9092"  
@@ -19,7 +19,7 @@ data:
   KAFKA_URI: "kafka"
   KAFKA_ZOOKEEPER_CONNECT: localhost:2181
   PREFERENCE_API_URL: http://localhost:5001/api/v1/mock/preferences
-  PROJECT_API_URL: http://localhost:5001/api/v4/mockproject
+  PROJECT_API_URL: http://localhost:5001/api/v4
   PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v4/mock
   RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2

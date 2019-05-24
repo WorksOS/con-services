@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
@@ -43,12 +44,12 @@ namespace VSS.Productivity3D.Filter.Tests
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<ICustomerProxy, CustomerProxy>()
-        .AddTransient<IProjectListProxy, ProjectListProxy>()
-        //.AddTransient<IFilterRepository, FilterRepository>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
         .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
-        .AddTransient<IRepository<IFilterEvent>, FilterRepository>();
-
+        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
+        .AddServiceDiscovery()
+        .AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
+   
       serviceProvider = serviceCollection.BuildServiceProvider();
 
       serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();

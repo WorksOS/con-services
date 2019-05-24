@@ -59,7 +59,6 @@ namespace ExecutorTests.Internal
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IProjectListProxy, ProjectListProxy>()
         .AddServiceDiscovery()
         .AddTransient<IAssetResolverProxy, AssetResolverProxy>()  
         .AddTransient<IWebRequest, GracefulWebRequest>()
@@ -70,6 +69,8 @@ namespace ExecutorTests.Internal
         .AddMemoryCache()
         .AddSingleton<IDataCache, InMemoryDataCache>()
         .AddSingleton<IGeofenceProxy, GeofenceProxy>()
+        .AddServiceDiscovery()
+        .AddSingleton<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();

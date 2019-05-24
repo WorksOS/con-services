@@ -62,7 +62,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
-      //todoJeannie wait on Stephen to complete serviceDiscovery: services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
       services.AddSingleton<IFileListProxy, FileListProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
@@ -75,7 +74,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
-      services.AddSingleton<IBoundaryProxy, BoundaryProxy>();
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<ISchedulerProxy, SchedulerProxy>();

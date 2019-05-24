@@ -4,13 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Push.Abstractions;
-using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 using VSS.Tile.Service.Common.Authentication;
@@ -65,7 +64,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddScoped<IBoundingBoxHelper, BoundingBoxHelper>();
       services.AddSingleton<IRaptorProxy, RaptorProxy>();
       services.AddSingleton<IFileListProxy, FileListProxy>();
-      services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+      
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
       services.AddTransient<IDataOceanClient, DataOceanClient>();
@@ -73,6 +72,10 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
+
+      services.AddServiceDiscovery();
+      services.AddSingleton<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
+
       services.AddSingleton<IFileRepository, FileRepository>();
 
       services.AddSingleton<CacheInvalidationService>();

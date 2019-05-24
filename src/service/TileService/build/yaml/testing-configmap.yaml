@@ -20,7 +20,7 @@ data:
   PEGASUS_EXECUTION_WAIT_MILLSECS: "1000"
   PEGASUS_URL: http://localhost:5001
   PREFERENCE_API_URL: http://localhost:5001/api/v1/mock/preferences
-  PROJECT_API_URL: http://localhost:5001/api/v4/mockproject
+  project_service: http://localhost:5001
   RAPTOR_3DPM_API_URL: http://localhost:5001/api/v2
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
