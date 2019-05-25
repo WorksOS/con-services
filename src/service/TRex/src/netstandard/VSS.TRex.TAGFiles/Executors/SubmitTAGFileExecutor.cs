@@ -104,12 +104,16 @@ namespace VSS.TRex.TAGFiles.Executors
               response.Success = true;
               response.Message = "";
               response.Code = (int)TRexTagFileResultCode.Valid;
+
+              Log.LogInformation($"Added TAG file {tagKey.FileName} representing asset {tagKey.AssetUID} within project {tagKey.ProjectUID} into the buffer queue");
             }
             else
             {
-              response.Code = (int)TRexTagFileResultCode.TRexQueueSubmissionError;
               response.Success = false;
               response.Message = "SubmitTAGFileResponse. Failed to submit tag file to processing queue. Request already exists";
+              response.Code = (int)TRexTagFileResultCode.TRexQueueSubmissionError;
+
+              Log.LogWarning(response.Message);
             }
           }
           else
