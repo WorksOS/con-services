@@ -6,7 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
+using Google.Protobuf;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
@@ -15,7 +17,6 @@ using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
-using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
@@ -28,6 +29,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The interval between epochs where the service checks to see if there is anything to do
         /// </summary>
         private const int kTAGFileBufferQueueServiceCheckIntervalMS = 1000;
+
+        private const int kDefaultNumConcurrentTAGFileProcessingTasks = 1;
 
         /// <summary>
         /// Flag set then Cancel() is called to instruct the service to finish operations
@@ -45,8 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         private readonly List<Guid> ProjectsToAvoid = new List<Guid>();
 
-        // Todo: Make the number of parallel TAG file processing TAG executors configurable
-        const int NumConcurrentProcessingTasks = 1;
+        private readonly int NumConcurrentProcessingTasks = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS", kDefaultNumConcurrentTAGFileProcessingTasks);
 
         private void ProcessTAGFilesFromGrouper()
         {
@@ -132,7 +134,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                     if (tagFileResponse.Success)
                                     {
                                         //Commented out to keep happy path log less noisy
-                                        //Log.LogInformation($"Grouper1 TAG file {tagFileResponse.FileName} successfully processed");
+                                        Log.LogInformation($"Grouper1 TAG file {tagFileResponse.FileName} successfully processed");
                                     }
                                     else
                                     {
@@ -146,6 +148,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                     if (!queueCache.Remove(removalKey))
                                     {
                                         Log.LogError($"Failed to remove TAG file {removalKey}");
+                                    }
+                                    else
+                                    {
+                                        Log.LogError($"Successfully to removes TAG file {removalKey}");
                                     }
                                 }
                                 catch (Exception e)
@@ -221,51 +227,61 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 Log.LogError(e, "Error, exception occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
             }
 
-            if (TAGQueueItems?.Count > 0)
+            try
             {
-                // -> Supply the package to the processor
-                var request = new ProcessTAGFileRequest();
-                var response = request.Execute(new ProcessTAGFileRequestArgument
+                if (TAGQueueItems?.Count > 0)
                 {
-                    ProjectID = projectID,
-                    AssetUID = TAGQueueItems[0].AssetID,
-                    TAGFiles = fileItems
-                });
-
-                ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
-                {
-                    ProjectUID = projectID,
-                    AssetUID = TAGQueueItems[0].AssetID
-                };
-
-                // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
-                foreach (var tagFileResponse in response.Results)
-                {
-                    try
+                    // -> Supply the package to the processor
+                    var request = new ProcessTAGFileRequest();
+                    var response = request.Execute(new ProcessTAGFileRequestArgument
                     {
-                        if (tagFileResponse.Success)
-                        {
-                          //Commented out to keep happy path log less noisy
-                          // Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
-                        }
-                        else
-                        {
-                          // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
-                          Log.LogError($"Grouper2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
-                        }
-
-                        removalKey.FileName = tagFileResponse.FileName;
-
-                        if (!queueCache.Remove(removalKey))
-                            Log.LogError($"Failed to remove TAG file {removalKey}");
-                    }
-                    catch (Exception e)
+                        ProjectID = projectID,
+                        AssetUID = TAGQueueItems[0].AssetID,
+                        TAGFiles = fileItems
+                    });
+           
+                    ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
                     {
-                        Log.LogError(e, $"Exception occurred while removing TAG file {tagFileResponse.FileName} in project {projectID} from the TAG file buffer queue");
+                        ProjectUID = projectID,
+                        AssetUID = TAGQueueItems[0].AssetID
+                    };
+           
+                    // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
+                    foreach (var tagFileResponse in response.Results)
+                    {
+                        try
+                        {
+                            if (tagFileResponse.Success)
+                            {
+                              //Commented out to keep happy path log less noisy
+                              Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
+                            }
+                            else
+                            {
+                              // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
+                              Log.LogError($"Grouper2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                            }
+           
+                            removalKey.FileName = tagFileResponse.FileName;
+           
+                            if (!queueCache.Remove(removalKey))
+                              Log.LogError($"Failed to remove TAG file {removalKey}");
+                            else
+                              Log.LogInformation($"Successfully removed TAG file {removalKey}");
+                        }
+                        catch (Exception e)
+                        {
+                            Log.LogError(e, $"Exception occurred while removing TAG file {tagFileResponse.FileName} in project {projectID} from the TAG file buffer queue");
+                        }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                Log.LogError(e, $"Exception occurred while submitting TAG file processing requests for project {projectID} from the TAG file buffer queue");
+            }
         }
+    
 
         /// <summary>
         /// A version of ProcessTAGFilesFromGrouper2 that uses task parallelism

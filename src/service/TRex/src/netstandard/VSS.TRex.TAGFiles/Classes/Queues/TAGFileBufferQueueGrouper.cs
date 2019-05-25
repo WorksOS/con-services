@@ -57,6 +57,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             lock (this)
             {
+                Log.LogInformation($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
+
                 if (groupMap.TryGetValue(key.ProjectUID, out Dictionary<Guid, List<ITAGFileBufferQueueKey>> assetsDict))
                 {
                     if (!assetsDict.TryGetValue(key.AssetUID, out List<ITAGFileBufferQueueKey> keyList))
@@ -163,6 +165,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     Log.LogInformation($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectID} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
                     avoidProjects.Add(projectID);
                 }
+
+                var count = 0;
+                Log.LogInformation($"Grouper returning group containing {result.Count()} TAG files");
+                foreach (var TAGFile in result)
+                  Log.LogInformation($"Returned TAG file {count++} is {TAGFile.FileName} representing asset {TAGFile.AssetUID} within project {TAGFile.ProjectUID}");
 
                 return result;
             }
