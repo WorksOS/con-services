@@ -7,7 +7,7 @@ namespace VSS.TRex.GridFabric.Requests
   /// <summary>
   /// The base class for requests. This provides common aspects such as the injected Ignite instance
   /// </summary>
-  public abstract class BaseRequest<TArgument, TResponse> : BaseIgniteClass, IBaseRequest<TArgument, TResponse>, IBaseRequest
+  public abstract class BaseRequest<TArgument, TResponse> : BaseIgniteClass, IBaseRequest<TArgument, TResponse>
   {
     /// <summary>
     /// Constructor accepting a role for the request that may identify a cluster group of nodes in the grid
