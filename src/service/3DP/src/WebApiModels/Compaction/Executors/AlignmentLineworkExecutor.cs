@@ -6,6 +6,7 @@ using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -17,16 +18,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   /// </summary>
   public class AlignmentLineworkExecutor : RequestExecutorContainer
   {
+    public AlignmentLineworkExecutor()
+    {
+      ProcessErrorCodes();
+    }
+
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = CastRequestObjectTo<AlignmentLineworkRequest>(item);
-
-      if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
+      try
       {
-        return ProcessWithTRex(request);
-      }
+        var request = CastRequestObjectTo<AlignmentLineworkRequest>(item);
 
-      return ProcessWithRaptor(request);     
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
+        {
+          return ProcessWithTRex(request);
+        }
+
+        return ProcessWithRaptor(request);
+      }
+      finally
+      {
+        ContractExecutionStates.ClearDynamic();
+      }
     }
 
     private AlignmentLineworkResult ProcessWithTRex(AlignmentLineworkRequest request)
@@ -83,6 +96,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException("Use the asynchronous form of this method");
+    }
+
+    protected sealed override void ProcessErrorCodes()
+    {
+#if RAPTOR
+      RaptorResult.AddDesignProfileErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }
