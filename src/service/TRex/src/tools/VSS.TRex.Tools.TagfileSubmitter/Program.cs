@@ -110,14 +110,14 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         }
         finally
         {
-          Console.WriteLine("TAG file submission complete. Press a key...");
-
-          Console.ReadKey();
+          DIContext.Obtain<ITRexGridFactory>()?.StopGrids();
         }
       }
       finally
       {
-        DIContext.Obtain<ITRexGridFactory>()?.StopGrids();
+        Console.WriteLine("TAG file submission complete. Press a key...");
+
+        Console.ReadKey();
       }
     }
   }
