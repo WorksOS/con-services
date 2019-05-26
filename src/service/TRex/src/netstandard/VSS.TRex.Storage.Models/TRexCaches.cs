@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.Common;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Storage.Caches
 {
@@ -18,6 +19,8 @@ namespace VSS.TRex.Storage.Caches
         private const string kNonSpatialImmutableCompressed = "NonSpatial-Immutable"; // Same as compressed as there is currently no distinction
 
         private const string kSiteModelMetadataCache = "SiteModelMetadataCache";
+        private const string kSiteModelsCacheMutable = "SiteModelsCache-Mutable";
+        private const string kSiteModelsCacheImmutable = "SiteModelsCache-Immutable";
 
         private const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
 
@@ -45,9 +48,21 @@ namespace VSS.TRex.Storage.Caches
         /// <returns></returns>
         public static string ImmutableNonSpatialCacheName() => kNonSpatialImmutableCompressed;
 
-        public static string SpatialCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Mutable ? MutableSpatialCacheName() : ImmutableSpatialCacheName();
+        public static string SpatialCacheName(StorageMutability Mutability, FileSystemStreamType streamType)
+        {
+          if (streamType == FileSystemStreamType.ProductionDataXML)
+            return SiteModelsCacheName(Mutability);
 
-        public static string NonSpatialCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
+           return Mutability == StorageMutability.Mutable ? MutableSpatialCacheName() : ImmutableSpatialCacheName();
+        }
+
+        public static string NonSpatialCacheName(StorageMutability Mutability, FileSystemStreamType streamType)
+        {
+          if (streamType == FileSystemStreamType.ProductionDataXML)
+            return SiteModelsCacheName(Mutability);
+
+          return Mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
+        }
 
         /// <summary>
         /// Returns the name of of the design topology existence maps
@@ -55,6 +70,12 @@ namespace VSS.TRex.Storage.Caches
         /// <returns></returns>
         public static string SiteModelMetadataCacheName() => kSiteModelMetadataCache;
    
+        /// <summary>
+        /// Returns the name of of the design topology existence maps
+        /// </summary>
+        /// <returns></returns>
+        public static string SiteModelsCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Immutable ? kSiteModelsCacheImmutable : kSiteModelsCacheMutable;
+        
         /// <summary>
         /// Returns the name of of the design topology existence maps
         /// </summary>

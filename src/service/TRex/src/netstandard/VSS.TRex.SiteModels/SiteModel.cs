@@ -64,7 +64,7 @@ namespace VSS.TRex.SiteModels
 
     private const string kSiteModelXMLFileName = "ProductionDataModel.XML";
     private const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
-    private const string kSubGridVersionMapFileName = "SubGridVersionMap";
+    //private const string kSubGridVersionMapFileName = "SubGridVersionMap";
 
     private const byte VERSION_NUMBER = 1;
 
@@ -171,7 +171,7 @@ namespace VSS.TRex.SiteModels
       if (IsTransient)
         return csib = string.Empty;
 
-      FileSystemErrorStatus readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID,
+      var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID,
         CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
         FileSystemStreamType.CoordinateSystemCSIB,
         out MemoryStream csibStream);

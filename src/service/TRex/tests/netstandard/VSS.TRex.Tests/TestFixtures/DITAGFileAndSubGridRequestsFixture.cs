@@ -99,8 +99,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Takes a list of TAG files and constructs an ephemeral site model that may be queried
     /// </summary>
-    /// <param name="tagFiles"></param>
-    /// <param name="ProcessedTasks"></param>
     /// <returns></returns>
     public static ISiteModel BuildModel(IEnumerable<string> tagFiles, out List<AggregatedDataIntegratorTask> ProcessedTasks, 
       bool callTaskProcessingComplete = true,

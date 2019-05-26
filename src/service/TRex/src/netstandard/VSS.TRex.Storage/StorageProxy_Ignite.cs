@@ -37,9 +37,9 @@ namespace VSS.TRex.Storage
 
     private void EstablishCaches()
     {
-      spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
-      generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
-      siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
+      spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
+      generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
+      siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ namespace VSS.TRex.Storage
 
       try
       {
-        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
+        var cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
 
         //Log.LogInformation($"Getting key:{cacheKey}");
 
