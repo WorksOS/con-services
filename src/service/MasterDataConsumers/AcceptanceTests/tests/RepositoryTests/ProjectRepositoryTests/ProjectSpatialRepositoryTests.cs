@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests.Internal;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
@@ -1142,6 +1143,66 @@ namespace RepositoryTests
 
       var g = projectContext.DoesPolygonOverlap(testProjectUID, testBoundary); g.Wait();
       Assert.IsTrue(g.Result, "Should be overlap between project and geofence");
+    }
+
+    [TestMethod]
+    public void PolygonIntersections()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createCustomerEvent = new CreateCustomerEvent
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUtc
+      };
+
+      var createProjectEvent = new CreateProjectEvent
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = new Random().Next(1, 1999999),
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.Standard,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUtc,
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUtc
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+
+      var testProjectUID = createProjectEvent.ProjectUID.ToString();
+
+      string testBoundary1 = "POLYGON((175 15, 185 15, 185 35, 175 35, 175 15))"; //Inside
+      string testBoundary2 = "POLYGON((200 10, 202 10, 202 20, 200 20, 200 10))"; //Outside
+      string testBoundary3 = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"; //Completely overlapping
+      string testBoundary4 = "POLYGON((200 10, 202 10, 202 20, 190 20, 200 10))"; //Touches at a point
+      string testBoundary5 = "POLYGON((200 10, 202 10, 202 20, 175 45, 200 10))"; //Overlaps but no internal points
+
+      var testBoundaries = new List<string>
+      {
+        testBoundary1, testBoundary2, testBoundary3, testBoundary4, testBoundary5
+      };
+      var g = projectContext.DoPolygonsOverlap(testProjectUID, testBoundaries); g.Wait();
+      var results = g.Result.ToList();
+      Assert.AreEqual(testBoundaries.Count, results.Count, "Wrong number of results returned");
+      for (var i=0; i<results.Count; i++)
+      {
+        Assert.AreEqual(i != 1, results[i], $"Wrong polygon overlap result: {i}");
+      }
     }
 
   }

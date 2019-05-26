@@ -1837,6 +1837,29 @@ namespace VSS.Productivity3D.Project.Repository
     }
 
     /// <summary>
+    /// Determines which, if any, of the given geofence polygons intersect the project polygon
+    /// </summary>
+    public async Task<IEnumerable<bool>> DoPolygonsOverlap(string projectUid, IEnumerable<string> geometryWkts)
+    {
+      var results = new List<bool>();
+      foreach (var geometryWkt in geometryWkts)
+      {
+        string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
+
+        var select = $@"SELECT ProjectUID FROM Project  
+                        WHERE IsDeleted = 0
+                          AND ProjectUid = @projectUid
+                          AND st_Intersects({polygonToCheck}, PolygonST) = 1";
+
+        var result = (await QueryWithAsyncPolicy<string>(select,
+          new {projectUid})).FirstOrDefault();
+        results.Add(!string.IsNullOrEmpty(result));
+      }
+
+      return results;
+    }
+
+    /// <summary>
     ///     Gets any project for the customer
     ///     which the lat/long is within
     ///       optionally can check for a) subset of projectTypes and b) within time 
