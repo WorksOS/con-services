@@ -210,7 +210,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         // No backups for now
         Backups = 0,
 
-        DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
+        DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION
       });
     }
 

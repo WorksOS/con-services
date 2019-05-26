@@ -254,7 +254,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             if (tagFileResponse.Success)
                             {
                               //Commented out to keep happy path log less noisy
-                              Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
+                              //Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
                             }
                             else
                             {
@@ -263,11 +263,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             }
            
                             removalKey.FileName = tagFileResponse.FileName;
-           
+
                             if (!queueCache.Remove(removalKey))
                               Log.LogError($"Failed to remove TAG file {removalKey}");
                             else
-                              Log.LogInformation($"Successfully removed TAG file {removalKey}");
+                              ; // Log.LogInformation($"Successfully removed TAG file {removalKey}");
                         }
                         catch (Exception e)
                         {

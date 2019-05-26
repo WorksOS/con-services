@@ -166,10 +166,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     avoidProjects.Add(projectID);
                 }
 
-                var count = 0;
                 Log.LogInformation($"Grouper returning group containing {result.Count()} TAG files");
-                foreach (var TAGFile in result)
-                  Log.LogInformation($"Returned TAG file {count++} is {TAGFile.FileName} representing asset {TAGFile.AssetUID} within project {TAGFile.ProjectUID}");
+
+                // var count = 0;
+                // foreach (var TAGFile in result)
+                //   Log.LogInformation($"Returned TAG file {count++} is {TAGFile.FileName} representing asset {TAGFile.AssetUID} within project {TAGFile.ProjectUID}");
 
                 return result;
             }
