@@ -105,7 +105,8 @@ namespace VSS.TRex.TAGFiles.Executors
               response.Message = "";
               response.Code = (int)TRexTagFileResultCode.Valid;
 
-              Log.LogInformation($"Added TAG file {tagKey.FileName} representing asset {tagKey.AssetUID} within project {tagKey.ProjectUID} into the buffer queue");
+              // Commented out top reduce logging
+              // Log.LogInformation($"Added TAG file {tagKey.FileName} representing asset {tagKey.AssetUID} within project {tagKey.ProjectUID} into the buffer queue");
             }
             else
             {

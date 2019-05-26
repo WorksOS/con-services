@@ -57,7 +57,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             lock (this)
             {
-                Log.LogInformation($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
+                // Commented out to reduce logging
+                //Log.LogInformation($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
 
                 if (groupMap.TryGetValue(key.ProjectUID, out Dictionary<Guid, List<ITAGFileBufferQueueKey>> assetsDict))
                 {
