@@ -1844,16 +1844,7 @@ namespace VSS.Productivity3D.Project.Repository
       var results = new List<bool>();
       foreach (var geometryWkt in geometryWkts)
       {
-        string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
-
-        var select = $@"SELECT ProjectUID FROM Project  
-                        WHERE IsDeleted = 0
-                          AND ProjectUid = @projectUid
-                          AND st_Intersects({polygonToCheck}, PolygonST) = 1";
-
-        var result = (await QueryWithAsyncPolicy<string>(select,
-          new {projectUid})).FirstOrDefault();
-        results.Add(!string.IsNullOrEmpty(result));
+        results.Add(await DoesPolygonOverlap(projectUid, geometryWkt));
       }
 
       return results;
