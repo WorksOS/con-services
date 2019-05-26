@@ -1827,11 +1827,11 @@ namespace VSS.Productivity3D.Project.Repository
 
       var select = $@"SELECT ProjectUID FROM Project  
                         WHERE IsDeleted = 0
-                          AND ProjectUid == @projectUid
+                          AND ProjectUid = @projectUid
                           AND st_Intersects({polygonToCheck}, PolygonST) = 1";
 
       var result = (await QueryWithAsyncPolicy<string>(select,
-        new {ProjectUID = projectUid})).FirstOrDefault();
+        new {projectUid})).FirstOrDefault();
 
       return !string.IsNullOrEmpty(result);
     }
