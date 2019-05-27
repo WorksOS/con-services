@@ -107,9 +107,12 @@ namespace VSS.Productivity3D.Filter.Tests
       string boundaryUid = Guid.NewGuid().ToString();
       string boundaryName = "blah";
       string boundaryGeometryWKT = "whatever";
-      Guid favoriteUid = Guid.NewGuid();
-      string favoriteName = "favorite blah";
-      string favoriteGeometryWKT = "who cares";
+      Guid favoriteUidInside = Guid.NewGuid();
+      string favoriteNameInside = "favorite blah";
+      string favoriteGeometryWKTInside = "who cares";
+      Guid favoriteUidOutside = Guid.NewGuid();
+      string favoriteNameOutside = "more favorite blah";
+      string favoriteGeometryWKTOutside = "still don't care";
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -127,21 +130,30 @@ namespace VSS.Productivity3D.Filter.Tests
       };
       geofenceRepo.As<IGeofenceRepository>().Setup(g => g.GetGeofences(It.IsAny<IEnumerable<string>>())).ReturnsAsync(new List<Geofence>{geofenceBoundary});
 
-      var favoriteGeofence = new GeofenceData
+      var favoriteGeofenceInside = new GeofenceData
       {
-        GeofenceUID = favoriteUid,
-        GeofenceName = favoriteName,
-        GeometryWKT = favoriteGeometryWKT,
+        GeofenceUID = favoriteUidInside,
+        GeofenceName = favoriteNameInside,
+        GeometryWKT = favoriteGeometryWKTInside,
         GeofenceType = GeofenceType.Generic.ToString(),
         CustomerUID = Guid.Parse(custUid)
       };
-      var favorites = new List<GeofenceData>{favoriteGeofence};
+      var favoriteGeofenceOutside = new GeofenceData
+      {
+        GeofenceUID = favoriteUidOutside,
+        GeofenceName = favoriteNameOutside,
+        GeometryWKT = favoriteGeometryWKTOutside,
+        GeofenceType = GeofenceType.Generic.ToString(),
+        CustomerUID = Guid.Parse(custUid)
+      };
+      var favorites = new List<GeofenceData>{favoriteGeofenceInside, favoriteGeofenceOutside};
       var geofenceProxy = new Mock<IGeofenceProxy>();
       geofenceProxy.Setup(g => g.GetFavoriteGeofences(custUid, userUid, null)).ReturnsAsync(favorites);
 
       var projectRepo = new Mock<ProjectRepository>(configStore, logger);
       var projectGeofence = new ProjectGeofence { GeofenceUID = boundaryUid, ProjectUID = projectUid };
       projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence> { projectGeofence });
+      projectRepo.As<IProjectRepository>().Setup(p => p.DoPolygonsOverlap(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(new List<bool> { true, false });
 
       var geofenceToTest = AutoMapperUtility.Automapper.Map<GeofenceData>(geofenceBoundary);
 
@@ -170,14 +182,15 @@ namespace VSS.Productivity3D.Filter.Tests
         "executor returned incorrect boundary GeometryWKT");
       Assert.AreEqual(geofenceToTest.GeofenceType, actualBoundary.GeofenceType,
         "executor returned incorrect boundary GeofenceType");
-      var actualFavorite = result.GeofenceData.SingleOrDefault(g => g.GeofenceUID == favoriteGeofence.GeofenceUID);
-      Assert.AreEqual(favoriteGeofence.GeofenceUID, actualFavorite.GeofenceUID,
+      var actualFavorite = result.GeofenceData.SingleOrDefault(g => g.GeofenceUID == favoriteGeofenceInside.GeofenceUID);
+      Assert.IsNotNull(actualFavorite, "missing favorite geofence");
+      Assert.AreEqual(favoriteGeofenceInside.GeofenceUID, actualFavorite.GeofenceUID,
         "executor returned incorrect favorite GeofenceUID");
-      Assert.AreEqual(favoriteGeofence.GeofenceName, actualFavorite.GeofenceName,
+      Assert.AreEqual(favoriteGeofenceInside.GeofenceName, actualFavorite.GeofenceName,
         "executor returned incorrect favorite GeofenceName");
-      Assert.AreEqual(favoriteGeofence.GeometryWKT, actualFavorite.GeometryWKT,
+      Assert.AreEqual(favoriteGeofenceInside.GeometryWKT, actualFavorite.GeometryWKT,
         "executor returned incorrect favorite GeometryWKT");
-      Assert.AreEqual(favoriteGeofence.GeofenceType, actualFavorite.GeofenceType,
+      Assert.AreEqual(favoriteGeofenceInside.GeofenceType, actualFavorite.GeofenceType,
         "executor returned incorrect favorite GeofenceType");
     }
 
