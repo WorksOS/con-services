@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -47,7 +48,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
           catch (Exception e)
           {
             Log.LogError(e, $"Exception occured during execution of {nameof(Execute)}");
-            return new ProcessTAGFileResponse();
+            return null;
           }
         }
     }

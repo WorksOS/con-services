@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
-using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Log4NetExtensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
@@ -172,7 +172,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
                 if (!hadWorkToDo)
                 {
-                    //Log.LogInformation($"ProcessTAGFilesFromGrouper sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
+                    if (Log.IsTraceEnabled())
+                      Log.LogInformation($"ProcessTAGFilesFromGrouper sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
 
                     Thread.Sleep(kTAGFileBufferQueueServiceCheckIntervalMS);
                 }
@@ -253,8 +254,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         {
                             if (tagFileResponse.Success)
                             {
-                              //Commented out to keep happy path log less noisy
-                              //Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
+                              if (Log.IsTraceEnabled())
+                                Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
                             }
                             else
                             {
@@ -267,7 +268,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             if (!queueCache.Remove(removalKey))
                               Log.LogError($"Failed to remove TAG file {removalKey}");
                             else
-                              ; // Log.LogInformation($"Successfully removed TAG file {removalKey}");
+                              if (Log.IsTraceEnabled())
+                                 Log.LogInformation($"Successfully removed TAG file {removalKey}");
                         }
                         catch (Exception e)
                         {

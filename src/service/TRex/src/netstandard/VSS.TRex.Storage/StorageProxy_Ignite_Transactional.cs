@@ -53,7 +53,7 @@ namespace VSS.TRex.Storage
 
       var commitTasks = new List<Task<(int _numDeleted, int _numUpdated, long _numBytesWritten)>>
       {
-        Task.Factory.StartNew(() =>
+        Task.Factory.Run(() =>
         {
           try
           {
@@ -66,7 +66,7 @@ namespace VSS.TRex.Storage
             throw;
           }
         }),
-        Task.Factory.StartNew(() =>
+        Task.Factory.Run(() =>
         {
           try
           {
@@ -79,7 +79,7 @@ namespace VSS.TRex.Storage
             throw;
           }
         }),
-        Task.Factory.StartNew(() =>
+        Task.Factory.Run(() =>
         {
           try
           {
