@@ -60,19 +60,21 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
       var boundaries = new List<GeofenceData>();
       var projectRepo = (IProjectRepository) auxRepository;
-      var customBoundaries = await BoundaryHelper.GetProjectBoundaries(
-        log, serviceExceptionHandler,
-        request.ProjectUid, projectRepo, (IGeofenceRepository) Repository);
-      boundaries.AddRange(customBoundaries.GeofenceData);
 
-      var geofences = await GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
+      var boundariesTask = BoundaryHelper.GetProjectBoundaries(
+        log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository)Repository);
+      var favoritesTask = GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
+      await Task.WhenAll(boundariesTask, favoritesTask);
+
+      boundaries.AddRange(boundariesTask.Result.GeofenceData);
+
       //Find out which geofences overlap project boundary
       var overlappingGeofences =
-        (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT, geofences.Select(g => g.GeometryWKT))).ToList();
-      for (var i = 0; i < geofences.Count; i++)
+        (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT, favoritesTask.Result.Select(g => g.GeometryWKT))).ToList();
+      for (var i = 0; i < favoritesTask.Result.Count; i++)
       {
         if (overlappingGeofences[i])
-          boundaries.Add(geofences[i]);
+          boundaries.Add(favoritesTask.Result[i]);
       }
 
       return new GeofenceDataListResult

@@ -1850,13 +1850,14 @@ namespace VSS.Productivity3D.Project.Repository
     /// </summary>
     public async Task<IEnumerable<bool>> DoPolygonsOverlap(string projectGeometryWkt, IEnumerable<string> geometryWkts)
     {
-      var results = new List<bool>();
-      foreach (var geometryWkt in geometryWkts)
+      var list = geometryWkts.ToList();
+      var tasks = new List<Task<bool>>();
+      for (var i=0; i<list.Count; i++)
       {
-        results.Add(await DoesPolygonOverlap(projectGeometryWkt, geometryWkt));
+        tasks.Add(DoesPolygonOverlap(projectGeometryWkt, list[i]));
       }
-
-      return results;
+      await Task.WhenAll(tasks);
+      return tasks.Select(t => t.Result);    
     }
 
     /// <summary>
