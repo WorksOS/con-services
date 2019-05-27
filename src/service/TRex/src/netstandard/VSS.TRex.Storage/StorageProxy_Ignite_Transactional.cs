@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
 using VSS.TRex.DI;
@@ -97,7 +99,7 @@ namespace VSS.TRex.Storage
       var commitResults = commitTasks.WhenAll();
       commitResults.Wait();
 
-      if (commitResults.IsFaulted)
+      if (commitResults.IsFaulted || commitTasks.Any(x => x.IsFaulted))
         return false;
 
       foreach (var (_numDeleted, _numUpdated, _numBytesWritten) in commitResults.Result)
@@ -121,9 +123,9 @@ namespace VSS.TRex.Storage
       {
         spatialCache.Clear();
       }
-      catch (Exception e)
+      catch
       {
-        Log.LogError(e, "Exception thrown clearing changes for spatial cache");
+        Log.LogError("Exception thrown clearing changes for spatial cache");
         throw;
       }
 
@@ -131,9 +133,9 @@ namespace VSS.TRex.Storage
       {
         generalNonSpatialCache.Clear();
       }
-      catch (Exception e)
+      catch
       {
-        Log.LogError(e, "Exception thrown clearing changes for general non spatial cache");
+        Log.LogError("Exception thrown clearing changes for general non spatial cache");
         throw;
       }
 
@@ -141,9 +143,9 @@ namespace VSS.TRex.Storage
       {
         siteModelCache.Clear();
       }
-      catch (Exception e)
+      catch
       {
-        Log.LogError(e, "Exception thrown clearing changes for site model cache");
+        Log.LogError("Exception thrown clearing changes for site model cache");
         throw;
       }
 
