@@ -1821,30 +1821,27 @@ namespace VSS.Productivity3D.Project.Repository
     /// <summary>
     /// Determines if the given geofence polygon intersects the project polygon
     /// </summary>
-    public async Task<bool> DoesPolygonOverlap(string projectUid, string geometryWkt)
+    public async Task<bool> DoesPolygonOverlap(string projectGeometryWkt, string geometryWkt)
     {
       string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
+      string projectPolygon = RepositoryHelper.WKTToSpatial(projectGeometryWkt);
 
-      var select = $@"SELECT ProjectUID FROM Project  
-                        WHERE IsDeleted = 0
-                          AND ProjectUid = @projectUid
-                          AND st_Intersects({polygonToCheck}, PolygonST) = 1";
+      var select = $@"SELECT st_Intersects({polygonToCheck}, {projectPolygon})";
 
-      var result = (await QueryWithAsyncPolicy<string>(select,
-        new {projectUid})).FirstOrDefault();
+      var result = (await QueryWithAsyncPolicy<int>(select)).FirstOrDefault();
 
-      return !string.IsNullOrEmpty(result);
+      return result == 1;
     }
 
     /// <summary>
     /// Determines which, if any, of the given geofence polygons intersect the project polygon
     /// </summary>
-    public async Task<IEnumerable<bool>> DoPolygonsOverlap(string projectUid, IEnumerable<string> geometryWkts)
+    public async Task<IEnumerable<bool>> DoPolygonsOverlap(string projectGeometryWkt, IEnumerable<string> geometryWkts)
     {
       var results = new List<bool>();
       foreach (var geometryWkt in geometryWkts)
       {
-        results.Add(await DoesPolygonOverlap(projectUid, geometryWkt));
+        results.Add(await DoesPolygonOverlap(projectGeometryWkt, geometryWkt));
       }
 
       return results;

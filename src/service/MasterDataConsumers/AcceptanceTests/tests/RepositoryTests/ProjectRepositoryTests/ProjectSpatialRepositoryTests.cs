@@ -906,46 +906,10 @@ namespace RepositoryTests
     [TestMethod]
     public void PolygonIntersection_InternalBoundary()
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-
-      var createCustomerEvent = new CreateCustomerEvent
-      {
-        CustomerUID = Guid.NewGuid(),
-        CustomerName = "The Customer Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = actionUtc
-      };
-
-      var createProjectEvent = new CreateProjectEvent
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = new Random().Next(1, 1999999),
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.Standard,
-        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUtc,
-        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = actionUtc
-      };
-
-      projectContext.StoreEvent(createProjectEvent).Wait();
-      customerContext.StoreEvent(createCustomerEvent).Wait();
-      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
-
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
       string testBoundary = "POLYGON((175 15, 185 15, 185 35, 175 35, 175 15))";
-      var testProjectUID = createProjectEvent.ProjectUID.ToString();
 
-      var g = projectContext.DoesPolygonOverlap(testProjectUID, testBoundary); g.Wait();
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
       Assert.IsTrue(g.Result, "Should be overlap between project and geofence");
     }
 
@@ -955,46 +919,10 @@ namespace RepositoryTests
     [TestMethod]
     public void PolygonIntersection_ExternalBoundary()
     {
-      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
-
-      var createCustomerEvent = new CreateCustomerEvent
-      {
-        CustomerUID = Guid.NewGuid(),
-        CustomerName = "The Customer Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = actionUTC
-      };
-
-      var createProjectEvent = new CreateProjectEvent
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = new Random().Next(1, 1999999),
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.Standard,
-        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC,
-        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = actionUTC
-      };
-
-      projectContext.StoreEvent(createProjectEvent).Wait();
-      customerContext.StoreEvent(createCustomerEvent).Wait();
-      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
-
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
       string testBoundary = "POLYGON((200 10, 202 10, 202 20, 200 20, 200 10))";
-      var testProjectUID = createProjectEvent.ProjectUID.ToString();
 
-      var g = projectContext.DoesPolygonOverlap(testProjectUID, testBoundary); g.Wait();
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
       Assert.IsFalse(g.Result, "Should not be overlap between project and geofence");
     }
 
@@ -1004,46 +932,10 @@ namespace RepositoryTests
     [TestMethod]
     public void PolygonIntersection_OverlappingBoundary()
     {
-      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
-
-      var createCustomerEvent = new CreateCustomerEvent
-      {
-        CustomerUID = Guid.NewGuid(),
-        CustomerName = "The Customer Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = actionUTC
-      };
-
-      var createProjectEvent = new CreateProjectEvent
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = new Random().Next(1, 1999999),
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.Standard,
-        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC,
-        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = actionUTC
-      };
-
-      projectContext.StoreEvent(createProjectEvent).Wait();
-      customerContext.StoreEvent(createCustomerEvent).Wait();
-      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
-
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
       string testBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
-      var testProjectUID = createProjectEvent.ProjectUID.ToString();
 
-      var g = projectContext.DoesPolygonOverlap(testProjectUID, testBoundary); g.Wait();
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
       Assert.IsTrue(g.Result, "Should be overlap between project and geofence");
     }
 
@@ -1053,46 +945,10 @@ namespace RepositoryTests
     [TestMethod]
     public void PolygonIntersection_TouchingBoundary()
     {
-      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
-
-      var createCustomerEvent = new CreateCustomerEvent
-      {
-        CustomerUID = Guid.NewGuid(),
-        CustomerName = "The Customer Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = actionUTC
-      };
-
-      var createProjectEvent = new CreateProjectEvent
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = new Random().Next(1, 1999999),
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.Standard,
-        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC,
-        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = actionUTC
-      };
-
-      projectContext.StoreEvent(createProjectEvent).Wait();
-      customerContext.StoreEvent(createCustomerEvent).Wait();
-      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
-
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
       string testBoundary = "POLYGON((200 10, 202 10, 202 20, 190 20, 200 10))";
-      var testProjectUID = createProjectEvent.ProjectUID.ToString();
 
-      var g = projectContext.DoesPolygonOverlap(testProjectUID, testBoundary); g.Wait();
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
       Assert.IsTrue(g.Result, "Should be overlap between project and geofence");
     }
 
@@ -1102,89 +958,17 @@ namespace RepositoryTests
     [TestMethod]
     public void PolygonIntersection_OverlapExternalBoundary()
     {
-      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
-
-      var createCustomerEvent = new CreateCustomerEvent
-      {
-        CustomerUID = Guid.NewGuid(),
-        CustomerName = "The Customer Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = actionUTC
-      };
-
-      var createProjectEvent = new CreateProjectEvent
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = new Random().Next(1, 1999999),
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.Standard,
-        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC,
-        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = actionUTC
-      };
-
-      projectContext.StoreEvent(createProjectEvent).Wait();
-      customerContext.StoreEvent(createCustomerEvent).Wait();
-      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
-
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
       string testBoundary = "POLYGON((200 10, 202 10, 202 20, 175 45, 200 10))";
-      var testProjectUID = createProjectEvent.ProjectUID.ToString();
 
-      var g = projectContext.DoesPolygonOverlap(testProjectUID, testBoundary); g.Wait();
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
       Assert.IsTrue(g.Result, "Should be overlap between project and geofence");
     }
 
     [TestMethod]
     public void PolygonIntersections()
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-
-      var createCustomerEvent = new CreateCustomerEvent
-      {
-        CustomerUID = Guid.NewGuid(),
-        CustomerName = "The Customer Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = actionUtc
-      };
-
-      var createProjectEvent = new CreateProjectEvent
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = new Random().Next(1, 1999999),
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.Standard,
-        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUtc,
-        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = actionUtc
-      };
-
-      projectContext.StoreEvent(createProjectEvent).Wait();
-      customerContext.StoreEvent(createCustomerEvent).Wait();
-      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
-
-      var testProjectUID = createProjectEvent.ProjectUID.ToString();
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
 
       string testBoundary1 = "POLYGON((175 15, 185 15, 185 35, 175 35, 175 15))"; //Inside
       string testBoundary2 = "POLYGON((200 10, 202 10, 202 20, 200 20, 200 10))"; //Outside
@@ -1196,7 +980,7 @@ namespace RepositoryTests
       {
         testBoundary1, testBoundary2, testBoundary3, testBoundary4, testBoundary5
       };
-      var g = projectContext.DoPolygonsOverlap(testProjectUID, testBoundaries); g.Wait();
+      var g = projectContext.DoPolygonsOverlap(projectBoundary, testBoundaries); g.Wait();
       var results = g.Result.ToList();
       Assert.AreEqual(testBoundaries.Count, results.Count, "Wrong number of results returned");
       for (var i=0; i<results.Count; i++)

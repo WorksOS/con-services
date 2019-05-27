@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var geofences = await GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
       //Find out which geofences overlap project boundary
       var overlappingGeofences =
-        (await projectRepo.DoPolygonsOverlap(request.ProjectUid, geofences.Select(g => g.GeometryWKT))).ToList();
+        (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT, geofences.Select(g => g.GeometryWKT))).ToList();
       for (var i = 0; i < geofences.Count; i++)
       {
         if (overlappingGeofences[i])

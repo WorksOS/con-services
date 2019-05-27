@@ -15,6 +15,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public bool IsApplicationContext { get; set; }
     public string UserUid { get; set; }
     public string ProjectUid { get; set; }
+    public string ProjectGeometryWKT { get; set; }
     public IDictionary<string, string> CustomHeaders { get; set; }
 
     /// <summary>
@@ -38,7 +39,8 @@ namespace VSS.Productivity3D.Filter.Common.Models
         ProjectUid = projectData?.ProjectUid,
         CustomerUid = customerUid,
         UserUid = userUid,
-        CustomHeaders = customHeaders
+        CustomHeaders = customHeaders,
+        ProjectGeometryWKT = projectData?.ProjectGeofenceWKT
       };
     }
 
