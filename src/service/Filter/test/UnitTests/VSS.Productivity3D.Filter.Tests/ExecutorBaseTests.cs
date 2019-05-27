@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.Filter.Tests
         .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
         .AddServiceDiscovery()
-        .AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
+        .AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
    
       serviceProvider = serviceCollection.BuildServiceProvider();
 

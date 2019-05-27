@@ -13,6 +13,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -43,10 +44,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     public CompactionReportController(
       IConfigurationStore configStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
+      IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
       ITRexCompactionDataProxy tRexCompactionDataProxy) :
-      base(configStore, fileListProxy, settingsManager)
+      base(configStore, fileImportProxy, settingsManager)
     {
       this.requestFactory = requestFactory;
       this.prefProxy = prefProxy;

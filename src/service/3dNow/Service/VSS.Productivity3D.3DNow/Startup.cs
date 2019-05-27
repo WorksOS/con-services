@@ -42,14 +42,14 @@ namespace VSS.Productivity3D.Now3D
 
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IFileListProxy, FileListProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
 
       services.AddServiceDiscovery();
-      services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
+      services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
       services.AddTransient<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
+      services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
 
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, Now3DExecutionStates>();

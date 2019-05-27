@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public Compaction3DMapController(ILoggerFactory loggerFactory,
       IServiceExceptionHandler serviceExceptionHandler,
       IConfigurationStore configStore,
-      IFileListProxy fileListProxy,
+      IFileImportProxy fileImportProxy,
       IProjectSettingsProxy projectSettingsProxy,
       IFilterServiceProxy filterServiceProxy,
       ICompactionSettingsManager settingsManager,
@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       IASNodeClient raptorClient,
 #endif
       IBoundingBoxHelper boundingBoxHelper,
-      ITRexCompactionDataProxy trexCompactionDataProxy) : base(configStore, fileListProxy, settingsManager)
+      ITRexCompactionDataProxy trexCompactionDataProxy) : base(configStore, fileImportProxy, settingsManager)
     {
       this.tileService = tileService;
       this.boundingBoxHelper = boundingBoxHelper;

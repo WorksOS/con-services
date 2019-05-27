@@ -24,6 +24,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 #if RAPTOR
 using VSS.Productivity3D.WebApi.Models.Notification.Executors;
 #endif
@@ -74,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// For getting imported files for a project
     /// </summary>
-    private readonly IFileListProxy fileListProxy;
+    private readonly IFileImportProxy fileImportProxy;
 
     /// <summary>
     /// For getting filter by uid. Used here so FilterService can clear an item from cache.
@@ -90,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Project list proxy
     /// </summary>
-    private readonly IProjectListProxy projectsListProxy;
+    private readonly IProjectProxy projectProxy;
 
     private readonly IDataCache dataCache;
 
@@ -126,8 +127,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 #endif
       ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
-      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
-      IFilterServiceProxy filterServiceProxy, IResponseCache cache, IProjectListProxy projectProxy, IDataCache dataCache)
+      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileImportProxy fileImportProxy,
+      IFilterServiceProxy filterServiceProxy, IResponseCache cache, IProjectProxy projectProxy, IDataCache dataCache)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -137,12 +138,12 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.fileRepo = fileRepo;
       this.configStore = configStore;
       this.tileGenerator = tileGenerator;
-      this.fileListProxy = fileListProxy;
+      this.fileImportProxy = fileImportProxy;
       this.filterServiceProxy = filterServiceProxy;
       this.cache = cache;
       this.dataCache = dataCache;
       userPreferences = prefProxy;
-      projectsListProxy = projectProxy;
+      this.projectProxy = projectProxy;
     }
 
     /// <summary>
@@ -338,7 +339,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var customHeaders = Request.Headers.GetCustomHeaders();
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
-      await projectsListProxy.GetProjectForCustomer(((RaptorPrincipal) User).CustomerUid, projectUid.ToString(),
+      await projectProxy.GetProjectForCustomer(((RaptorPrincipal) User).CustomerUid, projectUid.ToString(),
         customHeaders);
       dataCache.RemoveByTag(projectUid.ToString());
       cache.InvalidateReponseCacheForProject(projectUid);
@@ -396,7 +397,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
       dataCache.RemoveByTag(projectUid.ToString());
 
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), customHeaders);
+      var fileList = await fileImportProxy.GetFiles(projectUid.ToString(), GetUserId(), customHeaders);
       log.LogInformation("After clearing cache {0} total imported files, {1} activated, for project {2}", fileList.Count, fileList.Count(f => f.IsActivated), projectUid);
 
       return fileList;

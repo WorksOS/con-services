@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.Models.Models
+namespace VSS.Productivity3D.Project.Abstractions.Models
 {
   /// <summary>
   /// Describes an imported file for a project

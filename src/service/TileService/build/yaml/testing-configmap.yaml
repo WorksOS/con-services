@@ -11,7 +11,7 @@ data:
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_URL: http://localhost:5001
   GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
-  IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/mock/importedfiles
+  IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/importedfiles
   LOADDUMP_API_URL: http://localhost:5001/api/v1/mock/loaddump
   LOG_MAX_CHAR: "1000"
   MOCK_WEBAPI_BASE_URL: http://localhost:5001

@@ -17,15 +17,15 @@ namespace VSS.Productivity3D.Now3D.Controllers
   public class ProjectsController : BaseController
   {
     private readonly ICustomerProxy customerProxy;
-    private readonly IProjectListProxy projectListProxy;
-    private readonly IFileListProxy fileListProxy;
+    private readonly IProjectProxy projectProxy;
+    private readonly IFileImportProxy fileImportProxy;
 
-    public ProjectsController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, ICustomerProxy customerProxy, IProjectListProxy projectListProxy, IFileListProxy fileListProxy)
+    public ProjectsController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, ICustomerProxy customerProxy, IProjectProxy projectProxy, IFileImportProxy fileImportProxy)
       :base(loggerFactory, serviceExceptionHandler)
     {
       this.customerProxy = customerProxy;
-      this.projectListProxy = projectListProxy;
-      this.fileListProxy = fileListProxy;
+      this.projectProxy = projectProxy;
+      this.fileImportProxy = fileImportProxy;
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
       
       headers.Add(HeaderConstants.X_VISION_LINK_CUSTOMER_UID, customerData.uid);
 
-      var projects = await projectListProxy.GetProjectsV4(customerData.uid, headers);
+      var projects = await projectProxy.GetProjectsV4(customerData.uid, headers);
 
       customerModel.Projects = await ExecuteAgainstMultiple(projects, y => GetProjectModel(y, headers));
 
@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
         IsActive = !project.IsArchived
       };
 
-      var files = await fileListProxy.GetFiles(project.ProjectUid, UserId, headers);
+      var files = await fileImportProxy.GetFiles(project.ProjectUid, UserId, headers);
 
       foreach (var fileData in files.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface))
       {

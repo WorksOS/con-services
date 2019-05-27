@@ -21,9 +21,9 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
   public abstract class BaseController : Controller
   {
     /// <summary>
-    /// Gets the service's implementation of <see cref="IProjectListProxy"/>.
+    /// Gets the service's implementation of <see cref="IProjectProxy"/>.
     /// </summary>
-    protected readonly IProjectListProxy ProjectListProxy;
+    protected readonly IProjectProxy ProjectProxy;
 
     /// <summary>
     /// Gets the service's Raptor interface controller.
@@ -89,14 +89,14 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     protected BaseController(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IKafka producer, string eventType)
+      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IKafka producer, string eventType)
     {
       Logger = logger;
       Log = logger.CreateLogger<BaseController>();
 
       ConfigStore = configStore;
       ServiceExceptionHandler = serviceExceptionHandler;
-      ProjectListProxy = projectListProxy;
+      ProjectProxy = projectProxy;
       RaptorProxy = raptorProxy;
       AssetResolverProxy = assetResolverProxy;
       Producer = producer;

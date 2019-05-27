@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -14,6 +15,7 @@ using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 
 namespace VSS.Productivity3D.Filter.Proxy
 {
+  [Obsolete("Use FilterV1ServiceDiscoveryProxy instead")]
   public class FilterServiceProxy : BaseProxy, IFilterServiceProxy
   {
     public FilterServiceProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(

@@ -1,36 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Proxy
 {
-  [Obsolete("Use ProjectSettingsV4ServiceDiscoveryProxy instead")]
-  public class ProjectSettingsProxy : BaseProxy, IProjectSettingsProxy
+  public class ProjectSettingsV4ServiceDiscoveryProxy : BaseServiceDiscoveryProxy, IProjectSettingsProxy
   {
-    public ProjectSettingsProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(configurationStore, logger, cache)
+    public ProjectSettingsV4ServiceDiscoveryProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
+      : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
     }
 
+    public override bool IsInsideAuthBoundary => true;
+
+    public override ApiService InternalServiceType => ApiService.Project;
+
+    public override string ExternalServiceName => null;
+
+    public override ApiVersion Version => ApiVersion.V4;
+
+    public override ApiType Type => ApiType.Public;
+
+    public override string CacheLifeKey => "PROJECT_SETTINGS_CACHE_LIFE";
+
     public async Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders)
     {
-      var result = await GetMasterDataItem<ProjectSettingsDataResult>(projectUid, userId,
-        "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, $"/projectsettings/{projectUid}");
-
+      var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult> ($"/projectsettings/{projectUid}", projectUid, userId, customHeaders );
       if (result.Code == 0)
-      {
         return result.Settings;
-      }
 
       log.LogWarning($"Failed to get project settings, using default values: {result.Code}, {result.Message}");
       return null;
@@ -51,15 +61,11 @@ namespace VSS.Productivity3D.Project.Proxy
           throw new ServiceException(HttpStatusCode.BadRequest,new ContractExecutionResult(-10,"Unsupported project settings type."));
       }
 
-      var result = await GetMasterDataItem<ProjectSettingsDataResult>(projectUid + settingsType, userId,
-        "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, uri);
-
+      var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult> (uri,projectUid + settingsType, userId, customHeaders );
       if (result.Code == 0)
-      {
         return result.Settings;
-      }
  
-      log.LogWarning("Failed to get project settings, using default values: {0}, {1}", result.Code, result.Message);
+      log.LogWarning($"Failed to get project settings by type {settingsType.ToString()}, using default values: {result.Code}, {result.Message}");
       return null;
       
     }

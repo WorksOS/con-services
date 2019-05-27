@@ -18,6 +18,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -47,9 +48,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionElevationController(
-      IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy,
+      IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileImportProxy fileImportProxy,
       ICompactionSettingsManager settingsManager, IProductionDataRequestFactory productionDataRequestFactory) :
-      base(configStore, fileListProxy, settingsManager)
+      base(configStore, fileImportProxy, settingsManager)
     {
       this.elevProxy = elevProxy;
       requestFactory = productionDataRequestFactory;

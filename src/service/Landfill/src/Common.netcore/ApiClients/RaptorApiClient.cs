@@ -8,12 +8,11 @@ using Common.Repository;
 using LandfillService.Common.ApiClients;
 using LandfillService.Common.Models;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.TimeZones;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace Common.netstandard.ApiClients
 {
@@ -43,9 +42,9 @@ namespace Common.netstandard.ApiClients
     //private readonly string reportEndpoint;
     //private string baseAddress;
     public IDictionary<string, string> customHeaders;
-    private IFileListProxy filesProxy;
+    private IFileImportProxy fileImportProxy;
 
-    public RaptorApiClient(ILogger Log, IConfigurationStore config, IRaptorProxy proxy, IFileListProxy projectProxy, IDictionary<string, string> customHeaders)
+    public RaptorApiClient(ILogger Log, IConfigurationStore config, IRaptorProxy proxy, IFileImportProxy fileImportProxy, IDictionary<string, string> customHeaders)
     {
       //baseAddress = config.GetValueString("RaptorApiUrl") ?? "/";
       //reportEndpoint = config.GetValueString("RaptorReportEndpoint");
@@ -53,7 +52,7 @@ namespace Common.netstandard.ApiClients
       this.Log = Log;
       this.config = config;
       raptorProxy = proxy;
-      filesProxy = projectProxy;
+      this.fileImportProxy = fileImportProxy;
       this.customHeaders=customHeaders;
     }
 
@@ -143,7 +142,7 @@ namespace Common.netstandard.ApiClients
     public async Task<List<DesignDescriptiorLegacy>> GetDesignID(string jwt, Project project,string customerUid)
     {
       Console.WriteLine("Get a list of design files from 3d pm/raptor");
-      var allFiles = await filesProxy.GetFiles(project.projectUid, "", customHeaders);
+      var allFiles = await fileImportProxy.GetFiles(project.projectUid, "", customHeaders);
       var listFiles = new List<DesignDescriptiorLegacy>();
       foreach (var file in allFiles)
       {

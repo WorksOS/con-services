@@ -10,6 +10,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -23,15 +24,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   {
     private readonly ILoggerFactory _loggerFactory;
     private readonly IConfigurationStore _configStore;
-    private readonly IFileListProxy _fileListProxy;
+    private readonly IFileImportProxy _fileImportProxy;
     private readonly ITRexCompactionDataProxy _tRexCompactionDataProxy;
 
 #if RAPTOR
     private readonly IASNodeClient _raptorClient;
 #endif
 
-    public ProjectStatisticsHelper(ILoggerFactory loggerFactory, IConfigurationStore configStore, 
-      IFileListProxy fileListProxy, ITRexCompactionDataProxy tRexCompactionDataProxy
+    public ProjectStatisticsHelper(ILoggerFactory loggerFactory, IConfigurationStore configStore,
+      IFileImportProxy fileImportProxy, ITRexCompactionDataProxy tRexCompactionDataProxy
 #if RAPTOR
         , IASNodeClient raptorClient
 #endif
@@ -39,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       _loggerFactory = loggerFactory;
       _configStore = configStore;
-      _fileListProxy = fileListProxy;
+      _fileImportProxy = fileImportProxy;
       _tRexCompactionDataProxy = tRexCompactionDataProxy;
 #if RAPTOR
       _raptorClient = raptorClient;
@@ -53,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
     public async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IDictionary<string, string> customHeaders)
     {
-      var fileList = await _fileListProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
+      var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return null;
@@ -72,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// </summary>
     private async Task<(List<Guid> Uids, List<long> Ids)> GetExcludedSurveyedSurfaces(Guid projectUid, string userId, IDictionary<string, string> customHeaders)
     {
-      var fileList = await _fileListProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
+      var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
       if (fileList == null || fileList.Count == 0)
         return (null, null);
 
@@ -92,7 +93,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// </summary>
     private async Task<List<Guid>> GetExcludedSurveyedSurfacesMatches(Guid projectUid, List<long> Ids, string userId, IDictionary<string, string> customHeaders)
     {
-      var fileList = await _fileListProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
+      var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
       if (fileList == null || fileList.Count == 0)
         return null;
 

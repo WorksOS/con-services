@@ -18,14 +18,14 @@ namespace VSS.Productivity3D.Filter.Common.Validators
 {
   public class ValidationUtil
   {
-    protected readonly IProjectListProxy ProjectListProxy;
+    protected readonly IProjectProxy projectProxy;
     protected ILogger Log;
     protected readonly IServiceExceptionHandler ServiceExceptionHandler;
 
-    public ValidationUtil(IProjectListProxy projectListProxy, ILogger log, IServiceExceptionHandler serviceExceptionHandler)
+    public ValidationUtil(IProjectProxy projectProxy, ILogger log, IServiceExceptionHandler serviceExceptionHandler)
     {
       Log = log;
-      ProjectListProxy = projectListProxy;
+      this.projectProxy = projectProxy;
       ServiceExceptionHandler = serviceExceptionHandler;
     }
 

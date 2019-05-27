@@ -63,7 +63,6 @@ namespace VSS.Tile.Service.WebApi
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<IBoundingBoxHelper, BoundingBoxHelper>();
       services.AddSingleton<IRaptorProxy, RaptorProxy>();
-      services.AddSingleton<IFileListProxy, FileListProxy>();
       
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
@@ -74,7 +73,8 @@ namespace VSS.Tile.Service.WebApi
       services.AddTransient<ITPaasProxy, TPaasProxy>();
 
       services.AddServiceDiscovery();
-      services.AddSingleton<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
+      services.AddSingleton<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
+      services.AddSingleton<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
 
       services.AddSingleton<IFileRepository, FileRepository>();
 

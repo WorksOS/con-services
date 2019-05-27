@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Cache.Interfaces;
-using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
-namespace VSS.MasterData.Proxies.Interfaces
+namespace VSS.Productivity3D.Project.Abstractions.Interfaces
 {
-  public interface IFileListProxy : ICacheProxy
+  public interface IFileImportProxy : ICacheProxy
   {
     Task<List<FileData>> GetFiles(string projectUid, string userId, IDictionary<string, string> customHeaders);
 

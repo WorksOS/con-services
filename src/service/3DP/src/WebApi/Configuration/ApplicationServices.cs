@@ -60,9 +60,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IErrorCodesProvider, TRexResult>();
 #endif
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
-      services.AddSingleton<IProjectListProxy, ProjectListProxy>();
-      services.AddSingleton<IFileListProxy, FileListProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
@@ -70,7 +67,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
       services.AddScoped<ICompactionSettingsManager, CompactionSettingsManager>();
       services.AddScoped<IProductionDataRequestFactory, ProductionDataRequestFactory>();
-      services.AddScoped<IFilterServiceProxy, FilterServiceProxy>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
@@ -89,6 +85,24 @@ namespace VSS.Productivity3D.WebApi
 
       // Action services
       services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();
+
+      services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
+      services.AddSingleton<IProjectProxy, ProjectProxy>();
+      services.AddSingleton<IFileImportProxy, FileImportProxy>();
+      services.AddScoped<IFilterServiceProxy, FilterServiceProxy>();
+
+      /* todoJeannie 
+      // service discovery
+      services.AddServiceDiscovery();
+      services.AddScoped<IProjectSettingsProxy, ProjectSettingsV4ServiceDiscoveryProxy>();
+      services.AddScoped<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
+      services.AddScoped<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
+      services.AddScoped<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
+
+      var rr = services.BuildServiceProvider();
+      var psetting = rr.GetService<IFileImportProxy>();
+      var tt = psetting.GetFileForProject(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), new Dictionary<string, string>());
+      todoJeannie */
 
       //Disable CAP for now #76666
       /*

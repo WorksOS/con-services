@@ -18,10 +18,10 @@ using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
-using VSS.Productivity3D.AssetMgmt3D.Proxy;
 
 namespace ExecutorTests.Internal
 {
@@ -31,8 +31,8 @@ namespace ExecutorTests.Internal
     protected IConfigurationStore ConfigStore;
     protected ILoggerFactory Logger;
     protected IServiceExceptionHandler ServiceExceptionHandler;
-    protected IProjectListProxy ProjectListProxy;
-    protected IFileListProxy FileListProxy;
+    protected IProjectProxy ProjectProxy;
+    protected IFileImportProxy FileImportProxy;
     protected IRaptorProxy RaptorProxy;
     protected IAssetResolverProxy AssetResolverProxy;
     protected IKafka Producer;
@@ -62,7 +62,6 @@ namespace ExecutorTests.Internal
         .AddServiceDiscovery()
         .AddTransient<IAssetResolverProxy, AssetResolverProxy>()  
         .AddTransient<IWebRequest, GracefulWebRequest>()
-        .AddTransient<IFileListProxy, FileListProxy>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
@@ -70,7 +69,8 @@ namespace ExecutorTests.Internal
         .AddSingleton<IDataCache, InMemoryDataCache>()
         .AddSingleton<IGeofenceProxy, GeofenceProxy>()
         .AddServiceDiscovery()
-        .AddSingleton<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>()
+        .AddSingleton<IProjectProxy, ProjectV4ServiceDiscoveryProxy>()
+        .AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -79,8 +79,8 @@ namespace ExecutorTests.Internal
       FilterRepo = ServiceProvider.GetRequiredService<IRepository<IFilterEvent>>() as FilterRepository;
       ProjectRepo = ServiceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       GeofenceRepo = ServiceProvider.GetRequiredService<IRepository<IGeofenceEvent>>() as GeofenceRepository;
-      ProjectListProxy = ServiceProvider.GetRequiredService<IProjectListProxy>();
-      FileListProxy = ServiceProvider.GetRequiredService<IFileListProxy>();
+      ProjectProxy = ServiceProvider.GetRequiredService<IProjectProxy>();
+      FileImportProxy = ServiceProvider.GetRequiredService<IFileImportProxy>();
       RaptorProxy = ServiceProvider.GetRequiredService<IRaptorProxy>();
       AssetResolverProxy = ServiceProvider.GetRequiredService<IAssetResolverProxy>();
       GeofenceProxy = ServiceProvider.GetRequiredService<IGeofenceProxy>();

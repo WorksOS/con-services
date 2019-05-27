@@ -14,7 +14,6 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Internal;
@@ -29,6 +28,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Extensions;
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// helper methods for getting project statistics from Raptor/TRex
     /// </summary>
     private ProjectStatisticsHelper _projectStatisticsHelper = null;
-    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(LoggerFactory, ConfigStore, FileListProxy, TRexCompactionDataProxy
+    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(LoggerFactory, ConfigStore, FileImportProxy, TRexCompactionDataProxy
 #if RAPTOR
          , RaptorClient
 #endif
@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// For getting list of imported files for a project
     /// </summary>
-    protected readonly IFileListProxy FileListProxy;
+    protected readonly IFileImportProxy FileImportProxy;
 
     /// <summary>
     /// For getting compaction settings for a project
@@ -139,10 +139,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
+    protected BaseController(IConfigurationStore configStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
     {
       ConfigStore = configStore;
-      FileListProxy = fileListProxy;
+      FileImportProxy = fileImportProxy;
       SettingsManager = settingsManager;
     }
 
@@ -235,7 +235,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return null;
       }
 
-      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
+      var fileList = await FileImportProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

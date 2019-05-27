@@ -12,10 +12,10 @@ using Microsoft.Extensions.Logging;
 using NodaTime;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -30,10 +30,10 @@ namespace LandfillService.WebApi.netcore.Controllers
     private readonly ILogger Log;
     private IConfigurationStore config;
     private IRaptorProxy raptorProxy;
-    private IFileListProxy files;
+    private IFileImportProxy files;
 
 
-    public ProjectsController(ILogger<ProjectsController> logger, IConfigurationStore config, IRaptorProxy raptorProxy, IFileListProxy files )
+    public ProjectsController(ILogger<ProjectsController> logger, IConfigurationStore config, IRaptorProxy raptorProxy, IFileImportProxy files )
     {
       Log = logger;
       this.raptorProxy = raptorProxy;

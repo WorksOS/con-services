@@ -23,7 +23,7 @@ data:
   KAFKA_PRODUCER_SESSION_TIMEOUT: "1000"
   RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
-  IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/mock/importedfiles
+  IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/importedfiles
   GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
   assetmgmt3d_service: http://localhost:5001

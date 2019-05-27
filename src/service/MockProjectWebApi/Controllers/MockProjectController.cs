@@ -6,7 +6,6 @@ using MockProjectWebApi.Services;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 
@@ -29,7 +28,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet("api/v4")]
     public ProjectDataResult GetMockProjects()
     {
-      Console.WriteLine("GetMockProjects");
+      Console.WriteLine($"{nameof(GetMockProjects)}");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
       return new ProjectDataResult { ProjectDescriptors = projectService.ProjectList };
@@ -44,7 +43,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet("api/v4/project/{projectUid}")]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {
-      Console.WriteLine("GetMockProject");
+      Console.WriteLine($"{nameof(GetMockProject)}: projectUid={projectUid}");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
       return new ProjectDataSingleResult() { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUid == projectUid.ToString()) };
@@ -58,7 +57,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet("api/v4/projectsettings/{projectUid}")]
     public ProjectSettingsDataResult GetMockProjectSettingsTargets(string projectUid)
     {
-      Console.WriteLine($"GetMockProjectSettingsTargets: projectUid={projectUid}");
+      Console.WriteLine($"{nameof(GetMockProjectSettingsTargets)}: projectUid={projectUid}");
 
       JObject settings = null;
 
@@ -78,7 +77,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet("api/v4/projectcolors/{projectUid}")]
     public ProjectSettingsDataResult GetMockProjectSettingsColors(string projectUid)
     {
-      Console.WriteLine($"GetMockProjectSettingsColors: projectUid={projectUid}");
+      Console.WriteLine($"{nameof(GetMockProjectSettingsColors)}: projectUid={projectUid}");
 
       JObject settings = null;
 
