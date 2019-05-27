@@ -83,16 +83,16 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SegmentIterator_MoveToFirstSegment()
         {
-            IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+            var subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
-            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
+            var Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = true,
                 RetrieveAllPasses = true
             };
 
-            Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (forwards) when requesting only dirty segments");
+            Assert.True(Iterator.MoveToFirstSubGridSegment(), "Was not able to move to first segment (forwards) when requesting only dirty segments");
 
             Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {
@@ -101,7 +101,7 @@ namespace VSS.TRex.Tests.SubGridTrees
                 RetrieveAllPasses = true
             };
 
-            Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (backwards) when requesting only dirty segments");
+            Assert.True(Iterator.MoveToFirstSubGridSegment(), "Was not able to move to first segment (backwards) when requesting only dirty segments");
 
             Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {

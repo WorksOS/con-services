@@ -42,7 +42,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         byte[] bytes = new byte[fs.Length];
         fs.Read(bytes, 0, bytes.Length);
 
-        arg = new SubmitTAGFileRequestArgument()
+        arg = new SubmitTAGFileRequestArgument
         {
           ProjectID = projectID,
           AssetID = assetID,
@@ -69,13 +69,13 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         byte[] bytes = new byte[fs.Length];
         fs.Read(bytes, 0, bytes.Length);
 
-        arg = new ProcessTAGFileRequestArgument()
+        arg = new ProcessTAGFileRequestArgument
         {
           ProjectID = projectID,
           AssetUID = machineID,
-          TAGFiles = new List<ProcessTAGFileRequestFileItem>()
+          TAGFiles = new List<ProcessTAGFileRequestFileItem>
           {
-            new ProcessTAGFileRequestFileItem()
+            new ProcessTAGFileRequestFileItem
             {
               FileName = Path.GetFileName(fileName),
                             TagFileContent = bytes,

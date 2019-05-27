@@ -111,6 +111,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockProjectWebApi", "..\MockProjectWebApi\MockProjectWebApi.csproj", "{74B87A62-5D5D-41A8-A616-DF546E5C5FF5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetMgmt.Abstractions", "..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj", "{BDC126E2-E572-481B-A762-EDC8A6E624EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -273,6 +275,10 @@ Global
 		{74B87A62-5D5D-41A8-A616-DF546E5C5FF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74B87A62-5D5D-41A8-A616-DF546E5C5FF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74B87A62-5D5D-41A8-A616-DF546E5C5FF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDC126E2-E572-481B-A762-EDC8A6E624EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDC126E2-E572-481B-A762-EDC8A6E624EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDC126E2-E572-481B-A762-EDC8A6E624EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDC126E2-E572-481B-A762-EDC8A6E624EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -327,6 +333,7 @@ Global
 		{656FC0C3-1296-4211-8D86-7956608B7530} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 		{EC6ED6F7-0D47-4E00-BC7E-033650926D9C} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 		{74B87A62-5D5D-41A8-A616-DF546E5C5FF5} = {0B171363-3F4B-4614-B74A-AC6155E644FF}
+		{BDC126E2-E572-481B-A762-EDC8A6E624EE} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25C1559E-35F7-42CA-B265-A63D8D5E412C}
