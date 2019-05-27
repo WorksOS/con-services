@@ -68,7 +68,8 @@ namespace MockProjectWebApi.Services
           LegacyProjectId = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_ID_1,
           ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
           ProjectTimeZone = "Mountain Standard Time",
-          IanaTimeZone = "America/Creston"
+          IanaTimeZone = "America/Creston",
+          ProjectGeofenceWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362,-115.025723657623 36.2101347890754))"
         },
         new ProjectData {LegacyProjectId = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_ID_2, ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2},
         new ProjectData {LegacyProjectId = 1009999, ProjectUid = Guid.NewGuid().ToString()},
