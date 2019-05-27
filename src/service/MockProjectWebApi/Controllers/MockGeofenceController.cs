@@ -131,6 +131,15 @@ namespace MockProjectWebApi.Controllers
             FillColor = 65535,
             IsTransparent = true,
             GeofenceType = GeofenceType.Generic.ToString()
+          },
+          new GeofenceData
+          {
+            GeofenceName = "Golden_Dimension",
+            GeofenceUID = Guid.Parse("ac633c6c-f941-4fe0-a1f6-b5964f06b076"),
+            GeometryWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362,-115.025723657623 36.2101347890754))",
+            FillColor = 0,
+            IsTransparent = true,
+            GeofenceType = GeofenceType.Project.ToString()
           }
         };
       }
