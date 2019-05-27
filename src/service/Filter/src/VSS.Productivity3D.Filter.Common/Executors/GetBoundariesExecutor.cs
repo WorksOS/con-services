@@ -45,10 +45,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     }
 
     /// <summary>
-    /// Processes the GetFilters Request for a project
+    /// Processes the 'Get Custom Boundaries' Request for a project
     /// </summary>
-    /// <param name="item"></param>
-    /// <returns>a FiltersResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as BaseRequestFull;
@@ -58,13 +56,14 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
         return null;
       }
+      //a) Custom boundaries 
       var boundaries = new List<GeofenceData>();
       var projectRepo = (IProjectRepository) auxRepository;
       var customBoundaries = await BoundaryHelper.GetProjectBoundaries(
         log, serviceExceptionHandler,
         request.ProjectUid, projectRepo, (IGeofenceRepository) Repository);
       boundaries.AddRange(customBoundaries.GeofenceData);
-
+      //b) favorite geofences that overlap project 
       var geofences = await GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
       //Find out which geofences overlap project boundary
       var overlappingGeofences =
@@ -74,7 +73,11 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         if (overlappingGeofences[i])
           boundaries.Add(geofences[i]);
       }
-
+      //c) unified productivity associated geofences
+      var associatedGeofences = await UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid);
+      boundaries.AddRange(associatedGeofences);
+      //Remove any duplicates
+      boundaries = boundaries.Distinct(new DistinctGeofenceComparer()).ToList();
       return new GeofenceDataListResult
       {
         GeofenceData = boundaries.ToImmutableList()
