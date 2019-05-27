@@ -11,6 +11,7 @@ using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
+using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Executors
 {
@@ -95,7 +96,7 @@ namespace VSS.TRex.TAGFiles.Executors
                   batchCount = 0;
                 }
 
-                response.Results.Add(new ProcessTAGFileResponseItem { FileName = TAGFile.FileName, Success = true });
+                response.Results.Add(new ProcessTAGFileResponseItem { FileName = TAGFile.FileName, Success = converter.ReadResult == TAGReadResult.NoError });
               }
               catch (Exception E)
               {
