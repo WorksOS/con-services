@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Apache.Ignite.Core.Compute;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.ComputeFuncs;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
@@ -18,7 +17,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
         /// <summary>
         /// Local reference to the compute func used to execute the processing request on the grid.
         /// </summary>
-        private IComputeFunc<ProcessTAGFileRequestArgument, ProcessTAGFileResponse> func;
+        private readonly IComputeFunc<ProcessTAGFileRequestArgument, ProcessTAGFileResponse> func;
 
         /// <summary>
         /// No-arg constructor that creates a default TAG file submission request with a singleton ComputeFunc
