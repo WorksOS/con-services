@@ -40,7 +40,7 @@ namespace VSS.TRex.Profiling.Executors
           }
         }
 
-        ProfileRequestArgument_ClusterCompute arg2 = new ProfileRequestArgument_ClusterCompute
+        var arg2 = new ProfileRequestArgument_ClusterCompute
         {
           ProfileTypeRequired = arg.ProfileTypeRequired,
           ProfileStyle = arg.ProfileStyle,
@@ -59,13 +59,13 @@ namespace VSS.TRex.Profiling.Executors
         }
         else
         {
-          ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+          var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
 
           arg2.NEECoords = ConvertCoordinates.WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
         }
 
-        ProfileRequest_ClusterCompute<T> request = new ProfileRequest_ClusterCompute<T>();
-        ProfileRequestResponse<T> ProfileResponse = request.Execute(arg2);
+        var request = new ProfileRequest_ClusterCompute<T>();
+        var ProfileResponse = request.Execute(arg2);
 
         //... and then sort them to get the final result, as well as removing initial and duplicate null values
         // Remove null cells in the profiles list. Null cells are defined by cells with null CellLastHeight.

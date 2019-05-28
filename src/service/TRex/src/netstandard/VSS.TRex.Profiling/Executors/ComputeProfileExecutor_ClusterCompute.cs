@@ -51,12 +51,14 @@ namespace VSS.TRex.Profiling.Executors
     /// <summary>
     /// Constructs the profile analysis executor
     /// </summary>
+    /// <param name="profileStyle"></param>
     /// <param name="projectID"></param>
     /// <param name="profileTypeRequired"></param>
     /// <param name="nEECoords"></param>
     /// <param name="filters"></param>
-    /// <param name="designUid"></param>
+    /// <param name="design"></param>
     /// <param name="returnAllPassesAndLayers"></param>
+    /// <param name="volumeType"></param>
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
@@ -123,14 +125,14 @@ namespace VSS.TRex.Profiling.Executors
 
           if (SiteModel == null)
           {
-            Log.LogWarning($"Failed to locate sitemodel {ProjectID}");
+            Log.LogWarning($"Failed to locate site model {ProjectID}");
             return Response = new ProfileRequestResponse<T> {ResultStatus = RequestErrorStatus.NoSuchDataModel};
           }
 
-          // Obtain the subgrid existence map for the project
+          // Obtain the sub grid existence map for the project
           var ProdDataExistenceMap = SiteModel.ExistenceMap;
 
-          FilteredValuePopulationControl PopulationControl = new FilteredValuePopulationControl();
+          var PopulationControl = new FilteredValuePopulationControl();
           PopulationControl.PreparePopulationControl(ProfileTypeRequired, Filters.Filters[0].AttributeFilter);
 
           IDesign design = null;
@@ -144,16 +146,15 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           Log.LogInformation("Creating IProfileBuilder");
-          IProfilerBuilder<T> Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
+          var Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
           if (Profiler == null)
           {
             Log.LogWarning($"Failed to create IProfileBuilder via DI");
             return Response = new ProfileRequestResponse<T> { ResultStatus = RequestErrorStatus.FailedOnRequestProfile};
           }
 
-
           Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, new DesignWrapper(Design, design),
-            /* todo elevation range design + offset: */null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
+            /* todo elevation range design + offset: */null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel), VolumeType);
 
           Log.LogInformation("Building cell profile");
           if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
@@ -167,7 +168,7 @@ namespace VSS.TRex.Profiling.Executors
 
               // Remove null cells in the profiles list. NUll cells are defined by cells with null CellLastHeight.
               // All duplicate null cells will be replaced by a by single null cell entry
-              List<T> ThinnedProfileCells = ProfileCells.Where((x, i) =>
+              var ThinnedProfileCells = ProfileCells.Where((x, i) =>
                   i == 0 || !ProfileCells[i].IsNull() || (ProfileCells[i].IsNull() && !ProfileCells[i - 1].IsNull())).ToList();
 
               Response = new ProfileRequestResponse<T>
