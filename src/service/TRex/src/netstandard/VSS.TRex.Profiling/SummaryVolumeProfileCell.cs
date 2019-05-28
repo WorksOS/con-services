@@ -39,6 +39,12 @@ namespace VSS.TRex.Profiling
       LastCellPassElevation2 = reader.ReadFloat();
     }
 
-    public override bool IsNull() => false;
+    /// <summary>
+    /// Summary volume cells can be calculated be comparison of a cell pass elevation and a design elevation,
+    /// or by comparison of two cell pass elevations together.
+    /// </summary>
+    /// <returns></returns>
+    public override bool IsNull() => !((DesignElev != Consts.NullHeight && LastCellPassElevation1 != Consts.NullHeight) ||
+                                       (LastCellPassElevation1 != Consts.NullHeight && LastCellPassElevation2 != Consts.NullHeight));
   }
 }
