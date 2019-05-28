@@ -32,6 +32,7 @@ data:
   CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
   FILTER_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3Dfilter/1.0
   GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/
+  UNIFIED_PRODUCTIVITY_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-unifiedproductivity/1.0/
   IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
   IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfile
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
@@ -107,6 +108,7 @@ data:
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
   FILTER_CACHE_LIFE: 00:15:00
   GEOFENCE_CACHE_LIFE: 00:15:00
+  UNIFIED_PRODUCTIVITY_CACHE_LIFE: 00:15:00
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
   ASSETMGMT_CACHE_LIFE: 00:30:00

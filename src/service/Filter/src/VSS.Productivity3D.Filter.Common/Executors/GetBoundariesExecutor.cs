@@ -31,9 +31,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy,
       IFileListProxy fileListProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository,
-      IGeofenceProxy geofenceProxy)
+      IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy)
       : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy,
-        fileListProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy)
+        fileListProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
     {
     }
 
@@ -75,7 +75,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       await Task.WhenAll(boundariesTask, favoritesTask, associatedTask);
 
       boundaries.AddRange(boundariesTask.Result.GeofenceData);
-      boundaries.AddRange(associatedTask.Result);
+      if (associatedTask.Result != null)
+        boundaries.AddRange(associatedTask.Result);
 
       //Find out which favorite geofences overlap project boundary
       var overlappingGeofences =

@@ -27,5 +27,13 @@ namespace VSS.MasterData.Proxies
       return result.Results?.Select(r => r.Geofence).ToList();
     }
 
+    /// <summary>
+    /// Clears an item from the cache
+    /// </summary>
+    public void ClearCacheItem(string projectUid, string userId = null)
+    {
+      ClearCacheItem<GeofenceWithTargetsResult>(projectUid, userId);
+    }
+
   }
 }
