@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
@@ -46,7 +47,7 @@ namespace VSS.TRex.Tests.Profiling
     public void Test_ProfilerBuilder_Creation_Null()
     {
       var builder = new ProfilerBuilder<ProfileCell>();
-      builder.Configure(ProfileStyle.CellPasses, null, null, GridDataType.All, null, null, null, null, null);
+      builder.Configure(ProfileStyle.CellPasses, null, null, GridDataType.All, null, null, null, null, null, VolumeComputationType.None);
 
       Assert.True(builder != null, "Builder failed to construct");
     }
@@ -55,7 +56,7 @@ namespace VSS.TRex.Tests.Profiling
     public void Test_ProfilerBuilder_Creation_ProfileBuilders()
     {
       var builder = new ProfilerBuilder<ProfileCell>();
-      builder.Configure(ProfileStyle.CellPasses, null, null, GridDataType.All, null, null, null, null, null);
+      builder.Configure(ProfileStyle.CellPasses, null, null, GridDataType.All, null, null, null, null, null, VolumeComputationType.None);
 
       Assert.True(builder.CellLiftBuilder == DIContext.Obtain<ICellLiftBuilder>(), "Cell lift builder not expected one");
       Assert.True(builder.CellProfileBuilder == DIContext.Obtain<ICellProfileBuilder<ProfileCell>>(),

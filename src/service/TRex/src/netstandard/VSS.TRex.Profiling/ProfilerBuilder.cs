@@ -62,7 +62,7 @@ namespace VSS.TRex.Profiling
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
-      VolumeComputationType VolumeType = VolumeComputationType.None,
+      VolumeComputationType VolumeType,
       bool slicerToolUsed = true)    
     {
         CellLiftBuilder = factory.NewCellLiftBuilder(siteModel, gridDataType, PopulationControl, filterSet, CellPassFastEventLookerUpper);
