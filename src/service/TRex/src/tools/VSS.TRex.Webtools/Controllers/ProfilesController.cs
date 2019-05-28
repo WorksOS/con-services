@@ -8,10 +8,8 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
-using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
@@ -194,7 +192,5 @@ namespace VSS.TRex.Webtools.Controllers
 
       return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
     }
-
-
   }
 }

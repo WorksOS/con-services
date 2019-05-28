@@ -50,7 +50,7 @@ namespace VSS.TRex.Profiling.Interfaces
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
-      VolumeComputationType VolumeType = VolumeComputationType.None,
+      VolumeComputationType VolumeType,
       bool slicerToolUsed = true);
   }
 }
