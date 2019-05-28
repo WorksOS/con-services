@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Configuration;
@@ -15,6 +16,8 @@ using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using System.Collections.Immutable;
+using System.Linq;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -55,17 +58,28 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
         return null;
       }
+      var boundaries = new List<GeofenceData>();
+      var projectRepo = (IProjectRepository) auxRepository;
 
-      var boundaries =  await BoundaryHelper.GetProjectBoundaries(
-        log, serviceExceptionHandler,
-        request.ProjectUid, (IProjectRepository)auxRepository, (IGeofenceRepository)Repository).ConfigureAwait(false);
+      var boundariesTask = BoundaryHelper.GetProjectBoundaries(
+        log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository)Repository);
+      var favoritesTask = GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
+      await Task.WhenAll(boundariesTask, favoritesTask);
 
-      var geofences = await GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
-      geofences.AddRange(boundaries.GeofenceData);
+      boundaries.AddRange(boundariesTask.Result.GeofenceData);
+
+      //Find out which geofences overlap project boundary
+      var overlappingGeofences =
+        (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT, favoritesTask.Result.Select(g => g.GeometryWKT))).ToList();
+      for (var i = 0; i < favoritesTask.Result.Count; i++)
+      {
+        if (overlappingGeofences[i])
+          boundaries.Add(favoritesTask.Result[i]);
+      }
 
       return new GeofenceDataListResult
       {
-        GeofenceData = geofences.ToImmutableList()
+        GeofenceData = boundaries.ToImmutableList()
       };
 
     }

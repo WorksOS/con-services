@@ -18,6 +18,7 @@ namespace WebApiTests
     protected static readonly Guid SouthernMotorWayFavoriteGeofenceUid = Guid.Parse("ffdabc61-7ee9-4054-a3e1-f182dd1abec9");
     protected static readonly Guid WalnutCreekFavoriteGeofenceUid = Guid.Parse("09097669-34e7-4b34-b921-680018388505");
     protected static readonly Guid ZieglerBloomingtonFavoriteGeofenceUid = Guid.Parse("69de1f67-1b2a-413a-8936-659892379fd9");
+    protected static readonly Guid GoldenDimensionFavoriteGeofenceUid = Guid.Parse("ac633c6c-f941-4fe0-a1f6-b5964f06b076");
 
     //Copied from MockWebApi
     protected static string SouthernMotorWayFavoriteGeometryWKT =>

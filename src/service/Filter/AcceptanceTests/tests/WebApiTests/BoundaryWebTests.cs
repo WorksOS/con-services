@@ -109,7 +109,8 @@ namespace WebApiTests
     [TestMethod]
     public void GetBoundaries()
     {
-      var favoriteGeofences = new List<Guid> { SouthernMotorWayFavoriteGeofenceUid, WalnutCreekFavoriteGeofenceUid, ZieglerBloomingtonFavoriteGeofenceUid };
+      //var favoriteGeofences = new List<Guid> { SouthernMotorWayFavoriteGeofenceUid, WalnutCreekFavoriteGeofenceUid, ZieglerBloomingtonFavoriteGeofenceUid };
+      var overlappingFavoriteGeofences = new List<Guid> { GoldenDimensionFavoriteGeofenceUid };
 
       ts.DeleteAllBoundariesAndAssociations();
 
@@ -131,10 +132,10 @@ namespace WebApiTests
       var responseGet = ts.CallFilterWebApi($"api/v1/boundaries/{ProjectUid}", "GET");
       var boundaryResponseGet = JsonConvert.DeserializeObject<GeofenceDataListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       //2 boundaries and 3 favorites
-      Assert.AreEqual(5, boundaryResponseGet.GeofenceData.Count);
+      Assert.AreEqual(2 + overlappingFavoriteGeofences.Count, boundaryResponseGet.GeofenceData.Count);
       Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == boundaryUid1), "Missing boundary 1");
       Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == boundaryUid2), "Missing boundary 2");
-      foreach (var geofenceUid in favoriteGeofences)
+      foreach (var geofenceUid in overlappingFavoriteGeofences)
       {
         Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == geofenceUid), "Missing favorite geofence");
       }

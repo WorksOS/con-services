@@ -16,6 +16,7 @@ namespace ExecutorTests
   public class GetBoundariesExecutorTests : BoundaryRepositoryBase
   {
     private static string boundaryPolygon;
+    private static string goldenDimensionsPolygon = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362,-115.025723657623 36.2101347890754))";
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -36,12 +37,12 @@ namespace ExecutorTests
       var userId = Guid.NewGuid();
       var projectUid = Guid.NewGuid();
 
-      var request = CreateAndValidateRequest(custUid, projectUid, userId);
+      var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(3, result.GeofenceData.Count, "Should be 3 favorite geofences returned");
+      Assert.AreEqual(1, result.GeofenceData.Count, "Should be one overlapping favorite geofence returned");
       var boundaries = result.GeofenceData.Where(b => b.GeofenceType == GeofenceType.Filter.ToString()).ToList();
       Assert.AreEqual(0, boundaries.Count, "Shouldn't be any boundaries returned");
     }
@@ -75,7 +76,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = CreateAndValidateRequest(custUid, projectUid, userId);
+      var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
       var executor =
         RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
@@ -138,7 +139,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = CreateAndValidateRequest(custUid, projectUid, userId);
+      var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
       var executor =
         RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
@@ -149,12 +150,12 @@ namespace ExecutorTests
       Assert.AreEqual(1, boundaries.Count);
     }
 
-    private BaseRequestFull CreateAndValidateRequest(Guid custUid, Guid projectUid, Guid userId)
+    private BaseRequestFull CreateAndValidateRequest(Guid custUid, Guid projectUid, Guid userId, string projectGeometryWKT)
     {
       var request = BaseRequestFull.Create(
         custUid.ToString(),
         false,
-        new ProjectData() { ProjectUid = projectUid.ToString() },
+        new ProjectData() { ProjectUid = projectUid.ToString(), ProjectGeofenceWKT = projectGeometryWKT},
         userId.ToString(), null);
       request.Validate(ServiceExceptionHandler);
       return request;

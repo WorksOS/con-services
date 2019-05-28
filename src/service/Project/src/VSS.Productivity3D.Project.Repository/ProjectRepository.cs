@@ -1763,7 +1763,7 @@ namespace VSS.Productivity3D.Project.Repository
 
       return projects;
     }
-
+     
     /// <summary>
     ///     Gets any ProjectMonitoring or Landfill (as requested) project which the lat/long is within,
     ///     which satisfies all conditions for the tccOrgid
@@ -1828,6 +1828,36 @@ namespace VSS.Productivity3D.Project.Repository
       return (await QueryWithAsyncPolicy<ProjectDataModel>(select,
           new { CustomerUID = customerUid, StartDate = startDate.Date, EndDate = endDate.Date, excludeProjectUid }))
         .Any();
+    }
+
+    /// <summary>
+    /// Determines if the given geofence polygon intersects the project polygon
+    /// </summary>
+    public async Task<bool> DoesPolygonOverlap(string projectGeometryWkt, string geometryWkt)
+    {
+      string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
+      string projectPolygon = RepositoryHelper.WKTToSpatial(projectGeometryWkt);
+
+      var select = $@"SELECT st_Intersects({polygonToCheck}, {projectPolygon})";
+
+      var result = (await QueryWithAsyncPolicy<int>(select)).FirstOrDefault();
+
+      return result == 1;
+    }
+
+    /// <summary>
+    /// Determines which, if any, of the given geofence polygons intersect the project polygon
+    /// </summary>
+    public async Task<IEnumerable<bool>> DoPolygonsOverlap(string projectGeometryWkt, IEnumerable<string> geometryWkts)
+    {
+      var list = geometryWkts.ToList();
+      var tasks = new List<Task<bool>>();
+      for (var i=0; i<list.Count; i++)
+      {
+        tasks.Add(DoesPolygonOverlap(projectGeometryWkt, list[i]));
+      }
+      await Task.WhenAll(tasks);
+      return tasks.Select(t => t.Result);    
     }
 
     /// <summary>
