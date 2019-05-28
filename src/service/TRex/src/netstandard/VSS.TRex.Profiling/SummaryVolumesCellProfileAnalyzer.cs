@@ -102,6 +102,16 @@ namespace VSS.TRex.Profiling
         }
       }
 
+      if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
+      {
+        return new FilterSet(new [] { FilterSet.Filters[1] });
+      }
+
+      if (VolumeType == VolumeComputationType.BetweenFilterAndDesign)
+      {
+        return new FilterSet(new[] { FilterSet.Filters[0] });
+      }
+
       return FilterSet;
     }
 
@@ -109,7 +119,7 @@ namespace VSS.TRex.Profiling
     /// Merges the 'from' elevation sub grid and the 'intermediary' sub grid result into a single sub grid for 
     /// subsequent calculation. THe result is placed into the 'from' sub grid.
     /// </summary>
-    private void MergeIntemediaryResults(ClientHeightAndTimeLeafSubGrid heightGrid1, ClientHeightAndTimeLeafSubGrid intermediaryHeightGrid)
+    private void MergeIntermediaryResults(ClientHeightAndTimeLeafSubGrid heightGrid1, ClientHeightAndTimeLeafSubGrid intermediaryHeightGrid)
     {
       // Combine this result with the result of the first query to obtain a modified heights grid
 
@@ -140,7 +150,7 @@ namespace VSS.TRex.Profiling
         x.CellOverrideMask = cellOverrideMask;
 
         // Reach into the sub grid request layer and retrieve an appropriate sub grid
-        ServerRequestResult result = x.RequestSubGridInternal(address, prodDataAtAddress, true, out var clientGrid);
+        var result = x.RequestSubGridInternal(address, prodDataAtAddress, true, out var clientGrid);
         if (result != ServerRequestResult.NoError)
           Log.LogError($"Request for sub grid {address} request failed with code {result}");
 
@@ -150,13 +160,22 @@ namespace VSS.TRex.Profiling
       // If an intermediary result was requested then merge the 'from' and intermediary sub grids now
       if (IntermediaryFilterRequired)
       {
-        MergeIntemediaryResults(clientGrids[0] as ClientHeightAndTimeLeafSubGrid, clientGrids[1] as ClientHeightAndTimeLeafSubGrid);
+        MergeIntermediaryResults(clientGrids[0] as ClientHeightAndTimeLeafSubGrid, clientGrids[1] as ClientHeightAndTimeLeafSubGrid);
         //... and chop out the intermediary grid
         clientGrids = new[] {clientGrids[0], clientGrids[2]};
       }
 
-      var heightsGrid1 = clientGrids[0] as ClientHeightAndTimeLeafSubGrid;
-      var heightsGrid2 = clientGrids[1] as ClientHeightAndTimeLeafSubGrid;
+      // Assign the results of the sub grid requests according to the ordering of the filter in the overall
+      // volume type context of the request
+      ClientHeightAndTimeLeafSubGrid heightsGrid1 = null;
+      if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.Between2Filters)
+        heightsGrid1 = clientGrids[0] as ClientHeightAndTimeLeafSubGrid;
+
+      ClientHeightAndTimeLeafSubGrid heightsGrid2 = null;
+      if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
+        heightsGrid2 = clientGrids[0] as ClientHeightAndTimeLeafSubGrid;
+      else if (VolumeType == VolumeComputationType.Between2Filters)
+        heightsGrid2 = clientGrids[1] as ClientHeightAndTimeLeafSubGrid;
 
       IClientHeightLeafSubGrid designHeights = null;
 
