@@ -44,7 +44,6 @@ namespace VSS.TRex.Profiling
     /// or by comparison of two cell pass elevations together.
     /// </summary>
     /// <returns></returns>
-    public override bool IsNull() => !((DesignElev != Consts.NullHeight && LastCellPassElevation1 != Consts.NullHeight) ||
-                                       (LastCellPassElevation1 != Consts.NullHeight && LastCellPassElevation2 != Consts.NullHeight));
+    public override bool IsNull() => DesignElev == Consts.NullHeight && LastCellPassElevation1 == Consts.NullHeight && LastCellPassElevation2 == Consts.NullHeight;
   }
 }
