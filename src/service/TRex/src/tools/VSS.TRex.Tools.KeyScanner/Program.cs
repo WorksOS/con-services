@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
@@ -25,21 +24,28 @@ namespace VSS.TRex.Tools.KeyScanner
         .Add(x => x.AddSingleton(new MutableClientServer("Webtools-Mutable")))
         .Complete();
 
-      var ks = new KeyScanner();
+      try
+      {
+        var ks = new KeyScanner();
 
-      Console.WriteLine("Starting to dump mutable grid keys");
-      Console.WriteLine("##################################");
+        Console.WriteLine("Starting to dump mutable grid keys");
+        Console.WriteLine("##################################");
 
-      ks.dumpKeysToFile(StorageMutability.Mutable, @"C:\Temp\AllTRexIgniteCacheKeys = mutable.txt");
-      Console.WriteLine("----> Mutable grid key dump complete");
+        ks.dumpKeysToFile(StorageMutability.Mutable, @"C:\Temp\AllTRexIgniteCacheKeys = mutable.txt");
+        Console.WriteLine("----> Mutable grid key dump complete");
 
-      Console.WriteLine("Starting to dump immutable grid keys");
-      Console.WriteLine("####################################");
-      ks.dumpKeysToFile(StorageMutability.Immutable, @"C:\Temp\AllTRexIgniteCacheKeys = immutable.txt");
-      Console.WriteLine("----> Immutable grid key dump complete");
+        Console.WriteLine("Starting to dump immutable grid keys");
+        Console.WriteLine("####################################");
+        ks.dumpKeysToFile(StorageMutability.Immutable, @"C:\Temp\AllTRexIgniteCacheKeys = immutable.txt");
+        Console.WriteLine("----> Immutable grid key dump complete");
 
-      Console.WriteLine("Completed dump of grid keys");
-      Console.WriteLine("###########################");
+        Console.WriteLine("Completed dump of grid keys");
+        Console.WriteLine("###########################");
+      }
+      finally
+      {
+        DIContext.Obtain<ITRexGridFactory>()?.StopGrids();
+      }
     }
   }
 }
