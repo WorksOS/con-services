@@ -13,7 +13,6 @@ using System.Linq;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
@@ -201,7 +200,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       base.ConfigureMutableSpatialCache(cfg);
 
       cfg.Name = TRexCaches.MutableSpatialCacheName();
-      //            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
       cfg.KeepBinaryInStore = false;
 
       cfg.Backups = 0;
@@ -238,6 +236,22 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     public void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
     {
       mutableTRexGrid.GetOrCreateCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
+    }
+
+    private void InstantiateSiteModelsCacheReference()
+    {
+      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(new CacheConfiguration
+      {
+        Name = TRexCaches.SiteModelsCacheName(StorageMutability.Mutable),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Partitioned,
+        AffinityFunction = new MutableNonSpatialAffinityFunction(),
+
+        // No backups for now
+        Backups = 0,
+
+        DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
+      });
     }
 
     public void StartTRexGridCacheNode()
@@ -277,6 +291,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //InstantiateTAGFileBufferQueueCacheReference(CacheCfg);
       var tagCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.TAGFileBufferQueueCacheName()));
       InstantiateTAGFileBufferQueueCacheReference(tagCacheConfiguration);
+
+      InstantiateSiteModelsCacheReference();
 
       // Create the SiteModel MetaData Manager so later DI context references wont need to create the cache etc for it at an inappropriate time
       var _ = DIContext.Obtain<ISiteModelMetadataManager>();

@@ -14,7 +14,7 @@ namespace VSS.TRex.Storage
   [ExcludeFromCodeCoverage] // Not currently used...
   public class StorageProxy_FileSystem : IStorageProxy
   {
-    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache { get; } = null; // Not implemented
+    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType) => null; // Not implemented
     public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; } = null; // Not implemented
 
     public StorageMutability Mutability { get; set; } = StorageMutability.Immutable;
@@ -46,7 +46,7 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.RemoveStreamFromPersistentStore(Guid dataModelID, string streamName)
+    FileSystemErrorStatus IStorageProxy.RemoveStreamFromPersistentStore(Guid dataModelID, FileSystemStreamType streamType, string streamName)
     {
       throw new NotImplementedException();
     }

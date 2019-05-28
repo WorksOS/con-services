@@ -330,13 +330,16 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           });
 
           // ... then integrate them
-          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes (spanning {Task.AggregatedCellPasses.CountLeafSubGridsInMemory()} sub grids) into primary data model for {SiteModelFromDM.ID} spanning {SiteModelFromDM.ExistenceMap.CountBits()} sub grids");
+          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes from {ProcessedTasks.Count} TAG files (spanning {Task.AggregatedCellPasses.CountLeafSubGridsInMemory()} sub grids) into primary data model for {SiteModelFromDM.ID} spanning {SiteModelFromDM.ExistenceMap.CountBits()} sub grids");
 
           var subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
           if (!subGridIntegrator.IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
             return false; 
 
           Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {SiteModelFromDM.ID}");
+
+          TAGProcessingStatistics.IncrementTotalTAGFilesProcessedIntoModels(ProcessedTasks.Count);
+          TAGProcessingStatistics.IncrementTotalCellPassesAggregatedIntoModels(totalPassCountInAggregation);
 
           // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
           SiteModelFromDM.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
