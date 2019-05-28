@@ -49,8 +49,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 
     public override bool Equals(object obj)
     {
-      var otherProject = obj as Project;
-      if (otherProject == null)
+      if (!(obj is Project otherProject))
       {
         return false;
       }
