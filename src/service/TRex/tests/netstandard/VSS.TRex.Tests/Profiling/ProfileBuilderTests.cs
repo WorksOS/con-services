@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.Profiling
         factory.Setup(mk => mk.NewCellLiftBuilder(null, GridDataType.All, null, null, null))
           .Returns(newCellLiftBuilder.Object);
         factory.Setup(mk => mk.NewCellProfileBuilder(null, null, null, true)).Returns(newCellProfileBuilder.Object);
-        factory.Setup(mk => mk.NewCellProfileAnalyzer(ProfileStyle.CellPasses, null, null, null, null, null, It.IsAny<ICellLiftBuilder>()))
+        factory.Setup(mk => mk.NewCellProfileAnalyzer(ProfileStyle.CellPasses, null, null, null, null, null, It.IsAny<ICellLiftBuilder>(), It.IsAny<VolumeComputationType>()))
           .Returns(newProfileLiftBuilder.Object);
 
         DIBuilder

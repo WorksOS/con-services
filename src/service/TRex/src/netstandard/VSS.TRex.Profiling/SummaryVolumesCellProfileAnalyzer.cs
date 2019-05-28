@@ -57,14 +57,17 @@ namespace VSS.TRex.Profiling
     /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     /// <param name="referenceDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
+    /// <param name="volumeType"></param>
     public SummaryVolumesCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
-      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
+      ICellLiftBuilder cellLiftBuilder,
+      VolumeComputationType volumeType) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
     {
       svDesignWrapper = referenceDesignWrapper;
+      VolumeType = volumeType;
     }
 
     /// <summary>
