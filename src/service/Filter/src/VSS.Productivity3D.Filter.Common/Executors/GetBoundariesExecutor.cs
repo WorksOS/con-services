@@ -28,16 +28,21 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetBoundariesExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileListProxy fileListProxy,
-      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy)
-      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy, fileListProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy)
-    { }
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy,
+      IFileListProxy fileListProxy,
+      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository,
+      IGeofenceProxy geofenceProxy)
+      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy,
+        fileListProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy)
+    {
+    }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public GetBoundariesExecutor()
-    { }
+    {
+    }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -56,28 +61,35 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
         return null;
       }
-      //a) Custom boundaries 
+
       var boundaries = new List<GeofenceData>();
       var projectRepo = (IProjectRepository) auxRepository;
-      var customBoundaries = await BoundaryHelper.GetProjectBoundaries(
-        log, serviceExceptionHandler,
-        request.ProjectUid, projectRepo, (IGeofenceRepository) Repository);
-      boundaries.AddRange(customBoundaries.GeofenceData);
+      //a) Custom boundaries 
+      var boundariesTask = BoundaryHelper.GetProjectBoundaries(
+        log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository) Repository);
       //b) favorite geofences that overlap project 
-      var geofences = await GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
-      //Find out which geofences overlap project boundary
+      var favoritesTask =
+        GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
+      //c) unified productivity associated geofences
+      var associatedTask = UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid);
+      await Task.WhenAll(boundariesTask, favoritesTask, associatedTask);
+
+      boundaries.AddRange(boundariesTask.Result.GeofenceData);
+      boundaries.AddRange(associatedTask.Result);
+
+      //Find out which favorite geofences overlap project boundary
       var overlappingGeofences =
-        (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT, geofences.Select(g => g.GeometryWKT))).ToList();
-      for (var i = 0; i < geofences.Count; i++)
+        (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT,
+          favoritesTask.Result.Select(g => g.GeometryWKT))).ToList();
+      for (var i = 0; i < favoritesTask.Result.Count; i++)
       {
         if (overlappingGeofences[i])
-          boundaries.Add(geofences[i]);
+          boundaries.Add(favoritesTask.Result[i]);
       }
-      //c) unified productivity associated geofences
-      var associatedGeofences = await UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid);
-      boundaries.AddRange(associatedGeofences);
+
       //Remove any duplicates
       boundaries = boundaries.Distinct(new DistinctGeofenceComparer()).ToList();
+
       return new GeofenceDataListResult
       {
         GeofenceData = boundaries.ToImmutableList()
