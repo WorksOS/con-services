@@ -238,7 +238,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       mutableTRexGrid.GetOrCreateCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
     }
 
-    public void InstantiateSitemodelsCacheReference()
+    private void InstantiateSiteModelsCacheReference()
     {
       mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(new CacheConfiguration
       {
@@ -292,7 +292,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       var tagCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.TAGFileBufferQueueCacheName()));
       InstantiateTAGFileBufferQueueCacheReference(tagCacheConfiguration);
 
-      InstantiateSitemodelsCacheReference();
+      InstantiateSiteModelsCacheReference();
 
       // Create the SiteModel MetaData Manager so later DI context references wont need to create the cache etc for it at an inappropriate time
       var _ = DIContext.Obtain<ISiteModelMetadataManager>();

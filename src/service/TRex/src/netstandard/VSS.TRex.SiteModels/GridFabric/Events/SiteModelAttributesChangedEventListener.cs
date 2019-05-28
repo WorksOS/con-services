@@ -38,30 +38,27 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         Log.LogInformation(
           $"Received notification of site model attributes changed for {message.SiteModelID}: ExistenceMapModified={message.ExistenceMapModified}, DesignsModified={message.DesignsModified}, SurveyedSurfacesModified {message.SurveyedSurfacesModified} CsibModified={message.CsibModified}, MachinesModified={message.MachinesModified}, MachineTargetValuesModified={message.MachineTargetValuesModified}, AlignmentsModified {message.AlignmentsModified}, ExistenceMapChangeMask {message.ExistenceMapChangeMask != null}");
 
-        try
+        // Tell the SiteModels instance to reload the designated site model that has changed
+        var siteModels = DIContext.Obtain<ISiteModels>();
+        if (siteModels != null)
         {
-          // Tell the SiteModels instance to reload the designated site model that has changed
-          var siteModels = DIContext.Obtain<ISiteModels>();
-          if (siteModels != null)
-          {
-            siteModels.SiteModelAttributesHaveChanged(message);
-          }
-          else
-          {
-            Log.LogError("No ISiteModels instance available from DIContext to send attributes change message to");
-            return false;
-          }
+          siteModels.SiteModelAttributesHaveChanged(message);
         }
-        finally
+        else
         {
-          Log.LogInformation(
-            $"Completed handling notification of site model attributes changed for {message.SiteModelID}: ExistenceMapModified={message.ExistenceMapModified}, DesignsModified={message.DesignsModified}, SurveyedSurfacesModified {message.SurveyedSurfacesModified} CsibModified={message.CsibModified}, MachinesModified={message.MachinesModified}, MachineTargetValuesModified={message.MachineTargetValuesModified}, AlignmentsModified {message.AlignmentsModified}, ExistenceMapChangeMask {message.ExistenceMapChangeMask != null}");
+          Log.LogError("No ISiteModels instance available from DIContext to send attributes change message to");
+          return false;
         }
       }
       catch (Exception e)
       {
         Log.LogError(e, "Exception occured processing site model attributes changed event");
         return false;
+      }
+      finally
+      {
+        Log.LogInformation(
+          $"Completed handling notification of site model attributes changed for {message.SiteModelID}: ExistenceMapModified={message.ExistenceMapModified}, DesignsModified={message.DesignsModified}, SurveyedSurfacesModified {message.SurveyedSurfacesModified} CsibModified={message.CsibModified}, MachinesModified={message.MachinesModified}, MachineTargetValuesModified={message.MachineTargetValuesModified}, AlignmentsModified {message.AlignmentsModified}, ExistenceMapChangeMask {message.ExistenceMapChangeMask != null}");
       }
 
       return true;

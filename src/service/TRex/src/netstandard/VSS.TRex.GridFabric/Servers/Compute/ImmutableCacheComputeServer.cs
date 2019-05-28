@@ -199,7 +199,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
-    public void InstantiateSitemodelsCacheReference()
+    private void InstantiateSiteModelsCacheReference()
     {
       immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(new CacheConfiguration
       {
@@ -248,7 +248,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //ConfigureImmutableSpatialCache(CacheCfg);
       SpatialImmutableCache = InstantiateSpatialCacheReference(spatialCacheConfiguration);
 
-      InstantiateSitemodelsCacheReference();
+      InstantiateSiteModelsCacheReference();
     }
   }
 }
