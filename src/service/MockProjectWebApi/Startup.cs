@@ -57,6 +57,7 @@ namespace MockProjectWebApi
       services.AddSingleton<IFiltersService, FiltersService>();
       services.AddSingleton<IImportedFilesService, ImportedFilesService>();
       services.AddSingleton<IProjectService, ProjectService>();
+      services.AddSingleton<IGeofenceservice, GeofenceService>();
 
       serviceCollection = services;
     }

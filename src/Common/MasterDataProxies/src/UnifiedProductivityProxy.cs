@@ -22,7 +22,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     public async Task<List<GeofenceData>> GetAssociatedGeofences(string projectUid, IDictionary<string, string> customHeaders = null)
     {
-      var route = $"/projects/{projectUid}/sitewithtargets/asgeofence";
+      var route = $"/composite/projects/{projectUid}/sitewithtargets/asgeofence";
       var result = await GetContainedMasterDataList<GeofenceWithTargetsResult>(projectUid, null, "UNIFIED_PRODUCTIVITY_CACHE_LIFE", "UNIFIED_PRODUCTIVITY_API_URL", customHeaders, null, route);
       return result.Results?.Select(r => r.Geofence).ToList();
     }
