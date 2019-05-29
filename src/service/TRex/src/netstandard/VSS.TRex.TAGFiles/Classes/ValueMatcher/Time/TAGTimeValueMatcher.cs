@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
     /// </summary>
     public class TAGTimeValueMatcher : TAGValueMatcher
     {
-        public TAGTimeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGTimeValueMatcher()
         {
         }
 
@@ -17,7 +17,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = false;
 

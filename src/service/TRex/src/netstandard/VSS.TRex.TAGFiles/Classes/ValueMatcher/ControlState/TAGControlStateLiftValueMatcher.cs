@@ -5,7 +5,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.ControlState
 {
     public class TAGControlStateLiftValueMatcher : TAGValueMatcher
     {
-        public TAGControlStateLiftValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGControlStateLiftValueMatcher()
         {
         }
 
@@ -13,7 +13,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.ControlState
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             valueSink.ControlStateLift = (int)value;
 

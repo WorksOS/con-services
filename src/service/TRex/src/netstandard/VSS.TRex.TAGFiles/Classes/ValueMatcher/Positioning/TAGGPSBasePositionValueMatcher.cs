@@ -5,7 +5,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 {
     public class TAGGPSBasePositionValueMatcher : TAGValueMatcher
     {
-        public TAGGPSBasePositionValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGGPSBasePositionValueMatcher()
         {
         }
 
@@ -13,7 +13,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
+        public override bool ProcessEmptyValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType)
         {
             state.GPSBasePositionReportingHaveStarted = true;
 

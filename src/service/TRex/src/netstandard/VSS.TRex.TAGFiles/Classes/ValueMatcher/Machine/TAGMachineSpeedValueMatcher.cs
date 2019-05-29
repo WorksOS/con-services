@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
     /// </summary>
     public class TAGMachineSpeedValueMatcher : TAGValueMatcher
     {
-        public TAGMachineSpeedValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGMachineSpeedValueMatcher()
         {
         }
 
@@ -16,7 +16,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessDoubleValue(TAGDictionaryItem valueType, double value)
+        public override bool ProcessDoubleValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, double value)
         {
             state.HaveSeenMachineSpeed = true;
             valueSink.SetICMachineSpeedValue(value);

@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
     /// </summary>
     public class TAGAmplitudeValueMatcher : TAGValueMatcher
     {
-        public TAGAmplitudeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGAmplitudeValueMatcher()
         {
         }
 
@@ -17,7 +17,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
+        public override bool ProcessEmptyValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType)
         {
             state.HaveSeenAnAbsoluteAmplitude = false;
 
@@ -26,7 +27,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
             return true;
         }
 
-        public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
+        public override bool ProcessIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, int value)
         {
             bool result = false;
 
@@ -43,7 +45,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
             return result;
         }
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             state.HaveSeenAnAbsoluteAmplitude = true;
 

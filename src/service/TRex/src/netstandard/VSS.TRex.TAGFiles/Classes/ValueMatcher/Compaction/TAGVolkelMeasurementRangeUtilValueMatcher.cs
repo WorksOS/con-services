@@ -10,7 +10,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
     /// </summary>
     public class TAGVolkelMeasurementRangeUtilValueMatcher : TAGValueMatcher
     {
-        public TAGVolkelMeasurementRangeUtilValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGVolkelMeasurementRangeUtilValueMatcher()
         {
         }
 
@@ -18,7 +18,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
+        public override bool ProcessEmptyValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType)
         {
             state.HaveSeenAnAbsoluteVolkelMeasUtilRange = false;
 
@@ -27,7 +28,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
             return true;
         }
 
-        public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
+        public override bool ProcessIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, int value)
         {
             bool result = false;
 
@@ -44,7 +46,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
             return result;
         }
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = false;
 

@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
     /// </summary>
     public class TAGMachineIDValueMatcher : TAGValueMatcher
     {
-        public TAGMachineIDValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGMachineIDValueMatcher()
         {
         }
 
@@ -17,7 +17,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessANSIStringValue(TAGDictionaryItem valueType, byte[] value)
+        public override bool ProcessANSIStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, byte[] value)
         {
             valueSink.MachineID = Encoding.ASCII.GetString(value);
             state.HaveSeenAMachineID = true;

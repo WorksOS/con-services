@@ -37,7 +37,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// </summary>
     /// <param name="storageProxy"></param>
     /// <param name="subGrid"></param>
-    public void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid)
+    public void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid, uint subGridSegmentPassCountLimit = 0)
     {
       SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, storageProxy)
       {
@@ -60,7 +60,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
         if (Segment.RequiresCleaving(out uint TotalPassCount, out uint MaximumPassCount))
         {
-          if (subGrid.Cells.CleaveSegment(Segment, PersistedClovenSegments))
+          if (subGrid.Cells.CleaveSegment(Segment, PersistedClovenSegments, subGridSegmentPassCountLimit))
           {
               Iterator.SegmentListExtended();
 

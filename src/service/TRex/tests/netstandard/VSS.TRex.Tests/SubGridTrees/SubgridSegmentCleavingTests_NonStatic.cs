@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -229,24 +228,19 @@ namespace VSS.TRex.Tests.SubGridTrees
     [Fact()]
     public void Test_SubgridSegmentCleaving()
     {
-      // set the environment variable cleaving limit to 100000 to force the segment not to be cloven = the cleave result should be false
-      SetupDITfa(100000);
-
-      // Create a subgrid to hold the segment. the subGrid retains the limit in the subGrid constructor in MakeSubgridWith10240CellPassesAtOneSecondIntervals()
+      // Create a sub grid to hold the segment. the subGrid retains the limit in the subGrid constructor in MakeSubgridWith10240CellPassesAtOneSecondIntervals()
       IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
       ISubGridCellPassesDataSegment segment = subGrid.Cells.PassesData[0];
 
-      // Instruct the segment container to cleave the segment
+      // Instruct the segment container to cleave the segment with a limit of 100000
       var persistedClovenSegments = new List<ISubGridSpatialAffinityKey>();
-      Assert.False(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments), "Segment was cloven when cell pass count was below limit");
+      Assert.False(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments, 100000), "Segment was cloven when cell pass count was below limit");
 
       // Set the cleaving limit to 10000 to force the segment TO BE cloven = the cleave result should be true
-      SetupDITfa(10000);
-      // Since the cleaving limit is immutable in the subGrid, need to alter environment variable and re-read the subGrid according to the new limit.
       subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
       segment = subGrid.Cells.PassesData[0];
       persistedClovenSegments = new List<ISubGridSpatialAffinityKey>();
-      Assert.True(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments), "Segment failed to cleave with pass count above limit");
+      Assert.True(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments, 10000), "Segment failed to cleave with pass count above limit");
 
       //Check there are now two segments in total
       Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
@@ -258,7 +252,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       segment1.PassesData.CalculateTotalPasses(out uint totalPassCount1, out uint maximumPassCount1);
       segment2.PassesData.CalculateTotalPasses(out uint totalPassCount2, out uint maximumPassCount2);
 
-      Assert.True(10240 == (totalPassCount1 + totalPassCount2), $"Totals ({totalPassCount1} and {totalPassCount2} don't add up to 10240 after cleaving");
+      Assert.True(10240 == totalPassCount1 + totalPassCount2, $"Totals ({totalPassCount1} and {totalPassCount2} don't add up to 10240 after cleaving");
       Assert.True(5 == maximumPassCount1, $"Maximum pass count 1 {maximumPassCount1}, is not 5");
       Assert.True(5 == maximumPassCount2, $"Maximum pass count 2 {maximumPassCount2}, is not 5");
 
@@ -270,9 +264,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     [Fact()]
     public void Test_SubgridSegment_Cleaver()
     {
-      // set the environment variable cleaving limit to 10000 to force the segment not to be cloven = the cleave result should be true
-      SetupDITfa(10000);
-      // Create a subgrid to hold the segment
+      // Create a sub grid to hold the segment
       IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
       // Exercise the cleaver!
@@ -281,14 +273,14 @@ namespace VSS.TRex.Tests.SubGridTrees
       subGrid.Cells.PassesData[0].Dirty = false;
 
       var cleaver = new SubGridSegmentCleaver();
-      cleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
+      cleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid, 10000);
 
       Assert.True(1 == subGrid.Cells.PassesData.Count, $"After cleaving with no dirty segments there are {subGrid.Cells.PassesData.Count} segments instead of the expected one segments");
 
       // Set the segment to not dirty - it should be ignored
       subGrid.Cells.PassesData[0].Dirty = true;
       cleaver = new SubGridSegmentCleaver();
-      cleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
+      cleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid, 10000);
 
       //Check there are now two segments in total
       Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
