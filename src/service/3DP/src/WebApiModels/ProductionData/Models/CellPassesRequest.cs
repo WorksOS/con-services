@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     //TODO Move this to a new ENUM
     [JsonProperty(PropertyName = "gridDataType", Required = Required.Always)]
     [Required]
-    public int gridDataType { get; private set; }
+    public int gridDataType { get; set; }
 
     /// <summary>
     /// The ID of the filter to be used. 
@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult filter { get; protected set; }
 
     /// <summary>
     /// Validation of CellPassRequest
