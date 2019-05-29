@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Scheduler.Models;
 
 namespace VSS.Productivity3D.Scheduler.Abstractions
 {
-  public interface ISchedulerProxy
+  public interface ISchedulerProxy : ICacheProxy
   {
     [Obsolete("Use ScheduleBackgroundJob instead - generic solution")]
     Task<JobStatusResult> GetExportJobStatus(string jobId, IDictionary<string, string> customHeaders);
@@ -25,7 +26,7 @@ namespace VSS.Productivity3D.Scheduler.Abstractions
     Task<ScheduleJobResult> ScheduleBackgroundJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders);
 
     /// <summary>
-    /// Get the job status for a preeviously started job
+    /// Get the job status for a previously started job
     /// </summary>
     /// <param name="jobId">Job ID</param>
     /// <param name="customHeaders">Any custom headers to be passed with the request</param>

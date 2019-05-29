@@ -72,7 +72,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
-      services.AddScoped<ISchedulerProxy, SchedulerProxy>();
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
       services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
       services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
@@ -90,6 +89,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IProjectProxy, ProjectProxy>();
       services.AddSingleton<IFileImportProxy, FileImportProxy>();
       services.AddScoped<IFilterServiceProxy, FilterServiceProxy>();
+      services.AddScoped<ISchedulerProxy, SchedulerProxy>();
 
       /* todoJeannie 
       // service discovery
@@ -98,10 +98,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
       services.AddScoped<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
       services.AddScoped<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
-
-      var rr = services.BuildServiceProvider();
-      var psetting = rr.GetService<IFileImportProxy>();
-      var tt = psetting.GetFileForProject(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), new Dictionary<string, string>());
+      services.AddScoped<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
       todoJeannie */
 
       //Disable CAP for now #76666

@@ -72,7 +72,6 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<ICustomerRepository, CustomerRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
-      services.AddTransient<ISchedulerProxy, SchedulerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddTransient<IDataOceanClient, DataOceanClient>();
       services.AddTransient<IPegasusClient, PegasusClient>();
@@ -83,8 +82,8 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
 
-      services.AddServiceDiscovery();
       services.AddScoped<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
+      services.AddTransient<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
 
       services.AddOpenTracing(builder =>
       {

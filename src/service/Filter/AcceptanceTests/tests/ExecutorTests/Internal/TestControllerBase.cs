@@ -70,7 +70,7 @@ namespace ExecutorTests.Internal
         .AddSingleton<IGeofenceProxy, GeofenceProxy>()
         .AddServiceDiscovery()
         .AddSingleton<IProjectProxy, ProjectV4ServiceDiscoveryProxy>()
-        .AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>()
+        .AddSingleton<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();

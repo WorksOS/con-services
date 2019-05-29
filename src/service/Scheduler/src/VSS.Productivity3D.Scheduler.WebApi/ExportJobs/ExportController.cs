@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="jobId">Job Id of the background job</param>
     /// <returns>The content of the results of the background job if the job is completed</returns>
     [Route("api/v1/export/{jobId}/result")]
-    [Route("api/v1/background/{jobId}/result")]
+    [Route("api/v1/background/{jobId}/result")] // todo missing HttpGet
     public FileStreamResult GetExportJobResult(string jobId)
     {
       var status = GetExportJobStatus(jobId);
