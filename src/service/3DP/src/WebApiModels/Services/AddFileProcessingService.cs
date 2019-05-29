@@ -8,10 +8,12 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity.Push.Models.Notifications;
+using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 #if RAPTOR
 using VSS.Productivity3D.WebApi.Models.Notification.Executors;
 #endif
@@ -39,15 +41,16 @@ namespace VSS.Productivity3D.WebApi.Models.Services
     private CancellationToken token;
     private bool stopRequested = false;
     private SemaphoreSlim stopSemaphore = new SemaphoreSlim(1);
-    //private readonly ICapPublisher capPublisher;//Disable CAP for now #76666
-    private readonly string kafkaTopicName;
+    private readonly INotificationHubClient notificationHubClient;
+
 
     public AddFileProcessingService(ILogger<AddFileProcessingService> logger, ILoggerFactory logFactory,
       IConfigurationStore configService, IFileRepository repositoryService,
 #if RAPTOR
       IASNodeClient raptorService,
 #endif
-      ITileGenerator tileService/*, ICapPublisher capPub*/)//Disable CAP for now #76666
+      ITileGenerator tileService,
+      INotificationHubClient notificationHubClient)
     {
       log = logger;
       configServiceStore = configService;
@@ -57,8 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.Services
       raptorServiceClient = raptorService;
 #endif
       tileServiceGenerator = tileService;
-      //capPublisher = capPub;//Disable CAP for now #76666
-      kafkaTopicName = $"VSS.Productivity3D.Service.AddFileProcessedEvent{configServiceStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")}".Trim();
+      this.notificationHubClient = notificationHubClient;
     }
 
     private async Task<AddFileResult> ProcessItem(ProjectFileDescriptor file)
@@ -75,19 +77,14 @@ namespace VSS.Productivity3D.WebApi.Models.Services
         {"result", result.Message }
       };
       NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request_files", eventAttributes);
-      //Disable CAP for now #76666
-      /*
-      try
+      log.LogInformation($"Pushing DXF tile notification for {result.FileUid}");
+      var notifyParams = new DxfTileNotificationParameters
       {
-        log.LogInformation($"Publishing result to CAP with kafka topic {kafkaTopicName}");
-        capPublisher.Publish(kafkaTopicName, result);
-      }
-      catch (Exception e)
-      {
-        log.LogError(e, $"Failed to publish to CAP");
-        throw;
-      }
-      */
+        FileUid = result.FileUid,
+        MinZoomLevel = result.MinZoomLevel,
+        MaxZoomLevel = result.MaxZoomLevel
+      };
+      await notificationHubClient.Notify(new ProjectFileDxfTilesGeneratedNotification(notifyParams));
       return result;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
