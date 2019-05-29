@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The maximum number of TAG files the grouper will permit in a bucket of TAG file before being committed to the 
         /// full buckets list.
         /// </summary>
-        public int kMaxNumberOfTAGFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
+        public static readonly int kMaxNumberOfTAGFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
 
         /// <summary>
         /// GroupMap is a dictionary (keyed on project UID) of dictionaries (keyed on AssetUID) of

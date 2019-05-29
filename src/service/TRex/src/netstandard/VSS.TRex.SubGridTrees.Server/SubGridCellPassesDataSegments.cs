@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGridTrees.Server
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegments>();
 
-    private readonly bool _performSegmentAdditionIntegrityChecks = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS", Consts.DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS);
+    private static readonly bool _performSegmentAdditionIntegrityChecks = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS", Consts.DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS);
 
     public List<ISubGridCellPassesDataSegment> Items { get; set; } = new List<ISubGridCellPassesDataSegment>();
 
