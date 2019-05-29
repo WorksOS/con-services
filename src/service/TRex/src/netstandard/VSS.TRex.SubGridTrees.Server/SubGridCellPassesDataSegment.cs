@@ -189,7 +189,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool Write(BinaryWriter writer)
     {
       // Write the version to the stream
-      SubGridStreamHeader Header = new SubGridStreamHeader
+      var Header = new SubGridStreamHeader
       {
         Identifier = SubGridStreamHeader.kICServerSubGridLeafFileMoniker,
         Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridSegmentFile,
