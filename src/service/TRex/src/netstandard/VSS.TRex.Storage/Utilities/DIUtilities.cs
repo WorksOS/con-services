@@ -2,6 +2,7 @@
 using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
@@ -27,10 +28,10 @@ namespace VSS.TRex.Storage.Utilities
         (factory => (ignite, mutability, streamType) => new StorageProxyCache<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability, streamType)))))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>>>
-        (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability, streamType)))))
+        (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability, streamType)), new SubGridSpatialAffinityKeyEqualityComparer())))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>
-        (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability, streamType)))));
+        (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new NonSpatialAffinityKeyEqualityComparer())));
     }
 
     /// <summary>

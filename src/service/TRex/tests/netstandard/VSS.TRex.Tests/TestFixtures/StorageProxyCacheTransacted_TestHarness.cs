@@ -6,7 +6,7 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class StorageProxyCacheTransacted_TestHarness<TK, TV> : StorageProxyCacheTransacted<TK, TV>, IStorageProxyCacheTransacted_TestHarness<TK, TV>
   {
-    public StorageProxyCacheTransacted_TestHarness(ICache<TK, TV> cache) : base(cache)
+    public StorageProxyCacheTransacted_TestHarness(ICache<TK, TV> cache, IEqualityComparer<TK> comparer) : base(cache, comparer)
     {
     }
 
