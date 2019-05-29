@@ -6,7 +6,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 {
     public class TAGSerialValueMatcher : TAGValueMatcher
     {
-        public TAGSerialValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGSerialValueMatcher()
         {
         }
 
@@ -14,7 +14,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessANSIStringValue(TAGDictionaryItem valueType, byte[] value)
+        public override bool ProcessANSIStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, byte[] value)
         {
             valueSink.HardwareID = Encoding.ASCII.GetString(value);
 

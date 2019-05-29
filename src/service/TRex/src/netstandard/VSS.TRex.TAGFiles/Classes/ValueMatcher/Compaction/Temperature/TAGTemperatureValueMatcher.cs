@@ -10,7 +10,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
     /// </summary>
     public class TAGTemperatureValueMatcher : TAGValueMatcher
     {
-        public TAGTemperatureValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGTemperatureValueMatcher()
         {
         }
 
@@ -18,7 +18,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
+        public override bool ProcessEmptyValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType)
         {
             state.HaveSeenAnAbsoluteTemperature = false;
 
@@ -27,7 +28,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
             return true;
         }
 
-        public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
+        public override bool ProcessIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, int value)
         {
             bool result = false;
 
@@ -46,7 +48,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
             return result;
         }
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
           // Value is absolute temperature value
           state.HaveSeenAnAbsoluteTemperature = true;

@@ -22,6 +22,8 @@ namespace VSS.TRex.TAGFiles.Executors
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
+    private static readonly bool tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
+
     /// <summary>
     /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
     /// </summary>
@@ -75,7 +77,6 @@ namespace VSS.TRex.TAGFiles.Executors
           if (result.Code == (int) TRexTagFileResultCode.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tag file
-            var tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
             if (tagFileArchiving)
             {
               Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");

@@ -10,7 +10,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem
   /// </summary>
   public class TAGCoordinateSystemTypeValueMatcher : TAGValueMatcher
   {
-    public TAGCoordinateSystemTypeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+    public TAGCoordinateSystemTypeValueMatcher()
     {
     }
 
@@ -18,7 +18,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem
 
     public override string[] MatchedValueTypes() => valueTypes;
 
-    public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+    public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+      TAGDictionaryItem valueType, uint value)
     {
       bool result = false;
 

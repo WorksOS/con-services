@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
     /// </summary>
     public class TAGRMVJumpThresholdValueMatcher : TAGValueMatcher
     {
-        public TAGRMVJumpThresholdValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGRMVJumpThresholdValueMatcher()
         {
         }
 
@@ -16,7 +16,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             valueSink.ICRMVJumpthreshold = (short)value;
 

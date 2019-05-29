@@ -6,7 +6,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
 {
     public class TAGWheelOrdinateValueMatcher : TAGValueMatcher
     {
-        public TAGWheelOrdinateValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGWheelOrdinateValueMatcher()
         {
         }
 
@@ -14,7 +14,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
+        public override bool ProcessIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, int value)
         {
             // Position value is integer number of millimeters offset from the current position
 
@@ -68,7 +69,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
             return false;
         }
 
-        public override bool ProcessDoubleValue(TAGDictionaryItem valueType, double value)
+        public override bool ProcessDoubleValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, double value)
         {
             state.HaveSeenAnAbsoluteWheelPosition = true;
 
@@ -117,7 +119,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
             return false;
         }
 
-        public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
+        public override bool ProcessEmptyValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType)
         {
             state.HaveSeenAnAbsoluteWheelPosition = false;
 

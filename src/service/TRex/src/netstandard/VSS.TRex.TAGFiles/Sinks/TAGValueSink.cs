@@ -20,50 +20,47 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         /// <summary>
         /// The set of value matchers available to match TAG values being accepted
         /// </summary>
-        private Dictionary<string, TAGValueMatcher> ValueMatchers { get; } = new Dictionary<string, TAGValueMatcher>();
+        private static readonly Dictionary<string, TAGValueMatcher> ValueMatchers = InitialiseValueMatchers();
 
         /// <summary>
         /// Returns the list of TAGs that are supported by this instance of the TAG value sink
         /// </summary>
-        public string[] InstantiatedTAGs => ValueMatchers.Keys.ToArray();
+        public static readonly string[] InstantiatedTAGs = ValueMatchers.Keys.ToArray();
 
         /// <summary>
-        /// Local value matcher state that the TAG value matchers use to coordinate values before sending them to the procesor
+        /// Local value matcher state that the TAG value matchers use to coordinate values before sending them to the processor
         /// </summary>
         protected TAGValueMatcherState ValueMatcherState { get; } = new TAGValueMatcherState();
 
         /// <summary>
         /// Locate all value matcher classes and add them to the value matchers list using reflection (or just manually as below)
         /// </summary>
-        private void InitialiseValueMatchers()
+        private static Dictionary<string, TAGValueMatcher> InitialiseValueMatchers()
         {
             // Get all the value matcher classes that exist in the assembly. These are all classes that
             // descend from TAGValueMatcher
-            List<Type> matchers = TypesHelper.FindAllDerivedTypes<TAGValueMatcher>();
+            var matchers = TypesHelper.FindAllDerivedTypes<TAGValueMatcher>();
+
+            var valueMatchers = new Dictionary<string, TAGValueMatcher>();
 
             // Iterate through those types and create each on in turn, query the TAG types from it that the matcher supports and
-            // then register the value matcher instance against those TAGs to allow the TAG file processor to locate matcher for 
-            // TAGS
-            foreach (Type t in matchers)
+            // then register the value matcher instance against those TAGs to allow the TAG file processor to locate matcher for TAGS
+            foreach (var t in matchers)
             {
-                TAGValueMatcher matcher = (TAGValueMatcher)Activator.CreateInstance(t, Processor, ValueMatcherState);
+                var matcher = (TAGValueMatcher)Activator.CreateInstance(t);
 
                 foreach (string tag in matcher.MatchedValueTypes())
                 {
-                    ValueMatchers.Add(tag, matcher);
+                    valueMatchers.Add(tag, matcher);
                 }
             }
 
-            // For each value matcher, register the value the matcher class supports into the value matcher dictionary
-            //matchers.Select(matcher => { ((string[])(matcher.GetMethod("matchedValueTypes").Invoke(null, null))).ForEach(value => ValueMatchers.Add(value, matcher)); });
+            return valueMatchers;
         }
 
         public TAGValueSink(TAGProcessorStateBase processor)
         {
             Processor = processor;
-
-            // Populate the Value matchers list with those necessary to read the file
-            InitialiseValueMatchers();
         }
 
         public override bool Starting() => true;
@@ -78,7 +75,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         {
             if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher?.ProcessANSIStringValue(valueType, value);
+                valueMatcher?.ProcessANSIStringValue(ValueMatcherState, Processor, valueType, value);
             }
         }
 
@@ -86,7 +83,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         {
             if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher?.ProcessEmptyValue(valueType);
+                valueMatcher?.ProcessEmptyValue(ValueMatcherState, Processor, valueType);
             }
         }
 
@@ -94,7 +91,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         {
             if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher?.ProcessDoubleValue(valueType, value);
+                valueMatcher?.ProcessDoubleValue(ValueMatcherState, Processor, valueType, value);
             }
         }
 
@@ -107,7 +104,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         {
             if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher?.ProcessIntegerValue(valueType, value);
+                valueMatcher?.ProcessIntegerValue(ValueMatcherState, Processor, valueType, value);
             }
         }
 
@@ -115,7 +112,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         {
             if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher?.ProcessUnicodeStringValue(valueType, value);
+                valueMatcher?.ProcessUnicodeStringValue(ValueMatcherState, Processor, valueType, value);
             }
         }
 
@@ -123,7 +120,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         {
             if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher?.ProcessUnsignedIntegerValue(valueType, value);
+                valueMatcher?.ProcessUnsignedIntegerValue(ValueMatcherState, Processor, valueType, value);
             }
         }
     }

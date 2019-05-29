@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
@@ -35,7 +35,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public bool RecordSubGridFileReadingToLog { get; set; } = false;
 
-    private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
+    private static readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
     
     public ServerSubGridTree(Guid siteModelID, StorageMutability mutability) :
       this(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
@@ -358,15 +358,19 @@ namespace VSS.TRex.SubGridTrees.Server
           //*** modified file being written will be recovered.                 ***
           //**********************************************************************
 
-          Log.LogDebug($"Sub grid has {ModifiedOriginalSegments.Count} modified segments");
+          if (Log.IsTraceEnabled())
+            Log.LogTrace($"Sub grid has {ModifiedOriginalSegments.Count} modified segments");
 
           foreach (var segment in ModifiedOriginalSegments)
           {
             // Update the version of the segment as it is about to be written
             segment.SegmentInfo.Touch();
 
-            if (segment.SaveToFile(storageProxy, GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo), out FileSystemErrorStatus FSError))
-              Log.LogDebug($"Saved modified grid segment file: {segment}");
+            if (segment.SaveToFile(storageProxy, GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo), out var FSError))
+            {
+              if (Log.IsTraceEnabled())
+                Log.LogTrace($"Saved modified grid segment file: {segment}");
+            }
             else
             {
               Log.LogError($"Failed to save modified original grid segment {GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo)}: Error:{FSError}");
@@ -402,11 +406,13 @@ namespace VSS.TRex.SubGridTrees.Server
 
         if (subGrid.SaveDirectoryToFile(storageProxy, GetLeafSubGridFullFileName(OriginAddress)))
         {
-          Log.LogDebug($"Saved grid directory file: {GetLeafSubGridFullFileName(OriginAddress)}");
+          if (Log.IsTraceEnabled())
+            Log.LogTrace($"Saved grid directory file: {GetLeafSubGridFullFileName(OriginAddress)}");
         }
         else
         {
-          Log.LogError($"Failed to save grid: {GetLeafSubGridFullFileName(OriginAddress)}");
+          if (Log.IsTraceEnabled())
+            Log.LogTrace($"Failed to save grid: {GetLeafSubGridFullFileName(OriginAddress)}");
           return false;
         }
 

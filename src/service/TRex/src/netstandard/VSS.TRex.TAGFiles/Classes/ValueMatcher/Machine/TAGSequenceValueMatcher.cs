@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
     /// </summary>
     public class TAGSequenceValueMatcher : TAGValueMatcher
     {
-        public TAGSequenceValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGSequenceValueMatcher()
         {
         }
 
@@ -16,7 +16,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = valueType.Type == TAGDataType.t32bitUInt;
 

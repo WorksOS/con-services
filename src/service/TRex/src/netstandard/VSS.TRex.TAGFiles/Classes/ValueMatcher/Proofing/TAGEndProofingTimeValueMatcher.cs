@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
   /// </summary>
   public class TAGEndProofingTimeValueMatcher : TAGValueMatcher
   {
-    public TAGEndProofingTimeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+    public TAGEndProofingTimeValueMatcher()
     {
     }
 
@@ -17,7 +17,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
 
     public override string[] MatchedValueTypes() => valueTypes;
 
-    public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+    public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+      TAGDictionaryItem valueType, uint value)
     {
       bool result = false;
 

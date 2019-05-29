@@ -48,7 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         private readonly List<Guid> ProjectsToAvoid = new List<Guid>();
 
-        private readonly int NumConcurrentProcessingTasks = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS", kDefaultNumConcurrentTAGFileProcessingTasks);
+        private static readonly int NumConcurrentProcessingTasks = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS", kDefaultNumConcurrentTAGFileProcessingTasks);
 
         private void ProcessTAGFilesFromGrouper()
         {

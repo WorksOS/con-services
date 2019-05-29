@@ -110,7 +110,7 @@ namespace VSS.TRex.Compression
         {
             long _numBits = 0;
 
-            foreach (BitFieldArrayRecordsDescriptor descriptor in recordsArray)
+            foreach (var descriptor in recordsArray)
                 _numBits += (long)descriptor.NumRecords * descriptor.BitsPerRecord;
 
             if (_numBits > uint.MaxValue)
@@ -196,7 +196,7 @@ namespace VSS.TRex.Compression
               : value - descriptor.MinValue;
 
             // Be paranoid! Ensure there are no bits set in the high order bits above the least significant valueBits in Value
-            value = value & ((1 << ValueBits) - 1);
+            value &= (1 << ValueBits) - 1;
 
             int StoragePointer = unchecked((int)(StreamWriteBitPos >> BIT_LOCATION_TO_BLOCK_SHIFT));
             int AvailBitsInCurrentStorageElement = N_BITS_TO_READ_AT_A_TIME - unchecked((byte)(StreamWriteBitPos & BITS_REMAINING_IN_STORAGE_BLOCK_MASK));
@@ -204,7 +204,7 @@ namespace VSS.TRex.Compression
             // Write initial bits into storage element
             if (AvailBitsInCurrentStorageElement >= ValueBits)
             {
-                Storage[StoragePointer] |=  unchecked((ulong)value) << (AvailBitsInCurrentStorageElement - ValueBits);
+                Storage[StoragePointer] |= unchecked((ulong)value) << (AvailBitsInCurrentStorageElement - ValueBits);
                 StreamWriteBitPos += unchecked((uint)ValueBits);   // Advance the current bit position pointer;
                 return;
             }

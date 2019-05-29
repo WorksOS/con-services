@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
     /// </summary>
     public class TAGGPSAccuracyValueMatcher : TAGValueMatcher
     {
-        public TAGGPSAccuracyValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGGPSAccuracyValueMatcher()
         {
         }
 
@@ -17,7 +17,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = valueType.Type == TAGDataType.t16bitUInt;
 
