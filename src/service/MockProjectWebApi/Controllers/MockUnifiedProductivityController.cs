@@ -34,8 +34,8 @@ namespace MockProjectWebApi.Controllers
         AssociatedGeofenceData = new List<GeofenceWithTargetsData>();
         foreach (var geofence in geofenceService.Associated)
         {
-          AssociatedGeofenceData.Add(new GeofenceWithTargetsData { Geofence = geofence});
-        }  
+          AssociatedGeofenceData.Add(new GeofenceWithTargetsData { Geofence = geofence });
+        }
       }
     }
 

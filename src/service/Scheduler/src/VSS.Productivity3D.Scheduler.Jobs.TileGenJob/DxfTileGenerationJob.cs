@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics.Health;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
@@ -21,12 +22,14 @@ using VSS.Productivity3D.Push.Abstractions.Notifications;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
 {
-
   /// <summary>
   /// Job to generate DXF tiles using Pegasus.
   /// </summary>
   public class DxfTileGenerationJob : IJob
   {
+    // Bug 83657 - 3D pm and Scheduler failing to generate tiles in pegasus. 
+    // Disable this job until Pegasus is ready
+    private const bool isEnabled = false;
 
     public static Guid VSSJOB_UID = Guid.Parse("5f3eed28-58e8-451e-8459-5f5a39d5c3b6");
     public Guid VSSJobUid => VSSJOB_UID;
@@ -66,18 +69,28 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
       //Validate the parameters
       request.Validate();
 
-      var dataOceanPath = $"{Path.DirectorySeparatorChar}{request.DataOceanRootFolder}{Path.DirectorySeparatorChar}{request.CustomerUid}{Path.DirectorySeparatorChar}{request.ProjectUid}";
-      var dxfFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{request.DxfFileName}";
-      var dcFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{request.DcFileName}";
-
-      var result = await pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, request.DxfUnitsType, CustomHeaders());
-      var notifyParams = new DxfTileNotificationParameters
+      // Bug 83657 - 3D pm and Scheduler failing to generate tiles in pegasus. 
+      // This is disabled until we are ready to move to Pegasus 
+      if (isEnabled)
       {
-        FileUid = request.ImportedFileUid,
-        MinZoomLevel = result.MinZoom,
-        MaxZoomLevel = result.MaxZoom
-      };
-      await notificationHubClient.Notify(new ProjectFileDxfTilesGeneratedNotification(notifyParams));
+        var dataOceanPath = $"{Path.DirectorySeparatorChar}{request.DataOceanRootFolder}{Path.DirectorySeparatorChar}{request.CustomerUid}{Path.DirectorySeparatorChar}{request.ProjectUid}";
+        var dxfFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{request.DxfFileName}";
+        var dcFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{request.DcFileName}";
+
+        var result = await pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, request.DxfUnitsType, CustomHeaders());
+        log.LogInformation($"Received Pegasus response for tile generation, filename: {dxfFileName}, result: `{JsonConvert.SerializeObject(result)}`");
+        var notifyParams = new DxfTileNotificationParameters
+        {
+          FileUid = request.ImportedFileUid,
+          MinZoomLevel = result.MinZoom,
+          MaxZoomLevel = result.MaxZoom
+        };
+        await notificationHubClient.Notify(new ProjectFileDxfTilesGeneratedNotification(notifyParams));
+      }
+      else
+      {
+        log.LogInformation($"Dxf Tile Generation with Pegasus disabled (Bug 83657) - ignoring request: {JsonConvert.SerializeObject(request)}");
+      }
     }
 
     public Task TearDown(object o)

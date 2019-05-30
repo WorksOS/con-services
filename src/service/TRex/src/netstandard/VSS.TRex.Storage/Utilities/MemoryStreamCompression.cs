@@ -20,7 +20,7 @@ namespace VSS.TRex.Storage.Utilities
                 return null;
             }
 
-            MemoryStream compressStream = new MemoryStream();
+            var compressStream = new MemoryStream();
 
             input.Position = 0;
             using (var compressor = new DeflateStream(compressStream, CompressionMode.Compress, true))

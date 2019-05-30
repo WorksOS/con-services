@@ -8,6 +8,6 @@ namespace VSS.MasterData.Models.Models
     public GeofenceData Geofence { get; set; }
     //Unified Productivity also returns Target and Backfill data here which we don't care about
 
-    public List<string> GetIdentifiers() => Geofence?.GetIdentifiers();
+    public List<string> GetIdentifiers() => Geofence?.GetIdentifiers() ?? new List<string>();
   }
 }

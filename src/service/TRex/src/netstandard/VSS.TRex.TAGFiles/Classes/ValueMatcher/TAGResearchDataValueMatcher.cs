@@ -8,8 +8,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
     /// </summary>
     public class TAGResearchDataValueMatcher : TAGValueMatcher
     {
-        public TAGResearchDataValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(
-            valueSink, state)
+        public TAGResearchDataValueMatcher()
         {
         }
 
@@ -17,7 +16,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             valueSink.ResearchData = value != 0;
 

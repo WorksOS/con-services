@@ -15,7 +15,7 @@ namespace MockProjectWebApi.Controllers
 
     public MockGeofenceController(IGeofenceservice geofenceService)
     {
-      this.geofenceService = (GeofenceService) geofenceService;
+      this.geofenceService = (GeofenceService)geofenceService;
     }
 
     [Route("api/v1/mock/geofences")]

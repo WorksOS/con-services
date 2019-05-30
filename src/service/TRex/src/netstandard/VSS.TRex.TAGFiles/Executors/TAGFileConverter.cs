@@ -66,7 +66,7 @@ namespace VSS.TRex.TAGFiles.Executors
         public ProductionEventLists MachineTargetValueChangesAggregator { get; set; }
 
         /// <summary>
-        /// The processor used as the sink for values reader from the TAGfile by the TAG file reader.
+        /// The processor used as the sink for values reader from the TAG file by the TAG file reader.
         /// Once the TAG file is converted, this contains the final state of the TAGProcessor state machine.
         /// </summary>
         public TAGProcessor Processor { get; set; }
@@ -102,22 +102,22 @@ namespace VSS.TRex.TAGFiles.Executors
       /// <summary>
         /// Fill out the local class properties with the information wanted from the TAG file
         /// </summary>
-        /// <param name="Processor"></param>
-        private void SetPublishedState(TAGProcessor Processor)
+        /// <param name="processor"></param>
+        private void SetPublishedState(TAGProcessor processor)
         {
-            ProcessedEpochCount = Processor.ProcessedEpochCount;
-            ProcessedCellPassCount = Processor.ProcessedCellPassesCount;
+            ProcessedEpochCount = processor.ProcessedEpochCount;
+            ProcessedCellPassCount = processor.ProcessedCellPassesCount;
 
             // Set the site model's last modified date...
             SiteModel.LastModifiedDate = DateTime.UtcNow;
         
             //Update latest status for the machine
-            Machine.LastKnownX = Processor.DataLeft.X;
-            Machine.LastKnownY = Processor.DataLeft.Y;
-            Machine.LastKnownPositionTimeStamp = Processor.DataTime;
-            Machine.MachineHardwareID = Processor.HardwareID;
-            Machine.MachineType = Processor.MachineType;
-            Machine.Name = Processor.MachineID;
+            Machine.LastKnownX = processor.DataLeft.X;
+            Machine.LastKnownY = processor.DataLeft.Y;
+            Machine.LastKnownPositionTimeStamp = processor.DataTime;
+            Machine.MachineHardwareID = processor.HardwareID;
+            Machine.MachineType = processor.MachineType;
+            Machine.Name = processor.MachineID;
         }
 
         /// <summary>
@@ -132,13 +132,13 @@ namespace VSS.TRex.TAGFiles.Executors
             {
                 Initialise();
 
-                TAGValueSink Sink = new TAGValueSink(Processor);
-                TAGReader Reader = new TAGReader(TAGData);
-                TAGFile TagFile = new TAGFile();
+                var Sink = new TAGValueSink(Processor);
+                var Reader = new TAGReader(TAGData);
+                var TagFile = new TAGFile();
 
                 ReadResult = TagFile.Read(Reader, Sink);
 
-                // Notify the Processor that all reading operations have completed for the file
+                // Notify the processor that all reading operations have completed for the file
                 Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
 
                 SetPublishedState(Processor);

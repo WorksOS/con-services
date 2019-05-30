@@ -5,14 +5,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
     public class TAG3DSonicValueMatcher : TAGValueMatcher
     {
-        public TAG3DSonicValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAG3DSonicValueMatcher()
         {
         }
 
         private static readonly string[] valueTypes = { TAGValueNames.kTag3DSonic };
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = false;
 

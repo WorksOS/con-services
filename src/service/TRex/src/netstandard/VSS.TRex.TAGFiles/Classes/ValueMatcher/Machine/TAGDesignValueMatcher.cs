@@ -5,7 +5,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 {
     public class TAGDesignValueMatcher : TAGValueMatcher
     {
-        public TAGDesignValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGDesignValueMatcher()
         {
         }
 
@@ -13,7 +13,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnicodeStringValue(TAGDictionaryItem valueType, string value)
+        public override bool ProcessUnicodeStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, string value)
         {
             valueSink.Design = value;
 

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -13,7 +11,6 @@ using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
@@ -60,19 +57,22 @@ namespace VSS.TRex.Profiling
     /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     /// <param name="referenceDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
+    /// <param name="volumeType"></param>
     public SummaryVolumesCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
-      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
+      ICellLiftBuilder cellLiftBuilder,
+      VolumeComputationType volumeType) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
     {
       svDesignWrapper = referenceDesignWrapper;
+      VolumeType = volumeType;
     }
 
     /// <summary>
-    /// Constructs the set of filters that will be used to derive the set of production data subgrids required for
-    /// each subgrid being considered along the profile line.
+    /// Constructs the set of filters that will be used to derive the set of production data sub grids required for
+    /// each sub grid being considered along the profile line.
     /// </summary>
     /// <returns></returns>
     private IFilterSet ConstructFilters()
@@ -102,14 +102,24 @@ namespace VSS.TRex.Profiling
         }
       }
 
+      if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
+      {
+        return new FilterSet(new [] { FilterSet.Filters[1] });
+      }
+
+      if (VolumeType == VolumeComputationType.BetweenFilterAndDesign)
+      {
+        return new FilterSet(new[] { FilterSet.Filters[0] });
+      }
+
       return FilterSet;
     }
 
     /// <summary>
-    /// Merges the 'from' elevation subgrid and the 'intermediary' subgrid result into a single subgrid for 
-    /// subsequent calculation. THe result is placed into the 'from' subgrid.
+    /// Merges the 'from' elevation sub grid and the 'intermediary' sub grid result into a single sub grid for 
+    /// subsequent calculation. THe result is placed into the 'from' sub grid.
     /// </summary>
-    private void MergeIntemediaryResults(ClientHeightAndTimeLeafSubGrid heightGrid1, ClientHeightAndTimeLeafSubGrid intermediaryHeightGrid)
+    private void MergeIntermediaryResults(ClientHeightAndTimeLeafSubGrid heightGrid1, ClientHeightAndTimeLeafSubGrid intermediaryHeightGrid)
     {
       // Combine this result with the result of the first query to obtain a modified heights grid
 
@@ -128,7 +138,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Processes each subgrid in turn into the resulting profile.
+    /// Processes each sub grid in turn into the resulting profile.
     /// </summary>
     public void ProcessSubGroup(SubGridCellAddress address, bool prodDataAtAddress, SubGridTreeBitmapSubGridBits cellOverrideMask)
     { 
@@ -140,7 +150,7 @@ namespace VSS.TRex.Profiling
         x.CellOverrideMask = cellOverrideMask;
 
         // Reach into the sub grid request layer and retrieve an appropriate sub grid
-        ServerRequestResult result = x.RequestSubGridInternal(address, prodDataAtAddress, true, out var clientGrid);
+        var result = x.RequestSubGridInternal(address, prodDataAtAddress, true, out var clientGrid);
         if (result != ServerRequestResult.NoError)
           Log.LogError($"Request for sub grid {address} request failed with code {result}");
 
@@ -150,22 +160,29 @@ namespace VSS.TRex.Profiling
       // If an intermediary result was requested then merge the 'from' and intermediary sub grids now
       if (IntermediaryFilterRequired)
       {
-        MergeIntemediaryResults(clientGrids[0] as ClientHeightAndTimeLeafSubGrid, clientGrids[1] as ClientHeightAndTimeLeafSubGrid);
+        MergeIntermediaryResults(clientGrids[0] as ClientHeightAndTimeLeafSubGrid, clientGrids[1] as ClientHeightAndTimeLeafSubGrid);
         //... and chop out the intermediary grid
         clientGrids = new[] {clientGrids[0], clientGrids[2]};
       }
 
-      var heightsGrid1 = clientGrids[0] as ClientHeightAndTimeLeafSubGrid;
-      var heightsGrid2 = clientGrids[1] as ClientHeightAndTimeLeafSubGrid;
+      // Assign the results of the sub grid requests according to the ordering of the filter in the overall
+      // volume type context of the request
+      ClientHeightAndTimeLeafSubGrid heightsGrid1 = null;
+      if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.Between2Filters)
+        heightsGrid1 = clientGrids[0] as ClientHeightAndTimeLeafSubGrid;
+
+      ClientHeightAndTimeLeafSubGrid heightsGrid2 = null;
+      if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
+        heightsGrid2 = clientGrids[0] as ClientHeightAndTimeLeafSubGrid;
+      else if (VolumeType == VolumeComputationType.Between2Filters)
+        heightsGrid2 = clientGrids[1] as ClientHeightAndTimeLeafSubGrid;
 
       IClientHeightLeafSubGrid designHeights = null;
 
       if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
       {
-
         if (svDesignWrapper?.Design != null)
         {
-
           svDesignWrapper.Design.GetDesignHeights(SiteModel.ID, svDesignWrapper.Offset, address, SiteModel.CellSize, out designHeights, out var errorCode);
           if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
           {
@@ -187,7 +204,6 @@ namespace VSS.TRex.Profiling
         {
           Log.LogError("Missing design reference. Call to request Summary Volumes Profile using design failed due to no reference design");
         }
-
       }
       else
       {
@@ -205,12 +221,9 @@ namespace VSS.TRex.Profiling
           if (heightsGrid2 != null)
             profileCellList[I].LastCellPassElevation2 = heightsGrid2.Cells[cellX, cellY];
           profileCellList[I].DesignElev = designHeights?.Cells[cellX, cellY] ?? CellPassConsts.NullHeight;
-
         }
       }
-
     }
-
 
     /// <summary>
     /// Builds a fully analyzed vector of profiled cells from the list of cell passed to it
@@ -224,32 +237,30 @@ namespace VSS.TRex.Profiling
 
       Log.LogDebug($"Analyze Summary Volume ProfileCells. Processing {profileCells.Count}");
 
-      SubGridCellAddress CurrentSubgridOrigin = new SubGridCellAddress(int.MaxValue, int.MaxValue);
+      var CurrentSubgridOrigin = new SubGridCellAddress(int.MaxValue, int.MaxValue);
       ISubGrid SubGrid = null;
       IServerLeafSubGrid _SubGridAsLeaf = null;
       profileCell = null;
 
-      // Construct the set of requestors to query elevation subgrids needed for the summary volume calculations.
+      // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       Requestors = utilities.ConstructRequestors(SiteModel,
         utilities.ConstructRequestorIntermediaries(SiteModel, ConstructFilters(), true, GridDataType.HeightAndTime),
         AreaControlSet.CreateAreaControlSet(), PDExistenceMap);
 
-      SubGridTreeBitmapSubGridBits cellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
+      var cellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       for (int I = 0; I < profileCells.Count; I++)
       {
-
         profileCell = profileCells[I];
 
-        // get subgrid origin for cell address
-        SubGridCellAddress thisSubgridOrigin = new SubGridCellAddress(profileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-                                                   profileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+        // get sub grid origin for cell address
+        var thisSubgridOrigin = new SubGridCellAddress(profileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                                                       profileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
-        if (!CurrentSubgridOrigin.Equals(thisSubgridOrigin)) // if we have a new subgrid to fetch 
+        if (!CurrentSubgridOrigin.Equals(thisSubgridOrigin)) // if we have a new sub grid to fetch 
         {
-          // if we have an existing subgrid and a change in subgrid detected process the current subgrid profilecell list
+          // if we have an existing sub grid and a change in sub grid detected process the current sub grid profile cell list
           if (SubGrid != null)
           {
             ProcessSubGroup(new SubGridCellAddress(CurrentSubgridOrigin.X << SubGridTreeConsts.SubGridIndexBitsPerLevel, CurrentSubgridOrigin.Y << SubGridTreeConsts.SubGridIndexBitsPerLevel),
@@ -260,7 +271,7 @@ namespace VSS.TRex.Profiling
           SubGrid = null;
           cellCounter = 0;
 
-          // Does the subgrid tree contain this node in it's existence map? if so get subgrid
+          // Does the sub grid tree contain this node in it's existence map? if so get sub grid
           if (PDExistenceMap[thisSubgridOrigin.X, thisSubgridOrigin.Y])
             SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining
               (SiteModel.PrimaryStorageProxy, SiteModel.Grid, profileCell.OTGCellX, profileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
@@ -269,11 +280,10 @@ namespace VSS.TRex.Profiling
           if (_SubGridAsLeaf == null)
             continue;
 
-          CurrentSubgridOrigin = thisSubgridOrigin; // all good to proceed with this subgrid
-
+          CurrentSubgridOrigin = thisSubgridOrigin; // all good to proceed with this sub grid
         }
 
-        profileCellList[cellCounter++] = profileCell; // add cell to list to process for this subgrid
+        profileCellList[cellCounter++] = profileCell; // add cell to list to process for this sub grid
         cellOverrideMask.SetBit(profileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask, profileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask);
       }
 

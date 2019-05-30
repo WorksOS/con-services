@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
@@ -24,7 +23,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public ISubGridCellPassesDataSegments PassesData { get; set; } = new SubGridCellPassesDataSegments();
 
-    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
+    private static readonly uint _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueUint("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
 
     public SubGridCellPassesDataWrapper()
     {
@@ -96,16 +95,29 @@ namespace VSS.TRex.SubGridTrees.Server
       }
     }
 
-    // CleaveSegment does the donkey work of taking a segment and splitting it into
-    // two segments that each contain half the cell passes of the segment passed in
+    /// <summary>
+    /// CleaveSegment does the donkey work of taking a segment and splitting it into
+    /// two segments that each contain half the cell passes of the segment passed in
+    /// If the subGridSegmentPassCountLimit is zero then the default segment pass count
+    /// limit specified in the configuration will be used.
+    /// </summary>
+    /// <param name="CleavingSegment"></param>
+    /// <param name="PersistedClovenSegments"></param>
+    /// <param name="subGridSegmentPassCountLimit"></param>
+    /// <returns></returns>
     public bool CleaveSegment(ISubGridCellPassesDataSegment CleavingSegment,
-      List<ISubGridSpatialAffinityKey> PersistedClovenSegments)
+      List<ISubGridSpatialAffinityKey> PersistedClovenSegments,
+      uint subGridSegmentPassCountLimit = 0)
     {
       if (!CleavingSegment.HasAllPasses)
       {
         Log.LogError($"Cannot cleave a sub grid ({Owner.Moniker()}) without its cell passes");
         return false;
       }
+
+
+      if (subGridSegmentPassCountLimit == 0)
+        subGridSegmentPassCountLimit = _subGridSegmentPassCountLimit;
 
       // Count up the number of cell passes in total in the segment
       CleavingSegment.PassesData.CalculateTotalPasses(out uint TotalPassCount, out uint _ /*MaximumPassCount*/);
@@ -114,12 +126,13 @@ namespace VSS.TRex.SubGridTrees.Server
       CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
 #endif
 
-      if (TotalPassCount < _subGridSegmentPassCountLimit)
+      if (TotalPassCount < subGridSegmentPassCountLimit)
       {
         return false; // There is no need to cleave this segment
       }
 
-      int NumRequiredClovenSegments = ((int) TotalPassCount - 1) / _subGridSegmentPassCountLimit + 1;
+
+      uint NumRequiredClovenSegments = (TotalPassCount - 1) / subGridSegmentPassCountLimit + 1;
 
       // Determine the actual time range of the passes within the segment
       CleavingSegment.PassesData.CalculateTimeRange(out DateTime CoveredTimeRangeStart,

@@ -16,7 +16,7 @@ namespace TAGFiles.Tests
       List<string> valueNames = TAGValueNames.Names();
 
       // Instantiate a TAGValueSink and ask it for the list of TAGs supported
-      string[] instantiatedTAGs = new TAGValueSink(null).InstantiatedTAGs;
+      string[] instantiatedTAGs = TAGValueSink.InstantiatedTAGs;
 
 //            Assert.True(false,"Instantiated TAGs! : {0}, compared to {1}", String.Join(", ", instantiatedTAGs), String.Join(", ", valueNames));
       Assert.True(instantiatedTAGs?.Length > 0, "No instantiated TAG!");

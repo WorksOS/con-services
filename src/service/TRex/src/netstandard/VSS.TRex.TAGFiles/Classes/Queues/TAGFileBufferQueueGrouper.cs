@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The maximum number of TAG files the grouper will permit in a bucket of TAG file before being committed to the 
         /// full buckets list.
         /// </summary>
-        public int kMaxNumberOfTAGFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
+        public static readonly int kMaxNumberOfTAGFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
 
         /// <summary>
         /// GroupMap is a dictionary (keyed on project UID) of dictionaries (keyed on AssetUID) of
@@ -57,8 +57,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             lock (this)
             {
-                // Commented out to reduce logging
-                //Log.LogInformation($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
+                if (Log.IsTraceEnabled())
+                    Log.LogTrace($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
 
                 if (groupMap.TryGetValue(key.ProjectUID, out Dictionary<Guid, List<ITAGFileBufferQueueKey>> assetsDict))
                 {
@@ -163,16 +163,21 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 if (result.Any())
                 {
                     // Add the project to the avoid list
-                    Log.LogInformation($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectID} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
+                    if (Log.IsTraceEnabled())
+                      Log.LogTrace($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectID} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
+
                     avoidProjects.Add(projectID);
                 }
 
                 Log.LogInformation($"Grouper returning group containing {result.Count()} TAG files");
 
-                // var count = 0;
-                // foreach (var TAGFile in result)
-                //   Log.LogInformation($"Returned TAG file {count++} is {TAGFile.FileName} representing asset {TAGFile.AssetUID} within project {TAGFile.ProjectUID}");
-
+                if (Log.IsTraceEnabled())
+                {
+                    var count = 0;
+                    foreach (var TAGFile in result)
+                       Log.LogTrace($"Returned TAG file {count++} is {TAGFile.FileName} representing asset {TAGFile.AssetUID} within project {TAGFile.ProjectUID}");
+                }
+                
                 return result;
             }
         }

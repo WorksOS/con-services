@@ -13,6 +13,15 @@
       <list>
         <!-- Creating a cache configuration. -->
         <bean class="org.apache.ignite.configuration.CacheConfiguration">
+            <property name="name" value="SiteModelsCache-Immutable"/>
+            <property name="dataRegionName" value="Default-Immutable" />
+            <!-- Creating the affinity function with custom setting.
+            <property name="affinity">
+                <bean class="org.apache.ignite.cache.affinity.trex.TrexImmutableNonSpatialAffinityFunction">
+                </bean>
+            </property>-->
+        </bean>
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
           <property name="name" value="Spatial-Immutable"/>
           <property name="dataRegionName" value="Default-Immutable" />
           <!-- Creating the affinity function with custom setting. -->
