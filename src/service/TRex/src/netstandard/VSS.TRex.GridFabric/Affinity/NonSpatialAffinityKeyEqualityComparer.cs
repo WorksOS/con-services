@@ -7,7 +7,11 @@ namespace VSS.TRex.GridFabric.Affinity
   {
     public bool Equals(INonSpatialAffinityKey x, INonSpatialAffinityKey y)
     {
-      return x.ProjectUID.Equals(y.ProjectUID) && x.KeyName.Equals(y.KeyName);
+      if (ReferenceEquals(x, y))
+        return true;
+
+      return x != null && y != null &&
+             x.ProjectUID.Equals(y.ProjectUID) && x.KeyName.Equals(y.KeyName);
     }
 
     public int GetHashCode(INonSpatialAffinityKey obj) => obj.GetHashCode();

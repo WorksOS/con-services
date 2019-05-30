@@ -7,7 +7,11 @@ namespace VSS.TRex.GridFabric.Affinity
   {
     public bool Equals(ISubGridSpatialAffinityKey x, ISubGridSpatialAffinityKey y)
     {
-      return x.ProjectUID.Equals(y.ProjectUID) &&
+      if (ReferenceEquals(x, y))
+        return true;
+
+      return x != null && y != null &&
+             x.ProjectUID.Equals(y.ProjectUID) &&
              x.SubGridX == y.SubGridX &&
              x.SubGridY == y.SubGridY &&
              x.SegmentIdentifier.Equals(y.SegmentIdentifier);
