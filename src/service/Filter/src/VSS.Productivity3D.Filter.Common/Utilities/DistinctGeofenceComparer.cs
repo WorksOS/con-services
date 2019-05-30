@@ -10,7 +10,11 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
   {
     public bool Equals(GeofenceData x, GeofenceData y)
     {
-      return x.GeofenceUID == y.GeofenceUID &&
+      if (ReferenceEquals(x, y))
+        return true;
+
+      return x != null && y != null &&
+             x.GeofenceUID == y.GeofenceUID &&
              x.GeofenceType == y.GeofenceType &&
              x.GeofenceName == y.GeofenceName &&
              x.GeometryWKT == y.GeometryWKT &&
