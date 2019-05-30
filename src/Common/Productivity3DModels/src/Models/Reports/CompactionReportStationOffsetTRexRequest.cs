@@ -102,8 +102,8 @@ namespace VSS.Productivity3D.Models.Models.Reports
             "Offsets must be specified for station and offset report."));
       }
 
-      // Start station's negative value is allowed...
-      if (EndStation < 0 || StartStation > EndStation)
+      // Start and end stations negative value are allowed...
+      if (StartStation > EndStation)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
