@@ -23,7 +23,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
 
             if (valueType.Type == TAGDataType.t4bitUInt)
             {
-                valueSink.SetVolkelMeasRange((int)value);
+                valueSink.SetVolkelMeasRange((byte)value);
                 result = true;
             }
 

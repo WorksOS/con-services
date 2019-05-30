@@ -75,7 +75,14 @@ namespace MockProjectWebApi.Services
         new ProjectData {LegacyProjectId = 1009999, ProjectUid = Guid.NewGuid().ToString()},
         new ProjectData {LegacyProjectId = 1012413, ProjectUid = Guid.NewGuid().ToString()},
         new ProjectData {LegacyProjectId = 1099999, ProjectUid = Guid.NewGuid().ToString()},
-        new ProjectData {LegacyProjectId = 1999999, ProjectUid = "0fa94210-0d7a-4015-9eee-4d9956f4b250"},
+        new ProjectData
+        {
+          LegacyProjectId = ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_ID,
+          ProjectUid = ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_UID,
+          ProjectType = ProjectType.Standard,
+          ProjectTimeZone = "New Zealand Standard Time",
+          IsArchived = false
+        },
         new ProjectData {
           LegacyProjectId = ConstantsUtil.LANDFILL_PROJECT_ID,
           ProjectUid = ConstantsUtil.LANDFILL_PROJECT_UID,

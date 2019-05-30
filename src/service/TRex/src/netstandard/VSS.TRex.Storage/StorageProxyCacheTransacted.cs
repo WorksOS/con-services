@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
@@ -20,13 +19,24 @@ namespace VSS.TRex.Storage
 
         private static readonly bool ReportPendingTransactedDeleteDuplicatesToLog = false;
 
-        private readonly HashSet<TK> PendingTransactedDeletes = new HashSet<TK>();
-        protected readonly Dictionary<TK, TV> PendingTransactedWrites = new Dictionary<TK, TV>();
+        /// <summary>
+        /// The hashed set of elements pending deletion stored in the transacted cache.
+        /// Note: The default equality comparer is supplied to prevent the hash set creating large numbers of comparer objects in its operations
+        /// </summary>
+        private readonly HashSet<TK> PendingTransactedDeletes;
+
+        /// <summary>
+        /// The dictionary of elements pending writing stored in the transacted cache.
+        /// Note: The default equality comparer is supplied to prevent the hash set creating large numbers of comparer objects in its operations
+        /// </summary>
+        protected readonly Dictionary<TK, TV> PendingTransactedWrites;
 
         private long BytesWritten;
 
-        public StorageProxyCacheTransacted(ICache<TK, TV> cache) : base(cache)
+        public StorageProxyCacheTransacted(ICache<TK, TV> cache, IEqualityComparer<TK> comparer) : base(cache)
         {
+          PendingTransactedDeletes = new HashSet<TK>(comparer);
+          PendingTransactedWrites = new Dictionary<TK, TV>(comparer);
         }
 
         /// <summary>
@@ -153,5 +163,6 @@ namespace VSS.TRex.Storage
         }
 
         public override void IncrementBytesWritten(long bytesWritten) => Interlocked.Add(ref BytesWritten, bytesWritten);
-  }
+
+    }
 }
