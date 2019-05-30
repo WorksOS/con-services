@@ -174,6 +174,30 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
+    /// Tests if the content opf this cell pass is equal to the content of another cell pass.
+    /// Note: This does nto implement IEquatable or similar interface to retain the pure
+    /// struct semantics of CellPass
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool Equals(CellPass other)
+    {
+      return GPSModeStore == other.GPSModeStore &&
+             InternalSiteModelMachineIndex == other.InternalSiteModelMachineIndex &&
+             Height == other.Height &&
+             Time == other.Time &&
+             CCV == other.CCV &&
+             RadioLatency == other.RadioLatency &&
+             RMV == other.RMV &&
+             Frequency == other.Frequency &&
+             Amplitude == other.Amplitude &&
+             MaterialTemperature == other.MaterialTemperature &&
+             MachineSpeed == other.MachineSpeed &&
+             MDP == other.MDP &&
+             CCA == other.CCA;
+    }
+
+    /// <summary>
     /// Produce a human readable text version of the information contained in a cell pass
     /// </summary>
     /// <returns></returns>
@@ -287,6 +311,5 @@ namespace VSS.TRex.Cells
       MDP = reader.ReadShort();
       CCA = reader.ReadByte();
     }
-
   }
 }
