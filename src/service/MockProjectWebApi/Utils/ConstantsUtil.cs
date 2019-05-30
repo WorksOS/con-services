@@ -27,5 +27,9 @@ namespace MockProjectWebApi.Utils
     //Used for Minimum elevation mode tests
     public const int KETTLEWELL_DRIVE_PROJECT_ID = 1000589;
     public const string KETTLEWELL_DRIVE_PROJECT_UID = "0583c019-f92a-4762-94c1-ad13a98ecab6";
+
+    // Used for an alignment file with negative start station tests
+    public const int CHRISTCHURCH_TEST_SITE_PROJECT_ID = 1999999;
+    public const string CHRISTCHURCH_TEST_SITE_PROJECT_UID = "0fa94210-0d7a-4015-9eee-4d9956f4b250";
   }
 }

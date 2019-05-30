@@ -153,10 +153,29 @@ namespace MockProjectWebApi.Services
       importedFilesGoldenData1.AddRange(surveyedSurfacesFileListIsActivated);
       importedFilesGoldenData1.AddRange(goldenDataDesignSurfaceFileList);
       importedFilesGoldenData1.AddRange(goldenDataReferenceSurfaceFileList);
-
+      
       ImportedFiles.Add(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1, importedFilesGoldenData1);
 
       ImportedFiles.Add(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2, surveyedSurfacesFileList);
+
+      // For an alignment file with negative start station...
+      var alignmentImportedFiles = new List<FileData>
+      {
+        new FileData
+        {
+          Name = "Negative Start Station.svl",
+          ProjectUid = ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_UID,
+          CustomerUid = "NegativeStartStationAlignmentTest",
+          ImportedFileType = ImportedFileType.Alignment,
+          ImportedFileUid = "7816b21b-33a3-499e-888a-a3d449e8b596",
+          LegacyFileId = 118,
+          IsActivated = true,
+          MinZoomLevel = 15,
+          MaxZoomLevel = 19
+        }
+      };
+
+      ImportedFiles.Add(ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_UID, alignmentImportedFiles);
     }
 
     private readonly List<FileData> surveyedSurfacesFileListIsActivated = new List<FileData>
