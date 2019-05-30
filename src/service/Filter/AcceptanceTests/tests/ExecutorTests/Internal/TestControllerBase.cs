@@ -72,6 +72,7 @@ namespace ExecutorTests.Internal
         .AddSingleton<IDataCache, InMemoryDataCache>()
         .AddSingleton<IGeofenceProxy, GeofenceProxy>()
         .AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>()
+        .AddServiceDiscovery()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
