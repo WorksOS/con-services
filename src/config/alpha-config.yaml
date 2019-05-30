@@ -33,7 +33,6 @@ data:
   CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
   FILTER_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dfilter/1.0
   GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/
-  UNIFIED_PRODUCTIVITY_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-unifiedproductivity/1.0/
   IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfiles
   IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfile
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
@@ -53,6 +52,7 @@ data:
 #SERVICE DISCOVERY REFERENCES
   assetdetails-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
   assetsummary-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
+  unifiedproductivity-public-v1: https://api-stg.trimble.com/t/trimble.com/vss-alpha-unifiedproductivity/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
 #CAP configuration  

@@ -4,36 +4,43 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
 {
-  public class UnifiedProductivityProxy : BaseProxy, IUnifiedProductivityProxy
+  public class UnifiedProductivityProxy : BaseServiceDiscoveryProxy, IUnifiedProductivityProxy
   {
-    public UnifiedProductivityProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(
-      configurationStore, logger, cache)
+    public UnifiedProductivityProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
+      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
+      dataCache, serviceResolution)
     {
     }
+
+    //unifiedproductivity-public-v1 = https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0/
+
+    //https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0/composite/projects/{projectUID}/sitewithtargets/asgeofence 
+
+    public override bool IsInsideAuthBoundary => false;
+    public override ApiService InternalServiceType => ApiService.None;
+    public override string ExternalServiceName => "unifiedproductivity";
+    public override ApiVersion Version => ApiVersion.V1;
+    public override ApiType Type => ApiType.Public;
+    public override string CacheLifeKey => "UNIFIED_PRODUCTIVITY_CACHE_LIFE";
 
     /// <summary>
     /// Gets the list of geofences associated with the project
     /// </summary>
     public async Task<List<GeofenceData>> GetAssociatedGeofences(string projectUid, IDictionary<string, string> customHeaders = null)
     {
-      var route = $"/composite/projects/{projectUid}/sitewithtargets/asgeofence";
-      var result = await GetContainedMasterDataList<GeofenceWithTargetsResult>(projectUid, null, "UNIFIED_PRODUCTIVITY_CACHE_LIFE", "UNIFIED_PRODUCTIVITY_API_URL", customHeaders, null, route);
+      var route = $"composite/projects/{projectUid}/sitewithtargets/asgeofence";
+      var result = await GetMasterDataItemServiceDiscovery<GeofenceWithTargetsResult>(route, projectUid, null,
+        customHeaders, null);
       return result.Results?.Select(r => r.Geofence).ToList();
-    }
-
-    /// <summary>
-    /// Clears an item from the cache
-    /// </summary>
-    public void ClearCacheItem(string projectUid, string userId = null)
-    {
-      ClearCacheItem<GeofenceWithTargetsResult>(projectUid, userId);
-    }
+    } 
 
   }
 }
