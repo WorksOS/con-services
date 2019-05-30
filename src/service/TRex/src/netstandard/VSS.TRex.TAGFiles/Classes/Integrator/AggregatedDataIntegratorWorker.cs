@@ -46,9 +46,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
     private static readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.ADVISEOTHERSERVICES_OFMODELCHANGES);
 
-    private static readonly int DefaultMaxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
+    private static readonly int _defaultMaxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
 
-    public int MaxMappedTagFilesToProcessPerAggregationEpoch { get; set; } = DefaultMaxMappedTagFilesToProcessPerAggregationEpoch;
+    public int MaxMappedTagFilesToProcessPerAggregationEpoch { get; set; } = _defaultMaxMappedTagFilesToProcessPerAggregationEpoch;
 
     private Guid SiteModelID { get; set; }
 

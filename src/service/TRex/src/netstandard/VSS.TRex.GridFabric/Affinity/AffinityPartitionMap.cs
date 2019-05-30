@@ -5,7 +5,6 @@ using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Events;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 
@@ -25,7 +24,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Provides a map of primary partitions that this node is responsible for
     /// </summary>
-    public bool[] PrimaryPartitions() =>  primaryPartitions ?? (primaryPartitions = GetPrimaryPartitions());
+    public bool[] PrimaryPartitions() => primaryPartitions ?? (primaryPartitions = GetPrimaryPartitions());
 
     /// <summary>
     /// Backing variable for BackupPartitions
@@ -91,7 +90,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Determines if this node hold the primary partition for the given key
     /// This is not so performant as it performant as it involves a full lookup of the cache affinity context from Ignite.
-    /// If performance is important, use the PrimaryParitionMap dictionary available from this class.
+    /// If performance is important, use the PrimaryPartitionMap dictionary available from this class.
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
@@ -100,7 +99,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Determines if this node holds a backup partition for the given key
     /// This is not so performant as it performant as it involves a full lookup of the cache affinity context from Ignite.
-    /// If performance is important, use the BackupParitionMap dictionary availalble from this class.
+    /// If performance is important, use the BackupPartitionMap dictionary available from this class.
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>

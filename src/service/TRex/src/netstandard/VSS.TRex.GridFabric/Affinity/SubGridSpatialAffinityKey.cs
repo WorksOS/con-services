@@ -39,7 +39,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
     /// <summary>
     /// The segment identifier for the sub grid data. If the segment identifier is empty then the element represents
-    /// the su grid directory (or SGL file). Otherwise, the segment identifier is a string representation of the start
+    /// the sub grid directory (or SGL file). Otherwise, the segment identifier is a string representation of the start
     /// and end times of the segment and the time duration the segment contains data for.
     /// </summary>
     public string SegmentIdentifier { get; set; }
