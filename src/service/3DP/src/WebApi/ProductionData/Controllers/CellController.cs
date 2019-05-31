@@ -19,6 +19,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
@@ -69,8 +70,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v2/productiondata/cells/passes")]
     [HttpPost]
-    public async Task<CellPassesResult> CellPassesV2([FromBody] CellPassesRequestV2 request)
+    public async Task<CellPassesV2Result> CellPassesV2([FromBody] CellPassesRequestV2 request)
     {
+#if RAPTOR
       request.Validate();
       var projectUid = request.ProjectUid 
                        ?? await ((RaptorPrincipal) User).GetProjectUid(request.ProjectId.Value);
@@ -82,7 +84,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           request.SetFilter(filter);
       }
 
-      return CellPasses(request);
+      return RequestExecutorContainerFactory.Build<CellPassesV2Executor>(logger, raptorClient).Process(request) as CellPassesV2Result;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
