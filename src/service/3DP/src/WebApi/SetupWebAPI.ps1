@@ -41,8 +41,6 @@ function ExecuteCommandWithRetry {
     }
 }
 
-$OKTORUN = $true
-
 $scriptpath = $MyInvocation.MyCommand.Path
 $dir = Split-Path $scriptpath
 
@@ -50,6 +48,7 @@ Set-Location $dir
 Write-host "Running from folder $dir"
 
 (Get-ChildItem Env:\RAPTORUSERNAME -ErrorAction SilentlyContinue).Value | ForEach-Object { IF ($null -eq $_) { $RAPTORUSERNAME = "ad-vspengg\svcRaptor" } ELSE { $RAPTORUSERNAME = $_ } };
+Write-host "RAPTORUSERNAME=$RAPTORUSERNAME"
 
 $SHAREUNC = (Get-ChildItem Env:\SHAREUNC).Value
 Write-host "SHAREUNC=$SHAREUNC"
@@ -57,30 +56,24 @@ Write-host "SHAREUNC=$SHAREUNC"
 # now we need to mount a share for the design files and reports
 if ($null -eq $SHAREUNC) {
     Write-host "Error! Environment variable SHAREUNC is not set" -ForegroundColor Red
-    $OKTORUN = $false
-}
-else { 
-    Write-Host "Mapping Raptor ProductionData folder to Z: drive"
-    ExecuteCommandWithRetry -Command 'New-SmbMapping' -Args @{ 
-        LocalPath  = "Z:" 
-        RemotePath = $SHAREUNC
-        UserName   = $RAPTORUSERNAME
-        Password   = "v3L0c1R^pt0R!"
-    }  -RandomDelay $true -Verbose
-    & Z:
-    $DL = (get-location).Drive.Name
-    Write-host "Current Drive=$DL"
-    if ($DL -eq "Z") {
-        & Get-ChildItem; & C:
-    }
-    else {
-        Write-Host "Warning! Could not map IONode productionData to drive Z:"
-    }
+    Exit 1
 }
 
-if ($OKTORUN) {
-    & .\\VSS.Productivity3D.WebApi.exe
+Write-Host "Mapping Raptor ProductionData folder to Z: drive"
+ExecuteCommandWithRetry -Command 'New-SmbMapping' -Args @{ 
+    LocalPath  = "Z:" 
+    RemotePath = $SHAREUNC
+    UserName   = $RAPTORUSERNAME
+    Password   = "v3L0c1R^pt0R!"
+}  -RandomDelay $true -Verbose
+& Z:
+$DL = (get-location).Drive.Name
+Write-host "Current Drive=$DL"
+if ($DL -eq "Z") {
+    & Get-ChildItem; & C:
 }
 else {
-    Write-host "Error! Not running VSS.Productivity3D.WebApi due to setup error. Check necessary environment variables are defined"  -ForegroundColor Red;
+    Write-Host "Warning! Could not map IONode productionData to drive Z:"
 }
+
+& .\\VSS.Productivity3D.WebApi.exe
