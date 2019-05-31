@@ -25,7 +25,7 @@ data:
   KAFKA_URI: 10.211.16.11
   KAFKA_PORT: "9092"
   KAFKA_OFFSET: latest
-  KAFKA_TOPIC_NAME_SUFFIX: kafka-topic-suffix-placeholder
+  KAFKA_TOPIC_NAME_SUFFIX: -Prod
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
 #Service references  
   ASSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/associateprojectsubscription
