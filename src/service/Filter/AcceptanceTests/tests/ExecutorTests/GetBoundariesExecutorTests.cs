@@ -39,10 +39,11 @@ namespace ExecutorTests
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
-      var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
+      var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(
+        ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy, unifiedProductivityProxy: UnifiedProductivityProxy);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(1, result.GeofenceData.Count, "Should be one overlapping favorite geofence returned");
+      Assert.AreEqual(2, result.GeofenceData.Count, "Should be two overlapping favorite or associated geofences returned");
       var boundaries = result.GeofenceData.Where(b => b.GeofenceType == GeofenceType.Filter.ToString()).ToList();
       Assert.AreEqual(0, boundaries.Count, "Shouldn't be any boundaries returned");
     }
@@ -79,7 +80,8 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
       var executor =
-        RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
+        RequestExecutorContainer.Build<GetBoundariesExecutor>(
+          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy, unifiedProductivityProxy: UnifiedProductivityProxy);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
       var boundaryToTest = new GeofenceDataSingleResult(
@@ -142,7 +144,8 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
       var executor =
-        RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy);
+        RequestExecutorContainer.Build<GetBoundariesExecutor>(
+          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy, unifiedProductivityProxy: UnifiedProductivityProxy);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);

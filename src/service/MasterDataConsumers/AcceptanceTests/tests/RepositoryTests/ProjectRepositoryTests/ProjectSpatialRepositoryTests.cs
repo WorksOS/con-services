@@ -989,5 +989,34 @@ namespace RepositoryTests
       }
     }
 
+    [TestMethod]
+    public void PolygonIntersection_MissingGeofence()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, null); g.Wait();
+      Assert.IsFalse(g.Result, "Should be no overlap between project and geofence");
+    }
+
+    [TestMethod]
+    public void PolygonIntersection_NotPolygonGeofence()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      string testBoundary = "LINESTRING(30 10, 10 30, 40 40)";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
+      Assert.IsFalse(g.Result, "Should be no overlap between project and geofence");
+    }
+
+    [TestMethod]
+    public void PolygonIntersection_InvalidGeofence()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      string testBoundary = "POLYGON((1 3,3 2,1 1,3 0,1 0,1 3))";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
+      Assert.IsFalse(g.Result, "Should be no overlap between project and geofence");
+    }
+
   }
 }
