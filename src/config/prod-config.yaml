@@ -53,7 +53,7 @@ data:
 #SERVICE DISCOVERY REFERENCES
   assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
   assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
-  unifiedproductivity-public-v1: https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0
+  unifiedproductivity_public_v1: https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2
 #Misc stuff

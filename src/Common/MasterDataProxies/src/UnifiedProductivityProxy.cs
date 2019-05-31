@@ -20,7 +20,7 @@ namespace VSS.MasterData.Proxies
     {
     }
 
-    //unifiedproductivity-public-v1 = https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0/
+    //unifiedproductivity_public_v1 = https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0/
 
     //https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0/composite/projects/{projectUID}/sitewithtargets/asgeofence 
 
