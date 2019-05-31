@@ -15,13 +15,18 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
+        /// <summary>
+        /// The array of enumeration values represented by ProductionEventType
+        /// </summary>
+        private static readonly Array _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType));
+
         private IProductionEventLists SourceLists;
         private IProductionEventLists TargetLists;
         private bool IntegratingIntoPersistentDataModel;
         private ISiteModel SourceSiteModel;
-      private ISiteModel TargetSiteModel;
-
-    public EventIntegrator()
+        private ISiteModel TargetSiteModel;
+     
+        public EventIntegrator()
         {
         }
 
@@ -108,7 +113,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             var targetEventLists = TargetLists.GetEventLists();
 
             // Integrate all remaining event lists and collate them wrt the machine start/stop recording events
-            foreach (var evt in Enum.GetValues(typeof(ProductionEventType)))
+            foreach (var evt in _productionEventTypeValues)
             {
                 IProductionEvents SourceList = sourceEventLists[(int)evt];
 
