@@ -260,7 +260,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             else
                             {
                               // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
-                              Log.LogError($"Grouper2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                              Log.LogError($"Grouper2 TAG file {tagFileResponse.FileName} failed to process, with exception '{tagFileResponse.Exception}'. WARNING: FILE REMOVED FROM QUEUE");
                             }
            
                             removalKey.FileName = tagFileResponse.FileName;
