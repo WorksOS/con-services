@@ -113,7 +113,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
                 if (PassCount_ > 0)
                 {
-                    AllocatePasses(i, j, (uint)PassCount_);
+                    AllocatePasses(i, j, PassCount_);
                     Read(i, j, reader);
 
                     SegmentPassCount += PassCount_;
