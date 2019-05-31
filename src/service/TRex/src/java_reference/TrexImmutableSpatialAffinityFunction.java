@@ -62,6 +62,7 @@ public class TrexImmutableSpatialAffinityFunction implements AffinityFunction, S
 
     int numPartitions = 1024;
     private static final int SubGridIndexBitsPerLevel = 5;
+	private static final int SubGridLocalParentKeyMask = 0x1F << SubGridIndexBitsPerLevel;
 
     @Override
     public void reset() {
@@ -92,7 +93,7 @@ public class TrexImmutableSpatialAffinityFunction implements AffinityFunction, S
             long subGridX = (long) (((BinaryReaderExImpl) r).readInt());
             long subGridY = (long) (((BinaryReaderExImpl) r).readInt());
 
-            return (int) (((subGridX >> SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((subGridY >> SubGridIndexBitsPerLevel) & 0x55555555)) % numPartitions;
+            return (int) ((subGridX & SubGridLocalParentKeyMask) | ((subGridY & SubGridLocalParentKeyMask) >> SubGridIndexBitsPerLevel)) % numPartitions;
         }
         throw new IllegalArgumentException("Spacial affinity function received a non spatial key of type " + key.toString()); //something went wrong
     }
