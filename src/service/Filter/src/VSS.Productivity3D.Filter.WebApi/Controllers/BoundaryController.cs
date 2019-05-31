@@ -125,11 +125,13 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <summary>
     /// Gets the active, persistent Boundaries for a customer/project/user.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
     /// <returns><see cref="GeofenceDataListResult"/></returns>
     [Route("api/v1/boundaries/{ProjectUid}")]
     [HttpGet]
-    public async Task<GeofenceDataListResult> GetProjectBoundaries(string projectUid, [FromServices] IGeofenceProxy geofenceProxy)
+    public async Task<GeofenceDataListResult> GetProjectBoundaries(
+      string projectUid, 
+      [FromServices] IGeofenceProxy geofenceProxy,
+      [FromServices] IUnifiedProductivityProxy unifiedProductivityProxy)
     {
       Log.LogInformation(
         $"{ToString()}.GetProjectBoundaries: CustomerUID={CustomerUid} IsApplication={IsApplication} UserUid={GetUserId} ProjectUid: {projectUid}");
@@ -144,7 +146,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
 
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler,
-        _geofenceRepository, _projectRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, geofenceProxy:geofenceProxy);
+        _geofenceRepository, _projectRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, 
+        KafkaTopicName, geofenceProxy:geofenceProxy, unifiedProductivityProxy: unifiedProductivityProxy);
 
       var result = await executor.ProcessAsync(requestFull);
 

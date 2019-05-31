@@ -1835,12 +1835,26 @@ namespace VSS.Productivity3D.Project.Repository
     /// </summary>
     public async Task<bool> DoesPolygonOverlap(string projectGeometryWkt, string geometryWkt)
     {
+      //Do some basic checking first to avoid filling the logs with lots of exceptions
+      if (string.IsNullOrEmpty(geometryWkt) || !geometryWkt.StartsWith("POLYGON"))
+      {
+        Log.LogDebug($"DoesPolygonOverlap: No geofence polygon to test {geometryWkt}");
+        return false;
+      }
+
       string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
+      var select = $@"SELECT st_IsValid({polygonToCheck})";
+      var result = (await QueryWithAsyncPolicy<int>(select)).FirstOrDefault();
+      if (result == 0)
+      {
+        Log.LogDebug($"DoesPolygonOverlap: Invalid geofence to test {geometryWkt}");
+        return false;
+      }
+
       string projectPolygon = RepositoryHelper.WKTToSpatial(projectGeometryWkt);
 
-      var select = $@"SELECT st_Intersects({polygonToCheck}, {projectPolygon})";
-
-      var result = (await QueryWithAsyncPolicy<int>(select)).FirstOrDefault();
+      select = $@"SELECT st_Intersects({polygonToCheck}, {projectPolygon})";
+      result = (await QueryWithAsyncPolicy<int>(select)).FirstOrDefault();
 
       return result == 1;
     }

@@ -51,6 +51,7 @@ data:
 #SERVICE DISCOVERY REFERENCES
   assetdetails-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
   assetsummary-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
+  unifiedproductivity_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-dev-unifiedproductivity/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2  
 #CAP configuration  
@@ -107,6 +108,7 @@ data:
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
   FILTER_CACHE_LIFE: 00:15:00
   GEOFENCE_CACHE_LIFE: 00:15:00
+  UNIFIED_PRODUCTIVITY_CACHE_LIFE: 00:15:00
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
   ASSETMGMT_CACHE_LIFE: 00:30:00
