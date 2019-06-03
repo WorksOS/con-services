@@ -294,5 +294,10 @@ namespace VSS.TRex.SubGridTrees.Server
         public bool HasPassData() => PassData != null;
 
         public bool IsImmutable() => false;
+
+        public void ReplacePasses(uint X, uint Y, CellPass[] cellPasses)
+        {
+          PassData[X, Y].Passes = cellPasses;
+        }
     } 
 }

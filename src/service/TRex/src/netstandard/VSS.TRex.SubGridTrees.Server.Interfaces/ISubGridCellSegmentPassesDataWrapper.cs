@@ -137,6 +137,14 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         CellPass[] ExtractCellPasses(uint X, uint Y);
 
         /// <summary>
+        /// Replaces the collection of passes at location (x, y) with the provided set of cell passes
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="cellPasses"></param>
+        void ReplacePasses(uint X, uint Y, CellPass[] cellPasses);
+
+        /// <summary>
         /// Allows a caller to supply the raw cell pass information to the segment which may convert it to 
         /// it's internal representation
         /// </summary>
