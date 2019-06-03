@@ -36,6 +36,9 @@ namespace VSS.TRex.Events.Interfaces
     object RawEventsObjects();
 
     List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn);
+
+    DateTime FirstStateDate();
+    DateTime LastStateDate();
   }
 
   public interface IProductionEvents<T> : IProductionEvents

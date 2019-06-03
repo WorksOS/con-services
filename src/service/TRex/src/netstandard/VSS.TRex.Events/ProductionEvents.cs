@@ -660,5 +660,11 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <returns></returns>
     public DateTime LastStateDate() => Events.Last().Date;
+
+    /// <summary>
+    /// Returns the date of the first element in the events list
+    /// </summary>
+    /// <returns></returns>
+    public DateTime FirstStateDate() => Events.First().Date;
   }
 }
