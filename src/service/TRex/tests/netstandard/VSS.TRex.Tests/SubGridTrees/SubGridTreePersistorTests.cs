@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.TestFixtures;
@@ -14,7 +15,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             // Create an empty subgrid bit mask tree and persist it into a stream
             SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
-            MemoryStream MS = new MemoryStream();
+            MemoryStream MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
             Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
             Assert.Equal(46, MS.Length);
@@ -25,7 +26,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
           // Create an empty subgrid bit mask tree and persist it into a stream
           SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
-          MemoryStream MS = new MemoryStream();
+          MemoryStream MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
           Assert.True(SubGridTreePersistor.Write(masktree, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
           Assert.Equal(37, MS.Length);
@@ -38,7 +39,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
             masktree.SetCell(100, 100, true);
 
-            MemoryStream MS = new MemoryStream();
+            MemoryStream MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
             Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
             Assert.Equal(183, MS.Length);
@@ -49,7 +50,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             // Create an empty subgrid bit mask tree and persist it into a stream, then read it back again
             SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
-            MemoryStream MS = new MemoryStream();
+            MemoryStream MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
             Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
 
@@ -70,7 +71,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
           // Create an empty subgrid bit mask tree and persist it into a stream, then read it back again
           SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
-          MemoryStream MS = new MemoryStream();
+          MemoryStream MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
           Assert.True(SubGridTreePersistor.Write(masktree, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
 
@@ -87,7 +88,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
             masktree.SetCell(100, 100, true);
 
-            MemoryStream MS = new MemoryStream();
+            MemoryStream MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
             Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
 
@@ -111,7 +112,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       {
         // Create an empty subgrid bit mask tree and persist it into a stream, then read it back again
         SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
-        MemoryStream MS = new MemoryStream();
+        MemoryStream MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
         Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), 
           "SubGridTreePersistor.Write failed");

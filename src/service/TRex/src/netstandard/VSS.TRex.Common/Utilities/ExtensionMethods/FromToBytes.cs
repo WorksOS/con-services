@@ -82,7 +82,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <returns></returns>
     public static byte[] ToBytes(Action<BinaryWriter> serializer)
     {
-      using (MemoryStream ms = new MemoryStream())
+      using (MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
       {
         using (BinaryWriter writer = new BinaryWriter(ms))
         {
@@ -100,7 +100,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <returns></returns>
     public static byte[] ToBytes(Action<BinaryWriter, byte[]> serializer, byte[] helperBuffer)
     {
-      using (MemoryStream ms = new MemoryStream())
+      using (MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
       {
         using (BinaryWriter writer = new BinaryWriter(ms))
         {
@@ -117,7 +117,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <returns></returns>
     public static MemoryStream ToStream(Action<BinaryWriter> serializer)
     {
-      MemoryStream ms = new MemoryStream();
+      MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
       using (BinaryWriter writer = new BinaryWriter(ms, Encoding.UTF8, true))
       {

@@ -437,7 +437,7 @@ namespace VSS.TRex.Events
 
     public MemoryStream GetMutableStream()
     {
-      var mutablestream = new MemoryStream();
+      var mutablestream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       var writer = new BinaryWriter(mutablestream);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -460,7 +460,7 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public MemoryStream GetImmutableStream()
     {
-      var immutableStream = new MemoryStream();
+      var immutableStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       var immutableWriter = new BinaryWriter(immutableStream);
 
       VersionSerializationHelper.EmitVersionByte(immutableWriter, VERSION_NUMBER);

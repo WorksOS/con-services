@@ -646,7 +646,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public bool SaveDirectoryToFile(IStorageProxy storage,
                                         string FileName)
         {
-            MemoryStream MStream = new MemoryStream();
+            var MStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
             SaveDirectoryToStream(MStream);
 

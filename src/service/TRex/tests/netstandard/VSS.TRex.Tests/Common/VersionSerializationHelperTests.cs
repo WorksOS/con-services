@@ -97,7 +97,7 @@ namespace VSS.TRex.Tests.Common
     {
       const byte TEST_VERSION = 99;
 
-      var writer = new BinaryWriter(new MemoryStream());
+      var writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       VersionSerializationHelper.EmitVersionByte(writer, TEST_VERSION);
 
       var ms = writer.BaseStream as MemoryStream;
@@ -112,7 +112,7 @@ namespace VSS.TRex.Tests.Common
       const byte TEST_VERSION = 99;
       const byte BAD_TEST_VERSION = 100;
 
-      var writer = new BinaryWriter(new MemoryStream());
+      var writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       VersionSerializationHelper.EmitVersionByte(writer, BAD_TEST_VERSION);
 
       var ms = writer.BaseStream as MemoryStream;
@@ -129,7 +129,7 @@ namespace VSS.TRex.Tests.Common
     {
       const byte TEST_VERSION = 99;
 
-      var writer = new BinaryWriter(new MemoryStream());
+      var writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       VersionSerializationHelper.EmitVersionByte(writer, TEST_VERSION);
 
       var ms = writer.BaseStream as MemoryStream;
@@ -146,7 +146,7 @@ namespace VSS.TRex.Tests.Common
       const byte BAD_TEST_VERSION = 99;
       byte[] EXPECTED_VERSIONS = { 97, 98 };
 
-      var writer = new BinaryWriter(new MemoryStream());
+      var writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       VersionSerializationHelper.EmitVersionByte(writer, BAD_TEST_VERSION);
 
       var ms = writer.BaseStream as MemoryStream;
@@ -164,7 +164,7 @@ namespace VSS.TRex.Tests.Common
       const byte TEST_VERSION = 99;
       byte[] EXPECTED_VERSIONS = { 97, 98, 99 };
 
-      var writer = new BinaryWriter(new MemoryStream());
+      var writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       VersionSerializationHelper.EmitVersionByte(writer, TEST_VERSION);
 
       var ms = writer.BaseStream as MemoryStream;
