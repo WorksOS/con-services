@@ -9,6 +9,7 @@ namespace VSS.TRex.SiteModels.Interfaces
   public enum SiteModelNotificationEventGridMutability : byte
   {
     NotifyMutable = 0x1,
-    NotifyImmutable = 0x2
+    NotifyImmutable = 0x2,
+    NotifyAll = NotifyMutable | NotifyImmutable
   }
 }
