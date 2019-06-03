@@ -466,8 +466,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       bool creating = existing == null;
       logger.LogInformation(
         creating
-          ? $"UpdateImportedFileExecutor. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
-          : $"UpdateImportedFileExecutor. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
+          ? $"{nameof(UpsertFileInternal)}. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
+          : $"{nameof(UpsertFileInternal)}. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
       ImportedFileDescriptorSingleResult importedFile;
 
@@ -497,6 +497,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 importedFileType == ImportedFileType.SurveyedSurface,
                 surveyedUtc, FileSpaceId, logger, serviceExceptionHandler, fileRepo)
               .ConfigureAwait(false);
+          }
+          // This whole uploadToTCC workflow is strictkly only for the TCC -> DataOcean migration.
+          else
+          {
+            logger.LogDebug($"{nameof(UpsertFileInternal)}. Opted out of uploading to TCC, constructing pseudo fileDescriptor.");
+
+            fileDescriptor = FileDescriptor.CreateFileDescriptor(
+              FileSpaceId, 
+              $"/{customerUid}/{projectUid}",
+              ImportedFileUtils.IncludeSurveyedUtcInName(Path.GetFileName(filename), surveyedUtc.Value));
           }
 
           //save copy to DataOcean      
