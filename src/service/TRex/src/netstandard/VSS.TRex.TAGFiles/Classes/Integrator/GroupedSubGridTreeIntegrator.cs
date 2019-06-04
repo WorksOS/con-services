@@ -32,6 +32,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Sort the sub grid trees into time order
       Trees.Sort((x, y) => x.Item2.CompareTo(y.Item2));
 
+      /*
       // Check (and warn) if any of the supplied models overlaps in time
       for (int i = 0; i < Trees.Count - 1; i++)
       {
@@ -41,6 +42,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           break;
         }
       }
+      */
 
       // Iterate oer all sub grids in the composite existence map constructed a grouped sub grid from the combined models and
       // adding it to the result sub grid tree
