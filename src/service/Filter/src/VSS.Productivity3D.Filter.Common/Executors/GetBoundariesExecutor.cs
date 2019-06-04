@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var favoritesTask =
         GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
       //c) unified productivity associated geofences
-      var associatedTask = UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid);
+      var associatedTask = UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid, request.CustomHeaders);
       await Task.WhenAll(boundariesTask, favoritesTask, associatedTask);
 
       boundaries.AddRange(boundariesTask.Result.GeofenceData);
