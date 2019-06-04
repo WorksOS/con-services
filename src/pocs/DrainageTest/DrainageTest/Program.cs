@@ -41,6 +41,7 @@ namespace DrainageTest
         logger = ServiceLocator.Current.GetInstance<ILoggerFacade>();
         logger.Log("here", Category.Info, Priority.Low);
 
+        //  try arg     ..\..\TestData\Sample\TestCase.xml
         if (args.Length != 1)
           throw new ArgumentException("Should be 1 argument i.e. the xml path and filename");
 
