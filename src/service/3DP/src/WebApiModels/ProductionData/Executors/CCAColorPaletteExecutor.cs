@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+#if RAPTOR
 using VLPDDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
