@@ -5,9 +5,11 @@ using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -38,25 +40,30 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
+
+    /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="logger">LoggerFactory</param>
-#if RAPTOR
     /// <param name="raptorClient">Raptor client</param>
-    public CCAColorPaletteController(ILoggerFactory logger, IASNodeClient raptorClient)
-    {
-      this.logger = logger;
-      this.log = logger.CreateLogger<CCAColorPaletteController>();
-      this.raptorClient = raptorClient;
-    }
-#else
-    public CCAColorPaletteController(ILoggerFactory logger)
-    {
-      this.logger = logger;
-      this.log = logger.CreateLogger<CCAColorPaletteController>();
-    }
+    public CCAColorPaletteController(ILoggerFactory logger,
+#if RAPTOR
+      IASNodeClient raptorClient,
 #endif
+      ITRexCompactionDataProxy trexCompactionDataProxy)
+    {
+      this.logger = logger;
+      this.log = logger.CreateLogger<CCAColorPaletteController>();
+#if RAPTOR
+      this.raptorClient = raptorClient;
+#endif
+      this.TRexCompactionDataProxy = trexCompactionDataProxy;
+    }
 
     /// <summary>
     /// Gets CCA data colour palette requested from Raptor with a project identifier.
@@ -66,27 +73,29 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="startUtc">Start date of the requeted CCA data in UTC.</param>
     /// <param name="endUtc">End date of the requested CCA data in UTC.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
+    /// <param name="assetUid">TRex's machine identifier.</param>
     /// <returns>Execution result with a list of CCA data colour palettes.</returns>
     [ProjectVerifier]
     [Route("api/v1/ccacolors")]
     [HttpGet]
-    public CCAColorPaletteResult Get([FromQuery] long projectId,
-                                     [FromQuery] long assetId, 
-                                     [FromQuery] DateTime? startUtc = null, 
-                                     [FromQuery] DateTime? endUtc = null, 
-                                     [FromQuery] int? liftId = null)
+    public async Task<CCAColorPaletteResult> Get(
+      [FromQuery] long projectId,
+      [FromQuery] long assetId, 
+      [FromQuery] DateTime? startUtc = null, 
+      [FromQuery] DateTime? endUtc = null, 
+      [FromQuery] int? liftId = null,
+      [FromQuery] Guid? assetUid = null)
     {
       log.LogInformation("Get: " + Request.QueryString);
 
-      var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId);
-
+      var projectUid = await((RaptorPrincipal)User).GetProjectUid(projectId);
+      var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId, projectUid, assetUid);
       request.Validate();
+      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger, raptorClient).Process(request) as CCAColorPaletteResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
 #endif
+        trexCompactionDataProxy: TRexCompactionDataProxy).Process(request) as CCAColorPaletteResult;
     }
 
     /// <summary>
@@ -97,27 +106,29 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="startUtc">Start date of the requeted CCA data in UTC.</param>
     /// <param name="endUtc">End date of the requested CCA data in UTC.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
+    /// <param name="assetUid">TRex's machine identifier.</param>
     /// <returns>Execution result with a list of CCA data colour palettes.</returns>
     [ProjectVerifier]
     [Route("api/v2/ccacolors")]
     [HttpGet]
-    public async Task<CCAColorPaletteResult> Get([FromQuery] Guid projectUid,
-                                     [FromQuery] long assetId,
-                                     [FromQuery] DateTime? startUtc = null,
-                                     [FromQuery] DateTime? endUtc = null,
-                                     [FromQuery] int? liftId = null)
+    public async Task<CCAColorPaletteResult> Get(
+      [FromQuery] Guid projectUid,
+      [FromQuery] long assetId,
+      [FromQuery] DateTime? startUtc = null,
+      [FromQuery] DateTime? endUtc = null,
+      [FromQuery] int? liftId = null,
+      [FromQuery] Guid? assetUid = null)
     {
       log.LogInformation("Get: " + Request.QueryString);
 
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId);
+      var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId, projectUid, assetUid);
       request.Validate();
+      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger, raptorClient).Process(request) as CCAColorPaletteResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
+        raptorClient,
+#endif        
+        trexCompactionDataProxy:TRexCompactionDataProxy).Process(request) as CCAColorPaletteResult;
     }
   }
 }

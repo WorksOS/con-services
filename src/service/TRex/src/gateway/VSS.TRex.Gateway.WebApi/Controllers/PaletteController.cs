@@ -29,18 +29,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Gets the CCA color palette for the specified machine.
     /// </summary>
-    [HttpPost]
-    public ColorPaletteResult GetCCAColorPalette([FromBody] ColorPaletteRequest request)
+    [HttpPost("/ccacolors")]
+    public CCAColorPaletteResult GetCCAColorPalette([FromBody] CCAColorPaletteTrexRequest request)
     {
       Log.LogInformation($"{nameof(GetCCAColorPalette)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetCCAColorPalette), request.ProjectUid);
-      GatewayHelper.ValidateMachines(new List<Guid?>{ request.AssetUid }, siteModel);
+      ValidateFilterMachines(nameof(GetCCAColorPalette), request.ProjectUid, request.Filter);
       return WithServiceExceptionTryExecute(() =>
           RequestExecutorContainer
             .Build<PaletteExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(request)) as ColorPaletteResult;
+            .Process(request)) as CCAColorPaletteResult;
     }
   }
 }

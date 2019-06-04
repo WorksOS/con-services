@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Rendering.Palettes;
 
 namespace VSS.TRex.Gateway.Common.Converters.Profiles

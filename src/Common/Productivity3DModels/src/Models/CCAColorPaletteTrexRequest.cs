@@ -8,21 +8,15 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// Request parameters for the CCA color palette
   /// </summary>
-  public class ColorPaletteRequest
+  public class CCAColorPaletteTrexRequest
   {
     public Guid ProjectUid { get; set; }
-    public Guid AssetUid { get; set; }
-    public DateTime? StartUtc { get; set; }
-    public DateTime? EndUtc { get; set; }
-    public int? LiftId { get; set; }
+    public FilterResult Filter { get; set; }
 
-    public ColorPaletteRequest(Guid projectUid, Guid assetUid, DateTime? startUtc, DateTime? endUtc, int? liftId)
+    public CCAColorPaletteTrexRequest(Guid projectUid, FilterResult filter)
     {
       ProjectUid = projectUid;
-      AssetUid = assetUid;
-      StartUtc = startUtc;
-      EndUtc = endUtc;
-      LiftId = liftId;
+      Filter = filter;
     }
 
     public void Validate()
@@ -33,17 +27,24 @@ namespace VSS.Productivity3D.Models.Models
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing ProjectUid"));
       }
-      if (AssetUid == Guid.Empty)
+
+      if (Filter == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Missing AssetUid"));
+            "Missing parameters"));
       }
-      if (StartUtc.HasValue || EndUtc.HasValue)
+      if (Filter.AssetIDs?.Count == 0 && Filter?.ContributingMachines?.Count == 0)
       {
-        if (StartUtc.HasValue && EndUtc.HasValue)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing Asset"));
+      }
+      if (Filter.StartUtc.HasValue || Filter.EndUtc.HasValue)
+      {
+        if (Filter.StartUtc.HasValue && Filter.EndUtc.HasValue)
         {
-          if (StartUtc.Value > this.EndUtc.Value)
+          if (Filter.StartUtc.Value > this.Filter.EndUtc.Value)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

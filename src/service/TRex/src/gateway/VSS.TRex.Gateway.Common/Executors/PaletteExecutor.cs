@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Rendering;
 using VSS.TRex.Rendering.Palettes;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -30,32 +33,15 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as ColorPaletteRequest;
+      var request = item as CCAColorPaletteTrexRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException<ColorPaletteRequest>();
+        ThrowRequestTypeCastException<CCAColorPaletteTrexRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
-
-      /*
-      var cellDatumRequest = new CellDatumRequest_ApplicationService();
-      var response = cellDatumRequest.Execute(new CellDatumRequestArgument_ApplicationService
-      {
-        ProjectID = siteModel.ID,
-        Filters = new FilterSet(filter),
-        Mode = request.DisplayMode,
-        CoordsAreGrid = request.CoordsAreGrid,
-        Point = request.CoordsAreGrid ? AutoMapperUtility.Automapper.Map<XYZ>(request.GridPoint) : AutoMapperUtility.Automapper.Map<XYZ>(request.LLPoint),
-        ReferenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, request.Offset ?? 0)
-      });
-
-      //      return new CompactionCellDatumResult(response.DisplayMode, response.ReturnCode, response.Value, response.TimeStampUTC, response.Northing, response.Easting);
-      */
-
-      //Default palette - TODO: see how Raptor gets from te machine
-      var palette = new CCAPalette();
-      return new ColorPaletteResult{Palettes = AutoMapperUtility.Automapper.Map<ColorPalette[]>(palette.PaletteTransitions)};
+      var filter = ConvertFilter(request.Filter, siteModel);
+      var ccaPalette = Utilities.ComputeCCAPalette(siteModel, filter.AttributeFilter, DisplayMode.CCA) as CCAPalette;
+      return new CCAColorPaletteResult{Palettes = ccaPalette == null ? null : AutoMapperUtility.Automapper.Map<ColorPalette[]>(ccaPalette.PaletteTransitions)};
     }
-
   }
 }

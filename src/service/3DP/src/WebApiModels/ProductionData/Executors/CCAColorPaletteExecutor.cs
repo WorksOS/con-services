@@ -1,13 +1,16 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
@@ -38,27 +41,29 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         try
         {
           var request = CastRequestObjectTo<CCAColorPaletteRequest>(item);
+#if RAPTOR
+          bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA_PALETTE"), out var useTrexGateway);
 
-          TColourPalettes palettes;
-          
-          palettes.Transitions = new TColourPalette[0];
-
-          //if (pdsClient.GetMachineCCAColourPalettes(projectId.projectId, assetId.dataId, out palettes))
-          if (raptorClient.GetMachineCCAColourPalettes(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.assetId, request.startUtc, request.endUtc, request.liftId, out palettes))
+          if (useTrexGateway)
           {
-            if (palettes.Transitions.Length == 0)
-            {
-              throw new ServiceException(HttpStatusCode.BadRequest,
-                new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                  "Failed to process CCA data colour palettes request sent to Raptor."));
-            }
-
-            return CCAColorPaletteResult.CreateCCAColorPaletteResult(RaptorConverters.convertColorPalettes(palettes.Transitions));
+#endif
+            var filter = FilterResult.CreateFilterForCCATileRequest
+            (
+              request.startUtc,
+              request.endUtc,
+              new List<long> { request.assetId },
+              null,
+              request.liftId.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None,
+              request.liftId,
+              new List<MachineDetails> { new MachineDetails(request.assetId, null, false, request.assetUid) }
+            );
+            var trexRequest = new CCAColorPaletteTrexRequest(request.ProjectUid.Value, filter);
+            return trexCompactionDataProxy.SendDataPostRequest<CCAColorPaletteResult, CCAColorPaletteTrexRequest>(trexRequest, "/ccacolors", customHeaders).Result;
+#if RAPTOR
           }
 
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              "Failed to process CCA data colour palettes request."));
+          return ProcessWithRaptor(request);
+#endif
         }
         finally
         {
@@ -71,14 +76,40 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           "No CCA data colour palettes request sent."));
     }
 
+#if RAPTOR
+    private CCAColorPaletteResult ProcessWithRaptor(CCAColorPaletteRequest request)
+    {
+      TColourPalettes palettes;
+
+      palettes.Transitions = new TColourPalette[0];
+
+      if (raptorClient.GetMachineCCAColourPalettes(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.assetId, request.startUtc, request.endUtc, request.liftId, out palettes))
+      {
+        if (palettes.Transitions.Length == 0)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              "Failed to process CCA data colour palettes request sent to Raptor."));
+        }
+
+        return new CCAColorPaletteResult(RaptorConverters.convertColorPalettes(palettes.Transitions));
+      }
+
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          "Failed to process CCA data colour palettes request."));
+    }
+#endif
+
     /// <summary>
     /// Populates ContractExecutionStates with Production Data Server error messages.
     /// </summary>
     /// 
     protected sealed override void ProcessErrorCodes()
     {
-     //throw new NotImplementedException();
-     RaptorResult.AddErrorMessages(ContractExecutionStates); 
+#if RAPTOR
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }
