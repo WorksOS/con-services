@@ -138,7 +138,6 @@ namespace VSS.TRex.Cells
       Time = CellPassConsts.NullTime;
 
       Height = CellPassConsts.NullHeight;
-      // MachineID = NullMachineID;
       InternalSiteModelMachineIndex = CellPassConsts.NullInternalSiteModelMachineIndex;
       gpsMode = CellPassConsts.NullGPSMode;
       CCV                 = CellPassConsts.NullCCV;
@@ -157,9 +156,8 @@ namespace VSS.TRex.Cells
     /// </summary>
     /// <param name="internalSiteModelMachineIndex"></param>
     /// <param name="time"></param>
-    public void MachineIDAndTime(/*out long machineID, */ out short internalSiteModelMachineIndex, out DateTime time)
+    public void MachineIDAndTime(out short internalSiteModelMachineIndex, out DateTime time)
     {
-      //machineID = MachineID;
       internalSiteModelMachineIndex = InternalSiteModelMachineIndex;
       time = Time;
     }
@@ -176,12 +174,35 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
+    /// Tests if the content opf this cell pass is equal to the content of another cell pass.
+    /// Note: This does nto implement IEquatable or similar interface to retain the pure
+    /// struct semantics of CellPass
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool Equals(CellPass other)
+    {
+      return GPSModeStore == other.GPSModeStore &&
+             InternalSiteModelMachineIndex == other.InternalSiteModelMachineIndex &&
+             Height == other.Height &&
+             Time == other.Time &&
+             CCV == other.CCV &&
+             RadioLatency == other.RadioLatency &&
+             RMV == other.RMV &&
+             Frequency == other.Frequency &&
+             Amplitude == other.Amplitude &&
+             MaterialTemperature == other.MaterialTemperature &&
+             MachineSpeed == other.MachineSpeed &&
+             MDP == other.MDP &&
+             CCA == other.CCA;
+    }
+
+    /// <summary>
     /// Produce a human readable text version of the information contained in a cell pass
     /// </summary>
     /// <returns></returns>
     public override string ToString()
     {
-      //return  $"Time:{Time} MachineID:{MachineID}, Height:{Height}, CCV:{CCV}, RadioLatency:{RadioLatency}, RMV:{RMV}, GPSMode:{gpsMode}, Freq:{Frequency}, Amp:{Amplitude}, Temperature:{MaterialTemperature}, Speed:{MachineSpeed}, MDP:{MDP}, CCA:{CCA}";
       return $"Time:{Time:yyyy-MM-dd hh-mm-ss.fff} InternalMachineID:{InternalSiteModelMachineIndex}, Height:{Height}, CCV:{CCV}, RadioLatency:{RadioLatency}, RMV:{RMV}, GPSMode:{gpsMode}, Freq:{Frequency}, Amp:{Amplitude}, Temperature:{MaterialTemperature}, Speed:{MachineSpeed}, MDP:{MDP}, CCA:{CCA}";
     }
 
@@ -192,7 +213,7 @@ namespace VSS.TRex.Cells
     public void Assign(CellPass Pass)
     {
       GPSModeStore = Pass.GPSModeStore;
-      //MachineID = Pass.MachineID;
+
       InternalSiteModelMachineIndex = Pass.InternalSiteModelMachineIndex;
       Height = Pass.Height;
       Time = Pass.Time;
@@ -214,7 +235,6 @@ namespace VSS.TRex.Cells
     public void Write(BinaryWriter writer)
     {
       writer.Write(GPSModeStore);
-      //writer.Write(MachineID);
       writer.Write(InternalSiteModelMachineIndex);
       writer.Write(Height);
       writer.Write(Time.ToBinary());
@@ -236,7 +256,6 @@ namespace VSS.TRex.Cells
     public void Read(BinaryReader reader)
     {
       GPSModeStore = reader.ReadByte();
-      //MachineID = reader.ReadInt64();
       InternalSiteModelMachineIndex = reader.ReadInt16();
       Height = reader.ReadSingle();
       Time = DateTime.FromBinary(reader.ReadInt64());
@@ -292,6 +311,5 @@ namespace VSS.TRex.Cells
       MDP = reader.ReadShort();
       CCA = reader.ReadByte();
     }
-
   }
 }

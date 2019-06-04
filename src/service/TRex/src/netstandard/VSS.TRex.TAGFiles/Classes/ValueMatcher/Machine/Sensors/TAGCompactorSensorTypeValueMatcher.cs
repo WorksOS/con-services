@@ -7,7 +7,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
 {
     public class TAGCompactorSensorTypeValueMatcher : TAGValueMatcher
     {
-        public TAGCompactorSensorTypeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGCompactorSensorTypeValueMatcher()
         {
         }
 
@@ -15,7 +15,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             if (!Enum.IsDefined(typeof(CompactionSensorType), (byte)value))
             {

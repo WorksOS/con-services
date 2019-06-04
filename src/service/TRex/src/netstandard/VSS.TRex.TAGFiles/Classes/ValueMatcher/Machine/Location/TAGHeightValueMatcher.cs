@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Location
     /// </summary>
     public class TAGHeightValueMatcher : TAGValueMatcher
     {
-        public TAGHeightValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGHeightValueMatcher()
         {
         }
 
@@ -16,7 +16,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Location
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessDoubleValue(TAGDictionaryItem valueType, double value)
+        public override bool ProcessDoubleValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, double value)
         {
             if (state.GPSBasePositionReportingHaveStarted)
             {

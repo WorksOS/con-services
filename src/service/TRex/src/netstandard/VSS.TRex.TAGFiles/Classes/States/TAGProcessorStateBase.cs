@@ -152,7 +152,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
       // default to true wrt to the processing of the file.
       OnGrounds.Add(Consts.MIN_DATETIME_AS_UTC, OnGroundState.YesLegacy);
 
-      AgeOfCorrections.Add(Consts.MIN_DATETIME_AS_UTC, (byte)0);
+      AgeOfCorrections.Add(Consts.MIN_DATETIME_AS_UTC, 0);
 
       VolkelMeasureRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasRange);
       VolkelMeasureUtilRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasUtilRange);
@@ -399,10 +399,10 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public XYZ DataRearLeft = XYZ.Null;
     public XYZ DataRearRight = XYZ.Null;
 
-    public AccumulatedAttributes GPSModes { get; } = new AccumulatedAttributes();
-    public AccumulatedAttributes OnGrounds { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes<GPSMode> GPSModes { get; } = new AccumulatedAttributes<GPSMode>();
+    public AccumulatedAttributes<OnGroundState> OnGrounds { get; } = new AccumulatedAttributes<OnGroundState>();
 
-    public AccumulatedAttributes AgeOfCorrections { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes<byte> AgeOfCorrections { get; } = new AccumulatedAttributes<byte>();
 
     //  ValidPosition is only used in terms of the most recent epoch and do not need to have the history of these
     // values maintained in a TAccumulatedAttributeList
@@ -424,40 +424,40 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public string HardwareID { get; set; } = string.Empty;
     public uint Sequence { get; set; }
 
-    public AccumulatedAttributes ICCCVValues { get; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICMachineSpeedValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes<short> ICCCVValues { get; } = new AccumulatedAttributes<short>();
+    public AccumulatedAttributes<double> ICMachineSpeedValues { get; } = new AccumulatedAttributes<double>();
 
     public short ICCCVTargetValue { get { return _ICCCVTargetValue; } set { SetICCCVTargetValue(value); } }
 
     public ushort ICPassTargetValue { get { return _ICPassTargetValue; } set { SetICPassTargetValue(value); } }
     public ushort ICLayerIDValue { get { return _ICLayerIDValue; } set { SetICLayerIDValue(value); } }
 
-    public AccumulatedAttributes ICRMVValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes<short> ICRMVValues { get; } = new AccumulatedAttributes<short>();
 
     public short ICRMVJumpthreshold { get { return _RMVJumpThreshold; } set { SetRMVJumpThresholdValue(value); } }
 
-    public AccumulatedAttributes ICFrequencys { get; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICAmplitudes { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes<ushort> ICFrequencys { get; } = new AccumulatedAttributes<ushort>();
+    public AccumulatedAttributes<ushort> ICAmplitudes { get; } = new AccumulatedAttributes<ushort>();
 
     public MachineGear ICGear { get { return _ICGear; } set { SetICGear(value); } }
     public byte ICSonic3D { get { return _ICSonic3D; } set { SetICSonic3D(value); } }
     public byte ICMode { get { return _ICMode; } set { SetICMode(value); } }
     public CompactionSensorType ICSensorType { get { return _ICSensorType; } set { SetICSensorType(value); } }
-    public AccumulatedAttributes ICMDPValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes<short> ICMDPValues { get; } = new AccumulatedAttributes<short>();
     public short ICMDPTargetValue { get { return _ICMDPTargetValue; } set { SetICMDPTargetValue(value); } }
-    public AccumulatedAttributes ICCCAValues { get; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICCCALeftFrontValues { get; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICCCARightFrontValues { get; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICCCALeftRearValues { get; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICCCARightRearValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes<byte> ICCCAValues { get; } = new AccumulatedAttributes<byte>();
+    public AccumulatedAttributes<byte> ICCCALeftFrontValues { get; } = new AccumulatedAttributes<byte>();
+    public AccumulatedAttributes<byte> ICCCARightFrontValues { get; } = new AccumulatedAttributes<byte>();
+    public AccumulatedAttributes<byte> ICCCALeftRearValues { get; } = new AccumulatedAttributes<byte>();
+    public AccumulatedAttributes<byte> ICCCARightRearValues { get; } = new AccumulatedAttributes<byte>();
     public byte ICCCATargetValue { get { return _ICCCATargetValue; } set { SetICCCATargetValue(value); } }
-    public AccumulatedAttributes ICTemperatureValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes<ushort> ICTemperatureValues { get; } = new AccumulatedAttributes<ushort>();
 
     public ushort ICTempWarningLevelMinValue { get { return _ICTempWarningLevelMinValue; } set { SetICTempWarningLevelMinValue(value); } }
     public ushort ICTempWarningLevelMaxValue { get { return _ICTempWarningLevelMaxValue; } set { SetICTempWarningLevelMaxValue(value); } }
 
-    public AccumulatedAttributes VolkelMeasureRanges { get; } = new AccumulatedAttributes();
-    public AccumulatedAttributes VolkelMeasureUtilRanges { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes<byte> VolkelMeasureRanges { get; } = new AccumulatedAttributes<byte>();
+    public AccumulatedAttributes<int> VolkelMeasureUtilRanges { get; } = new AccumulatedAttributes<int>();
 
     public string ApplicationVersion { get { return _ApplicationVersion; } set { SetApplicationVersion(value); } }
 
@@ -572,7 +572,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public virtual void SetICAmplitude(ushort value) => ICAmplitudes.Add(DataTime, value);
     public virtual void SetICRMVValue(short value) => ICRMVValues.Add(DataTime, value);
     public virtual void SetAgeOfCorrection(byte value) => AgeOfCorrections.Add(DataTime, value);
-    public virtual void SetVolkelMeasRange(int value) => VolkelMeasureRanges.Add(DataTime, value);
+    public virtual void SetVolkelMeasRange(byte value) => VolkelMeasureRanges.Add(DataTime, value);
     public virtual void SetVolkelMeasUtilRange(int value) => VolkelMeasureUtilRanges.Add(DataTime, value);
     public virtual void SetElevationMappingModeState(ElevationMappingMode value) => ElevationMappingMode = value;
     public virtual void SetInAvoidZoneState(byte value) => InAvoidZone = value;
@@ -623,7 +623,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
       LeftRearPoint = DataRearLeft;
       RightRearPoint = DataRearRight;
 
-      GPSMode gPSMode = GPSModes.GetGPSModeAtDateTime(DataTime);
+      GPSMode gPSMode = GPSModes.GetValueAtDateTime(DataTime, CellPassConsts.NullGPSMode);
 
       // Check to see if the current blade epoch position is 'accurate' (essentially, not 'Autonomous' if GPS; we assume UTS is accurate enough regardless)
       // and if so save it for future use

@@ -5,7 +5,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CCA
 {
     public class TAGCCATargetValueMatcher : TAGValueMatcher
     {
-        public TAGCCATargetValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGCCATargetValueMatcher()
         {
         }
 
@@ -13,7 +13,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CCA
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = false;
 

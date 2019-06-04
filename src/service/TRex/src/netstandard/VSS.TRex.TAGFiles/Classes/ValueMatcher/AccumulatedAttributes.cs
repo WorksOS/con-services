@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
@@ -10,14 +7,14 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
     /// AccumulatedAttributes stores a list of AccumulatedAttribute instances
     /// the record a series of attribute value observations
     /// </summary>
-    public class AccumulatedAttributes
+    public class AccumulatedAttributes<T>
     {
         /// <summary>
         /// List of items being tracked. This list is managed with the aid of the NumAttrs field to
         /// remove the need to resize the attributes list frequently when all but the latest attributes are
         /// discarded.
         /// </summary>
-        private readonly List<AccumulatedAttribute> list = new List<AccumulatedAttribute>();
+        private readonly List<AccumulatedAttribute<T>> list = new List<AccumulatedAttribute<T>>();
 
         public AccumulatedAttributes()
         {
@@ -47,33 +44,33 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// </summary>
         /// <param name="dateTime"></param>
         /// <param name="value"></param>
-        public void Add(DateTime dateTime, object value)
+        public void Add(DateTime dateTime, T value)
         {
           if (dateTime.Kind != DateTimeKind.Utc)
             throw new ArgumentException("Attribute time must be a UTC cell pass time", nameof(dateTime));
 
           // If there are available entries to reuse, then reuse them...
           if (NumAttrs < list.Count)
-            list[NumAttrs] = new AccumulatedAttribute(dateTime, value);
+            list[NumAttrs] = new AccumulatedAttribute<T>(dateTime, value);
           else
-            list.Add(new AccumulatedAttribute(dateTime, value));
+            list.Add(new AccumulatedAttribute<T>(dateTime, value));
 
           NumAttrs++;
         }
 
         // GetLatest simply returns the last value in the list
-        public object GetLatest()
+        public T GetLatest()
         {
-            return NumAttrs > 0 ? list[NumAttrs - 1].value : null;
+            return NumAttrs > 0 ? list[NumAttrs - 1].value : default(T);
         }
 
         // GetValueAtDateTime locates the value appropriate for the given datetime
         // Requesting a value for a datetime prior to the first value in the list
         // will return the first value in the list. If there are no values in the list
         // then the function returns false.
-        public bool GetValueAtDateTime(DateTime dateTime, out object value)
+        public bool GetValueAtDateTime(DateTime dateTime, out T value)
         {
-            value = null;
+            value = default(T);
 
             switch (NumAttrs)
             {
@@ -114,110 +111,11 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// Gets the appropriate GPSMode given a UTC datetime
         /// </summary>
         /// <param name="dateTime"></param>
+        /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public GPSMode GetGPSModeAtDateTime(DateTime dateTime)
+        public T GetValueAtDateTime(DateTime dateTime, T defaultValue)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (GPSMode)value : CellPassConsts.NullGPSMode;
-        }
-
-        /// <summary>
-        /// Gets the appropriate CCV value given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        public short GetCCVValueAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPassConsts.NullCCV;
-        }
-
-        /// <summary>
-        /// Gets the appropriate RMV value given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>        
-        public short GetRMVValueAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPassConsts.NullRMV;
-        }
-
-        /// <summary>
-        /// Gets the appropriate vibration frequency value given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>   
-        public ushort GetFrequencyValueAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPassConsts.NullFrequency;
-        }
-
-        /// <summary>
-        /// Gets the appropriate vibration amplitude value given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>   
-        public ushort GetAmplitudeValueAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPassConsts.NullAmplitude;
-        }
-
-        /// <summary>
-        /// Gets the appropriate correction age given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        public byte GetAgeOfCorrectionValueAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (byte)value : (byte)0;
-        }
-
-        /// <summary>
-        /// Gets the appropriate on ground state given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        public OnGroundState GetOnGroundAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (OnGroundState)value : OnGroundState.No;
-        }
-
-        /// <summary>
-        /// Gets the appropriate material temperature value state given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        public ushort GetMaterialTemperatureValueAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPassConsts.NullMaterialTemperatureValue;
-        }
-
-        /// <summary>
-        /// Gets the appropriate MDP value state given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        public short GetMDPValueAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPassConsts.NullMDP;
-        }
-
-        /// <summary>
-        /// Gets the appropriate machine speed given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        public double GetMachineSpeedValueAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (double)value : Consts.NullDouble;
-        }
-
-        /// <summary>
-        /// Gets the appropriate CCA value given a UTC datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        public byte GetCCAValueAtDateTime(DateTime dateTime)
-        {
-            return GetValueAtDateTime(dateTime, out object value) ? (byte)value : CellPassConsts.NullCCA;
+          return GetValueAtDateTime(dateTime, out T value) ? value : defaultValue;
         }
     }
 }

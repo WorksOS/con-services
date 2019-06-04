@@ -143,7 +143,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
                         if (!(passType == PassType.Track || passType == PassType.Wheel))
                         {
-                            if (Processor.OnGrounds.GetOnGroundAtDateTime(_TheTime) == OnGroundState.No)
+                            if (Processor.OnGrounds.GetValueAtDateTime(_TheTime, OnGroundState.No) == OnGroundState.No)
                                 continue;
                         }
 
@@ -162,7 +162,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
                             if (CompactionDataSupportedByMachine)
                             {
-                                ProcessedCellPass.MDP = Processor.ICMDPValues.GetMDPValueAtDateTime(_TheTime);
+                                ProcessedCellPass.MDP = Processor.ICMDPValues.GetValueAtDateTime(_TheTime, CellPassConsts.NullMDP);
 
                                 //    ProcessedCellPass.CCA = Processor.ICCCAValues.GetCCAValueAtDateTime(_TheTime);
                             
@@ -175,17 +175,17 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                 // temp bug fix AJR
                                 if (MachineTargetValueChanges.VibrationStateEvents.GetValueAtDate(ProcessedCellPass.Time, out int StateChangeIndex, VibrationState.Invalid) == VibrationState.On)
                                 {
-                                    ProcessedCellPass.CCV = Processor.ICCCVValues.GetCCVValueAtDateTime(_TheTime);
-                                    ProcessedCellPass.RMV = Processor.ICRMVValues.GetRMVValueAtDateTime(_TheTime);
-                                    ProcessedCellPass.Frequency = Processor.ICFrequencys.GetFrequencyValueAtDateTime(_TheTime);
-                                    ProcessedCellPass.Amplitude = Processor.ICAmplitudes.GetAmplitudeValueAtDateTime(_TheTime);
+                                    ProcessedCellPass.CCV = Processor.ICCCVValues.GetValueAtDateTime(_TheTime, CellPassConsts.NullCCV);
+                                    ProcessedCellPass.RMV = Processor.ICRMVValues.GetValueAtDateTime(_TheTime, CellPassConsts.NullRMV);
+                                    ProcessedCellPass.Frequency = Processor.ICFrequencys.GetValueAtDateTime(_TheTime, CellPassConsts.NullFrequency);
+                                    ProcessedCellPass.Amplitude = Processor.ICAmplitudes.GetValueAtDateTime(_TheTime, CellPassConsts.NullAmplitude);
                                 }
                             }
 
-                            ProcessedCellPass.RadioLatency = Processor.AgeOfCorrections.GetAgeOfCorrectionValueAtDateTime(_TheTime);
-                            ProcessedCellPass.MaterialTemperature = Processor.ICTemperatureValues.GetMaterialTemperatureValueAtDateTime(_TheTime);
+                            ProcessedCellPass.RadioLatency = Processor.AgeOfCorrections.GetValueAtDateTime(_TheTime, CellPassConsts.NullRadioLatency);
+                            ProcessedCellPass.MaterialTemperature = Processor.ICTemperatureValues.GetValueAtDateTime(_TheTime, CellPassConsts.NullMaterialTemperatureValue);
 
-                            double MachineSpd = Processor.ICMachineSpeedValues.GetMachineSpeedValueAtDateTime(_TheTime);
+                            double MachineSpd = Processor.ICMachineSpeedValues.GetValueAtDateTime(_TheTime, Consts.NullDouble);
                             if (MachineSpd == Consts.NullDouble)
                             {
                                 MachineSpd = Processor.CalculatedMachineSpeed;
@@ -199,7 +199,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                 ProcessedCellPass.MachineSpeed = (ushort)Math.Round(MachineSpd * 100);
                             }
 
-                            ProcessedCellPass.gpsMode = Processor.GPSModes.GetGPSModeAtDateTime(_TheTime);
+                            ProcessedCellPass.gpsMode = Processor.GPSModes.GetValueAtDateTime(_TheTime, CellPassConsts.NullGPSMode);
 
                             ProcessedCellPass.HalfPass = HalfPass;
                             ProcessedCellPass.PassType = passType;

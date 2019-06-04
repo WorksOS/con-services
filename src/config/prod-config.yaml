@@ -25,7 +25,6 @@ data:
   KAFKA_URI: 10.211.16.11
   KAFKA_PORT: "9092"
   KAFKA_OFFSET: latest
-  KAFKA_TOPIC_NAME_SUFFIX:
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
 #Service references  
   ASSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/associateprojectsubscription
@@ -53,6 +52,7 @@ data:
 #SERVICE DISCOVERY REFERENCES
   assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
   assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
+  unifiedproductivity_public_v1: https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2
 #Misc stuff
@@ -99,6 +99,7 @@ data:
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
   FILTER_CACHE_LIFE: 00:15:00
   GEOFENCE_CACHE_LIFE: 00:15:00
+  UNIFIED_PRODUCTIVITY_CACHE_LIFE: 00:15:00
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
   ASSETMGMT_CACHE_LIFE: 00:30:00

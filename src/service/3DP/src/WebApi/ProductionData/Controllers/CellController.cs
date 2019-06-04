@@ -9,13 +9,17 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
@@ -26,13 +30,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// </summary>
   [ProjectVerifier]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class CellController
+  public class CellController : BaseController<CellController>
   {
 #if RAPTOR
     private readonly IASNodeClient raptorClient;
 #endif
     private readonly ILoggerFactory logger;
-    private readonly IConfigurationStore configStore;
     private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
 
     /// <summary>
@@ -42,14 +45,50 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+      ILoggerFactory logger, 
+      IConfigurationStore configStore, 
+      ITRexCompactionDataProxy trexCompactionDataProxy, 
+      IFileListProxy fileListProxy,
+      ICompactionSettingsManager settingsManager) 
+      : base(configStore, fileListProxy, settingsManager)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
 #endif
       this.logger = logger;
-      this.configStore = configStore;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
+    }
+
+    /// <summary>
+    /// Retrieve passes for a single cell and process them according to the provided filter and layer analysis parameters
+    /// The version 2 endpoint supports FilterUID values being passed, as opposed to raw filters or filter ID values
+    /// Other than that, the request and response is the same.
+    /// </summary>
+    /// <param name="request">The request representation for the operation</param>
+    /// <returns>A representation of the cell that contains summary information relative to the cell as a whole, a collection of layers derived from layer analysis and the collection of cell passes that met the filter conditions.</returns>
+    /// <executor>CellPassesExecutor</executor>
+    [PostRequestVerifier]
+    [Route("api/v2/productiondata/cells/passes")]
+    [HttpPost]
+    public async Task<CellPassesV2Result> CellPassesV2([FromBody] CellPassesRequestV2 request)
+    {
+#if RAPTOR
+      request.Validate();
+      var projectUid = request.ProjectUid 
+                       ?? await ((RaptorPrincipal) User).GetProjectUid(request.ProjectId.Value);
+
+      if (request.FilterUid.HasValue)
+      {
+        var filter = await GetCompactionFilter(projectUid, request.FilterUid.Value);
+        if (filter != null)
+          request.SetFilter(filter);
+      }
+
+      return RequestExecutorContainerFactory.Build<CellPassesV2Executor>(logger, raptorClient).Process(request) as CellPassesV2Result;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -61,9 +100,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/productiondata/cells/passes")]
     [HttpPost]
-    public CellPassesResult Post([FromBody]CellPassesRequest request)
+    public CellPassesResult CellPasses([FromBody]CellPassesRequest request)
     {
 #if RAPTOR
+      request.Validate();
+      
       return RequestExecutorContainerFactory.Build<CellPassesExecutor>(logger, raptorClient).Process(request) as CellPassesResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
@@ -87,7 +128,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
         raptorClient,
 #endif
-        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResult;
+        configStore: ConfigStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResult;
     }
 
     /// <summary>
