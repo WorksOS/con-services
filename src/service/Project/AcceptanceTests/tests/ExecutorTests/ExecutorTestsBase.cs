@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.Common.Abstractions.Configuration;
@@ -24,21 +23,20 @@ using RdKafkaDriver = VSS.KafkaConsumer.Kafka.RdKafkaDriver;
 
 namespace ExecutorTests
 {
-  public class ExecutorTestsBase
+  public class ExecutorTestsBase : IDisposable
   {
-    protected IServiceProvider serviceProvider;
-    protected IConfigurationStore configStore;
-    protected ILoggerFactory logger;
-    protected IServiceExceptionHandler serviceExceptionHandler;
-    protected ProjectRepository projectRepo;
-    protected CustomerRepository customerRepo;
-    protected IRaptorProxy raptorProxy;
-    protected IKafka producer;
-    protected string kafkaTopicName;
+    public IServiceProvider serviceProvider;
+    public IConfigurationStore configStore;
+    public ILoggerFactory logger;
+    public IServiceExceptionHandler serviceExceptionHandler;
+    public ProjectRepository projectRepo;
+    public CustomerRepository customerRepo;
+    public IRaptorProxy raptorProxy;
+    public IKafka producer;
+    public string kafkaTopicName;
     private readonly string loggerRepoName = "UnitTestLogTest";
 
-    [TestInitialize]
-    public virtual void InitTest()
+    public ExecutorTestsBase()
     {
       var serviceCollection = new ServiceCollection();
       
@@ -74,7 +72,7 @@ namespace ExecutorTests
                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
-    protected IDictionary<string, string> CustomHeaders(string customerUid)
+    public IDictionary<string, string> CustomHeaders(string customerUid)
     {
       var headers = new Dictionary<string, string>();
       headers.Add("X-JWT-Assertion", RestClientUtil.DEFAULT_JWT);
@@ -83,7 +81,7 @@ namespace ExecutorTests
       return headers;
     }
 
-    protected bool CreateCustomerProject(string customerUid, string projectUid)
+    public bool CreateCustomerProject(string customerUid, string projectUid)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
@@ -129,7 +127,7 @@ namespace ExecutorTests
       return (g.Result != null ? true : false);
     }
 
-    protected bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
+    public bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectGuidParseResult = Guid.TryParse(projectUid, out Guid projectGuid);
@@ -162,5 +160,8 @@ namespace ExecutorTests
       var g = projectRepo.GetProjectSettings(projectUid, userId, settingsType); g.Wait();
       return (g.Result != null ? true : false);
     }
+
+    public void Dispose()
+    { }
   }
 }

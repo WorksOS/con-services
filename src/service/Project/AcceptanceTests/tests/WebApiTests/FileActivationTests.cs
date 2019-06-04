@@ -5,28 +5,24 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using WebApiTests.UtilityClasses;
+using Xunit;
 
 namespace WebApiTests
 {
-  [TestClass]
   public class FileActivationTests
   {
-    private readonly Msg msg = new Msg();
-
-    private const string GEOMETRY_WKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
-
-    [TestMethod]
+    [Fact]
     public void GetImportedFiles_should_return_activation_state()
     {
       const string testName = "Get Activated Import Files";
-      msg.Title(testName, "Get all activated import files");
+      Msg.Title(testName, "Get all activated import files");
       var ts = new TestSupport();
       var importFile = new ImportFile();
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -46,13 +42,18 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
+      var importFilename1 = TestFileResolver.File(TestFile.TestAlignment1);
+      var fullFilePath1 = TestFileResolver.GetFullPath(importFilename1);
+      var importFilename2 = TestFileResolver.File(TestFile.TestAlignment2);
+      var fullFilePath2 = TestFileResolver.GetFullPath(importFilename2);
+
       var importFileArray = new[] {
-        "| EventType              | ProjectUid   | CustomerUid   | Name                       | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment2.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |"};
+        "| EventType              | ProjectUid   | CustomerUid   | Name            | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated |",
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fullFilePath1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |",
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fullFilePath2} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |"};
 
       var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post));
       var expectedResult = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
@@ -65,19 +66,19 @@ namespace WebApiTests
       expectedResult.IsActivated = true;
       ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult, true);
 
-      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
-      Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
+      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      Assert.True(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult, true);
 
-      var activatedFileList = importFile.GetImportedFilesFromWebApiV4(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
-      Assert.AreEqual(2, activatedFileList.ImportedFileDescriptors.Count);
+      var activatedFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      Assert.Equal(2, activatedFileList.ImportedFileDescriptors.Count);
     }
 
-    [TestMethod]
+    [Fact]
     public void Set_activation_should_fail_when_projectId_is_invalid()
     {
       const string testName = "Set ImportFile::IsActivated with invalid project id";
-      msg.Title(testName, string.Empty);
+      Msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
@@ -86,15 +87,15 @@ namespace WebApiTests
         false, 2001, "No access to the project for a customer or the project does not exist.", true);
     }
 
-    [TestMethod]
+    [Fact]
     public void Set_activation_should_handle_project_with_no_files()
     {
       const string testName = "Set ImportFile::IsActivated with no loaded project files";
-      msg.Title(testName, string.Empty);
+      Msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var projectUid = Guid.NewGuid().ToString();
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
@@ -113,22 +114,22 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
       DoActivationRequest(ts, customerUid, projectUid, "id",
         false, (int)HttpStatusCode.BadRequest, "Project contains no imported files.");
     }
 
-    [TestMethod]
+    [Fact]
     public void Set_activation_should_handle_empty_file_list()
     {
       const string testName = "Set ImportFile::IsActivated with empty file list";
-      msg.Title(testName, string.Empty);
+      Msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var projectUid = Guid.NewGuid();
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
@@ -148,24 +149,27 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
-      ImportFiles(ts, projectUid, customerUid, startDateTime, TestFile.TestAlignment1.FullPath());
+      var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
+      var fullFilePath = TestFileResolver.GetFullPath(importFilename);
+
+      ImportFiles(ts, projectUid, customerUid, startDateTime, fullFilePath);
 
       DoActivationRequest(ts, customerUid, projectUid.ToString(), null,
         false, (int)HttpStatusCode.BadRequest, "Request contains no imported file IDs.");
     }
 
-    [TestMethod]
+    [Fact]
     public void Set_activation_should_handle_no_eligible_files()
     {
       const string testName = "Set ImportFile::IsActivated with no valid files";
-      msg.Title(testName, string.Empty);
+      Msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var projectUid = Guid.NewGuid();
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
@@ -185,24 +189,26 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
-      ImportFiles(ts, projectUid, customerUid, startDateTime, TestFile.TestAlignment2.FullPath());
+      var importFilename = TestFileResolver.File(TestFile.TestAlignment2);
+
+      ImportFiles(ts, projectUid, customerUid, startDateTime, TestFileResolver.GetFullPath(importFilename));
 
       DoActivationRequest(ts, customerUid, projectUid.ToString(), "BAD_ID",
         false, (int)HttpStatusCode.OK, "Success");
     }
 
-    [TestMethod]
+    [Fact]
     public void Set_activation_should_set_state_on_eligible_files()
     {
       const string testName = "Set ImportFile::IsActivated";
-      msg.Title(testName, string.Empty);
+      Msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var projectUid = Guid.NewGuid();
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
@@ -222,39 +228,42 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
-      var fileResult = ImportFiles(ts, projectUid, customerUid, startDateTime, TestFile.TestAlignment2.FullPath());
+      var importFilename = TestFileResolver.File(TestFile.TestAlignment2);
+      var fullFilePath = TestFileResolver.GetFullPath(importFilename);
+
+      var fileResult = ImportFiles(ts, projectUid, customerUid, startDateTime, fullFilePath);
 
       DoActivationRequest(ts, customerUid, projectUid.ToString(), fileResult.ImportedFileDescriptor.ImportedFileUid,
         false, (int)HttpStatusCode.OK, "Success");
 
       //Confirm it's deactivated for this user
       var importFile = new ImportFile();
-      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
-      Assert.AreEqual(1, importFileList.ImportedFileDescriptors.Count, "Wrong number of imported files 1");
-      Assert.IsFalse(importFileList.ImportedFileDescriptors[0].IsActivated, "Should be deactivated for user 1");
+      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      Assert.Single(importFileList.ImportedFileDescriptors);
+      Assert.False(importFileList.ImportedFileDescriptors[0].IsActivated, "Should be deactivated for user 1");
 
       //and activated for another user
-      importFileList = importFile.GetImportedFilesFromWebApiV4(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid, RestClientUtil.ANOTHER_JWT);
-      Assert.AreEqual(1, importFileList.ImportedFileDescriptors.Count, "Wrong number of imported files 2");
-      Assert.IsTrue(importFileList.ImportedFileDescriptors[0].IsActivated, "Should be activated for user 2");
+      importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid, RestClientUtil.ANOTHER_JWT);
+      Assert.Single(importFileList.ImportedFileDescriptors);
+      Assert.True(importFileList.ImportedFileDescriptors[0].IsActivated, "Should be activated for user 2");
     }
 
-    [TestMethod]
-    [DataRow("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
+    [Theory]
+    [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
     public void Set_activation_should_set_state_on_design_and_reference_surfaces(string uriRoot1, string uriRoot2)
     {
       const string testName = "Set ImportFile::IsActivated";
-      msg.Title(testName, string.Empty);
+      Msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
 
       var projectUid = Guid.NewGuid();
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
@@ -274,14 +283,16 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
       //Import parent design and reference surface
-      var parentName = TestFile.TestDesignSurface1.FullPath();
+      var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
+      var parentName = TestFileResolver.GetFullPath(importFilename);
+
       var importFileArray = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
       var offset = 1.5;
       var name = $"{Path.GetFileNameWithoutExtension(parentName)} +{offset}m";
@@ -295,26 +306,25 @@ namespace WebApiTests
         false, (int)HttpStatusCode.OK, "Success");
 
       //Confirm both design and ref surface have been deactivated
-      var importFileList = importFileParent.GetImportedFilesFromWebApiV4(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
-      Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      Assert.IsFalse(importFileList.ImportedFileDescriptors[0].IsActivated, "First file should be deactivated");
-      Assert.IsFalse(importFileList.ImportedFileDescriptors[1].IsActivated, "Second file should be deactivated");
+      var importFileList = importFileParent.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      Assert.True(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
+      Assert.False(importFileList.ImportedFileDescriptors[0].IsActivated, "First file should be deactivated");
+      Assert.False(importFileList.ImportedFileDescriptors[1].IsActivated, "Second file should be deactivated");
     }
 
-    [TestMethod]
-    [DataRow("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
-
+    [Theory]
+    [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
     public void Set_activation_should_ignore_reference_surface(string uriRoot1, string uriRoot2)
     {
       const string testName = "Set ImportFile::IsActivated";
-      msg.Title(testName, string.Empty);
+      Msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
 
       var projectUid = Guid.NewGuid();
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
@@ -324,7 +334,7 @@ namespace WebApiTests
       var endDate = endDateTime.ToString("yyyy-MM-dd");
 
       var eventsArray = new[] {
-        "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+        "| TableName            | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
         $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
         $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
         $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
@@ -334,14 +344,17 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
+      
       //Import parent design and reference surface
-      var parentName = TestFile.TestDesignSurface1.FullPath();
+      var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
+      var parentName = TestFileResolver.GetFullPath(importFilename);
+
       var importFileArray = new[] {
-        "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
+        "| EventType               | ProjectUid   | CustomerUid   | Name         | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
       var offset = 1.5;
       var name = $"{Path.GetFileNameWithoutExtension(parentName)} +{offset}m";
@@ -355,13 +368,13 @@ namespace WebApiTests
         false, (int)HttpStatusCode.OK, "Success");
 
       //Confirm it has not changed state
-      var importFileList = importFileParent.GetImportedFilesFromWebApiV4(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
-      Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
+      var importFileList = importFileParent.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      Assert.True(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       var refSurf = importFileList.ImportedFileDescriptors.SingleOrDefault(i =>
         i.ImportedFileUid == filesResult2.ImportedFileDescriptor.ImportedFileUid);
 
-      Assert.IsNotNull(refSurf);
-      Assert.IsTrue(refSurf.IsActivated, "Reference surface should be activated");
+      Assert.NotNull(refSurf);
+      Assert.True(refSurf.IsActivated, "Reference surface should be activated");
     }
 
     private ImportedFileDescriptorSingleResult ImportFiles(TestSupport testSupport, Guid projectUid, Guid customerUid, DateTime startDateTime, string testFile)
@@ -375,7 +388,7 @@ namespace WebApiTests
       return importFile.SendRequestToFileImportV4(testSupport, importFileArray, 1, new ImportOptions(HttpMethod.Post));
     }
 
-    public static void DoActivationRequest(TestSupport ts, Guid customerUid, string projectUid, string importedFileUid, bool activated, int expectedCode, string expectedMessage, bool uppercase = false)
+    internal static void DoActivationRequest(TestSupport ts, Guid customerUid, string projectUid, string importedFileUid, bool activated, int expectedCode, string expectedMessage, bool uppercase = false)
     {
       var importFile = new ImportFile();
 
@@ -385,6 +398,7 @@ namespace WebApiTests
         {
           new ActivatedFileDescriptor {ImportedFileUid = importedFileUid, IsActivated = activated}
         };
+
       var requestBody = JsonConvert.SerializeObject(new ActivatedImportFilesRequest
       {
         ImportedFileDescriptors = descrList
@@ -399,8 +413,8 @@ namespace WebApiTests
 
       var response = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
 
-      Assert.AreEqual(expectedCode, uppercase ? response.Code.Value : response.code.Value);
-      Assert.AreEqual(expectedMessage, uppercase ? response.Message.Value : response.message.Value);
+      Assert.Equal(expectedCode, uppercase ? response.Code.Value : response.code.Value);
+      Assert.Equal(expectedMessage, uppercase ? response.Message.Value : response.message.Value);
     }
   }
 }

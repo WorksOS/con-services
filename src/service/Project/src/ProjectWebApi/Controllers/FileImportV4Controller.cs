@@ -108,8 +108,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DxfUnitsType dxfUnitsType,
       [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
-      [FromQuery] DateTime? surveyedUtc
-    )
+      [FromQuery] DateTime? surveyedUtc)
     {
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
@@ -314,8 +313,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       logger.LogInformation(
         $"{nameof(UpsertImportedFileV4)}. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
-      
-      return UpsertFile(file.path, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, uploadToTcc);
+
+      return UpsertFile(file.path, file.flowFilename, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, uploadToTcc);
     }
 
     /// <summary>
@@ -358,9 +357,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58, $"Expected a multipart request, but got '{Request.ContentType}'");
       }
 
-      var targetFilePath = await HttpContext.Request.StreamFile(filename, logger);
+      var tempFilePath = await HttpContext.Request.StreamFile(Guid.NewGuid().ToString(), logger);
 
-      var result = await UpsertFile(targetFilePath, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
+      var result = await UpsertFile(tempFilePath, filename, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
 
       return result;
     }
@@ -418,24 +417,25 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Common file processing method used by all importedFile endpoints.
     /// </summary>
     private async Task<ImportedFileDescriptorSingleResult> UpsertFile(
-       string filePath,
-       string projectUid,
-       ImportedFileType importedFileType,
-       DxfUnitsType dxfUnitsType,
-       DateTime fileCreatedUtc,
-       DateTime fileUpdatedUtc,
-       DateTime? surveyedUtc,
-       ISchedulerProxy schedulerProxy,
-       bool uploadToTcc = true)
+      string tmpFilePath,
+      string filename,
+      string projectUid,
+      ImportedFileType importedFileType,
+      DxfUnitsType dxfUnitsType,
+      DateTime fileCreatedUtc,
+      DateTime fileUpdatedUtc,
+      DateTime? surveyedUtc,
+      ISchedulerProxy schedulerProxy,
+      bool uploadToTcc = true)
     {
-      if (!System.IO.File.Exists(filePath))
+      if (!System.IO.File.Exists(tmpFilePath))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 55);
       }
 
-      using (var fileStream = new FileStream(filePath, FileMode.Open))
+      using (var fileStream = new FileStream(tmpFilePath, FileMode.Open))
       {
-        return await UpsertFileInternal(Path.GetFileName(filePath), fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType,
+        return await UpsertFileInternal(filename, fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, uploadToTcc: uploadToTcc);
       }
     }

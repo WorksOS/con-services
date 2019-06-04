@@ -6,11 +6,11 @@ using System.Text;
 
 namespace TestUtility
 {
-  public class RdKafkaDriver
+  public static class RdKafkaDriver
   {
-    public Producer<byte[], byte[]> kafkaProducer;
+    public static Producer<byte[], byte[]> kafkaProducer;
 
-    public RdKafkaDriver()
+    static RdKafkaDriver()
     {
       var appConfig = new TestConfig();
       Console.WriteLine($"Kafka Server: {appConfig.kafkaServer} ");
@@ -33,24 +33,28 @@ namespace TestUtility
     /// </summary>
     /// <param name="topicName">Kafka topic name e.g  VSS.VisionLink.Interfaces.Events.Telematics.Machine.SwitchStateEvent </param>
     /// <param name="message">Kafka Message</param>
-    public void SendKafkaMessage(string topicName, string message)
+    public static void SendKafkaMessage(string topicName, string message)
     {
-      try
+      lock (kafkaProducer)
       {
-        Console.WriteLine($"Publish: {topicName} Message: {message} ");
-        var data = Encoding.UTF8.GetBytes(message);
-        var key = Encoding.UTF8.GetBytes(message);
-        var deliveryReport = kafkaProducer.ProduceAsync(topicName, new Message<byte[], byte[]> {Key = key, Value = data}).ContinueWith(task =>
+        try
         {
-          Console.WriteLine(
-            $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {task.Status.ToString()}");
-          return 1;
-        }).Result;
+          Console.WriteLine($"Publish: {topicName} Message: {message} ");
 
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex);
+          var data = Encoding.UTF8.GetBytes(message);
+          var key = Encoding.UTF8.GetBytes(message);
+
+          _ = kafkaProducer.ProduceAsync(topicName, new Message<byte[], byte[]> { Key = key, Value = data }).ContinueWith(task =>
+            {
+              Console.WriteLine(
+                $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {task.Status.ToString()}");
+              return 1;
+            }).Result;
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex);
+        }
       }
     }
   }

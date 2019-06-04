@@ -1,20 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
 using Newtonsoft.Json;
-using System;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using Xunit;
 
 namespace WebApiTests
 {
-  [TestClass]
   public class SubscriptionTests
   {
-    private readonly Msg _msg = new Msg();
-
-    [TestMethod]
+    [Fact]
     public void Get2SubscriptionsForProjectMonitoring()
     {
-      _msg.Title("Project Subtest 1", "Get 2 project monitoring subscriptions ");
+      Msg.Title("Project Subtest 1", "Get 2 project monitoring subscriptions ");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -34,14 +31,14 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
       var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
-      Assert.AreEqual(objresp.SubscriptionDescriptors.Count, 2, " Expecting 2 subscriptions in the results");
-      Assert.AreEqual(objresp.Message, "success", "The message in the response should be success");
+      Assert.Equal(2, objresp.SubscriptionDescriptors.Count);
+      Assert.Equal("success", objresp.Message);
     }
 
-    [TestMethod]
+    [Fact]
     public void Get4SubscriptionsForProjectMonitoringAndLandFill()
     {
-      _msg.Title("Project Subtest 2", "Get 2 project monitoring and 2 landfill subscriptions ");
+      Msg.Title("Project Subtest 2", "Get 2 project monitoring and 2 landfill subscriptions ");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -66,20 +63,21 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
       var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
-      Assert.AreEqual(objresp.SubscriptionDescriptors.Count, 4, " Expecting 4 subscriptions in the results");
-      Assert.AreEqual(objresp.Message, "success", "The message in the response should be success");
+      Assert.Equal(4, objresp.SubscriptionDescriptors.Count);
+      Assert.Equal("success", objresp.Message);
       foreach (var sub in objresp.SubscriptionDescriptors)
       {
-        if (sub.ServiceTypeName == "Landfill" || sub.ServiceTypeName == "ProjectMonitoring") { }
-        else
-        { Assert.Fail("The subscription should be Landfill or Project Monitoring"); }
+        if (sub.ServiceTypeName != "Landfill" && sub.ServiceTypeName != "ProjectMonitoring")
+        {
+          Assert.True(false, "The subscription should be Landfill or Project Monitoring");
+        }
       }
     }
 
-    [TestMethod]
+    [Fact]
     public void Create4SubscriptionsAndUse2ForProjects()
     {
-      _msg.Title("Project Subtest 3", "Get 4 subscriptions and use two ");
+      Msg.Title("Project Subtest 3", "Get 4 subscriptions and use two ");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -87,8 +85,8 @@ namespace WebApiTests
       var subscriptionUid2 = Guid.NewGuid();
       var subscriptionUid3 = Guid.NewGuid();
       var subscriptionUid4 = Guid.NewGuid();
-      var legacyProjectId1 = ts.SetLegacyProjectId();
-      var legacyProjectId2 = legacyProjectId1 + 1;
+      var legacyProjectId1 = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId2 = MySqlHelper.GenerateLegacyProjectId();
       var projectUid1 = Guid.NewGuid().ToString();
       var projectUid2 = Guid.NewGuid().ToString();
       var startDateTime = ts.FirstEventDate;
@@ -116,23 +114,21 @@ namespace WebApiTests
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | {legacyProjectId1} | Project Sub 4-1 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 4-2 | ProjectMonitoring | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       ts.PublishEventCollection(projectEventArray);
-      //Thread.Sleep(3000);
+
       var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
-      Assert.AreEqual(objresp.SubscriptionDescriptors.Count, 2, " Expecting 2 subscriptions in the results");
-      Assert.AreEqual(objresp.Message, "success", "The message in the response should be success");
+      Assert.Equal(2, objresp.SubscriptionDescriptors.Count);
+      Assert.Equal("success", objresp.Message);
       foreach (var sub in objresp.SubscriptionDescriptors)
       {
-        if (sub.ServiceTypeName == "Landfill") { }
-        else
-        { Assert.Fail("The subscription should be Landfill or Project Monitoring"); }
+        Assert.Equal("Landfill", sub.ServiceTypeName);
       }
     }
 
-    [TestMethod]
+    [Fact]
     public void Create4SubscriptionsAndUse2ForLandfillProjects()
     {
-      _msg.Title("Project Subtest 4", "Get 4 subscriptions and use two ");
+      Msg.Title("Project Subtest 4", "Get 4 subscriptions and use two ");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -140,8 +136,8 @@ namespace WebApiTests
       var subscriptionUid2 = Guid.NewGuid();
       var subscriptionUid3 = Guid.NewGuid();
       var subscriptionUid4 = Guid.NewGuid();
-      var legacyProjectId1 = ts.SetLegacyProjectId();
-      var legacyProjectId2 = legacyProjectId1 + 1;
+      var legacyProjectId1 = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId2 = MySqlHelper.GenerateLegacyProjectId();
       var projectUid1 = Guid.NewGuid().ToString();
       var projectUid2 = Guid.NewGuid().ToString();
       var startDateTime = ts.FirstEventDate;
@@ -170,18 +166,15 @@ namespace WebApiTests
       $"| CreateProjectEvent | 0d+10:00:00 | {projectUid1} | {legacyProjectId1} | Project Sub 4-1 | LandFill          | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" ,
       $"| CreateProjectEvent | 0d+10:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 4-2 | LandFill          | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       ts.PublishEventCollection(projectEventArray);
-      //Thread.Sleep(5000);
+
       var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
-      Assert.AreEqual(2, objresp.SubscriptionDescriptors.Count, " Expected subscriptions mismatch");
-      Assert.AreEqual("success", objresp.Message, "The message in the response should be success");
+      Assert.Equal(2, objresp.SubscriptionDescriptors.Count);
+      Assert.Equal("success", objresp.Message);
 
       foreach (var sub in objresp.SubscriptionDescriptors)
       {
-        if (sub.ServiceTypeName != "ProjectMonitoring")
-        {
-          Assert.Fail("The subscription should be Project Monitoring");
-        }
+        Assert.Equal("ProjectMonitoring", sub.ServiceTypeName);
       }
     }
   }

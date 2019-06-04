@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,283 +7,282 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Xunit;
 
 namespace ExecutorTests
 {
-    [TestClass]
-  public class ProjectSettingsTests : ExecutorTestsBase
+  public class ProjectSettingsTests : IClassFixture<ExecutorTestsBase>
   {
-    [TestMethod]
-    [DataRow(ProjectSettingsType.Targets)]
-    [DataRow(ProjectSettingsType.ImportedFiles)]
+    private readonly ExecutorTestsBase _fixture;
+    public ProjectSettingsTests(ExecutorTestsBase fixture)
+    {
+      _fixture = fixture;
+    }
+
+    [Theory]
+    [InlineData(ProjectSettingsType.Targets)]
+    [InlineData(ProjectSettingsType.ImportedFiles)]
     public void GetProjectSettingsExecutor_InvalidProjectUid(ProjectSettingsType settingsType)
     {
-      string projectUid = string.Empty;
-      string settings = string.Empty;
+      var projectUid = string.Empty;
+      var settings = string.Empty;
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
-      var ex = Assert.ThrowsException<ServiceException>(() => projectSettingsRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2005", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Missing ProjectUID.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+      var ex = Assert.Throws<ServiceException>(() => projectSettingsRequest.Validate());
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2005", StringComparison.Ordinal));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("Missing ProjectUID.", StringComparison.Ordinal));
     }
 
-    [TestMethod]
-    [DataRow(ProjectSettingsType.Targets)]
-    //[DataRow(ProjectSettingsType.ImportedFiles)]
-    [DataRow(ProjectSettingsType.Colors)]
+    [Theory]
+    [InlineData(ProjectSettingsType.Targets)]
+    //[InlineData(ProjectSettingsType.ImportedFiles)]
+    [InlineData(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_InvalidCustomerProjectRelationship(ProjectSettingsType settingsType)
     {
-      string customerUidOfProject = Guid.NewGuid().ToString();
-      string customerUidSomeOther = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string userEmailAddress = "whatever@here.there.com";
-      string projectUid = Guid.NewGuid().ToString();
-      string settings = string.Empty;
+      var customerUidOfProject = Guid.NewGuid().ToString();
+      var customerUidSomeOther = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var userEmailAddress = "whatever@here.there.com";
+      var projectUid = Guid.NewGuid().ToString();
+      var settings = string.Empty;
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
 
-      var isCreatedOk = CreateCustomerProject(customerUidOfProject, projectUid);
-      Assert.IsTrue(isCreatedOk, "unable to create project for Customer");
+      var isCreatedOk = _fixture.CreateCustomerProject(customerUidOfProject, projectUid);
+      Assert.True(isCreatedOk, "unable to create project for Customer");
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
-        (logger, configStore, serviceExceptionHandler,
-          customerUidSomeOther, userId, userEmailAddress, CustomHeaders(customerUidOfProject),
+        (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+          customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),
           null, null, 
           null, null, null, null, null,
-          projectRepo);
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+          _fixture.projectRepo);
+      var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal));
     }
 
-    [TestMethod]
-    [DataRow(ProjectSettingsType.Targets)]
-    //[DataRow(ProjectSettingsType.ImportedFiles)]
-    [DataRow(ProjectSettingsType.Colors)]
+    [Theory]
+    [InlineData(ProjectSettingsType.Targets)]
+    //[InlineData(ProjectSettingsType.ImportedFiles)]
+    [InlineData(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_NoSettingsExists(ProjectSettingsType settingsType)
     {
-      string customerUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string userEmailAddress = "whatever@here.there.com";
-      string projectUid = Guid.NewGuid().ToString();
-      string settings = string.Empty;
+      var customerUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var userEmailAddress = "whatever@here.there.com";
+      var projectUid = Guid.NewGuid().ToString();
+      var settings = string.Empty;
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
 
-      var isCreatedOk = CreateCustomerProject(customerUid, projectUid);
-      Assert.IsTrue(isCreatedOk, "unable to create project for Customer");
+      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid);
+      Assert.True(isCreatedOk, "unable to create project for Customer");
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
-          ( logger, configStore, serviceExceptionHandler,
-            customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
+          ( _fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+            customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
             null, null, 
             null, null, null, null, null,
-           projectRepo);
+            _fixture.projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
-      Assert.IsNull(result.settings, "executor should have returned null Settings");
-      Assert.AreEqual(settingsType, result.projectSettingsType, $"executor should have returned {settingsType} SettingsType");
+      Assert.NotNull(result);
+      Assert.Equal(projectUid, result.projectUid);
+      Assert.Null(result.settings);
+      Assert.Equal(settingsType, result.projectSettingsType);
     }
 
-    [TestMethod]
-    [DataRow(ProjectSettingsType.Targets)]
-    //[DataRow(ProjectSettingsType.ImportedFiles)]
-    [DataRow(ProjectSettingsType.Colors)]
+    [Theory]
+    [InlineData(ProjectSettingsType.Targets)]
+    //[InlineData(ProjectSettingsType.ImportedFiles)]
+    [InlineData(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_Exists(ProjectSettingsType settingsType)
     {
-      string customerUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string userEmailAddress = "whatever@here.there.com";
-      string projectUid = Guid.NewGuid().ToString();
-      string settings = @"{firstValue: 10, lastValue: 20}";//"blah";
+      var customerUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var userEmailAddress = "whatever@here.there.com";
+      var projectUid = Guid.NewGuid().ToString();
+      var settings = @"{firstValue: 10, lastValue: 20}";//"blah";
 
-      var isCreatedOk = CreateCustomerProject(customerUid, projectUid);
-      Assert.IsTrue(isCreatedOk, "unable to create project for Customer");
+      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid);
+      Assert.True(isCreatedOk, "unable to create project for Customer");
 
-      isCreatedOk = CreateProjectSettings(projectUid, userId, settings, settingsType);
-      Assert.IsTrue(isCreatedOk, "created projectSettings");
+      isCreatedOk = _fixture.CreateProjectSettings(projectUid, userId, settings, settingsType);
+      Assert.True(isCreatedOk, "created projectSettings");
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
-        (logger, configStore, serviceExceptionHandler,
-          customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
+        (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+          customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
           null, null, 
           null, null, null, null, null,
-          projectRepo);
+          _fixture.projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+      Assert.NotNull(result);
+      Assert.Equal(projectUid, result.projectUid);
+      Assert.Equal(settingsType, result.projectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
       {
         var tempSettings = JsonConvert.DeserializeObject<JObject>(settings);
 
-        Assert.AreEqual(tempSettings["firstValue"], result.settings["firstValue"],
-          "executor returned incorrect firstValue of settings");
-        Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"],
-          "executor should have returned lastValue of settings");
+        Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
+        Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
       }
       else
       {
         var tempObj = JsonConvert.DeserializeObject<JArray>(settings);
         var tempJObject = new JObject { ["importedFiles"] = tempObj };
 
-        Assert.AreEqual(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"], "executor returned incorrect firstValue of the first object of the settings");
-        Assert.AreEqual(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"], "executor returned incorrect lastValue of the first object of the settings");
-        Assert.AreEqual(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"], "executor returned incorrect firstValue of the last object of the settings");
-        Assert.AreEqual(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"], "executor returned incorrect lastValue of the last object of the settings");
+        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"]);
       }
     }
 
-    [TestMethod]
-    [DataRow(ProjectSettingsType.Targets)]
-    [DataRow(ProjectSettingsType.ImportedFiles)]
+    [Theory]
+    [InlineData(ProjectSettingsType.Targets)]
+    [InlineData(ProjectSettingsType.ImportedFiles)]
     public void UpsertProjectSettingsExecutor_InvalidProjectSettings(ProjectSettingsType settingsType)
     {
-      string projectUid = Guid.NewGuid().ToString();
-      string settings = null;
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
-      var ex = Assert.ThrowsException<ServiceException>(() => projectSettingsRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("ProjectSettings cannot be null.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+      var projectUid = Guid.NewGuid().ToString();
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, null, settingsType);
+      var ex = Assert.Throws<ServiceException>(() => projectSettingsRequest.Validate());
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("ProjectSettings cannot be null.", StringComparison.Ordinal));
     }
 
-    [TestMethod]
-    [DataRow(ProjectSettingsType.Targets)]
-    [DataRow(ProjectSettingsType.ImportedFiles)]
+    [Theory]
+    [InlineData(ProjectSettingsType.Targets)]
+    [InlineData(ProjectSettingsType.ImportedFiles)]
     public async Task UpsertProjectSettingsExecutor_InvalidCustomerProjectRelationship(ProjectSettingsType settingsType)
     {
-      string customerUidOfProject = Guid.NewGuid().ToString();
-      string customerUidSomeOther = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string userEmailAddress = "whatever@here.there.com";
+      var customerUidOfProject = Guid.NewGuid().ToString();
+      var customerUidSomeOther = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var userEmailAddress = "whatever@here.there.com";
       var projectUid = Guid.NewGuid();
-      string settings = "blah";
-      string settingsUpdated = "blah Is Updated";
+      var settings = "blah";
+      var settingsUpdated = "blah Is Updated";
 
-      var isCreatedOk = CreateCustomerProject(customerUidOfProject, projectUid.ToString());
-      Assert.IsTrue(isCreatedOk, "unable to create project for Customer");
+      var isCreatedOk = _fixture.CreateCustomerProject(customerUidOfProject, projectUid.ToString());
+      Assert.True(isCreatedOk, "unable to create project for Customer");
 
-      isCreatedOk = CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
-      Assert.IsTrue(isCreatedOk, "created projectSettings");
+      isCreatedOk = _fixture.CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
+      Assert.True(isCreatedOk, "created projectSettings");
 
       var projectSettingsRequest =
         ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
-      (logger, configStore, serviceExceptionHandler,
-        customerUidSomeOther, userId, userEmailAddress, CustomHeaders(customerUidOfProject),
-        producer, kafkaTopicName,
-        raptorProxy, null, null, null, null,
-        projectRepo);
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+      (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+        customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),
+        _fixture.producer, _fixture.kafkaTopicName,
+        _fixture.raptorProxy, null, null, null, null,
+        _fixture.projectRepo);
+      var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal));
     }
 
-    [TestMethod]
-    [DataRow(ProjectSettingsType.Targets)]
-    [DataRow(ProjectSettingsType.ImportedFiles)]
-    [DataRow(ProjectSettingsType.Colors)]
+    [Theory]
+    [InlineData(ProjectSettingsType.Targets)]
+    [InlineData(ProjectSettingsType.ImportedFiles)]
+    [InlineData(ProjectSettingsType.Colors)]
     public async Task UpsertProjectSettingsExecutor_NoProjectSettingsExists(ProjectSettingsType settingsType)
     {
-      string customerUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string userEmailAddress = "whatever@here.there.com";
+      var customerUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var userEmailAddress = "whatever@here.there.com";
       var projectUid = Guid.NewGuid();
-      string settings = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";//"blah";
+      var settings = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";//"blah";
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settings, settingsType);
 
-      var isCreatedOk = CreateCustomerProject(customerUid, projectUid.ToString());
-      Assert.IsTrue(isCreatedOk, "unable to create project for Customer");
+      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid.ToString());
+      Assert.True(isCreatedOk, "unable to create project for Customer");
       
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
-        (logger, configStore, serviceExceptionHandler,
-        customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
-        producer, kafkaTopicName,
-        raptorProxy, null, null, null, null,
-        projectRepo);
+        (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+        customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
+        _fixture.producer, _fixture.kafkaTopicName,
+        _fixture.raptorProxy, null, null, null, null,
+        _fixture.projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(projectUid.ToString(), result.projectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+      Assert.NotNull(result);
+      Assert.Equal(projectUid.ToString(), result.projectUid);
+      Assert.Equal(settingsType, result.projectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
       {
         var tempSettings = JsonConvert.DeserializeObject<JObject>(settings);
 
-        Assert.AreEqual(tempSettings["firstValue"], result.settings["firstValue"],
-          "executor returned incorrect firstValue of settings");
-        Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"],
-          "executor should have returned lastValue of settings");
+        Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
+        Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
       }
       else
       {
         var tempObj = JsonConvert.DeserializeObject<JArray>(settings);
         var tempJObject = new JObject { ["importedFiles"] = tempObj };
 
-        Assert.AreEqual(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"], "executor returned incorrect firstValue of the first object of the settings");
-        Assert.AreEqual(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"], "executor returned incorrect lastValue of the first object of the settings");
-        Assert.AreEqual(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"], "executor returned incorrect firstValue of the last object of the settings");
-        Assert.AreEqual(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"], "executor returned incorrect lastValue of the last object of the settings");
+        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"]);
       }
     }
 
-    [TestMethod]
-    [DataRow(ProjectSettingsType.Targets)]
-    [DataRow(ProjectSettingsType.ImportedFiles)]
-    [DataRow(ProjectSettingsType.Colors)]
+    [Theory]
+    [InlineData(ProjectSettingsType.Targets)]
+    [InlineData(ProjectSettingsType.ImportedFiles)]
+    [InlineData(ProjectSettingsType.Colors)]
     public async Task UpsertProjectSettingsExecutor_Exists(ProjectSettingsType settingsType)
     {
-      string customerUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string userEmailAddress = "whatever@here.there.com";
+      var customerUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var userEmailAddress = "whatever@here.there.com";
       var projectUid = Guid.NewGuid();
-      string settings = "blah";
+      var settings = "blah";
       //string settingsUpdated = "blah Is Updated";
-      string settingsUpdated = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
+      var settingsUpdated = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
 
-      var isCreatedOk = CreateCustomerProject(customerUid, projectUid.ToString());
-      Assert.IsTrue(isCreatedOk, "unable to create project for Customer");
+      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid.ToString());
+      Assert.True(isCreatedOk, "unable to create project for Customer");
 
-      isCreatedOk = CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
-      Assert.IsTrue(isCreatedOk, "created projectSettings");
+      isCreatedOk = _fixture.CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
+      Assert.True(isCreatedOk, "created projectSettings");
 
       var projectSettingsRequest =
         ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
-      (logger, configStore, serviceExceptionHandler,
-        customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
-        producer, kafkaTopicName,
-        raptorProxy, null, null, null, null,
-        projectRepo);
+      (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+        customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
+        _fixture.producer, _fixture.kafkaTopicName,
+        _fixture.raptorProxy, null, null, null, null,
+        _fixture.projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(projectUid.ToString(), result.projectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(settingsType, result.projectSettingsType, "executor returned incorrect projectSettingsType");
+      Assert.NotNull(result);
+      Assert.Equal(projectUid.ToString(), result.projectUid);
+      Assert.Equal(settingsType, result.projectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
       {
         var tempSettings = JsonConvert.DeserializeObject<JObject>(settingsUpdated);
 
-        Assert.AreEqual(tempSettings["firstValue"], result.settings["firstValue"],
-          "executor returned incorrect firstValue of settings");
-        Assert.AreEqual(tempSettings["lastValue"], result.settings["lastValue"],
-          "executor should have returned lastValue of settings");
+        Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
+        Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
       }
       else
       {
         var tempObj = JsonConvert.DeserializeObject<JArray>(settingsUpdated);
         var tempJObject = new JObject { ["importedFiles"] = tempObj };
 
-        Assert.AreEqual(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"], "executor returned incorrect firstValue of the first object of the settings");
-        Assert.AreEqual(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"], "executor returned incorrect lastValue of the first object of the settings");
-        Assert.AreEqual(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"], "executor returned incorrect firstValue of the last object of the settings");
-        Assert.AreEqual(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"], "executor returned incorrect lastValue of the last object of the settings");
+        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"]);
       }
     }
   }
