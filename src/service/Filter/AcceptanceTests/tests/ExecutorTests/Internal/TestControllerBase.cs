@@ -41,6 +41,7 @@ namespace ExecutorTests.Internal
     protected ProjectRepository ProjectRepo;
     protected GeofenceRepository GeofenceRepo;
     protected IGeofenceProxy GeofenceProxy;
+    protected IUnifiedProductivityProxy UnifiedProductivityProxy;
     private const string LOGGER_REPO_NAME = "UnitTestLogTest";
 
     public void SetupDI()
@@ -70,6 +71,8 @@ namespace ExecutorTests.Internal
         .AddMemoryCache()
         .AddSingleton<IDataCache, InMemoryDataCache>()
         .AddSingleton<IGeofenceProxy, GeofenceProxy>()
+        .AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>()
+        .AddServiceDiscovery()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -83,6 +86,7 @@ namespace ExecutorTests.Internal
       RaptorProxy = ServiceProvider.GetRequiredService<IRaptorProxy>();
       AssetResolverProxy = ServiceProvider.GetRequiredService<IAssetResolverProxy>();
       GeofenceProxy = ServiceProvider.GetRequiredService<IGeofenceProxy>();
+      UnifiedProductivityProxy = ServiceProvider.GetRequiredService<IUnifiedProductivityProxy>();
 
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
     }
