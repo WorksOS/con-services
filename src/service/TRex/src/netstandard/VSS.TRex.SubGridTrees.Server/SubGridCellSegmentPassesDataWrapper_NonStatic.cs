@@ -297,6 +297,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void ReplacePasses(uint X, uint Y, CellPass[] cellPasses)
         {
+          SegmentPassCount += (uint)cellPasses.Length - PassData[X, Y].PassCount;
+
           PassData[X, Y].Passes = cellPasses;
         }
     } 
