@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Models.Classes.Integrator;
@@ -17,97 +17,141 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
   /// </summary>
   public class GroupedSubGridIntegrator : IGroupedSubGridIntegrator
   {
-    private const int Default_CELL_PASS_ARRAY_SIZE = 1000;
-    private const int Default_CELL_PASS_ARRAY_SIZE_INCREMENT = 1000;
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<GroupedSubGridIntegrator>();
 
-    public List<(IServerSubGridTree, DateTime, DateTime)> Trees { get; set; }
+    private const int DEFAULT_CELL_PASS_ARRAY_SIZE = 1000;
+    private const int DEFAULT_CELL_PASS_ARRAY_SIZE_INCREMENT = 1000;
 
-    private readonly List<IServerLeafSubGrid> _subGridGroup = new List<IServerLeafSubGrid>();
-    private CellPass[] _cellPasses = new CellPass[Default_CELL_PASS_ARRAY_SIZE];
-    private int _numCellPasses;
+    private List<(IServerSubGridTree, DateTime, DateTime)> _trees;
+    public List<(IServerSubGridTree, DateTime, DateTime)> Trees
+    {
+      get => _trees;
+      set
+      {
+        _trees = value;
+        _subGridGroup = new IServerLeafSubGrid[_trees.Count];
+      }
+    }
+
+    private IServerLeafSubGrid[] _subGridGroup;
+    private int _subGridGroupCount;
+
+    private CellPass[] _totalCellPasses = new CellPass[DEFAULT_CELL_PASS_ARRAY_SIZE];
+    private int _numTotalCellPasses;
+
+    private IServerLeafSubGrid _resultSubGrid;
 
     public GroupedSubGridIntegrator()
     {
     }
 
-    public void IntegrateSubGridGroup(IServerLeafSubGrid resultSubGrid) 
+    private void ProcessCell(uint x, uint y)
     {
-      var subGridCount = 0;
+      uint totalCellPassCount = 0;
 
-      // Locate references to the sub grid in all the supplied models that have a sub grid present at subGridCellAddress
-      foreach (var tree in Trees)
+      for (int i = 0; i < _subGridGroupCount; i++)
+        totalCellPassCount += _subGridGroup[i].Cells.PassesData[0].PassesData.PassCount(x, y);
+
+      if (totalCellPassCount == 0)
+        return;
+
+      if (_totalCellPasses.Length < totalCellPassCount)
+        _totalCellPasses = new CellPass[totalCellPassCount + DEFAULT_CELL_PASS_ARRAY_SIZE_INCREMENT];
+
+      var lastTime = DateTime.MinValue;
+      _numTotalCellPasses = 0;
+
+      for (int i = 0; i < _subGridGroupCount; i++)
       {
-        var subGrid = tree.Item1.LocateSubGridContaining(resultSubGrid.OriginX, resultSubGrid.OriginY);
+        var cellPasses = _subGridGroup[i].Cells.PassesData[0].PassesData.ExtractCellPasses(x, y);
 
-        if (subGrid != null)
+        if (cellPasses == null)
         {
-          if (subGridCount < _subGridGroup.Count)
-            _subGridGroup[subGridCount] = (IServerLeafSubGrid) subGrid;
+          // There are no cell passes present in this cell in this sub grid
+          continue;
+        }
+
+        foreach (var cellPass in cellPasses)
+        {
+          if (_numTotalCellPasses == 0 || lastTime < cellPass.Time)
+          {
+            _totalCellPasses[_numTotalCellPasses++] = cellPass;
+            lastTime = cellPass.Time;
+          }
           else
-            _subGridGroup.Add((IServerLeafSubGrid) subGrid);
-          subGridCount++;
+          {
+            // Somehow an out of order cell pass has been presented. Take the 'unhappy' path of figuring out where to insert it
+            // Find the appropriate location in the overall cell passes. If it is an exact match then replace it, otherwise
+            // insert it. As the location is most likely to be very near the end of the list use a dum reverse linear search...
+            // This is horribly non-performing in general but is expected to be very rare given that the site models are sorted
+            // in time before integration by this code
+
+            var index = _numTotalCellPasses - 1;
+            while (index > 0 && _totalCellPasses[index].Time > cellPass.Time)
+              index--;
+
+            // Cell pass at index has same time as cellPass.Time, then just replace it, otherwise insert it.
+            if (!_totalCellPasses[index].Time.Equals(cellPass.Time))
+            {
+              Array.Copy(_totalCellPasses, index, _totalCellPasses, index + 1, _numTotalCellPasses - index);
+              _numTotalCellPasses++;
+            }
+
+            _totalCellPasses[index] = cellPass;
+          }
         }
       }
+
+      if (_numTotalCellPasses > 0)
+      {
+        var resultCellPasses = new CellPass[_numTotalCellPasses];
+        Array.Copy(_totalCellPasses, resultCellPasses, _numTotalCellPasses);
+
+        _resultSubGrid.Cells.PassesData[0].PassesData.ReplacePasses(x, y, resultCellPasses);
+        _resultSubGrid.Directory.GlobalLatestCells.PassDataExistenceMap[(byte) x, (byte) y] = true;
+      }
+    }
+
+    public void IntegrateSubGridGroup(IServerLeafSubGrid resultSubGrid)
+    {
+      _resultSubGrid = resultSubGrid;
 
       // Iterate over all cells in the sub grid.
       // --> Count the number of cell passes in the overall collection
       // --> Create a cell pass array enough big enough to hold all of them
       // --> Aggregate all cell passes from the sub grid group together
 
-      resultSubGrid.Directory.CreateDefaultSegment();
-      resultSubGrid.AllocateLeafFullPassStacks();
-      resultSubGrid.AllocateSegment(resultSubGrid.Directory.SegmentDirectory[0]);
-      resultSubGrid.Cells.PassesData[0].AllocateFullPassStacks();
+      _subGridGroupCount = 0;
 
-      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      // Locate references to the sub grid in all the supplied models that have a sub grid present at subGridCellAddress
+      foreach (var tree in _trees)
       {
-        uint totalCellPassCount = 0;
+        var subGrid = tree.Item1.LocateSubGridContaining(_resultSubGrid.OriginX, _resultSubGrid.OriginY);
 
-        foreach (var subGrid in _subGridGroup)
-          totalCellPassCount += subGrid.Cells.PassesData[0].PassesData.PassCount(x, y);
-
-        if (_cellPasses.Length < totalCellPassCount)
-          _cellPasses = new CellPass[totalCellPassCount + Default_CELL_PASS_ARRAY_SIZE_INCREMENT];
-
-        foreach (var subGrid in _subGridGroup)
+        if (subGrid != null)
         {
-          _numCellPasses = 0;
-          var cellPasses = subGrid.Cells.PassesData[0].PassesData.ExtractCellPasses(x, y);
-
-          if (cellPasses == null)
-          {
-            // There are no cell passes present in this cell in this sub grid
-            continue;
-          }
-
-          foreach (var cellPass in cellPasses)
-          {
-            if (_numCellPasses == 0)
-            {
-              _cellPasses[_numCellPasses] = cellPass;
-              continue;
-            }
-
-            if (_cellPasses[_numCellPasses - 1].Time < cellPass.Time)
-            {
-              _cellPasses[_numCellPasses] = cellPass;
-            }
-            else
-            {
-              // Enforce ordering criteria???
-              // ...
-              throw new TRexException("Site models not time ordered");
-            }
-
-            _numCellPasses++;
-          }
-
-          var resultCellPasses = new CellPass[_numCellPasses];
-          Array.Copy(_cellPasses, resultCellPasses, _numCellPasses);
-
-          resultSubGrid.Cells.PassesData[0].PassesData.ReplacePasses(x, y, resultCellPasses);
+          _subGridGroup[_subGridGroupCount++] = (IServerLeafSubGrid) subGrid;
         }
-      });
+      }
+
+      if (_subGridGroupCount == 0)
+      {
+        Log.LogWarning($"No sub grids found in grouped site models at sub grid {_resultSubGrid.Moniker()}");
+        return;
+      }
+
+      _resultSubGrid.Directory.CreateDefaultSegment();
+      _resultSubGrid.AllocateLeafFullPassStacks();
+      _resultSubGrid.AllocateLeafLatestPassGrid();
+      _resultSubGrid.AllocateSegment(resultSubGrid.Directory.SegmentDirectory[0]);
+      _resultSubGrid.Cells.PassesData[0].AllocateFullPassStacks();
+
+      SubGridUtilities.SubGridDimensionalIterator((Action<uint, uint>) ProcessCell);
+
+      if (_resultSubGrid.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits() == 0)
+      {
+        Log.LogWarning($"No cells established in sub grids for in grouped site models at sub grid {_resultSubGrid.Moniker()}");
+      }
     }
   }
 }

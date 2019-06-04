@@ -53,6 +53,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
       IServerSubGridTree result = new ServerSubGridTree(Guid.Empty, StorageMutability.Mutable);
 
+      // Scan across all sub grids in the combined existence map and aggregate each spatial sub grid in turn
       overallMap.ScanAllSetBitsAsSubGridAddresses(address => subGridGrouper.IntegrateSubGridGroup(result.ConstructPathToCell(address.X, address.Y, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid));
 
       return result;
