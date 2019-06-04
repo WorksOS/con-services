@@ -503,10 +503,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           {
             logger.LogDebug($"{nameof(UpsertFileInternal)}. Opted out of uploading to TCC, constructing pseudo fileDescriptor.");
 
+            var tccFileName = Path.GetFileName(filename);
+            if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
+            {
+              tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
+            }
+
             fileDescriptor = FileDescriptor.CreateFileDescriptor(
               FileSpaceId, 
               $"/{customerUid}/{projectUid}",
-              ImportedFileUtils.IncludeSurveyedUtcInName(Path.GetFileName(filename), surveyedUtc.Value));
+              tccFileName);
           }
 
           //save copy to DataOcean      
