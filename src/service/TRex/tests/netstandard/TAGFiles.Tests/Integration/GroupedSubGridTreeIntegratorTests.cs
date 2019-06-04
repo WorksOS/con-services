@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using FluentAssertions;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -18,13 +19,12 @@ namespace TAGFiles.Tests.Integration
     }
 
     [Theory]
-    [InlineData("Dimensions2018-CaseMachine", 164, 164, 0, 10, 4)] // Take the first 10
-    [InlineData("Dimensions2018-CaseMachine", 164, 164, 10, 10, 2)] // Take the next 10
-    [InlineData("Dimensions2018-CaseMachine", 164, 164, 20, 10, 3)] // Take the next 10
-    [InlineData("Dimensions2018-CaseMachine", 164, 164, 30, 10, 2)] // Take the next 10
-    [InlineData("Dimensions2018-CaseMachine", 164, 164, 0, 164, 9)] // Take the lot
-    public void Integrator_TAGFileSet(string tagFileCollectionFolder,
-     int expectedFileCount, int maxTAGFilesPerAggregation, int skipTo, int numToTake, int expectedSubGridCount)
+    [InlineData("Dimensions2018-CaseMachine", 164, 0, 10, 4)] // Take the first 10
+    [InlineData("Dimensions2018-CaseMachine", 164, 10, 10, 2)] // Take the next 10
+    [InlineData("Dimensions2018-CaseMachine", 164, 20, 10, 3)] // Take the next 10
+    [InlineData("Dimensions2018-CaseMachine", 164, 30, 10, 2)] // Take the next 10
+    [InlineData("Dimensions2018-CaseMachine", 164, 0, 164, 9)] // Take the lot
+    public void Integrator_TAGFileSet(string tagFileCollectionFolder, int expectedFileCount, int skipTo, int numToTake, int expectedSubGridCount)
     {
       Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag").Length.Should().Be(expectedFileCount);
 
@@ -50,6 +50,10 @@ namespace TAGFiles.Tests.Integration
 
       // Check the set of TAG files created the expected number of sub grids
       result.CountLeafSubGridsInMemory().Should().Be(expectedSubGridCount);
+
+      int nonNullCellCount = 0;
+      result.ScanAllSubGrids(leaf => (nonNullCellCount += (leaf as IServerLeafSubGrid).CountNonNullCells()) > -1);
+      nonNullCellCount.Should().BeGreaterThan(0);
     }
   }
 }
