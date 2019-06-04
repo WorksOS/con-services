@@ -33,9 +33,9 @@ namespace VSS.Productivity3D.Scheduler.Proxy
 
     public override ApiVersion Version => ApiVersion.V1;
 
-    public override ApiType Type => ApiType.Public;
+    public override ApiType Type => ApiType.Private;
 
-    public override string CacheLifeKey => "SCHEDULER_CACHE_LIFE"; // n/a todoJeannie
+    public override string CacheLifeKey => "SCHEDULER_CACHE_LIFE"; 
 
     /// <summary>
     /// Schedules the export job with a Scheduler Service.
@@ -47,28 +47,37 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     public async Task<ScheduleJobResult> ScheduleExportJob(ScheduleJobRequest request,
       IDictionary<string, string> customHeaders)
     {
-      // SCHEDULER_INTERNAL_BASE_URL internal/v1 POST /runjob (mock)
-
-      // SCHEDULER_INTERNAL_EXPORT_URL         POST internal/v1/export (/mock)
-      // SCHEDULER_INTERNAL_BACKGROUND_JOB_URL POST internal/v1/background
-
-      // SCHEDULER_EXTERNAL_EXPORT_URL /api/v1/export/{jobId} (not configured anywhere)
-      // SCHEDULER_EXTERNAL_BACKGROUND_JOB_URL GET api/v1 (not configured anywhere)
       var jsonData = JsonConvert.SerializeObject(request);
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
-        //TODO: Use the new "SCHEDULER_INTERNAL_BASE_URL" and a route to reduce the number of env vars
-        // "SCHEDULER_INTERNAL_EXPORT_URL "internal/v1/export" // todoJeannie pattern different
-        var result =
-          await PostMasterDataItemServiceDiscoveryNoCache<ScheduleJobResult>
-            ("internal/v1/export", customHeaders, payload: payload);
+        // "/internal/v1/export"
+        var result = await PostMasterDataItemServiceDiscoveryNoCache<ScheduleJobResult>
+            ("/export", customHeaders, payload: payload);
         if (result != null)
           return result;
       }
 
-      log.LogDebug($"{nameof(ScheduleExportJob)} Failed to schedule a job");
+      log.LogDebug($"{nameof(ScheduleExportJob)} Failed to schedule an export job");
       return null;
     }
+
+    /// <inheritdoc />
+    public async Task<ScheduleJobResult> ScheduleBackgroundJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders)
+    {
+      var jsonData = JsonConvert.SerializeObject(request);
+      using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
+      {
+        // "/internal/v1/background"
+        var result = await PostMasterDataItemServiceDiscoveryNoCache<ScheduleJobResult>
+            ("/background", customHeaders, payload: payload);
+        if (result != null)
+          return result;
+      }
+
+      log.LogDebug($"{nameof(ScheduleBackgroundJob)} Failed to schedule a background job");
+      return null;
+    }
+
 
     /// <summary>
     /// Retrieves the status of the requested job and the filename in S3 bucket where file is stored.
@@ -79,42 +88,23 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     [Obsolete("Use ScheduleBackgroundJob instead - generic solution")]
     public async Task<JobStatusResult> GetExportJobStatus(string jobId, IDictionary<string, string> customHeaders)
     {
-      // "SCHEDULER_EXTERNAL_EXPORT_URL "/api/v1/export/{jobId}" // todoJeannie pattern different
-      var result = await GetMasterDataItemServiceDiscovery<JobStatusResult>($"/export/{jobId}", 
-        Guid.NewGuid().ToString(), null, /* todoJeannie how to indicate to never cache? */ 
-        customHeaders);
+      // "internal/v1/export/{jobId}"
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<JobStatusResult>
+        ($"/export/{jobId}", customHeaders);
       if (result != null)
         return result;
 
-      log.LogDebug($"{nameof(GetExportJobStatus)} Failed to get job status");
+      log.LogDebug($"{nameof(GetExportJobStatus)} Failed to get status for JobID: {jobId}");
       return null;
     }
 
-    /// <inheritdoc />
-    public async Task<ScheduleJobResult> ScheduleBackgroundJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders)
-    {
-      var jsonData = JsonConvert.SerializeObject(request);
-      using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-      {
-        // "SCHEDULER_INTERNAL_BACKGROUND_JOB_URL "internal/v1/background" // todoJeannie pattern different
-        var result =
-          await PostMasterDataItemServiceDiscoveryNoCache<ScheduleJobResult>("internal/v1/background", customHeaders,
-            payload: payload);
-        if (result != null)
-          return result;
-      }
-
-      log.LogDebug($"{nameof(ScheduleBackgroundJob)} Failed to schedule a background job");
-      return null;
-    }
 
     /// <inheritdoc />
     public async Task<JobStatusResult> GetBackgroundJobStatus(string jobId, IDictionary<string, string> customHeaders)
     {
-      // SCHEDULER_EXTERNAL_BACKGROUND_JOB_URL api/v1/export/{jobId} & api/v1/background/{jobId} same endpoint 
-      var result = await GetMasterDataItemServiceDiscovery<JobStatusResult>($"/background/{jobId}",
-        Guid.NewGuid().ToString(), null, /* todoJeannie how to indicate to never cache? */ 
-        customHeaders);
+      // "internal/v1/background/{jobId}"
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<JobStatusResult>
+      ($"/background/{jobId}", customHeaders);
       if (result != null)
         return result;
 
@@ -125,23 +115,26 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     /// <inheritdoc />
     public async Task<Stream> GetBackgroundJobResults(string jobId, IDictionary<string, string> customHeaders)
     {
-      // SCHEDULER_EXTERNAL_BACKGROUND_JOB_URL api/v1/export/{jobId}/result & api/v1/background/{jobId}/result same endpoint 
-      var result = await GetMasterDataStreamItemServiceDiscoveryNoCache($"/background/{jobId}/result", customHeaders);
+      // "internal/v1/background/{jobId}/result"
+      var result = await GetMasterDataStreamItemServiceDiscoveryNoCache
+        ($"/background/{jobId}/result", customHeaders);
       if (result != null)
         return result;
 
-      log.LogDebug($"{nameof(GetBackgroundJobResults)} Failed to get job results");
+      log.LogDebug($"{nameof(GetBackgroundJobResults)} Failed to get background jobid {jobId} results");
       return null;
     }
 
+    // todoJeannie this is from the jobRunnerController and should be a separate proxy. See if/how it is used
     /// <inheritdoc />
     public async Task<ScheduleJobResult> ScheduleVSSJob(JobRequest request, IDictionary<string, string> customHeaders)
     {
       var jsonData = JsonConvert.SerializeObject(request);
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
-        // SCHEDULER_INTERNAL_BASE_URL /internal/v1/mock/runjob
-        var result = await PostMasterDataItemServiceDiscoveryNoCache<ScheduleJobResult>("/runjob", customHeaders, payload: payload);
+        // "/internal/v1/runjob" there is a proxy for this but no endpoint in scheduler API
+        var result = await PostMasterDataItemServiceDiscoveryNoCache<ScheduleJobResult>
+          ("/runjob", customHeaders, payload: payload);
         if (result != null)
           return result;
       }

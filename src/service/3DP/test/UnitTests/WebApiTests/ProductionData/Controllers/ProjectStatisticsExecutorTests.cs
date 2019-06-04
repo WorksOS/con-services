@@ -7,15 +7,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
+using VSS.TRex.Gateway.Abstractions;
 #if RAPTOR
 using BoundingExtents;
 using SVOICStatistics;

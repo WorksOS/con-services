@@ -7,11 +7,12 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TCCFileAccess;
+using VSS.TRex.Gateway.Abstractions;
+using VSS.TRex.Mutable.Gateway.Abstractions;
 
 namespace VSS.Productivity3D.Common.Interfaces
 {

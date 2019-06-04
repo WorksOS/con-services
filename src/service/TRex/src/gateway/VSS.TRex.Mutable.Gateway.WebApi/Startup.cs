@@ -45,7 +45,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     /// </summary>
     public const string LoggerRepoName = "TRexMutableWebApi";
 
- public override string ServiceName => "TRex Mutable Gateway API";
+    public override string ServiceName => "TRex Mutable Gateway API";
     public override string ServiceDescription => "TRex Mutable Gateway API";
     public override string ServiceVersion => "v1";
 

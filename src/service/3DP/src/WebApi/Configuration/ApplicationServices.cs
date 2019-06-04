@@ -34,6 +34,10 @@ using VSS.Productivity3D.WebApi.Models.Services;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
+using VSS.TRex.Gateway.Abstractions;
+using VSS.TRex.Gateway.Proxy;
+using VSS.TRex.Mutable.Gateway.Abstractions;
+using VSS.TRex.Mutable.Gateway.Proxy;
 
 // ReSharper disable once CheckNamespace
 namespace VSS.Productivity3D.WebApi

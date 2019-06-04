@@ -12,6 +12,8 @@
     Scheduler,
     AssetMgmt3D,
     Push,
-    Tile
+    Tile,
+    TRex,
+    TRexMutable
   }
 }

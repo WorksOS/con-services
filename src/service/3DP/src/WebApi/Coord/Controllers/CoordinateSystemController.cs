@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -18,6 +13,7 @@ using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Coord.Contracts;
 using VSS.Productivity3D.WebApi.Models.Coord.Executors;
+using VSS.TRex.Gateway.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Coord.Controllers
 {

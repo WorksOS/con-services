@@ -8,13 +8,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
-
+using VSS.TRex.Gateway.Abstractions;
 #if RAPTOR
 using VLPDDecls;
 #endif

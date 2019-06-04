@@ -18,6 +18,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using VSS.TRex.Gateway.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {

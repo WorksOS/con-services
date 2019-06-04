@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
-using model = VSS.Productivity3D.Models.Models;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Mutable.Gateway.Abstractions;
 
-namespace VSS.MasterData.Proxies
+namespace VSS.TRex.Mutable.Gateway.Proxy
 {
   public class TRexTagFileProxy : BaseProxy, ITRexTagFileProxy
   {
@@ -20,19 +18,19 @@ namespace VSS.MasterData.Proxies
     public TRexTagFileProxy(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore, logger)
     { }
 
-    public async Task<ContractExecutionResult> SendTagFileDirect(model.CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
+    public async Task<ContractExecutionResult> SendTagFileDirect(CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"{nameof(SendTagFileDirect)}: Filename: {compactionTagFileRequest.FileName}");
       return await SendTagFilePost(TREX_TAGFILE_API_URL_KEY, JsonConvert.SerializeObject(compactionTagFileRequest), customHeaders, "/direct");
     }
 
-    public async Task<ContractExecutionResult> SendTagFileNonDirect(model.CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
+    public async Task<ContractExecutionResult> SendTagFileNonDirect(CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"{nameof(SendTagFileNonDirect)}: Filename: {compactionTagFileRequest.FileName}");
       return await SendTagFilePost(TREX_TAGFILE_API_URL_KEY, JsonConvert.SerializeObject(compactionTagFileRequest), customHeaders, null);
     }
 
-    public async Task<ContractExecutionResult> SendTagFileNonDirectToConnectedSite(model.CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
+    public async Task<ContractExecutionResult> SendTagFileNonDirectToConnectedSite(CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"{nameof(SendTagFileNonDirectToConnectedSite)}: Filename: {compactionTagFileRequest.FileName}");
       return await SendTagFilePost(CONNECTED_SITE_GATEWAY_URL_KEY, JsonConvert.SerializeObject(compactionTagFileRequest), customHeaders, null);

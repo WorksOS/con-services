@@ -13,7 +13,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
@@ -27,6 +26,7 @@ using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.TRex.Gateway.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

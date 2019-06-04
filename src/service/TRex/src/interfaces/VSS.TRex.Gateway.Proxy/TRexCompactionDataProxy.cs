@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.TRex.Gateway.Abstractions;
 
-namespace VSS.MasterData.Proxies
+namespace VSS.TRex.Gateway.Proxy
 {
   /// <summary>
   /// Proxy to access the TRex Gateway WebAPIs.

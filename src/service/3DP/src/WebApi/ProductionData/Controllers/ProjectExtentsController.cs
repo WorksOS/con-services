@@ -2,15 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using VSS.TRex.Gateway.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {

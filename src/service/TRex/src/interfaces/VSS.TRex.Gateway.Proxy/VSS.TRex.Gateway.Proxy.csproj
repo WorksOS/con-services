@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Gateway.Abstractions\VSS.TRex.Gateway.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

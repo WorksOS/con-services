@@ -15,7 +15,6 @@ using VSS.Common.Abstractions.Http;
 using VLPDDecls;
 #endif
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -41,6 +40,7 @@ using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Designs.TTM.Optimised.Exceptions;
+using VSS.TRex.Gateway.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

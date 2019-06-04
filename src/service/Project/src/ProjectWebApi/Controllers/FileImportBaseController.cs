@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -23,6 +21,7 @@ using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TCCFileAccess;
+using VSS.TRex.Mutable.Gateway.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 

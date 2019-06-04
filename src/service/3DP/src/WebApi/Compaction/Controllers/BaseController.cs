@@ -20,7 +20,6 @@ using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -32,6 +31,7 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Extensions;
+using VSS.TRex.Gateway.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers

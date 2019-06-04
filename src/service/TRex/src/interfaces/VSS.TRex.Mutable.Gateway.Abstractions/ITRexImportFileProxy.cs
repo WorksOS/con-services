@@ -6,7 +6,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.Proxies.Interfaces
+namespace VSS.TRex.Mutable.Gateway.Abstractions
 {
   public interface ITRexImportFileProxy
   {
