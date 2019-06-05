@@ -51,7 +51,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             // server interlock (ICServerModule.Server.AcquireLock) and we may interact
             // directly with the sub grid tree being populated
 
-            IServerLeafSubGrid SubGrid = Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+            var SubGrid = Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
 
             SubGrid.AllocateLeafFullPassStacks();
 
