@@ -10,6 +10,7 @@
     <OutputTypeEx>exe</OutputTypeEx>
     <StartupObject />
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
  <ItemGroup>
@@ -100,7 +101,6 @@
     <Content Remove="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryMDPPassCountRange.json" />
     <Content Remove="Json\Filters\DimensionsPassCountRange.json" />
-    <Content Remove="Json\Filters\DimensionsTemperatureRange.json" />
     <Content Remove="Json\Filters\DimensionsTempRangeBoundary.json" />
     <Content Remove="Json\UserPreferences\DummyUserPreferences.json" />
   </ItemGroup>
@@ -184,8 +184,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="web.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj" />
@@ -212,6 +217,9 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="kestrelsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -222,10 +230,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="log4net.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
     <None Update="Resources\Large Sites Road_AlignmentCenterline%24.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
