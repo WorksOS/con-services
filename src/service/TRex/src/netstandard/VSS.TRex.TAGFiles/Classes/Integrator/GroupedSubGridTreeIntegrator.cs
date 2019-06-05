@@ -58,6 +58,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Scan across all sub grids in the combined existence map and aggregate each spatial sub grid in turn
       overallMap.ScanAllSetBitsAsSubGridAddresses(address => subGridGrouper.IntegrateSubGridGroup(result.ConstructPathToCell(address.X, address.Y, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid));
 
+      if (subGridGrouper.NumOutOfOrderCellPassInsertions > 0)
+        Log.LogWarning($"Sub grid grouper processed {subGridGrouper.NumOutOfOrderCellPassInsertions} out of order cell pass insertions");
+
       return result;
     }
   }

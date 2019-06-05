@@ -147,7 +147,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 // Replace the existing cell pass with the new one. The assumption
                 // here is that more than one machine will never cross a cell center position
-                // within the same second (the resolution of the cell pass time stamps)
+                // within the resolution of the cell pass time stamps
                 Segment.PassesData.ReplacePass(cellX, cellY, PassIndex, Pass);
 
                 SetDirty(); 
@@ -159,7 +159,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
           Segment.Dirty = true;
-    }
+        }
 
         /// <summary>
         /// Creates the default segment metadata within the segment directory. This is only called to create the first 

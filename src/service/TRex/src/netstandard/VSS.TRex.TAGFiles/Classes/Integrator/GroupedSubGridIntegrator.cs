@@ -41,6 +41,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
     private IServerLeafSubGrid _resultSubGrid;
 
+    public long NumOutOfOrderCellPassInsertions;
+
+
     public GroupedSubGridIntegrator()
     {
     }
@@ -98,6 +101,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             }
 
             _totalCellPasses[index] = cellPass;
+
+            NumOutOfOrderCellPassInsertions++;
           }
         }
       }

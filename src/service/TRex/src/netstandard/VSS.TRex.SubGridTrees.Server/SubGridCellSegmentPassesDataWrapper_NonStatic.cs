@@ -16,7 +16,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// A hook that may be used to gain notification of the add, replace and remove cell pass mutations in the cell pass stack
         /// </summary>
-        private readonly ICell_NonStatic_MutationHook _mutationHook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+        private static readonly ICell_NonStatic_MutationHook _mutationHook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
      
         public Cell_NonStatic[,] PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
