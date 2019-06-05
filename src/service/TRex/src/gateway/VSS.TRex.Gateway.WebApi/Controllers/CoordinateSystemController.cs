@@ -2,14 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
-using VSS.TRex.Common.Utilities;
-using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Executors.Coords;
 
@@ -84,5 +80,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<CoordinateConversionExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(request) as CoordinateConversionResult);
     }
+
+    /// <summary>
+    /// Gets a coordinate system CSIB assigned to a TRex's site model/project with a unique identifier.
+    /// </summary>
+    [Route("api/v1/projects/{projectUid}/csib")]
+    [HttpGet]
+    public CSIBResult GetCSIB([FromRoute] Guid projectUid)
+    {
+      Log.LogInformation($"{nameof(GetCoordinateSystem)}: {Request.QueryString}");
+
+      var request = new ProjectID(null, projectUid);
+
+      request.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<CSIBExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(request) as CSIBResult);
+    }
+
   }
 }

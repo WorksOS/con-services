@@ -9,6 +9,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Models;
+using VSS.TRex.Gateway.Common.Utilities;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
 {
@@ -57,7 +58,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         CSName = coordSystem.SystemName,
         CSFileName = csFileName,
         CSGroup = coordSystem.ZoneInfo.ZoneGroupName,
-        CSIB = Encoding.ASCII.GetBytes(coordSystem.Id),
+        CSIB = CoordinateSystemUtility.FromCSIBKeyToBytes(coordSystem.Id),
         // Ellipsoid...
         EllipsoidName = coordSystem.DatumInfo.EllipseName,
         EllipsoidSemiMajorAxis = coordSystem.DatumInfo.EllipseA,
