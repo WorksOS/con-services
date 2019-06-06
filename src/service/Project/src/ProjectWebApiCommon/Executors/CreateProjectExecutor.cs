@@ -9,7 +9,7 @@ using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -23,20 +23,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     protected string subscriptionUidAssigned;
 
-   
     /// <summary>
     /// Processes the CreateProjectEvent
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ContractExecutionResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      CreateProjectEvent createProjectEvent = item as CreateProjectEvent;
-      if (createProjectEvent == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-      }
+      var createProjectEvent = CastRequestObjectTo<CreateProjectEvent>(item, errorCode: 68);
 
       ProjectRequestHelper.ValidateProjectBoundary(createProjectEvent.ProjectBoundary, serviceExceptionHandler);
 
@@ -51,7 +43,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectBoundary,
         log, serviceExceptionHandler, projectRepo);
 
-      AssociateProjectCustomer customerProject = new AssociateProjectCustomer
+      var customerProject = new AssociateProjectCustomer
       {
         CustomerUID = createProjectEvent.CustomerUID,
         LegacyCustomerID = createProjectEvent.CustomerID,
@@ -73,15 +65,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //    if AssociateProjectSubscription fails ditto
       createProjectEvent = await CreateProjectInDb(createProjectEvent, customerProject).ConfigureAwait(false);
       await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(
-        createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName, 
+        createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
         projectRepo, raptorProxy, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
 
       subscriptionUidAssigned = await ProjectRequestHelper.AssociateProjectSubscriptionInSubscriptionService(createProjectEvent.ProjectUID.ToString(), createProjectEvent.ProjectType, customerUid,
-        log, serviceExceptionHandler, customHeaders, subscriptionProxy,subscriptionRepo, projectRepo, true).ConfigureAwait(false);
+        log, serviceExceptionHandler, customHeaders, subscriptionProxy, subscriptionRepo, projectRepo, true).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Was projectSubscription Associated? subscriptionUidAssigned: {subscriptionUidAssigned}");
-    
+
       // doing this as late as possible in case something fails. We can't cleanup kafka que.
       CreateKafkaEvents(createProjectEvent, customerProject);
 
@@ -173,7 +165,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string wktBoundary = project.ProjectBoundary;
 
       // Convert to old format for Kafka for consistency on kakfa queue
-      string kafkaBoundary = project.ProjectBoundary
+      _ = project.ProjectBoundary
         .Replace(GeofenceValidation.POLYGON_WKT, string.Empty)
         .Replace("))", string.Empty)
         .Replace(',', ';')

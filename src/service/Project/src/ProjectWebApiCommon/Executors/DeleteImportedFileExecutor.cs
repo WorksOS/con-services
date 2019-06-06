@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using DotNetCore.CAP.Dashboard.Resources;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Nito.AsyncEx;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.Pegasus.Client;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -39,42 +33,30 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Adds file via Raptor and/or Trex
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ContractExecutionResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var deleteImportedFile = item as DeleteImportedFile;
-      if (deleteImportedFile == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
-      }
+      var deleteImportedFile = CastRequestObjectTo<DeleteImportedFile>(item, errorCode: 68);
 
-      await CheckIfUsedInAFilterAsync(deleteImportedFile).ConfigureAwait(false);
+      await CheckIfUsedInFilter(deleteImportedFile).ConfigureAwait(false);
 
       await CheckIfHasReferenceSurfacesAsync(deleteImportedFile);
-  
+
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
-      var isDesignFileType = deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
-                             deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface ||
-                             deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
-                             deleteImportedFile.ImportedFileType == ImportedFileType.ReferenceSurface;
 
       DeleteImportedFileEvent deleteImportedFileEvent = null;
-      if (useTrexGatewayDesignImport && isDesignFileType)
+      if (useTrexGatewayDesignImport && deleteImportedFile.IsDesignFileType)
       {
         await ImportedFileRequestHelper.NotifyTRexDeleteFile(deleteImportedFile.ProjectUid,
           deleteImportedFile.ImportedFileType, deleteImportedFile.FileDescriptor.FileName,
           deleteImportedFile.ImportedFileUid,
-          deleteImportedFile.SurveyedUtc, 
+          deleteImportedFile.SurveyedUtc,
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy, projectRepo).ConfigureAwait(false);
 
         // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
         deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
-          (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo, false)
+          (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false);
       }
 
@@ -84,7 +66,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (deleteImportedFileEvent == null)
         {
           deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
-            (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo, false)
+            (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo)
             .ConfigureAwait(false);
         }
 
@@ -99,8 +81,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (importedFileInternalResult == null)
         {
           if (deleteImportedFile.ImportedFileType != ImportedFileType.ReferenceSurface)
-          { 
-            importedFileInternalResult = await TccHelper.DeleteFileFromTCCRepository
+          {
+            await TccHelper.DeleteFileFromTCCRepository
               (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
                 log, serviceExceptionHandler, fileRepo, projectRepo)
               .ConfigureAwait(false);
@@ -159,14 +141,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       throw new NotImplementedException();
     }
 
-    private async Task CheckIfUsedInAFilterAsync(DeleteImportedFile deleteImportedFile)
+    private async Task CheckIfUsedInFilter(DeleteImportedFile deleteImportedFile)
     {
-      //Cannot delete a design (or alignment) which is used in a filter
-      //TODO: When scheduled reports are implemented, extend this check to them as well.
-      if (deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
-          deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface || 
-          deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
-          deleteImportedFile.ImportedFileType == ImportedFileType.ReferenceSurface)
+      if (deleteImportedFile.IsDesignFileType)
       {
         var filters = await ImportedFileRequestDatabaseHelper.GetFilters(deleteImportedFile.ProjectUid, customHeaders, filterServiceProxy);
         if (filters != null && filters.Any())
@@ -192,6 +169,5 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         }
       }
     }
-
   }
 }

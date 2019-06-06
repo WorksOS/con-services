@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -129,7 +127,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ImportedFileDescriptorSingleResult importedFile;
       if (creating)
       {
-        var createImportedFile = CreateImportedFile.Create(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
+        var createImportedFile = new CreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
           fileDescriptor,
           importedFileTbc.ImportedFileTypeId,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
@@ -156,7 +154,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       else
       {
-        var importedFileUpsertEvent = UpdateImportedFile.Create
+        var importedFileUpsertEvent = new UpdateImportedFile
         (
           Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
