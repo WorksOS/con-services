@@ -88,7 +88,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpGet]
     public CSIBResult GetCSIB([FromRoute] Guid projectUid)
     {
-      Log.LogInformation($"{nameof(GetCoordinateSystem)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(GetCSIB)}: {Request.QueryString}");
 
       var request = new ProjectID(null, projectUid);
 
