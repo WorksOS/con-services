@@ -23,9 +23,6 @@ namespace MockProjectWebApi
           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-
-    //  env.ConfigureLog4Net(repoName: LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
-
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
     }
