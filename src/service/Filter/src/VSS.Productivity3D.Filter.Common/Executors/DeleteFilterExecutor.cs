@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -42,18 +41,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns>a FiltersResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var filterRequest = item as FilterRequestFull;
-      if (filterRequest == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 37);
-
-        return null;
-      }
+      var request = CastRequestObjectTo<FilterRequestFull>(item, 37);
+      if (request == null) return null;
 
       var filter =
-        (await ((IFilterRepository)Repository).GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid,
-          filterRequest.UserId, true).ConfigureAwait(false))
-        .SingleOrDefault(f => string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
+        (await ((IFilterRepository)Repository).GetFiltersForProjectUser(request.CustomerUid, request.ProjectUid,
+          request.UserId, true).ConfigureAwait(false))
+        .SingleOrDefault(f => string.Equals(f.FilterUid, request.FilterUid, StringComparison.OrdinalIgnoreCase));
 
       if (filter == null)
       {
@@ -61,10 +55,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
       log.LogDebug($"DeleteFilter retrieved filter {JsonConvert.SerializeObject(filter)}");
 
-      var deleteEvent = await StoreFilterAndNotifyRaptor<DeleteFilterEvent>(filterRequest, new int[] { 12, 13 });
+      var deleteEvent = await StoreFilterAndNotifyRaptor<DeleteFilterEvent>(request, new [] { 12, 13 });
 
       //Only write to kafka for persistent filters
-      if (filterRequest.SendKafkaMessages && deleteEvent != null && filter.FilterType != FilterType.Transient)
+      if (request.SendKafkaMessages && deleteEvent != null && filter.FilterType != FilterType.Transient)
       {
         var payload = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteEvent });
         SendToKafka(deleteEvent.FilterUID.ToString(), payload, 14);

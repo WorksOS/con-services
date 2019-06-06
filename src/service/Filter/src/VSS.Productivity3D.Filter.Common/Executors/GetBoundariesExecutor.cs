@@ -1,11 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -15,9 +17,6 @@ using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using System.Collections.Immutable;
-using System.Linq;
-using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -41,8 +40,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public GetBoundariesExecutor()
-    {
-    }
+    { }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -54,13 +52,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as BaseRequestFull;
-      if (request == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 52);
-
-        return null;
-      }
+      var request = CastRequestObjectTo<BaseRequestFull>(item, 52);
+      if (request == null) return null;
 
       var boundaries = new List<GeofenceData>();
       var projectRepo = (IProjectRepository) auxRepository;

@@ -18,15 +18,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Processes the GetProjectSettings request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ProjectSettingsResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       ContractExecutionResult result = null;
-      ProjectSettingsRequest projectSettingsRequest = item as ProjectSettingsRequest;
-      if ( projectSettingsRequest == null )
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
+
+      var projectSettingsRequest = CastRequestObjectTo<ProjectSettingsRequest>(item, errorCode: 68);
 
       if (projectSettingsRequest.ProjectSettingsType != ProjectSettingsType.Targets && projectSettingsRequest.ProjectSettingsType != ProjectSettingsType.Colors)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 77);
@@ -37,8 +33,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         var projectSettings = await projectRepo.GetProjectSettings(projectSettingsRequest.projectUid, userId, projectSettingsRequest.ProjectSettingsType).ConfigureAwait(false);
 
-        result = projectSettings == null ? 
-          ProjectSettingsResult.CreateProjectSettingsResult(projectSettingsRequest.projectUid, null, projectSettingsRequest.ProjectSettingsType) : 
+        result = projectSettings == null ?
+          ProjectSettingsResult.CreateProjectSettingsResult(projectSettingsRequest.projectUid, null, projectSettingsRequest.ProjectSettingsType) :
           ProjectSettingsResult.CreateProjectSettingsResult(projectSettings.ProjectUid, JsonConvert.DeserializeObject<JObject>(projectSettings.Settings), projectSettings.ProjectSettingsType);
       }
       catch (Exception e)

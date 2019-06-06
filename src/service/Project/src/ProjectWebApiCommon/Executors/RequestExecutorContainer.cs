@@ -6,22 +6,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
-using VSS.Productivity3D.Scheduler.Abstractions;
-using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
@@ -102,56 +98,33 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Repository factory used for accessing files in TCC (at present)
     /// </summary>
-    /// 
     protected IFileRepository fileRepo;
 
     /// <summary>
     /// Repository factory used for Customer db
     /// </summary>
-    /// 
     protected ICustomerRepository customerRepo;
 
     /// <summary>
     /// Context of the API call
     /// </summary>
-    /// 
     protected IHttpContextAccessor httpContextAccessor;
 
     protected IDataOceanClient dataOceanClient;
     protected ITPaaSApplicationAuthentication authn;
     protected ISchedulerProxy schedulerProxy;
     protected IPegasusClient pegasusClient;
-
-    /// <summary>
-    /// Generates the dynamic errorlist for instanciated executor.
-    /// </summary>
-    /// <returns>List of errors with corresponding descriptions.</returns>
-    public List<Tuple<int, string>> GenerateErrorlist()
-    {
-      List<Tuple<int, string>> result = new List<Tuple<int, string>>();
-      for (int i = 0; i < ContractExecutionStates.Count; i++)
-      {
-        result.Add(new Tuple<int, string>(ContractExecutionStates.ValueAt(i),
-          ContractExecutionStates.NameAt(i)));
-      }
-      ContractExecutionStates.ClearDynamic();
-      return result;
-    }
-
+    
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
     /// </summary>
     /// <typeparam name="T">>Generic type which should be</typeparam>
     /// <param name="item">>The item.</param>
-    /// <returns></returns>
     protected abstract ContractExecutionResult ProcessEx<T>(T item);
 
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
     protected virtual Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -161,20 +134,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="item"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    /// <exception cref="ServiceException"></exception>
     public ContractExecutionResult Process<T>(T item)
     {
       ValidateTItem(item);
       return ProcessEx(item);
     }
 
-    public async Task<ContractExecutionResult> ProcessAsync<T>(T item)
+    public Task<ContractExecutionResult> ProcessAsync<T>(T item)
     {
       ValidateTItem(item);
-      return await ProcessAsyncEx(item);
+      return ProcessAsyncEx(item);
     }
 
     private static void ValidateTItem<T>(T item)
@@ -261,22 +230,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    /// <typeparam name="TExecutor">The type of the executor.</typeparam>
-    /// <returns></returns>
     public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, IKafka producer = null, string kafkaTopicName = null)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger.CreateLogger<TExecutor>(), configStore = configStore, serviceExceptionHandler = serviceExceptionHandler, projectRepo = projectRepo, producer  = producer, kafkaTopicName = kafkaTopicName };
-      return executor;
+      return new TExecutor { log = logger.CreateLogger<TExecutor>(), configStore = configStore, serviceExceptionHandler = serviceExceptionHandler, projectRepo = projectRepo, producer  = producer, kafkaTopicName = kafkaTopicName };
     }
 
 
     /// <summary>
     /// Validates a project identifier.
     /// </summary>
-    /// <param name="customerUid"></param>
-    /// <param name="projectUid">The project uid.</param>
-    /// <returns></returns>
     public async Task ValidateProjectWithCustomer(string customerUid, string projectUid)
     {
       var project = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
@@ -287,6 +250,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       log.LogInformation($"projectUid {projectUid} validated");
+    }
+    
+    /// <summary>
+    /// Casts input object to type T for use with child executors.
+    /// </summary>
+    protected T CastRequestObjectTo<T>(object item, int errorCode) where T : class
+    {
+      var request = item as T;
+
+      if (request == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCode);
+      }
+
+      return request;
     }
   }
 }
