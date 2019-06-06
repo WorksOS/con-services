@@ -15,7 +15,7 @@ Scenario: DimensionsBase64
 Scenario: Multiple
   Given The geofence thumbnail URI is "/api/v1/geofencethumbnails/base64" for operation "multiple"
   And the expected response is in the "MultiGeofenceThumbnailResponse.json" respository
-	When I request multiple Thumbnails
+	When I request multiple Thumbnails "c910d127-5e3c-453f-82c3-e235848ac20e,d4edddc9-d07f-4d56-ad50-5e9671631f70,eee23e91-5682-45ec-a4a7-9dfe0d6b7a64,ba35221d-cc46-48ce-970c-8b1509a0c737"
 	Then The result should match "Multiple" from the response repository
 
 Scenario: Point
