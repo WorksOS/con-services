@@ -18,7 +18,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.TRex.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Executors
 {

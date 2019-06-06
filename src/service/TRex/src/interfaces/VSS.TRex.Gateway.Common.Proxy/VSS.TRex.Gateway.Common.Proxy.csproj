@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
-    <ProjectReference Include="..\VSS.TRex.Gateway.Abstractions\VSS.TRex.Gateway.Abstractions.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

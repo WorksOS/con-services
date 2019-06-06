@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.Mutable.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 {

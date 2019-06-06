@@ -40,7 +40,7 @@ using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Designs.TTM.Optimised.Exceptions;
-using VSS.TRex.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

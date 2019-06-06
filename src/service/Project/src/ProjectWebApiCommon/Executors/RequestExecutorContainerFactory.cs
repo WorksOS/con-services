@@ -13,7 +13,7 @@ using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
-using VSS.TRex.Mutable.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors

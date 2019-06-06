@@ -36,7 +36,7 @@
     <ProjectReference Include="..\..\..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\Models\VSS.Productivity.Push.Models\VSS.Productivity.Push.Models.csproj" />
     <ProjectReference Include="..\..\..\Scheduler\src\VSS.Productivity3D.Scheduler.Jobs.TileGenJob\VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.csproj" />
-    <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Mutable.Gateway.Abstractions\VSS.TRex.Mutable.Gateway.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
     <ProjectReference Include="..\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
   </ItemGroup>
 

@@ -31,7 +31,7 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Extensions;
-using VSS.TRex.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers

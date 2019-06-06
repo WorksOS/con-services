@@ -26,7 +26,7 @@ using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.TRex.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

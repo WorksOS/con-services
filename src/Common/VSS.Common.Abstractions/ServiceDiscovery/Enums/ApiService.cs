@@ -13,7 +13,6 @@
     AssetMgmt3D,
     Push,
     Tile,
-    TRex,
-    TRexMutable
+    TRex
   }
 }

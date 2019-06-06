@@ -1,16 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Mutable.Gateway.Abstractions;
 
-namespace VSS.TRex.Mutable.Gateway.Proxy
+namespace VSS.TRex.Gateway.Common.Proxy
 {
+  [Obsolete("Use TRexTagFileV1ServiceDiscoveryProxy instead")]
   public class TRexTagFileProxy : BaseProxy, ITRexTagFileProxy
   {
     private const string TREX_TAGFILE_API_URL_KEY = "TREX_TAGFILE_API_URL";

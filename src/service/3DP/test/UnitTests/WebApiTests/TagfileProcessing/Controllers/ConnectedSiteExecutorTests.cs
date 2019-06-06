@@ -24,7 +24,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
-using VSS.TRex.Mutable.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 {

@@ -34,8 +34,8 @@ using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Proxy;
 using VSS.TCCFileAccess;
-using VSS.TRex.Mutable.Gateway.Abstractions;
-using VSS.TRex.Mutable.Gateway.Proxy;
+using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI

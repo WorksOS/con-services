@@ -15,6 +15,7 @@ using VSS.Productivity3D.Scheduler.Models;
 
 namespace VSS.Productivity3D.Scheduler.Proxy
 {
+  [Obsolete("Use SchedulerV1ServiceDiscoveryProxy instead")]
   public class SchedulerProxy : BaseProxy, ISchedulerProxy
   {
     public SchedulerProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : 

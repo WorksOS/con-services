@@ -11,8 +11,8 @@ using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TCCFileAccess;
-using VSS.TRex.Gateway.Abstractions;
-using VSS.TRex.Mutable.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 
 namespace VSS.Productivity3D.Common.Interfaces
 {

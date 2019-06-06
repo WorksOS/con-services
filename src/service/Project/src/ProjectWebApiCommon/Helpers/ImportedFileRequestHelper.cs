@@ -16,7 +16,7 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.TRex.Mutable.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 

@@ -23,7 +23,7 @@ using VSS.Productivity3D.WebApi.Models.Report.Contracts;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.TRex.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {

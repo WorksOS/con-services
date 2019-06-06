@@ -11,6 +11,7 @@
     public const string TILE_SERVICE = "tile-service";
     public const string TREX_SERVICE = "trex-service";
     public const string TREX_MUTABLE_SERVICE = "trex-mutable-service";
+    public const string TREX_CONNECTEDSITE_SERVICE = "trex-connectedsite-service";
 
     public const string REDIS_CACHE = "redis-cache-service";
     public const string INFLUX_DB = "influx-db-service";

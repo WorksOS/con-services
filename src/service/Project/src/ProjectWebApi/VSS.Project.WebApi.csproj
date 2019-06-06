@@ -54,7 +54,8 @@
     <ProjectReference Include="..\..\..\Push\Clients\VSS.Productivity3D.Push.Clients\VSS.Productivity3D.Push.Clients.csproj" />
     <ProjectReference Include="..\..\..\Push\WebAPI\VSS.Productivity3D.Push.WebAPI\VSS.Productivity3D.Push.WebAPI.csproj" />
     <ProjectReference Include="..\..\..\Scheduler\src\VSS.Productivity3D.Scheduler.Proxy\VSS.Productivity3D.Scheduler.Proxy.csproj" />
-    <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Mutable.Gateway.Proxy\VSS.TRex.Mutable.Gateway.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj" />
     <ProjectReference Include="..\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
     <ProjectReference Include="..\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
   </ItemGroup>

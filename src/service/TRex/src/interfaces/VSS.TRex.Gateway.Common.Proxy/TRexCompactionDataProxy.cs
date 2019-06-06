@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -6,15 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.TRex.Gateway.Abstractions;
 
-namespace VSS.TRex.Gateway.Proxy
+namespace VSS.TRex.Gateway.Common.Proxy
 {
   /// <summary>
   /// Proxy to access the TRex Gateway WebAPIs.
   /// </summary>
+  [Obsolete("Use TRexCompactionDataV1ServiceDiscoveryProxy instead")]
   public class TRexCompactionDataProxy : BaseProxy, ITRexCompactionDataProxy
   {
     private const string TREX_GATEWAY_IMMUTABLE_BASE_URL = "TREX_GATEWAY_API_URL";

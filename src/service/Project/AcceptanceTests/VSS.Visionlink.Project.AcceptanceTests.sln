@@ -95,9 +95,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\..\TRe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\..\..\Common\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{7706A865-38AD-4A77-B9E4-13F52E210565}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{74A6B0CC-CA54-45FA-BAEB-860835E5A98D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Mutable.Gateway.Abstractions", "..\..\TRex\src\interfaces\VSS.TRex.Mutable.Gateway.Abstractions\VSS.TRex.Mutable.Gateway.Abstractions.csproj", "{20564953-807F-4828-9242-86476CFFBC9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Abstractions", "..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj", "{35D4B8D7-D045-4D16-A9E0-01DB4879F6EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -253,10 +251,10 @@ Global
 		{7706A865-38AD-4A77-B9E4-13F52E210565}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7706A865-38AD-4A77-B9E4-13F52E210565}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7706A865-38AD-4A77-B9E4-13F52E210565}.Release|Any CPU.Build.0 = Release|Any CPU
-		{20564953-807F-4828-9242-86476CFFBC9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20564953-807F-4828-9242-86476CFFBC9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20564953-807F-4828-9242-86476CFFBC9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{20564953-807F-4828-9242-86476CFFBC9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35D4B8D7-D045-4D16-A9E0-01DB4879F6EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35D4B8D7-D045-4D16-A9E0-01DB4879F6EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35D4B8D7-D045-4D16-A9E0-01DB4879F6EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35D4B8D7-D045-4D16-A9E0-01DB4879F6EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -293,7 +291,6 @@ Global
 		{C44838E5-F93E-4E5C-B729-938B307CD433} = {7274F59B-3CAD-4475-9AB9-46C61266B843}
 		{9957CF9F-952C-4E63-8959-4748F5325AB2} = {7274F59B-3CAD-4475-9AB9-46C61266B843}
 		{6E2CD02F-D63A-4057-B4BE-BA0C243E3B01} = {7274F59B-3CAD-4475-9AB9-46C61266B843}
-		{20564953-807F-4828-9242-86476CFFBC9E} = {74A6B0CC-CA54-45FA-BAEB-860835E5A98D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {93A267F3-30F1-417D-B3E8-ACFEA87B5242}

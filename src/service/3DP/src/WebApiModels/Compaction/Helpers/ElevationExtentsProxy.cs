@@ -16,7 +16,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.TRex.Gateway.Abstractions;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {

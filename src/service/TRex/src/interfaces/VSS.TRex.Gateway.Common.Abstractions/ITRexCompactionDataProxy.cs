@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.TRex.Gateway.Abstractions
+namespace VSS.TRex.Gateway.Common.Abstractions
 {
   /// <summary>
   /// Proxy interface to access the TRex Gateway WebAPIs.

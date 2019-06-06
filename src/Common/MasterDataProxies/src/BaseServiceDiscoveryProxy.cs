@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Abstractions.Proxy.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
@@ -99,18 +100,6 @@ namespace VSS.MasterData.Proxies
         () => RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload));
     }
 
-    /// <summary>
-    /// Execute a Put to an endpoint, and cache the result
-    /// NOTE: Must have a uid or userid for cache key
-    /// </summary>
-    protected Task<T> PutMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
-      IDictionary<string, string> queryParameters = null, Stream payload = null)
-      where T : class, IMasterDataModel
-    {
-      return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
-        () => RequestAndReturnData<T>(customHeaders, HttpMethod.Put, route, queryParameters, payload));
-    }
-
     protected Task<T> GetMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
       IDictionary<string, string> queryParameters = null) 
       where T : class, IMasterDataModel
@@ -120,7 +109,6 @@ namespace VSS.MasterData.Proxies
 
     protected Task<Stream> GetMasterDataStreamItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
       IDictionary<string, string> queryParameters = null, string payload = null)
-     // where T : class,  IMasterDataModel
     {
       return RequestAndReturnDataStream(customHeaders, HttpMethod.Get, route, queryParameters, payload);
     }
@@ -137,6 +125,16 @@ namespace VSS.MasterData.Proxies
       where T : class, IMasterDataModel
     {
       return RequestAndReturnData<T>(customHeaders, HttpMethod.Put, route, queryParameters, payload);
+    }
+
+    /// <summary>
+    /// Execute a Post/Put/Delete to an endpoint, do not cache the result, and return a ContractExecutionResult
+    /// NOTE: Must have a uid or userid for cache key
+    /// </summary>
+    protected Task<ContractExecutionResult> MasterDataItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
+      HttpMethod method, IDictionary<string, string> queryParameters = null, Stream payload = null)
+    {
+      return RequestAndReturnResult(customHeaders, method, route, queryParameters, payload);
     }
 
     #endregion
@@ -186,6 +184,21 @@ namespace VSS.MasterData.Proxies
 
       return result;
     }
+
+    private async Task<ContractExecutionResult> RequestAndReturnResult(IDictionary<string, string> customHeaders,
+      HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, System.IO.Stream payload = null) 
+    {
+      var url = await GetUrl(route, queryParameters);
+
+      // If we are calling to our own services, keep the JWT assertion
+      customHeaders.StripHeaders(IsInsideAuthBoundary);
+
+      var result = await webRequest.ExecuteRequest<ContractExecutionResult>(url, payload: payload, customHeaders: customHeaders, method: method);
+      log.LogDebug($"{nameof(RequestAndReturnResult)} Result: {JsonConvert.SerializeObject(result)}");
+
+      return result;
+    }
+
 
     #endregion
   }

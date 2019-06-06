@@ -34,16 +34,14 @@ using VSS.Productivity3D.WebApi.Models.Services;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
-using VSS.TRex.Gateway.Abstractions;
-using VSS.TRex.Gateway.Proxy;
-using VSS.TRex.Mutable.Gateway.Abstractions;
-using VSS.TRex.Mutable.Gateway.Proxy;
+using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 
 // ReSharper disable once CheckNamespace
 namespace VSS.Productivity3D.WebApi
 {
   /// <summary>
-  /// Partial implemtnation of startup configuration for service descriptor contracts.
+  /// Partial implementation of startup configuration for service descriptor contracts.
   /// </summary>
   public partial class Startup
   {
@@ -77,8 +75,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
-      services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
-      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
       services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>) provider.GetServices<IHostedService>()
@@ -94,6 +90,8 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IFileImportProxy, FileImportProxy>();
       services.AddScoped<IFilterServiceProxy, FilterServiceProxy>();
       services.AddScoped<ISchedulerProxy, SchedulerProxy>();
+      services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
+      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
 
       /* todoJeannie 
       // service discovery
@@ -103,6 +101,8 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
       services.AddScoped<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
       services.AddScoped<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
+      services.AddScoped<ITRexTagFileProxy, TRexTagFileV1ServiceDiscoveryProxy>();
+      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataV1ServiceDiscoveryProxy>();
       todoJeannie */
 
       //Disable CAP for now #76666

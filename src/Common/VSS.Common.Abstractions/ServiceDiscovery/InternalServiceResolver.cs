@@ -104,10 +104,9 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
           return Constants.ServiceNameConstants.PUSH_SERVICE;
         case ApiService.Tile:
           return Constants.ServiceNameConstants.TILE_SERVICE;
-        case ApiService.TRex:
-          return Constants.ServiceNameConstants.TREX_SERVICE;
-        case ApiService.TRexMutable:
-          return Constants.ServiceNameConstants.TREX_MUTABLE_SERVICE;
+        //case ApiService.TRex:
+        //  return Constants.ServiceNameConstants.TREX_SERVICE;
+
         default:
           // There are unit tests to ensure this does not happen 
           throw new ArgumentOutOfRangeException(nameof(service), service, null);
