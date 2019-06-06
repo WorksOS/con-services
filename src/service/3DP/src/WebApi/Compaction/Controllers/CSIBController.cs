@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -27,18 +26,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogDebug($"{nameof(GetCSIBForProject)}");
 
-#if RAPTOR
       var projectId = await GetLegacyProjectId(projectUid);
 
-      var result = RequestExecutorContainerFactory.Build<CSIBExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore)
-                                                  .Process(new ProjectID(projectId, projectUid));
+      var result = RequestExecutorContainerFactory.Build<CSIBExecutor>(LoggerFactory,
+#if RAPTOR
+          RaptorClient,
+#endif
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy).Process(new ProjectID(projectId, projectUid));
 
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, result)
         : StatusCode((int)HttpStatusCode.BadRequest, result);
-#else
-      return StatusCode((int)HttpStatusCode.BadRequest, "TRex unsupported request");
-#endif
     }
   }
 }
