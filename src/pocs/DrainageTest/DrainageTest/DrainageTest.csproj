@@ -50,15 +50,57 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Accord, Version=2.12.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Accord.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.MachineLearning, Version=2.12.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Accord.MachineLearning.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math, Version=2.12.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Accord.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Statistics, Version=2.12.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Accord.Statistics.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\AForge.Math.dll</HintPath>
+    </Reference>
     <Reference Include="Core.Contracts">
       <HintPath>Libraries\Core.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Core.Services">
       <HintPath>Libraries\Core.Services.dll</HintPath>
     </Reference>
+    <Reference Include="Fake.CoordinateSystem, Version=24.0.5847.28513, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Fake.CoordinateSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Fake.CTCT">
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Fake.CTCT.dll</HintPath>
+    </Reference>
+    <Reference Include="Fake.Teigha">
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Fake.Teigha.dll</HintPath>
+    </Reference>
     <Reference Include="Gibraltar.Agent, Version=3.0.0.0, Culture=neutral, PublicKeyToken=ca42a1ee8d2e42d3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Gibraltar.Agent.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Drawing, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Microsoft.Expression.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common">
       <HintPath>Libraries\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
@@ -90,6 +132,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Morph.Contracts.dll</HintPath>
     </Reference>
+    <Reference Include="Morph.Contracts.XmlSerializers, Version=1.4.1225.1, Culture=neutral, PublicKeyToken=4759a7b96c578cd4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Morph.Contracts.XmlSerializers.dll</HintPath>
+    </Reference>
     <Reference Include="Morph.Core, Version=1.4.1225.1, Culture=neutral, PublicKeyToken=4759a7b96c578cd4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Morph.Core.dll</HintPath>
@@ -97,11 +143,35 @@
     <Reference Include="Morph.Module.Services">
       <HintPath>Libraries\Morph.Module.Services.dll</HintPath>
     </Reference>
+    <Reference Include="Morph.Resources, Version=1.4.1225.1, Culture=neutral, PublicKeyToken=4759a7b96c578cd4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Morph.Resources.dll</HintPath>
+    </Reference>
     <Reference Include="Morph.Service.Core">
       <HintPath>Libraries\Morph.Service.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Morph.Service.Core.XmlSerializers, Version=1.4.1225.1, Culture=neutral, PublicKeyToken=4759a7b96c578cd4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Morph.Service.Core.XmlSerializers.dll</HintPath>
+    </Reference>
     <Reference Include="Morph.Service.Engine">
       <HintPath>Libraries\Morph.Service.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Service.Resources, Version=1.4.1225.1, Culture=neutral, PublicKeyToken=4759a7b96c578cd4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Morph.Service.Resources.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Utility, Version=1.4.1225.1, Culture=neutral, PublicKeyToken=4759a7b96c578cd4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Morph.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
       <HintPath>..\packages\SlimDX.4.0.13.44\lib\NET40\SlimDX.dll</HintPath>
@@ -129,9 +199,31 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\TD_SwigDbMgd.dll</HintPath>
     </Reference>
+    <Reference Include="TG_SwigDbMgd">
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\TG_SwigDbMgd.dll</HintPath>
+    </Reference>
     <Reference Include="Trimble.DiskIO, Version=24.0.5847.28513, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Trimble.DiskIO.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Antenna, Version=24.0.5847.28516, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Trimble.Geodetic.Antenna.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Math, Version=24.0.5847.28513, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Trimble.Geodetic.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Optical, Version=24.0.5847.28513, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Trimble.Geodetic.Optical.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Receiver">
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Trimble.Geodetic.Receiver.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Reductions, Version=24.0.5847.28518, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Trimble.Geodetic.Reductions.dll</HintPath>
     </Reference>
     <Reference Include="Trimble.Properties, Version=24.0.5847.28513, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -144,6 +236,10 @@
     <Reference Include="Trimble.Vce.CADStyle, Version=17.0.5408.19463, Culture=neutral, PublicKeyToken=4759a7b96c578cd4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Trimble.Vce.CADStyle.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Collections, Version=24.0.5847.28514, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Docs\2019_05_20 HydrologyDocs\DrainageTest\DrainageTest\Libraries\Trimble.Vce.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Trimble.Vce.Coordinates, Version=24.0.5847.28517, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

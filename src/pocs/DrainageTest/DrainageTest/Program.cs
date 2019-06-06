@@ -17,11 +17,13 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.Practices.Prism.Logging;
+using Newtonsoft.Json;
 
 namespace DrainageTest
 {
@@ -74,13 +76,12 @@ namespace DrainageTest
       Console.WriteLine($"{nameof(Execute)}: surface file: {useCase.Surface}");
 
       // just trying this util for grins
-      var rowsDirection =
-        Morph.Services.Core.DataModel.Utils.NormalizeAngleRad(
+      var rowsDirection = Utils.NormalizeAngleRad(
           -useCase.FurrowHeading * (Math.PI / 180.0) + Math.PI / 2.0, -1.0 * Math.PI);
       Console.WriteLine($"{nameof(Execute)}: rowsDirection: {rowsDirection}");
 
       bool flag = false;
-      using (ILandLeveling instance = ServiceLocator.Current.GetInstance<ILandLeveling>())
+      using (var instance = ServiceLocator.Current.GetInstance<ILandLeveling>())
       {
         ISurfaceInfo surfaceInfo = null;
         if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(useCase.Surface), ".dxf") == 0)
