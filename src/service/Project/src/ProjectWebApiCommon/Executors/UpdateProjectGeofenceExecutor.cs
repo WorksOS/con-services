@@ -22,14 +22,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Processes the UpdateProjectGeofenceAssociation request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ProjectGeofenceResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var updateProjectGeofenceRequest = item as UpdateProjectGeofenceRequest;
-      if (updateProjectGeofenceRequest == null)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
+      var updateProjectGeofenceRequest = CastRequestObjectTo<UpdateProjectGeofenceRequest>(item, errorCode: 68);
 
       var project = await ProjectRequestHelper.GetProject(updateProjectGeofenceRequest.ProjectUid.ToString(),
         customerUid,
@@ -79,7 +74,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         // dissassociate not supported. Current associations should be included in requested list.
         var associationsMissing = allGeofencesOfTypes
-          .Where(g => (!string.IsNullOrEmpty(g.ProjectUID) && String.Compare(g.ProjectUID,
+          .Where(g => (!string.IsNullOrEmpty(g.ProjectUID) && string.Compare(g.ProjectUID,
                          updateProjectGeofenceRequest.ProjectUid.ToString(), StringComparison.OrdinalIgnoreCase) ==
                        0) &&
                       !updateProjectGeofenceRequest.GeofenceGuids.Contains(Guid.Parse(g.GeofenceUID))

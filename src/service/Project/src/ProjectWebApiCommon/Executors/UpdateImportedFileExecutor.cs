@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -34,27 +33,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>  
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      UpdateImportedFile updateImportedFile = item as UpdateImportedFile;
-      if (updateImportedFile == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
-      }
+      var updateImportedFile = CastRequestObjectTo<UpdateImportedFile>(item, errorCode: 68);
 
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
-      var isDesignFileType = updateImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
-                             updateImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface ||
-                             updateImportedFile.ImportedFileType == ImportedFileType.Alignment ||
-                             updateImportedFile.ImportedFileType == ImportedFileType.ReferenceSurface;
 
       ImportedFile existingImportedFile = null;
 
-      var existingImportedFileTask = 
-        projectRepo.GetImportedFile(updateImportedFile.ImportedFileUid.ToString())
-                   .ContinueWith(t => existingImportedFile = t.Result);
+      var existingImportedFileTask = projectRepo.GetImportedFile(updateImportedFile.ImportedFileUid.ToString())
+                                                .ContinueWith(t => existingImportedFile = t.Result);
 
-      if (useTrexGatewayDesignImport && isDesignFileType)
+      if (useTrexGatewayDesignImport && updateImportedFile.IsDesignFileType)
       {
         await ImportedFileRequestHelper.NotifyTRexUpdateFile(updateImportedFile.ProjectUid,
           updateImportedFile.ImportedFileType, updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileUid,
