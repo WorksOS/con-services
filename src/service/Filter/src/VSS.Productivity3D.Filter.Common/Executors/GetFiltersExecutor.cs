@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns>If successful returns a <see cref="FilterDescriptorListResult"/> containing a collection of filters for the project.</returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = CastRequestObjectTo<FilterRequestFull>(item, 5);
+      var request = CastRequestObjectTo<FilterRequestFull>(item, 9);
       if (request == null) return null;
 
       List<MasterData.Repositories.DBModels.Filter> filters = null;
