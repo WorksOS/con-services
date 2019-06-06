@@ -117,9 +117,9 @@ namespace VSS.TRex.Tests.SubGridTrees
       Assert.Equal(0, count);
 
       // Add some true cells to the tree and count them
-      for (uint x = 0; x < 10; x++)
+      for (int x = 0; x < 10; x++)
       {
-        for (uint y = 0; y < 10; y++)
+        for (int y = 0; y < 10; y++)
         {
           tree[x * 10, y * 10] = true;
         }

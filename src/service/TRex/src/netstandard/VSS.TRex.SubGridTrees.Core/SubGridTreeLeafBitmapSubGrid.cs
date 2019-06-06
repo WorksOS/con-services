@@ -55,7 +55,7 @@ namespace VSS.TRex.SubGridTrees
         /// CountBits counts the number of bits that are set to 1 (true) in the sub grid 
         /// </summary>
         /// <returns></returns>
-        public uint CountBits() => Bits.CountBits();
+        public int CountBits() => Bits.CountBits();
 
         /// <summary>
         /// Computes the bounding extent of the cells (bits) in the sub grid that are set to 1 (true)

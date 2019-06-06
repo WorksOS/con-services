@@ -134,10 +134,10 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.Equal(bits.CountBits(), SubGridTreeConsts.CellsPerSubGrid);
 
             bits.Clear();
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
             bits.SetBit(1, 1);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
         }
 
         [Fact]
@@ -199,7 +199,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits2.Read(br, new byte[10000]);
 
             Assert.True(bits.Equals(bits2), "Bits not equal after serialisation with arbitrary mask");
-            Assert.Equal(4U, bits.CountBits());
+            Assert.Equal(4, bits.CountBits());
         }
 
         [Fact]
@@ -230,22 +230,22 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.SetBitValue(0, 0, true);
 
             Assert.NotEqual(0U, bits.Bits[0]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.SetBitValue(0, 0, false);
 
             Assert.Equal(0U, bits.Bits[0]);
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
             bits.SetBitValue(31, 31, true);
 
             Assert.NotEqual(0U, bits.Bits[31]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.SetBitValue(31, 31, false);
                          
             Assert.Equal(0U, bits.Bits[31]);
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
         }
 
@@ -257,12 +257,12 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.SetBit(0, 0);
 
             Assert.NotEqual(0U, bits.Bits[0]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.SetBit(31, 31);
 
             Assert.NotEqual(0U, bits.Bits[31]);
-            Assert.Equal(2U, bits.CountBits());
+            Assert.Equal(2, bits.CountBits());
         }
 
         [Fact]
@@ -273,22 +273,22 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.SetBit(0, 0);
 
             Assert.NotEqual(0U, bits.Bits[0]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.ClearBit(0, 0);
 
             Assert.Equal(0U, bits.Bits[0]);
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
             bits.SetBit(31, 31);
 
             Assert.NotEqual(0U, bits.Bits[31]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.ClearBit(31, 31);
 
             Assert.Equal(0U, bits.Bits[31]);
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
         }
 
@@ -313,13 +313,13 @@ namespace VSS.TRex.Tests.SubGridTrees
           // Test testing a bit is on or off, at two corners to test boundary conditions
           SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-          Assert.False(bits.BitSet(0U, 0U));
-          Assert.False(bits.BitSet(31U, 31U));
+          Assert.False(bits.BitSet(0, 0U));
+          Assert.False(bits.BitSet(31, 31U));
 
           bits.Fill();
 
-          Assert.True(bits.BitSet(0U, 0U));
-          Assert.True(bits.BitSet(31U, 31U));
+          Assert.True(bits.BitSet(0, 0U));
+          Assert.True(bits.BitSet(31, 31U));
         }
 
     [Fact]
@@ -379,7 +379,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             bits.Clear();
             bits.ForEach((x, y) => { return (x == 1) && (y == 1); });
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
         }
 
         [Fact]
@@ -411,11 +411,11 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Test iteration action for empty, full and arbitrary masks
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
-            uint sum;
+            int sum;
 
             sum = 0;
             bits.ForEachClearBit((x, y) => { sum++; });
-            Assert.Equal(0U, sum);
+            Assert.Equal(0, sum);
 
             sum = 0;
             bits.Clear();

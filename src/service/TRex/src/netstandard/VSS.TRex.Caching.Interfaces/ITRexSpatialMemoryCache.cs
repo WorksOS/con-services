@@ -21,7 +21,7 @@ namespace VSS.TRex.Caching.Interfaces
     long ContextRemovalCount { get; }
 
     bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element);
-    ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, uint originX, uint originY);
+    ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, int originX, int originY);
     void Remove(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element);
 
     ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint);

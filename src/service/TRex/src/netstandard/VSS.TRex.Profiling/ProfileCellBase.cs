@@ -21,12 +21,12 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
     /// </summary>
-    public uint OTGCellX { get; set; }
+    public int OTGCellX { get; set; }
 
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
     /// </summary>
-    public uint OTGCellY { get; set; }
+    public int OTGCellY { get; set; }
 
     public float DesignElev { get; set; }
 
@@ -41,8 +41,8 @@ namespace VSS.TRex.Profiling
       writer.WriteDouble(Station);
       writer.WriteDouble(InterceptLength);
 
-      writer.WriteInt((int)OTGCellX);
-      writer.WriteInt((int)OTGCellY);
+      writer.WriteInt(OTGCellX);
+      writer.WriteInt(OTGCellY);
 
       writer.WriteFloat(DesignElev);
     }
@@ -56,8 +56,8 @@ namespace VSS.TRex.Profiling
       Station = reader.ReadDouble();
       InterceptLength = reader.ReadDouble();
 
-      OTGCellX = (uint)reader.ReadInt();
-      OTGCellY = (uint)reader.ReadInt();
+      OTGCellX = reader.ReadInt();
+      OTGCellY = reader.ReadInt();
 
       DesignElev = reader.ReadFloat();
     }

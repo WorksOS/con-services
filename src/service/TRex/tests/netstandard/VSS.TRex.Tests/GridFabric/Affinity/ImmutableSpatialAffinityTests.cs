@@ -42,9 +42,9 @@ namespace VSS.TRex.Tests.GridFabric.Affinity
 
       var partitions = new List<int>();
 
-      for (uint i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+      for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
       {
-        for (uint j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+        for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
         {
           partitions.Add(aff.GetPartition(new SubGridSpatialAffinityKey(0, Guid.NewGuid(),
             i * SubGridTreeConsts.SubGridTreeDimension, 

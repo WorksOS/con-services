@@ -24,7 +24,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// CountBits counts the number of bits that are set to 1 (true) in the subgrid 
     /// </summary>
     /// <returns></returns>
-    uint CountBits();
+    int CountBits();
 
     /// <summary>
     /// Computes the bounding extent of the cells (bits) in the subgrid that are set to 1 (true)

@@ -68,9 +68,9 @@ namespace VSS.TRex.Storage
         numUpdated += _numUpdated;
         numBytesWritten += _numBytesWritten;
       }
-      catch (Exception e)
+      catch 
       {
-        Log.LogError(e, "Exception thrown committing changes to Ignite for general non spatial cache");
+        Log.LogError("Exception thrown committing changes to Ignite for general non spatial cache");
         throw;
       }
 
@@ -81,9 +81,9 @@ namespace VSS.TRex.Storage
         numUpdated += _numUpdated;
         numBytesWritten += _numBytesWritten;
       }
-      catch (Exception e)
+      catch
       {
-        Log.LogError(e, "Exception thrown committing changes to Ignite for site model cache");
+        Log.LogError("Exception thrown committing changes to Ignite for site model cache");
         throw;
       }
 
@@ -97,9 +97,9 @@ namespace VSS.TRex.Storage
         spatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
         return (_numDeleted, _numUpdated, _numBytesWritten);
       }
-      catch (Exception e)
+      catch 
       {
-        Log.LogError(e, "Exception thrown committing changes to Ignite for spatial cache");
+        Log.LogError("Exception thrown committing changes to Ignite for spatial cache");
         throw;
       }
     }),
@@ -110,9 +110,9 @@ namespace VSS.TRex.Storage
         generalNonSpatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
         return (_numDeleted, _numUpdated, _numBytesWritten);
       }
-      catch (Exception e)
+      catch
       {
-        Log.LogError(e, "Exception thrown committing changes to Ignite for general non spatial cache");
+        Log.LogError("Exception thrown committing changes to Ignite for general non spatial cache");
         throw;
       }
     }),
@@ -123,9 +123,9 @@ namespace VSS.TRex.Storage
         siteModelCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
         return (_numDeleted, _numUpdated, _numBytesWritten);
       }
-      catch (Exception e)
+      catch
       {
-        Log.LogError(e, "Exception thrown committing changes to Ignite for site model cache");
+        Log.LogError("Exception thrown committing changes to Ignite for site model cache");
         throw;
       }
     })

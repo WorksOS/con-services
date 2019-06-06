@@ -23,13 +23,13 @@ namespace VSS.TRex.Cells
         /// cell. CellPassOffset records the location in that wider set of cell passes within the sub grid where the list of cell passes
         /// recorded for this cell starts. 
         /// </summary>
-        public uint CellPassOffset;
+        public int CellPassOffset;
 
         /// <summary>
         /// Number of cell passes recorded for this cell
         /// </summary>
         /// <returns></returns>
-        public uint PassCount;
+        public int PassCount;
 
         /// <summary>
         /// Determines if the cell is empty of all cell passes
@@ -60,8 +60,8 @@ namespace VSS.TRex.Cells
         /// <returns></returns>
         public bool LocateTime(CellPass[] Passes, DateTime time, out int index)
         {
-            int L = (int)CellPassOffset;
-            int H = L + (int)PassCount - 1;
+            int L = CellPassOffset;
+            int H = L + PassCount - 1;
 
             while (L <= H)
             {
@@ -89,7 +89,7 @@ namespace VSS.TRex.Cells
             return false;
         }
 
-        public Cell_Static(uint cellPassOffset, uint cellPassCount)
+        public Cell_Static(int cellPassOffset, int cellPassCount)
         {
             CellPassOffset = cellPassOffset;
             PassCount = cellPassCount;

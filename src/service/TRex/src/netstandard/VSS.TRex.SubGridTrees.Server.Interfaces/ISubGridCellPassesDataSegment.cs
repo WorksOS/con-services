@@ -54,7 +54,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// If either limit is breached, this segment requires cleaving
     /// </summary>
     /// <returns></returns>
-    bool RequiresCleaving(out uint TotalPasses, out uint MaxPassCount);
+    bool RequiresCleaving(out int TotalPasses, out int MaxPassCount);
 
     /// <summary>
     /// Verifies if the segment time range bounds are consistent with the cell passes it contains

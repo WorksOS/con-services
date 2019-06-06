@@ -24,8 +24,8 @@ namespace VSS.TRex.Tests.Profiling
       {
         ProfileCell cell = new ProfileCell(new FilteredMultiplePassInfo(), 1, 2, 3.0, 4.0, true);
 
-        Assert.Equal(1U, cell.OTGCellX);
-        Assert.Equal(2U, cell.OTGCellY);
+        Assert.Equal(1, cell.OTGCellX);
+        Assert.Equal(2, cell.OTGCellY);
         Assert.Equal(3.0, cell.Station);
         Assert.Equal(4.0, cell.InterceptLength);
 
@@ -39,8 +39,8 @@ namespace VSS.TRex.Tests.Profiling
         ProfileCell cell = new ProfileCell(new FilteredMultiplePassInfo(new [] {new FilteredPassData() }),
           1, 2, 3.0, 4.0, true);
 
-        Assert.Equal(1U, cell.OTGCellX);
-        Assert.Equal(2U, cell.OTGCellY);
+        Assert.Equal(1, cell.OTGCellX);
+        Assert.Equal(2, cell.OTGCellY);
         Assert.Equal(3.0, cell.Station);
         Assert.Equal(4.0, cell.InterceptLength);
 

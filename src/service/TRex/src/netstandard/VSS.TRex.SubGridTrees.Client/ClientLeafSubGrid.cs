@@ -40,7 +40,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// IndexOriginOffset is a copy of the IndexOriginOffset from the parent sub grid. It is replicated here
     ///to remove SubGridTree binding in other processing contexts
     /// </summary>
-    public uint IndexOriginOffset { get; set; }
+    public int IndexOriginOffset { get; set; }
 
     /// <summary>
     /// Is data extraction limited to the top identified layer of materials in each cell
@@ -137,7 +137,7 @@ namespace VSS.TRex.SubGridTrees.Client
         ISubGrid parent,
         byte level,
         double cellSize,
-        uint indexOriginOffset) : base(owner, parent, level)
+        int indexOriginOffset) : base(owner, parent, level)
     {
       CellSize = cellSize;
       IndexOriginOffset = indexOriginOffset;
@@ -258,7 +258,7 @@ namespace VSS.TRex.SubGridTrees.Client
         throw new TRexSubGridIOException("GridDataType in stream does not match GridDataType of local sub grid instance");
 
       CellSize = reader.ReadDouble();
-      IndexOriginOffset = reader.ReadUInt32();
+      IndexOriginOffset = reader.ReadInt32();
 
       ProdDataMap.Read(reader, buffer);
       FilterMap.Read(reader, buffer);
@@ -280,12 +280,12 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Facades the OriginX property of this sub grid for use in the spatial caching implementation
     /// </summary>
-    public uint CacheOriginX => OriginX;
+    public int CacheOriginX => OriginX;
 
     /// <summary>
     /// Facades the OriginY property of this sub grid for use in the spatial caching implementation
     /// </summary>
-    public uint CacheOriginY => OriginY;
+    public int CacheOriginY => OriginY;
 
     public void DumpToLog()
     {

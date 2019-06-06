@@ -25,12 +25,12 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
             Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
-                uint ThePassCount = segment.PassCount(i, j);
+                int ThePassCount = segment.PassCount(i, j);
 
                 if (ThePassCount == 0)
                     return;
 
-                for (uint PassIndex = 0; PassIndex < ThePassCount; PassIndex++)
+                for (int PassIndex = 0; PassIndex < ThePassCount; PassIndex++)
                 {
                     DateTime theTime = segment.PassTime(i, j, PassIndex);
 
@@ -54,24 +54,24 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         /// <param name="totalPasses"></param>
         /// <param name="maxPassCount"></param>
         public static void CalculatePassesBeforeTime(ISubGridCellSegmentPassesDataWrapper segment, DateTime searchTime,
-            out uint totalPasses, out uint maxPassCount)
+            out int totalPasses, out int maxPassCount)
         {
             totalPasses = 0;
             maxPassCount = 0;
 
-            uint _totalPasses = totalPasses;
-            uint _maxPassCount = maxPassCount;
+            int _totalPasses = totalPasses;
+            int _maxPassCount = maxPassCount;
 
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
-                uint thePassCount = segment.PassCount(i, j);
+                int thePassCount = segment.PassCount(i, j);
 
                 if (thePassCount == 0)
                     return;
 
-                uint countInCell = 0;
+                int countInCell = 0;
 
-                for (uint PassIndex = 0; PassIndex < thePassCount; PassIndex++)
+                for (int PassIndex = 0; PassIndex < thePassCount; PassIndex++)
                 {
                     DateTime theTime = segment.PassTime(i, j, PassIndex);
 

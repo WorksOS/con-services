@@ -8,11 +8,11 @@
         /// <summary>
         /// The number of records held in the vector
         /// </summary>
-        public uint NumRecords;
+        public int NumRecords;
 
         /// <summary>
         /// The number of bits used to encode each record in the vector
         /// </summary>
-        public uint BitsPerRecord;
+        public int BitsPerRecord;
     }
 }

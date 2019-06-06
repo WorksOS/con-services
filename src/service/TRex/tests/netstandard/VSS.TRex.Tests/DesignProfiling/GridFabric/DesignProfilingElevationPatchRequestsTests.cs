@@ -46,7 +46,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       // Get the cell location of the probe position. Note that the request will return the sub grid
       // that contains this cell, so the origin location of the sub grid may not be the same as the cell location
       // 
-      siteModel.Grid.CalculateIndexOfCellContainingPosition(spotX, spotY, out uint cellX, out uint cellY);
+      siteModel.Grid.CalculateIndexOfCellContainingPosition(spotX, spotY, out int cellX, out int cellY);
 
       var request = new DesignElevationPatchRequest();
       var argument = new CalculateDesignElevationPatchArgument
@@ -69,8 +69,8 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
         response.Heights.CellSize.Should().Be(siteModel.CellSize);
         response.Heights.GridDataType.Should().Be(GridDataType.Height);
         response.Heights.Level.Should().Be(siteModel.Grid.NumLevels);
-        response.Heights.OriginX.Should().Be((uint) (cellX & ~SubGridTreeConsts.SubGridLocalKeyMask));
-        response.Heights.OriginY.Should().Be((uint) (cellY & ~SubGridTreeConsts.SubGridLocalKeyMask));
+        response.Heights.OriginX.Should().Be((int) (cellX & ~SubGridTreeConsts.SubGridLocalKeyMask));
+        response.Heights.OriginY.Should().Be((int) (cellY & ~SubGridTreeConsts.SubGridLocalKeyMask));
         response.Heights.Owner.Should().BeNull();
         response.Heights.Parent.Should().BeNull();
         response.Heights.Cells.Should().NotBeNull();

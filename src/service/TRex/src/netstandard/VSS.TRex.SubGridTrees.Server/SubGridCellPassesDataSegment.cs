@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
@@ -225,7 +224,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (_segmentCleavingOperationsToLog || _itemsPersistedViaDataPersistorToLog)
       {
-        SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out uint TotalPasses, out uint MaxPasses);
+        SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out int TotalPasses, out int MaxPasses);
 
         if (_segmentCleavingOperationsToLog && TotalPasses > _subGridSegmentPassCountLimit)
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses}) which violates the maximum number of cell passes within a segment ({_subGridSegmentPassCountLimit})");
@@ -269,7 +268,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// If either limit is breached, this segment requires cleaving
     /// </summary>
     /// <returns></returns>
-    public bool RequiresCleaving(out uint TotalPasses, out uint MaxPassCount)
+    public bool RequiresCleaving(out int TotalPasses, out int MaxPassCount)
     {
       SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out TotalPasses, out MaxPassCount);
 

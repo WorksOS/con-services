@@ -74,11 +74,11 @@ namespace VSS.TRex.Designs
 
     public abstract bool HasElevationDataForSubGridPatch(double X, double Y);
 
-    public abstract bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY);
+    public abstract bool HasElevationDataForSubGridPatch(int SubGridX, int SubGridY);
 
     public abstract bool HasFiltrationDataForSubGridPatch(double X, double Y);
 
-    public abstract bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubGridY);
+    public abstract bool HasFiltrationDataForSubGridPatch(int SubGridX, int SubGridY);
 
     public virtual ISubGridTreeBitMask SubGridOverlayIndex() => null;
 

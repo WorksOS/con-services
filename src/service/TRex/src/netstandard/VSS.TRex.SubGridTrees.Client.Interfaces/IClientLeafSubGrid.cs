@@ -14,7 +14,7 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
   {
     double CellSize { set; get; }
 
-    uint IndexOriginOffset { get; set; }
+    int IndexOriginOffset { get; set; }
 
     GridDataType GridDataType { get; }
 

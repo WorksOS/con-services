@@ -21,7 +21,7 @@ namespace VSS.TRex.Storage.Interfaces
 
     FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID,
       string streamName,
-      uint subGridX, uint subGridY,
+      int subGridX, int subGridY,
       string segmentIdentifier,
       long version,
       FileSystemStreamType streamType,
@@ -35,7 +35,7 @@ namespace VSS.TRex.Storage.Interfaces
 
     FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelID,
       string streamName,
-      uint subGridX, uint subGridY,
+      int subGridX, int subGridY,
       string segmentIdentifier,
       long version,
       FileSystemStreamType streamType,

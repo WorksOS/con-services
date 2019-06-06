@@ -95,7 +95,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         private bool IntegrateIntoLiveDatabase(IServerLeafSubGrid SourceSubGrid, 
                                                IServerLeafSubGrid TargetSubGrid, 
                                                ISubGridSegmentIterator SegmentIterator,
-                                               Action<uint, uint> subGridChangeNotifier)
+                                               Action<int, int> subGridChangeNotifier)
         {
             // Note the fact that this sub grid will be changed and become dirty as a result
             // of the cell pass integration
@@ -140,7 +140,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         private void IntegrateIntoLiveGrid(IServerLeafSubGrid SourceSubGrid, 
                                            ISubGridSegmentIterator SegmentIterator,
-                                           Action<uint, uint> subGridChangeNotifier)
+                                           Action<int, int> subGridChangeNotifier)
         {
             var TargetSubGrid = LocateOrCreateSubGrid(Target, SourceSubGrid.OriginX, SourceSubGrid.OriginY);
             if (TargetSubGrid == null)
@@ -157,7 +157,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         private void IntegrateSubGrid(IServerLeafSubGrid SourceSubGrid, 
           SubGridTreeIntegrationMode integrationMode,
-          Action<uint, uint> subGridChangeNotifier,
+          Action<int, int> subGridChangeNotifier,
           ISubGridSegmentIterator segmentIterator)
         {
           // Locate a matching sub grid in this tree. If there is none, then create it
@@ -172,7 +172,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         }
 
         public bool IntegrateSubGridTree(SubGridTreeIntegrationMode integrationMode,
-                                         Action<uint, uint> subGridChangeNotifier)
+                                         Action<int, int> subGridChangeNotifier)
         {
             // Iterate over the sub grids in source and merge the cell passes from source
             // into the sub grids in this sub grid tree;
@@ -213,11 +213,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <param name="subGridChangeNotifier"></param>
         /// <returns></returns>
         public bool IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode integrationMode,
-          Action<uint, uint> subGridChangeNotifier)
+          Action<int, int> subGridChangeNotifier)
         {
           void ProcessSubGrid(IServerLeafSubGrid sourceSubGrid,
                               SubGridTreeIntegrationMode _integrationMode,
-                              Action<uint, uint> _subGridChangeNotifier)
+                              Action<int, int> _subGridChangeNotifier)
           {
             try
             {
@@ -265,7 +265,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <param name="CellY"></param>
     /// <returns></returns>
     // ReSharper disable once MemberCanBePrivate.Global
-    public IServerLeafSubGrid LocateOrCreateSubGrid(IServerSubGridTree Grid, uint CellX, uint CellY)
+    public IServerLeafSubGrid LocateOrCreateSubGrid(IServerSubGridTree Grid, int CellX, int CellY)
         {
             IServerLeafSubGrid Result = SubGridUtilities.LocateSubGridContaining(
                                     StorageProxy,

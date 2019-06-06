@@ -41,7 +41,7 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
         /// <param name="originX"></param>
         /// <param name="originY"></param>
         /// <returns>An appropriate instance derived from ClientLeafSubGrid configured with supplied cell size, tree level and origin</returns>
-        IClientLeafSubGrid GetSubGridEx(GridDataType gridDataType, double cellSize, byte level, uint originX, uint originY);
+        IClientLeafSubGrid GetSubGridEx(GridDataType gridDataType, double cellSize, byte level, int originX, int originY);
 
         void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid);
         void ReturnClientSubGrids(IClientLeafSubGrid[] clientGrid, int count);
