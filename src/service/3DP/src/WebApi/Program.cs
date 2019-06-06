@@ -8,9 +8,10 @@ using System.Threading;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.Log4Net.Extensions;
 using System;
 using VSS.WebApi.Common;
+using Serilog;
+using VSS.SeriLog.Extensions;
 
 namespace VSS.Productivity3D.WebApi
 {
@@ -36,50 +37,40 @@ namespace VSS.Productivity3D.WebApi
       var config = new ConfigurationBuilder()
         .AddCommandLine(args)
         .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
+        .AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
         .Build();
 
-      //Log4NetProvider.RepoName = Startup.LoggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(Startup.LoggerRepoName);
-      //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
-
       var libuvConfigured = int.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out var libuvThreads);
-
 
       var host = new WebHostBuilder().BuildHostWithReflectionException(builder =>
       {
-          return builder.UseConfiguration(config)
-          .UseKestrel(opts =>
+        return builder.UseConfiguration(config)
+        .UseKestrel(opts =>
+        {
+          opts.Limits.MaxResponseBufferSize = 131072; //128K for large exports (default is 64K)
+        })
+        //.UseUrls("http://127.0.0.1:5002") //DO NOT REMOVE (used for local debugging of long running veta exports)        
+        .UseLibuv(opts =>
+        {
+          if (libuvConfigured)
           {
-            opts.Limits.MaxResponseBufferSize = 131072; //128K for large exports (default is 64K)
-          })
-          //.UseUrls("http://127.0.0.1:5002") //DO NOT REMOVE (used for local debugging of long running veta exports)
-          .UseLibuv(opts =>
-          {
-            if (libuvConfigured)
-            {
-              opts.ThreadCount = libuvThreads;
-            }
-
-          })
-          .UseContentRoot(pathToContentRoot)
-          .ConfigureLogging(builderConf =>
-          {
-            Log4NetProvider.RepoName = Startup.LoggerRepoName;
-            builderConf.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-            builderConf.SetMinimumLevel(LogLevel.Debug);
-            builderConf.AddConfiguration(config);
-          })
-          .UseStartup<Startup>()
-          .Build();
+            opts.ThreadCount = libuvThreads;
+          }
+        })
+        .UseContentRoot(pathToContentRoot)
+        .UseStartup<Startup>()
+        .ConfigureLogging(x => SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log"))
+        .UseSerilog()
+        .Build();
       });
 
       var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
       log.LogInformation("Productivity3D service starting");
       log.LogInformation($"Num Libuv Threads = {(libuvConfigured ? libuvThreads.ToString() : "Default")}");
-      
+
       if (int.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out var maxWorkers) &&
           int.TryParse(Environment.GetEnvironmentVariable(MAX_IO_THREADS), out var maxIo))
       {

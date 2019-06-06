@@ -7,18 +7,12 @@ using MockProjectWebApi.Services;
 using src.Utils;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 
 namespace MockProjectWebApi
 {
   public class Startup
   {
-    /// <summary>
-    /// Log4net repository logger name.
-    /// </summary>
-    public const string LOGGER_REPO_NAME = "MockWebApi";
-
     private ILogger log;
     private IServiceCollection serviceCollection;
 
@@ -28,8 +22,6 @@ namespace MockProjectWebApi
           .SetBasePath(env.ContentRootPath)
           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-      env.ConfigureLog4Net(repoName: LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();

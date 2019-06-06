@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.Log4Net.Extensions;
+using Serilog;
+using VSS.SeriLog.Extensions;
 
 namespace MockProjectWebApi
 {
@@ -18,11 +19,12 @@ namespace MockProjectWebApi
     const string MIN_WORKER_THREADS = "MAX_WORKER_THREADS";
     const string MIN_IO_THREADS = "MIN_IO_THREADS";
     const string DEFAULT_CONNECTION_LIMIT = "DEFAULT_CONNECTION_LIMIT";
-    
-    public static void Main(string[] args)
+
+    public static void Main()
     {
       var config = new ConfigurationBuilder()
-        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
         .Build();
 
       var libuvConfigured = int.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out var libuvThreads);
@@ -30,13 +32,6 @@ namespace MockProjectWebApi
         .UseConfiguration(config)
         .UseKestrel()
         .UseContentRoot(Directory.GetCurrentDirectory())
-        .ConfigureLogging(builder =>
-        {
-          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
-          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          builder.SetMinimumLevel(LogLevel.Debug);
-          builder.AddConfiguration(config);
-        })
         .UseLibuv(opts =>
         {
           if (libuvConfigured)
@@ -45,6 +40,8 @@ namespace MockProjectWebApi
           }
         })
         .UseStartup<Startup>()
+        .ConfigureLogging(x => SerilogExtensions.Configure(config, "VSS.Productivity3D.MockWebAPI.log"))
+        .UseSerilog()
         .UseUrls("http://0.0.0.0:5001")
         .Build();
 
@@ -61,8 +58,8 @@ namespace MockProjectWebApi
       }
       else
       {
-        log.LogInformation($"Max Worker Threads = Default");
-        log.LogInformation($"Max IO Threads = Default");
+        log.LogInformation("Max Worker Threads = Default");
+        log.LogInformation("Max IO Threads = Default");
       }
 
       if (int.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out var minWorkers) &&
@@ -74,8 +71,8 @@ namespace MockProjectWebApi
       }
       else
       {
-        log.LogInformation($"Min Worker Threads = Default");
-        log.LogInformation($"Min IO Threads = Default");
+        log.LogInformation("Min Worker Threads = Default");
+        log.LogInformation("Min IO Threads = Default");
       }
 
       if (int.TryParse(Environment.GetEnvironmentVariable(DEFAULT_CONNECTION_LIMIT), out var connectionLimit))
@@ -86,7 +83,7 @@ namespace MockProjectWebApi
       }
       else
       {
-        log.LogInformation($"Default connection limit = Default");
+        log.LogInformation("Default connection limit = Default");
       }
 
       host.Run();
