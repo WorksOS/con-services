@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -97,23 +96,29 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the 
     /// X and Y components of the cell address with the variation that the cell address is restricted to the address
-    /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
+    /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised 
     /// origin descriptor.
     /// </summary>
-    public static uint ToSpatialPartitionDescriptor(uint X, uint Y) => (((X >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x55555555)) % NumPartitionsPerDataCache;
+    public static uint ToSpatialPartitionDescriptor(uint X, uint Y)
+    {
+      return ((X & SubGridTreeConsts.SubGridLocalParentKeyMask) | ((Y & SubGridTreeConsts.SubGridLocalParentKeyMask) >> SubGridTreeConsts.SubGridIndexBitsPerLevel)) % NumPartitionsPerDataCache;
+    }
 
     /// <summary>
     /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the 
     /// X and Y components of the cell address with the variation that the cell address is restricted to the address
-    /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
+    /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised 
     /// origin descriptor.
     /// </summary>
-    public uint ToSpatialPartitionDescriptor() => (((X >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x55555555)) % NumPartitionsPerDataCache;
+    public uint ToSpatialPartitionDescriptor()
+    {
+      return ((X & SubGridTreeConsts.SubGridLocalParentKeyMask) | ((Y & SubGridTreeConsts.SubGridLocalParentKeyMask) >> SubGridTreeConsts.SubGridIndexBitsPerLevel)) % NumPartitionsPerDataCache;
+    }
 
     /// <summary>
     /// Constructs a descriptor from a cell address that skips and interleaves alternate bits from each of the 
     /// X and Y components of the cell address with the variation that the cell address is restricted to the address
-    /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
+    /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised 
     /// origin descriptor.
     /// </summary>
     public uint ToSkipInterleavedSubgridOriginDescriptor => ((X >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x55555555);

@@ -5,6 +5,7 @@ using System.Text;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Messaging;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
@@ -36,7 +37,7 @@ namespace VSS.TRex.SubGrids.Executors
     protected override void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
     {
       // Package the resulting sub grids into the MemoryStream
-      using (var MS = new MemoryStream())
+      using (var MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
       {
         using (BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true))
         {

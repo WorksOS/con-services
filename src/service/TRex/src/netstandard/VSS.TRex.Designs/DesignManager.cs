@@ -48,7 +48,7 @@ namespace VSS.TRex.Designs
       {
         ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
 
-        IDesigns designs = DIContext.Obtain<IDesigns>();
+        var designs = DIContext.Obtain<IDesigns>();
         if (ms != null)
         {
           using (ms)
@@ -85,7 +85,7 @@ namespace VSS.TRex.Designs
 
         // Notify the mutable and immutable grid listeners that attributes of this site model have changed
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, designsChanged: true);
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, siteModelID, designsChanged: true);
       }
       catch (Exception e)
       {
@@ -101,8 +101,8 @@ namespace VSS.TRex.Designs
     /// <param name="extents"></param>
     public IDesign Add(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
     {
-      IDesigns designs = Load(SiteModelID);
-      IDesign result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
+      var designs = Load(SiteModelID);
+      var result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
       Store(SiteModelID, designs);
 
       return result;

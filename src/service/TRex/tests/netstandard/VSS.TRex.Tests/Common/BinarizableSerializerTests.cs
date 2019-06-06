@@ -2,6 +2,7 @@
 using System.IO;
 using FluentAssertions;
 using Moq;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.Tests.BinarizableSerialization;
@@ -22,7 +23,7 @@ namespace VSS.TRex.Tests.Common
     public void UnsupportedClass_Read()
     {
       var bs = new BinarizableSerializer();
-      var reader = new TestBinaryReader(new MemoryStream());
+      var reader = new TestBinaryReader(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       Action act = () => bs.ReadBinary(new object(), reader);
 
       act.Should().Throw<TRexNonBinarizableException>().WithMessage("Not IBinarizable on ReadBinary: System.Object");

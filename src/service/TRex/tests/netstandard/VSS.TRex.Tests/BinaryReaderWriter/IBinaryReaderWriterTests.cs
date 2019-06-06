@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using FluentAssertions.Common;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -71,7 +72,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
     private void TestStandardWrite(Type type)
     {
       var instance = Activator.CreateInstance(type) as IBinaryReaderWriter;
-      var ms = new MemoryStream();
+      var ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       var bw = new BinaryWriter(ms);
       instance.Write(bw);
 
@@ -86,7 +87,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
     private void TestBufferedWrite(Type type)
     {
       var instance = Activator.CreateInstance(type) as IBinaryReaderWriter;
-      var ms = new MemoryStream();
+      var ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       var bw = new BinaryWriter(ms);
       instance.Write(bw, new byte[10000]);
 

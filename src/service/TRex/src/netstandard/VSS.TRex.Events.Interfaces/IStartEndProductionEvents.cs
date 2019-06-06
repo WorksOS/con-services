@@ -9,7 +9,7 @@ namespace VSS.TRex.Events.Interfaces
 
       /// <summary>
       /// Implements search semantics for paired events where it is important to locate bracketing pairs of
-      /// start and stop evnets given a date/time
+      /// start and stop events given a date/time
       /// </summary>
       /// <param name="eventDate"></param>
       /// <param name="StartEventDate"></param>

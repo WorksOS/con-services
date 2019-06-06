@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Storage.Caches
 {
@@ -56,7 +57,7 @@ namespace VSS.TRex.Storage.Caches
                 string fileName = Path.Combine(path, key);
                 try
                 {
-                    MS = new MemoryStream();
+                    MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
                     using (FileStream fs = new FileStream(fileName, FileMode.Open))
                     {
                         fs.CopyTo(MS);

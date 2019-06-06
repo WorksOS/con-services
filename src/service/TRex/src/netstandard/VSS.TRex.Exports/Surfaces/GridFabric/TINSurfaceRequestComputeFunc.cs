@@ -45,7 +45,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
           Log.LogError("Request execution failed");
 
         TINSurfaceResult result = new TINSurfaceResult();
-        using (MemoryStream ms = new MemoryStream())
+        using (MemoryStream ms = new MemoryStream(Common.Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
         {
           if (request.SurfaceSubGridsResponse.TIN != null)
           {

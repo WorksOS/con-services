@@ -2,6 +2,7 @@
 using System.Collections;
 using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -56,16 +57,16 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_StaticCompressed();
 
-            // Feed the cell passes to the segment and ask it to serialise itself which will create the amchien ID set
+            // Feed the cell passes to the segment and ask it to serialise itself which will create the machine ID set
             item.SetState(cellPasses);
-            using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
+            using (BinaryWriter writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION)))
             {
                 item.Write(writer);
             }
 
             BitArray MachineIDSet = item.GetMachineIDSet();
 
-            // Check there is a machine ID set, and it contains only a single machine, beign the numebr of the internal machine ID used to construct TestPass
+            // Check there is a machine ID set, and it contains only a single machine, being the number of the internal machine ID used to construct TestPass
             Assert.True(MachineIDSet  != null, "Static compressed pass wrapper returned null machine ID set");
             Assert.Equal(_InternalMachineID + 1, MachineIDSet.Length);
             Assert.True(MachineIDSet[_InternalMachineID]);

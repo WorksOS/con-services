@@ -71,7 +71,7 @@ namespace VSS.TRex.SurveyedSurfaces
 
       // Notify the  grid listeners that attributes of this site model have changed.
       var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-      sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelUid, surveyedSurfacesChanged: true);
+      sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, siteModelUid, surveyedSurfacesChanged: true);
     }
 
     /// <summary>

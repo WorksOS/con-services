@@ -80,7 +80,7 @@ namespace VSS.TRex.Tests
       // Take a copy of the mutable cells for later reference
       SubGridCellLatestPassDataWrapper_NonStatic mutableCells = (mutableLeaf.Directory.GlobalLatestCells as SubGridCellLatestPassDataWrapper_NonStatic);
 
-      MemoryStream mutableStream = new MemoryStream();
+      MemoryStream mutableStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       mutableLeaf.SaveDirectoryToStream(mutableStream);
 
       var mutabilityConverter = new MutabilityConverter();
@@ -144,7 +144,7 @@ namespace VSS.TRex.Tests
       var mutableLatest = mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
       CellPass[,][] mutablePasses = mutableSegment.PassesData.GetState();
 
-      MemoryStream mutableStream = new MemoryStream();
+      MemoryStream mutableStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       using (var writer = new BinaryWriter(mutableStream, Encoding.UTF8, true))
       {
         mutableSegment.Write(writer);

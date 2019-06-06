@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Apache.Ignite.Core;
+using VSS.Log4NetExtensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
@@ -63,7 +64,8 @@ namespace VSS.TRex.Storage
 
         using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
-          // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}");
+          if (Log.IsTraceEnabled())
+            Log.LogInformation($"Putting key:{cacheKey} in {NonSpatialCache(streamType).Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
           NonSpatialCache(streamType).Put(cacheKey, compressedStream.ToArray());
         }
 
@@ -122,7 +124,8 @@ namespace VSS.TRex.Storage
 
         using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
-          // Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}");
+          if (Log.IsTraceEnabled())
+            Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
           spatialCache.Put(cacheKey, compressedStream.ToArray());
         }
 
@@ -258,7 +261,8 @@ namespace VSS.TRex.Storage
       {
         var cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
 
-        Log.LogInformation($"Removing key:{cacheKey}");
+        if (Log.IsTraceEnabled())
+          Log.LogInformation($"Removing key:{cacheKey}");
 
         // Remove item from both immutable and mutable caches
         try

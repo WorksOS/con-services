@@ -184,15 +184,15 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SubgridSegmentCleaving_AdoptCellPassesFrom()
         {
-            // Create the subgrid with lots of cell passes
-            IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
-            ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
+            // Create the sub grid with lots of cell passes
+            var subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+            var segment1 = subGrid.Cells.PassesData[0];
 
             // Get the time range
             segment1.PassesData.CalculateTimeRange(out DateTime startSegmentTime, out DateTime endSegmentTime);
 
             // Create a second segment specially and use the cell pass adopter to move cell passes 
-            SubGridCellPassesDataSegment segment2 = new SubGridCellPassesDataSegment
+            var segment2 = new SubGridCellPassesDataSegment
             {
                 Owner = subGrid,
                 SegmentInfo = new SubGridCellPassesDataSegmentInfo()

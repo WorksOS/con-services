@@ -31,5 +31,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric
 
       sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, Guid.NewGuid());
     }
+
+
+    [Fact]
+    public void ModelAttributesChanged_All()
+    {
+      var sender = new SiteModelAttributesChangedEventSender();
+
+      sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, Guid.NewGuid());
+    }
   }
 }

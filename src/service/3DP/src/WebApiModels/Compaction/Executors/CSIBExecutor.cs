@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -27,6 +28,23 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     private ContractExecutionResult RequestCSIBForProject(ProjectID request)
     {
 #if RAPTOR
+      if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CS"), out var useTrexGateway))
+        useTrexGateway = false;
+
+      if (useTrexGateway)
+      {
+#endif
+        var siteModelId = request.ProjectUid.ToString();
+
+        var returnedResult = trexCompactionDataProxy.SendDataGetRequest<CSIBResult>(siteModelId, $"/projects/{siteModelId}/csib", customHeaders).Result;
+
+        return returnedResult.CSIB == string.Empty
+          ? new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, $"{nameof(RequestCSIBForProject)}: result: {returnedResult}")
+          : returnedResult;
+
+#if RAPTOR
+      }
+
       log.LogDebug($"{nameof(GetType)}::{nameof(RequestCSIBForProject)}() : {JsonConvert.SerializeObject(request)}");
 
       var returnResult = raptorClient.GetCSIBFile(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, out var csibFileStream);
@@ -34,10 +52,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       log.LogInformation($"{nameof(RequestCSIBForProject)}: result: {returnResult}");
 
       return returnResult != TASNodeErrorStatus.asneOK
-        ? new ContractExecutionResult((int)returnResult, $"{nameof(RequestCSIBForProject)}: result: {returnResult}")
-        : new ContractExecutionResult((int)returnResult, Convert.ToBase64String(csibFileStream.ToArray()));
-#else
-      return null;
+        ? new ContractExecutionResult((int) returnResult, $"{nameof(RequestCSIBForProject)}: result: {returnResult}")
+        : new CSIBResult(Convert.ToBase64String(csibFileStream.ToArray()));
 #endif
     }
   }
