@@ -29,10 +29,10 @@ namespace DrainageTest
   {
     static void Main(string[] args)
     {
-      ILoggerFacade logger = (ILoggerFacade)null;
+      var logger = (ILoggerFacade)null;
       try
       {
-        Thread thread = new Thread(new ThreadStart(Program.CreateApp));
+        var thread = new Thread(new ThreadStart(Program.CreateApp));
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Thread.Sleep(100);
