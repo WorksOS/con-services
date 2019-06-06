@@ -96,7 +96,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// <summary>
     /// Scan all the bits in the bit mask sub grid tree treating each set bit as the address of a sub grid
     /// call the supplied Action 'functor' with a leaf sub grid origin address calculated from each of the bits
-    /// Note: As each bit represents an on-the-ground leaf sub grid, cell address of that bit needs to be transformed
+    /// Note: As each bit represents an on-the-ground leaf sub grid, cell address of that bit is transformed
     /// from the level 5 (node) layer to the level 6 (leaf) layer
     /// </summary>
     /// <param name="functor"></param>

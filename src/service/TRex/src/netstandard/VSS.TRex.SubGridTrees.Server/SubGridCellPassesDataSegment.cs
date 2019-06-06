@@ -234,12 +234,14 @@ namespace VSS.TRex.SubGridTrees.Server
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses})");
       }
 
-      using (MemoryStream MStream = new MemoryStream())
+      using (MemoryStream MStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
       {
         using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))
         {
           Result = Write(writer);
         }
+
+        // Log.LogInformation($"Segment persistence stream (uncompressed) for segment {FileName} containing {PassesData.SegmentPassCount} cell passes using storage proxy {storage.Mutability} is {MStream.Length} bytes (average = {MStream.Length / (1.0 * PassesData.SegmentPassCount)})");
 
         if (Result)
         {

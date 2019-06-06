@@ -22,6 +22,7 @@ namespace VSS.TRex.GridFabric.Affinity
     public long Version { get; set; }
 
     public const long DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER = 1; // tick
+
     /// <summary>
     /// The GUID for the project the sub grid data belongs to.
     /// </summary>

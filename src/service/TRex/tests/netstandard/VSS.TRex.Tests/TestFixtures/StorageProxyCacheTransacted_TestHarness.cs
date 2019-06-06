@@ -11,6 +11,12 @@ namespace VSS.TRex.Tests.TestFixtures
     }
 
     /// <summary>
+    /// Override the name property which extracts the cache name from the storage proxy. Test harnesses don;t have a valid cache
+    /// reference so just return a dummy name for the cache.
+    /// </summary>
+    public override string Name => "StorageProxyCacheTransacted_TestHarness";
+
+    /// <summary>
     /// Override the commit behaviour to make it a null operation for unit test activities
     /// </summary>
     public override void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)

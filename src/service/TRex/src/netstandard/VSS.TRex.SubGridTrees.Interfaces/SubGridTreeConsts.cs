@@ -44,7 +44,14 @@
     /// The mask required to extract the portion of a sub grid key relating to a single level in the tree
     /// This is 0b00011111 (ie: five bits of an X/Y component of the key)
     /// </summary>
-    public const byte SubGridLocalKeyMask = 0b00011111; //0x1F;
+    public const int SubGridLocalKeyMask = 0b00011111; //0x1F;
+
+    /// <summary>
+    /// The mask required to extract the portion of a sub grid key relating to level in the tree that is the
+    /// parent of the sub grid key identified by SubGridLocalKeyMask
+    /// This is 0b00011111 (ie: five bits of an X/Y component of the key)
+    /// </summary>
+    public const int SubGridLocalParentKeyMask = 0b1111100000; //0x1F00;
 
     /// <summary>
     /// The number of cells (representing node sub grids, leaf sub grids or on-the-ground cells) that

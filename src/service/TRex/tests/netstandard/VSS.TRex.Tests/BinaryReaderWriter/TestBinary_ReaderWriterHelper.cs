@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Tests.BinaryReaderWriter
@@ -9,7 +10,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
     public static void RoundTripSerialise<T>(T instance) where T : IBinaryReaderWriter, new()
     {
       // Test using standard Read()/Write()
-      var writer = new BinaryWriter(new MemoryStream());
+      var writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       instance.Write(writer);
 
       (writer.BaseStream as MemoryStream).Position = 0;
@@ -19,7 +20,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
       instance.Should().BeEquivalentTo(instance2);
 
       // Repeat using the buffered Write implementation
-      var writerBuffered = new BinaryWriter(new MemoryStream());
+      var writerBuffered = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       instance.Write(writerBuffered, new byte[10000]);
 
       (writerBuffered.BaseStream as MemoryStream).Position = 0;

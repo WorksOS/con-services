@@ -75,6 +75,11 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     private byte ReadANSIChar => (byte)ReadUnSignedIntegerValue(2);
 
     /// <summary>
+    /// THe byte buffer for reading bytes representing an ANSI string before construction of the string itself
+    /// </summary>
+    private byte[] _readANSIString_ByteBuffer = new byte[100];
+
+    /// <summary>
     /// Read an ANSI string from the stream. The result is returned as a byte array as
     /// c# does not have a native ANSI type
     /// </summary>
@@ -83,16 +88,16 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       byte b;
       int count = 0;
-      byte[] result = new byte[100];
 
       while ((b = ReadANSIChar) != 0)
       {
-        result[count++] = b;
-        if (count == result.Length)
-          Array.Resize(ref result, result.Length + 100);
+        _readANSIString_ByteBuffer[count++] = b;
+        if (count == _readANSIString_ByteBuffer.Length)
+          Array.Resize(ref _readANSIString_ByteBuffer, _readANSIString_ByteBuffer.Length + 100);
       }
 
-      Array.Resize(ref result, count);
+      byte[] result = new byte[count];
+      Array.Copy(_readANSIString_ByteBuffer, result, count);
 
       return result;
     }
@@ -102,30 +107,45 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// This method will only accept requests for an even number of nybbles to be read.
     /// </summary>
     /// <param name="count"></param>
+    /// <param name="buffer"></param>
     /// <returns></returns>
-    private byte[] ReadBuffer(uint count)
+    private void ReadBufferEx(uint count, byte[] buffer)
     {
       Debug.Assert(count % 2 != 1, "ReadBuffer can only read even number of nybbles");
 
-      byte[] buffer = new byte[count / 2];
-
       for (int I = 0; I < (count / 2); I++)
         buffer[I] = (byte)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble());
-
-      return buffer;
     }
+
+    /// <summary>
+    /// Buffer to be used by ReadDoublePrecisionIEEEValue()
+    /// </summary>
+    private readonly byte[] ReadDoublePrecisionIEEEValue_Buffer = new byte[8];
 
     /// <summary>
     /// Read an IEEE double number from the stream
     /// </summary>
     /// <returns></returns>
-    public double ReadDoublePrecisionIEEEValue() => BitConverter.ToDouble(ReadBuffer(16), 0);
+    public double ReadDoublePrecisionIEEEValue()
+    {
+      ReadBufferEx(16, ReadDoublePrecisionIEEEValue_Buffer);
+      return BitConverter.ToDouble(ReadDoublePrecisionIEEEValue_Buffer, 0);
+    }
+
+    /// <summary>
+    /// Buffer to be used by ReadSinglePrecisionIEEEValue()
+    /// </summary>
+    private readonly byte[] ReadSinglelePrecisionIEEEValue_Buffer = new byte[4];
 
     /// <summary>
     /// Read an IEEE single number from the stream
     /// </summary>
     /// <returns></returns>
-    public float ReadSinglePrecisionIEEEValue() => BitConverter.ToSingle(ReadBuffer(8), 0);
+    public float ReadSinglePrecisionIEEEValue()
+    {
+      ReadBufferEx(8, ReadSinglelePrecisionIEEEValue_Buffer);
+      return BitConverter.ToSingle(ReadSinglelePrecisionIEEEValue_Buffer, 0);
+    }
 
     /// <summary>
     /// Read a 4, 8, 12, 16 or 32 bit signed integer from the stream.
@@ -152,19 +172,28 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     }
 
     /// <summary>
+    /// Internal buffer used for ReadUnicodeCHar operations
+    /// </summary>
+    private readonly byte[] ReadUnicodeChar_ByteBuffer = {0, 0};
+
+    /// <summary>
     /// Read a single UniCode character from the stream
     /// </summary>
     /// <returns></returns>
-    private char ReadUnicodeChar() => BitConverter.ToChar(new byte[] { (byte)ReadUnSignedIntegerValue(NYBBLES_PER_UNICODE_CHAR), 0 }, 0);
+    private char ReadUnicodeChar()
+    {
+      ReadUnicodeChar_ByteBuffer[0] = (byte)ReadUnSignedIntegerValue(NYBBLES_PER_UNICODE_CHAR);
+      return BitConverter.ToChar(ReadUnicodeChar_ByteBuffer, 0);
+    }
 
-  /// <summary>
+    /// <summary>
   /// Read a Unicode string from the stream
   /// </summary>
   /// <returns></returns>
   public string ReadUnicodeString()
     {
       char c;
-      StringBuilder sb = new StringBuilder();
+      var sb = new StringBuilder();
 
       while ((c = ReadUnicodeChar()) != char.MinValue)
       {

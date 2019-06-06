@@ -75,7 +75,7 @@ namespace VSS.TRex.SubGridTrees.Server
       if (segmentInfo.Segment != null)
         throw new TRexSubGridProcessingException($"Segment info passed to AddNewSegment for sub grid {subGrid.Moniker()} already contains an allocated segment");
 
-      SubGridCellPassesDataSegment Result = new SubGridCellPassesDataSegment
+      var Result = new SubGridCellPassesDataSegment
       {
         Owner = subGrid,
         SegmentInfo = segmentInfo

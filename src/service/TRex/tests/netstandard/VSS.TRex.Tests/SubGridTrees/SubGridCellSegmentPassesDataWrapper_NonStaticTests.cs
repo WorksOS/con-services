@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -160,7 +161,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             ISubGridCellSegmentPassesDataWrapper item1 = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
             // Write to the stream...
             BinaryWriter writer = new BinaryWriter(ms, Encoding.UTF8, true);

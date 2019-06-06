@@ -1,7 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 
 namespace VSS.TRex.SiteModels.GridFabric.Events

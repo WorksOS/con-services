@@ -2,6 +2,8 @@
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Log4NetExtensions;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -31,7 +33,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// Converts the structure of the global latest cells structure into an immutable form
     /// </summary>
     /// <returns></returns>
-    public ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper latestPasses, SegmentLatestPassesContext context)
+    private ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper latestPasses, SegmentLatestPassesContext context)
     {
       if (latestPasses.IsImmutable())
       {
@@ -82,33 +84,45 @@ namespace VSS.TRex.SubGridTrees.Server
         throw new TRexException("Unable to determine a single valid source for immutability conversion.");
       }
 
+      bool result = false;
+
       switch (streamType)
       {
         case FileSystemStreamType.SubGridDirectory:
         {
-            return source == null 
+            result = source == null 
               ? ConvertSubGridDirectoryToImmutable(mutableStream, out immutableStream)
               : ConvertSubGridDirectoryToImmutable(source, out immutableStream);
+            break;
         }
         case FileSystemStreamType.SubGridSegment:
         {
-          return source == null
+          result = source == null
             ? ConvertSubGridSegmentToImmutable(mutableStream, out immutableStream)
             : ConvertSubGridSegmentToImmutable(source, out immutableStream);
+          break;
         }
         case FileSystemStreamType.Events:
         {
-          return source == null
+          result = source == null
             ? ConvertEventListToImmutable(mutableStream, out immutableStream)
             : ConvertEventListToImmutable(source, out immutableStream);
+          break;
         }
         default:
         {
           // EG: Sub grid existence map etc
           immutableStream = mutableStream;
-          return true;
+          result = true;
+          break;
         }
       }
+
+      if (mutableStream != null)
+        if (Log.IsTraceEnabled())
+          Log.LogInformation($"Mutability conversion: Type:{streamType}, Initial Size: {mutableStream.Length}, Final Size: {immutableStream.Length}, Ratio: {(immutableStream.Length/(1.0*mutableStream.Length)) * 100}%");
+
+      return result;
     }
 
     /// <summary>
@@ -117,7 +131,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubGridDirectoryToImmutable(object source, out MemoryStream immutableStream)
+    private bool ConvertSubGridDirectoryToImmutable(object source, out MemoryStream immutableStream)
     {
       try
       {
@@ -135,7 +149,7 @@ namespace VSS.TRex.SubGridTrees.Server
           }
         };
 
-        immutableStream = new MemoryStream();
+        immutableStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
         leaf.SaveDirectoryToStream(immutableStream);
 
         return true;
@@ -155,7 +169,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <param name="mutableStream"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubGridDirectoryToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    private bool ConvertSubGridDirectoryToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
     {
       try
       {
@@ -174,7 +188,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         leaf.Directory.GlobalLatestCells = ConvertLatestPassesToImmutable(leaf.Directory.GlobalLatestCells, SegmentLatestPassesContext.Global);
 
-        immutableStream = new MemoryStream();
+        immutableStream = new MemoryStream((int)mutableStream.Length);
         leaf.SaveDirectoryToStream(immutableStream);
 
         return true;
@@ -194,7 +208,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubGridSegmentToImmutable(object source, out MemoryStream immutableStream)
+    private bool ConvertSubGridSegmentToImmutable(object source, out MemoryStream immutableStream)
     {
       try
       {
@@ -212,7 +226,7 @@ namespace VSS.TRex.SubGridTrees.Server
         segment.PassesData.SetState(originSource.PassesData.GetState());
 
         // Write out the segment to the immutable stream
-        immutableStream = new MemoryStream();
+        immutableStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
         using (var writer = new BinaryWriter(immutableStream, Encoding.UTF8, true))
         {
           segment.Write(writer);
@@ -235,7 +249,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <param name="mutableStream"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubGridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    private bool ConvertSubGridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
     {
       try
       {
@@ -259,7 +273,7 @@ namespace VSS.TRex.SubGridTrees.Server
         segment.PassesData.SetState(mutablePassesData.GetState());
 
         // Write out the segment to the immutable stream
-        immutableStream = new MemoryStream();
+        immutableStream = new MemoryStream((int)mutableStream.Length);
         using (var writer = new BinaryWriter(immutableStream, Encoding.UTF8, true))
         {
           segment.Write(writer);
@@ -283,7 +297,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertEventListToImmutable(object source, out MemoryStream immutableStream)
+    private bool ConvertEventListToImmutable(object source, out MemoryStream immutableStream)
     {
       immutableStream = ((IProductionEvents)source).GetImmutableStream();
 
@@ -297,7 +311,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <param name="mutableStream"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    private bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
     {
       immutableStream = null;
       try

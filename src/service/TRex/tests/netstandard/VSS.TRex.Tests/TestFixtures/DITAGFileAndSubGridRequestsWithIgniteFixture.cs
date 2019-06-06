@@ -125,28 +125,21 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var filePathAndName = Path.Combine(filePath, fileName);
 
-      TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+      var ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
       var designLoadResult = ttm.LoadFromFile(filePathAndName, constructIndexFilesOnLoad); 
       designLoadResult.Should().Be(DesignLoadResult.Success);
 
-      BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+      var extents = new BoundingWorldExtent3D();
       ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
       ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
-      Guid designUid = Guid.NewGuid();
+      var designUid = Guid.NewGuid();
       var existenceMaps = DIContext.Obtain<IExistenceMaps>();
 
       // Create the design surface in the site model
       var designSurface = DIContext.Obtain<IDesignManager>().Add(siteModel.ID,
         new DesignDescriptor(designUid, filePath, fileName), extents);
       existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
-
-      // Tell the site models collection the site model has changed 
-      DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(new SiteModelAttributesChangedEvent
-        {
-          SiteModelID = siteModel.ID,
-          DesignsModified = true
-        });
 
       // get the newly updated site model with the design reference included
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
@@ -195,13 +188,6 @@ namespace VSS.TRex.Tests.TestFixtures
       var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(siteModel.ID,
         new DesignDescriptor(surveyedSurfaceUid, filePath, fileName), asAtDate, extents);
       existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubGridOverlayIndex());
-
-      // Tell the site models collection the site model has changed 
-      DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(new SiteModelAttributesChangedEvent
-      {
-        SiteModelID = siteModel.ID,
-        SurveyedSurfacesModified = true
-      });
 
       // get the newly updated site model with the surveyed surface included
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);

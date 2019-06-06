@@ -22,6 +22,11 @@ namespace VSS.TRex.Events
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
+    /// The array of enumeration values represented by ProductionEventType
+    /// </summary>
+    private static readonly Array _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType));
+
+    /// <summary>
     /// The SiteModel these events relate to
     /// </summary>
     private ISiteModel SiteModel { get; set; }
@@ -285,7 +290,7 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public bool LoadEventsForMachine(IStorageProxy storageProxy)
     {
-      foreach (ProductionEventType evt in Enum.GetValues(typeof(ProductionEventType)))
+      foreach (ProductionEventType evt in _productionEventTypeValues)
       {
         Log.LogDebug($"Loading {evt} events for machine {InternalSiteModelMachineIndex} in project {SiteModel.ID}");
 
