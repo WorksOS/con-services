@@ -229,8 +229,8 @@ namespace VSS.TRex.Tests.Reports.StationOffset
         });
       }
 
-      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(0, 0);
-      cellPasses.Length.Should().Be(PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(0, 0, out int passCount);
+      passCount.Should().Be(PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
       // Assign global latest cell pass to the appropriate pass
       leaf.Directory.GlobalLatestCells[0, 0] = cellPasses.Last();

@@ -167,28 +167,36 @@ namespace VSS.TRex.SubGridTrees.Server
 
             long[] CalculateAttributeValueRange_Buffer = new long[allCellPassesArray.Length];
 
-            allCellPassesArray.ForEach((cp, i) => CalculateAttributeValueRange_Buffer[i] = cp.InternalSiteModelMachineIndex);
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].InternalSiteModelMachineIndex;
             AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullInternalSiteModelMachineIndex, true, ref EncodedFieldDescriptors.InternalMachineID);
 
-            allCellPassesArray.ForEach((cp, i) => CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedTime(cp.Time, FirstRealCellPassTime));
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedTime(allCellPassesArray[i].Time, FirstRealCellPassTime);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0x7fff_ffff_ffff_ffff, -1, true, ref EncodedFieldDescriptors.Time);
        
-            allCellPassesArray.ForEach((cp, i) => CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedHeight(cp.Height));
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedHeight(allCellPassesArray[i].Height);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
        
-            allCellPassesArray.ForEach((cp, i) => CalculateAttributeValueRange_Buffer[i] = cp.CCV);
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].CCV;
             AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
        
-            allCellPassesArray.ForEach((cp, i) => CalculateAttributeValueRange_Buffer[i] = cp.RMV);
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].RMV;
             AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullRMV, true, ref EncodedFieldDescriptors.RMV);
        
-            allCellPassesArray.ForEach((cp, i) => CalculateAttributeValueRange_Buffer[i] = cp.MDP);
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].MDP;
             AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullMDP, true, ref EncodedFieldDescriptors.MDP);
        
-            allCellPassesArray.ForEach((cp, i) => CalculateAttributeValueRange_Buffer[i] = cp.MaterialTemperature);
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].MaterialTemperature;
             AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
        
-            allCellPassesArray.ForEach((cp, i) => CalculateAttributeValueRange_Buffer[i] = cp.CCA);
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].CCA;
             AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xff, CellPassConsts.NullCCA, true, ref EncodedFieldDescriptors.CCA);
 
             // Calculate the offset bit locations for the cell pass attributes

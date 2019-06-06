@@ -4,7 +4,6 @@ using System.Text;
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
@@ -58,10 +57,10 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
-            Assert.Equal(0U, item.PassCount(1, 1));
+            Assert.Equal(0, item.PassCount(1, 1));
 
             item.AddPass(1, 1, new CellPass() {Time = DateTime.UtcNow});
-            Assert.Equal(1U, item.PassCount(1, 1));
+            Assert.Equal(1, item.PassCount(1, 1));
         }
 
         [Fact()]
@@ -71,8 +70,26 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             item.AllocatePasses(1, 1, 10);
 
-            Assert.Equal(10U, item.PassCount(1, 1));
+            Assert.Equal(0, item.PassCount(1, 1));
         }
+
+        [Fact()]
+        public void SubGridCellSegmentPassesDataWrapper_NonStatic_AllocatePassesExact_Test()
+        {
+          ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
+
+          item.AllocatePassesExact(1, 1, 10);
+
+          Assert.Equal(0, item.PassCount(1, 1));
+
+          item.AddPass(1, 1, new CellPass() { Time = DateTime.UtcNow });
+          item.AddPass(1, 1, new CellPass() { Time = DateTime.UtcNow });
+
+          Assert.Equal(2, item.PassCount(1, 1));
+
+          item.AllocatePassesExact(1, 1, 1);
+          Assert.Equal(1, item.PassCount(1, 1));
+          }
 
         [Fact()]
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_AddPass_Test()
@@ -80,7 +97,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
             item.AddPass(1, 1, TestCellPass());
-            Assert.Equal(1U, item.PassCount(1, 1));
+            Assert.Equal(1, item.PassCount(1, 1));
 
             Assert.True(item.ExtractCellPass(1, 1, 0).Equals(TestCellPass()), "Cell added is not as expected when retrieved");
         }
@@ -93,7 +110,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             CellPass pass = TestCellPass();
 
             item.AddPass(1, 1, pass);
-            Assert.Equal(1U, item.PassCount(1, 1));
+            Assert.Equal(1, item.PassCount(1, 1));
             Assert.True(item.ExtractCellPass(1, 1, 0).Equals(pass), "Cell added is not as expected when retrieved");
 
             pass.CCV = 1000; // Change the cell pass a little
@@ -131,23 +148,23 @@ namespace VSS.TRex.Tests.SubGridTrees
             item.AddPass(1, 1, pass2);
             item.AddPass(1, 1, pass3);
 
-            Assert.Equal(3U, item.PassCount(1, 1));
+            Assert.Equal(3, item.PassCount(1, 1));
 
             bool exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(1999, 12, 31, 0, 0, 0), DateTimeKind.Utc), out int index);
             Assert.False(exactMatch, "Exact match found!!!");
             Assert.Equal(0, index);
 
             exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 0), DateTimeKind.Utc), out index);
-            Assert.True(exactMatch && index > -1 && item.Pass(1, 1, (uint)index).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 0), located pass is {item.Pass(1, 1, (uint)index)}");
+            Assert.True(exactMatch && index > -1 && item.Pass(1, 1, (int)index).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 0), located pass is {item.Pass(1, 1, (int)index)}");
 
             exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 1), DateTimeKind.Utc), out index);
-            Assert.True(exactMatch == false && item.Pass(1, 1, (uint)index - 1).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 1), index = {index}");
+            Assert.True(exactMatch == false && item.Pass(1, 1, (int)index - 1).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 1), index = {index}");
 
             exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(2000, 1, 2, 10, 0, 0), DateTimeKind.Utc), out index);
-            Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (uint)index - 1).Equals(pass2), $"Failed to locate pass at DateTime(2001, 1, 2, 10, 0, 0), index = {index}");
+            Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (int)index - 1).Equals(pass2), $"Failed to locate pass at DateTime(2001, 1, 2, 10, 0, 0), index = {index}");
 
             exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(2001, 1, 1, 0, 0, 0), DateTimeKind.Utc), out index);
-            Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (uint)index - 1).Equals(pass3), $"Failed to locate pass at DateTime(2001, 1, 1, 0, 0, 0), index = {index}");
+            Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (int)index - 1).Equals(pass3), $"Failed to locate pass at DateTime(2001, 1, 1, 0, 0, 0), index = {index}");
         }
 
         [Fact()]
@@ -155,9 +172,14 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             // Create the main 2D array of cell pass arrays
             CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
+            var cellPassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             // Create each sub array and add a test cell pass to it
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new [] { TestCellPass() });
+            SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+            {
+              cellPasses[x, y] = new[] {TestCellPass()};
+              cellPassCounts[x, y] = 1;
+            });
 
             ISubGridCellSegmentPassesDataWrapper item1 = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
@@ -165,7 +187,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             // Write to the stream...
             BinaryWriter writer = new BinaryWriter(ms, Encoding.UTF8, true);
-            item1.SetState(cellPasses);
+            item1.SetState(cellPasses, cellPassCounts);
             item1.Write(writer);
 
             // Create a new segment and read it back again
@@ -177,10 +199,13 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             SubGridUtilities.SubGridDimensionalIterator((col, row) =>
             {
-                Assert.True(item1.ExtractCellPasses(col, row)
-                                 .Zip(item2.ExtractCellPasses(col, row), (a, b) => a.Equals(b))
-                                 .All(x => x), 
-                            "Read segment does not contain the same list of cell passes written into it");
+              var cellPasses1 = item1.ExtractCellPasses(col, row, out int passCount1);
+              var cellPasses2 = item2.ExtractCellPasses(col, row, out int passCount2);
+
+              Assert.True(passCount1 == passCount2, "Read segment does not contain the same list of cell passes written into it - counts do not match");
+
+              for (int i = 0; i < passCount1; i++)
+                Assert.True(cellPasses1[i].Equals(cellPasses2[i]), "Read segment does not contain the same list of cell passes written into it");
             });
         }
 
@@ -220,11 +245,11 @@ namespace VSS.TRex.Tests.SubGridTrees
             Cell_NonStatic integrateFrom = new Cell_NonStatic();
             integrateFrom.AddPass(pass2);
 
-            item.Integrate(1, 1, integrateFrom.Passes, 0, 0, out uint addedCount, out uint modifiedCount);
+            item.Integrate(1, 1, integrateFrom.Passes, 1, 0, 0, out int addedCount, out int modifiedCount);
 
-            Assert.Equal(2U, item.PassCount(1, 1));
-            Assert.Equal(1U, addedCount);
-            Assert.Equal(0U, modifiedCount);
+            Assert.Equal(2, item.PassCount(1, 1));
+            Assert.Equal(1, addedCount);
+            Assert.Equal(0, modifiedCount);
         }
 
         [Fact()]
@@ -246,9 +271,9 @@ namespace VSS.TRex.Tests.SubGridTrees
             item.AddPass(1, 1, pass2);
             item.AddPass(1, 1, pass3);
 
-            Assert.Equal(3U, item.PassCount(1, 1));
+            Assert.Equal(3, item.PassCount(1, 1));
 
-            Cell_NonStatic cell = new Cell_NonStatic() { Passes = item.ExtractCellPasses(1, 1) };
+            Cell_NonStatic cell = new Cell_NonStatic() { Passes = item.ExtractCellPasses(1, 1, out int passCount) };
 
             Assert.True(cell.Passes.Zip(passes, (a, b) => a.Equals(b)).All(x => x), 
                         "Extracted cell does not contain the same cell passes added to it");
@@ -274,14 +299,19 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             // Create the main 2D array of cell pass arrays
             CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
-
+            var cellPassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+            
             // Create each sub array and add a test cell pass to it
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new [] { TestCellPass() });
+            SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+            {
+              cellPasses[x, y] = new[] {TestCellPass()};
+              cellPassCounts[x, y] = 1;
+            });
 
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
             // Feed the cell passes to the segment
-            item.SetState(cellPasses);
+            item.SetState(cellPasses, cellPassCounts);
 
             // Check the passes all match
             SubGridUtilities.SubGridDimensionalIterator((x, y) =>

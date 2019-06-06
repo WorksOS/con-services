@@ -50,15 +50,20 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_NoMachineIDSet_Test()
         {
             CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
+            var cellPassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             // Create each sub array and add a test cell pass to it
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new[] { TestCellPass() });
+            SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+            {
+              cellPasses[x, y] = new[] {TestCellPass()};
+              cellPassCounts[x, y] = 1;
+            });
 
 
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_StaticCompressed();
 
             // Feed the cell passes to the segment and ask it to serialise itself which will create the machine ID set
-            item.SetState(cellPasses);
+            item.SetState(cellPasses, cellPassCounts);
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION)))
             {
                 item.Write(writer);
