@@ -25,27 +25,20 @@ namespace VSS.TRex.Gateway.Common.Utilities
       if (csibKey == NO_KEY)
         return null;
 
-      try
+      byte[] gzBuffer = Base32.Crockford.Decode(csibKey);
+
+      using (var ms = new MemoryStream())
       {
-        byte[] gzBuffer = Base32.Crockford.Decode(csibKey);
+        int msgLength = BitConverter.ToInt32(gzBuffer, 0);
+        ms.Write(gzBuffer, BYTES_OFFSET, gzBuffer.Length - BYTES_OFFSET);
 
-        using (var ms = new MemoryStream())
-        {
-          int msgLength = BitConverter.ToInt32(gzBuffer, 0);
-          ms.Write(gzBuffer, BYTES_OFFSET, gzBuffer.Length - BYTES_OFFSET);
+        byte[] buffer = new byte[msgLength];
 
-          byte[] buffer = new byte[msgLength];
+        ms.Position = 0;
+        using (var zip = new GZipStream(ms, CompressionMode.Decompress))
+          zip.Read(buffer, 0, buffer.Length);
 
-          ms.Position = 0;
-          using (var zip = new GZipStream(ms, CompressionMode.Decompress))
-            zip.Read(buffer, 0, buffer.Length);
-
-          return buffer;
-        }
-      }
-      catch (Exception)
-      {
-        return null;
+        return buffer;
       }
     }
   }
