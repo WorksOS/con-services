@@ -15,15 +15,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
+//using System.Windows.Media.Imaging;
+//using System.Windows.Media.Media3D;
 using Microsoft.Practices.Prism.Logging;
 using Newtonsoft.Json;
+using Trimble.Vce.Data;
+//using Trimble.Vce.Data.Skp;
+//using Trimble.Vce.Data.Skp.SkpLib;
+using Trimble.Vce.Geometry;
+
 
 namespace DrainageTest
 {
@@ -31,65 +36,49 @@ namespace DrainageTest
   {
     static void Main(string[] args)
     {
-      var logger = (ILoggerFacade)null;
+      var logger = (ILogger)null;
       try
       {
-        var thread = new Thread(new ThreadStart(Program.CreateApp));
+        var thread = new Thread(Program.CreateWPFApp);
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Thread.Sleep(100);
         new BootStrapper().Run();
-
-        logger = ServiceLocator.Current.GetInstance<ILoggerFacade>();
-        logger.Log("here", Category.Info, Priority.Low);
+        logger = ServiceLocator.Current.GetInstance<ILogger>();
 
         //  try arg     ..\..\TestData\Sample\TestCase.xml
-        if (args.Length != 1)
-          throw new ArgumentException("Should be 1 argument i.e. the xml path and filename");
-
-        var stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         foreach (string str in args)
-          stringBuilder.Append($"{str} ");
-        Console.WriteLine($"{nameof(Main)}: args: {stringBuilder}");
-
+          stringBuilder.AppendFormat("{0} ", (object)str);
+        logger.LogInfo(nameof(Main), "start: {0}", (object)stringBuilder.ToString());
         Program.Execute(args, logger);
       }
       catch (Exception ex)
       {
         Console.WriteLine($"{nameof(Main)}: exception: {ex}");
-        logger.Log($"{nameof(Main)} Exception: {ex}", Category.Exception, Priority.High);
+        logger.LogError($"{nameof(Main)} Exception: {ex}", Category.Exception.ToString());
       }
       finally
       {
-        //Application.Current.Dispatcher.Invoke((Action)(() => MediaTypeNames.Application.Current.Shutdown()));
+        Application.Current.Dispatcher.Invoke((Action)(() => Application.Current.Shutdown()));
       }
     }
 
-    private static void Execute(string[] args, ILoggerFacade logger)
+    private static void Execute(string[] args, ILogger logger)
     {
-      string commandLineArgument = Program.ParseCommandLineArguments(args)["input"];
-      Console.WriteLine($"{nameof(Execute)}: args: {commandLineArgument}");
-      if (!System.IO.File.Exists(commandLineArgument))
+      var commandLineArgument = Program.ParseCommandLineArguments(args)["input"];
+      logger.LogInfo(nameof(Execute), $"args: {commandLineArgument}");
+      if (!File.Exists(commandLineArgument))
         throw new ArgumentException($"Unable to locate the xml file: {commandLineArgument}");
 
-      TestCase useCase = TestCase.Load(Path.GetFullPath(commandLineArgument));
-      Console.WriteLine($"{nameof(Execute)}: surface file: {useCase.Surface}");
-
-      // just trying this util for grins
-      var rowsDirection = Utils.NormalizeAngleRad(
-          -useCase.FurrowHeading * (Math.PI / 180.0) + Math.PI / 2.0, -1.0 * Math.PI);
-      Console.WriteLine($"{nameof(Execute)}: rowsDirection: {rowsDirection}");
-
-      bool flag = false;
+      var useCase = TestCase.Load(Path.GetFullPath(commandLineArgument));
+      logger.LogInfo(nameof(Execute), $"XML loaded. surface Filename: {JsonConvert.SerializeObject(useCase.Surface)}");
+      
+      var flag = false;
       using (var instance = ServiceLocator.Current.GetInstance<ILandLeveling>())
       {
-        ISurfaceInfo surfaceInfo = null;
+        var surfaceInfo = (ISurfaceInfo)null;
         if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(useCase.Surface), ".dxf") == 0)
-          /* this fails trying to load
-             Could not load file or assembly 'TD_SwigDbMgd, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5ccc28765cdf0a88' or one of its dependencies. 
-             An attempt was made to load a program with an incorrect format.
-             ((System.BadImageFormatException)ex).FusionLog
-          */
           surfaceInfo = instance.ImportSurface(useCase.Surface, (Action<float>) null);
 
         //else if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(useCase.Surface), ".xml") == 0)
@@ -131,6 +120,9 @@ namespace DrainageTest
         //  surfaceInfo = instance.CreateSurface(Path.GetFileNameWithoutExtension(useCase.Surface), (IEnumerable<Point3D>)pointsFromTextFile, (IList<int>)null, source.Select<Point3D, Point>((Func<Point3D, Point>)(p => p.ToPoint())), (IEnumerable<IEnumerable<Point>>)null, double.NaN);
         //}
 
+        if (surfaceInfo == null)
+          throw new ArgumentException($"Unable to create Surface from: {useCase.Surface}");
+
         if (!useCase.IsMetric)
           useCase = useCase.AsMetric();
         Design design = (Design) null;
@@ -158,6 +150,7 @@ namespace DrainageTest
           //      break;
 
           case ComputeEnum.SurfaceBestFit:
+            logger.LogInfo(nameof(Execute), $"Compute SurfaceBestFit. surface Name: {surfaceInfo.Name} pointCount: {surfaceInfo.Points.Count}");
             SurfaceConstraints constraints1 = new SurfaceConstraints();
             constraints1.Resolution = useCase.Resolution;
             constraints1.Boundary = useCase.Boundary;
@@ -188,10 +181,13 @@ namespace DrainageTest
             for (int index = 0; index < constraints1.Areas.Count; ++index)
             {
               if (string.IsNullOrEmpty(constraints1.Areas[index].Tag))
-                constraints1.Areas[index].Tag = string.Format("Area{0:00}", (object) (index + 1));
+                constraints1.Areas[index].Tag = $"Area{(object) (index + 1):00}";
             }
 
             design = instance.ComputeSurface(constraints1, (Predicate<float>) null);
+            if (design == null)
+              throw new ArgumentException($"Unable to create design from Surface: {useCase.Surface}");
+
             break;
           //    case ComputeEnum.Furrows:
           //      RowsConstraints constraints2 = new RowsConstraints();
@@ -245,11 +241,15 @@ namespace DrainageTest
           //      design = instance.ComputeBasin(constraints4, (Predicate<float>)null);
           //      break;
         }
-      }
 
-      //  string str = Path.ChangeExtension(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(commandLineArgument)), Path.GetFileNameWithoutExtension(commandLineArgument)), "skp");
-      //  Program.CreateSketchupFile(str, surfaceInfo, design, useCase);
-      //  Morph.Services.Core.DataModel.Utils.LaunchSketchup(str);
+        //string str =
+        //  Path.ChangeExtension(
+        //    Path.Combine(Path.GetDirectoryName(Path.GetFullPath(commandLineArgument)),
+        //      Path.GetFileNameWithoutExtension(commandLineArgument)), "skp");
+        //Program.CreateSketchupFile(str, surfaceInfo, design, useCase);
+        //Morph.Services.Core.DataModel.Utils.LaunchSketchup(str);
+
+      }
     }
 
     public static IDictionary<string, string> ParseCommandLineArguments(string[] args)
@@ -279,12 +279,90 @@ namespace DrainageTest
       return (IDictionary<string, string>)sortedList;
     }
 
-    private static void CreateApp()
+    private static void CreateWPFApp()
     {
-      //new Application
-      //{
-      //  System.Windows.ShutdownMode = System.Windows.ShutdownMode.OnExplicitShutdown
-      //}.Run();
+      new Application()
+      {
+        ShutdownMode = ShutdownMode.OnExplicitShutdown
+      }.Run();
     }
+
+  //private static void CreateSketchupFile(string skuFile, ISurfaceInfo surfaceInfo, Design design, TestCase useCase)
+  //  {
+  //    using (SkuModel skuModel = new SkuModel(useCase.IsMetric))
+  //    {
+  //      skuModel.Name = Path.GetFileNameWithoutExtension(skuFile);
+  //      BitmapSource texture1 = (BitmapSource)null;
+  //      if (useCase.OriginalVisualizationTools != null)
+  //      {
+  //        foreach (VizTool visualizationTool in useCase.OriginalVisualizationTools)
+  //        {
+  //          BitmapSource andSaveTexture = visualizationTool.GenerateAndSaveTexture(surfaceInfo, skuFile, "original");
+  //          if (texture1 == null && andSaveTexture != null)
+  //            texture1 = andSaveTexture;
+  //        }
+  //      }
+  //      if (texture1 != null)
+  //        skuModel.AddSurfaceWithHorizontalTexture(surfaceInfo.Points, surfaceInfo.Triangles, "surface", texture1, 0.75, "surface", (SkuModel.ReportProgressDelegate)null);
+  //      else
+  //        skuModel.AddSurface((IEnumerable<Point3D>)surfaceInfo.Points, surfaceInfo.Triangles, "surface", "BurlyWood", 0.75, "surface", (SkuModel.ReportProgressDelegate)null);
+  //      if (useCase.Compute == ComputeEnum.SurfaceBestFit)
+  //      {
+  //        IList<Morph.Services.Core.Tools.Node> totalNodes = (IList<Morph.Services.Core.Tools.Node>)null;
+  //        List<Flow3D> flowSegments = surfaceInfo.GenerateFlowSegments(design.CellSize, out totalNodes, (IEnumerable<IEnumerable<Point>>)null, (IEnumerable<IEnumerable<Point>>)null, new CancellationToken());
+  //        skuModel.AddLinestrings((IEnumerable<IEnumerable<Point3D>>)flowSegments.Select<Flow3D, Point3D[]>((Func<Flow3D, Point3D[]>)(fs => new Point3D[2]
+  //      {
+  //          fs.Point1,
+  //          fs.Point2
+  //      })), "surface flows", "brown", 0.75, false, "");
+  //      }
+  //      BitmapSource texture2 = (BitmapSource)null;
+  //      if (useCase.DesignVisualizationTools != null)
+  //      {
+  //        foreach (VizTool visualizationTool in useCase.DesignVisualizationTools)
+  //        {
+  //          BitmapSource andSaveTexture = visualizationTool.GenerateAndSaveTexture(design.Surface, skuFile, nameof(design));
+  //          if (texture2 == null && andSaveTexture != null)
+  //            texture2 = andSaveTexture;
+  //        }
+  //      }
+  //      if (texture2 != null)
+  //        skuModel.AddSurfaceWithHorizontalTexture(design.Surface.Points, design.Surface.Triangles, nameof(design), texture2, 0.75, nameof(design), (SkuModel.ReportProgressDelegate)null);
+  //      else
+  //        skuModel.AddSurface((IEnumerable<Point3D>)design.Surface.Points, design.Surface.Triangles, nameof(design), "Green", 0.75, nameof(design), (SkuModel.ReportProgressDelegate)null);
+  //      if (useCase.Compute == ComputeEnum.SurfaceBestFit)
+  //      {
+  //        IList<Morph.Services.Core.Tools.Node> totalNodes = (IList<Morph.Services.Core.Tools.Node>)null;
+  //        List<Flow3D> flowSegments = design.Surface.GenerateFlowSegments(design.CellSize, out totalNodes, (IEnumerable<IEnumerable<Point>>)null, (IEnumerable<IEnumerable<Point>>)null, new CancellationToken());
+  //        skuModel.AddLinestrings((IEnumerable<IEnumerable<Point3D>>)flowSegments.Select<Flow3D, Point3D[]>((Func<Flow3D, Point3D[]>)(fs => new Point3D[2]
+  //      {
+  //          fs.Point1,
+  //          fs.Point2
+  //      })), "design flows", "DarkGreen", 0.75, false, "");
+  //      }
+  //      string fullPath = Path.GetFullPath(Path.Combine("Sketchup", "AltitudeTexture.png"));
+  //      skuModel.AddSurfaceWithVerticalTexture(design.CutFillSurface.Points, design.CutFillSurface.Triangles, true, "cutfill", fullPath, 0.75, nameof(design), (SkuModel.ReportProgressDelegate)null);
+  //      if (useCase.TargetDitches != null && useCase.TargetDitches.Any<Linestring>())
+  //      {
+  //        int num = 1;
+  //        foreach (Linestring targetDitch in useCase.TargetDitches)
+  //        {
+  //          if (targetDitch.Points.Any<Point>())
+  //            skuModel.AddLinestring(targetDitch.Points.Select<Point, Point3D>((Func<Point, Point3D>)(p => new Point3D(p.X, p.Y, 0.0))), string.Format("ditch-{0}", (object)num++), "Lime", 1.0, true, "");
+  //        }
+  //      }
+  //      if (useCase.Pipeline != null && useCase.Pipeline.Points.Any<Point>())
+  //        skuModel.AddLinestring(useCase.Pipeline.Points.Select<Point, Point3D>((Func<Point, Point3D>)(p => new Point3D(p.X, p.Y, 0.0))), "pipeline", "Lime", 1.0, true, "");
+  //      if (design.Rows.Any<Linestring3D>())
+  //        skuModel.AddLinestrings((IEnumerable<IEnumerable<Point3D>>)design.Rows.Select<Linestring3D, List<Point3D>>((Func<Linestring3D, List<Point3D>>)(ls => ls.Points)), "Rows", "Green", 1.0, false, "Rows");
+  //      if (design.Columns.Any<Linestring3D>())
+  //        skuModel.AddLinestrings((IEnumerable<IEnumerable<Point3D>>)design.Columns.Select<Linestring3D, List<Point3D>>((Func<Linestring3D, List<Point3D>>)(ls => ls.Points)), "Columns", "Green", 1.0, false, "Columns");
+  //      foreach (Plane plane in (IEnumerable<Plane>)design.Planes)
+  //        skuModel.AddPlane((IEnumerable<Point3D>)plane.Boundary.Points, plane.Tag, "Red", 0.75, "");
+  //      skuModel.ZoomToExtents();
+  //      skuModel.Save(skuFile, ModelVersion.SU2015);
+  //    }
+  //  }
+
   }
 }

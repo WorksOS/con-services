@@ -57,7 +57,7 @@ namespace DrainageTest
         throw new InvalidOperationException("Resources.NullCompositionContainerException");
       this.Logger.Log("Resources.ConfiguringMefContainer", Category.Debug, Priority.Low);
       this.ConfigureContainer();
-      this.Container.ComposeExportedValue<ILogger>(this.Logger as ILogger);
+    //  this.Container.ComposeExportedValue<ILogger>(this.Logger as ILogger);
       this.Logger.Log("Resources.ConfiguringServiceLocatorSingleton", Category.Debug, Priority.Low);
       this.ConfigureServiceLocator();
       IEnumerable<Lazy<object, object>> exports =
@@ -66,7 +66,7 @@ namespace DrainageTest
       if (exports != null && exports.Count<Lazy<object, object>>() > 0)
       {
         this.Logger.Log("Resources.InitializingModules", Category.Debug, Priority.Low);
-        // this.InitializeModules(); // {System.ComponentModel.Composition.ExportServices.<>c__DisplayClass13_0<Microsoft.Practices.Prism.Modularity.IModuleManager, System.Collections.Generic.IDictionary<string, object>>}
+        this.InitializeModules(); 
       }
 
       this.Logger.Log("Resources.BootstrapperSequenceCompleted", Category.Debug, Priority.Low);
