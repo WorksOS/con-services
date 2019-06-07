@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -145,7 +146,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Test serialisation with full mask
             SubGridTreeBitmapSubGridBits bits = SubGridTreeBitmapSubGridBits.FullMask;
 
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
             bits.Write(bw, new byte[1000]);
@@ -164,7 +165,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Test serialisation with full mask
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
             bits.Write(bw, new byte[1000]);
@@ -187,7 +188,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.SetBit(20, 20);
             bits.SetBit(31, 31);
 
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
             bits.Write(bw, new byte[1000]);
@@ -209,7 +210,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Test serialisation with arbitrary bits set
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
        
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
             bw.Write(INVALID_CONTROL_BYTE);      
 

@@ -115,9 +115,9 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       }
       finally
       {
-        Console.WriteLine("TAG file submission complete. Press a key...");
-
-        Console.ReadKey();
+        // Reinstate with a command line flag if required in future
+        //Console.WriteLine("TAG file submission complete. Press a key...");
+        //Console.ReadKey();
       }
     }
   }

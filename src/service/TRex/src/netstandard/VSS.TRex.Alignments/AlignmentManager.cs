@@ -86,7 +86,7 @@ namespace VSS.TRex.Alignments
 
         // Notify the  grid listeners that attributes of this site model have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelUid, alignmentsChanged: true);
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, siteModelUid, alignmentsChanged: true);
       }
       catch (Exception e)
       {

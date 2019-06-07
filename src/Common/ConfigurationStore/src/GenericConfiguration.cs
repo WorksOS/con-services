@@ -7,7 +7,7 @@ using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Log4NetExtensions;
+using VSS.SeriLog.Extensions;
 
 namespace VSS.ConfigurationStore
 {

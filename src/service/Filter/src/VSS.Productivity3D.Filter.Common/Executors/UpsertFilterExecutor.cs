@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -47,29 +46,25 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
+      var request = CastRequestObjectTo<FilterRequestFull>(item, 38);
       FilterDescriptorSingleResult result;
-      var filterRequest = item as FilterRequestFull;
-      if (filterRequest == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
-      }
 
       // Hydrate the polygon filter if present.
-      filterRequest.FilterJson = await ValidationUtil.HydrateJsonWithBoundary(GeofenceProxy, auxRepository as GeofenceRepository, log, serviceExceptionHandler, filterRequest);
+      request.FilterJson = await ValidationUtil.HydrateJsonWithBoundary(GeofenceProxy, auxRepository as GeofenceRepository, log, serviceExceptionHandler, request);
 
-      if (filterRequest.FilterType == FilterType.Transient)
+      if (request.FilterType == FilterType.Transient)
       {
-        result = await ProcessTransient(filterRequest);
+        result = await ProcessTransient(request);
       }
       else
       {
         // Hydrate the alignment and design filenames if present (persistent filters only).
-        FilterFilenameUtil.GetFilterFileNames(log, serviceExceptionHandler, FileListProxy, filterRequest);
+        FilterFilenameUtil.GetFilterFileNames(log, serviceExceptionHandler, FileListProxy, request);
 
-        result = await ProcessPersistent(filterRequest);
+        result = await ProcessPersistent(request);
       }
 
-      await FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, result.FilterDescriptor, raptorProxy, assetResolverProxy, filterRequest.CustomHeaders);
+      await FilterJsonHelper.ParseFilterJson(request.ProjectData, result.FilterDescriptor, raptorProxy, assetResolverProxy, request.CustomHeaders);
 
       return result;
     }

@@ -18,16 +18,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Processes the ValidateTcc orgShortName against customerUid
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ContractExecutionResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      ValidateTccAuthorizationRequest validateTccAuthorizationRequest = item as ValidateTccAuthorizationRequest;
-      if (validateTccAuthorizationRequest == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
-      }
+      var validateTccAuthorizationRequest = CastRequestObjectTo<ValidateTccAuthorizationRequest>(item, errorCode: 86);
 
       try
       {

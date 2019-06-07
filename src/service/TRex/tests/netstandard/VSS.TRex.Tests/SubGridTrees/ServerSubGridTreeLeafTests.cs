@@ -350,7 +350,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
           var leaf = CreateADefaultEmptyLeaf();
 
-          MemoryStream stream = new MemoryStream();
+          MemoryStream stream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
           leaf.SaveDirectoryToStream(stream);
 
           var mockStorage = new Mock<IStorageProxy>();

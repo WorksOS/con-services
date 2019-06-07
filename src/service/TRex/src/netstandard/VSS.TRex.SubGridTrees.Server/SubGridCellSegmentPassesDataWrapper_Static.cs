@@ -345,5 +345,10 @@ namespace VSS.TRex.SubGridTrees.Server
         public bool IsImmutable() => true;
 
         public bool HasPassData() => PassData != null;
+
+        public void ReplacePasses(uint X, uint Y, CellPass[] cellPasses)
+        {
+          throw new NotImplementedException("Does not support ReplacePasses()");
+        }
     }
 }

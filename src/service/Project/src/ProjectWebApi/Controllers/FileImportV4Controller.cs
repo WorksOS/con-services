@@ -314,7 +314,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       logger.LogInformation(
         $"{nameof(UpsertImportedFileV4)}. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
-      
+
       return UpsertFile(file.path, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, uploadToTcc);
     }
 
@@ -394,7 +394,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       ImportedFileUtils.ValidateEnvironmentVariables(existing.ImportedFileType, configStore, serviceExceptionHandler);
 
-      var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
+      var deleteImportedFile = new DeleteImportedFile(
         projectUid, existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor),
         Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId, DataOceanRootFolder);
 
@@ -503,10 +503,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           {
             logger.LogDebug($"{nameof(UpsertFileInternal)}. Opted out of uploading to TCC, constructing pseudo fileDescriptor.");
 
+            var tccFileName = Path.GetFileName(filename);
+            if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
+            {
+              tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
+            }
+
             fileDescriptor = FileDescriptor.CreateFileDescriptor(
-              FileSpaceId, 
+              FileSpaceId,
               $"/{customerUid}/{projectUid}",
-              ImportedFileUtils.IncludeSurveyedUtcInName(Path.GetFileName(filename), surveyedUtc.Value));
+              tccFileName);
           }
 
           //save copy to DataOcean      
@@ -520,7 +526,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       if (creating)
       {
-        var createImportedFile = CreateImportedFile.Create(
+        var createImportedFile = new CreateImportedFile(
           projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
@@ -540,7 +546,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         // this also validates that this customer has access to the projectUid
         var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo);
 
-        var importedFileUpsertEvent = UpdateImportedFile.Create(
+        var importedFileUpsertEvent = new UpdateImportedFile(
           projectUid, project.LegacyProjectID, importedFileType,
           importedFileType == ImportedFileType.SurveyedSurface
             ? surveyedUtc

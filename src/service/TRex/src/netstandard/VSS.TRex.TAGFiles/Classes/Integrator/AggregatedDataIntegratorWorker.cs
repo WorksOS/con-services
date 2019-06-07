@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
@@ -160,26 +160,30 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           ProcessedTasks.Add(task);
         }
 
-        /*    if (TasksToProcess.Count > 0)
-            {
-              for (int I = 0; I < TasksToProcess.Count; I++)
-              {
-                if (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch)
-                {
-                  if (TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
-                    ProcessedTasks.Add(task);
-                }
-                else
-                {
-                  break;
-                }
-              }
-            }*/
-
         Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.PersistedTargetMachineID} in project {Task.PersistedTargetSiteModelID}");
 
         // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
 
+        // Use the grouped sub grid tree integrator to assemble a single aggregate tree from the set of trees in the processed tasks
+
+        Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
+
+        var subGridTreeIntegrator = new GroupedSubGridTreeIntegrator
+        {
+          Trees = ProcessedTasks
+            .Where(t => t.AggregatedCellPassCount > 0)
+            .Select(t => (t.AggregatedCellPasses, 
+                          t.AggregatedMachineEvents.StartEndRecordedDataEvents.FirstStateDate(),
+                          t.AggregatedMachineEvents.StartEndRecordedDataEvents.LastStateDate()))
+            .ToList()
+        };
+
+        // Assign the new grid into Task to represent the spatial aggregation of all of the tasks aggregated cell passes
+        var groupedAggregatedCellPasses = subGridTreeIntegrator.IntegrateSubGridTreeGroup();
+
+        Log.LogDebug("Aggregation Task Process --> Integrate machine events and other clean up cell pass trees");
+
+        // Iterate through the tasks to integrate the machine events and perform other clean up operations
         for (int I = 1; I < ProcessedTasks.Count; I++) // Zeroth item in the list is Task
         {
           var processedTask = ProcessedTasks[I];
@@ -189,12 +193,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
           // Integrate the machine events
           eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, processedTask.IntermediaryTargetSiteModel, Task.IntermediaryTargetSiteModel);
-
-          //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
-
-          // Integrate the cell passes from all cell pass aggregators 
-          var subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null, Task.AggregatedCellPasses, null);
-          subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.UsingInMemoryTarget, SubGridHasChanged);
 
           //Update current DateTime with the latest one
           if (processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp) == -1)
@@ -215,6 +213,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
         // read from the datamodel file itself, then synchronously write it to the DataModel
+
+        Log.LogDebug($"Aggregation Task Process --> Integrating aggregated cell passes into the live site model");
 
         IMachine MachineFromDM;
         IProductionEventLists SiteModelMachineTargetValues;
@@ -263,6 +263,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         // Perform machine event integration outside of the SiteModel write access interlock as the
         // individual event lists have independent exclusive locks event integration uses.
+
+        Log.LogDebug($"Aggregation Task Process --> Integrating machine events into the live site model");
+
         eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.IntermediaryTargetSiteModel, SiteModelFromDM);
 
         // Integrate the machine events into the main site model. This requires the
@@ -312,7 +315,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           long totalPassCountInAggregation = 0;
           // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
           // ... first relabel the passes with the machine ID as it is set to null in the swathing engine
-          Task.AggregatedCellPasses?.ScanAllSubGrids(leaf =>
+          groupedAggregatedCellPasses?.ScanAllSubGrids(leaf =>
           {
             var serverLeaf = (ServerSubGridTreeLeaf) leaf;
 
@@ -332,9 +335,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           });
 
           // ... then integrate them
-          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes from {ProcessedTasks.Count} TAG files (spanning {Task.AggregatedCellPasses.CountLeafSubGridsInMemory()} sub grids) into primary data model for {SiteModelFromDM.ID} spanning {SiteModelFromDM.ExistenceMap.CountBits()} sub grids");
+          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes from {ProcessedTasks.Count} TAG files (spanning {groupedAggregatedCellPasses?.CountLeafSubGridsInMemory()} sub grids) into primary data model for {SiteModelFromDM.ID} spanning {SiteModelFromDM.ExistenceMap.CountBits()} sub grids");
 
-          var subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
+          var subGridIntegrator = new SubGridIntegrator(groupedAggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
           if (!subGridIntegrator.IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
             return false; 
 
@@ -385,8 +388,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             }
             catch (Exception e)
             {
-              Log.LogCritical(e,
-                "Unable to add segment invalidation list to segment retirement queue due to exception:");
+              Log.LogCritical(e, "Unable to add segment invalidation list to segment retirement queue due to exception:");
               Log.LogCritical("The following segments will NOT be retired as a result:");
               foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
                 Log.LogCritical($"{invalidatedItem}");

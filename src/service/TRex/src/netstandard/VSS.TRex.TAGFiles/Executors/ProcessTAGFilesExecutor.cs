@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Integrator;
@@ -73,7 +72,7 @@ namespace VSS.TRex.TAGFiles.Executors
                 var theTask = await Task.WhenAny(tagFileConversions);
                 tagFileConversions.Remove(theTask);
                 return await theTask;
-              };
+              }
 
               var convertedTask = nextTaskCompleted();
 

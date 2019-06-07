@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -424,7 +425,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
           ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-          var MS = new MemoryStream();
+          var MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
           tree.ToStream(MS);
 
           MS.Length.Should().Be(EXPECTED_SIZE);

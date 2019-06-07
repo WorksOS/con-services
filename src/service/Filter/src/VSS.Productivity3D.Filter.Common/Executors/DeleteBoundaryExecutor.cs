@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -51,12 +50,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns>Returns an <see cref="BoundaryRequest"/> object if successful.</returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as BoundaryUidRequestFull;
-      if (request == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
-        return null;
-      }
+      var request = CastRequestObjectTo<BoundaryUidRequestFull>(item, 53);
+      if (request == null) return null;
 
       IEnumerable<ProjectGeofence> associations = null;
       try

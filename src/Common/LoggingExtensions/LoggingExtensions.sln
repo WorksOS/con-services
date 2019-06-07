@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeriLogExtensions", "SeriLogExtensions\VSS.SeriLog.Extensions.csproj", "{7D6290D4-9EDA-425B-A88A-B9C00021D6C5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "src\VSS.Log4NetExtensions.csproj", "{69EBDCA8-B301-4360-AFED-DC31511EDC4E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D6290D4-9EDA-425B-A88A-B9C00021D6C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D6290D4-9EDA-425B-A88A-B9C00021D6C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D6290D4-9EDA-425B-A88A-B9C00021D6C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D6290D4-9EDA-425B-A88A-B9C00021D6C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69EBDCA8-B301-4360-AFED-DC31511EDC4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69EBDCA8-B301-4360-AFED-DC31511EDC4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69EBDCA8-B301-4360-AFED-DC31511EDC4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69EBDCA8-B301-4360-AFED-DC31511EDC4E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {73687ACA-7706-40E8-B503-DC94865FFA6A}
+	EndGlobalSection
+EndGlobal
