@@ -11,13 +11,10 @@ using VSS.Common.ServiceDiscovery;
 using VSS.Log4NetExtensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
@@ -38,17 +35,12 @@ namespace VSS.Productivity3D.WebApi
     public override string ServiceVersion => "v1";
     
     /// <summary>
-    /// Log4net repository logger name.
-    /// </summary>
-    internal const string LoggerRepoName = "WebApi";
-    
-    /// <summary>
     /// Gets the default configuration object.
     /// </summary>
     public IConfigurationRoot Configuration { get; }
 
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
     {
       var builder = new ConfigurationBuilder()
           .SetBasePath(env.ContentRootPath)
