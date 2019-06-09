@@ -90,26 +90,33 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Write the contents of the Items array using the supplied writer
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+    public override void Write(BinaryWriter writer)
     {
-      base.Write(writer, buffer);
+      base.Write(writer);
 
-      Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long));
-      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long));
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
+
+      var buffer = new byte[BUFFER_SIZE];
+
+      Buffer.BlockCopy(Times, 0, buffer, 0, BUFFER_SIZE);
+      writer.Write(buffer, 0, BUFFER_SIZE);
     }
 
     /// <summary>
     /// Fill the items array by reading the binary representation using the provided reader. 
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader)
     {
-      base.Read(reader, buffer);
+      base.Read(reader);
 
-      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long));
-      Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long));
+
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
+
+      var buffer = new byte[BUFFER_SIZE];
+
+      reader.Read(buffer, 0, BUFFER_SIZE);
+      Buffer.BlockCopy(buffer, 0, Times, 0, BUFFER_SIZE);
     }
 
     /// <summary>

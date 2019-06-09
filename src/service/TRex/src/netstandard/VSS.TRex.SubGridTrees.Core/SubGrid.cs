@@ -173,7 +173,7 @@ namespace VSS.TRex.SubGridTrees
         /// Returns a moniker string comprised of the X and Y origin ordinates in the sub grid cell address space
         /// separated by a colon, eg: in the form 1234:5678
         /// </summary>
-        public string Moniker() => $"{OriginX}:{OriginY}";
+        public string Moniker() => OriginX.ToString() + ":" + OriginY.ToString(); // 30% faster than $"{OriginX}:{OriginY}";
 
         /// <summary>
         /// A virtual method representing an access mechanism to request a child sub grid at the X/Y location in this sub grid
@@ -314,8 +314,7 @@ namespace VSS.TRex.SubGridTrees
         /// Write the contents of the Items array using the supplied writer
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="buffer"></param>
-        public virtual void Write(BinaryWriter writer, byte [] buffer)
+        public virtual void Write(BinaryWriter writer)
         {
             writer.Write(Level);
             writer.Write(OriginX);
@@ -326,8 +325,7 @@ namespace VSS.TRex.SubGridTrees
         /// Fill the items array by reading the binary representation using the provided reader. 
         /// </summary>
         /// <param name="reader"></param>
-        /// <param name="buffer"></param>
-        public virtual void Read(BinaryReader reader, byte [] buffer)
+        public virtual void Read(BinaryReader reader)
         {
             Level = reader.ReadByte();
             OriginX = reader.ReadInt32();
@@ -340,11 +338,9 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public SubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(OriginX, OriginY);
 
-        public byte[] ToBytes() => ToBytes(new byte[10000]);
+        public byte[] ToBytes() => FromToBytes.ToBytes(Write);
 
-        public byte[] ToBytes(byte[] helperBuffer) => FromToBytes.ToBytes(Write, helperBuffer ?? new byte[10000]);
-
-        public void FromBytes(byte[] bytes, byte[] helperBuffer = null) => FromToBytes.FromBytes(bytes, Read, helperBuffer ?? new byte[10000]);
+        public void FromBytes(byte[] bytes) => FromToBytes.FromBytes(bytes, Read);
      
         /// <summary>
         /// Iterates over all the cells in the sub grid calling functor on each of them.

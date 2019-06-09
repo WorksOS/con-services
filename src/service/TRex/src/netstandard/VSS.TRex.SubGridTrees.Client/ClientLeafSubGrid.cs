@@ -18,7 +18,7 @@ namespace VSS.TRex.SubGridTrees.Client
   /// map records which cells in the sub grid contain information that has been
   /// retrieved from the server.
   /// </summary>
-    public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid, IBinaryReaderWriterBuffered
+    public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid, IBinaryReaderWriter
   {
     /// <summary>
     /// Enumeration indicating type of grid data held in this client leaf sub grid
@@ -233,26 +233,25 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="writer"></param>
     /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+    public override void Write(BinaryWriter writer)
     {
-      base.Write(writer, buffer);
+      base.Write(writer);
 
       writer.Write((int)GridDataType);
       writer.Write(CellSize);
       writer.Write(IndexOriginOffset);
 
-      ProdDataMap.Write(writer, buffer);
-      FilterMap.Write(writer, buffer);
+      ProdDataMap.Write(writer);
+      FilterMap.Write(writer);
     }
 
     /// <summary>
     /// Fill the items array by reading the binary representation using the provided reader. 
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader)
     {
-      base.Read(reader, buffer);
+      base.Read(reader);
 
       if ((GridDataType)reader.ReadInt32() != GridDataType)
         throw new TRexSubGridIOException("GridDataType in stream does not match GridDataType of local sub grid instance");
@@ -260,8 +259,8 @@ namespace VSS.TRex.SubGridTrees.Client
       CellSize = reader.ReadDouble();
       IndexOriginOffset = reader.ReadInt32();
 
-      ProdDataMap.Read(reader, buffer);
-      FilterMap.Read(reader, buffer);
+      ProdDataMap.Read(reader);
+      FilterMap.Read(reader);
     }
 
     /// <summary>

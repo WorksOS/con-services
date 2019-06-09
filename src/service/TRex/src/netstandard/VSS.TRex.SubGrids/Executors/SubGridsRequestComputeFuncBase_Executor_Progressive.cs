@@ -42,7 +42,6 @@ namespace VSS.TRex.SubGrids.Executors
         using (BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true))
         {
           writer.Write(resultCount);
-          var buffer = new byte[10000];
 
           for (int i = 0; i < resultCount; i++)
           {
@@ -50,7 +49,7 @@ namespace VSS.TRex.SubGrids.Executors
             foreach (IClientLeafSubGrid result in results[i])
             {
               writer.Write(result != null);
-              result?.Write(writer, buffer);
+              result?.Write(writer);
             }
           }
         }

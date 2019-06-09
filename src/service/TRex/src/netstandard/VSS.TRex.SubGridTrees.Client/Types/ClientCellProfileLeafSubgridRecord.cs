@@ -168,7 +168,5 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       writer.Write(LastPassValidCCA);
       writer.Write(TargetCCA);
     }
-
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }

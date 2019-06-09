@@ -125,8 +125,6 @@ namespace VSS.TRex.Machines
         this[i].Write(writer);
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     /// <summary>
     /// Deserializes the list of machines using the given reader
     /// </summary>

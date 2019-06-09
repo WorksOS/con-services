@@ -26,15 +26,13 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
       writer.Write(tree.ID.ToByteArray());
       writer.Write(SubGridCount);
 
-      byte[] buffer = new byte[10000];
-
       return tree.ScanAllSubGrids(subGrid =>
       {
         // Write out the origin for the node
         writer.Write(subGrid.OriginX);
         writer.Write(subGrid.OriginY);
 
-        subGrid.Write(writer, buffer);
+        subGrid.Write(writer);
 
         return true; // keep scanning
       });
@@ -94,8 +92,6 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
       // Read in the number of sub grids
       long SubGridCount = reader.ReadInt64();
 
-      byte[] buffer = new byte[10000];
-
       // Read in each sub grid and add it to the tree
       for (long I = 0; I < SubGridCount; I++)
       {
@@ -105,7 +101,7 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
 
         // Create a node to hold the bits
         ISubGrid SubGrid = tree.ConstructPathToCell(OriginX, OriginY, Types.SubGridPathConstructionType.CreateLeaf);
-        SubGrid.Read(reader, buffer);
+        SubGrid.Read(reader);
       }
 
       return true;
