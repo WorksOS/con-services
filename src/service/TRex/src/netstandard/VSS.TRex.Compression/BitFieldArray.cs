@@ -257,7 +257,7 @@ namespace VSS.TRex.Compression
 
             // Be paranoid! Ensure there are no bits set in the high order bits above the
             // least significant valueBits in Value
-            value = value & ((1 << valueBits) - 1);
+            value &= ((1 << valueBits) - 1);
 
             int StoragePointer = StreamWriteBitPos >> BIT_LOCATION_TO_BLOCK_SHIFT;
             int AvailBitsInCurrentStorageElement = N_BITS_TO_READ_AT_A_TIME - (StreamWriteBitPos & BITS_REMAINING_IN_STORAGE_BLOCK_MASK);
