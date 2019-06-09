@@ -6,16 +6,16 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
 {
   public class PaletteProfile : Profile
   {
-
     public PaletteProfile()
     {
-      CreateMap<Transition, ColorPalette>()
-        .ForMember(x => x.Value,
-          opt => opt.MapFrom(f => f.Value))
-        .ForMember(x => x.Color,
-          opt => opt.MapFrom(f => 
-            (uint)((f.Color.A << 24) | (f.Color.R << 16) |
-                   (f.Color.G << 8) | (f.Color.B << 0))));
+      //Note: Transition is a struct and ColorPalette is a class. 
+      //This is the only way I could get AutoMapper to work.
+      CreateMap<Transition, ColorPalette>().ConvertUsing(x =>
+      {
+        var color = (uint) ((x.Color.A << 24) | (x.Color.R << 16) |
+                            (x.Color.G << 8) | (x.Color.B << 0));
+        return new ColorPalette(color, x.Value);
+      });
     }
   }
 }

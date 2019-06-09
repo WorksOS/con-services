@@ -40,7 +40,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
-      var ccaPalette = Utilities.ComputeCCAPalette(siteModel, filter.AttributeFilter, DisplayMode.CCA) as CCAPalette;
+      var ccaPalette = VSS.TRex.Rendering.Utilities.ComputeCCAPalette(siteModel, filter.AttributeFilter, DisplayMode.CCA) as CCAPalette;
       return new CCAColorPaletteResult{Palettes = ccaPalette == null ? null : AutoMapperUtility.Automapper.Map<ColorPalette[]>(ccaPalette.PaletteTransitions)};
     }
   }
