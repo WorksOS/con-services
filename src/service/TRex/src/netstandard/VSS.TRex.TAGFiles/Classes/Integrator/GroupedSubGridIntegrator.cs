@@ -48,9 +48,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     {
     }
 
-    private void ProcessCell(uint x, uint y)
+    private void ProcessCell(int x, int y)
     {
-      uint totalCellPassCount = 0;
+      int totalCellPassCount = 0;
 
       for (int i = 0; i < _subGridGroupCount; i++)
         totalCellPassCount += _subGridGroup[i].Cells.PassesData[0].PassesData.PassCount(x, y);
@@ -66,7 +66,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
       for (int i = 0; i < _subGridGroupCount; i++)
       {
-        var cellPasses = _subGridGroup[i].Cells.PassesData[0].PassesData.ExtractCellPasses(x, y);
+        var cellPasses = _subGridGroup[i].Cells.PassesData[0].PassesData.ExtractCellPasses(x, y, out int passCount);
 
         if (cellPasses == null)
         {
@@ -74,8 +74,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           continue;
         }
 
-        foreach (var cellPass in cellPasses)
+        for (int cpi = 0; cpi < passCount; cpi++)
         {
+          var cellPass = cellPasses[cpi];
+
           if (_numTotalCellPasses == 0 || lastTime < cellPass.Time)
           {
             _totalCellPasses[_numTotalCellPasses++] = cellPass;
@@ -112,7 +114,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         var resultCellPasses = new CellPass[_numTotalCellPasses];
         Array.Copy(_totalCellPasses, resultCellPasses, _numTotalCellPasses);
 
-        _resultSubGrid.Cells.PassesData[0].PassesData.ReplacePasses(x, y, resultCellPasses);
+        _resultSubGrid.Cells.PassesData[0].PassesData.ReplacePasses(x, y, resultCellPasses, _numTotalCellPasses);
         _resultSubGrid.Directory.GlobalLatestCells.PassDataExistenceMap[(byte) x, (byte) y] = true;
       }
     }
@@ -151,7 +153,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       _resultSubGrid.AllocateSegment(resultSubGrid.Directory.SegmentDirectory[0]);
       _resultSubGrid.Cells.PassesData[0].AllocateFullPassStacks();
 
-      SubGridUtilities.SubGridDimensionalIterator((Action<uint, uint>) ProcessCell);
+      SubGridUtilities.SubGridDimensionalIterator((Action<int, int>) ProcessCell);
 
       if (_resultSubGrid.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits() == 0)
       {

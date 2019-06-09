@@ -41,7 +41,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>                        
-        public bool GetCell(uint CellX, uint CellY)
+        public bool GetCell(int CellX, int CellY)
         {
             var SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
 
@@ -62,7 +62,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellY"></param>
         /// <param name="Value"></param>
         /// <returns></returns>     
-        public void SetCell(uint CellX, uint CellY, bool Value)
+        public void SetCell(int CellX, int CellY, bool Value)
         {
             var SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.CreateLeaf);
 
@@ -95,7 +95,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
-        public bool this[uint CellX, uint CellY]
+        public bool this[int CellX, int CellY]
         {
             get => GetCell(CellX, CellY);
             set => SetCell(CellX, CellY, value);
@@ -107,7 +107,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
-        public void RemoveLeafOwningCell(uint CellX, uint CellY)
+        public void RemoveLeafOwningCell(int CellX, int CellY)
         {
             var SubGrid = LocateSubGridContaining(CellX, CellY, (byte)(NumLevels - 1));
 
@@ -148,8 +148,8 @@ namespace VSS.TRex.SubGridTrees
 
             if (SubGridCellsExtents.IsValidExtent)
             {
-                GetCellCenterPosition((uint)SubGridCellsExtents.MinX, (uint)SubGridCellsExtents.MinY, out double MinCX, out double MinCY);
-                GetCellCenterPosition((uint)SubGridCellsExtents.MaxX, (uint)SubGridCellsExtents.MaxY, out double MaxCX, out double MaxCY);
+                GetCellCenterPosition(SubGridCellsExtents.MinX, SubGridCellsExtents.MinY, out double MinCX, out double MinCY);
+                GetCellCenterPosition(SubGridCellsExtents.MaxX, SubGridCellsExtents.MaxY, out double MaxCX, out double MaxCY);
 
                 return new BoundingWorldExtent3D(MinCX - CellSizeOver2, MinCY - CellSizeOver2,
                                                  MaxCX + CellSizeOver2, MaxCY + CellSizeOver2);
@@ -164,7 +164,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
-        public bool LeafExists(uint CellX, uint CellY) => ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly) != null;
+        public bool LeafExists(int CellX, int CellY) => ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly) != null;
 
         /// <summary>
         /// Takes a source SubGridBitMask instance and performs a bitwise OR of the contents of source against the
@@ -253,7 +253,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
-        public bool ClearCellIfSet(uint CellX, uint CellY)
+        public bool ClearCellIfSet(int CellX, int CellY)
         {
             var SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
 
@@ -285,8 +285,8 @@ namespace VSS.TRex.SubGridTrees
           ScanAllSubGrids(leaf =>
           {
             ((SubGridTreeLeafBitmapSubGrid)leaf).Bits.ForEachSetBit((x, y) =>
-              functor(new SubGridCellAddress((uint)(leaf.OriginX + x) << SubGridTreeConsts.SubGridIndexBitsPerLevel,
-                                             (uint)(leaf.OriginY + y) << SubGridTreeConsts.SubGridIndexBitsPerLevel))
+              functor(new SubGridCellAddress((leaf.OriginX + x) << SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                                             (leaf.OriginY + y) << SubGridTreeConsts.SubGridIndexBitsPerLevel))
             );
 
             return true;

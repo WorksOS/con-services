@@ -22,12 +22,12 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
-                uint _PassCount = segment.PassCount(i, j);
+                int _PassCount = segment.PassCount(i, j);
 
                 if (_PassCount == 0)
                     return;
 
-                for (uint PassIndex = 0; PassIndex < _PassCount; PassIndex++)
+                for (int PassIndex = 0; PassIndex < _PassCount; PassIndex++)
                 {
                     float _height = segment.PassHeight(i, j, PassIndex);
 

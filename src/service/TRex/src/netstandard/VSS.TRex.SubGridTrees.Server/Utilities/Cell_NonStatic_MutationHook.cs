@@ -13,17 +13,17 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// <summary>
     /// The action to take when a pass is added
     /// </summary>
-    public Action<uint, uint, Cell_NonStatic, CellPass, int> AddPassAction { get; set; }
+    public Action<int, int, Cell_NonStatic, CellPass, int> AddPassAction { get; set; }
 
     /// <summary>
     /// The action to take when a pass is replaced
     /// </summary>
-    public Action<uint, uint, Cell_NonStatic, int, CellPass> ReplacePassAction { get; set; }
+    public Action<int, int, Cell_NonStatic, int, CellPass> ReplacePassAction { get; set; }
 
     /// <summary>
     /// The action to take when a pass is deleted
     /// </summary>
-    public Action<uint, uint, int> RemovePassAction { get; set; }
+    public Action<int, int, int> RemovePassAction { get; set; }
 
     /// <summary>
     /// Emits an arbitrary note to the mutation hook
@@ -41,9 +41,9 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// <param name="addPassAction"></param>
     /// <param name="replaceAction"></param>
     /// <param name="removeAction"></param>
-    public Cell_NonStatic_MutationHook(Action<uint, uint, Cell_NonStatic, CellPass, int> addPassAction,
-      Action<uint, uint, Cell_NonStatic, int, CellPass> replaceAction,
-      Action<uint, uint, int> removeAction,
+    public Cell_NonStatic_MutationHook(Action<int, int, Cell_NonStatic, CellPass, int> addPassAction,
+      Action<int, int, Cell_NonStatic, int, CellPass> replaceAction,
+      Action<int, int, int> removeAction,
       Action<string> emitNoteAction)
     {
       AddPassAction = addPassAction;
@@ -65,7 +65,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// <param name="cell"></param>
     /// <param name="pass"></param>
     /// <param name="position"></param>
-    public virtual void AddPass(uint X, uint Y, Cell_NonStatic cell, CellPass pass, int position = -1)
+    public virtual void AddPass(int X, int Y, Cell_NonStatic cell, CellPass pass, int position = -1)
     {
       AddPassAction?.Invoke(X, Y, cell, pass, position);
     }
@@ -78,7 +78,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// <param name="cell"></param>
     /// <param name="pass"></param>
     /// <param name="position"></param>
-    public virtual void ReplacePass(uint X, uint Y, Cell_NonStatic cell, int position, CellPass pass)
+    public virtual void ReplacePass(int X, int Y, Cell_NonStatic cell, int position, CellPass pass)
     {
       ReplacePassAction?.Invoke(X, Y, cell, position, pass);
     }
@@ -88,7 +88,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// </summary>
     /// <param name="X"></param>
     /// <param name="Y"></param>
-    public virtual void RemovePass(uint X, uint Y, int passIndex)
+    public virtual void RemovePass(int X, int Y, int passIndex)
     {
       RemovePassAction?.Invoke(X, Y, passIndex);
     }

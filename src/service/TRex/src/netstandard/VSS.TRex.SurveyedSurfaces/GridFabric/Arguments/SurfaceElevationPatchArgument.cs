@@ -23,12 +23,12 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// <summary>
     /// The bottom left on-the-ground cell origin X location for the patch of elevations to be computed from
     /// </summary>
-    public uint OTGCellBottomLeftX { get; private set; }
+    public int OTGCellBottomLeftX { get; private set; }
 
     /// <summary>
     /// The bottom left on-the-ground cell origin Y location for the patch of elevations to be computed from
     /// </summary>
-    public uint OTGCellBottomLeftY { get; private set; }
+    public int OTGCellBottomLeftY { get; private set; }
 
     /// <summary>
     /// The cell stepping size to move between points in the patch being interpolated
@@ -62,8 +62,8 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// <param name="processingMap"></param>
     /// <param name="includedSurveyedSurfaces"></param>
     public SurfaceElevationPatchArgument(Guid siteModelID,
-      uint oTGCellBottomLeftX,
-      uint oTGCellBottomLeftY,
+      int oTGCellBottomLeftX,
+      int oTGCellBottomLeftY,
       double cellSize,
       SurveyedSurfacePatchType surveyedSurfacePatchType,
       SubGridTreeBitmapSubGridBits processingMap,
@@ -91,7 +91,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// </summary>
     /// <param name="oTGCellBottomLeftX"></param>
     /// <param name="oTGCellBottomLeftY"></param>
-    public void SetOTGBottomLeftLocation(uint oTGCellBottomLeftX, uint oTGCellBottomLeftY)
+    public void SetOTGBottomLeftLocation(int oTGCellBottomLeftX, int oTGCellBottomLeftY)
     {
       OTGCellBottomLeftX = oTGCellBottomLeftX;
       OTGCellBottomLeftY = oTGCellBottomLeftY;
@@ -147,8 +147,8 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       SiteModelID = reader.ReadGuid() ?? Guid.Empty;
-      OTGCellBottomLeftX = (uint) reader.ReadInt();
-      OTGCellBottomLeftY = (uint)reader.ReadInt();
+      OTGCellBottomLeftX = reader.ReadInt();
+      OTGCellBottomLeftY = reader.ReadInt();
       CellSize = reader.ReadDouble();
       SurveyedSurfacePatchType = (SurveyedSurfacePatchType) reader.ReadByte();
 

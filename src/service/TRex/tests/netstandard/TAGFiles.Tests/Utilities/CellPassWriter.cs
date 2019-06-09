@@ -29,15 +29,15 @@ namespace TAGFiles.Tests.Utilities
       WriteLine = writeLine;
     }
 
-    public void AddPass(uint X, uint Y, Cell_NonStatic cell, CellPass pass, int position)
+    public void AddPass(int X, int Y, Cell_NonStatic cell, CellPass pass, int position)
     {
       var passString = ShortFormOutput ? $"Time:{pass.Time:yyyy-MM-dd-HH-mm-ss.fff}" : $"{pass}";
       WriteToOutput($"AddPass {X}:{Y}:{position}->{passString}");
     }
 
-    public void RemovePass(uint X, uint Y, int passIndex) => WriteToOutput($"RemovePass {X}:{Y}, Position:{passIndex}");
+    public void RemovePass(int X, int Y, int passIndex) => WriteToOutput($"RemovePass {X}:{Y}, Position:{passIndex}");
 
-    public void ReplacePass(uint X, uint Y, Cell_NonStatic cell, int position, CellPass pass)
+    public void ReplacePass(int X, int Y, Cell_NonStatic cell, int position, CellPass pass)
     {
       var passString = ShortFormOutput ? $"Time:{pass.Time:yyyy-MM-dd-HH-mm-ss.fff}" : $"{pass}";
       WriteToOutput($"ReplacePass {X}:{Y}:{position}->{passString}");

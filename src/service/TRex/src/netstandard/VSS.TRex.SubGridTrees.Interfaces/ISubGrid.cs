@@ -17,13 +17,13 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// Grid cell X Origin of the bottom left hand cell in this sub grid. 
     /// Origin is wrt to cells of the spatial dimension held by this sub grid
     /// </summary>
-    uint OriginX { get; set; }
+    int OriginX { get; set; }
 
     /// <summary>
     /// Grid cell Y Origin of the bottom left hand cell in this sub grid. 
     /// Origin is wrt to cells of the spatial dimension held by this sub grid
     /// </summary>
-    uint OriginY { get; set; }
+    int OriginY { get; set; }
 
     /// <summary>
     /// Dirty property used to indicate the presence of changes that are not persisted.
@@ -42,11 +42,11 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 
     void SetDirty();
 
-    uint AxialCellCoverageByThisSubGrid();
-    uint AxialCellCoverageByChildSubGrid();
-    bool ContainsOTGCell(uint CellX, uint CellY);
-    void SetOriginPosition(uint CellX, uint CellY);
-    void GetSubGridCellIndex(uint CellX, uint CellY, out byte SubGridX, out byte SubGridY);
+    int AxialCellCoverageByThisSubGrid();
+    int AxialCellCoverageByChildSubGrid();
+    bool ContainsOTGCell(int CellX, int CellY);
+    void SetOriginPosition(int CellX, int CellY);
+    void GetSubGridCellIndex(int CellX, int CellY, out byte SubGridX, out byte SubGridY);
     bool IsLeafSubGrid();
     string Moniker();
     ISubGrid GetSubGrid(int X, int Y);
@@ -58,7 +58,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     void RemoveFromParent();
     bool CellHasValue(byte CellX, byte CellY);
     int CountNonNullCells();
-    void SetAbsoluteOriginPosition(uint originX, uint originY);
+    void SetAbsoluteOriginPosition(int originX, int originY);
     void SetAbsoluteLevel(byte level);
 
     void Write(BinaryWriter writer, byte[] buffer);
