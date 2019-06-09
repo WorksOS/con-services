@@ -265,6 +265,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Trimble.Vce.Data.RawData.dll</HintPath>
     </Reference>
+    <Reference Include="Trimble.Vce.Data.Skp, Version=24.0.5847.28516, Culture=neutral, PublicKeyToken=4759a7b96c578cd4, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\Trimble.Vce.Data.Skp.dll</HintPath>
+    </Reference>
     <Reference Include="Trimble.Vce.ForeignCad, Version=24.0.5847.28520, Culture=neutral, PublicKeyToken=551d74244f0db52e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Trimble.Vce.ForeignCad.dll</HintPath>
@@ -293,21 +297,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BootStrapper.cs" />
+    <Compile Include="SketchupFile.cs" />
+    <Compile Include="Surface.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  
   <ItemGroup>
-    <None Include="Libraries/**/*.*" Link="%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="Libraries/**/*.*" Link="%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
-    </None>	
+    </None>
   </ItemGroup>
-  
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
@@ -317,6 +320,10 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup> 
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Obfuscated\" />
+    <Folder Include="Sketchup\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
