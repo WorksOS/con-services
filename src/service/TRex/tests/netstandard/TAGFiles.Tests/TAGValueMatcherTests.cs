@@ -58,8 +58,7 @@ namespace TAGFiles.Tests
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGApplicationVersionValueMatcher();
 
-      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0),
-              Encoding.ASCII.GetBytes("Test")),
+      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0), "Test"),
           "Matcher process function returned false");
 
       Assert.Equal("Test", sink.ApplicationVersion);
@@ -852,8 +851,7 @@ namespace TAGFiles.Tests
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGRadioSerialValueMatcher();
 
-      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0),
-              Encoding.ASCII.GetBytes("Test")),
+      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0), "Test"),
           "Matcher process function returned false");
 
       Assert.Equal("Test", sink.RadioSerial);
@@ -866,8 +864,7 @@ namespace TAGFiles.Tests
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGRadioTypeValueMatcher();
 
-      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0),
-              Encoding.ASCII.GetBytes("Test")),
+      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0), "Test"),
           "Matcher process function returned false");
 
       Assert.Equal("Test", sink.RadioType);
@@ -957,8 +954,7 @@ namespace TAGFiles.Tests
 
       string name = "Start Proofing Run";
 
-      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0),
-        Encoding.ASCII.GetBytes(name)),
+      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0), name),
         "Matcher process function returned false");
       Assert.Equal(name, sink.StartProofing);
     }
@@ -971,8 +967,7 @@ namespace TAGFiles.Tests
 
       string name = "End Proofing Run";
 
-      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0),
-          Encoding.ASCII.GetBytes(name)),
+      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0), name),
         "Matcher process function returned false");
       Assert.Equal(name, sink.EndProofingName);
     }
@@ -1012,8 +1007,7 @@ namespace TAGFiles.Tests
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGMachineIDValueMatcher();
 
-      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0),
-              Encoding.ASCII.GetBytes("Test")),
+      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0), "Test"),
           "Matcher process function returned false");
 
       Assert.Equal("Test", sink.MachineID);
@@ -1478,8 +1472,7 @@ namespace TAGFiles.Tests
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGEndProofingValueMatcher();
 
-      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0),
-              Encoding.ASCII.GetBytes("TestEnd")),
+      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0), "TestEnd"),
           "Matcher process function returned false");
 
       Assert.Equal("TestEnd", sink.EndProofingName);
@@ -1500,8 +1493,7 @@ namespace TAGFiles.Tests
 
       sink.DataTime = GPS.GPSOriginTimeToDateTime(sink.GPSWeekNumber, sink.GPSWeekTime = 10000000);
 
-      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0),
-              Encoding.ASCII.GetBytes("TestStart")),
+      Assert.True(matcher.ProcessANSIStringValue(state, sink, new TAGDictionaryItem("", TAGDataType.tANSIString, 0), "TestStart"),
           "Matcher process function returned false");
 
       Assert.Equal("TestStart", sink.StartProofing);

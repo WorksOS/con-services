@@ -25,7 +25,7 @@
         /// </summary>
         /// <param name="valueType"></param>
         /// <param name="value"></param>
-        public abstract void ReadANSIStringValue(TAGDictionaryItem valueType, byte[] value);
+        public abstract void ReadANSIStringValue(TAGDictionaryItem valueType, string value);
 
         /// <summary>
         /// Accepts an Unicode string value from the TAG file data.
