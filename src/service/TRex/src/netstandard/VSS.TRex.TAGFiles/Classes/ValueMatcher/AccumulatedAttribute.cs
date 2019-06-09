@@ -16,5 +16,11 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
       this.dateTime = dateTime;
       this.value = value;
     }
+
+    public void Set(DateTime date, T val)
+    {
+      dateTime = date;
+      value = val;
+    }
   }
 }
