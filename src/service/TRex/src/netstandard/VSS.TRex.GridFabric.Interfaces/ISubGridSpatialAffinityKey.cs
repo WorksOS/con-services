@@ -26,11 +26,14 @@ namespace VSS.TRex.GridFabric.Interfaces
     int SubGridY { get; set; }
 
     /// <summary>
-    /// The segment identifier for the sub grid data. If the segment identifier is empty then the element represents
-    /// the sub grid directory (or SGL file). Otherwise, the segment identifier is a string representation of the start
-    /// and end times of the segment and the time duration the segment contains data for.
+    /// The start date for the data held if this key refers to a segment. It will be -1 if it does not.
     /// </summary>
-    string SegmentIdentifier { get; set; }
+    long SegmentStartDate { get; set; } // in ticks
+
+    /// <summary>
+    /// The end date for the data held if this key refers to a segment. It will be -1 if it does not.
+    /// </summary>
+    long SegmentEndDate { get; set; } // in ticks
 
     /// <summary>
     /// Converts the spatial segment affinity key into a string representation suitable for use as a unique string
