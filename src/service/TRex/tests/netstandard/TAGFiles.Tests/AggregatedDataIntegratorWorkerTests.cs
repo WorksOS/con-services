@@ -63,7 +63,7 @@ namespace TAGFiles.Tests
       var processedTasks = new List<AggregatedDataIntegratorTask>();
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
-      worker.ProcessTask(processedTasks);
+      worker.ProcessTask(processedTasks, 1);
       worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
@@ -97,7 +97,7 @@ namespace TAGFiles.Tests
       var processedTasks = new List<AggregatedDataIntegratorTask>();
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
-      worker.ProcessTask(processedTasks);
+      worker.ProcessTask(processedTasks, 1);
       worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
@@ -134,7 +134,7 @@ namespace TAGFiles.Tests
       var processedTasks = new List<AggregatedDataIntegratorTask>();
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
-      worker.ProcessTask(processedTasks);
+      worker.ProcessTask(processedTasks, 1);
       worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
@@ -172,7 +172,7 @@ namespace TAGFiles.Tests
       var processedTasks = new List<AggregatedDataIntegratorTask>();
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
-      worker.ProcessTask(processedTasks);
+      worker.ProcessTask(processedTasks, 2);
       worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(2);
@@ -217,7 +217,7 @@ namespace TAGFiles.Tests
       {
         MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
       };
-      worker.ProcessTask(processedTasks);
+      worker.ProcessTask(processedTasks, converters.Length);
       worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(numToTake);
