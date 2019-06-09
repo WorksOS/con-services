@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.TAGFiles.Classes.States;
+﻿using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
 
@@ -24,7 +23,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem
       bool result = false;
 
       if (valueType.Type == TAGDataType.t4bitUInt &&
-          Enum.IsDefined(typeof(CoordinateSystemType), (byte) value))
+          (value >= CoordinateSystemTypeConsts.COORDINATE_SYSTEM_MIN_VALUE && value <= CoordinateSystemTypeConsts.COORDINATE_SYSTEM_MAX_VALUE))
       {
         valueSink.CSType = (CoordinateSystemType) value;
 

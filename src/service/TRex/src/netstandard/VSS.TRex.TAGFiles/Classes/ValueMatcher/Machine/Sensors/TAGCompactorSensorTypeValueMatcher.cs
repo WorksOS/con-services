@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.TAGFiles.Classes.States;
+﻿using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
 
@@ -18,13 +17,12 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
         public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
           TAGDictionaryItem valueType, uint value)
         {
-            if (!Enum.IsDefined(typeof(CompactionSensorType), (byte)value))
+            if (!(value >= CompactionSensorTypeConsts.COMPACTION_SENSOR_TYPE_MIN_VALUE && value <= CompactionSensorTypeConsts.COMPACTION_SENSOR_TYPE_MAX_VALUE))
             {
                 return false;
             }
 
-            CompactionSensorType sensorType = (CompactionSensorType)value;
-            valueSink.ICSensorType = sensorType;
+            valueSink.ICSensorType = (CompactionSensorType)value;
 
             return true;
         }

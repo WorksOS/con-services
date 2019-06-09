@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
@@ -37,7 +36,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// </summary>
     /// <param name="storageProxy"></param>
     /// <param name="subGrid"></param>
-    public void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid, uint subGridSegmentPassCountLimit = 0)
+    public void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid, int subGridSegmentPassCountLimit = 0)
     {
       SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, storageProxy)
       {
@@ -58,7 +57,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         DateTime CleavedTimeRangeStart = Segment.SegmentInfo.StartTime;
         DateTime CleavedTimeRangeEnd = Segment.SegmentInfo.EndTime;
 
-        if (Segment.RequiresCleaving(out uint TotalPassCount, out uint MaximumPassCount))
+        if (Segment.RequiresCleaving(out int TotalPassCount, out int MaximumPassCount))
         {
           if (subGrid.Cells.CleaveSegment(Segment, PersistedClovenSegments, subGridSegmentPassCountLimit))
           {

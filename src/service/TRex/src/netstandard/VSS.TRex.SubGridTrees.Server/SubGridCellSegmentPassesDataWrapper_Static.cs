@@ -40,14 +40,22 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Constructor that accepts a set of cell passes and creates the internal structures to hold them
         /// </summary>
         /// <param name="cellPasses"></param>
-        public void SetState(CellPass[,][] cellPasses)
+        /// <param name="cellPassCounts"></param>
+        public void SetState(CellPass[,][] cellPasses, int[,] cellPassCounts)
         {
             // Ensure eny existing state is erased
             PassData = null;
             CellPasses = null;
 
             // Determine the total number of passes that need to be stored and create the array to hold them
-            int totalPassCount = cellPasses.Cast<CellPass[]>().Sum(passes => passes.Length);
+            int totalPassCount = 0;
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            {
+              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              {
+                totalPassCount += cellPassCounts[i, j];
+              }
+            }
 
             CellPasses = new CellPass[totalPassCount];
 
@@ -55,14 +63,15 @@ namespace VSS.TRex.SubGridTrees.Server
 
             // Shift all the cell pass information into the private arrays, setting the cell pass offsets for 
             // each cell to reference the correct set of cell passes in the collated array.
-            uint runningPassCount = 0;
+            int runningPassCount = 0;
 
             Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
                 PassData[i, j].CellPassOffset = runningPassCount;
 
-                foreach (CellPass cellPass in cellPasses[i, j])
-                    CellPasses[runningPassCount++] = cellPass;
+                var thisCellPasses = cellPasses[i, j];
+                for (int cpIndex = 0, limit = cellPassCounts[i, j]; cpIndex < limit; cpIndex++)
+                  CellPasses[runningPassCount++] = thisCellPasses[cpIndex];
             });
         }
 
@@ -73,7 +82,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public SubGridCellSegmentPassesDataWrapper_Static(Cell_NonStatic[,] cells)
         {
             // Determine the total number of passes that need to be stored and create the array to hold them
-            uint totalPassCount = 0;
+            int totalPassCount = 0;
 
             foreach (Cell_NonStatic cell in cells)
             {
@@ -86,34 +95,33 @@ namespace VSS.TRex.SubGridTrees.Server
 
             // Shift all the cell pass information into the private arrays, setting the cell pass offsets for 
             // each cell to reference the correct set of cell passes in the collated array.
-            uint runningPassCount = 0;
+            int runningPassCount = 0;
             Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
                 PassData[i, j].CellPassOffset = runningPassCount;
 
-                foreach (CellPass pass in cells[i, j].Passes)
-                {
-                    CellPasses[runningPassCount++] = pass;
-                }
+                var thisCellPasses = cells[i, j];
+                for (int cpIndex = 0, limit = thisCellPasses.PassCount; cpIndex < limit; cpIndex++)
+                  CellPasses[runningPassCount++] = thisCellPasses.Passes[cpIndex];
             });
         }
 
-        public uint PassCount(uint X, uint Y)
+        public int PassCount(int X, int Y)
         {
             return PassData[X, Y].PassCount;
         }
 
-        public void AllocatePasses(uint X, uint Y, uint passCount)
+        public void AllocatePasses(int X, int Y, int passCount)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
-        public void AddPass(uint X, uint Y, CellPass pass, int position = -1)
+        public void AddPass(int X, int Y, CellPass pass, int position = -1)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
-        public void ReplacePass(uint X, uint Y, int position, CellPass pass)
+        public void ReplacePass(int X, int Y, int position, CellPass pass)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
@@ -124,12 +132,12 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="position"></param>
-        public void RemovePass(uint X, uint Y, int position)
+        public void RemovePass(int X, int Y, int position)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
-        public CellPass ExtractCellPass(uint X, uint Y, uint passNumber)
+        public CellPass ExtractCellPass(int X, int Y, int passNumber)
         {
             return CellPasses[PassData[X, Y].CellPassOffset + passNumber];
         }
@@ -144,7 +152,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="time"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public bool LocateTime(uint X, uint Y, DateTime time, out int index)
+        public bool LocateTime(int X, int Y, DateTime time, out int index)
         {
             return PassData[X, Y].LocateTime(CellPasses, time, out index);
         }
@@ -154,7 +162,7 @@ namespace VSS.TRex.SubGridTrees.Server
             int TotalPasses = reader.ReadInt32();
             int MaxPassCount = reader.ReadInt32();
 
-            uint[,] PassCounts = new uint[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+            int[,] PassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
 
@@ -165,8 +173,8 @@ namespace VSS.TRex.SubGridTrees.Server
                       switch (PassCounts_Size)
                       {
                           case 1: PassCounts[i, j] = reader.ReadByte(); break;
-                          case 2: PassCounts[i, j] = reader.ReadUInt16(); break;
-                          case 3: PassCounts[i, j] = reader.ReadUInt32(); break;
+                          case 2: PassCounts[i, j] = reader.ReadInt16(); break;
+                          case 3: PassCounts[i, j] = reader.ReadInt32(); break;
                           default:
                               throw new InvalidDataException($"Unknown PassCounts_Size {PassCounts_Size}");
                       }
@@ -176,11 +184,11 @@ namespace VSS.TRex.SubGridTrees.Server
                 // Read all the cells from the stream
                 Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
                 {
-                    uint PassCount_ = PassCounts[i, j];
+                    int PassCount_ = PassCounts[i, j];
            
                     if (PassCounts[i, j] > 0)
                     {
-                        AllocatePasses(i, j, (uint)PassCounts[i, j]);
+                        AllocatePasses(i, j, PassCounts[i, j]);
                         Read(i, j, reader);
            
                         SegmentPassCount += PassCount_;
@@ -189,22 +197,22 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        private void Read(uint X, uint Y, BinaryReader reader)
+        private void Read(int X, int Y, BinaryReader reader)
         {
-            uint lastPassCount = PassData[X, Y].CellPassOffset + PassCount(X, Y);
+            int lastPassCount = PassData[X, Y].CellPassOffset + PassCount(X, Y);
 
-            for (uint cellPassIndex = PassData[X, Y].CellPassOffset; cellPassIndex < lastPassCount; cellPassIndex++)
+            for (int cellPassIndex = PassData[X, Y].CellPassOffset; cellPassIndex < lastPassCount; cellPassIndex++)
             {
                 CellPasses[cellPassIndex].Read(reader);
             }
         }
 
-        private void Read(uint X, uint Y, uint passNumber, BinaryReader reader)
+        private void Read(int X, int Y, int passNumber, BinaryReader reader)
         {
             CellPasses[PassData[X, Y].CellPassOffset + passNumber].Read(reader);
         }
 
-        public void Write(uint X, uint Y, uint passNumber, BinaryWriter writer)
+        public void Write(int X, int Y, int passNumber, BinaryWriter writer)
         {
             CellPasses[PassData[X, Y].CellPassOffset + passNumber].Write(writer);
         }
@@ -214,7 +222,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
-        public void CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount)
+        public void CalculateTotalPasses(out int TotalPasses, out int MaxPassCount)
         {
             SegmentTotalPassesCalculator.CalculateTotalPasses(this, out TotalPasses, out MaxPassCount);
         }
@@ -235,7 +243,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="searchTime"></param>
         /// <param name="totalPasses"></param>
         /// <param name="maxPassCount"></param>
-        public void CalculatePassesBeforeTime(DateTime searchTime, out uint totalPasses, out uint maxPassCount)
+        public void CalculatePassesBeforeTime(DateTime searchTime, out int totalPasses, out int maxPassCount)
         {
             SegmentTimeRangeCalculator.CalculatePassesBeforeTime(this, searchTime, out totalPasses, out maxPassCount);
         }
@@ -259,7 +267,7 @@ namespace VSS.TRex.SubGridTrees.Server
       /// <param name="Y"></param>
       /// <param name="passNumber"></param>
       /// <param name="internalMachineID"></param>
-    public void SetInternalMachineID(uint X, uint Y, int passNumber, short internalMachineID)
+    public void SetInternalMachineID(int X, int Y, int passNumber, short internalMachineID)
       {
         throw new InvalidOperationException("Immutable cell pass segment.");
       }
@@ -272,7 +280,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void Write(BinaryWriter writer)
         {
-            CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount);
+            CalculateTotalPasses(out int TotalPasses, out int MaxPassCount);
 
             writer.Write(TotalPasses);
             writer.Write(MaxPassCount);
@@ -287,7 +295,7 @@ namespace VSS.TRex.SubGridTrees.Server
                     switch (PassCounts_Size)
                     {
                         case 1: writer.Write((byte)PassCount(i, j)); break;
-                        case 2: writer.Write((ushort)PassCount(i, j)); break;
+                        case 2: writer.Write((short)PassCount(i, j)); break;
                         case 3: writer.Write((int)PassCount(i, j)); break;
                         default:
                             throw new InvalidDataException($"Unknown PassCounts_Size: {PassCounts_Size}");
@@ -299,41 +307,41 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void Write(uint X, uint Y, BinaryWriter writer)
+        public void Write(int X, int Y, BinaryWriter writer)
         {
-            uint lastPassCount = PassData[X, Y].CellPassOffset + PassCount(X, Y);
-            for (uint cellPassIndex = PassData[X, Y].CellPassOffset; cellPassIndex < lastPassCount; cellPassIndex++)
+            int lastPassCount = PassData[X, Y].CellPassOffset + PassCount(X, Y);
+            for (int cellPassIndex = PassData[X, Y].CellPassOffset; cellPassIndex < lastPassCount; cellPassIndex++)
             {
                 CellPasses[cellPassIndex].Write(writer);
             }
         }
 
-        public float PassHeight(uint X, uint Y, uint passNumber)
+        public float PassHeight(int X, int Y, int passNumber)
         {
             return CellPasses[PassData[X, Y].CellPassOffset + passNumber].Height;
         }
 
-        public DateTime PassTime(uint X, uint Y, uint passNumber)
+        public DateTime PassTime(int X, int Y, int passNumber)
         {
             return CellPasses[PassData[X, Y].CellPassOffset + passNumber].Time;
         }
 
-        public void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out uint AddedCount, out uint ModifiedCount)
+        public void Integrate(int X, int Y, CellPass[] sourcePasses, int sourcePassCount, int StartIndex, int EndIndex, out int AddedCount, out int ModifiedCount)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
-        public CellPass[] ExtractCellPasses(uint X, uint Y)
+        public CellPass[] ExtractCellPasses(int X, int Y, out int passCount)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
-        public CellPass Pass(uint X, uint Y, uint passIndex)
+        public CellPass Pass(int X, int Y, int passIndex)
         {
             return CellPasses[PassData[X, Y].CellPassOffset + passIndex];
         }
 
-        public CellPass[,][] GetState()
+        public CellPass[,][] GetState(out int[,] cellPassCounts)
         {
             throw new NotImplementedException("Does not support GetState()");
         }
@@ -346,9 +354,14 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool HasPassData() => PassData != null;
 
-        public void ReplacePasses(uint X, uint Y, CellPass[] cellPasses)
+        public void ReplacePasses(int X, int Y, CellPass[] cellPasses, int cellPassCount)
         {
           throw new NotImplementedException("Does not support ReplacePasses()");
+        }
+
+        public void AllocatePassesExact(int X, int Y, int passCount)
+        {
+          throw new NotImplementedException("Does not support AllocatePassesExact()");
         }
     }
 }

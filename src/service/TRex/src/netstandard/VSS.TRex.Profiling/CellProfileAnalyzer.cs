@@ -351,8 +351,8 @@ namespace VSS.TRex.Profiling
       ProfileCell.SetFirstLastHighestLowestElevations(PassFilter.HasElevationTypeFilter, PassFilter.ElevationType);
 
 // are coords set right?
-      uint CellX = ProfileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
-      uint CellY = ProfileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
+      int CellX = ProfileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
+      int CellY = ProfileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
       bool HaveCompositeSurfaceForCell = CompositeHeightsGrid?.ProdDataMap.BitSet(CellX, CellY) ?? false;
 
       if (HaveCompositeSurfaceForCell)

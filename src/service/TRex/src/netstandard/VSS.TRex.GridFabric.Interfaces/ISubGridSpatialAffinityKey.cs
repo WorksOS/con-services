@@ -18,12 +18,12 @@ namespace VSS.TRex.GridFabric.Interfaces
     /// <summary>
     /// The X ordinate cell address of the origin cell for the sub grid
     /// </summary>
-    uint SubGridX { get; set; }
+    int SubGridX { get; set; }
 
     /// <summary>
     /// The Y ordinate cell address of the origin cell for the sub grid
     /// </summary>
-    uint SubGridY { get; set; }
+    int SubGridY { get; set; }
 
     /// <summary>
     /// The segment identifier for the sub grid data. If the segment identifier is empty then the element represents

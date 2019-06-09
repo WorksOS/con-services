@@ -1,8 +1,6 @@
-﻿using System;
-using VSS.TRex.Common.Types;
+﻿using VSS.TRex.Common.Types;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
@@ -24,10 +22,11 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         {
             bool result = false;
 
-            if (valueType.Type == TAGDataType.t4bitUInt &&             
-                Enum.IsDefined(typeof(MachineDirection), (byte) (value - 1))) // Direction value in tag file is 1-based
+            var testValue = value - 1; // Direction value in tag file is 1-based
+            if (valueType.Type == TAGDataType.t4bitUInt &&  
+                (testValue >= MachineDirectionConsts.MACHINE_DIRECTION_MIN_VALUE && testValue <= MachineDirectionConsts.MACHINE_DIRECTION_MAX_VALUE)) 
             {
-                 valueSink.MachineDirection = (MachineDirection) (value - 1);
+                 valueSink.MachineDirection = (MachineDirection) testValue;
                  result = true;
             }
 

@@ -23,7 +23,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public ISubGridCellPassesDataSegments PassesData { get; set; } = new SubGridCellPassesDataSegments();
 
-    private static readonly uint _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueUint("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
+    private static readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
 
     public SubGridCellPassesDataWrapper()
     {
@@ -107,7 +107,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <returns></returns>
     public bool CleaveSegment(ISubGridCellPassesDataSegment CleavingSegment,
       List<ISubGridSpatialAffinityKey> PersistedClovenSegments,
-      uint subGridSegmentPassCountLimit = 0)
+      int subGridSegmentPassCountLimit = 0)
     {
       if (!CleavingSegment.HasAllPasses)
       {
@@ -115,12 +115,11 @@ namespace VSS.TRex.SubGridTrees.Server
         return false;
       }
 
-
       if (subGridSegmentPassCountLimit == 0)
         subGridSegmentPassCountLimit = _subGridSegmentPassCountLimit;
 
       // Count up the number of cell passes in total in the segment
-      CleavingSegment.PassesData.CalculateTotalPasses(out uint TotalPassCount, out uint _ /*MaximumPassCount*/);
+      CleavingSegment.PassesData.CalculateTotalPasses(out int TotalPassCount, out int _ /*MaximumPassCount*/);
 
 #if DEBUG
       CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
@@ -132,7 +131,7 @@ namespace VSS.TRex.SubGridTrees.Server
       }
 
 
-      uint NumRequiredClovenSegments = (TotalPassCount - 1) / subGridSegmentPassCountLimit + 1;
+      int NumRequiredClovenSegments = (TotalPassCount - 1) / subGridSegmentPassCountLimit + 1;
 
       // Determine the actual time range of the passes within the segment
       CleavingSegment.PassesData.CalculateTimeRange(out DateTime CoveredTimeRangeStart,
@@ -156,14 +155,14 @@ namespace VSS.TRex.SubGridTrees.Server
 
       DateTime TestTimeRangeStart = CoveredTimeRangeStart;
       DateTime TestTimeRangeEnd = CoveredTimeRangeEnd;
-      uint PassesInFirstTimeRange;
+      int PassesInFirstTimeRange;
       DateTime TestTime;
 
       do
       {
         TestTime = TestTimeRangeStart + new TimeSpan((TestTimeRangeEnd.Ticks - TestTimeRangeStart.Ticks) / 2);
 
-        CleavingSegment.PassesData.CalculatePassesBeforeTime(TestTime, out PassesInFirstTimeRange, out uint _);
+        CleavingSegment.PassesData.CalculatePassesBeforeTime(TestTime, out PassesInFirstTimeRange, out int _);
 
         if (PassesInFirstTimeRange < TotalPassCount / NumRequiredClovenSegments)
           TestTimeRangeStart = TestTime;

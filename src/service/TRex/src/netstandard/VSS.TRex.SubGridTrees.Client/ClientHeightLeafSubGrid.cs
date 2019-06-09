@@ -52,7 +52,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="level"></param>
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
-    public ClientHeightLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    public ClientHeightLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, int indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
       Initialise();
     }

@@ -234,7 +234,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
           CacheSubgrid = CachedElevationSubgrids[CacheSubgridIndex].SubGrid;
         else
         {
-          CacheSubgrid = (GenericLeafSubGrid_Float) DataStore.LocateSubGridContaining((uint)TestX, (uint)TestY);
+          CacheSubgrid = (GenericLeafSubGrid_Float) DataStore.LocateSubGridContaining(TestX, TestY);
           CachedElevationSubgrids[CacheSubgridIndex].SubGrid = CacheSubgrid;
           CachedElevationSubgrids[CacheSubgridIndex].TriangleScanInvocationNumber = TriangleScanInvocationNumber;
         }
@@ -248,7 +248,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       // Get the initial ExistenceBitMask from the bitmask cache
       if (spotElevationOnly)
-        CacheSubgrid = (GenericLeafSubGrid_Float)DataStore.LocateSubGridContaining((uint)TestX, (uint)TestY);
+        CacheSubgrid = (GenericLeafSubGrid_Float)DataStore.LocateSubGridContaining(TestX, TestY);
       else
       {
         CacheSubgridIndex = TestX / SubGridTreeConsts.SubGridTreeDimension - Elevations_MinXTriangleScanRange / SubGridTreeConsts.SubGridTreeDimension;
@@ -317,7 +317,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
           ExistenceBitMask = CachedInUseMaps[BitMaskCacheSubgridIndex].InUseMap;
         else
         {
-          ExistenceBitMask = (SubGridTreeLeafBitmapSubGrid)IsUsed.ConstructPathToCell((uint)_x, (uint)_y, SubGridPathConstructionType.ReturnExistingLeafOnly);
+          ExistenceBitMask = (SubGridTreeLeafBitmapSubGrid)IsUsed.ConstructPathToCell(_x, _y, SubGridPathConstructionType.ReturnExistingLeafOnly);
           CachedInUseMaps[BitMaskCacheSubgridIndex].InUseMap = ExistenceBitMask;
           CachedInUseMaps[BitMaskCacheSubgridIndex].TriangleScanInvocationNumber = TriangleScanInvocationNumber;
         }
@@ -542,13 +542,13 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// </summary>
     private void Select(int sx, int sy, double sz, GridToTINTriangle T)
     {
-      //if (IsUsed[(uint)sx, (uint)sy])
+      //if (IsUsed[(int)sx, (int)sy])
       //  throw new TRexTINException($"Reusing vertex at {sx},{sy}");
 
       // Noisy logging - reinclude as necessary
       // Log.LogDebug($"Setting IsUSed[{sx},{sy}] to true");
 
-      IsUsed[(uint)sx, (uint)sy] = true;
+      IsUsed[sx, sy] = true;
 
       // Add the new position as a vertex into the model and add that new vertex to the mesh
       Engine.IncorporateCoordIntoTriangle(Engine.AddVertex(sx, sy, sz), T);

@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public CellPass this[uint x, uint y]
+        public CellPass this[int x, int y]
         {
             get => PassData[x, y];
             set => PassData[x, y] = value;
@@ -67,7 +67,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public short ReadInternalMachineIndex(uint Col, uint Row) => PassData[Col, Row].InternalSiteModelMachineIndex;
+        public short ReadInternalMachineIndex(int Col, int Row) => PassData[Col, Row].InternalSiteModelMachineIndex;
 
       
         /// <summary>
@@ -76,7 +76,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public DateTime ReadTime(uint Col, uint Row) => PassData[Col, Row].Time;
+        public DateTime ReadTime(int Col, int Row) => PassData[Col, Row].Time;
 
         /// <summary>
         /// ReadHeight will read the Height from the latest cell identified by the Row and Col
@@ -84,7 +84,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public float ReadHeight(uint Col, uint Row) => PassData[Col, Row].Height;
+        public float ReadHeight(int Col, int Row) => PassData[Col, Row].Height;
 
         /// <summary>
         /// ReadCCV will read the CCV from the latest cell identified by the Row and Col
@@ -92,7 +92,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public short ReadCCV(uint Col, uint Row) => PassData[Col, Row].CCV;
+        public short ReadCCV(int Col, int Row) => PassData[Col, Row].CCV;
 
         /// <summary>
         /// ReadRMV will read the RMV from the latest cell identified by the Row and Col
@@ -100,7 +100,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public short ReadRMV(uint Col, uint Row) => PassData[Col, Row].RMV;
+        public short ReadRMV(int Col, int Row) => PassData[Col, Row].RMV;
 
         /// <summary>
         /// ReadFrequency will read the Frequency from the latest cell identified by the Row and Col
@@ -108,10 +108,10 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public ushort ReadFrequency(uint Col, uint Row) => PassData[Col, Row].Frequency;
+        public ushort ReadFrequency(int Col, int Row) => PassData[Col, Row].Frequency;
 
         // ReadAmplitude will read the Amplitude from the latest cell identified by the Row and Col
-        public ushort ReadAmplitude(uint Col, uint Row) => PassData[Col, Row].Amplitude;
+        public ushort ReadAmplitude(int Col, int Row) => PassData[Col, Row].Amplitude;
 
         /// <summary>
         /// ReadCCA will read the CCA from the latest cell identified by the Row and Col
@@ -119,7 +119,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public byte ReadCCA(uint Col, uint Row) => PassData[Col, Row].CCA;
+        public byte ReadCCA(int Col, int Row) => PassData[Col, Row].CCA;
 
         /// <summary>
         /// ReadGPSMode will read the GPSMode from the latest cell identified by the Row and Col
@@ -127,7 +127,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public GPSMode ReadGPSMode(uint Col, uint Row) => PassData[Col, Row].gpsMode;
+        public GPSMode ReadGPSMode(int Col, int Row) => PassData[Col, Row].gpsMode;
 
         /// <summary>
         /// ReadMDP will read the MDP from the latest cell identified by the Row and Col
@@ -135,7 +135,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public short ReadMDP(uint Col, uint Row) => PassData[Col, Row].MDP;
+        public short ReadMDP(int Col, int Row) => PassData[Col, Row].MDP;
 
         /// <summary>
         /// ReadTemperature will read the Temperature from the latest cell identified by the Row and Col
@@ -143,7 +143,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public ushort ReadTemperature(uint Col, uint Row) => PassData[Col, Row].MaterialTemperature;
+        public ushort ReadTemperature(int Col, int Row) => PassData[Col, Row].MaterialTemperature;
 
         /// <summary>
         /// Writes the contents of the NonStatic latest passes using a supplied BinaryWriter

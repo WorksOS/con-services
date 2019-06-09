@@ -20,12 +20,12 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// The X ordinate of the cell address
     /// </summary>
-    public uint X { get; set; }
+    public int X;
 
     /// <summary>
     /// The Y ordinate of the cell address
     /// </summary>
-    public uint Y { get; set; }
+    public int Y;
 
     /// <summary>
     /// Specifies if production data is being requested with respect to this cell address
@@ -45,23 +45,23 @@ namespace VSS.TRex.SubGridTrees
       set => BitFlagHelper.SetBit(ref DataRequestFlags, 1, value); 
     }
 
-    private static readonly uint NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueUint("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
+    private static readonly int NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
     
-    public SubGridCellAddress(uint AX, uint AY) 
+    public SubGridCellAddress(int AX, int AY) 
     {
       X = AX;
       Y = AY;
       DataRequestFlags = 0;
     }
 
-    public SubGridCellAddress(uint AX, uint AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested) : this(AX, AY)
+    public SubGridCellAddress(int AX, int AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested) : this(AX, AY)
     {
       ProdDataRequested = AProdDataRequested;
       SurveyedSurfaceDataRequested = ASurveyedSurfaceDataRequested;
     }
 
     /// <summary>
-    /// Determine if this subgrid cell address is the same as another subgrid cell address.
+    /// Determine if this sub grid cell address is the same as another sub grid cell address.
     /// The comparison examines only the location of the address, not the data request flags also contained within it
     /// </summary>
     /// <param name="other"></param>
@@ -91,7 +91,7 @@ namespace VSS.TRex.SubGridTrees
     /// Constructs a descriptor from a cell address that skips and interleaves alternate bits from each of the 
     /// X and Y components of the cell address.
     /// </summary>
-    public uint ToSkipInterleavedDescriptor => (X & 0xAAAAAAAA) | (Y & 0x55555555);
+    public int ToSkipInterleavedDescriptor => (int)((X & 0x4AAAAAAA) | (Y & 0x15555555));
 
     /// <summary>
     /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the 
@@ -99,7 +99,7 @@ namespace VSS.TRex.SubGridTrees
     /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised 
     /// origin descriptor.
     /// </summary>
-    public static uint ToSpatialPartitionDescriptor(uint X, uint Y)
+    public static int ToSpatialPartitionDescriptor(int X, int Y)
     {
       return ((X & SubGridTreeConsts.SubGridLocalParentKeyMask) | ((Y & SubGridTreeConsts.SubGridLocalParentKeyMask) >> SubGridTreeConsts.SubGridIndexBitsPerLevel)) % NumPartitionsPerDataCache;
     }
@@ -110,7 +110,7 @@ namespace VSS.TRex.SubGridTrees
     /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised 
     /// origin descriptor.
     /// </summary>
-    public uint ToSpatialPartitionDescriptor()
+    public int ToSpatialPartitionDescriptor()
     {
       return ((X & SubGridTreeConsts.SubGridLocalParentKeyMask) | ((Y & SubGridTreeConsts.SubGridLocalParentKeyMask) >> SubGridTreeConsts.SubGridIndexBitsPerLevel)) % NumPartitionsPerDataCache;
     }
@@ -121,7 +121,7 @@ namespace VSS.TRex.SubGridTrees
     /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised 
     /// origin descriptor.
     /// </summary>
-    public uint ToSkipInterleavedSubgridOriginDescriptor => ((X >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x55555555);
+    public int ToSkipInterleavedSubgridOriginDescriptor => ((X >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x4AAAAAAA) | ((Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x15555555);
 
     /// <summary>
     /// Produce a human readable form of the cell address information
@@ -136,7 +136,7 @@ namespace VSS.TRex.SubGridTrees
     /// <param name="AY"></param>
     /// <param name="AProdDataRequested"></param>
     /// <param name="ASurveyedSurfaceDataRequested"></param>
-    public void Set(uint AX, uint AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested)
+    public void Set(int AX, int AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested)
     {
       X = AX;
       Y = AY;

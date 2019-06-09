@@ -29,11 +29,11 @@ namespace VSS.TRex.Caching.Interfaces
 
     void Remove(ITRexMemoryCacheItem element);
 
-    ITRexMemoryCacheItem Get(uint originX, uint originY);
+    ITRexMemoryCacheItem Get(int originX, int originY);
 
     void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
 
-    void InvalidateSubGridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation);
+    void InvalidateSubGridNoLock(int originX, int originY, out bool subGridPresentForInvalidation);
 
     void MarkForRemoval(DateTime markedForRemovalAtUtc);
 

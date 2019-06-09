@@ -114,7 +114,7 @@ namespace TAGFiles.Tests
                 Assert.False(true, $"Exception {E} occured computing latest cell information");
             }
 
-            grid.CalculateIndexOfCellContainingPosition(grid.CellSize / 2, grid.CellSize / 2, out uint _, out uint _);
+            grid.CalculateIndexOfCellContainingPosition(grid.CellSize / 2, grid.CellSize / 2, out int _, out int _);
 
             int nonNullCellCount = 0;
             try

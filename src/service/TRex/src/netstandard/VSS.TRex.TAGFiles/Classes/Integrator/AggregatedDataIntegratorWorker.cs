@@ -76,7 +76,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
-    private void SubGridHasChanged(uint CellX, uint CellY)
+    private void SubGridHasChanged(int CellX, int CellY)
     {
       WorkingModelUpdateMap.SetCell(CellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
         CellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel, true);
@@ -91,6 +91,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks)
     {
       var eventIntegrator = new EventIntegrator();
+      long totalPassCountInAggregation = 0;
 
       /* The task contains a set of machine events and cell passes that need to be integrated into the
         machine and site model references in the task respectively. Machine events need to be integrated
@@ -183,6 +184,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         Log.LogDebug("Aggregation Task Process --> Integrate machine events and other clean up cell pass trees");
 
+        // Discard all the aggregated cell pass models for the tasks being processed as they have now been aggregated into
+        // the model represented by groupedAggregatedCellPasses
+
+        ProcessedTasks.ForEach(x => x.AggregatedCellPasses = null);
+
         // Iterate through the tasks to integrate the machine events and perform other clean up operations
         for (int I = 1; I < ProcessedTasks.Count; I++) // Zeroth item in the list is Task
         {
@@ -207,14 +213,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
           if (Task.IntermediaryTargetMachine.MachineType == 0)
             Task.IntermediaryTargetMachine.MachineType = processedTask.IntermediaryTargetMachine.MachineType;
-
-          processedTask.AggregatedCellPasses = null;
         }
 
         // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
         // read from the datamodel file itself, then synchronously write it to the DataModel
 
-        Log.LogDebug($"Aggregation Task Process --> Integrating aggregated cell passes into the live site model");
+        Log.LogDebug("Aggregation Task Process --> Integrating aggregated cell passes into the live site model");
 
         IMachine MachineFromDM;
         IProductionEventLists SiteModelMachineTargetValues;
@@ -264,7 +268,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // Perform machine event integration outside of the SiteModel write access interlock as the
         // individual event lists have independent exclusive locks event integration uses.
 
-        Log.LogDebug($"Aggregation Task Process --> Integrating machine events into the live site model");
+        Log.LogDebug("Aggregation Task Process --> Integrating machine events into the live site model");
 
         eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.IntermediaryTargetSiteModel, SiteModelFromDM);
 
@@ -312,7 +316,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             ID = SiteModelFromDM.ID
           };
 
-          long totalPassCountInAggregation = 0;
           // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
           // ... first relabel the passes with the machine ID as it is set to null in the swathing engine
           groupedAggregatedCellPasses?.ScanAllSubGrids(leaf =>
@@ -323,7 +326,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             {
               SubGridUtilities.SubGridDimensionalIterator((x, y) =>
               {
-                uint passCount = segment.PassesData.PassCount(x, y);
+                int passCount = segment.PassesData.PassCount(x, y);
                 for (int i = 0; i < passCount; i++)
                   segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
 
@@ -427,7 +430,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       finally
       {
-        Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for PersistedMachine: {Task?.PersistedTargetMachineID} FinalMachine: {Task?.IntermediaryTargetMachine.ID} in project {Task?.PersistedTargetSiteModelID}");
+        Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files and {totalPassCountInAggregation} cell passes for PersistedMachine: {Task?.PersistedTargetMachineID} FinalMachine: {Task?.IntermediaryTargetMachine.ID} in project {Task?.PersistedTargetSiteModelID}");
       }
 
       return true;

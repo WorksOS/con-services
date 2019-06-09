@@ -83,9 +83,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
               int cellCount = 0;
 
               // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
-              for (uint I = (uint) CellExtent.MinX; I <= CellExtent.MaxX; I++)
+              for (int I = CellExtent.MinX; I <= CellExtent.MaxX; I++)
               {
-                for (uint J = (uint) CellExtent.MinY; J <= CellExtent.MaxY; J++)
+                for (int J = CellExtent.MinY; J <= CellExtent.MaxY; J++)
                 {
                   Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
 
@@ -98,9 +98,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             }
 
             // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
-            for (uint I = (uint)CellExtent.MinX; I <= CellExtent.MaxX; I++)
+            for (int I = CellExtent.MinX; I <= CellExtent.MaxX; I++)
             {
-                for (uint J = (uint)CellExtent.MinY; J <= CellExtent.MaxY; J++)
+                for (int J = CellExtent.MinY; J <= CellExtent.MaxY; J++)
                 {
                     Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
 

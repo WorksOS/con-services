@@ -48,7 +48,7 @@ namespace VSS.TRex.CellDatum.Executors
       var existenceMap = siteModel.ExistenceMap;
 
       // Determine the on-the-ground cell 
-      siteModel.Grid.CalculateIndexOfCellContainingPosition(arg.Point.X, arg.Point.Y, out uint OTGCellX, out uint OTGCellY);
+      siteModel.Grid.CalculateIndexOfCellContainingPosition(arg.Point.X, arg.Point.Y, out int OTGCellX, out int OTGCellY);
 
       if (!existenceMap[OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel])
       {

@@ -128,7 +128,7 @@ namespace VSS.TRex.SubGridTrees.Server
           SetIsMutable(mutability == StorageMutability.Mutable);
         }
 
-        public void AddPass(uint cellX, uint cellY, CellPass Pass)
+        public void AddPass(int cellX, int cellY, CellPass Pass)
         {
             var Segment = Cells.SelectSegment(Pass.Time);
 
@@ -257,7 +257,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             ValueFromLatestCellPass = false;
 
-            for (int I = LastPassIndex; I >= 0; I--)
+            for (int I = (int)LastPassIndex; I >= 0; I--)
             {
                 switch (TypeToCheck)
                 {
@@ -335,6 +335,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         private void CalculateLatestPassDataForPassStack(CellPass[] CellPasses,
+                                                         int passCount,
                                                          ref CellPass LatestData,
                                                          out bool CCVFromLatestCellPass,
                                                          out bool RMVFromLatestCellPass,
@@ -345,20 +346,22 @@ namespace VSS.TRex.SubGridTrees.Server
                                                          out bool MDPFromLatestCellPass,
                                                          out bool CCAFromLatestCellPass)
         {
-            int LastPassIndex = CellPasses.Length - 1;
+            int LastPassIndex = passCount - 1;
 
             if (LastPassIndex >= 0)
             {
-              LatestData.Time = CellPasses[LastPassIndex].Time;
-              LatestData.InternalSiteModelMachineIndex = CellPasses[LastPassIndex].InternalSiteModelMachineIndex;
+              var lastCellPass = CellPasses[LastPassIndex];
 
-              if (CellPasses[LastPassIndex].Height != Consts.NullHeight)
-                LatestData.Height = CellPasses[LastPassIndex].Height;
+              LatestData.Time = lastCellPass.Time;
+              LatestData.InternalSiteModelMachineIndex = lastCellPass.InternalSiteModelMachineIndex;
 
-              if (CellPasses[LastPassIndex].RadioLatency != CellPassConsts.NullRadioLatency)
-                LatestData.RadioLatency = CellPasses[LastPassIndex].RadioLatency;
+              if (lastCellPass.Height != Consts.NullHeight)
+                LatestData.Height = lastCellPass.Height;
 
-              LatestData.MachineSpeed = CellPasses[LastPassIndex].MachineSpeed;
+              if (lastCellPass.RadioLatency != CellPassConsts.NullRadioLatency)
+                LatestData.RadioLatency = lastCellPass.RadioLatency;
+
+              LatestData.MachineSpeed = lastCellPass.MachineSpeed;
             }
 
             GetAppropriateLatestValueFor(CellPasses, ref LatestData, LastPassIndex, GridDataType.GPSMode, out GPSModeFromLatestCellPass);
@@ -423,7 +426,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 // Update the latest data from any previous segment with the information contained in this segment
                 if (Segment.PassesData.PassCount(I, J) > 0)
                 {
-                    CalculateLatestPassDataForPassStack(Segment.PassesData.ExtractCellPasses(I, J),
+                    CalculateLatestPassDataForPassStack(Segment.PassesData.ExtractCellPasses(I, J, out int passCount), passCount,
                         ref ((SubGridCellLatestPassDataWrapper_NonStatic)Segment.LatestPasses).PassData[I, J],
                         out bool CCVFromLatestCellPass,
                         out bool RMVFromLatestCellPass,
@@ -766,16 +769,13 @@ namespace VSS.TRex.SubGridTrees.Server
             UpdateStartEndTimeRange(Source.LeafStartTime);
             UpdateStartEndTimeRange(Source.LeafEndTime);
 
-            uint AddedCount = 0;
-            uint ModifiedCount = 0;
-
-            for (uint I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
+            for (int I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
             {
-                for (uint J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
+                for (int J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                 {
                     // Perform the physical integration of the new cell passes into the target sub grid
-                    uint StartIndex = 0;
-                    uint localPassCount = SourceSegment.PassesData.PassCount(I, J);
+                    int StartIndex = 0;
+                    int localPassCount = SourceSegment.PassesData.PassCount(I, J);
 
                     if (localPassCount == 0)
                         continue;
@@ -794,14 +794,14 @@ namespace VSS.TRex.SubGridTrees.Server
                         if (StartIndex < localPassCount && SourceSegment.PassesData.PassTime(I, J, StartIndex) >= Segment.SegmentInfo.EndTime)
                             continue;
 
-                        uint EndIndex = StartIndex;
+                        int EndIndex = StartIndex;
                         DateTime EndTime = Segment.SegmentInfo.EndTime;
-                        int PassCountMinusOne = (int)localPassCount - 1;
+                        int PassCountMinusOne = localPassCount - 1;
 
                         while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
                             EndIndex++;
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out AddedCount, out ModifiedCount);
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J, out int sourcePassCount), sourcePassCount, StartIndex, EndIndex, out int AddedCount, out int ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
                             Segment.Dirty = true;

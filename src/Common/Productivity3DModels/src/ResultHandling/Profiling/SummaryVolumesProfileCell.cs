@@ -6,9 +6,9 @@
   
     public double InterceptLength { get; private set; }
 
-    public uint OTGCellX { get; private set; }
+    public int OTGCellX { get; private set; }
 
-    public uint OTGCellY { get; private set; }
+    public int OTGCellY { get; private set; }
 
     public float DesignElev { get; private set; }
 
@@ -35,8 +35,8 @@
     public SummaryVolumesProfileCell(
       double station, 
       double interceptLength, 
-      uint otgCellX, 
-      uint otgCellY, 
+      int otgCellX, 
+      int otgCellY, 
       float designElev, 
       float lastCellPassElevation1, 
       float lastCellPassElevation2)

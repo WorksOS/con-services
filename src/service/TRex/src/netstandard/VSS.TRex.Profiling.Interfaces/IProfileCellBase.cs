@@ -7,12 +7,12 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
     /// </summary>
-    uint OTGCellX { get; set; }
+    int OTGCellX { get; set; }
 
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
     /// </summary>
-    uint OTGCellY { get; set; }
+    int OTGCellY { get; set; }
 
     /// <summary>
     /// The real-world distance from the 'start' of the profile line drawn by the user;

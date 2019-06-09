@@ -131,7 +131,7 @@ namespace VSS.TRex.Profiling
     /// <param name="interceptLength"></param>
     /// <param name="includesProductionData"></param>
     public ProfileCell(FilteredMultiplePassInfo filteredPassInfo,
-      uint oTGX, uint oTGY,
+      int oTGX, int oTGY,
       double station, double interceptLength,
       bool includesProductionData = true) : this()
     {
