@@ -113,7 +113,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           $"Get project extents has not been implemented in TRex yet. ProjectUid: {projectUid}"));
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
-      trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+      trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), 
+          It.IsAny<string>(), 
+          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<string>()))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

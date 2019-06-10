@@ -37,8 +37,9 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="siteModelId"></param>
     /// <param name="route"></param>
     /// <param name="customHeaders"></param>
+    /// <param name="queryParameters"></param>
     /// <returns></returns>
     Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
-      IDictionary<string, string> customHeaders = null);
+      IDictionary<string, string> customHeaders = null, string queryParameters = null);
   }
 }

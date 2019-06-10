@@ -69,12 +69,13 @@ namespace VSS.MasterData.Proxies
     /// <param name="siteModelId"></param>
     /// <param name="route"></param>
     /// <param name="customHeaders"></param>
+    /// <param name="queryParameters"></param>
     /// <returns></returns>
-    public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route, IDictionary<string, string> customHeaders = null)
+    public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route, IDictionary<string, string> customHeaders = null, string queryParameters = null)
     {
       log.LogDebug($"{nameof(TResponse)}: Sending the get data request for site model ID: {siteModelId}");
 
-      return SendRequestGet<TResponse>(customHeaders, route);
+      return SendRequestGet<TResponse>(customHeaders, route, queryParameters);
     }
 
     /// <summary>

@@ -6,14 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -97,15 +98,24 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Gets a list of design boundaries in GeoJson format from TRex database.
     /// </summary>
     /// <param name="projectUid">The site model/project unique identifier.</param>
+    /// <param name="designUid">The design file unique identidier.</param>
     /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
     /// <returns>Execution result with a list of design boundaries.</returns>
     [HttpGet("boundaries")]
-    public ContractExecutionResult GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] double? tolerance)
+    public ContractExecutionResult GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] Guid designUid, [FromQuery] double? tolerance)
     {
-      Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid{projectUid} tolerance: {tolerance}");
+      Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid:{projectUid}, designUid:{designUid}, tolerance: {tolerance}");
 
-      return null;
+      const double BOUNDARY_POINTS_INTERVAL = 1.00;
+
+      var designBoundariesRequest = new TRexDesignBoundariesRequest(projectUid, designUid, tolerance ?? BOUNDARY_POINTS_INTERVAL);
+
+      designBoundariesRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<DesignBoundariesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(designBoundariesRequest) as DesignBoundaryResult);
     }
-
   }
 }

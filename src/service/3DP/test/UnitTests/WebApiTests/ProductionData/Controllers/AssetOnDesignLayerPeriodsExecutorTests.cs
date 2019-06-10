@@ -63,7 +63,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       tRexProxy.Setup(x => x.SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<string>()))
         .ReturnsAsync(expectedResult);
 
       var assets = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
@@ -140,7 +141,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       tRexProxy.Setup(x => x.SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<string>()))
         .ReturnsAsync(expectedResult);
 
       var assets = new List<KeyValuePair<Guid, long>>()

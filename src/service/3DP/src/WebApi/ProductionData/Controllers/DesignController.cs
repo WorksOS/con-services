@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       tolerance = tolerance ?? DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL;
 
-      var request = DesignBoundariesRequest.CreateDesignBoundariesRequest(projectId, tolerance.Value);
+      var request = new DesignBoundariesRequest(projectId, projectUid, tolerance.Value);
 
       request.Validate();
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 #if RAPTOR
@@ -13,6 +14,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
@@ -44,17 +46,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           for (var i = 0; i < fileList.Count; i++)
           {
             log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
-
-            string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
-            var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, fileList[i].Path, fileList[i].Name);
-
 #if RAPTOR
             if (useTrexGateway)
 #endif
-              ProcessWithTRex(request, fileDescriptor, ref geoJsonList);
+              ProcessWithTRex(request, fileList[i].ImportedFileUid, ref geoJsonList);
 #if RAPTOR
             else
+            {
+              string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
+              var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, fileList[i].Path, fileList[i].Name);
+
               ProcessWithRaptor(request, fileDescriptor, ref geoJsonList);
+            }
 #endif
           }
 
@@ -73,9 +76,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
     }
 
-    private void ProcessWithTRex(DesignBoundariesRequest request, FileDescriptor fileDescriptor, ref List<JObject> geoJsonList)
+    private void ProcessWithTRex(DesignBoundariesRequest request, string designUid, ref List<JObject> geoJsonList)
     {
-      // ...
+      var siteModelId = request.ProjectUid.ToString();
+      var queryParams = $"?projectUid={siteModelId}&designUid={designUid}&tolerance={request.Tolerance}";
+
+      var returnedResult = trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, $"/design/boundaries", customHeaders, queryParams).Result;
     }
 
 #if RAPTOR
@@ -86,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           fileDescriptor.DesignDescriptor(configStore, log, 0, 0),
           DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtJson,
-          request.tolerance,
+          request.Tolerance,
           TVLPDDistanceUnits.vduMeters,
           0),
         out var memoryStream,
