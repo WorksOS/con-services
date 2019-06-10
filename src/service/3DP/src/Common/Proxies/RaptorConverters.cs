@@ -539,7 +539,7 @@ namespace VSS.Productivity3D.Common.Proxies
         filter.SetDesignNameCellpassState(true);
       }
       else
-        if (filterResult.OnMachineDesignId.HasValue && filterResult.OnMachineDesignId.Value > 0)
+        if (filterResult.OnMachineDesignId.HasValue)
         {
           filter.DesignNameID =
             (int)filterResult.OnMachineDesignId
