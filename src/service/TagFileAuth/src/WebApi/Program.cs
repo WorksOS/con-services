@@ -1,37 +1,43 @@
-﻿using System.IO;
-using System.Net;
-using System.Threading;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using VSS.Log4Net.Extensions;
+using Serilog;
+using VSS.SeriLog.Extensions;
 using VSS.WebApi.Common;
-
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
   /// <summary>
-  /// Application entry point.
+  /// 
   /// </summary>
   public class Program
   {
     /// <summary>
-    /// Default constructory.
+    /// Application entry point.
     /// </summary>
     public static void Main(string[] args)
     {
+      var config = new ConfigurationBuilder()
+                   .AddCommandLine(args)
+                   .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                   .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
+                   .AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
+                   .Build();
 
       var host = new WebHostBuilder().BuildHostWithReflectionException(builder =>
       {
-        return builder.UseKestrel()
-          .UseLibuv(opts => { opts.ThreadCount = 32; })
-          .BuildKestrelWebHost(Startup.LoggerRepoName)
-          .UseStartup<Startup>()
-          .Build();
+        return builder.UseConfiguration(config)
+                      .UseKestrel()
+                      .UseLibuv(opts =>
+                      {
+                        opts.ThreadCount = 32;
+                      })
+                      .UseStartup<Startup>()
+                      .ConfigureLogging(x => SerilogExtensions.Configure(config, "VSS.TagFileAuth.WebAPI.log"))
+                      .UseSerilog()
+                      .Build();
       });
 
-       host.Run();
+      host.Run();
     }
   }
 }
