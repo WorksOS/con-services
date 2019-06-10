@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
       if (configStore.GetValueBool("SCHEDULER_ENABLE_DXF_TILE_GENERATION").HasValue &&
           configStore.GetValueBool("SCHEDULER_ENABLE_DXF_TILE_GENERATION").Value)
       {
-        log.LogInformation($"DXF tile deneration with Pegasus enabled: {JsonConvert.SerializeObject(request)}");
+        log.LogInformation($"DXF tile generation with Pegasus enabled: {JsonConvert.SerializeObject(request)}");
 
         var dataOceanPath = $"{Path.DirectorySeparatorChar}{request.DataOceanRootFolder}{Path.DirectorySeparatorChar}{request.CustomerUid}{Path.DirectorySeparatorChar}{request.ProjectUid}";
         var dxfFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{request.DxfFileName}";
