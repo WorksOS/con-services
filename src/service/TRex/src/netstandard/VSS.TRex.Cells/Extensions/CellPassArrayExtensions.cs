@@ -13,11 +13,11 @@ namespace VSS.TRex.Cells.Extensions
     {
       DateTime minValue = DateTime.MaxValue;
 
-      for (int i = 0; i < passes.Length; i++)
-        if (minValue < passes[i].Time)
+      for (int i = 0, length = passes.Length; i < length; i++)
+        if (passes[i].Time < minValue)
           minValue = passes[i].Time;
 
-      return minValue == DateTime.MaxValue ? DateTime.MinValue : minValue;
+      return minValue;
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ namespace VSS.TRex.Cells.Extensions
     {
       short maxValue = short.MinValue;
 
-      for (int i = 0; i < passes.Length; i++)
+      for (int i = 0, length = passes.Length; i < length; i++)
         if (passes[i].InternalSiteModelMachineIndex > maxValue)
           maxValue = passes[i].InternalSiteModelMachineIndex;
 
