@@ -38,7 +38,7 @@
     /// will represent a smaller fraction of these on-the-ground cells given by
     /// (1/ kSubGridTreeDimension)
     /// </summary>
-    public const uint RootSubGridCellSize = 1 << ((SubGridTreeLevels - 1) * SubGridIndexBitsPerLevel);
+    public const int RootSubGridCellSize = 1 << ((SubGridTreeLevels - 1) * SubGridIndexBitsPerLevel);
 
     /// <summary>
     /// The mask required to extract the portion of a sub grid key relating to a single level in the tree
@@ -51,13 +51,13 @@
     /// parent of the sub grid key identified by SubGridLocalKeyMask
     /// This is 0b00011111 (ie: five bits of an X/Y component of the key)
     /// </summary>
-    public const int SubGridLocalParentKeyMask = 0b1111100000; //0x1F00;
+    public const int SubGridLocalParentKeyMask = SubGridLocalKeyMask << SubGridIndexBitsPerLevel; 
 
     /// <summary>
     /// The number of cells (representing node sub grids, leaf sub grids or on-the-ground cells) that
     /// are represented within a sub grid
     /// </summary>
-    public const uint CellsPerSubGrid = SubGridTreeDimension * SubGridTreeDimension;
+    public const int CellsPerSubGrid = SubGridTreeDimension * SubGridTreeDimension;
 
     /// <summary>
     /// The default cell index offset to translate the
@@ -67,6 +67,6 @@
     /// left hand corner is at the exact center of the grid. This offset is
     /// applied to both the X and Y dimensions of the grid.
     /// </summary>
-    public const uint DefaultIndexOriginOffset = 1 << ((SubGridTreeLevels * SubGridIndexBitsPerLevel) - 1);
+    public const int DefaultIndexOriginOffset = 1 << ((SubGridTreeLevels * SubGridIndexBitsPerLevel) - 1);
   }
 }

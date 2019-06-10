@@ -21,4 +21,10 @@
         SensorFailed,
         Null = 255
     }
+
+    public static class MachineGearConsts
+    {
+    public const int MACHINE_GEAR_MIN_VALUE = (int) MachineGear.Neutral;
+    public const int MACHINE_GEAR_MAX_VALUE = (int) MachineGear.SensorFailed;
+  }
 }

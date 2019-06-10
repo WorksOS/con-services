@@ -133,7 +133,7 @@ namespace VSS.TRex.Tests.Pipelines
     public void Test_RequestAnalyser_SingleSubGridInExistenceMap_IntersectingFilterRestriction_YieldsOneSubGrid()
     {
       var prodDataExistenceMap = new SubGridTreeSubGridExistenceBitMask();
-      prodDataExistenceMap.CalculateIndexOfCellContainingPosition(50, 50, out uint cellX, out uint cellY);
+      prodDataExistenceMap.CalculateIndexOfCellContainingPosition(50, 50, out int cellX, out int cellY);
       prodDataExistenceMap[cellX, cellY] = true;
 
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
@@ -152,7 +152,7 @@ namespace VSS.TRex.Tests.Pipelines
     public void Test_RequestAnalyser_SingleSubGridInExistenceMap_NonIntersectingFilterRestriction_YieldsNoSubGrids()
     {
       var prodDataExistenceMap = new SubGridTreeSubGridExistenceBitMask();
-      prodDataExistenceMap.CalculateIndexOfCellContainingPosition(1000, 1000, out uint cellX, out uint cellY);
+      prodDataExistenceMap.CalculateIndexOfCellContainingPosition(1000, 1000, out int cellX, out int cellY);
       prodDataExistenceMap[cellX, cellY] = true;
 
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
@@ -172,8 +172,8 @@ namespace VSS.TRex.Tests.Pipelines
     {
       var prodDataExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
         prodDataExistenceMap[i, j] = true;
 
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
@@ -197,8 +197,8 @@ namespace VSS.TRex.Tests.Pipelines
     {
       var prodDataExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
         prodDataExistenceMap[i, j] = true;
 
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)

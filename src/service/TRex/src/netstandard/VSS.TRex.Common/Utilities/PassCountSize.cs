@@ -9,7 +9,7 @@
         /// <returns></returns>
         public static int Calculate(int MaxPassCounts)
         {
-            return MaxPassCounts < (1 << 8) ? 1 : MaxPassCounts < (1 << 16) ? 2 : 3;
+            return MaxPassCounts < (1 << 8) ? 1 : MaxPassCounts < (1 << 15) ? 2 : 3;
         }
     }
 }

@@ -18,15 +18,14 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     {
       Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
       {
-        var sourceSegmentPasses = sourceSegment.ExtractCellPasses(i, j);
-        var thePassCount = (uint) sourceSegmentPasses.Length;
+        var sourceSegmentPasses = sourceSegment.ExtractCellPasses(i, j, out int sourcePassCount);
 
-        if (thePassCount == 0)
+        if (sourcePassCount == 0)
           return;
 
-        uint countInCell = 0;
+        int countInCell = 0;
 
-        for (uint PassIndex = 0; PassIndex < thePassCount; PassIndex++)
+        for (int PassIndex = 0; PassIndex < sourcePassCount; PassIndex++)
         {
           if (sourceSegmentPasses[PassIndex].Time < atAndAfterTime)
             countInCell++;
@@ -37,14 +36,16 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         // countInCell represents the number of cells that should remain in the source segment.
         // The remainder are to be moved to this segment
 
-        var adoptedPassCount = thePassCount - countInCell;
+        var adoptedPassCount = sourcePassCount - countInCell;
         if (adoptedPassCount > 0)
         {
-          segment.Integrate(i, j, sourceSegmentPasses, countInCell, thePassCount - 1, out uint AddedCount, out _);
+          segment.Integrate(i, j, sourceSegmentPasses, sourcePassCount, countInCell, sourcePassCount - 1, out int AddedCount, out _);
           segment.SegmentPassCount += AddedCount;
 
-          // Set the new number of passes and reset the length of the cell passes in the cell the passes were adopted from
           sourceSegment.SegmentPassCount -= adoptedPassCount;
+
+          // Set the new number of passes using AllocatePasses(). This will reduce the tracked pass count without incurring the
+          // overhead of resizing the array. Use AllocatePassesExact() if this behaviour is required.
           sourceSegment.AllocatePasses(i, j, countInCell);
         }
       });

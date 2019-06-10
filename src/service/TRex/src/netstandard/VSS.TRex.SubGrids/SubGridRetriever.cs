@@ -247,7 +247,7 @@ namespace VSS.TRex.SubGrids
     /// <param name="cellPass"></param>
     /// <param name="x"></param>
     /// <param name="y"></param>
-    private void AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref CellPass cellPass, uint x, uint y)
+    private void AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref CellPass cellPass, int x, int y)
     {
       switch (_gridDataType)
       {
@@ -324,7 +324,7 @@ namespace VSS.TRex.SubGrids
     /// If the grid data type is not represented in the latest cell pass information this method returns false.
     /// </summary>
     /// <returns></returns>
-    private bool LatestCellPassAttributeIsNull(uint StripeIndex, uint J)
+    private bool LatestCellPassAttributeIsNull(int StripeIndex, int J)
     {
       switch (_gridDataType)
       {

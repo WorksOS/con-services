@@ -214,8 +214,8 @@ namespace VSS.TRex.Profiling
       {
         for (int I = 0; I < cellCounter; I++)
         {
-          uint cellX = profileCellList[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
-          uint cellY = profileCellList[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
+          int cellX = profileCellList[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
+          int cellY = profileCellList[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
           if (heightsGrid1 != null)
             profileCellList[I].LastCellPassElevation1 = heightsGrid1.Cells[cellX, cellY];
           if (heightsGrid2 != null)

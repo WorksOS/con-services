@@ -342,14 +342,14 @@ namespace VSS.TRex.SubGridTrees
         /// Count the number of bits in the bit mask that are set to on (1)
         /// </summary>
         /// <returns></returns>
-        public uint CountBits()
+        public int CountBits()
         {
             uint result = 0;
 
             for (int i = 0; i < SubGridBitsHelper.BitsArrayLength; i++)
                 result += BitCounterHelper.CountSetBits(Bits[i]);
 
-            return result;
+            return (int)result;
         }
 
         /// <summary>

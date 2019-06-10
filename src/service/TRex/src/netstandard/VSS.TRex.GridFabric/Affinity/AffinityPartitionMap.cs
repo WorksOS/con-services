@@ -44,7 +44,7 @@ namespace VSS.TRex.GridFabric.Affinity
     private ICacheAffinity Affinity { get; set; }
     private IClusterNode LocalNode { get; set; }
 
-    protected static readonly uint NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueUint("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
+    protected static readonly int NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
 
     /// <summary>
     /// Constructor accepting a cache reference to obtain the partition map information for

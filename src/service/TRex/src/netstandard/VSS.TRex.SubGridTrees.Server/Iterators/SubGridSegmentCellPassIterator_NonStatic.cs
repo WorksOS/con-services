@@ -54,7 +54,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         /// <returns></returns>
         protected override CellPass ExtractCellPass()
         {
-            return SegmentIterator.CurrentSubGridSegment.PassesData.ExtractCellPass(CellX, CellY, unchecked((uint)cellInSegmentIndex));
+            return SegmentIterator.CurrentSubGridSegment.PassesData.ExtractCellPass(CellX, CellY, cellInSegmentIndex);
         }
     }
 }

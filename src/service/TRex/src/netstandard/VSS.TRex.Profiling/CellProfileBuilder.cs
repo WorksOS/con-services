@@ -36,7 +36,7 @@ namespace VSS.TRex.Profiling
 
     private bool SlicerToolUsed;
     private bool ReturnDesignElevation;
-    private uint OTGCellX, OTGCellY;
+    private int OTGCellX, OTGCellY;
 
     private SubGridCellAddress CurrentSubgridOrigin;
     private SubGridCellAddress ThisSubgridOrigin;
@@ -198,7 +198,7 @@ namespace VSS.TRex.Profiling
     /// <param name="OTGY"></param>
     /// <param name="Station"></param>
     /// <param name="InterceptLength"></param>
-    private void AddCellPassesDataToList(uint OTGX, uint OTGY, double Station, double InterceptLength)
+    private void AddCellPassesDataToList(int OTGX, int OTGY, double Station, double InterceptLength)
     {
       IProfileCellBase ProfileCell = new T
       {

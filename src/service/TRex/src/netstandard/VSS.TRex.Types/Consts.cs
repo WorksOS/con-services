@@ -125,7 +125,7 @@ namespace VSS.TRex.Common
     /// <summary>
     /// The number of partitions configured for caches that store spatial subgrid data
     /// </summary>
-    public const uint NUMPARTITIONS_PERDATACACHE = 1024;                   // override with: NUMPARTITIONS_PERDATACACHE
+    public const int NUMPARTITIONS_PERDATACACHE = 1024;                   // override with: NUMPARTITIONS_PERDATACACHE
 
     /// <summary>
     /// The minimum tag file size required to contain even basic configuration

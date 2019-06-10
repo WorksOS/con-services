@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     ISubGridCellPassesDataSegment SelectSegment(DateTime time);
     bool CleaveSegment(ISubGridCellPassesDataSegment CleavingSegment, 
       List<ISubGridSpatialAffinityKey> PersistedClovenSegments,
-      uint subGridSegmentPassCountLimit = 0);
+      int subGridSegmentPassCountLimit = 0);
 
     bool MergeSegments(ISubGridCellPassesDataSegment MergeToSegment,
       ISubGridCellPassesDataSegment MergeFromSegment);

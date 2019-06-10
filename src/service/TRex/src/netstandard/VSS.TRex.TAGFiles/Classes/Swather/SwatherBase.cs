@@ -36,7 +36,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
         public Fence InterpolationFence { get; set; }
 
-        public void CommitCellPassToModel(uint cellX, uint cellY,
+        public void CommitCellPassToModel(int cellX, int cellY,
                                           double gridX, double gridY,
                                           CellPass processedCellPass)
         {

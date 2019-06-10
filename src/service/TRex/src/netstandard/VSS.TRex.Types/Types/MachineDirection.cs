@@ -20,4 +20,10 @@
         /// </summary>
         Unknown
     }
+
+    public static class MachineDirectionConsts
+    {
+      public const int MACHINE_DIRECTION_MIN_VALUE = (int) MachineDirection.Forward;
+      public const int MACHINE_DIRECTION_MAX_VALUE = (int) MachineDirection.Unknown;
+    }
 }

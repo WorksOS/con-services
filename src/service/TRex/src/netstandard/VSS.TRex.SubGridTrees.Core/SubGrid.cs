@@ -37,13 +37,13 @@ namespace VSS.TRex.SubGridTrees
         /// Grid cell X Origin of the bottom left hand cell in this sub grid. 
         /// Origin is wrt to cells of the spatial dimension held by this sub grid
         /// </summary>
-        public uint OriginX { get; set; } // int.MinValue;
+        public int OriginX { get; set; } // int.MinValue;
 
         /// <summary>
         /// Grid cell Y Origin of the bottom left hand cell in this sub grid. 
         /// Origin is wrt to cells of the spatial dimension held by this sub grid
         /// </summary>
-        public uint OriginY { get; set; } // int.MinValue;
+        public int OriginY { get; set; } // int.MinValue;
 
         /// <summary>
         /// Dirty property used to indicate the presence of changes that are not persisted.
@@ -80,12 +80,12 @@ namespace VSS.TRex.SubGridTrees
         /// The number of on-the-ground cells that the span of this sub grid covers along each axis
         /// </summary>
         /// <returns></returns>
-        public uint AxialCellCoverageByThisSubGrid() => (uint)SubGridTreeConsts.SubGridTreeDimension << ((Owner.NumLevels - Level) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
+        public int AxialCellCoverageByThisSubGrid() => SubGridTreeConsts.SubGridTreeDimension << ((Owner.NumLevels - Level) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
         /// <summary>
         /// The number of on-the-ground cells that the span of a child sub grid of this sub grid covers along each axis
         /// </summary>
-        public uint AxialCellCoverageByChildSubGrid() => AxialCellCoverageByThisSubGrid() >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+        public int AxialCellCoverageByChildSubGrid() => AxialCellCoverageByThisSubGrid() >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
         /// <summary>
         /// Sets the origin position of this sub grid to the supplied X and Y values within the cells of the parent sub grid. 
@@ -93,7 +93,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
-        public void SetOriginPosition(uint CellX, uint CellY)
+        public void SetOriginPosition(int CellX, int CellY)
         {
             if (Parent == null)
             { 
@@ -117,7 +117,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="originX"></param>
         /// <param name="originY"></param>
-        public void SetAbsoluteOriginPosition(uint originX, uint originY)
+        public void SetAbsoluteOriginPosition(int originX, int originY)
         {
             if (Parent != null)
             {
@@ -140,7 +140,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellY"></param>
         /// <param name="SubGridX"></param>
         /// <param name="SubGridY"></param>
-        public void GetSubGridCellIndex(uint CellX, uint CellY, out byte SubGridX, out byte SubGridY)
+        public void GetSubGridCellIndex(int CellX, int CellY, out byte SubGridX, out byte SubGridY)
         {
             int SHRValue = (Owner.NumLevels - Level) * SubGridTreeConsts.SubGridIndexBitsPerLevel;
             SubGridX = (byte)((CellX >> SHRValue) & SubGridTreeConsts.SubGridLocalKeyMask);
@@ -206,8 +206,8 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="WorldOriginY"></param>
         public virtual void CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY)
         {
-            WorldOriginX = ((int)OriginX - Owner.IndexOriginOffset) * Owner.CellSize;
-            WorldOriginY = ((int)OriginY - Owner.IndexOriginOffset) * Owner.CellSize;
+            WorldOriginX = (OriginX - Owner.IndexOriginOffset) * Owner.CellSize;
+            WorldOriginY = (OriginY - Owner.IndexOriginOffset) * Owner.CellSize;
         }
 
         /// <summary>
@@ -256,9 +256,9 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
-        public bool ContainsOTGCell(uint CellX, uint CellY)
+        public bool ContainsOTGCell(int CellX, int CellY)
         {
-           uint AxialCoverage = AxialCellCoverageByThisSubGrid();
+           int AxialCoverage = AxialCellCoverageByThisSubGrid();
 
            return (CellX >= OriginX) && (CellX < OriginX + AxialCoverage) && (CellY >= OriginY) && (CellY < OriginY + AxialCoverage);
         }
@@ -330,8 +330,8 @@ namespace VSS.TRex.SubGridTrees
         public virtual void Read(BinaryReader reader, byte [] buffer)
         {
             Level = reader.ReadByte();
-            OriginX = reader.ReadUInt32();
-            OriginY = reader.ReadUInt32();
+            OriginX = reader.ReadInt32();
+            OriginY = reader.ReadInt32();
         }
 
         /// <summary>

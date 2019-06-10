@@ -176,11 +176,11 @@ namespace VSS.TRex.Designs
       return false;
     }
 
-    public override bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY) => false;
+    public override bool HasElevationDataForSubGridPatch(int SubGridX, int SubGridY) => false;
 
     public override bool HasFiltrationDataForSubGridPatch(double X, double Y) => false;
 
-    public override bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubGridY) => false;
+    public override bool HasFiltrationDataForSubGridPatch(int SubGridX, int SubGridY) => false;
 
     /// <summary>
     /// Computes the requested geometric profile over the design and returns the result

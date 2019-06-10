@@ -77,7 +77,7 @@ namespace VSS.TRex.Profiling
         // Go over set bits and determine if they are in Design fence boundary
         mask.ForEachSetBit((X, Y) =>
         {
-          tree.GetCellCenterPosition((uint)(currentSubGridOrigin.X + X), (uint)(currentSubGridOrigin.Y + Y), out var CX, out var CY);
+          tree.GetCellCenterPosition(currentSubGridOrigin.X + X, currentSubGridOrigin.Y + Y, out var CX, out var CY);
           if (!cellFilter.AlignmentFence.IncludesPoint(CX, CY))
           {
             mask.ClearBit(X, Y); // remove interest as its not in design boundary

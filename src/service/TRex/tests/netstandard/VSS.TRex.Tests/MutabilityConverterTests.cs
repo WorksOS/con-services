@@ -142,7 +142,7 @@ namespace VSS.TRex.Tests
 
       // Take a copy of the mutable cells and cell passes for later reference
       var mutableLatest = mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
-      CellPass[,][] mutablePasses = mutableSegment.PassesData.GetState();
+      CellPass[,][] mutablePasses = mutableSegment.PassesData.GetState(out var cellPassCounts);
 
       MemoryStream mutableStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       using (var writer = new BinaryWriter(mutableStream, Encoding.UTF8, true))
@@ -185,7 +185,7 @@ namespace VSS.TRex.Tests
       // Check the heights specially to account for tolerance differences
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        for (uint i = 0; i < immutableSegment.PassesData.PassCount(x, y); i++)
+        for (int i = 0; i < immutableSegment.PassesData.PassCount(x, y); i++)
         {
           double mutableValue = mutableSegment.PassesData.PassHeight(x, y, i);
           double immutableValue = immutableSegment.PassesData.PassHeight(x, y, i);
@@ -199,7 +199,7 @@ namespace VSS.TRex.Tests
       // Check the times specially to account for tolerance differences
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        for (uint i = 0; i < immutableSegment.PassesData.PassCount(x, y); i++)
+        for (int i = 0; i < immutableSegment.PassesData.PassCount(x, y); i++)
         {
 
           DateTime mutableValue = mutableSegment.PassesData.PassTime(x, y, i);
@@ -214,7 +214,7 @@ namespace VSS.TRex.Tests
       // Check that the cell passes in the cell pass stacks for the segment match to tolerance given the compressed lossiness
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        for (uint i = 0; i < immutableSegment.PassesData.PassCount(x, y); i++)
+        for (int i = 0; i < immutableSegment.PassesData.PassCount(x, y); i++)
         {
           CellPass cellPass = immutableSegment.PassesData.ExtractCellPass(x, y, i);
 

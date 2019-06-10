@@ -102,7 +102,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       subgrid.SetToZeroHeight();
 
-      Assert.Equal((uint) subgrid.CountNonNullCells(), SubGridTreeConsts.CellsPerSubGrid);
+      Assert.Equal((int) subgrid.CountNonNullCells(), SubGridTreeConsts.CellsPerSubGrid);
 
       int NumEqualZero = 0;
       ClientHeightLeafSubGrid.ForEachStatic((x, y) =>
@@ -110,7 +110,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
         if (subgrid.Cells[x, y] == 0.0) NumEqualZero++;
       });
 
-      Assert.Equal((uint) NumEqualZero, SubGridTreeConsts.CellsPerSubGrid);
+      Assert.Equal((int) NumEqualZero, SubGridTreeConsts.CellsPerSubGrid);
     }
 
     [Fact]

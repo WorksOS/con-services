@@ -39,8 +39,8 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.Equal(leafSubgrid.Level, SubGridTreeConsts.SubGridTreeLevels);
             Assert.Equal(leafSubgrid.AxialCellCoverageByThisSubGrid(), SubGridTreeConsts.SubGridTreeDimension);
 
-            Assert.Equal(0U, leafSubgrid.OriginX);
-            Assert.Equal(0U, leafSubgrid.OriginY);
+            Assert.Equal(0, leafSubgrid.OriginX);
+            Assert.Equal(0, leafSubgrid.OriginY);
             Assert.Equal("0:0", leafSubgrid.Moniker());
 
             // Does the dirty flag change?
@@ -327,7 +327,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // a part of the newly created subgrid. First, get the cell enclosing that worl location and then ask
             // the subgrid if it contains it
 
-            uint CellX, CellY;
+            int CellX, CellY;
 
             Assert.True(tree.CalculateIndexOfCellContainingPosition(0.5, 0.5, out CellX, out CellY),
                           "Failed to get cell index for (0.5, 0.5)");
@@ -469,8 +469,8 @@ namespace VSS.TRex.Tests.SubGridTrees
 
                 int numCalls = 0;
                 mockSubGrid
-                  .Setup(x => x.GetSubGridContainingCell(It.IsAny<uint>(), It.IsAny<uint>()))
-                  .Returns((uint cellX, uint cellY) =>
+                  .Setup(x => x.GetSubGridContainingCell(It.IsAny<int>(), It.IsAny<int>()))
+                  .Returns((int cellX, int cellY) =>
                   {
                     numCalls++;
                     if (numCalls == 1) return null;

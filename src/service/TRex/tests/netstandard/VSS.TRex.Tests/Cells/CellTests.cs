@@ -6,8 +6,20 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Cells
 {
-        public class CellTests
+    public class CellTests
     {
+        /// <summary>
+        /// Ensure the IsEmpty mechanism reports the cell empty of cell passes
+        /// </summary>
+        [Fact]
+        public void Test_Cell_EmptyCellCreation()
+        {
+          Cell_NonStatic c = new Cell_NonStatic();
+      
+          Assert.Equal(0, c.PassCount);
+          Assert.True(c.IsEmpty, "Cell does not report itself as being empty of cell passes");
+        }
+
         /// <summary>
         /// Ensure the IsEmpty mechanism reports the cell empty of cell passes
         /// </summary>
@@ -16,8 +28,20 @@ namespace VSS.TRex.Tests.Cells
         {
             Cell_NonStatic c = new Cell_NonStatic(0);
 
-            Assert.Equal(0U, c.PassCount);
+            Assert.Equal(0, c.PassCount);
             Assert.True(c.IsEmpty, "Cell does not report itself as being empty of cell passes");
+        }
+
+        /// <summary>
+        /// Ensure the IsEmpty mechanism reports the cell empty of cell passes
+        /// </summary>
+        [Fact]
+        public void Test_Cell_NonEmptyCellPassesOnCreation()
+        {
+          Cell_NonStatic c = new Cell_NonStatic(1);
+
+          Assert.Equal(0, c.PassCount);
+          Assert.True(c.IsEmpty, "Cell does not report itself as being empty of cell passes");
         }
 
         /// <summary>
@@ -26,11 +50,12 @@ namespace VSS.TRex.Tests.Cells
         [Fact]
         public void Test_Cell_CellPassAllocation()
         {
-            Cell_NonStatic c = new Cell_NonStatic(0);
+            Cell_NonStatic c = new Cell_NonStatic();
 
             c.AllocatePasses(10);
 
-            Assert.Equal(10U, c.PassCount);
+            Assert.Equal(0, c.PassCount);
+            Assert.True(c.Passes.Length >= 10);
         }
 
         /// <summary>
@@ -39,18 +64,18 @@ namespace VSS.TRex.Tests.Cells
         [Fact]
         public void Test_Cell_AddCellPassOrdered()
         {
-            Cell_NonStatic c = new Cell_NonStatic(0);
+            Cell_NonStatic c = new Cell_NonStatic();
 
             c.AddPass(CellPassTests.ATestCellPass());
 
-            Assert.Equal(1U, c.PassCount);
+            Assert.Equal(1, c.PassCount);
 
             CellPass cp = CellPassTests.ATestCellPass();
             Assert.True(c.Passes[0].Equals(cp), "Added cell pass not the same content as it was constructed with");
 
             c.AddPass(CellPassTests.ATestCellPass2());
 
-            Assert.Equal(2U, c.PassCount);
+            Assert.Equal(2, c.PassCount);
 
             CellPass cp2 = CellPassTests.ATestCellPass2();
             Assert.True(c.Passes[1].Equals(cp2), "Added cell pass not the same content as it was constructed with");
@@ -59,7 +84,7 @@ namespace VSS.TRex.Tests.Cells
         [Fact]
         public void Test_Cell_AddCellPass_WithDuplicateTime()
         {
-          Cell_NonStatic c = new Cell_NonStatic(0);
+          Cell_NonStatic c = new Cell_NonStatic();
 
           c.AddPass(CellPassTests.ATestCellPass(), -1);
 
@@ -73,18 +98,18 @@ namespace VSS.TRex.Tests.Cells
     [Fact]
         public void Test_Cell_AddCellPassUnOrdered()
         {
-            Cell_NonStatic c = new Cell_NonStatic(0);
+            Cell_NonStatic c = new Cell_NonStatic();
 
             c.AddPass(CellPassTests.ATestCellPass2());
 
-            Assert.Equal(1U, c.PassCount);
+            Assert.Equal(1, c.PassCount);
 
             CellPass cp2 = CellPassTests.ATestCellPass2();
             Assert.True(c.Passes[0].Equals(cp2), "Added cell pass not the same content as it was constructed with");
 
             c.AddPass(CellPassTests.ATestCellPass());
 
-            Assert.Equal(2U, c.PassCount);
+            Assert.Equal(2, c.PassCount);
 
             CellPass cp1 = CellPassTests.ATestCellPass();
             Assert.True(c.Passes[0].Equals(cp1), "Added cell pass not the same content as it was constructed with");
@@ -97,22 +122,22 @@ namespace VSS.TRex.Tests.Cells
         [Fact]
         public void Test_Cell_TopMostHeight()
         {
-            Cell_NonStatic c1 = new Cell_NonStatic(0);
+            Cell_NonStatic c1 = new Cell_NonStatic();
 
             // Add two cell passes in ascending order
             c1.AddPass(CellPassTests.ATestCellPass());
             c1.AddPass(CellPassTests.ATestCellPass2());
 
-            Assert.Equal(2U, c1.PassCount);
+            Assert.Equal(2, c1.PassCount);
             Assert.Equal(50, c1.TopMostHeight);
 
-            // Add two cell passes in ascending order
-            Cell_NonStatic c2 = new Cell_NonStatic(0);
+            // Add two cell passes in descending order
+            Cell_NonStatic c2 = new Cell_NonStatic();
 
             c2.AddPass(CellPassTests.ATestCellPass2());
             c2.AddPass(CellPassTests.ATestCellPass());
 
-            Assert.Equal(2U, c2.PassCount);
+            Assert.Equal(2, c2.PassCount);
             Assert.Equal(50, c2.TopMostHeight);
         }
 
@@ -123,7 +148,7 @@ namespace VSS.TRex.Tests.Cells
         public void Test_Cell_LocateTime()
         {
             // Create a cell with two cell passes with different times
-            Cell_NonStatic c = new Cell_NonStatic(0);
+            Cell_NonStatic c = new Cell_NonStatic();
             CellPass cp1 = CellPassTests.ATestCellPass();
             CellPass cp2 = CellPassTests.ATestCellPass2();
 
@@ -163,7 +188,7 @@ namespace VSS.TRex.Tests.Cells
         [Fact]
         public void Test_Cell_ReplaceCellPass()
         {
-            Cell_NonStatic c = new Cell_NonStatic(0);
+            Cell_NonStatic c = new Cell_NonStatic();
 
             // Add a cell pass then replace it with a second cell pass
             c.AddPass(CellPassTests.ATestCellPass());
@@ -178,16 +203,16 @@ namespace VSS.TRex.Tests.Cells
         [Fact]
         public void Test_Cell_RemoveCellPass()
         {
-            Cell_NonStatic c = new Cell_NonStatic(0);
+            Cell_NonStatic c = new Cell_NonStatic();
 
             // Add a cell pass then replace it with a second cell pass
             c.AddPass(CellPassTests.ATestCellPass());
             c.AddPass(CellPassTests.ATestCellPass2());
 
-            Assert.Equal(2U, c.PassCount);
+            Assert.Equal(2, c.PassCount);
 
             c.RemovePass(0);
-            Assert.Equal(1U, c.PassCount);
+            Assert.Equal(1, c.PassCount);
 
             // Check the remaining pass is the one we think it is
             Assert.True(c.Passes[0].Equals(CellPassTests.ATestCellPass2()), "Remaining pass after removal is not the expected pass");
@@ -204,17 +229,17 @@ namespace VSS.TRex.Tests.Cells
             CellPass cp1 = CellPassTests.ATestCellPass();
             CellPass cp2 = CellPassTests.ATestCellPass2();
 
-            Cell_NonStatic c1 = new Cell_NonStatic(0);
+            Cell_NonStatic c1 = new Cell_NonStatic();
             c1.AddPass(cp1);
 
-            Cell_NonStatic c2 = new Cell_NonStatic(0);
+            Cell_NonStatic c2 = new Cell_NonStatic();
             c2.AddPass(cp2);
 
             // Test integration of later cell pass to list with earlier cell pass resulting in 1 added and 0 modified
-            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out uint addedCount, out uint modifiedCount);
+            c1.Integrate(c2.Passes, c2.PassCount, 0, c2.PassCount - 1, out int addedCount, out int modifiedCount);
 
-            Assert.Equal(1U, addedCount);
-            Assert.Equal(0U, modifiedCount);
+            Assert.Equal(1, addedCount);
+            Assert.Equal(0, modifiedCount);
 
             Assert.True(c2.PassCount == 1 && c2.Passes[0].Equals(cp2), "Integration unexpectedly modified source cell");
             Assert.True(c1.PassCount == 2 && c1.Passes[0].Equals(cp1) && c1.Passes[1].Equals(cp2),
@@ -231,20 +256,20 @@ namespace VSS.TRex.Tests.Cells
           CellPass cp1 = CellPassTests.ATestCellPass();
           CellPass cp2 = CellPassTests.ATestCellPass2();
 
-          Cell_NonStatic c1 = new Cell_NonStatic(0);
+          Cell_NonStatic c1 = new Cell_NonStatic();
           c1.AddPass(cp1);
           cp1.Time = cp1.Time.AddSeconds(1);
           c1.AddPass(cp1);
 
-          Cell_NonStatic c2 = new Cell_NonStatic(0);
+          Cell_NonStatic c2 = new Cell_NonStatic();
           c2.AddPass(cp2);
           cp2.Time = cp2.Time.AddSeconds(1);
           c2.AddPass(cp2);
 
-          c2.Integrate(c1.Passes, 0, c1.PassCount - 1, out uint addedCount, out uint modifiedCount);
+          c2.Integrate(c1.Passes, c1.PassCount, 0, c1.PassCount - 1, out int addedCount, out int modifiedCount);
 
-          Assert.Equal(2U, addedCount);
-          Assert.Equal(0U, modifiedCount);
+          Assert.Equal(2, addedCount);
+          Assert.Equal(0, modifiedCount);
         }
 
         /// <summary>
@@ -255,16 +280,16 @@ namespace VSS.TRex.Tests.Cells
         {
           CellPass cp1 = CellPassTests.ATestCellPass();
 
-          Cell_NonStatic c1 = new Cell_NonStatic(0);
+          Cell_NonStatic c1 = new Cell_NonStatic();
           c1.AddPass(cp1);
 
-          Cell_NonStatic c2 = new Cell_NonStatic(0);
+          Cell_NonStatic c2 = new Cell_NonStatic();
 
           // Test integration of cell with no cell passes
-          c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out uint addedCount, out uint modifiedCount);
+          c1.Integrate(c2.Passes, c2.PassCount, 0, c2.PassCount - 1, out int addedCount, out int modifiedCount);
 
-          Assert.Equal(0U, addedCount);
-          Assert.Equal(0U, modifiedCount);
+          Assert.Equal(0, addedCount);
+          Assert.Equal(0, modifiedCount);
         }
 
     /// <summary>
@@ -276,17 +301,17 @@ namespace VSS.TRex.Tests.Cells
             // Create cells with the same single cell pass in each
             CellPass cp1 = CellPassTests.ATestCellPass();
 
-            Cell_NonStatic c1 = new Cell_NonStatic(0);
+            Cell_NonStatic c1 = new Cell_NonStatic();
             c1.AddPass(cp1);
 
-            Cell_NonStatic c2 = new Cell_NonStatic(0);
+            Cell_NonStatic c2 = new Cell_NonStatic();
             c2.AddPass(cp1);
 
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 0 modified (as identical cell passes are not a modification)
-            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out uint addedCount, out uint modifiedCount);
+            c1.Integrate(c2.Passes, c2.PassCount, 0, c2.PassCount - 1, out int addedCount, out int modifiedCount);
 
-            Assert.Equal(0U, addedCount);
-            Assert.Equal(0U, modifiedCount);
+            Assert.Equal(0, addedCount);
+            Assert.Equal(0, modifiedCount);
 
             Assert.True(c2.PassCount == 1 && c2.Passes[0].Equals(cp1), "Integration unexpectedly modified source cell");
             Assert.True(c1.PassCount == 1 && c1.Passes[0].Equals(cp1),
@@ -297,12 +322,12 @@ namespace VSS.TRex.Tests.Cells
             c2.Passes[0].InternalSiteModelMachineIndex = 10000;
 
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 1 modified (as identical cell passes are not a modification)
-            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
+            c1.Integrate(c2.Passes, c2.PassCount, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
 
-            Assert.Equal(0U, addedCount);
-            Assert.Equal(1U, modifiedCount);
+            Assert.Equal(0, addedCount);
+            Assert.Equal(1, modifiedCount);
 
-            Assert.Equal(1U, c1.PassCount);
+            Assert.Equal(1, c1.PassCount);
         }
 
     }

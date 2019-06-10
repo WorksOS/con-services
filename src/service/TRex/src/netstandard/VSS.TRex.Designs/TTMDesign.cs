@@ -401,15 +401,15 @@ namespace VSS.TRex.Designs
 
     public override bool HasElevationDataForSubGridPatch(double X, double Y)
     {
-      subGridIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint SubGridX, out uint SubGridY);
+      subGridIndex.CalculateIndexOfCellContainingPosition(X, Y, out int SubGridX, out int SubGridY);
       return subGridIndex[SubGridX, SubGridY];
     }
 
-    public override bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY) => subGridIndex[SubGridX, SubGridY];
+    public override bool HasElevationDataForSubGridPatch(int SubGridX, int SubGridY) => subGridIndex[SubGridX, SubGridY];
 
     public override bool HasFiltrationDataForSubGridPatch(double X, double Y) => false;
 
-    public override bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubGridY) => false;
+    public override bool HasFiltrationDataForSubGridPatch(int SubGridX, int SubGridY) => false;
 
     private double GetHeight(Triangle tri, double X, double Y)
     {
@@ -449,7 +449,7 @@ namespace VSS.TRex.Designs
 
       // Search in the sub grid triangle list for this sub grid from the spatial index
 
-      SpatialIndexOptimised.CalculateIndexOfCellContainingPosition(X, Y, out uint CellX, out uint CellY);
+      SpatialIndexOptimised.CalculateIndexOfCellContainingPosition(X, Y, out int CellX, out int CellY);
 
       TriangleArrayReference arrayReference = SpatialIndexOptimised[CellX, CellY];
 
@@ -507,7 +507,7 @@ namespace VSS.TRex.Designs
 
       // Search in the sub grid triangle list for this sub grid from the spatial index
       // All cells in this sub grid will be contained in the same triangle list from the spatial index
-      SpatialIndexOptimised.CalculateIndexOfCellContainingPosition(OriginXPlusHalfCellSize, OriginYPlusHalfCellSize, out uint CellX, out uint CellY);
+      SpatialIndexOptimised.CalculateIndexOfCellContainingPosition(OriginXPlusHalfCellSize, OriginYPlusHalfCellSize, out int CellX, out int CellY);
       TriangleArrayReference arrayReference = SpatialIndexOptimised[CellX, CellY];
       int triangleCount = arrayReference.Count;
 

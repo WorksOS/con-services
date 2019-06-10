@@ -100,8 +100,8 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
       for (long I = 0; I < SubGridCount; I++)
       {
         // Read in the the origin for the node
-        uint OriginX = reader.ReadUInt32();
-        uint OriginY = reader.ReadUInt32();
+        int OriginX = reader.ReadInt32();
+        int OriginY = reader.ReadInt32();
 
         // Create a node to hold the bits
         ISubGrid SubGrid = tree.ConstructPathToCell(OriginX, OriginY, Types.SubGridPathConstructionType.CreateLeaf);

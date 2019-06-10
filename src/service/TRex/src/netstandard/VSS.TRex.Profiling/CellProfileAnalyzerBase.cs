@@ -141,8 +141,8 @@ namespace VSS.TRex.Profiling
       // elevation sub grids and populate it with the common elements for this set of sub grids being requested.
       SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
       (siteModelID:  SiteModel.ID,
-       oTGCellBottomLeftX: uint.MaxValue,
-       oTGCellBottomLeftY: uint.MaxValue,
+       oTGCellBottomLeftX: int.MaxValue,
+       oTGCellBottomLeftY: int.MaxValue,
        cellSize: SiteModel.CellSize,
        includedSurveyedSurfaces: FilteredSurveyedSurfaces,
        surveyedSurfacePatchType: SurveyedSurfacePatchType.CompositeElevations,

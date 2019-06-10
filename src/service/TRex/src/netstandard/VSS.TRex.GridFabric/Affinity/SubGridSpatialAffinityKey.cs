@@ -31,12 +31,12 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// The X ordinate cell address of the origin cell for the sub grid
     /// </summary>
-    public uint SubGridX { get; set; }
+    public int SubGridX { get; set; }
 
     /// <summary>
     /// The Y ordinate cell address of the origin cell for the sub grid
     /// </summary>
-    public uint SubGridY { get; set; }
+    public int SubGridY { get; set; }
 
     /// <summary>
     /// The segment identifier for the sub grid data. If the segment identifier is empty then the element represents
@@ -54,7 +54,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
     /// <param name="segmentIdentifier"></param>
-    public SubGridSpatialAffinityKey(long version, Guid projectID, uint subGridX, uint subGridY, string segmentIdentifier)
+    public SubGridSpatialAffinityKey(long version, Guid projectID, int subGridX, int subGridY, string segmentIdentifier)
     {
       Version = version;
       ProjectUID = projectID;
@@ -88,7 +88,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <param name="projectID"></param>
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
-    public SubGridSpatialAffinityKey(long version, Guid projectID, uint subGridX, uint subGridY) : this(version, projectID, subGridX, subGridY, "")
+    public SubGridSpatialAffinityKey(long version, Guid projectID, int subGridX, int subGridY) : this(version, projectID, subGridX, subGridY, "")
     {
     }
 
@@ -134,8 +134,8 @@ namespace VSS.TRex.GridFabric.Affinity
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
-      SubGridX = (uint) reader.ReadInt();
-      SubGridY = (uint) reader.ReadInt();
+      SubGridX = reader.ReadInt();
+      SubGridY = reader.ReadInt();
       SegmentIdentifier = reader.ReadString();
     }
   }

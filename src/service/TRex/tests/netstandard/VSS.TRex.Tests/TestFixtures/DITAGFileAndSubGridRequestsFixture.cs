@@ -154,7 +154,7 @@ namespace VSS.TRex.Tests.TestFixtures
       return targetSiteModel;
     }
 
-    public static void AddSingleCellWithPasses(ISiteModel siteModel, uint cellX, uint cellY, 
+    public static void AddSingleCellWithPasses(ISiteModel siteModel, int cellX, int cellY, 
       IEnumerable<CellPass> passes, int expectedCellCount = -1, int expectedPassCount = -1)
     {
       // Construct the sub grid to hold the cell being tested
@@ -177,9 +177,9 @@ namespace VSS.TRex.Tests.TestFixtures
       foreach (var pass in _passes)
         leaf.AddPass(subGridX, subGridY, pass);
 
-      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(subGridX, subGridY);
+      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(subGridX, subGridY, out int passCount);
       if (expectedPassCount > -1)
-        cellPasses.Length.Should().Be(expectedPassCount);
+        ((int)passCount).Should().Be(expectedPassCount);
 
       // Assign global latest cell pass to the appropriate pass
       leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Last();
@@ -209,7 +209,7 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
     }
 
-    public static void AddMultipleCellsWithPasses(ISiteModel siteModel, uint cellX, uint cellY,
+    public static void AddMultipleCellsWithPasses(ISiteModel siteModel, int cellX, int cellY,
       List<CellPass[]> passesList, int expectedCellCount = -1, int expectedPassCount = -1)
     {
       // Construct the sub grid to hold the cell being tested
@@ -236,9 +236,9 @@ namespace VSS.TRex.Tests.TestFixtures
         foreach (var pass in passesList[i])
           leaf.AddPass(subGridX, subGridY, pass);
 
-        var cellPasses = leaf.Cells.PassesData[i].PassesData.ExtractCellPasses(subGridX, subGridY);
+        var cellPasses = leaf.Cells.PassesData[i].PassesData.ExtractCellPasses(subGridX, subGridY, out int passCount);
         if (expectedPassCount > -1)
-          cellPasses.Length.Should().Be(expectedPassCount);
+          ((int)passCount).Should().Be(expectedPassCount);
 
         // Assign global latest cell pass to the appropriate pass
         leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Last();
@@ -268,7 +268,7 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
     }
 
-    public static void AddSingleSubGridWithPasses(ISiteModel siteModel, uint cellX, uint cellY, IEnumerable<CellPass>[,] passes)
+    public static void AddSingleSubGridWithPasses(ISiteModel siteModel, int cellX, int cellY, IEnumerable<CellPass>[,] passes)
     {
       // Construct the sub grid to hold the cell being tested
       var leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
