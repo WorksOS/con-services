@@ -31,7 +31,9 @@ data:
   TCCPWD: "vldev_key"
   TCCUSERNAME: "vldev"
   TREX_GATEWAY_API_URL: http://localhost:55750/api/v1
+  trex_service_immutable: http://localhost:55750
   TREX_MUTABLE_GATEWAY_API_URL: http://localhost:55650/api/v1
+  trex_service_mutable: http://localhost:55650
   TREX_TAGFILE_API_URL: http://localhost:5001/api/v2/mocktrextagfile
   WEBAPI_DEBUG_URI: http://localhost:80/
   WEBAPI_URI: http://localhost:80/

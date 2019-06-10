@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -72,6 +73,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// <param name="customHeaders"></param>
     /// <returns></returns>
     public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route, IDictionary<string, string> customHeaders = null)
+      where TResponse : class, IMasterDataModel
     {
       log.LogDebug($"{nameof(TResponse)}: Sending the get data request for site model ID: {siteModelId}");
 

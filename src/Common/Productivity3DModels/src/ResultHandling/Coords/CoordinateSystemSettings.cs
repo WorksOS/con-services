@@ -1,4 +1,6 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using System.Collections.Generic;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
@@ -8,7 +10,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
   /// Coordinate system settings result object.
   /// </summary>
   ///    
-  public class CoordinateSystemSettings : ContractExecutionResult
+  public class CoordinateSystemSettings : ContractExecutionResult, IMasterDataModel
   {
     #region Coordinate System details
     /// <summary>
@@ -276,6 +278,11 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
         // Others...
         $"SiteCalibration:{SiteCalibration}, VerticalDatumName:{VerticalDatumName}, ShiftGridName:{ShiftGridName}, SnakeGridName:{SnakeGridName}, " +
         $"UnsupportedProjection:{UnsupportedProjection}";
+    }
+
+    public List<string> GetIdentifiers()
+    {
+      return new List<string>();
     }
   }
 }

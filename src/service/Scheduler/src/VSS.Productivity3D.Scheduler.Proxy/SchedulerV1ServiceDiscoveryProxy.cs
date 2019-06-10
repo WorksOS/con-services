@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -117,7 +118,7 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     {
       // "internal/v1/background/{jobId}/result"
       var result = await GetMasterDataStreamItemServiceDiscoveryNoCache
-        ($"/background/{jobId}/result", customHeaders);
+        ($"/background/{jobId}/result", customHeaders, HttpMethod.Get);
       if (result != null)
         return result;
 

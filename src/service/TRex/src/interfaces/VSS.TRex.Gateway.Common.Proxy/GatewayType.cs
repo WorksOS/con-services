@@ -6,6 +6,7 @@
     /// Default value, will not include a gateway portion in URL
     /// </summary>
     None,
+    Immutable,
     Mutable,
     ConnectedSite
   }

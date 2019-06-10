@@ -11,9 +11,9 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.Project.Proxy
 {
+  [Obsolete("Use FileImportV4ServiceDiscoveryProxy instead")]
   public class FileImportProxy : BaseProxy, IFileImportProxy
   {
-    [Obsolete("Use FileImportV4ServiceDiscoveryProxy instead")]
     public FileImportProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(configurationStore, logger, cache)
       { }
      

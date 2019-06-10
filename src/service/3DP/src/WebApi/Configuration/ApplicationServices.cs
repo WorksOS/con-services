@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,6 +20,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Scheduler.Abstractions;
@@ -96,15 +98,15 @@ namespace VSS.Productivity3D.WebApi
       /* todoJeannie 
       // service discovery
       services.AddServiceDiscovery();
-      services.AddScoped<IProjectSettingsProxy, ProjectSettingsV4ServiceDiscoveryProxy>();
-      services.AddScoped<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
-      services.AddScoped<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
-      services.AddScoped<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
-      services.AddScoped<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
-      services.AddScoped<ITRexTagFileProxy, TRexTagFileV1ServiceDiscoveryProxy>();
-      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataV1ServiceDiscoveryProxy>();
+      services.AddTransient<IProjectSettingsProxy, ProjectSettingsV4ServiceDiscoveryProxy>();
+      services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
+      services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
+      services.AddTransient<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
+      services.AddTransient<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
+      services.AddTransient<ITRexTagFileProxy, TRexTagFileV1ServiceDiscoveryProxy>();
+      services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1ServiceDiscoveryProxy>();
       todoJeannie */
-
+      
       //Disable CAP for now #76666
       /*
       var serviceProvider = services.BuildServiceProvider();

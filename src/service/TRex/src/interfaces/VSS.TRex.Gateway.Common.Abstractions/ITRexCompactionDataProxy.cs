@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.TRex.Gateway.Common.Abstractions
@@ -19,7 +20,8 @@ namespace VSS.TRex.Gateway.Common.Abstractions
     /// <param name="mutableGateway"></param>
     /// <returns></returns>
     Task<TResponse> SendDataPostRequest<TResponse, TRequest>(TRequest dataRequest, string route,
-      IDictionary<string, string> customHeaders = null, bool mutableGateway = false) where TResponse : ContractExecutionResult;
+      IDictionary<string, string> customHeaders = null, bool mutableGateway = false) 
+      where TResponse : ContractExecutionResult;
 
     /// <summary>
     /// Sends a request to get data as a stream from the TRex immutable database.
@@ -39,6 +41,7 @@ namespace VSS.TRex.Gateway.Common.Abstractions
     /// <param name="customHeaders"></param>
     /// <returns></returns>
     Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
-      IDictionary<string, string> customHeaders = null);
+      IDictionary<string, string> customHeaders = null)
+      where TResponse : class, IMasterDataModel;
   }
 }

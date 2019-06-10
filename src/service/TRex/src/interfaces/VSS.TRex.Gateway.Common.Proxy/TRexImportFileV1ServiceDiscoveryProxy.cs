@@ -11,9 +11,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -26,10 +24,6 @@ namespace VSS.TRex.Gateway.Common.Proxy
   /// </summary>
   public class TRexImportFileV1ServiceDiscoveryProxy : BaseTRexServiceDiscoveryProxy, ITRexImportFileProxy
   {
-    // TRex has 2 endpoints, 1 for immutable and other for mutable access
-    private const string TREX_IMPORTFILE_WRITE_API_URL_KEY = "TREX_IMPORTFILE_WRITE_API_URL";
-    private const string TREX_IMPORTFILE_READ_API_URL_KEY = "TREX_IMPORTFILE_READ_API_URL";
-
     public TRexImportFileV1ServiceDiscoveryProxy(IWebRequest webRequest, IConfigurationStore configurationStore,
       ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
@@ -38,7 +32,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     public override bool IsInsideAuthBoundary => true;
 
-    public override ApiService InternalServiceType => ApiService.Filter;
+    public override ApiService InternalServiceType => ApiService.None;
 
     public override string ExternalServiceName => null;
 
@@ -47,9 +41,6 @@ namespace VSS.TRex.Gateway.Common.Proxy
     public override ApiType Type => ApiType.Public;
 
     public override string CacheLifeKey => "TREX_IMPORTFILE_CACHE_LIFE";
-
-    public override GatewayType Gateway { get => Gateway ; set => Gateway = GatewayType.None; }
-
 
     /// <summary>
     /// Notifies TRex that a design file has been added to a project
@@ -87,11 +78,10 @@ namespace VSS.TRex.Gateway.Common.Proxy
     public async Task<DesignListResult> GetDesignsOfTypeForProject(Guid projectUid, ImportedFileType? importedFileType,
         IDictionary<string, string> customHeaders = null)
     {
-      Gateway = GatewayType.None;
+      Gateway = GatewayType.Immutable;
       var queryParams = new Dictionary<string, string>();
       queryParams.Add("projectUid", projectUid.ToString());
       queryParams.Add("importedFileType", importedFileType.ToString());
-      //  // return await SendImportFileRequest(TREX_IMPORTFILE_READ_API_URL_KEY, string.Empty, customHeaders, "/get", HttpMethod.Get, queryParams);
       return await GetMasterDataItemServiceDiscovery<DesignListResult>
         ($"/design/get", projectUid.ToString(), null, customHeaders, queryParams);
     }

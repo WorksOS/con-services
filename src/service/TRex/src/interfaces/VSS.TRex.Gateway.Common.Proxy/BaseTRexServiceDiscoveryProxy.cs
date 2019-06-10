@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Proxy.Interfaces;
-using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -17,13 +18,15 @@ namespace VSS.TRex.Gateway.Common.Proxy
   /// But we should create brand new fetch methods than don't accept URL values
   /// As these should be 'resolved' by the Service Resolution class
   /// </summary>
-  public abstract class BaseTRexServiceDiscoveryProxy : BaseServiceDiscoveryProxy, IServiceDiscoveryProxy
+  public abstract class BaseTRexServiceDiscoveryProxy : BaseServiceDiscoveryProxy
   {
+    private readonly IServiceResolution _serviceResolution;
 
     protected BaseTRexServiceDiscoveryProxy(IWebRequest webRequest, IConfigurationStore configurationStore,
       ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
+      _serviceResolution = serviceResolution;
     }
 
     #region Properties
@@ -31,7 +34,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// <summary>
     /// The Type of gateway this service is for, so the service-name includes it e.g. trex-gateway; trex-mutable-gateway; trex-connectedSite-gateway
     /// </summary>
-    public abstract GatewayType Gateway { get; set; }
+    protected GatewayType Gateway { get; set; } = GatewayType.None;
 
     #endregion
 
@@ -41,24 +44,23 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// Execute a Post to an endpoint, and cache the result
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
-
-    public string GetServiceName(ApiService service, GatewayType gateway)
+    protected override Task<string> GetUrl(string route = null, IDictionary<string, string> queryParameters = null)
     {
-      switch (service)
+      return _serviceResolution.ResolveLocalServiceEndpoint(GetServiceName(), Type, Version, route, queryParameters);
+    }
+
+    private string GetServiceName()
+    {
+      switch (Gateway)
       {
-        case ApiService.TRex:
-          switch (gateway)
-          {
-            case GatewayType.Mutable:
-              return ServiceNameConstants.TREX_MUTABLE_SERVICE;
-            case GatewayType.ConnectedSite:
-              return ServiceNameConstants.TREX_CONNECTEDSITE_SERVICE;
-            default:
-              return ServiceNameConstants.TREX_SERVICE;
-          }
+        case GatewayType.Immutable:
+          return ServiceNameConstants.TREX_SERVICE_IMMUTABLE;
+        case GatewayType.Mutable:
+          return ServiceNameConstants.TREX_SERVICE_MUTABLE;
+        case GatewayType.ConnectedSite:
+          return ServiceNameConstants.TREX_SERVICE_CONNECTEDSITE;
         default:
-          // There are unit tests to ensure this does not happen 
-          throw new ArgumentOutOfRangeException(nameof(service), service, null);
+          throw new ArgumentOutOfRangeException("Trex", Gateway, null);
       }
     }
 

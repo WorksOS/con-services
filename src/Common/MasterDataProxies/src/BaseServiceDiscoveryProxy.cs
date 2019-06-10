@@ -28,7 +28,7 @@ namespace VSS.MasterData.Proxies
     private readonly IWebRequest webRequest;
     private readonly IServiceResolution serviceResolution;
     private const int DefaultLogMaxchar = 1000;
-    private readonly int logMaxChar = DefaultLogMaxchar;
+    protected readonly int logMaxChar = DefaultLogMaxchar;
 
     protected BaseServiceDiscoveryProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
       : base(configurationStore, logger, dataCache)
@@ -108,9 +108,9 @@ namespace VSS.MasterData.Proxies
     }
 
     protected Task<Stream> GetMasterDataStreamItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
-      IDictionary<string, string> queryParameters = null, string payload = null)
+     HttpMethod method, IDictionary<string, string> queryParameters = null, string payload = null)
     {
-      return RequestAndReturnDataStream(customHeaders, HttpMethod.Get, route, queryParameters, payload);
+      return RequestAndReturnDataStream(customHeaders, method, route, queryParameters, payload);
     }
 
     protected Task<T> PostMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
@@ -141,7 +141,10 @@ namespace VSS.MasterData.Proxies
 
     #region Private Methods
 
-    private Task<string> GetUrl(string route = null, IDictionary<string, string> queryParameters = null)
+    /// <summary>
+    /// TRex uses its own resolver in BaseTRexServiceDiscoveryProxy
+    /// </summary>
+    protected virtual Task<string> GetUrl(string route = null, IDictionary<string, string> queryParameters = null)
     {
       if (IsInsideAuthBoundary && InternalServiceType == ApiService.None)
         throw new ArgumentException($"{nameof(InternalServiceType)} has not been defined, it is required for Services Inside our Authentication Boundary");
@@ -156,7 +159,6 @@ namespace VSS.MasterData.Proxies
 
     private async Task<Stream> RequestAndReturnDataStream(IDictionary<string, string> customHeaders,
      HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, string payload = null)  
-     //where T : class, IMasterDataModel
     {
       var url = await GetUrl(route, queryParameters);
 
@@ -198,8 +200,7 @@ namespace VSS.MasterData.Proxies
 
       return result;
     }
-
-
+    
     #endregion
   }
 }

@@ -38,10 +38,13 @@ namespace VSS.MasterData.Models.ResultHandling
     [JsonProperty(PropertyName = "failureDetails", Required = Required.Default)]
     public FailureDetails FailureDetails { get; set; }
 
+    /// <summary>
+    /// Just a placeholder as none of the proxy methods support caching
+    /// </summary>
+    /// <returns></returns>
     public List<string> GetIdentifiers()
     {
-      // todoJeannie
-      throw new NotImplementedException();
+      return string.IsNullOrEmpty(Key)  ? new List<string>() : new List<string>() { Key };
     }
   }
 }
