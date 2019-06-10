@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -46,15 +47,16 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
+    private readonly IConfigurationStore configurationStore;
+
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    /// <param name="logger">LoggerFactory</param>
-    /// <param name="raptorClient">Raptor client</param>
     public CCAColorPaletteController(ILoggerFactory logger,
 #if RAPTOR
       IASNodeClient raptorClient,
 #endif
+      IConfigurationStore configStore,
       ITRexCompactionDataProxy trexCompactionDataProxy)
     {
       this.logger = logger;
@@ -63,6 +65,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       this.raptorClient = raptorClient;
 #endif
       this.TRexCompactionDataProxy = trexCompactionDataProxy;
+      configurationStore = configStore;
     }
 
     /// <summary>
@@ -95,6 +98,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
         raptorClient,
 #endif
+        configStore: configurationStore,
         trexCompactionDataProxy: TRexCompactionDataProxy).Process(request) as CCAColorPaletteResult;
     }
 
@@ -127,8 +131,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger,
 #if RAPTOR
         raptorClient,
-#endif        
-        trexCompactionDataProxy:TRexCompactionDataProxy).Process(request) as CCAColorPaletteResult;
+#endif   
+        configStore: configurationStore,
+        trexCompactionDataProxy: TRexCompactionDataProxy).Process(request) as CCAColorPaletteResult;
     }
   }
 }
