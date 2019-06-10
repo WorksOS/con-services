@@ -145,7 +145,6 @@ namespace VSS.WebApi.Common
       Services = services;
       ServiceProvider = services.BuildServiceProvider();
 
-    //  Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
       Configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
       services.AddMetricsReportingHostedService();
