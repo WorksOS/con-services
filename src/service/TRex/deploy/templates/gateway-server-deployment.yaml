@@ -60,9 +60,5 @@ spec:
             value: "vss-project3dp-stg" # for production this should be vss-project3dp-prod
           - name: AWS_BUCKET_NAME
             value: "vss-exports-stg" # for production this should be vss-exports-prod
-          - name: AWS_ACCESS_KEY
-            value: "AKIAIBGOEETXHMANDX7A"           
-          - name: AWS_SECRET_KEY
-            value: "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"
           - name: AWS_PRESIGNED_URL_EXPIRY
             value: "7.00:00:00"          
