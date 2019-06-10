@@ -27,6 +27,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
+      Log.LogDebug("Loading application service descriptors");
+
       // Add framework services.
       services
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
@@ -37,7 +39,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>();
-
 
       services.AddOpenTracing(builder =>
       {

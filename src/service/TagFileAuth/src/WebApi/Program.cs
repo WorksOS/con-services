@@ -18,6 +18,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     {
       var config = new ConfigurationBuilder()
                    .AddCommandLine(args)
+                   .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                    .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
                    .AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
                    .Build();

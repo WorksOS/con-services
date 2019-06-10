@@ -58,7 +58,7 @@ namespace VSS.WebApi.Common
     /// </summary>
     protected ILogger Log
     {
-      get { return _logger ?? (_logger = ServiceProvider.GetRequiredService<ILogger<BaseStartup>>()); }
+      get { return _logger ?? (_logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name)); }
       set => _logger = value;
     }
 
@@ -89,12 +89,6 @@ namespace VSS.WebApi.Common
           options.AddPolicy(name, corsPolicy);
         }
       });
-
-      //TODO this should be enabled for LibLog
-      /*XmlConfigurator.Configure(
-        LogManager.GetRepository(Assembly.GetAssembly(typeof(LogManager))),
-        new FileInfo("log4net.xml"));*/
-
 
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
       services.AddJaeger(ServiceName);
@@ -130,11 +124,10 @@ namespace VSS.WebApi.Common
         .HealthChecks.AddPingCheck("InternetAccess", "google.com", TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
         .BuildAndAddTo(services);
 
-
       services.AddHealth(healthMetrics);
       services.AddHealthEndpoints();
 
-
+      ServiceProvider = services.BuildServiceProvider();
       ConfigureAdditionalServices(services);
 
       services.AddMvc(
@@ -148,12 +141,11 @@ namespace VSS.WebApi.Common
         options.MetricsEndpointOutputFormatter =
           metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
       });
-
+      
       Services = services;
+      ServiceProvider = services.BuildServiceProvider();
 
-      ServiceProvider = Services.BuildServiceProvider();
-
-      Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
+    //  Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
       Configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
       services.AddMetricsReportingHostedService();
