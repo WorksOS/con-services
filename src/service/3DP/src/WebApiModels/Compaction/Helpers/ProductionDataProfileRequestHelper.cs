@@ -7,6 +7,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;

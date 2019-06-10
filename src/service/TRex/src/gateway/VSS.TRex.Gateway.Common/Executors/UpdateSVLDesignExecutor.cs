@@ -8,6 +8,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;

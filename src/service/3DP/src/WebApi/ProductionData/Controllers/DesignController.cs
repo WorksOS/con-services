@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -47,13 +46,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     private readonly IConfigurationStore configStore;
-
-
+    
     /// <summary>
     /// For getting list of imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
-#endregion
+
+    /// <summary>
+    /// Gets the tRex CompactionData proxy interface.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
+    #endregion
 
     /// <summary>
     /// Constructor with injection
@@ -66,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
+      ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy, ITRexCompactionDataProxy tRexCompactionDataProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -75,6 +78,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       this.log = logger.CreateLogger<NotificationController>();
       this.configStore = configStore;
       this.fileListProxy = fileListProxy;
+      this.tRexCompactionDataProxy = tRexCompactionDataProxy;
     }
 
     /// <summary>
@@ -93,21 +97,21 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       tolerance = tolerance ?? DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL;
 
-      DesignBoundariesRequest request = DesignBoundariesRequest.CreateDesignBoundariesRequest(projectId, tolerance.Value);
+      var request = DesignBoundariesRequest.CreateDesignBoundariesRequest(projectId, tolerance.Value);
 
       request.Validate();
-#if RAPTOR
+
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders());
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
-      return RequestExecutorContainerFactory.Build<DesignExecutor>(logger, raptorClient, configStore: configStore, fileList: fileList).Process(request);
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
-    }
+      return RequestExecutorContainerFactory.Build<DesignExecutor>(logger,
 #if RAPTOR
+        raptorClient,
+#endif
+        configStore: configStore, fileList: fileList, trexCompactionDataProxy: tRexCompactionDataProxy).Process(request);
+    }
+
     /// <summary>
     /// Gets the User uid/applicationID from the context.
     /// </summary>
@@ -122,6 +126,5 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       throw new ArgumentException("Incorrect UserId in request context principal.");
     }
-#endif
   }
 }

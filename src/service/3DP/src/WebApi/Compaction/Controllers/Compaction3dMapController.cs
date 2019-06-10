@@ -28,6 +28,7 @@ using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;

@@ -24,7 +24,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// Controller to get designs for a project.
   ///     Create/Update/Delete endpoints use the mutable endpoint (at present VSS.TRex.Mutable.Gateway.WebApi)
   /// </summary>
-  [Route("api/v1/design/get")]
+  [Route("api/v1/design")]
   public class DesignController : BaseController
   {
     /// <inheritdoc />
@@ -41,7 +41,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="projectUid"></param>
     /// <param name="fileType"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("get")]
     public DesignListResult GetDesignsForProject([FromQuery] Guid projectUid, [FromQuery] ImportedFileType? fileType)
     {
       Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid{projectUid} fileType: {fileType}");
@@ -92,5 +92,20 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       return new DesignListResult { DesignFileDescriptors = designFileDescriptorList };
     }
+
+    /// <summary>
+    /// Gets a list of design boundaries in GeoJson format from TRex database.
+    /// </summary>
+    /// <param name="projectUid">The site model/project unique identifier.</param>
+    /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
+    /// <returns>Execution result with a list of design boundaries.</returns>
+    [HttpGet("boundaries")]
+    public ContractExecutionResult GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] double? tolerance)
+    {
+      Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid{projectUid} tolerance: {tolerance}");
+
+      return null;
+    }
+
   }
 }

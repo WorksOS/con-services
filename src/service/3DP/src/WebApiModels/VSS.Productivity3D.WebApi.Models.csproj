@@ -62,7 +62,6 @@
 
     <Compile Remove=".\ProductionData\Executors\CCAColorPaletteExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\CellPassesExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\DesignExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\EditDataExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\GetEditDataExecutor.cs" />

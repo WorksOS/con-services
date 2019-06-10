@@ -22,6 +22,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using __Global = ProductionServer_TLB.__Global;
 
 namespace VSS.Productivity3D.Common.Proxies
