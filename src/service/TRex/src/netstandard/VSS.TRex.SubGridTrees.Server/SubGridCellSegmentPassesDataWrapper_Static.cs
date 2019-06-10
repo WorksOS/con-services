@@ -180,13 +180,13 @@ namespace VSS.TRex.SubGridTrees.Server
                 {
                   switch (PassCounts_Size)
                   {
-                    case 1:
+                    case PassCountSize.ONE_BYTE:
                       PassCounts[i, j] = reader.ReadByte();
                       break;
-                    case 2:
+                    case PassCountSize.TWO_BYTES:
                       PassCounts[i, j] = reader.ReadInt16();
                       break;
-                    case 3:
+                    case PassCountSize.FOUR_BYTES:
                       PassCounts[i, j] = reader.ReadInt32();
                       break;
                     default:
@@ -314,13 +314,13 @@ namespace VSS.TRex.SubGridTrees.Server
                 {
                   switch (PassCounts_Size)
                   {
-                    case 1:
+                    case PassCountSize.ONE_BYTE:
                       writer.Write((byte) PassCount(i, j));
                       break;
-                    case 2:
+                    case PassCountSize.TWO_BYTES:
                       writer.Write((short) PassCount(i, j));
                       break;
-                    case 3:
+                    case PassCountSize.FOUR_BYTES:
                       writer.Write(PassCount(i, j));
                       break;
                     default:
