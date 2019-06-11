@@ -20,7 +20,8 @@ namespace VSS.TRex.Storage.Utilities
                 return null;
             }
 
-            var compressStream = new MemoryStream();
+            // Assume compression will at least halve the size of the data so set initial capacity to this value
+            var compressStream = new MemoryStream((int)(input.Length / 2));
 
             input.Position = 0;
             using (var compressor = new DeflateStream(compressStream, CompressionMode.Compress, true))
@@ -44,7 +45,8 @@ namespace VSS.TRex.Storage.Utilities
                 return null;
             }
 
-            var output = new MemoryStream();
+            // Assume compression will at least halve the size of the data so set initial capacity to this value
+            var output = new MemoryStream((int)(input.Length * 2));
 
             input.Position = 0;
             using (var decompressor = new DeflateStream(input, CompressionMode.Decompress, true))

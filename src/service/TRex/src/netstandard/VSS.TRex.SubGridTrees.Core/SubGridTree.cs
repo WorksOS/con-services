@@ -140,7 +140,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The value of the index origin offset for this sub grid tree
         /// </summary>
-        public uint IndexOriginOffset { get; }
+        public int IndexOriginOffset { get; }
 
         /// <summary>
         /// Base Sub Grid Tree constructor. Creates a tree with the requested number of levels, 
@@ -168,7 +168,7 @@ namespace VSS.TRex.SubGridTrees
 
             NumLevels = numLevels;
             SetCellSize(cellSize);
-            IndexOriginOffset = (uint)1 << (NumBitsInKeys - 1);
+            IndexOriginOffset = 1 << (NumBitsInKeys - 1);
 
             SubGridFactory = subGridFactory ?? throw new ArgumentException("A sub grid factory must be specified", nameof(subGridFactory));
 
@@ -205,14 +205,14 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellY"></param>
         public static void CalculateIndexOfCellContainingPosition(double X, double Y,
                                                                   double CellSize,
-                                                                  uint IndexOriginOffset,
-                                                                  out uint CellX, out uint CellY)
+                                                                  int IndexOriginOffset,
+                                                                  out int CellX, out int CellY)
         {
           // Calculate the cell index in a centered [0,0] origin basis
           // Convert the cell indexes into a bottom left [0,0] basis (ie: to grid cell
           // indexes in the top right quadrant).
-            CellX = (uint)Math.Floor(X / CellSize) + IndexOriginOffset;
-            CellY = (uint)Math.Floor(Y / CellSize) + IndexOriginOffset;
+            CellX = (int)Math.Floor(X / CellSize) + IndexOriginOffset;
+            CellY = (int)Math.Floor(Y / CellSize) + IndexOriginOffset;
         }
 
         /// <summary>
@@ -226,12 +226,12 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellY"></param>
         /// <returns></returns>
         public bool CalculateIndexOfCellContainingPosition(double X, double Y,
-                                                           out uint CellX, out uint CellY)
+                                                           out int CellX, out int CellY)
         {
             if (Math.Abs(X) > MaxOrdinate || Math.Abs(Y) > MaxOrdinate)
             {
-                CellX = uint.MaxValue;
-                CellY = uint.MaxValue;
+                CellX = int.MaxValue;
+                CellY = int.MaxValue;
 
                 return false;
             }
@@ -257,11 +257,11 @@ namespace VSS.TRex.SubGridTrees
             CalculateIndexOfCellContainingPosition(
               Range.EnsureRange(worldExtent.MinX, -MaxOrdinate, MaxOrdinate),
               Range.EnsureRange(worldExtent.MinY, -MaxOrdinate, MaxOrdinate),
-              out uint minX, out uint minY);
+              out int minX, out int minY);
             CalculateIndexOfCellContainingPosition(
               Range.EnsureRange(worldExtent.MaxX, -MaxOrdinate, MaxOrdinate),
               Range.EnsureRange(worldExtent.MaxY, -MaxOrdinate, MaxOrdinate),
-              out uint maxX, out uint maxY);
+              out int maxX, out int maxY);
 
             cellExtent = new BoundingIntegerExtent2D((int) minX, (int) minY, (int) maxX, (int) maxY);
         }
@@ -351,7 +351,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="cellY"></param>
         /// <param name="pathType"></param>
         /// <returns></returns>
-        public virtual ISubGrid ConstructPathToCell(uint cellX, uint cellY,
+        public virtual ISubGrid ConstructPathToCell(int cellX, int cellY,
                                             SubGridPathConstructionType pathType)
         {
             ISubGrid result = null;
@@ -479,7 +479,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="cellY"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public ISubGrid LocateSubGridContaining(uint cellX, uint cellY, byte level)
+        public ISubGrid LocateSubGridContaining(int cellX, int cellY, byte level)
         {
             ISubGrid subGrid = Root;
 
@@ -498,7 +498,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
         /// <returns></returns>
-        public ISubGrid LocateSubGridContaining(uint cellX, uint cellY) => LocateSubGridContaining(cellX, cellY, NumLevels);
+        public ISubGrid LocateSubGridContaining(int cellX, int cellY) => LocateSubGridContaining(cellX, cellY, NumLevels);
 
         /// <summary>
         /// LocateClosestSubGridContaining behaves much like LocateSubGridContaining()
@@ -510,7 +510,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="cellY"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public ISubGrid LocateClosestSubGridContaining(uint cellX, uint cellY, byte level)
+        public ISubGrid LocateClosestSubGridContaining(int cellX, int cellY, byte level)
         {
             // Walk down the tree looking for the sub grid that contains the cell
             // with the given X, Y location. Stop when we reach the leaf sub grid level,
@@ -540,7 +540,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="Y"></param>
         /// <param name="cx"></param>
         /// <param name="cy"></param>
-        public void GetCellCenterPosition(uint X, uint Y, out double cx, out double cy)
+        public void GetCellCenterPosition(int X, int Y, out double cx, out double cy)
         {
             cx = (X - IndexOriginOffset) * CellSize + CellSizeOver2;
             cy = (Y - IndexOriginOffset) * CellSize + CellSizeOver2;
@@ -556,7 +556,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="Y"></param>
         /// <param name="ox"></param>
         /// <param name="oy"></param>
-        public void GetCellOriginPosition(uint X, uint Y, out double ox, out double oy)
+        public void GetCellOriginPosition(int X, int Y, out double ox, out double oy)
         {
             ox = (X - IndexOriginOffset) * CellSize;
             oy = (Y - IndexOriginOffset) * CellSize;
@@ -571,7 +571,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns></returns>
-        public BoundingWorldExtent3D GetCellExtents(uint X, uint Y)
+        public BoundingWorldExtent3D GetCellExtents(int X, int Y)
         {
             double OriginX = (X - IndexOriginOffset) * CellSize;
             double OriginY = (Y - IndexOriginOffset) * CellSize;
@@ -589,7 +589,7 @@ namespace VSS.TRex.SubGridTrees
       /// <param name="Y"></param>
       /// <param name="extents"></param>
       /// <returns></returns>
-      public void GetCellExtents(uint X, uint Y, ref BoundingWorldExtent3D extents)
+      public void GetCellExtents(int X, int Y, ref BoundingWorldExtent3D extents)
       {
         double OriginX = (X - IndexOriginOffset) * CellSize;
         double OriginY = (Y - IndexOriginOffset) * CellSize;

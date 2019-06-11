@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -216,6 +215,21 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       };
 
       return executor;
+    }
+
+    /// <summary>
+    /// Casts input object to type T for use with child executors.
+    /// </summary>
+    protected T CastRequestObjectTo<T>(object item, int errorCode) where T : class
+    {
+      var request = item as T;
+
+      if (request == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCode);
+      }
+
+      return request;
     }
   }
 }

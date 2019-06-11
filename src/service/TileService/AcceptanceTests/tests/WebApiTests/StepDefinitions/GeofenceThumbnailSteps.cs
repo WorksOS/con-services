@@ -1,6 +1,7 @@
 ﻿using System;
-using FluentAssertions;
+using System.Linq;
 using System.Net;
+using FluentAssertions;
 using WebApiTests.Models;
 using WebApiTests.Utilities;
 using Xunit;
@@ -79,9 +80,18 @@ namespace WebApiTests.StepDefinitions
 
     }
 
-    [When(@"I request multiple Thumbnails")]
-    public void WhenIRequestMultipleThumbnails()
+    [When(@"I request multiple Thumbnails ""(.*)""")]
+    public void WhenIRequestMultipleThumbnails(string uids)
     {
+      var geofenceUids = uids.Split(",").ToArray();
+
+      uri = $"{uri}?geofenceUids={geofenceUids[0]}";
+
+      for (var i = 1; i < geofenceUids.Length; i++)
+      {
+        uri = $"{uri}&geofenceUids={geofenceUids[i]}";
+      }
+
       multiTileRequester = new Getter<MultipleThumbnailsResult>(uri, responseRepositoryFileName);
       switch (operation)
       {

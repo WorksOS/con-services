@@ -25,7 +25,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public ISubGridSpatialAffinityKey AffinityKey(Guid projectUID)
         {
           return new SubGridSpatialAffinityKey(Version, projectUID, Segment.Owner.OriginX, Segment.Owner.OriginY, 
-                                               SegmentIdentifier());
+                                               Segment.SegmentInfo.StartTime.Ticks, Segment.SegmentInfo.EndTime.Ticks);
         }
 
         public bool ExistsInPersistentStore { get; set; }
@@ -55,10 +55,8 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         public bool IncludesTimeWithinBounds(DateTime time)
         {
-            const double Epsilon = 1E-9;
-
-            double testTime = time.ToOADate();
-            return testTime > StartTime.ToOADate() + Epsilon && testTime < EndTime.ToOADate() - Epsilon;
+            var testTime = time.Ticks;
+            return testTime > StartTime.Ticks && testTime < EndTime.Ticks;
         }
 
         /// <summary>
@@ -66,7 +64,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// is based on the time range this segment is responsible for storing cell passes for.
         /// </summary>
         /// <returns></returns>
-        public string SegmentIdentifier()=> $"({StartTime.ToOADate():F6}-{EndTime.ToOADate():F6})";
+        public string SegmentIdentifier() => StartTime.Ticks.ToString() + "-" + EndTime.Ticks.ToString(); // 30% faster than $"{StartTime.Ticks}-{EndTime.Ticks}"
 
         /// <summary>
         /// Returns the 'filename', and string that encodes the segment version, spatial location and time range it 
@@ -75,7 +73,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="OriginX"></param>
         /// <param name="OriginY"></param>
         /// <returns></returns>
-        public string FileName(uint OriginX, uint OriginY) => $"{Version}-{OriginX:d10}-{OriginY:d10}-{SegmentIdentifier()}";
+        public string FileName(int OriginX, int OriginY) => $"{Version}-{OriginX:d10}-{OriginY:d10}-{SegmentIdentifier()}";
 
         public void Write(BinaryWriter writer)
         {

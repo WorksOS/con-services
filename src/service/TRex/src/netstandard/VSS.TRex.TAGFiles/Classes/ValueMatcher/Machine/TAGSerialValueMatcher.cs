@@ -15,9 +15,9 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
         public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessANSIStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
-          TAGDictionaryItem valueType, byte[] value)
+          TAGDictionaryItem valueType, string value)
         {
-            valueSink.HardwareID = Encoding.ASCII.GetString(value);
+            valueSink.HardwareID = value;
 
             return true;
         }

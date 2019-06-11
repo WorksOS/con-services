@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
@@ -19,7 +18,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TerrainSwather>();
 
-        private readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+        private static readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
 
         /// <summary>
         /// The maximum number of cell passes that may be generated when swathing a single interval between
@@ -84,9 +83,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
               int cellCount = 0;
 
               // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
-              for (uint I = (uint) CellExtent.MinX; I <= CellExtent.MaxX; I++)
+              for (int I = CellExtent.MinX; I <= CellExtent.MaxX; I++)
               {
-                for (uint J = (uint) CellExtent.MinY; J <= CellExtent.MaxY; J++)
+                for (int J = CellExtent.MinY; J <= CellExtent.MaxY; J++)
                 {
                   Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
 
@@ -99,9 +98,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             }
 
             // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
-            for (uint I = (uint)CellExtent.MinX; I <= CellExtent.MaxX; I++)
+            for (int I = CellExtent.MinX; I <= CellExtent.MaxX; I++)
             {
-                for (uint J = (uint)CellExtent.MinY; J <= CellExtent.MaxY; J++)
+                for (int J = CellExtent.MinY; J <= CellExtent.MaxY; J++)
                 {
                     Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
 

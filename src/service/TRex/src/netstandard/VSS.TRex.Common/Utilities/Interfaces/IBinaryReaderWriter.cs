@@ -9,6 +9,5 @@ namespace VSS.TRex.Common.Utilities.Interfaces
     {
         void Read(BinaryReader reader);
         void Write(BinaryWriter writer);
-        void Write(BinaryWriter writer, byte [] buffer);
     }
 }

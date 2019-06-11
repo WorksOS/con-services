@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IO;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
@@ -41,6 +42,7 @@ namespace VSS.TRex.Server.MutableData
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<RecyclableMemoryStreamManager>(new RecyclableMemoryStreamManager()))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)

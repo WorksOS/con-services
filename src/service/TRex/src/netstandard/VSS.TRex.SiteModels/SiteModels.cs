@@ -160,7 +160,7 @@ namespace VSS.TRex.SiteModels
           return;
 
         // Note: The spatial data grid is highly conserved and never killed in a site model change notification.
-        SiteModelOriginConstructionFlags originFlags =
+        var originFlags =
           SiteModelOriginConstructionFlags.PreserveGrid
           | (!message.ExistenceMapModified ? SiteModelOriginConstructionFlags.PreserveExistenceMap : 0)
           | (!message.CsibModified ? SiteModelOriginConstructionFlags.PreserveCsib : 0)

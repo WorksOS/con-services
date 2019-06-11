@@ -12,12 +12,12 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// The X origin location for the patch of elevations, or spot elevation, to be computed from
     /// </summary>
-    public uint OriginX { get; set; }
+    public int OriginX { get; set; }
 
     /// <summary>
     /// The Y origin location for the patch of elevations, or spot elevation, to be computed from
     /// </summary>
-    public uint OriginY { get; set; }
+    public int OriginY { get; set; }
 
     /// <summary>
     /// The cell stepping size to move between points in the patch being interpolated
@@ -36,8 +36,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <param name="originY"></param>
     /// <param name="referenceSurface"></param>
     public DesignSubGridFilterMaskArgument(Guid siteModelID,
-      uint originX,
-      uint originY,
+      int originX,
+      int originY,
       DesignOffset referenceSurface,
       double cellSize) : base(siteModelID, referenceSurface)
     {
@@ -65,8 +65,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt((int)OriginX);
-      writer.WriteInt((int)OriginY);
+      writer.WriteInt(OriginX);
+      writer.WriteInt(OriginY);
       writer.WriteDouble(CellSize);
     }
 
@@ -80,8 +80,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      OriginX = (uint)reader.ReadInt();
-      OriginY = (uint)reader.ReadInt();
+      OriginX = reader.ReadInt();
+      OriginY = reader.ReadInt();
       CellSize = reader.ReadDouble();
     }
   }

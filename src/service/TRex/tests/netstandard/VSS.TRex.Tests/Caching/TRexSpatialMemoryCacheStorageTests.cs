@@ -40,8 +40,8 @@ namespace VSS.TRex.Tests.Caching
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element
         {
           SizeInBytes = 0,
-          CacheOriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
-          CacheOriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
+          CacheOriginX = (int)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginY = (int)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
         }, dummyCache);
 
       Assert.False(storage.HasFreeSpace(), "Storage has free space when filled");
@@ -65,8 +65,8 @@ namespace VSS.TRex.Tests.Caching
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element
         {
           SizeInBytes = 0,
-          CacheOriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
-          CacheOriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
+          CacheOriginX = (int)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginY = (int)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
         }, dummyCache);
 
       Assert.False(storage.HasFreeSpace(), "Storage has free space when filled");
@@ -75,8 +75,8 @@ namespace VSS.TRex.Tests.Caching
       storage.Add(new TRexSpatialMemoryCacheContextTests_Element
       {
         SizeInBytes = 0,
-        CacheOriginX = (uint)(2000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
-        CacheOriginY = (uint)(3000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
+        CacheOriginX = (int)(2000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
+        CacheOriginY = (int)(3000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
       }, dummyCache);
 
       Assert.True(storage.TokenCount == numElements, $"Element count incorrect (= {storage.TokenCount})");
@@ -147,8 +147,8 @@ namespace VSS.TRex.Tests.Caching
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element
         {
           SizeInBytes = 1000,
-          CacheOriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
-          CacheOriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
+          CacheOriginX = (int)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginY = (int)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
         }, dummyCache);
 
       var midTime = DateTime.Now;
@@ -157,8 +157,8 @@ namespace VSS.TRex.Tests.Caching
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element
         {
           SizeInBytes = 1000,
-          CacheOriginX = (uint)(1000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
-          CacheOriginY = (uint)(1000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
+          CacheOriginX = (int)(1000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginY = (int)(1000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
         }, dummyCache);
 
       Assert.False(true, $"Time for adding {numElements} elements is {midTime - startTime} and adding {overflowBy} overflows is {DateTime.Now - midTime}");
@@ -210,7 +210,7 @@ namespace VSS.TRex.Tests.Caching
       { 
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element()
         {
-          CacheOriginX = (uint)(1000 + i * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginX = (int)(1000 + i * SubGridTreeConsts.SubGridTreeDimension),
           CacheOriginY = 1000,
           SizeInBytes = 1000
         }, dummyCache);
@@ -230,7 +230,7 @@ namespace VSS.TRex.Tests.Caching
       {
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element()
         {
-          CacheOriginX = (uint)(1000 + i * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginX = (int)(1000 + i * SubGridTreeConsts.SubGridTreeDimension),
           CacheOriginY = 1000,
           SizeInBytes = 1000
         }, dummyCache);

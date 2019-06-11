@@ -76,30 +76,36 @@ namespace VSS.TRex.TAGFiles.Executors
         /// </summary>
         public TAGFileConverter()
         {
+          Initialise();
         }
 
-      private void Initialise()
-      {
-        ProcessedEpochCount = 0;
-        ProcessedCellPassCount = 0;
-
-        // Note: Intermediary TAG file processing contexts don't store their data to any persistence context
-        // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
-        // storage proxy assigned to it
-        SiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(StorageMutability.Mutable);
-        Machine = new Machine();
-
-        SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable)
+        private void Initialise()
         {
-          CellSize = SiteModel.CellSize
-        };
-
-        MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-
-        Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
-      }
-
-      /// <summary>
+          ProcessedEpochCount = 0;
+          ProcessedCellPassCount = 0;
+    
+          // Note: Intermediary TAG file processing contexts don't store their data to any persistence context
+          // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
+          // storage proxy assigned to it
+          SiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(StorageMutability.Mutable);
+          Machine = new Machine();
+    
+          SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable)
+          {
+            CellSize = SiteModel.CellSize
+          };
+    
+          MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
+        }
+    
+        /// <summary>
+        /// Resets the internal state of the converter ready for another TAG file
+        /// </summary>
+        public void Reset()
+        {
+        }
+    
+        /// <summary>
         /// Fill out the local class properties with the information wanted from the TAG file
         /// </summary>
         /// <param name="processor"></param>
@@ -128,10 +134,11 @@ namespace VSS.TRex.TAGFiles.Executors
         /// <returns></returns>
         public bool Execute(Stream TAGData)
         {
+            ReadResult = TAGReadResult.NoError;
+
             try
             {
-                Initialise();
-
+                Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
                 var Sink = new TAGValueSink(Processor);
                 var Reader = new TAGReader(TAGData);
                 var TagFile = new TAGFile();

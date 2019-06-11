@@ -31,8 +31,6 @@ namespace VSS.TRex.Designs.Storage
             }
         }
 
-        public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
         public void Read(BinaryReader reader)
         {
             VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);

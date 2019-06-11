@@ -13,7 +13,7 @@ namespace VSS.TRex.TAGFiles.Classes
         public string Name { get; set; }
 
         /// <summary>
-        /// Typpe of value this name represents, // eg: Double precision IEEE real
+        /// Type of value this name represents, // eg: Double precision IEEE real
         /// </summary>
         public TAGDataType Type { get; set; }
 

@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 
     new void SetSubGrid(int X, int Y, ISubGrid Value);
 
-    ISubGrid GetSubGridContainingCell(uint CellX, uint CellY);
+    ISubGrid GetSubGridContainingCell(int CellX, int CellY);
 
     void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor);
 

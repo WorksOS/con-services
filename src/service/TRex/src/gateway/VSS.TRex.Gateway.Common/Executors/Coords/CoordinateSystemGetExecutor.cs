@@ -1,16 +1,11 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Coords;
 using VSS.TRex.CoordinateSystems;
-using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
-using VSS.TRex.CoordinateSystems.GridFabric.Requests;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
 {

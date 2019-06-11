@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 
@@ -26,10 +25,10 @@ namespace VSS.TRex.Cells
         public CellPass[] Passes;
 
         /// <summary>
-        /// Number of cell passes recorded for this cell
+        /// Number of cell passes recorded for this cell. It may be less than the actual size of Passes
         /// </summary>
         /// <returns></returns>
-        public uint PassCount => Passes == null ? 0 : (uint)Passes.Length;
+        public int PassCount;
 
         /// <summary>
         /// Determines if the cell is empty of all cell passes
@@ -41,30 +40,84 @@ namespace VSS.TRex.Cells
         /// Determines the height (Elevation from NEE) of the 'top most', or latest recorded in time, cell pass. If there are no passes a null height is returned.
         /// </summary>
         /// <returns></returns>
-        public float TopMostHeight => IsEmpty ? CellPassConsts.NullHeight : Passes.Last().Height;
+        public float TopMostHeight => IsEmpty ? CellPassConsts.NullHeight : Passes[PassCount - 1].Height;
 
         /// <summary>
         /// Allocate or resize an array of passes to a new size
         /// </summary>
-        /// <param name="passCount"></param>
-        public void AllocatePasses(uint passCount)
+        /// <param name="capacity"></param>
+        public void AllocatePasses(int capacity)
         {
-            Array.Resize(ref Passes, (int)passCount);
+          const int CELL_PASS_ARRAY_INCREMENT_SIZE = 5;
+
+          if (PassCount > capacity)
+          {
+            // Reset pass count to capacity, but don't reduce the allocated array size
+            PassCount = capacity;
+          }
+
+          if (Passes == null)
+          {
+            Passes = capacity >= CELL_PASS_ARRAY_INCREMENT_SIZE ? new CellPass[capacity] : new CellPass[CELL_PASS_ARRAY_INCREMENT_SIZE];
+          }
+          else
+          {
+            int currentSize = Passes.Length;
+
+            if (currentSize >= capacity)
+            {
+              // Current allocated capacity is sufficient.
+              return;
+            }
+
+            if (capacity - currentSize >= CELL_PASS_ARRAY_INCREMENT_SIZE)
+              Array.Resize(ref Passes, capacity);
+            else
+              Array.Resize(ref Passes, capacity + CELL_PASS_ARRAY_INCREMENT_SIZE);
+          }
         }
 
         /// <summary>
-        /// LocateTime attempts to locate an entry in the passes list that has
-        /// the same time stamp as the Time parameter
-        /// It uses a binary search to locate any matching pass. As there will
-        /// only ever by a single pass that matches, finding an exact match
-        /// aborts the binary search and returns the result. If there is no
-        /// exact match the search returns the index in the list where a pass with
-        /// the given time should go. 
+        /// Allocate or resize an array of passes to a new size which will exactly equal the size asked for
         /// </summary>
-        /// <param name="time"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public bool LocateTime(DateTime time, out int index)
+        /// <param name="capacity"></param>
+        public void AllocatePassesExact(int capacity)
+        {
+          if (PassCount == capacity)
+          {
+            // Current allocated capacity is correct
+            return;
+          }
+
+          if (PassCount > capacity)
+            PassCount = capacity;
+
+          if (capacity == 0)
+          {
+            Passes = null;
+          }
+          else
+          {
+            if (Passes == null)
+              Passes = new CellPass[capacity];
+            else
+              Array.Resize(ref Passes, capacity);
+          }
+        }
+
+    /// <summary>
+    /// LocateTime attempts to locate an entry in the passes list that has
+    /// the same time stamp as the Time parameter
+    /// It uses a binary search to locate any matching pass. As there will
+    /// only ever by a single pass that matches, finding an exact match
+    /// aborts the binary search and returns the result. If there is no
+    /// exact match the search returns the index in the list where a pass with
+    /// the given time should go. 
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public bool LocateTime(DateTime time, out int index)
         {
             int L = 0;
             int H = (int)PassCount - 1;
@@ -106,17 +159,13 @@ namespace VSS.TRex.Cells
             if (position == -1 && LocateTime(pass.Time, out position))
                 throw new TRexException("Pass with same time being added to cell");
 
-            // Yes, this looks naive, however, this operation really only occurs during TAG
-            // file processing where the cell pass results from that processing are added into
-            // new, and temporary, sub grid trees.
-            // Examination of the code in the previous version showed this the effective behaviour anyway.
-
             AllocatePasses(PassCount + 1);
-            if (position < PassCount - 1)
-                Array.Copy(Passes, position, Passes, position + 1, PassCount - position - 1);
+            if (position < PassCount)
+                Array.Copy(Passes, position, Passes, position + 1, PassCount - position);
 
             // Add the new pass to the passes list.
             Passes[position] = pass;
+            PassCount++;
 
 #if CELLDEBUG
             for (int i = 0; i < PassCount - 1; i++)
@@ -125,7 +174,7 @@ namespace VSS.TRex.Cells
             }
 #endif
         }
-
+     
         /// <summary>
         /// ReplacePass takes a pass record containing pass information processed
         /// for a machine crossing this cell and replaces the pass at the given
@@ -144,11 +193,13 @@ namespace VSS.TRex.Cells
         /// <param name="passIndex"></param>
         public void RemovePass(int passIndex)
         {
-
             if (PassCount > passIndex)
             {
               Array.Copy(Passes, passIndex + 1, Passes, passIndex, PassCount - passIndex - 1);
-              AllocatePasses(PassCount - 1);
+              PassCount--;
+
+              // Don't reallocate the array to save allocation and additional copy.
+              //AllocatePasses(PassCount - 1);
             }
         }
 
@@ -157,29 +208,30 @@ namespace VSS.TRex.Cells
         /// and that cell pass ordering on time is preserved
         /// </summary>
         /// <param name="sourcePasses"></param>
+        /// <param name="sourcePassCount"></param>
         /// <param name="startIndex"></param>
         /// <param name="endIndex"></param>
         /// <param name="addedCount"></param>
         /// <param name="modifiedCount"></param>
         public void Integrate(CellPass[] sourcePasses,
-                              uint startIndex,
-                              uint endIndex,
-                              out uint addedCount,
-                              out uint modifiedCount)
+                              int sourcePassCount,
+                              int startIndex,
+                              int endIndex,
+                              out int addedCount,
+                              out int modifiedCount)
         {
             addedCount = 0;
             modifiedCount = 0;
 
-            if (sourcePasses.Length == 0)
+            if (sourcePassCount == 0)
                 return;
 
-            CellPass[] IntegratedPasses = null;
             int ThisIndex = 0;
-            uint SourceIndex = startIndex;
+            int SourceIndex = startIndex;
             int IntegratedIndex = 0;
 
-            uint OriginalPassCount = PassCount;
-            uint IntegratedPassCount = OriginalPassCount + (endIndex - startIndex + 1);
+            int OriginalPassCount = PassCount;
+            int IntegratedPassCount = OriginalPassCount + (endIndex - startIndex + 1);
 
             // Set the length to be the combined. While this may be more than needed if
             // there are passes in source that have identical times to the passes in
@@ -187,7 +239,7 @@ namespace VSS.TRex.Cells
             // where the actual number of passes are less than the total that are initially set here
             // will be cleaned up when the sub grid next exits the cache, or is integrated with
             // another aggregated sub grid from TAG file processing
-            Array.Resize(ref IntegratedPasses, (int)IntegratedPassCount);
+            CellPass[] IntegratedPasses = new CellPass[IntegratedPassCount];
 
             // Combine the two (sorted) lists of cell passes together to arrive at a single
             // integrated list of passes.
@@ -233,18 +285,23 @@ namespace VSS.TRex.Cells
                 IntegratedIndex++;
             } while (IntegratedIndex <= IntegratedPassCount - 1);
 
-            // Assign the integrated list of passes to this cell, replacing the previous list of passes.
-            if (IntegratedPasses.Length > IntegratedPassCount)
-                Array.Resize(ref IntegratedPasses, (int)IntegratedPassCount);
+            // Don't resize the cell pass list downwards as this costs an allocation and array copy
+            // This workflow is specific to TAG file ingest and the segments being manipulated are transient
+            // and will be removed shortly in general operations.
+            // if (IntegratedPasses.Length > IntegratedPassCount)
+            //    Array.Resize(ref IntegratedPasses, (int)IntegratedPassCount);
 
+            // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             Passes = IntegratedPasses;
+            PassCount = IntegratedPassCount;
             addedCount = IntegratedPassCount - OriginalPassCount;
         }
 
-        public Cell_NonStatic(uint cellPassCount)
+        public Cell_NonStatic(int cellPassCapacity)
         {
             Passes = null;
-            AllocatePasses(cellPassCount);
+            PassCount = 0;
+            AllocatePasses(cellPassCapacity);
         }
     }
 }

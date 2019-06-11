@@ -13,7 +13,7 @@ namespace VSS.TRex.Tests.ExistenceMaps
 {
   public class ExistenceMapsTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private SubGridTreeSubGridExistenceBitMask MakeSprinkledBitMask(uint sprinkleFactor)
+    private SubGridTreeSubGridExistenceBitMask MakeSprinkledBitMask(int sprinkleFactor)
     {
       var result = new SubGridTreeSubGridExistenceBitMask();
 

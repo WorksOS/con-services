@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
+using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
-using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -40,28 +38,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Adds file via Raptor and/or Trex
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ContractExecutionResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var createimportedfile = item as CreateImportedFile;
-      if (createimportedfile == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          "shouldn't get here"); // to keep compiler happy
-      }
+      var createimportedfile = CastRequestObjectTo<CreateImportedFile>(item, errorCode: 68);
 
       await ImportedFileRequestDatabaseHelper.CheckIfParentSurfaceExistsAsync(createimportedfile.ImportedFileType, createimportedfile.ParentUid, serviceExceptionHandler, projectRepo);
 
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
         out var useRaptorGatewayDesignImport);
-      var isDesignFileType = createimportedfile.ImportedFileType == ImportedFileType.DesignSurface ||
-                             createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface ||
-                             createimportedfile.ImportedFileType == ImportedFileType.Alignment ||
-                             createimportedfile.ImportedFileType == ImportedFileType.ReferenceSurface;
 
       // need to write to Db prior to 
       //      notifying raptor, as raptor needs the legacyImportedFileID 
@@ -75,9 +60,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           log, serviceExceptionHandler, projectRepo, createimportedfile.ParentUid, createimportedfile.Offset)
         .ConfigureAwait(false);
 
-      if (useTrexGatewayDesignImport && isDesignFileType)
+      if (useTrexGatewayDesignImport && createimportedfile.IsDesignFileType)
       {
-        var result = await ImportedFileRequestHelper.NotifyTRexAddFile(createimportedfile.ProjectUid,
+        await ImportedFileRequestHelper.NotifyTRexAddFile(createimportedfile.ProjectUid,
             createimportedfile.ImportedFileType, createimportedfile.FileName, createImportedFileEvent.ImportedFileUID,
             createimportedfile.SurveyedUtc,
             log, customHeaders, serviceExceptionHandler,
@@ -91,7 +76,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           await ProjectRequestHelper.GetProject(createimportedfile.ProjectUid.ToString(), customerUid, log,
             serviceExceptionHandler, projectRepo);
 
-        var addFileResult = await ImportedFileRequestHelper.NotifyRaptorAddFile(project.LegacyProjectID,
+        await ImportedFileRequestHelper.NotifyRaptorAddFile(project.LegacyProjectID,
           createimportedfile.ProjectUid,
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileDescriptor,
           createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,

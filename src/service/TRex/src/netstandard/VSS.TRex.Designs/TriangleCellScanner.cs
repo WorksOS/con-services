@@ -25,12 +25,12 @@ namespace VSS.TRex.Designs
 
     public void ScanCellsOverTriangle(ISubGridTree tree,
          int triIndex,
-         Func<ISubGridTree, uint, uint, bool> leafSatisfied,
-         Action<ISubGridTree, uint, uint, int> includeTriangleInLeaf,
+         Func<ISubGridTree, int, int, bool> leafSatisfied,
+         Action<ISubGridTree, int, int, int> includeTriangleInLeaf,
          Action<ISubGridTree,
            int, // sourceTriangle
-           Func<ISubGridTree, uint, uint, bool>, // leafSatisfied
-           Action<ISubGridTree, uint, uint, int>, // includeTriangleInLeaf
+           Func<ISubGridTree, int, int, bool>, // leafSatisfied
+           Action<ISubGridTree, int, int, int>, // includeTriangleInLeaf
            XYZ, XYZ, XYZ, bool> ProcessTrianglePiece)
     {
       Triangle Tri = TriangleItems[triIndex];
@@ -113,8 +113,8 @@ namespace VSS.TRex.Designs
 
     public void AddTrianglePieceToSubgridIndex(ISubGridTree index,
       int sourceTriangle,
-      Func<ISubGridTree, uint, uint, bool> leafSatisfied,
-      Action<ISubGridTree, uint, uint, int> includeTriangleInLeaf,
+      Func<ISubGridTree, int, int, bool> leafSatisfied,
+      Action<ISubGridTree, int, int, int> includeTriangleInLeaf,
       XYZ H1, XYZ H2, XYZ V, bool SingleRowOnly)
     {
       double H1Slope, H2Slope;
@@ -161,12 +161,12 @@ namespace VSS.TRex.Designs
       double H2SlopeTimesCellSize = H2Slope * index.CellSize;
 
       bool FirstRow = true;
-      uint PrevLeftSubGridX = uint.MaxValue;
-      uint PrevRightSubGridX = uint.MinValue;
+      int PrevLeftSubGridX = int.MaxValue;
+      int PrevRightSubGridX = int.MinValue;
 
       // Determine the start and end rows
-      index.CalculateIndexOfCellContainingPosition(H1X, H1Y, out _, out uint SubgridStartY);
-      index.CalculateIndexOfCellContainingPosition(V.X, V.Y, out _, out uint SubgridEndY);
+      index.CalculateIndexOfCellContainingPosition(H1X, H1Y, out _, out int SubgridStartY);
+      index.CalculateIndexOfCellContainingPosition(V.X, V.Y, out _, out int SubgridEndY);
 
       if (SubgridStartY == SubgridEndY)
       {
@@ -178,14 +178,14 @@ namespace VSS.TRex.Designs
       // H1 and H2 vertices lie on the boundary of two subgrids which may cause numeric
       // imprecision when the H1 and H2 vertices are updated after scanning across the
       // subgrids in the row.
-      uint OverrideSubGridY = SubgridStartY;
+      int OverrideSubGridY = SubgridStartY;
 
       // Repeatedly scan over rows of subgrids that cover the triangle piece checking
       // if they cover the body of the triangle
       do
       {
-        index.CalculateIndexOfCellContainingPosition(H1X, H1Y, out uint LeftSubGridX, out _);
-        index.CalculateIndexOfCellContainingPosition(H2X, H2Y, out uint RightSubGridX, out _);
+        index.CalculateIndexOfCellContainingPosition(H1X, H1Y, out int LeftSubGridX, out _);
+        index.CalculateIndexOfCellContainingPosition(H2X, H2Y, out int RightSubGridX, out _);
 
         if (LeftSubGridX > RightSubGridX)
           MinMax.Swap(ref LeftSubGridX, ref RightSubGridX);
@@ -195,11 +195,11 @@ namespace VSS.TRex.Designs
         // of near horizontal triangle edges are taken into consideration as each
         // subsequent row of subgrids is scanned.
 
-        uint TestLeftSubGridX = FirstRow ? LeftSubGridX : (PrevLeftSubGridX < LeftSubGridX) ? PrevLeftSubGridX : LeftSubGridX;
-        uint TestRightSubGridX = FirstRow ? RightSubGridX : (PrevRightSubGridX > RightSubGridX) ? PrevRightSubGridX : RightSubGridX;
+        int TestLeftSubGridX = FirstRow ? LeftSubGridX : (PrevLeftSubGridX < LeftSubGridX) ? PrevLeftSubGridX : LeftSubGridX;
+        int TestRightSubGridX = FirstRow ? RightSubGridX : (PrevRightSubGridX > RightSubGridX) ? PrevRightSubGridX : RightSubGridX;
 
         // Scan 'central' portion of subgrids between the two end points
-        for (uint I = TestLeftSubGridX; I <= TestRightSubGridX; I++)
+        for (int I = TestLeftSubGridX; I <= TestRightSubGridX; I++)
         {
           if (!leafSatisfied(index, I, OverrideSubGridY))
           {
@@ -211,7 +211,7 @@ namespace VSS.TRex.Designs
         }
 
         // Scan to the left from the left most point until subgrids no longer intersect the triangle
-        uint SubGridX = TestLeftSubGridX;
+        int SubGridX = TestLeftSubGridX;
         do
         {
           SubGridX--;
@@ -251,7 +251,7 @@ namespace VSS.TRex.Designs
         PrevLeftSubGridX = LeftSubGridX;
         PrevRightSubGridX = RightSubGridX;
 
-        OverrideSubGridY = (uint)(OverrideSubGridY + YStep);
+        OverrideSubGridY = OverrideSubGridY + YStep;
 
         WasLastRow = LastRow;
         LastRow = OverrideSubGridY == SubgridEndY; // H2X < H1X;

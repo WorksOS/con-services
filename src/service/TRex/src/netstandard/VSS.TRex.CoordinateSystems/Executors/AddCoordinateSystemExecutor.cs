@@ -33,11 +33,11 @@ namespace VSS.TRex.CoordinateSystems.Executors
       try
       {
         // Add the coordinate system to the cache
-        IStorageProxy storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+        var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
         using (MemoryStream csibStream = new MemoryStream(Encoding.ASCII.GetBytes(CSIB)))
         {
-          FileSystemErrorStatus status = storageProxy.WriteStreamToPersistentStore(projectID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
+          var status = storageProxy.WriteStreamToPersistentStore(projectID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
             FileSystemStreamType.CoordinateSystemCSIB, csibStream, CSIB);
 
           if (status != FileSystemErrorStatus.OK)
@@ -47,9 +47,9 @@ namespace VSS.TRex.CoordinateSystems.Executors
         if (!storageProxy.Commit())
           return false;
 
-        // Notify the  grid listeners that attributes of this sitemodel have changed.
+        // Notify the  grid listeners that attributes of this site model have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, projectID, CsibChanged: true);
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, projectID, CsibChanged: true);
       }
       catch (Exception e)
       {

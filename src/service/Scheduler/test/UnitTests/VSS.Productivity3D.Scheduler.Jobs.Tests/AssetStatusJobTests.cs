@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -222,6 +221,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       var expectedResult = new AssetAggregateStatus()
       {
+        AssetId =  123,
+        LiftNumber = 6433,
         CustomerUid = subscription.CustomerUid,
         ProjectUid = subscription.ProjectUid,
         LocationLastUpdatedUtc = machine1.lastKnownTimeStamp,
@@ -230,7 +231,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         FuelLevel = null,
         FuelLevelLastUpdatedUtc = null,
         Latitude = machine1.lastKnownLatitude * RADIANS_TO_DEGREES,
-        Longitude = machine1.lastKnownLongitude * RADIANS_TO_DEGREES
+        Longitude = machine1.lastKnownLongitude * RADIANS_TO_DEGREES,
+        MachineName = "Test Machine1"
       };
 
       var expectedHeaders = GetExpectedHeaders(subscription.CustomerUid, subscription.AuthorizationHeader, subscription.JWTAssertion);
@@ -338,7 +340,10 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         FuelLevel = assetDetails.FuelLevelLastReported,
         FuelLevelLastUpdatedUtc = assetDetails.FuelReportedTimeUtc,
         Latitude = assetDetails.LastReportedLocationLatitude,
-        Longitude = assetDetails.LastReportedLocationLongitude
+        Longitude = assetDetails.LastReportedLocationLongitude,
+        LiftNumber = 15215,
+        AssetId = 55743,
+        MachineName = "Test Machine from 3d"
       };
 
       var expectedHeaders = GetExpectedHeaders(subscription.CustomerUid, subscription.AuthorizationHeader, subscription.JWTAssertion);

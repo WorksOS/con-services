@@ -18,10 +18,10 @@ namespace TAGFiles.Tests
     {
       TAGFileConverter converter = new TAGFileConverter();
 
-      Assert.True(converter.Machine == null &&
-                  converter.SiteModel == null &&
-                  converter.SiteModelGridAggregator == null &&
-                  converter.MachineTargetValueChangesAggregator == null &&
+      Assert.True(converter.Machine != null &&
+                  converter.SiteModel != null &&
+                  converter.SiteModelGridAggregator != null &&
+                  converter.MachineTargetValueChangesAggregator != null &&
                   converter.ReadResult == TAGReadResult.NoError &&
                   converter.ProcessedCellPassCount == 0 &&
                   converter.ProcessedEpochCount == 0,

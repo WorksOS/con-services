@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Simple array to hold client leaf sub grid type constructor map
     /// </summary>
-    private readonly Func<IClientLeafSubGrid>[] typeMap = new Func<IClientLeafSubGrid>[Enum.GetNames(typeof(GridDataType)).Length];
+    private static readonly Func<IClientLeafSubGrid>[] typeMap = new Func<IClientLeafSubGrid>[Enum.GetNames(typeof(GridDataType)).Length];
 
     /// <summary>
     /// Stores of cached client grids to reduce the object instantiation and garbage collection overhead
@@ -72,7 +72,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="originX"></param>
     /// <param name="originY"></param>
     /// <returns>An appropriate instance derived from ClientLeafSubGrid</returns>
-    public IClientLeafSubGrid GetSubGridEx(GridDataType gridDataType, double cellSize, byte level, uint originX, uint originY)
+    public IClientLeafSubGrid GetSubGridEx(GridDataType gridDataType, double cellSize, byte level, int originX, int originY)
     {
       var result = GetSubGrid(gridDataType);
 

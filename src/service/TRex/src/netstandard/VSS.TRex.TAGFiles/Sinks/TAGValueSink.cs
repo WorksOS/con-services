@@ -71,7 +71,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
             return !ValueMatcherState.HaveSeenATimeValue || Processor.ProcessEpochContext();
         }
 
-        public override void ReadANSIStringValue(TAGDictionaryItem valueType, byte[] value)
+        public override void ReadANSIStringValue(TAGDictionaryItem valueType, string value)
         {
             if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {

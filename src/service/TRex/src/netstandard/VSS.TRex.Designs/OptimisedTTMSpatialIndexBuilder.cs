@@ -48,7 +48,7 @@ namespace VSS.TRex.Designs
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <param name="triIndex"></param>
-    private void IncludeTriangleInSubGridTreeIndex(NonOptimisedSpatialIndexSubGridTree tree, uint x, uint y, int triIndex)
+    private void IncludeTriangleInSubGridTreeIndex(NonOptimisedSpatialIndexSubGridTree tree, int x, int y, int triIndex)
     {
       // Get sub grid from tree, creating the path and leaf if necessary
       var leaf = tree.ConstructPathToCell(x, y, SubGridPathConstructionType.CreateLeaf) as NonOptimisedSpatialIndexSubGridLeaf;
@@ -198,8 +198,8 @@ namespace VSS.TRex.Designs
             // core cell size for the project
             SubGridUtilities.SubGridDimensionalIterator((x, y) =>
             {
-              uint CellX = leaf.OriginX + x;
-              uint CellY = leaf.OriginY + y;
+              int CellX = leaf.OriginX + x;
+              int CellY = leaf.OriginY + y;
 
               List<int> triList = FSpatialIndex[CellX, CellY];
 

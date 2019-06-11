@@ -1,9 +1,4 @@
-﻿using System;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.ConfigurationStore;
-using VSS.TRex.Common;
-using VSS.TRex.DI;
+﻿using FluentAssertions;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -148,14 +143,14 @@ namespace VSS.TRex.Tests.SubGridTrees
         }
 
         [Theory]
-        [InlineData(1000, 1000, 31)]
-        [InlineData(10_000, 10_000, 312)]
-        [InlineData(100_000, 100_000, 53)]
-        [InlineData(1_000_000, 1_000_000, 530)]
-        [InlineData(10_000_000, 10_000_000, 180)]
-        [InlineData(100_000_000, 100_000_000, 776)]
-        [InlineData(1_000_000_000, 1_000_000_000, 592)]
-        public void Test_SubgridCellAddress_ToSpatialPartitionDescriptor(uint cellX, uint cellY, uint expectedPartition)
+        [InlineData(1000, 1000, 1023)]
+        [InlineData(10_000, 10_000, 792)]
+        [InlineData(100_000, 100_000, 693)]
+        [InlineData(1_000_000, 1_000_000, 594)]
+        [InlineData(10_000_000, 10_000_000, 660)]
+        [InlineData(100_000_000, 100_000_000, 264)]
+        [InlineData(1_000_000_000, 1_000_000_000, 528)]
+        public void Test_SubgridCellAddress_ToSpatialPartitionDescriptor(int cellX, int cellY, int expectedPartition)
         {
           // These tests assume the default number of 1024 partitions from the configuration
 

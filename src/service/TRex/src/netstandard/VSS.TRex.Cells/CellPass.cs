@@ -133,13 +133,13 @@ namespace VSS.TRex.Cells
     /// </summary>
     public void Clear()
     {
-      GPSModeStore = 0;
+      GPSModeStore        = 0;
 
-      Time = CellPassConsts.NullTime;
+      Time                = CellPassConsts.NullTime;
 
-      Height = CellPassConsts.NullHeight;
+      Height              = CellPassConsts.NullHeight;
       InternalSiteModelMachineIndex = CellPassConsts.NullInternalSiteModelMachineIndex;
-      gpsMode = CellPassConsts.NullGPSMode;
+      gpsMode             = CellPassConsts.NullGPSMode;
       CCV                 = CellPassConsts.NullCCV;
       RadioLatency        = CellPassConsts.NullRadioLatency;
       RMV                 = CellPassConsts.NullRMV;

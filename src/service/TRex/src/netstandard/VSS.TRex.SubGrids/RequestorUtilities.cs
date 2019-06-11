@@ -106,8 +106,8 @@ namespace VSS.TRex.SubGrids
         var surfaceElevationPatchArg = new SurfaceElevationPatchArgument
         (
           siteModelID: siteModel.ID,
-          oTGCellBottomLeftX: uint.MinValue,
-          oTGCellBottomLeftY: uint.MinValue,
+          oTGCellBottomLeftX: int.MinValue,
+          oTGCellBottomLeftY: int.MinValue,
           cellSize: siteModel.CellSize,
           includedSurveyedSurfaces: FilteredSurveyedSurfaces, 
           surveyedSurfacePatchType: filter.AttributeFilter.ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,

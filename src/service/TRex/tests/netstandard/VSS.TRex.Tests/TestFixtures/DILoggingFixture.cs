@@ -1,9 +1,9 @@
 ﻿using System;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IO;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -22,10 +22,11 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<RecyclableMemoryStreamManager>(new RecyclableMemoryStreamManager()))
         .Add(x => x.AddSingleton<Mock<IConfigurationStore>>(mock =>
         {
           var config = new Mock<IConfigurationStore>();
-          config.Setup(c => c.GetValueUint("NUMPARTITIONS_PERDATACACHE", It.IsAny<uint>())).Returns(Consts.NUMPARTITIONS_PERDATACACHE);
+          config.Setup(c => c.GetValueInt("NUMPARTITIONS_PERDATACACHE", It.IsAny<int>())).Returns(Consts.NUMPARTITIONS_PERDATACACHE);
 
           config.Setup(c => c.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", It.IsAny<int>())).Returns(Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
           config.Setup(c => c.GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", It.IsAny<int>())).Returns(Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
@@ -46,7 +47,7 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueLong("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE", It.IsAny<long>())).Returns(Consts.GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE);
           config.Setup(c => c.GetValueDouble("GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION", It.IsAny<double>())).Returns(Consts.GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION);
 
-          config.Setup(c => c.GetValueUint("SUBGRIDTREENODE_CELLSPARCITYLIMIT", It.IsAny<uint>())).Returns(Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT);
+          config.Setup(c => c.GetValueInt("SUBGRIDTREENODE_CELLSPARCITYLIMIT", It.IsAny<int>())).Returns(Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT);
 
           config.Setup(c => c.GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", It.IsAny<bool>())).Returns(Consts.ENABLE_TAGFILE_ARCHIVING_METADATA);
           config.Setup(c => c.GetValueBool("ENABLE_TAGFILE_ARCHIVING", It.IsAny<bool>())).Returns(Consts.ENABLE_TAGFILE_ARCHIVING);

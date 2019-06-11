@@ -8,7 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -20,21 +20,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Save for potential rollback
     /// </summary>
-    protected string subscriptionUidAssigned = null;
+    protected string subscriptionUidAssigned;
 
     /// <summary>
     /// Processes the UpdateProjectEvent
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ContractExecutionResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      UpdateProjectEvent updateProjectEvent = item as UpdateProjectEvent;
-      if (updateProjectEvent == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-      }
+      var updateProjectEvent = CastRequestObjectTo<UpdateProjectEvent>(item, errorCode: 68);
 
       var existing = await projectRepo.GetProject(updateProjectEvent.ProjectUID.ToString());
       if (existing == null)
@@ -49,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       await ProjectRequestHelper.ValidateCoordSystemInRaptor(updateProjectEvent, serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
 
-      if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && String.Compare(existing.GeometryWKT,
+      if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.GeometryWKT,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
         await ProjectRequestHelper.DoesProjectOverlap(existing.CustomerUID, updateProjectEvent.ProjectUID.ToString(),
@@ -82,7 +75,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
           projectRepo, raptorProxy, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
-        log.LogDebug($"UpdateProject: CreateCoordSystemInRaptorAndTcc succeeded");
+        log.LogDebug("UpdateProject: CreateCoordSystemInRaptorAndTcc succeeded");
       }
 
       if (existing != null && existing.ProjectType == ProjectType.Standard &&
@@ -112,7 +105,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 62, string.Empty);
       }
 
-      log.LogDebug($"UpdateProject: Project updated successfully");
+      log.LogDebug("UpdateProject: Project updated successfully");
 
 
       // doing this as late as possible in case something fails. We can't cleanup kafka que.
@@ -129,14 +122,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <returns></returns>
     protected void CreateKafkaEvents(UpdateProjectEvent updateProjectEvent)
     {
-      var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent});
+      var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(updateProjectEvent.ProjectUID.ToString(), messagePayload)
         });
     }
-    
+
 
     private async Task RollbackAndThrow(UpdateProjectEvent updateProjectEvent, HttpStatusCode httpStatusCode, int errorCode, string exceptionMessage, ProjectDatabaseModel existing = null)
     {
@@ -163,7 +156,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       serviceExceptionHandler.ThrowServiceException(httpStatusCode, errorCode, exceptionMessage);
     }
-    
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException();

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Compression;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
@@ -52,11 +50,10 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
             /// <summary>
-            /// Serialise all descriptors to the supplied writer
+            /// Serialize all descriptors to the supplied writer
             /// </summary>
             /// <param name="writer"></param>
-            /// <param name="buffer"></param>
-            public void Write(BinaryWriter writer, byte [] buffer)
+            public void Write(BinaryWriter writer)
             {
                 InternalMachineID.Write(writer);
                 Time.Write(writer);
@@ -72,8 +69,7 @@ namespace VSS.TRex.SubGridTrees.Server
             /// Deserialize all descriptors using the supplied reader
             /// </summary>
             /// <param name="reader"></param>
-            /// <param name="buffer"></param>
-            public void Read(BinaryReader reader, byte [] buffer)
+            public void Read(BinaryReader reader)
             {
                 InternalMachineID.Read(reader);
                 Time.Read(reader);
@@ -89,7 +85,7 @@ namespace VSS.TRex.SubGridTrees.Server
             /// Calculate the chained offsets and numbers of required bits for each attribute being stored
             /// </summary>
             /// <param name="NumBitsPerCellPass"></param>
-            public void CalculateTotalOffsetBits(out uint NumBitsPerCellPass)
+            public void CalculateTotalOffsetBits(out int NumBitsPerCellPass)
             {
                 InternalMachineID.OffsetBits = 0;
                 Time.OffsetBits = (ushort)(InternalMachineID.OffsetBits + InternalMachineID.RequiredBits);
@@ -101,7 +97,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 CCA.OffsetBits = (ushort)(MaterialTemperature.OffsetBits + MaterialTemperature.RequiredBits);
 
                 // Calculate the total number of bits required and pass back
-                NumBitsPerCellPass = (uint)(CCA.OffsetBits + CCA.RequiredBits);
+                NumBitsPerCellPass = CCA.OffsetBits + CCA.RequiredBits;
             }
         }
 
@@ -111,7 +107,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public CellPass this[uint x, uint y]
+        public CellPass this[int x, int y]
         {
             get => CellPass(x, y);
             set => throw new NotSupportedException("Writing to individual last pass information is not supported in immutable representations");
@@ -119,7 +115,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         private EncodedFieldDescriptorsStruct EncodedFieldDescriptors; // = new EncodedFieldDescriptorsStruct();
 
-        private uint NumBitsPerCellPass;
+        private int NumBitsPerCellPass;
 
         public SubGridCellLatestPassDataWrapper_StaticCompressed()
         {
@@ -140,17 +136,26 @@ namespace VSS.TRex.SubGridTrees.Server
             // passes in the latest cell passes
             FirstRealCellPassTime = Consts.MAX_DATETIME_AS_UTC;
 
-            SubGridUtilities.SubGridDimensionalIterator((col, row) =>
+            for (int col = 0; col < SubGridTreeConsts.SubGridTreeDimension; col++)
             {
+              for (int row = 0; row < SubGridTreeConsts.SubGridTreeDimension; row++)
+              {
                 DateTime time = cellPasses[col, row].Time;
                 FirstRealCellPassTime = time != CellPassConsts.NullTime && time < FirstRealCellPassTime ? time : FirstRealCellPassTime;
-            });
+              }
+            }
 
             // For ease of management convert all the cell passes into a single list for the following operations
             var allCellPassesArray = new CellPass[SubGridTreeConsts.SubGridTreeCellsPerSubGrid];
             int cellPassIndex = 0;
 
-            SubGridUtilities.SubGridDimensionalIterator((col, row) => allCellPassesArray[cellPassIndex++] = cellPasses[col, row]);
+            for (int col = 0; col < SubGridTreeConsts.SubGridTreeDimension; col++)
+            {
+              for (int row = 0; row < SubGridTreeConsts.SubGridTreeDimension; row++)
+              {
+                allCellPassesArray[cellPassIndex++] = cellPasses[col, row];
+              }
+            }
 
             // Work out the value ranges of all the attributes and given the value range
             // for each attribute, calculate the number of bits required to store the values.
@@ -164,14 +169,39 @@ namespace VSS.TRex.SubGridTrees.Server
             // from the lowest values of those attributes. Reuse the existing fields in the
             // cell passes list to avoid having to allocate an extra memory block
 
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.InternalSiteModelMachineIndex).ToArray(), 0xffff, CellPassConsts.NullInternalSiteModelMachineIndex, true, ref EncodedFieldDescriptors.InternalMachineID);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedTime(x.Time, FirstRealCellPassTime)).ToArray(), 0x7fff_ffff_ffff_ffff, -1, true, ref EncodedFieldDescriptors.Time);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedHeight(x.Height)).ToArray(), 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.CCV).ToArray(), 0xffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.RMV).ToArray(), 0xffff, CellPassConsts.NullRMV, true, ref EncodedFieldDescriptors.RMV);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.MDP).ToArray(), 0xffff, CellPassConsts.NullMDP, true, ref EncodedFieldDescriptors.MDP);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.MaterialTemperature).ToArray(), 0xffff, CellPassConsts.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (long)x.CCA).ToArray(), 0xff, CellPassConsts.NullCCA, true, ref EncodedFieldDescriptors.CCA);
+            long[] CalculateAttributeValueRange_Buffer = new long[allCellPassesArray.Length];
+
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].InternalSiteModelMachineIndex;
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullInternalSiteModelMachineIndex, true, ref EncodedFieldDescriptors.InternalMachineID);
+
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedTime(allCellPassesArray[i].Time, FirstRealCellPassTime);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0x7fff_ffff_ffff_ffff, -1, true, ref EncodedFieldDescriptors.Time);
+       
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedHeight(allCellPassesArray[i].Height);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
+       
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].CCV;
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
+       
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].RMV;
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullRMV, true, ref EncodedFieldDescriptors.RMV);
+       
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].MDP;
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullMDP, true, ref EncodedFieldDescriptors.MDP);
+       
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].MaterialTemperature;
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
+       
+            for (int i = 0; i < allCellPassesArray.Length; i++)
+              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].CCA;
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xff, CellPassConsts.NullCCA, true, ref EncodedFieldDescriptors.CCA);
 
             // Calculate the offset bit locations for the cell pass attributes
             EncodedFieldDescriptors.CalculateTotalOffsetBits(out NumBitsPerCellPass);
@@ -191,8 +221,10 @@ namespace VSS.TRex.SubGridTrees.Server
             BF_CellPasses.StreamWriteStart();
             try
             {
-                foreach (CellPass pass in allCellPassesArray)
+                for (int i=0, length = allCellPassesArray.Length; i < length; i++)
                 {
+                    CellPass pass = allCellPassesArray[i];
+
                     BF_CellPasses.StreamWrite(pass.InternalSiteModelMachineIndex, EncodedFieldDescriptors.InternalMachineID);
                     BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedTime(pass.Time, FirstRealCellPassTime), EncodedFieldDescriptors.Time);
                     BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedHeight(pass.Height), EncodedFieldDescriptors.Height);
@@ -217,9 +249,9 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public short ReadInternalMachineIndex(uint Col, uint Row)
+        public short ReadInternalMachineIndex(int Col, int Row)
         {
-          uint BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.InternalMachineID.OffsetBits;
+          int BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.InternalMachineID.OffsetBits;
           return (short)BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.InternalMachineID);
     }
      
@@ -229,9 +261,9 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public DateTime ReadTime(uint Col, uint Row)
+        public DateTime ReadTime(int Col, int Row)
         {
-            uint BitLocation = (((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * NumBitsPerCellPass) + EncodedFieldDescriptors.Time.OffsetBits;
+            int BitLocation = (((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * NumBitsPerCellPass) + EncodedFieldDescriptors.Time.OffsetBits;
 
             long IntegerTime = BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Time);
             return IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? Consts.MIN_DATETIME_AS_UTC : FirstRealCellPassTime.AddMilliseconds(AttributeValueModifiers.MILLISECONDS_TO_DECISECONDS_FACTOR * IntegerTime);
@@ -243,11 +275,11 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public float ReadHeight(uint Col, uint Row)
+        public float ReadHeight(int Col, int Row)
         {
-            uint BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.Height.OffsetBits;
+            int BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.Height.OffsetBits;
             float IntegerHeight = BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Height);
-            return IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : IntegerHeight / 1000;
+            return IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : IntegerHeight / 1000.0f;
         }
 
         /// <summary>
@@ -256,9 +288,9 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public short ReadCCV(uint Col, uint Row)
+        public short ReadCCV(int Col, int Row)
         {
-            uint BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.CCV.OffsetBits;
+            int BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.CCV.OffsetBits;
             return (short)BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.CCV);
         }
 
@@ -268,9 +300,9 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public short ReadRMV(uint Col, uint Row)
+        public short ReadRMV(int Col, int Row)
         {
-            uint BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.RMV.OffsetBits;
+            int BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.RMV.OffsetBits;
             return (short)BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.RMV);
         }
 
@@ -280,9 +312,9 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public short ReadMDP(uint Col, uint Row)
+        public short ReadMDP(int Col, int Row)
         {
-            uint BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.MDP.OffsetBits;
+            int BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.MDP.OffsetBits;
             return (short)BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.MDP);
         }
 
@@ -292,9 +324,9 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public ushort ReadTemperature(uint Col, uint Row)
+        public ushort ReadTemperature(int Col, int Row)
         {
-            uint BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.MaterialTemperature.OffsetBits;
+            int BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.MaterialTemperature.OffsetBits;
             return (ushort)BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.MaterialTemperature);
         }
 
@@ -304,7 +336,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public ushort ReadFrequency(uint Col, uint Row)
+        public ushort ReadFrequency(int Col, int Row)
         {
             return CellPassConsts.NullFrequency;
         }
@@ -315,7 +347,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public ushort ReadAmplitude(uint Col, uint Row)
+        public ushort ReadAmplitude(int Col, int Row)
         {
             return CellPassConsts.NullAmplitude;
         }
@@ -326,7 +358,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public GPSMode ReadGPSMode(uint Col, uint Row)
+        public GPSMode ReadGPSMode(int Col, int Row)
         {
             return GPSMode.NoGPS;
         }
@@ -337,9 +369,9 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public byte ReadCCA(uint Col, uint Row)
+        public byte ReadCCA(int Col, int Row)
         {
-          uint BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.CCA.OffsetBits;
+          int BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.CCA.OffsetBits;
           return (byte)BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.CCA);
         }
 
@@ -349,16 +381,16 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Col"></param>
         /// <param name="Row"></param>
         /// <returns></returns>
-        public CellPass CellPass(uint Col, uint Row)
+        public CellPass CellPass(int Col, int Row)
         {
             return GetCellPass(Col, Row);
         }
 
-        public CellPass GetCellPass(uint Col, uint Row)
+        public CellPass GetCellPass(int Col, int Row)
         {
             // IMPORTANT: The fields read in this method must be read in the same order as they were written during encoding
 
-            uint CellPassBitLocation = ((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * NumBitsPerCellPass;
+            int CellPassBitLocation = ((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * NumBitsPerCellPass;
 
             var Result = new CellPass();
 
@@ -379,31 +411,31 @@ namespace VSS.TRex.SubGridTrees.Server
             return Result;
         }
 
-        public override void Read(BinaryReader reader, byte[] buffer)
+        public override void Read(BinaryReader reader)
         {
             Clear();
-            base.Read(reader, buffer);
+            base.Read(reader);
 
             FirstRealCellPassTime = DateTime.FromBinary(reader.ReadInt64());
 
             BF_CellPasses.Read(reader);
 
-            EncodedFieldDescriptors.Read(reader, buffer);
+            EncodedFieldDescriptors.Read(reader);
 
-            NumBitsPerCellPass = (uint)reader.ReadInt32();
+            NumBitsPerCellPass = reader.ReadInt32();
         }
 
-        public override void Write(BinaryWriter writer, byte [] buffer)
+        public override void Write(BinaryWriter writer)
         {
-            base.Write(writer, buffer);
+            base.Write(writer);
 
             writer.Write(FirstRealCellPassTime.ToBinary());
 
             BF_CellPasses.Write(writer);
 
-            EncodedFieldDescriptors.Write(writer, buffer);
+            EncodedFieldDescriptors.Write(writer);
 
-            writer.Write((int)NumBitsPerCellPass);
+            writer.Write(NumBitsPerCellPass);
         }
 
         /// <summary>

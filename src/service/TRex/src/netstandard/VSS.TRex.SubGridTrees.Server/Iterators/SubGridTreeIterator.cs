@@ -95,8 +95,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             }
             else
             {
-              uint CellX = (uint) (iterationState[LevelIdx].SubGrid.OriginX + iterationState[LevelIdx].XIdx * SubGridTreeConsts.SubGridTreeDimension);
-              uint CellY = (uint) (iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTreeConsts.SubGridTreeDimension);
+              int CellX = iterationState[LevelIdx].SubGrid.OriginX + iterationState[LevelIdx].XIdx * SubGridTreeConsts.SubGridTreeDimension;
+              int CellY = iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTreeConsts.SubGridTreeDimension;
 
               SubGrid = Utilities.SubGridUtilities.LocateSubGridContaining
               (StorageProxy,

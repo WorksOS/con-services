@@ -1,4 +1,5 @@
-﻿using VSS.TRex.SubGridTrees.Server.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
@@ -10,24 +11,28 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         /// <param name="segment"></param>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
-        public static void CalculateTotalPasses(ISubGridCellSegmentPassesDataWrapper segment, out uint TotalPasses, out uint MaxPassCount)
+        public static void CalculateTotalPasses(ISubGridCellSegmentPassesDataWrapper segment, out int TotalPasses, out int MaxPassCount)
         {
-            uint _TotalPasses = 0;
-            uint _MaxPassCount = 0;
+            int _TotalPasses = 0;
+            int _MaxPassCount = 0;
 
+            // Todo: Push this down to the segment to avoid the PassCount abstraction
             if (segment.HasPassData())
             {
-                Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+              {
+                for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
                 {
-                    uint ThePassCount = segment.PassCount(i, j);
-                 
-                    if (ThePassCount > _MaxPassCount)
-                    {
-                      _MaxPassCount = ThePassCount;
-                    }
-                 
-                    _TotalPasses += ThePassCount;
-                });
+                  int ThePassCount = segment.PassCount(i, j);
+
+                  if (ThePassCount > _MaxPassCount)
+                  {
+                    _MaxPassCount = ThePassCount;
+                  }
+
+                  _TotalPasses += ThePassCount;
+                }
+              }
             }
 
             TotalPasses = _TotalPasses;

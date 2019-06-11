@@ -14,7 +14,8 @@ namespace VSS.TRex.GridFabric.Affinity
              x.ProjectUID.Equals(y.ProjectUID) &&
              x.SubGridX == y.SubGridX &&
              x.SubGridY == y.SubGridY &&
-             x.SegmentIdentifier.Equals(y.SegmentIdentifier);
+             x.SegmentStartDate == y.SegmentStartDate &&
+             x.SegmentEndDate == y.SegmentEndDate;
     }
 
     public int GetHashCode(ISubGridSpatialAffinityKey obj) => obj.GetHashCode();

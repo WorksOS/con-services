@@ -25,4 +25,10 @@
         /// </summary>
         CATFactoryFitSensor
     }
+
+    public static class CompactionSensorTypeConsts
+  {
+      public const int COMPACTION_SENSOR_TYPE_MIN_VALUE = (int)CompactionSensorType.NoSensor;
+      public const int COMPACTION_SENSOR_TYPE_MAX_VALUE = (int)CompactionSensorType.CATFactoryFitSensor;
+    }
 }

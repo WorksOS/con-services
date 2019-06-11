@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -13,10 +12,8 @@ using VSS.Productivity.Push.Models;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Scheduler.Abstractions;
-using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
 {
@@ -165,15 +162,20 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
         ProjectUid = projectUid,
         CustomerUid = customerUid,
         AssetUid =  assetUid,
-        Design = machineStatus.lastKnownDesignName
+        UtilizationSummary = summary
       };
-
+      
       // This is where all the magic happens, in terms of mapping data we have from 3d / 2d endpoints into an event for the UI
       // details / summary can be null, machineStatus won't be.
       var lastLocationTimeUtc = machineStatus.lastKnownTimeStamp;
       // These values are in radians, where the AssetDetails values are in degrees
       result.Latitude = machineStatus.lastKnownLatitude?.LatRadiansToDegrees();
       result.Longitude = machineStatus.lastKnownLongitude?.LonRadiansToDegrees();
+
+      result.AssetId = machineStatus.AssetId;
+      result.Design = machineStatus.lastKnownDesignName;
+      result.LiftNumber = machineStatus.lastKnownLayerId;
+      result.MachineName = machineStatus.MachineName;
 
       // Extract data from Asset Details
       if (details != null)
@@ -188,8 +190,14 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
 
         result.FuelLevel = details.FuelLevelLastReported;
         result.FuelLevelLastUpdatedUtc = details.FuelReportedTimeUtc;
+        result.AssetIcon = details.AssetIcon;
+        result.AssetSerialNumber = details.AssetSerialNumber;
+        if (details.Devices?.Count > 0)
+        {
+          result.DeviceName = string.Join(", ", details.Devices.Select(d => d.DeviceType));
+        }
       }
-      
+
       // Clear the values if we don't have everything
       if (lastLocationTimeUtc == null || result.Latitude == null || result.Longitude == null)
       {

@@ -20,28 +20,28 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// May be null.
     /// </summary>       
     [JsonProperty(PropertyName = "cellAddress", Required = Required.Default)]
-    public CellAddress cellAddress { get; private set; }
+    public CellAddress cellAddress { get; set; }
 
     /// <summary>
     /// Location of the cell in the form of a grid position within it. 
     /// May be null.
     /// </summary>   
     [JsonProperty(PropertyName = "probePositionGrid", Required = Required.Default)]
-    public Point probePositionGrid { get; private set; }
+    public Point probePositionGrid { get; set; }
 
     /// <summary>
     /// Location of the cell in the form of a WGS84 position within it. 
     /// May be null.
     /// </summary>       
     [JsonProperty(PropertyName = "probePositionLL", Required = Required.Default)]
-    public WGSPoint probePositionLL { get; private set; }
+    public WGSPoint probePositionLL { get; set; }
 
     /// <summary>
     /// The lift/layer build settings to be used.
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; private set; }
+    public LiftBuildSettings liftBuildSettings { get; set; }
 
     /// <summary>
     /// The type of data being requested for the processed passes and layers to represent.
@@ -76,14 +76,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "filterId", Required = Required.Default)]
-    public long? filterId { get; private set; }
+    public long? filterId { get; set; }
 
     /// <summary>
     /// The lift/layer build settings to be used.
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; protected set; }
+    public FilterResult filter { get; set; }
 
     /// <summary>
     /// Validation of CellPassRequest

@@ -166,7 +166,5 @@ namespace VSS.TRex.Machines
       CompactionDataReported = reader.ReadBoolean();
       CompactionSensorType = (CompactionSensorType)reader.ReadInt32();
     }
-
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }

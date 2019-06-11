@@ -2,6 +2,7 @@
 using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using VSS.Log4NetExtensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
@@ -138,7 +139,8 @@ namespace VSS.TRex.Storage
       {
         using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
         {
-          // Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
+          if (Log.IsTraceEnabled())
+            Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
 
           // Place the converted immutable item into the immutable cache
           immutableCache.Put(cacheKey, compressedStream.ToArray());
@@ -212,7 +214,8 @@ namespace VSS.TRex.Storage
       {
         using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
         {
-          // Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
+          if (Log.IsTraceEnabled())
+            Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
 
           // Place the converted immutable item into the immutable cache
           immutableCache.Put(cacheKey, compressedStream.ToArray());

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Log4NetExtensions;
@@ -49,6 +51,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private readonly List<Guid> ProjectsToAvoid = new List<Guid>();
 
         private static readonly int NumConcurrentProcessingTasks = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS", kDefaultNumConcurrentTAGFileProcessingTasks);
+
+        private static readonly TAGFileNameComparer _tagFileNameComparer = new TAGFileNameComparer();
 
         private void ProcessTAGFilesFromGrouper()
         {
@@ -214,6 +218,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         throw;
                     }
                 }).ToList();
+
                 fileItems = TAGQueueItems
                     .Where(x => x != null)
                     .Select(x => new ProcessTAGFileRequestFileItem
@@ -221,7 +226,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         FileName = x.FileName,
                         TagFileContent = x.Content,
                         IsJohnDoe = x.IsJohnDoe
-                    }).ToList();
+                    })
+                    .OrderBy(x => x.FileName, _tagFileNameComparer)
+                    .ToList();
             }
             catch (Exception e)
             {
@@ -260,7 +267,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             else
                             {
                               // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
-                              Log.LogError($"Grouper2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                              Log.LogError($"Grouper2 TAG file {tagFileResponse.FileName} failed to process, with exception '{tagFileResponse.Exception}'. WARNING: FILE REMOVED FROM QUEUE");
                             }
            
                             removalKey.FileName = tagFileResponse.FileName;

@@ -36,7 +36,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
     private void AddEndIntercept(XYZ point, List<XYZS> intercepts, double station)
     {
-      if (!Index.CalculateIndexOfCellContainingPosition(point.X, point.Y, out uint cellX, out uint cellY))
+      if (!Index.CalculateIndexOfCellContainingPosition(point.X, point.Y, out int cellX, out int cellY))
       {
         Log.LogWarning($"No cell address computable for end point location {point.X}:{point.Y}");
         return;
@@ -108,13 +108,13 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // Add an initial intercept if the start point is located within a triangle
       AddEndIntercept(startPoint, intercepts, startStation);
 
-      uint prevCellX = uint.MinValue, preCellY = uint.MinValue;
+      int prevCellX = int.MinValue, preCellY = int.MinValue;
 
       for (int interceptIndex = 0; interceptIndex < VtHzIntercepts.Count; interceptIndex++)
       {
         InterceptRec intercept = VtHzIntercepts.Items[interceptIndex];
 
-        if (!Index.CalculateIndexOfCellContainingPosition(intercept.MidPointX, intercept.MidPointY, out uint cellX, out uint cellY))
+        if (!Index.CalculateIndexOfCellContainingPosition(intercept.MidPointX, intercept.MidPointY, out int cellX, out int cellY))
         {
           Log.LogWarning($"No cell address computable for location {intercept.MidPointX}:{intercept.MidPointY}");
           continue;

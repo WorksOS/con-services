@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -273,7 +274,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
 
             // Find the location of the cell that contains the world position of (0.1, 0.1)
-            Assert.True(tree.CalculateIndexOfCellContainingPosition(0.01, 0.01, out uint CellX, out uint CellY),
+            Assert.True(tree.CalculateIndexOfCellContainingPosition(0.01, 0.01, out int CellX, out int CellY),
                 "CalculateIndexOfCellContainingPosition failed to return a cell position for (0.01, 0.01)");
           
             // This location should be the cell exactly at the cell location of (IndexOriginOffset, IndexOriginOffset)
@@ -289,7 +290,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
           ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-          Assert.True(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate, tree.MaxOrdinate, out uint CellX, out uint CellY));
+          Assert.True(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate, tree.MaxOrdinate, out int CellX, out int CellY));
           Assert.True(tree.CalculateIndexOfCellContainingPosition(-tree.MaxOrdinate, -tree.MaxOrdinate, out CellX, out CellY));
           Assert.True(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate, -tree.MaxOrdinate, out CellX, out CellY));
           Assert.True(tree.CalculateIndexOfCellContainingPosition(-tree.MaxOrdinate, tree.MaxOrdinate, out CellX, out CellY));
@@ -300,21 +301,21 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
           ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-          Assert.False(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate + 1, tree.MaxOrdinate + 1, out uint CellX, out uint CellY));
-          CellX.Should().Be(uint.MaxValue);
-          CellY.Should().Be(uint.MaxValue);
+          Assert.False(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate + 1, tree.MaxOrdinate + 1, out int CellX, out int CellY));
+          CellX.Should().Be(int.MaxValue);
+          CellY.Should().Be(int.MaxValue);
 
           Assert.False(tree.CalculateIndexOfCellContainingPosition(-tree.MaxOrdinate - 1, -tree.MaxOrdinate - 1, out CellX, out CellY));
-          CellX.Should().Be(uint.MaxValue);
-          CellY.Should().Be(uint.MaxValue);
+          CellX.Should().Be(int.MaxValue);
+          CellY.Should().Be(int.MaxValue);
 
           Assert.False(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate + 1, -tree.MaxOrdinate - 1, out CellX, out CellY));
-          CellX.Should().Be(uint.MaxValue);
-          CellY.Should().Be(uint.MaxValue);
+          CellX.Should().Be(int.MaxValue);
+          CellY.Should().Be(int.MaxValue);
 
           Assert.False(tree.CalculateIndexOfCellContainingPosition(-tree.MaxOrdinate - 1, tree.MaxOrdinate + 1, out CellX, out CellY));
-          CellX.Should().Be(uint.MaxValue);
-          CellY.Should().Be(uint.MaxValue);
+          CellX.Should().Be(int.MaxValue);
+          CellY.Should().Be(int.MaxValue);
 
         }
 
@@ -424,7 +425,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
           ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-          var MS = new MemoryStream();
+          var MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
           tree.ToStream(MS);
 
           MS.Length.Should().Be(EXPECTED_SIZE);

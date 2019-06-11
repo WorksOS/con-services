@@ -96,8 +96,8 @@ namespace VSS.TRex.Caching
     {
       lock (this)
       {
-        uint x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-        uint y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+        int x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+        int y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
         // Add the element to storage and obtain its index in that storage, inserting it into the context
         // Note: The index is added as a 1-based index to the ContextTokens to differentiate iot from the null value
@@ -124,8 +124,8 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public void Remove(ITRexMemoryCacheItem element)
     {
-      uint x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-      uint y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      int x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      int y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       lock (this)
       {
@@ -138,7 +138,7 @@ namespace VSS.TRex.Caching
     /// memory cache instance prior to use. This operation is thread safe - all operations are concurrency locked within the
     /// confines of the context.
     /// </summary>
-    private void RemoveNoLock(uint x, uint y)
+    private void RemoveNoLock(int x, int y)
     {
       // Locate the index for the element in the context token tree and remove it from storage,
       // null out the entry in the context token tree.
@@ -155,10 +155,10 @@ namespace VSS.TRex.Caching
       }
     }
 
-    public ITRexMemoryCacheItem Get(uint originX, uint originY)
+    public ITRexMemoryCacheItem Get(int originX, int originY)
     {
-      uint x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-      uint y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      int x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      int y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       lock (this)
       {
@@ -178,8 +178,8 @@ namespace VSS.TRex.Caching
     /// <param name="item"></param>
     public void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item)
     {
-      uint x = item.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-      uint y = item.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      int x = item.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      int y = item.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       ContextTokens[x, y] = 0;
       OwnerMemoryCache.ItemRemovedFromContext(item.IndicativeSizeInBytes());
@@ -192,12 +192,12 @@ namespace VSS.TRex.Caching
     /// <param name="originX"></param>
     /// <param name="originY"></param>
     /// <param name="subGridPresentForInvalidation"></param>
-    public void InvalidateSubGridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation)
+    public void InvalidateSubGridNoLock(int originX, int originY, out bool subGridPresentForInvalidation)
     {
       subGridPresentForInvalidation = false;
 
-      uint x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-      uint y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      int x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      int y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       var contextToken = ContextTokens[x, y];
 
