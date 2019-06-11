@@ -8,9 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using Microsoft.CSharp.RuntimeBinder;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility.Model.WebApi;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -18,11 +16,14 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Xunit;
 
 namespace TestUtility
 {
   public class TestSupport
   {
+    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project";
+
     public string AssetUid { get; set; }
     public DateTime FirstEventDate { get; set; }
     public DateTime LastEventDate { get; set; }
@@ -37,7 +38,6 @@ namespace TestUtility
     public CreateProjectEvent CreateProjectEvt { get; set; }
     public UpdateProjectEvent UpdateProjectEvt { get; set; }
     public AssociateProjectCustomer AssociateCustomerProjectEvt { get; set; }
-    public DissociateProjectCustomer DissociateCustomerProjectEvt { get; set; }
     public AssociateProjectGeofence AssociateProjectGeofenceEvt { get; set; }
 
     public bool IsPublishToKafka { get; set; }
@@ -48,32 +48,40 @@ namespace TestUtility
       DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
       NullValueHandling = NullValueHandling.Ignore
     };
-    
+
     private readonly Random rndNumber = new Random();
     private readonly object syncLock = new object();
     private const char SEPARATOR = '|';
-    private readonly Msg msg = new Msg();
 
     private static readonly TestConfig _testConfig;
-    private static readonly string _baseUri;
+    public static readonly string BaseUri;
 
-    public string BaseUri => _baseUri;
+    private static readonly object _legacyIdLock = new object();
+
+    private static int _currentLegacyProjectId;
 
     static TestSupport()
     {
-      _testConfig = new TestConfig();
+      _testConfig = new TestConfig(PROJECT_DB_SCHEMA_NAME);
 
       if (Debugger.IsAttached || _testConfig.operatingSystem == "Windows_NT")
       {
-        _baseUri = _testConfig.debugWebApiUri;
+        BaseUri = _testConfig.debugWebApiUri;
       }
       else
       {
-        _baseUri = _testConfig.webApiUri;
+        BaseUri = _testConfig.webApiUri;
       }
-    }
 
-    #region Public Methods
+      const string query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
+
+      var result = MySqlHelper.ExecuteRead(query);
+      var index = string.IsNullOrEmpty(result)
+        ? 1000
+        : Convert.ToInt32(result);
+
+      _currentLegacyProjectId = Math.Max(index, _currentLegacyProjectId);
+    }
 
     public TestSupport()
     {
@@ -86,40 +94,14 @@ namespace TestUtility
       SetSubscriptionUid();
     }
 
-    /// <summary>
-    /// Set the legacy asset id
-    /// </summary>
-    /// <returns>get the maximum legacy asset id plus 1</returns>
-    public long SetLegacyAssetId()
+    public static int GenerateLegacyProjectId()
     {
-      var mysql = new MySqlHelper();
-      var query = "SELECT max(LegacyAssetID) FROM Asset;";
-      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(_testConfig.DbConnectionString, query);
-      if (string.IsNullOrEmpty(result))
+      lock (_legacyIdLock)
       {
-        return 1000;
-      }
-      var legacyAssetId = Convert.ToInt64(result);
-      return legacyAssetId + 1;
-    }
+        _currentLegacyProjectId += 1;
 
-    /// <summary>
-    /// Set the legacy project id from the database
-    /// </summary>
-    /// <returns></returns>
-    public int SetLegacyProjectId()
-    {
-      Console.WriteLine("SetLegacyProjectId start");
-      var mysql = new MySqlHelper();
-      var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
-      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(_testConfig.DbConnectionString, query);
-      if (string.IsNullOrEmpty(result))
-      {
-        return 1000;
+        return _currentLegacyProjectId;
       }
-      var legacyProjectId = Convert.ToInt32(result);
-      Console.WriteLine("legacyProjectId=" + legacyProjectId);
-      return legacyProjectId + 1;
     }
 
     /// <summary>
@@ -158,31 +140,27 @@ namespace TestUtility
     public void SetSubscriptionUid() => SubscriptionUid = Guid.NewGuid();
 
     /// <summary>
-    /// Set to true if writing to kafka instead of the database
-    /// </summary>
-    /// <param name="iAmPublishingToKafka">true or false</param>
-    public void SetPublishToKafka(bool iAmPublishingToKafka)
-    {
-      IsPublishToKafka = iAmPublishingToKafka;
-    }
-
-    /// <summary>
     /// Publish events to kafka from string array
     /// </summary>
-    /// <param name="eventArray">string array with all the events we are going to publish</param>
     public void PublishEventCollection(string[] eventArray)
     {
       try
       {
         if (IsPublishToWebApi)
-        { msg.DisplayEventsToConsoleWeb(eventArray); }
+        {
+          Msg.DisplayEventsToConsoleWeb(eventArray);
+        }
         else if (IsPublishToKafka)
-        { msg.DisplayEventsToConsoleKafka(eventArray); }
+        {
+          Msg.DisplayEventsToConsoleKafka(eventArray);
+        }
         else
-        { msg.DisplayEventsForDbInjectToConsole(eventArray); }
+        {
+          Msg.DisplayEventsForDbInjectToConsole(eventArray);
+        }
 
         var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-        var kafkaDriver = new RdKafkaDriver();
+
         for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
         {
           var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
@@ -199,8 +177,7 @@ namespace TestUtility
             }
             else
             {
-              kafkaDriver.SendKafkaMessage(topicName, jsonString);
-              WaitForTimeBasedOnNumberOfRecords(eventArray.Length);
+              RdKafkaDriver.SendKafkaMessage(topicName, jsonString);
             }
           }
           else
@@ -212,7 +189,7 @@ namespace TestUtility
       }
       catch (Exception ex)
       {
-        msg.DisplayException(ex.Message);
+        Msg.DisplayException(ex.Message);
         throw;
       }
     }
@@ -220,13 +197,11 @@ namespace TestUtility
     /// <summary>
     /// Publish event to web api
     /// </summary>
-    /// <param name="eventArray"></param>
-    /// <returns></returns>
     public string PublishEventToWebApi(string[] eventArray)
     {
       try
       {
-        msg.DisplayEventsToConsoleWeb(eventArray);
+        Msg.DisplayEventsToConsoleWeb(eventArray);
         var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
         var eventRow = eventArray.ElementAt(1).Split(SEPARATOR);
         dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
@@ -246,14 +221,14 @@ namespace TestUtility
       }
       catch (Exception ex)
       {
-        msg.DisplayException(ex.Message);
+        Msg.DisplayException(ex.Message);
         return ex.Message;
       }
     }
 
     public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray, int row)
     {
-      msg.DisplayEventsToConsoleWeb(importFileArray);
+      Msg.DisplayEventsToConsoleWeb(importFileArray);
       var allColumnNames = importFileArray.ElementAt(0).Split(SEPARATOR);
       var eventRow = importFileArray.ElementAt(row).Split(SEPARATOR);
       dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
@@ -283,30 +258,22 @@ namespace TestUtility
           response = CallProjectWebApi("api/v4/project/" + ProjectUid, HttpMethod.Delete.ToString(), string.Empty, customerUid);
           break;
       }
-      //Thread.Sleep(500);
+
       Console.WriteLine(response);
       var jsonResponse = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
+
       if (jsonResponse.Code == 0)
       {
         ProjectUid = new Guid(jsonResponse.ProjectDescriptor.ProjectUid);
         CustomerUid = new Guid(jsonResponse.ProjectDescriptor.CustomerUid);
       }
+
       return jsonResponse.Message;
     }
 
     /// <summary>
     /// Create the project via the web api. 
     /// </summary>
-    /// <param name="projectUid">project UID</param>
-    /// <param name="projectId">legacy project id</param>
-    /// <param name="name">project name</param>
-    /// <param name="startDate">project start date</param>
-    /// <param name="endDate">project end date</param>
-    /// <param name="projectType">project type</param>
-    /// <param name="timezone">project time zone</param>
-    /// <param name="actionUtc">timestamp of the event</param>
-    /// <param name="boundary"></param>
-    /// <param name="statusCode">expected status code from web api call</param>
     public void CreateProjectViaWebApiV3(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
     {
       CreateProjectEvt = new CreateProjectEvent
@@ -327,13 +294,6 @@ namespace TestUtility
     /// <summary>
     /// Update the project via the web api. 
     /// </summary>
-    /// <param name="projectUid">project UID</param>
-    /// <param name="name">project name</param>
-    /// <param name="endDate">project end date</param>
-    /// <param name="timezone">project time zone</param>
-    /// <param name="actionUtc">timestamp of the event</param>
-    /// <param name="statusCode">expected status code from web api call</param>
-    /// <param name="projectType"></param>
     public void UpdateProjectViaWebApiV3(Guid projectUid, string name, DateTime endDate, string timezone, DateTime actionUtc, HttpStatusCode statusCode, ProjectType projectType = ProjectType.Standard)
     {
       UpdateProjectEvt = new UpdateProjectEvent
@@ -351,27 +311,14 @@ namespace TestUtility
     /// <summary>
     /// Delete the project via the web api. 
     /// </summary>
-    /// <param name="projectUid">project UID</param>
-    /// <param name="actionUtc">timestamp of the event</param>
-    /// <param name="statusCode">expected status code from web api call</param>
-    public void DeleteProjectViaWebApiV3(Guid projectUid, DateTime actionUtc, HttpStatusCode statusCode)
+    public void DeleteProjectViaWebApiV3(Guid projectUid, HttpStatusCode statusCode)
     {
-      //DeleteProjectEvt = new DeleteProjectEvent
-      //{
-      //  ProjectUID = projectUid,
-      //  ActionUTC = actionUtc
-      //};
       CallProjectWebApiV3(null, projectUid.ToString(), statusCode, "Delete", HttpMethod.Delete.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
     /// Associate a customer and project via the web api. 
     /// </summary>
-    /// <param name="projectUid">project UID</param>
-    /// <param name="customerUid">customer UID</param>
-    /// <param name="customerId">legacy customer ID</param>
-    /// <param name="actionUtc">timestamp of the event</param>
-    /// <param name="statusCode">expected status code from web api call</param>
     public void AssociateCustomerProjectViaWebApiV3(Guid projectUid, Guid customerUid, int customerId, DateTime actionUtc, HttpStatusCode statusCode)
     {
       AssociateCustomerProjectEvt = new AssociateProjectCustomer
@@ -386,30 +333,8 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Dissociate a customer and project via the web api. 
-    /// </summary>
-    /// <param name="projectUid">project UID</param>
-    /// <param name="customerUid">customer UID</param>
-    /// <param name="actionUtc">timestamp of the event</param>
-    /// <param name="statusCode">expected status code from web api call</param>
-    public void DissociateProjectViaWebApiV3(Guid projectUid, Guid customerUid, DateTime actionUtc, HttpStatusCode statusCode)
-    {
-      DissociateCustomerProjectEvt = new DissociateProjectCustomer
-      {
-        ProjectUID = projectUid,
-        CustomerUID = customerUid,
-        ActionUTC = actionUtc
-      };
-      CallProjectWebApiV3(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer", HttpMethod.Post.ToString(), CustomerUid.ToString());
-    }
-
-    /// <summary>
     /// Associate a geofence and project via the web api. 
     /// </summary>
-    /// <param name="projectUid">project UID</param>
-    /// <param name="geofenceUid">geofence UID</param>
-    /// <param name="actionUtc">timestamp of the event</param>
-    /// <param name="statusCode">expected status code from web api call</param>
     public void AssociateGeofenceProjectViaWebApiV3(Guid projectUid, Guid geofenceUid, DateTime actionUtc, HttpStatusCode statusCode)
     {
       AssociateProjectGeofenceEvt = new AssociateProjectGeofence
@@ -424,7 +349,7 @@ namespace TestUtility
     /// <summary>
     /// Create the project via the web api. 
     /// </summary>
-    public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, List<TBCPoint> boundary, HttpStatusCode statusCode)
+    public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, List<TBCPoint> boundary, HttpStatusCode statusCode)
     {
       var createProjectV2Request = CreateProjectV2Request.CreateACreateProjectV2Request(
       projectType, startDate, endDate, name, timezone, boundary,
@@ -464,7 +389,7 @@ namespace TestUtility
         if (expectedResultsArray.Length == 0)
         {
           var actualProjects = JsonConvert.DeserializeObject<ImmutableDictionary<int, ProjectDescriptor>>(response);
-          Assert.IsTrue(expectedResultsArray.Length == actualProjects.Count, " There should not be any projects");
+          Assert.True(expectedResultsArray.Length == actualProjects.Count, " There should not be any projects");
         }
         else
         {
@@ -487,8 +412,8 @@ namespace TestUtility
                 CoordinateSystemFileName = project.CoordinateSystemFileName
               });
 
-          msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
-          Assert.IsFalse(expectedResultsArray.Length == actualProjects.Count, " Number of projects return do not match expected");
+          Msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
+          Assert.False(expectedResultsArray.Length == actualProjects.Count, " Number of projects return do not match expected");
           CompareTheActualProjectDictionaryWithExpected(actualProjects, expectedProjects, true);
         }
       }
@@ -506,15 +431,15 @@ namespace TestUtility
         {
           var projectDescriptorsListResult = JsonConvert.DeserializeObject<ProjectDescriptorsListResult>(response);
           var actualProjects = projectDescriptorsListResult.ProjectDescriptors.OrderBy(p => p.ProjectUid).ToList();
-          Assert.IsTrue(expectedResultsArray.Length == actualProjects.Count, " There should not be any projects");
+          Assert.True(expectedResultsArray.Length == actualProjects.Count, " There should not be any projects");
         }
         else
         {
           var projectDescriptorsListResult = JsonConvert.DeserializeObject<ProjectDescriptorsListResult>(response);
           var actualProjects = projectDescriptorsListResult.ProjectDescriptors.OrderBy(p => p.ProjectUid).ToList();
           var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-          msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
-          Assert.IsTrue(expectedResultsArray.Length - 1 == actualProjects.Count, " Number of projects return do not match expected");
+          Msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
+          Assert.True(expectedResultsArray.Length - 1 == actualProjects.Count, " Number of projects return do not match expected");
           CompareTheActualProjectListWithExpected(actualProjects, expectedProjects, ignoreZeros);
         }
       }
@@ -531,8 +456,8 @@ namespace TestUtility
         var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
         var actualProject = new List<ProjectV4Descriptor> { projectDescriptorResult.ProjectDescriptor };
         var expectedProjects = ConvertArrayToProjectV4DescriptorList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-        msg.DisplayResults("Expected project :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
-        Assert.IsTrue(actualProject.Count == 1, " There should be one project");
+        Msg.DisplayResults("Expected project :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
+        Assert.True(actualProject.Count == 1, " There should be one project");
         CompareTheActualProjectListV4WithExpected(actualProject, expectedProjects, ignoreZeros);
       }
     }
@@ -554,7 +479,7 @@ namespace TestUtility
       }
       else
       {
-        Assert.IsTrue(true, " There should be one project");
+        Assert.True(true, " There should be one project");
       }
 
       return projectDescriptorResult?.ProjectDescriptor;
@@ -566,11 +491,9 @@ namespace TestUtility
       var response = CallProjectWebApi(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
       Console.WriteLine($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
-      if (!string.IsNullOrEmpty(response))
-      {
-        return JsonConvert.DeserializeObject<GeofenceV4DescriptorsListResult>(response);
-      }
-      return null;
+      return !string.IsNullOrEmpty(response)
+        ? JsonConvert.DeserializeObject<GeofenceV4DescriptorsListResult>(response)
+        : null;
     }
 
     public ContractExecutionResult AssociateProjectGeofencesViaWebApiV4(string customerUid, string projectUid, List<GeofenceType> geofenceTypes, List<Guid> geofenceGuids)
@@ -592,9 +515,6 @@ namespace TestUtility
     /// <summary>
     /// Compare the two lists of projects
     /// </summary>
-    /// <param name="actualProjects"></param>
-    /// <param name="expectedProjects"></param>
-    /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
     public void CompareTheActualProjectListWithExpected(List<ProjectDescriptor> actualProjects, List<ProjectDescriptor> expectedProjects, bool ignoreZeros)
     {
       for (var cntlist = 0; cntlist < actualProjects.Count; cntlist++)
@@ -615,10 +535,8 @@ namespace TestUtility
               continue;
             }
           }
-          if (!Equals(expectedValue, actualValue))
-          {
-            Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue + " on the " + cntlist + 1 + " element in the list");
-          }
+
+          Assert.Equal(expectedValue, actualValue);
         }
       }
     }
@@ -626,13 +544,10 @@ namespace TestUtility
     /// <summary>
     /// Compare the two lists of projects
     /// </summary>
-    /// <param name="actualProjects"></param>
-    /// <param name="expectedProjects"></param>
-    /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
     public void CompareTheActualProjectDictionaryWithExpected(ImmutableDictionary<int, ProjectDescriptor> actualProjects, ImmutableDictionary<int, ProjectDescriptor> expectedProjects, bool ignoreZeros)
     {
-      List<ProjectDescriptor> actualList = actualProjects.Select(p => p.Value).ToList();
-      List<ProjectDescriptor> expectedList = expectedProjects.Select(p => p.Value).ToList();
+      var actualList = actualProjects.Select(p => p.Value).ToList();
+      var expectedList = expectedProjects.Select(p => p.Value).ToList();
       for (var cntlist = 0; cntlist < actualList.Count; cntlist++)
       {
         var oType = actualList[cntlist].GetType();
@@ -651,10 +566,8 @@ namespace TestUtility
               continue;
             }
           }
-          if (!Equals(expectedValue, actualValue))
-          {
-            Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue + " on the " + cntlist + 1 + " element in the list");
-          }
+
+          Assert.Equal(expectedValue, actualValue);
         }
       }
     }
@@ -663,9 +576,6 @@ namespace TestUtility
     /// <summary>
     /// Compare the two lists of projects
     /// </summary>
-    /// <param name="actualProjects"></param>
-    /// <param name="expectedProjects"></param>
-    /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
     public void CompareTheActualProjectListV4WithExpected(List<ProjectV4Descriptor> actualProjects, List<ProjectV4Descriptor> expectedProjects, bool ignoreZeros)
     {
       for (var cntlist = 0; cntlist < actualProjects.Count; cntlist++)
@@ -686,14 +596,11 @@ namespace TestUtility
               continue;
             }
           }
-          if (!Equals(expectedValue, actualValue))
-          {
-            Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue + " on the " + cntlist + 1 + " element in the list");
-          }
+
+          Assert.Equal(expectedValue, actualValue);
         }
       }
     }
-
 
     public void CompareTheActualImportFileWithExpectedV4(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
     {
@@ -703,9 +610,6 @@ namespace TestUtility
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="expectedFile"></param>
-    /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
-    /// <param name="actualFile"></param>
     public void CompareTheActualImportFileWithExpected<T>(T actualFile, T expectedFile, bool ignoreZeros)
     {
       var oType = actualFile.GetType();
@@ -724,10 +628,8 @@ namespace TestUtility
             continue;
           }
         }
-        if (!Equals(expectedValue, actualValue))
-        {
-          Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue);
-        }
+
+        Assert.Equal(expectedValue, actualValue);
       }
     }
 
@@ -735,9 +637,6 @@ namespace TestUtility
     /// <summary>
     /// Inject the MockCustomer
     /// </summary>
-    /// <param name="customerUid">Customer UID</param>
-    /// <param name="name">Customer name</param>
-    /// <param name="type">Customer type</param>
     public void CreateMockCustomer(Guid customerUid, string name, CustomerType type)
     {
       MockCustomer = new Customer
@@ -753,8 +652,7 @@ namespace TestUtility
       var query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"Customer"} 
                             (CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
                             ('{MockCustomer.CustomerUID}','{MockCustomer.Name}',{customerTypeId},{deleted},'{MockCustomer.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, query);
+      MySqlHelper.ExecuteNonQuery(query);
     }
 
     /// <summary>
@@ -780,8 +678,7 @@ namespace TestUtility
       var query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"Subscription"} 
                             (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
                             ('{MockSubscription.SubscriptionUID}','{MockSubscription.CustomerUID}',{MockSubscription.ServiceTypeID},'{MockSubscription.StartDate:yyyy-MM-dd HH}','{MockSubscription.EndDate:yyyy-MM-dd}','{MockSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, query);
+      MySqlHelper.ExecuteNonQuery(query);
 
       MockProjectSubscription = new ProjectSubscription
       {
@@ -793,7 +690,7 @@ namespace TestUtility
       query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"ProjectSubscription"} 
                             (fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
                             ('{MockProjectSubscription.SubscriptionUID}','{MockProjectSubscription.ProjectUID}','{MockProjectSubscription.EffectiveDate:yyyy-MM-dd}','{MockProjectSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, query);
+      MySqlHelper.ExecuteNonQuery(query);
     }
 
     /// <summary>
@@ -808,42 +705,19 @@ namespace TestUtility
       var query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"CustomerTccOrg"} 
                             (CustomerUID,TCCOrgID,LastActionedUTC) VALUES
                             ('{customerUid}','{orgId}','{lastActionedUtc:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, query);
+
+      MySqlHelper.ExecuteNonQuery(query);
     }
-
-    /// <summary>
-    /// Converts a special date string eg 2d+12:00:00 which signifies a two date and 12 hour offset
-    /// to a normal date time based on the first event date.
-    /// </summary>
-    /// <param name="timeStampAndDayOffSet">Date day off set and timestamp from first event date</param>
-    /// <param name="startEventDateTime"></param>
-    /// <returns>Datetime</returns>
-    public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet, DateTime startEventDateTime)
-    {
-      var components = Regex.Split(timeStampAndDayOffSet, @"d+\+");
-      var offset = double.Parse(components[0].Trim());
-
-      return DateTime.Parse(startEventDateTime.AddDays(offset).ToString("yyyy-MM-dd") + " " + components[1].Trim());
-    }
-
-    #endregion
-
-    #region Private Methods
 
     /// <summary>
     /// Set the full kafka topic name
     /// </summary>
-    private string SetKafkaTopicName(string masterDataEvent)
-    {
-      var topicName = _testConfig.masterDataTopic + masterDataEvent + _testConfig.kafkaTopicSuffix;
-      return topicName;
-    }
+    private static string SetKafkaTopicName(string masterDataEvent) => _testConfig.masterDataTopic + masterDataEvent + _testConfig.kafkaTopicSuffix;
 
     /// <summary>
     /// Set the full topic name from the event type
     /// </summary>
-    private string SetTheKafkaTopicFromTheEvent(string eventType)
+    private static string SetTheKafkaTopicFromTheEvent(string eventType)
     {
       var topicName = string.Empty;
       switch (eventType)
@@ -885,22 +759,8 @@ namespace TestUtility
           topicName = SetKafkaTopicName("IGeofenceEvent");
           break;
       }
+
       return topicName;
-    }
-
-
-    /// <summary>
-    /// Wait for time to let the data feed process
-    /// </summary>
-    /// <param name="count"></param>
-    private static void WaitForTimeBasedOnNumberOfRecords(int count)
-    {
-      if (count < 7)
-      { Thread.Sleep(1000); }
-      if (count > 6)
-      { Thread.Sleep(1000); }
-      if (count > 13)
-      { Thread.Sleep(1000); }
     }
 
     /// <summary>
@@ -915,7 +775,7 @@ namespace TestUtility
       switch (eventType)
       {
         case "CreateAssetEvent":
-          var createAssetEvent = new CreateAssetEvent()
+          var createAssetEvent = new CreateAssetEvent
           {
             ActionUTC = eventObject.EventDate,
             AssetUID = new Guid(AssetUid),
@@ -942,7 +802,7 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new { CreateAssetEvent = createAssetEvent }, JsonSettings);
           break;
         case "UpdateAssetEvent":
-          var updateAssetEvent = new UpdateAssetEvent()
+          var updateAssetEvent = new UpdateAssetEvent
           {
             ActionUTC = eventObject.EventDate,
             AssetUID = new Guid(AssetUid)
@@ -1405,18 +1265,18 @@ namespace TestUtility
             GeofenceUID = new Guid(eventObject.GeofenceUID),
             CustomerUID = new Guid(eventObject.CustomerUID),
             Description = eventObject.Description,
-            FillColor = Int32.Parse(eventObject.FillColor),
+            FillColor = int.Parse(eventObject.FillColor),
             GeofenceName = eventObject.GeofenceName,
             GeofenceType = eventObject.GeofenceType,
             GeometryWKT = eventObject.GeometryWKT,
-            IsTransparent = Boolean.Parse(eventObject.IsTransparent),
+            IsTransparent = bool.Parse(eventObject.IsTransparent),
             UserUID = new Guid(eventObject.UserUID)
           };
           jsonString = JsonConvert.SerializeObject(new { CreateGeofenceEvent = createGeofenceEvent }, JsonSettings);
           break;
 
         case "ImportedFileDescriptor":
-          var importedFileDescriptor = new ImportedFileDescriptor()
+          var importedFileDescriptor = new ImportedFileDescriptor
           {
             CustomerUid = eventObject.CustomerUid,
             FileCreatedUtc = DateTime.Parse(eventObject.FileCreatedUtc),
@@ -1497,8 +1357,8 @@ namespace TestUtility
     private void BuildMySqlInsertStringAndWriteToDatabase(dynamic eventObject)
     {
       string dbTable = eventObject.TableName;
-      var mysqlHelper = new MySqlHelper();
       var sqlCmd = $@"INSERT INTO `{_testConfig.dbSchema}`.{dbTable} ";
+
       switch (dbTable)
       {
         case "Asset":
@@ -1560,7 +1420,8 @@ namespace TestUtility
                      ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate}','{eventObject.EndDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
       }
-      mysqlHelper.ExecuteMySqlInsert(_testConfig.DbConnectionString, sqlCmd);
+
+      MySqlHelper.ExecuteNonQuery(sqlCmd);
     }
 
     /// <summary>
@@ -1583,11 +1444,7 @@ namespace TestUtility
     private static bool HasProperty(dynamic obj, string propertyName)
     {
       var expandoDict = (IDictionary<string, object>)obj;
-      if (expandoDict.ContainsKey(propertyName) && expandoDict[propertyName] != null)
-      {
-        return true;
-      }
-      return false;
+      return expandoDict.ContainsKey(propertyName) && expandoDict[propertyName] != null;
     }
 
     /// <summary>
@@ -1600,13 +1457,14 @@ namespace TestUtility
     {
       var expObj = new ExpandoObject() as IDictionary<string, object>;
       var colIdx = -1;
+
       foreach (var colName in allColumnNames)
       {
         colIdx++;
         if (colName.Trim() == string.Empty)
         { continue; }
 
-        dynamic obj = TransformObject(singleEventRow[colIdx].Trim());
+        var obj = TransformObject(singleEventRow[colIdx].Trim());
         expObj.Add(colName.Trim(), obj);
       }
       return (ExpandoObject)expObj;
@@ -1626,7 +1484,7 @@ namespace TestUtility
       }
       if (Regex.IsMatch(propertyValue, @"^\s*\d+d\+\d+"))
       {
-        obj = ConvertTimeStampAndDayOffSetToDateTime(propertyValue, FirstEventDate);
+        obj = DateTimeHelper.ConvertTimeStampAndDayOffSetToDateTime(propertyValue, FirstEventDate);
         return obj;
       }
       obj = propertyValue;
@@ -1660,7 +1518,7 @@ namespace TestUtility
           };
           if (HasProperty(eventObject, "IsArchived"))
           {
-            pd.IsArchived = Boolean.Parse(eventObject.IsArchived);
+            pd.IsArchived = bool.Parse(eventObject.IsArchived);
           }
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
@@ -1688,7 +1546,7 @@ namespace TestUtility
       }
       catch (Exception ex)
       {
-        msg.DisplayException(ex.Message);
+        Msg.DisplayException(ex.Message);
         throw;
       }
     }
@@ -1721,7 +1579,7 @@ namespace TestUtility
           };
           if (HasProperty(eventObject, "IsArchived"))
           {
-            pd.IsArchived = Boolean.Parse(eventObject.IsArchived);
+            pd.IsArchived = bool.Parse(eventObject.IsArchived);
           }
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
@@ -1757,16 +1615,13 @@ namespace TestUtility
       }
       catch (Exception ex)
       {
-        msg.DisplayException(ex.Message);
+        Msg.DisplayException(ex.Message);
         throw;
       }
     }
     /// <summary>
     /// Generate a random number. This is use for the number of days in the past to get a start date from.
     /// </summary>
-    /// <param name="min"></param>
-    /// <param name="max"></param>
-    /// <returns></returns>
     private int RandomNumber(int min, int max)
     {
       lock (syncLock)
@@ -1791,7 +1646,7 @@ namespace TestUtility
         ? null
         : JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
-      var response = new RestClientUtil().DoHttpRequest($"{_baseUri}api/v3/project/{routeSuffix}", method, configJson, statusCode, "application/json", customerUid);
+      var response = new RestClientUtil().DoHttpRequest($"{BaseUri}api/v3/project/{routeSuffix}", method, configJson, statusCode, "application/json", customerUid);
 
       if (response.Length > 0)
       {
@@ -1806,9 +1661,7 @@ namespace TestUtility
     /// </summary>
     public string CallProjectWebApi(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null, string endPoint = null)
     {
-      return new RestClientUtil().DoHttpRequest($"{_baseUri}{endPoint}{routeSuffix}", method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
+      return new RestClientUtil().DoHttpRequest($"{BaseUri}{endPoint}{routeSuffix}", method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
     }
-
-    #endregion
   }
 }

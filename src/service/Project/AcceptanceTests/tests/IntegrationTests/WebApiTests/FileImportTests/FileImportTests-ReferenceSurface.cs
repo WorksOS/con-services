@@ -3,27 +3,26 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Web;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using IntegrationTests.UtilityClasses;
 using TestUtility;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using Xunit;
 
-namespace WebApiTests
+namespace IntegrationTests.WebApiTests.FileImportTests
 {
-  [TestClass]
   public class FileImportTests_ReferenceSurface
   {
-    private readonly Msg msg = new Msg();
-
-    [TestMethod]
-    [DataRow("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
-    [DataRow("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
+    [Theory]
+    [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
+    [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
     public void TestImportReferenceSurfaceFile(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 20";
-      msg.Title(testName, "Create standard project and customer then upload reference surface file");
+      Msg.Title(testName, "Create standard project and customer then upload reference surface file");
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -32,7 +31,7 @@ namespace WebApiTests
       var endDateTime = new DateTime(9999, 12, 31);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
-      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
       var eventsArray = new[] {
         "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
         $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
@@ -44,14 +43,17 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
+
       //Parent Design
-      var parentName = TestFile.TestDesignSurface1.FullPath();
+      var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
+      var parentName = TestFileResolver.GetFullPath(importFilename);
+
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Reference Surface
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
@@ -64,17 +66,17 @@ namespace WebApiTests
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
-    [TestMethod]
-    [DataRow("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
-    [DataRow("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
+    [Theory]
+    [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
+    [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
     public void TestImportReferenceSurfaceFileFromDeactivatedDesign(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 24";
-      msg.Title(testName, "Create standard project and customer then upload reference surface file");
+      Msg.Title(testName, "Create standard project and customer then upload reference surface file");
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -83,7 +85,7 @@ namespace WebApiTests
       var endDateTime = new DateTime(9999, 12, 31);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
-      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
       var eventsArray = new[] {
         "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
         $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
@@ -95,18 +97,20 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
-      
+
       //Parent Design
-      var parentName = TestFile.TestDesignSurface1.FullPath();
+      var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
+      var parentName = TestFileResolver.GetFullPath(importFilename);
+
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Deactivate the parent design
-      FileActivationTests.DoActivationRequest(ts, customerUid, projectUid, filesResult.ImportedFileDescriptor.ImportedFileUid, false, (int)HttpStatusCode.OK, "Success");
+      FileActivationTests.DoActivationRequest(customerUid, projectUid, filesResult.ImportedFileDescriptor.ImportedFileUid, false, (int)HttpStatusCode.OK, "Success");
 
       //Reference Surface
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
@@ -121,17 +125,17 @@ namespace WebApiTests
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
-    [TestMethod]
-    [DataRow("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
-    [DataRow("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
+    [Theory]
+    [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
+    [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
     public void TestImport2ReferenceSurfaceFiles(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 21";
-      msg.Title(testName, "Create standard project and customer then upload two Reference surface files");
+      Msg.Title(testName, "Create standard project and customer then upload two Reference surface files");
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -140,7 +144,7 @@ namespace WebApiTests
       var endDateTime = new DateTime(9999, 12, 31);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
-      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
       var eventsArray = new[] {
          "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
         $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
@@ -152,14 +156,16 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
       //Parent Design
-      var parentName = TestFile.TestDesignSurface1.FullPath();
+      var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
+      var parentName = TestFileResolver.GetFullPath(importFilename);
+
       var importFileArray = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult1 = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var filesResult1 = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       var expectedResult1 = importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult1.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Reference Surfaces
@@ -181,22 +187,22 @@ namespace WebApiTests
       var expectedResult3 = importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult3.ImportedFileDescriptor, expectedResult3, true);
 
-      var importFileList = importFileParent.GetImportedFilesFromWebApiV4(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
-      Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 3, "Expected 3 imported files but got " + importFileList.ImportedFileDescriptors.Count);
+      var importFileList = importFileParent.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      Assert.True(importFileList.ImportedFileDescriptors.Count == 3, "Expected 3 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[2], expectedResult3, true);
     }
 
-    [TestMethod]
-    [DataRow("api/v4/importedfile/referencesurface")]
+    [Theory]
+    [InlineData("api/v4/importedfile/referencesurface")]
     public void TestImportReferenceSurfaceFileWithoutParentShouldFail(string uriRoot)
     {
       const string testName = "File Import 23";
-      msg.Title(testName, "Create standard project and customer then upload reference surface file without parent design uploaded");
+      Msg.Title(testName, "Create standard project and customer then upload reference surface file without parent design uploaded");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -205,7 +211,7 @@ namespace WebApiTests
       var endDateTime = new DateTime(9999, 12, 31);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
-      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
       var eventsArray = new[] {
         "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
         $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
@@ -217,29 +223,34 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
       //Reference Surface
+      var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
+      var parentName = TestFileResolver.GetFullPath(importFilename);
+
       var parentUid = Guid.NewGuid();
       var offset = 1.5;
-      var name = $"{Path.GetFileNameWithoutExtension(TestFile.TestDesignSurface1.FullPath())} +{offset}m";
+      var name = $"{Path.GetFileNameWithoutExtension(parentName)} +{offset}m";
       var importFileArray = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid   | Offset   |",
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset} |"};
-      importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }), "Missing parent design for reference surface");
+
+      var errorResultObj = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
+      Assert.Equal("Missing parent design for reference surface", errorResultObj.Message);
     }
 
-    [TestMethod]
-    [DataRow("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
-    [DataRow("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
+    [Theory]
+    [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
+    [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
     public void TestImportReferenceSurfaceThenDeleteTheParentDesignSurface(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 14";
-      msg.Title(testName, "Create standard project then upload a new reference file. Then delete parent design surface file");
+      Msg.Title(testName, "Create standard project then upload a new reference file. Then delete parent design surface file");
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -248,7 +259,7 @@ namespace WebApiTests
       var endDateTime = new DateTime(9999, 12, 31);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
-      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
       var eventsArray = new[] {
          "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
         $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
@@ -260,15 +271,17 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType           | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
       //Parent Design
-      var parentName = TestFile.TestDesignSurface1.FullPath();
+      var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
+      var parentName = TestFileResolver.GetFullPath(importFilename);
+
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Reference Surface
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
@@ -280,20 +293,22 @@ namespace WebApiTests
       var filesResult2 = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Delete parent design
-      _ = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete), "Cannot delete a design that has reference surfaces");
+
+      var errorResultObj = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete));
+      Assert.Equal("[{\"Key\":\"importedFileUid\",\"Value\":\"The value '' is invalid.\\r\\n\"}]", errorResultObj.Message);
     }
 
-    [TestMethod]
-    [DataRow("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
-    [DataRow("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
+    [Theory]
+    [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
+    [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
     public void TestImportReferenceSurfaceFileTwice(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 20";
-      msg.Title(testName, "Create standard project and customer then upload reference surface file");
+      Msg.Title(testName, "Create standard project and customer then upload reference surface file");
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -302,7 +317,7 @@ namespace WebApiTests
       var endDateTime = new DateTime(9999, 12, 31);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
-      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
       var eventsArray = new[] {
         "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
         $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
@@ -314,14 +329,16 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffffK} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
       //Parent Design
-      var parentName = TestFile.TestDesignSurface1.FullPath();
+      var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
+      var parentName = TestFileResolver.GetFullPath(importFilename);
+
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Reference Surface
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
@@ -332,8 +349,10 @@ namespace WebApiTests
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset} |"};
       var filesResult2 = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+
       //Import again
-      _ = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }), "Reference surface already exists");
+      var errorResultObj = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
+      Assert.Equal("Reference surface already exists", errorResultObj.Message);
     }
   }
 }
