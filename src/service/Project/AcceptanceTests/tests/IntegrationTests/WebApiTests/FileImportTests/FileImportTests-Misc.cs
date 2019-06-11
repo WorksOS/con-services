@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net.Http;
+using IntegrationTests.UtilityClasses;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using WebApiTests.UtilityClasses;
 using Xunit;
 
-namespace WebApiTests
+namespace IntegrationTests.WebApiTests.FileImportTests
 {
   public class FileImportTests
   {
@@ -36,13 +36,14 @@ namespace WebApiTests
 
       var projectsArray = new[] {
          "| TableName           | EventDate   | ProjectUID   | LegacyProjectID   | Name       | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone          | StartDate   | EndDate   | GeometryWKT   |",
-        $"| Project             | 0d+09:10:00 | {projectUid} | {MySqlHelper.GenerateLegacyProjectId()} | {testName} | 0                | New Zealand Standard Time | New Zealand Standard Time | {startDate} | {endDate} | {Boundaries.Boundary1} |"};
+        $"| Project             | 0d+09:10:00 | {projectUid} | {TestSupport.GenerateLegacyProjectId()} | {testName} | 0                | New Zealand Standard Time | New Zealand Standard Time | {startDate} | {endDate} | {Boundaries.Boundary1} |"};
+      
       ts.PublishEventCollection(projectsArray);
+      
       var importFile = new ImportFile(uriRoot);
       var expectedResults = importFile.ExpectedImportFileDescriptorsListResult;
-      var uri = ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}";
-
-      var filesResult = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(uri, customerUid);
+      var filesResult = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      
       Assert.True(filesResult.ImportedFileDescriptors.Count == expectedResults.ImportedFileDescriptors.Count, " Expected number of fields does not match actual");
       Assert.Equal(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
     }
@@ -56,7 +57,7 @@ namespace WebApiTests
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
       var trexService = new TRex();
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -118,7 +119,7 @@ namespace WebApiTests
 
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -155,7 +156,7 @@ namespace WebApiTests
 
       _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={importFilename}" }));
       var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
 
       Assert.True(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net.Http;
+using IntegrationTests.UtilityClasses;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using WebApiTests.UtilityClasses;
 using Xunit;
 
-namespace WebApiTests
+namespace IntegrationTests.WebApiTests.FileImportTests
 {
   public class FileImportTests_DesignSurface
   {
@@ -18,7 +18,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload design surface file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -59,7 +59,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload two Design surface files");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -98,7 +98,7 @@ namespace WebApiTests
       var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
-      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.True(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
@@ -112,7 +112,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project then upload a new design surface file. Then update design surface file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -150,7 +150,7 @@ namespace WebApiTests
 
       var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={importFilename}" }));
       var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
 
       Assert.True(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
@@ -165,7 +165,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project then upload a new design surface file. Then update design surface file however leave same FileDates");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();

@@ -1,96 +1,14 @@
 ﻿extern alias MySqlDataAlias;
 using System;
 using System.Data;
-using System.Threading;
 using MySqlDataAlias::MySql.Data.MySqlClient;
-using Xunit;
 
 namespace TestUtility
 {
   public static class MySqlHelper
   {
     private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project";
-
     private static readonly TestConfig _appConfig = new TestConfig(PROJECT_DB_SCHEMA_NAME);
-
-    private static readonly object _databaseLock = new object();
-    private static readonly object _legacyIdLock = new object();
-
-    private static int _currentLegacyProjectId;
-
-    static MySqlHelper()
-    {
-      const string query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
-
-      var result = ExecuteMySqlQueryAndReturnRecordCountResult(query);
-      var index = string.IsNullOrEmpty(result)
-        ? 1000
-        : Convert.ToInt32(result);
-
-      _currentLegacyProjectId = Math.Max(index, _currentLegacyProjectId);
-    }
-
-    public static int GenerateLegacyProjectId()
-    {
-      lock (_legacyIdLock)
-      {
-        _currentLegacyProjectId += 1;
-
-        return _currentLegacyProjectId;
-      }
-    }
-
-    /// <summary>
-    /// Read the my sql database and return a record count
-    /// </summary>
-    public static string ExecuteMySqlQueryAndReturnRecordCountResult(string queryString)
-    {
-      lock (_databaseLock)
-      {
-        string queryResult = null;
-
-        using (var mySqlConnection = new MySqlConnection(_appConfig.DbConnectionString))
-        {
-          mySqlConnection.Open();
-
-          using (var mySqlCommand = new MySqlCommand(queryString, mySqlConnection))
-          using (var mySqlDataReader = mySqlCommand.ExecuteReader(CommandBehavior.CloseConnection))
-          {
-            while (mySqlDataReader.Read())
-            {
-              queryResult = mySqlDataReader[0].ToString();
-            }
-
-            return queryResult;
-          }
-        }
-      }
-    }
-
-    /// <summary>
-    /// Used for updating the database
-    /// </summary>
-    public static int ExecuteMySqlInsert(string queryString)
-    {
-      lock (_databaseLock)
-      {
-        Console.WriteLine(queryString);
-
-        using (var mySqlConnection = new MySqlConnection(_appConfig.DbConnectionString))
-        {
-          mySqlConnection.Open();
-
-          using (var mySqlCommand = new MySqlCommand(queryString, mySqlConnection))
-          {
-            var result = mySqlCommand.ExecuteNonQuery();
-
-            Console.WriteLine(result.ToString());
-
-            return result;
-          }
-        }
-      }
-    }
 
     /// <summary>
     /// Verify the number of expected records in the table is there for the given uid
@@ -107,21 +25,21 @@ namespace TestUtility
 
       Msg.DisplayMySqlQuery(query);
 
-      while (retryCount < 20)
+      while (retryCount < 40)
       {
-        resultCount = Convert.ToInt32(ExecuteMySqlQueryAndReturnRecordCountResult(query));
+        resultCount = Convert.ToInt32(ExecuteRead(query));
 
         if (resultCount == expectedEventCount)
         {
-          break;
+          return;
         }
 
         retryCount++;
 
-        Thread.Sleep(1000);
+        System.Threading.Tasks.Task.Delay(500).Wait();
       }
 
-      Assert.Equal(expectedEventCount, resultCount);
+      throw new Exception($"Expected event count {expectedEventCount} doesn't equal result count {resultCount}");
     }
 
     /// <summary>
@@ -141,8 +59,58 @@ namespace TestUtility
 
       foreach (var _ in fldArray)
       {
-        Assert.Equal(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim());
+        if (expectedDataArray[idx].Trim() != actualDataArray[idx].Trim())
+        {
+          throw new Exception($"Expected array element '{expectedDataArray[idx]}' doesn't equal actual element '{actualDataArray[idx]}'");
+        }
+
         idx++;
+      }
+    }
+
+    /// <summary>
+    /// Executes and SQL statement against the connection and returns the number of rows affected.
+    /// </summary>
+    public static int ExecuteNonQuery(string queryString)
+    {
+      Console.WriteLine(queryString);
+
+      using (var mySqlConnection = new MySqlConnection(_appConfig.DbConnectionString))
+      {
+        mySqlConnection.Open();
+
+        using (var mySqlCommand = new MySqlCommand(queryString, mySqlConnection))
+        {
+          var result = mySqlCommand.ExecuteNonQuery();
+
+          Console.WriteLine(result.ToString());
+
+          return result;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Read the my sql database and return a record count
+    /// </summary>
+    public static string ExecuteRead(string queryString)
+    {
+      string queryResult = null;
+
+      using (var mySqlConnection = new MySqlConnection(_appConfig.DbConnectionString))
+      {
+        mySqlConnection.Open();
+
+        using (var mySqlCommand = new MySqlCommand(queryString, mySqlConnection))
+        using (var mySqlDataReader = mySqlCommand.ExecuteReader(CommandBehavior.CloseConnection))
+        {
+          while (mySqlDataReader.Read())
+          {
+            queryResult = mySqlDataReader[0].ToString();
+          }
+
+          return queryResult;
+        }
       }
     }
 

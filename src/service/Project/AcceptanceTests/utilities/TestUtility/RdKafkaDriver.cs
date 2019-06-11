@@ -35,7 +35,7 @@ namespace TestUtility
     /// <param name="message">Kafka Message</param>
     public static void SendKafkaMessage(string topicName, string message)
     {
-      lock (kafkaProducer)
+     // lock (kafkaProducer)
       {
         try
         {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net.Http;
+using IntegrationTests.UtilityClasses;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using WebApiTests.UtilityClasses;
 using Xunit;
 
-namespace WebApiTests
+namespace IntegrationTests.WebApiTests.FileImportTests
 {
   public class FileImportTests_Alignment
   {
@@ -18,7 +18,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload svl file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -61,7 +61,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload two alignment files");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -102,7 +102,7 @@ namespace WebApiTests
       var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
-      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.True(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
@@ -117,7 +117,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project then upload a new alignment file. Then update alignment file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -154,7 +154,7 @@ namespace WebApiTests
 
       _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
 
       Assert.True(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
@@ -169,7 +169,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project then upload a new alignment file. Then delete alignment file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -207,7 +207,7 @@ namespace WebApiTests
       importFile.ImportedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
 
       _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete));
-      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
 
       Assert.True(importFileList.ImportedFileDescriptors.Count == 0, "Expected 0 imported files but got " + importFileList.ImportedFileDescriptors.Count);
     }
@@ -221,7 +221,7 @@ namespace WebApiTests
       Msg.Title(testName, "Kafka Consume Test Create standard project then upload a new alignment file.");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -270,7 +270,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project then upload two alignment files that are the same name and content");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -308,7 +308,7 @@ namespace WebApiTests
 
       var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       Assert.True(filesResult2.Message == "CreateImportedFileV4. The file has already been created.", "Expecting a message: CreateImportedFileV4. The file has already been created.");
-      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.True(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       Assert.Single(filesResult.ImportedFileDescriptor.ImportedFileHistory);

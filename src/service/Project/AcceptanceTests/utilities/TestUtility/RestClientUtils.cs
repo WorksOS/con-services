@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
 using Xunit;
 
 namespace TestUtility
@@ -29,7 +28,6 @@ namespace TestUtility
     /// <returns></returns>
     public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, HttpStatusCode httpResponseCode = HttpStatusCode.OK, string mediaType = "application/json", string customerUid = null, string jwt = null)
     {
-      Thread.Sleep(500);
       Console.WriteLine($"{nameof(DoHttpRequest)}: [{httpMethod}] {resourceUri}, expected response code: {httpResponseCode}");
 
       var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid, jwt);

@@ -1,4 +1,4 @@
-﻿namespace WebApiTests.UtilityClasses
+﻿namespace IntegrationTests.UtilityClasses
 {
   public class Boundaries
   {

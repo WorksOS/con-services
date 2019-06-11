@@ -54,8 +54,11 @@ namespace TestUtility
     private const char SEPARATOR = '|';
 
     private static readonly TestConfig _testConfig;
-    private static readonly string _baseUri;
-    public string BaseUri => _baseUri;
+    public static readonly string BaseUri;
+
+    private static readonly object _legacyIdLock = new object();
+
+    private static int _currentLegacyProjectId;
 
     static TestSupport()
     {
@@ -63,17 +66,22 @@ namespace TestUtility
 
       if (Debugger.IsAttached || _testConfig.operatingSystem == "Windows_NT")
       {
-        _baseUri = _testConfig.debugWebApiUri;
+        BaseUri = _testConfig.debugWebApiUri;
       }
       else
       {
-        _baseUri = _testConfig.webApiUri;
+        BaseUri = _testConfig.webApiUri;
       }
 
-      _baseUri = "http://localhost:3001/";
-    }
+      const string query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
 
-    #region Public Methods
+      var result = MySqlHelper.ExecuteRead(query);
+      var index = string.IsNullOrEmpty(result)
+        ? 1000
+        : Convert.ToInt32(result);
+
+      _currentLegacyProjectId = Math.Max(index, _currentLegacyProjectId);
+    }
 
     public TestSupport()
     {
@@ -84,6 +92,16 @@ namespace TestUtility
       SetCustomerUid();
       SetGeofenceUid();
       SetSubscriptionUid();
+    }
+
+    public static int GenerateLegacyProjectId()
+    {
+      lock (_legacyIdLock)
+      {
+        _currentLegacyProjectId += 1;
+
+        return _currentLegacyProjectId;
+      }
     }
 
     /// <summary>
@@ -634,7 +652,7 @@ namespace TestUtility
       var query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"Customer"} 
                             (CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
                             ('{MockCustomer.CustomerUID}','{MockCustomer.Name}',{customerTypeId},{deleted},'{MockCustomer.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      MySqlHelper.ExecuteMySqlInsert(query);
+      MySqlHelper.ExecuteNonQuery(query);
     }
 
     /// <summary>
@@ -660,7 +678,7 @@ namespace TestUtility
       var query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"Subscription"} 
                             (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
                             ('{MockSubscription.SubscriptionUID}','{MockSubscription.CustomerUID}',{MockSubscription.ServiceTypeID},'{MockSubscription.StartDate:yyyy-MM-dd HH}','{MockSubscription.EndDate:yyyy-MM-dd}','{MockSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      MySqlHelper.ExecuteMySqlInsert(query);
+      MySqlHelper.ExecuteNonQuery(query);
 
       MockProjectSubscription = new ProjectSubscription
       {
@@ -672,7 +690,7 @@ namespace TestUtility
       query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"ProjectSubscription"} 
                             (fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
                             ('{MockProjectSubscription.SubscriptionUID}','{MockProjectSubscription.ProjectUID}','{MockProjectSubscription.EffectiveDate:yyyy-MM-dd}','{MockProjectSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      MySqlHelper.ExecuteMySqlInsert(query);
+      MySqlHelper.ExecuteNonQuery(query);
     }
 
     /// <summary>
@@ -687,13 +705,9 @@ namespace TestUtility
       var query = $@"INSERT INTO `{_testConfig.dbSchema}`.{"CustomerTccOrg"} 
                             (CustomerUID,TCCOrgID,LastActionedUTC) VALUES
                             ('{customerUid}','{orgId}','{lastActionedUtc:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      
-      MySqlHelper.ExecuteMySqlInsert(query);
+
+      MySqlHelper.ExecuteNonQuery(query);
     }
-
-    #endregion
-
-    #region Private Methods
 
     /// <summary>
     /// Set the full kafka topic name
@@ -1407,7 +1421,7 @@ namespace TestUtility
           break;
       }
 
-      MySqlHelper.ExecuteMySqlInsert(sqlCmd);
+      MySqlHelper.ExecuteNonQuery(sqlCmd);
     }
 
     /// <summary>
@@ -1626,13 +1640,13 @@ namespace TestUtility
     /// <param name="method">http method</param>
     /// <param name="customerUid">Customer UID to add to http headers</param>
     /// <returns>The web api response</returns>
-    private static string CallProjectWebApiV3(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
+    private string CallProjectWebApiV3(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
     {
       var configJson = evt == null
         ? null
         : JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
-      var response = new RestClientUtil().DoHttpRequest($"{_baseUri}api/v3/project/{routeSuffix}", method, configJson, statusCode, "application/json", customerUid);
+      var response = new RestClientUtil().DoHttpRequest($"{BaseUri}api/v3/project/{routeSuffix}", method, configJson, statusCode, "application/json", customerUid);
 
       if (response.Length > 0)
       {
@@ -1647,9 +1661,7 @@ namespace TestUtility
     /// </summary>
     public string CallProjectWebApi(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null, string endPoint = null)
     {
-      return new RestClientUtil().DoHttpRequest($"{_baseUri}{endPoint}{routeSuffix}", method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
+      return new RestClientUtil().DoHttpRequest($"{BaseUri}{endPoint}{routeSuffix}", method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
     }
-
-    #endregion
   }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net.Http;
+using IntegrationTests.UtilityClasses;
 using TestUtility;
-using WebApiTests.UtilityClasses;
 using Xunit;
 
-namespace WebApiTests
+namespace IntegrationTests.WebApiTests.FileImportTests
 {
   public class FileImportTestsDxf
   {
@@ -17,7 +17,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload dxf file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -60,7 +60,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload dxf file in imperial");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -103,7 +103,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload dxf file in metric");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();

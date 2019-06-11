@@ -53,7 +53,7 @@ namespace TestUtility
     /// </summary>
     public T GetImportedFilesFromWebApi<T>(string uri, Guid customerUid, string jwt = null)
     {
-      var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid.ToString(), jwt);
+      var response = CallWebApi(TestSupport.BaseUri + uri, HttpMethod.Get.ToString(), null, customerUid.ToString(), jwt);
 
       return JsonConvert.DeserializeObject<T>(response);
     }
@@ -74,7 +74,7 @@ namespace TestUtility
       var createdDt = fileDescriptor.FileCreatedUtc.ToString(CultureInfo.InvariantCulture);
       var updatedDt = fileDescriptor.FileUpdatedUtc.ToString(CultureInfo.InvariantCulture);
 
-      var uri = $"{ts.BaseUri}{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
+      var uri = $"{TestSupport.BaseUri}{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
 
       switch (fileDescriptor.ImportedFileTypeName)
       {
@@ -99,7 +99,7 @@ namespace TestUtility
 
       if (importOptions.HttpMethod == HttpMethod.Delete)
       {
-        uri = ts.BaseUri + $"api/v4/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
+        uri = $"{TestSupport.BaseUri}api/v4/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
 
       string response;
@@ -128,7 +128,7 @@ namespace TestUtility
     /// </summary>
     public string SendImportedFilesToWebApiV2(TestSupport ts, long projectId, string[] importFileArray, int row)
     {
-      var uri = $"{ts.BaseUri}api/v2/projects/{projectId}/importedfiles";
+      var uri = $"{TestSupport.BaseUri}api/v2/projects/{projectId}/importedfiles";
       var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
       var importedFileTbc = new ImportedFileTbc

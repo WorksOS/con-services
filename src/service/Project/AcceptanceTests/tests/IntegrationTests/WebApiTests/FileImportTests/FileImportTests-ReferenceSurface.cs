@@ -3,12 +3,12 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Web;
+using IntegrationTests.UtilityClasses;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using WebApiTests.UtilityClasses;
 using Xunit;
 
-namespace WebApiTests
+namespace IntegrationTests.WebApiTests.FileImportTests
 {
   public class FileImportTests_ReferenceSurface
   {
@@ -22,7 +22,7 @@ namespace WebApiTests
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -76,7 +76,7 @@ namespace WebApiTests
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -110,7 +110,7 @@ namespace WebApiTests
       var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Deactivate the parent design
-      FileActivationTests.DoActivationRequest(ts, customerUid, projectUid, filesResult.ImportedFileDescriptor.ImportedFileUid, false, (int)HttpStatusCode.OK, "Success");
+      FileActivationTests.DoActivationRequest(customerUid, projectUid, filesResult.ImportedFileDescriptor.ImportedFileUid, false, (int)HttpStatusCode.OK, "Success");
 
       //Reference Surface
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
@@ -135,7 +135,7 @@ namespace WebApiTests
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -187,7 +187,7 @@ namespace WebApiTests
       var expectedResult3 = importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult3.ImportedFileDescriptor, expectedResult3, true);
 
-      var importFileList = importFileParent.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(ts.BaseUri + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFileParent.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.True(importFileList.ImportedFileDescriptors.Count == 3, "Expected 3 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
@@ -202,7 +202,7 @@ namespace WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload reference surface file without parent design uploaded");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -250,7 +250,7 @@ namespace WebApiTests
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -308,7 +308,7 @@ namespace WebApiTests
       var ts = new TestSupport();
       var importFileParent = new ImportFile(uriRoot1);
       var importFileChild = new ImportFile(uriRoot2);
-      var legacyProjectId = MySqlHelper.GenerateLegacyProjectId();
+      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
