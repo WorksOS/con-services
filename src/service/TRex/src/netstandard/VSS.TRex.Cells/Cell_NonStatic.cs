@@ -56,23 +56,20 @@ namespace VSS.TRex.Cells
             PassCount = capacity;
           }
 
-          int currentSize = Passes?.Length ?? 0;
-
-          if (currentSize >= capacity)
-          {
-            // Current allocated capacity is sufficient.
-            return;
-          }
-
           if (Passes == null)
           {
-            if (capacity - currentSize >= CELL_PASS_ARRAY_INCREMENT_SIZE)
-              Passes = new CellPass[capacity];
-            else
-              Passes = new CellPass[capacity + CELL_PASS_ARRAY_INCREMENT_SIZE];
+            Passes = capacity >= CELL_PASS_ARRAY_INCREMENT_SIZE ? new CellPass[capacity] : new CellPass[CELL_PASS_ARRAY_INCREMENT_SIZE];
           }
           else
           {
+            int currentSize = Passes.Length;
+
+            if (currentSize >= capacity)
+            {
+              // Current allocated capacity is sufficient.
+              return;
+            }
+
             if (capacity - currentSize >= CELL_PASS_ARRAY_INCREMENT_SIZE)
               Array.Resize(ref Passes, capacity);
             else

@@ -129,10 +129,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Override to implement if needed.
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+    public override void Write(BinaryWriter writer)
     {
-      base.Write(writer, buffer);
+      base.Write(writer);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
     }
@@ -143,10 +142,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Override to implement if needed.
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader)
     {
-      base.Read(reader, buffer);
+      base.Read(reader);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }

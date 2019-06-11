@@ -114,31 +114,43 @@ namespace VSS.TRex.SubGridTrees.Server
 
             int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
 
-            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
+              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              {
                 switch (PassCounts_Size)
                 {
-                    case 1: PassCounts[i, j] = reader.ReadByte(); break;
-                    case 2: PassCounts[i, j] = reader.ReadInt16(); break;
-                    case 3: PassCounts[i, j] = reader.ReadInt32(); break;
-                    default:
-                        throw new InvalidDataException($"Unknown PassCounts_Size {PassCounts_Size}");
+                  case PassCountSize.ONE_BYTE:
+                    PassCounts[i, j] = reader.ReadByte();
+                    break;
+                  case PassCountSize.TWO_BYTES:
+                    PassCounts[i, j] = reader.ReadInt16();
+                    break;
+                  case PassCountSize.FOUR_BYTES:
+                    PassCounts[i, j] = reader.ReadInt32();
+                    break;
+                  default:
+                    throw new InvalidDataException($"Unknown PassCounts_Size {PassCounts_Size}");
                 }
-            });
+              }
+            }
 
             // Read all the cells from the stream
-            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
+              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              {
                 int PassCount_ = PassCounts[i, j];
 
                 if (PassCount_ > 0)
                 {
-                    AllocatePassesExact(i, j, PassCount_);
-                    Read(i, j, reader, PassCount_);
+                  AllocatePassesExact(i, j, PassCount_);
+                  Read(i, j, reader, PassCount_);
 
-                    SegmentPassCount += PassCount_;
+                  SegmentPassCount += PassCount_;
                 }
-            });
+              }
+            }
         }
 
         private void Read(int X, int Y, BinaryReader reader, int passCount)
@@ -234,28 +246,40 @@ namespace VSS.TRex.SubGridTrees.Server
 
             int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
 
-      // Read all the cells from the stream
-          Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            // Read all the cells from the stream
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
+              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              {
                 switch (PassCounts_Size)
                 {
-                    case 1: writer.Write((byte)PassCount(i, j)); break;
-                    case 2: writer.Write((short)PassCount(i, j)); break;
-                    case 3: writer.Write(PassCount(i, j)); break;
-                    default:
-                        throw new InvalidDataException($"Unknown PassCounts_Size: {PassCounts_Size}");
+                  case PassCountSize.ONE_BYTE:
+                    writer.Write((byte) PassCount(i, j));
+                    break;
+                  case PassCountSize.TWO_BYTES:
+                    writer.Write((short) PassCount(i, j));
+                    break;
+                  case PassCountSize.FOUR_BYTES:
+                    writer.Write(PassCount(i, j));
+                    break;
+                  default:
+                    throw new InvalidDataException($"Unknown PassCounts_Size: {PassCounts_Size}");
                 }
-            });
+              }
+            }
 
             // write all the cell passes to the stream, avoiding those cells that do not have any passes
-            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
+              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              {
                 var passCount = PassData[i, j].PassCount;
                 if (passCount > 0)
                 {
-                    Write(i, j, writer, passCount);
+                  Write(i, j, writer, passCount);
                 }
-            });
+              }
+            }
         }
 
         private void Write(int X, int Y, BinaryWriter writer, int passCount)
@@ -300,16 +324,19 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             SegmentPassCount = 0;
             PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
-       
-            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+
+            for (int x = 0; x < SubGridTreeConsts.SubGridTreeDimension; x++)
             {
-              PassData[x, y].Passes = cellPasses[x, y];
+              for (int y = 0; y < SubGridTreeConsts.SubGridTreeDimension; y++)
+              {
+                PassData[x, y].Passes = cellPasses[x, y];
 
-              var passCount = cellPassCounts[x, y];
+                var passCount = cellPassCounts[x, y];
 
-              PassData[x, y].PassCount = passCount;
-              SegmentPassCount += passCount;
-            });
+                PassData[x, y].PassCount = passCount;
+                SegmentPassCount += passCount;
+              }
+            }
         }
 
         /// <summary>

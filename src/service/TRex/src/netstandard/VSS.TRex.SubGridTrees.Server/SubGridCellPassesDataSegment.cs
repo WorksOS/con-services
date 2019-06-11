@@ -107,7 +107,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       // Segments may not have any defined latest pass information
       writer.Write(LatestPasses != null);
-      LatestPasses?.Write(writer, new byte[50000]);
+      LatestPasses?.Write(writer);
 
       CellStacksOffset = (int) writer.BaseStream.Position;
 
@@ -134,7 +134,7 @@ namespace VSS.TRex.SubGridTrees.Server
       if (HasLatestData && loadLatestData)
       {
         if (reader.ReadBoolean())
-          LatestPasses.Read(reader, new byte[50000]);
+          LatestPasses.Read(reader);
         else
           LatestPasses = null;
       }
@@ -248,7 +248,8 @@ namespace VSS.TRex.SubGridTrees.Server
             Owner.Owner.ID,
             FileName,
             Owner.OriginX, Owner.OriginY,
-            FileName,
+            SegmentInfo.StartTime.Ticks,
+            SegmentInfo.EndTime.Ticks,
             SegmentInfo.Version,
             FileSystemStreamType.SubGridSegment,
             MStream,

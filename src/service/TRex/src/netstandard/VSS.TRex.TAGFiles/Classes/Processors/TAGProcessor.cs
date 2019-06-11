@@ -31,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// 1. The target SiteModel which is intended to be the recipient of the TAG information processed 
     /// 2. The target Machine in the site model which recorded the TAG information
     /// 3. The event lists related to the target machine in the target site model
-    /// 4. A subgrid tree representing the aggregator for all the spatial cell pass infromation processed
+    /// 4. A subgrid tree representing the aggregator for all the spatial cell pass information processed
     ///    from the TAG information as an independent entity.
     /// 5. A set of event lists representing the aggregator for all the machine events for the target machine
     ///    in the target site model that were processed from the TAG information as a separate entity.

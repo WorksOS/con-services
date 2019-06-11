@@ -29,6 +29,8 @@ namespace VSS.TRex.SubGridTrees.Server
     private readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
     private readonly ISubGridCellSegmentPassesDataWrapperFactory subGridCellSegmentPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>();
 
+    private static readonly IProductionEventsFactory _ProductionEventsFactory = DIContext.Obtain<IProductionEventsFactory>();
+
     /// <summary>
     /// Converts the structure of the global latest cells structure into an immutable form
     /// </summary>
@@ -84,7 +86,7 @@ namespace VSS.TRex.SubGridTrees.Server
         throw new TRexException("Unable to determine a single valid source for immutability conversion.");
       }
 
-      bool result = false;
+      bool result;
 
       switch (streamType)
       {
@@ -118,9 +120,8 @@ namespace VSS.TRex.SubGridTrees.Server
         }
       }
 
-      if (mutableStream != null)
-        if (Log.IsTraceEnabled())
-          Log.LogInformation($"Mutability conversion: Type:{streamType}, Initial Size: {mutableStream.Length}, Final Size: {immutableStream.Length}, Ratio: {(immutableStream.Length/(1.0*mutableStream.Length)) * 100}%");
+      if (mutableStream != null && immutableStream != null && Log.IsTraceEnabled())
+        Log.LogInformation($"Mutability conversion: Type:{streamType}, Initial Size: {mutableStream.Length}, Final Size: {immutableStream.Length}, Ratio: {(immutableStream.Length/(1.0*mutableStream.Length)) * 100}%");
 
       return result;
     }
@@ -333,7 +334,7 @@ namespace VSS.TRex.SubGridTrees.Server
             return false;
           }
 
-          IProductionEvents events = DIContext.Obtain<IProductionEventsFactory>().NewEventList(-1, Guid.Empty, (ProductionEventType)eventType);
+          var events = _ProductionEventsFactory.NewEventList(-1, Guid.Empty, (ProductionEventType)eventType);
 
           mutableStream.Position = 0;
           events.ReadEvents(reader);

@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
         }
       };
 
-      TestBinary_ReaderWriterBufferedHelper.RoundTripSerialise(clientGrid);
+      TestBinary_ReaderWriterHelper.RoundTripSerialise(clientGrid);
     }
 
     [Fact]

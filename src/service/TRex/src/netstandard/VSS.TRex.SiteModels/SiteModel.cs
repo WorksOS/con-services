@@ -532,8 +532,6 @@ versionMap = null;
       writer.Write(LastModifiedDate.ToBinary());
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     public void Read(BinaryReader reader)
     {
 // Read the SiteModel attributes

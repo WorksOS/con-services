@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
@@ -18,7 +19,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// The array of enumeration values represented by ProductionEventType
         /// </summary>
-        private static readonly Array _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType));
+        private static readonly int[] _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType)).Cast<int>().ToArray();
 
         private IProductionEventLists SourceLists;
         private IProductionEventLists TargetLists;

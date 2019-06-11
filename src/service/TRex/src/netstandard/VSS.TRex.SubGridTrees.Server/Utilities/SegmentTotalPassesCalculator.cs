@@ -1,4 +1,5 @@
-﻿using VSS.TRex.SubGridTrees.Server.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
@@ -15,19 +16,23 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             int _TotalPasses = 0;
             int _MaxPassCount = 0;
 
+            // Todo: Push this down to the segment to avoid the PassCount abstraction
             if (segment.HasPassData())
             {
-                Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+              {
+                for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
                 {
-                    int ThePassCount = segment.PassCount(i, j);
-                 
-                    if (ThePassCount > _MaxPassCount)
-                    {
-                      _MaxPassCount = ThePassCount;
-                    }
-                 
-                    _TotalPasses += ThePassCount;
-                });
+                  int ThePassCount = segment.PassCount(i, j);
+
+                  if (ThePassCount > _MaxPassCount)
+                  {
+                    _MaxPassCount = ThePassCount;
+                  }
+
+                  _TotalPasses += ThePassCount;
+                }
+              }
             }
 
             TotalPasses = _TotalPasses;

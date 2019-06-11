@@ -73,7 +73,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public void Write(BinaryWriter writer)
         {
             writer.Write(GlobalLatestCells != null);
-            GlobalLatestCells?.Write(writer, new byte[50000]);
+            GlobalLatestCells?.Write(writer);
 
             // Write out the directory of segments
             writer.Write(SegmentDirectory.Count);
@@ -92,7 +92,7 @@ namespace VSS.TRex.SubGridTrees.Server
           {
             if (GlobalLatestCells == null)
               throw new TRexSubGridIOException("Cannot read sub grid directory without global latest values available");
-            GlobalLatestCells.Read(reader, new byte[50000]);
+            GlobalLatestCells.Read(reader);
           }
 
           // Read in the directory of segments

@@ -600,7 +600,11 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
              var FSError = storageProxy.ReadSpatialStreamFromPersistentStore
-                         (Owner.ID, FileName, OriginX, OriginY, FileName, Segment.SegmentInfo.Version, FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
+              (Owner.ID, FileName, OriginX, OriginY, 
+               Segment.SegmentInfo.StartTime.Ticks,
+               Segment.SegmentInfo.EndTime.Ticks,
+               Segment.SegmentInfo.Version, 
+               FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
 
              bool Result = FSError == FileSystemErrorStatus.OK;
 
@@ -654,7 +658,7 @@ namespace VSS.TRex.SubGridTrees.Server
             SaveDirectoryToStream(MStream);
 
             bool Result = storage.WriteSpatialStreamToPersistentStore
-             (Owner.ID, FileName, OriginX, OriginY, string.Empty, Version,
+             (Owner.ID, FileName, OriginX, OriginY, -1, -1, Version,
               FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
 
             if (!Result)
@@ -714,7 +718,7 @@ namespace VSS.TRex.SubGridTrees.Server
            if (Version == 0)
              Log.LogError($"Version for {Moniker()} is 0");
 
-            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty, Version,
+            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, -1, -1, Version,
                                                                        FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
 
             if (FSError != FileSystemErrorStatus.OK || SMS == null)

@@ -24,12 +24,12 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
         }
 
         public override bool ProcessANSIStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
-          TAGDictionaryItem valueType, byte[] value)
+          TAGDictionaryItem valueType, string value)
         {
             if (!state.ProofingRunProcessed)
                 state.ProofingRunProcessed = valueSink.ProcessEpochContext();
 
-            valueSink.StartProofing = Encoding.ASCII.GetString(value);
+            valueSink.StartProofing = value;
 
             SetProofingRunStartTime(state, valueSink);
 

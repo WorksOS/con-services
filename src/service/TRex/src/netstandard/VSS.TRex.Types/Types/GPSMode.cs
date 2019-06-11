@@ -55,4 +55,10 @@
         /// </summary>
         NoGPS = 0x0F
     }
+
+    public static class GPSModeConstants
+    {
+      public static int GPS_MODE_MIN_VALUE = (int) GPSMode.Old;
+      public static int GPS_MODE_MAX_VALUE = (int) GPSMode.LocationRTK;
+  }
 }

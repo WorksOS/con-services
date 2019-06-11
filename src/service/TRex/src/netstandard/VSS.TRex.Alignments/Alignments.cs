@@ -70,9 +70,6 @@ namespace VSS.TRex.Alignments
       MinorVersion = reader.ReadByte();
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
-
     public void Assign(IAlignments source)
     {
       Clear();

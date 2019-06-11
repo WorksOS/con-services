@@ -70,7 +70,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <param name="value"></param>
         /// <returns></returns>
         public virtual bool ProcessANSIStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
-          TAGDictionaryItem valueType, byte[] value) => false;
+          TAGDictionaryItem valueType, string value) => false;
 
         /// <summary>
         /// Processes an unicode TAG value

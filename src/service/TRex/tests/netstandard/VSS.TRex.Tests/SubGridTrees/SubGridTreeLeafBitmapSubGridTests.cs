@@ -33,12 +33,12 @@ namespace VSS.TRex.Tests.SubGridTrees
       {
         using (var bw = new BinaryWriter(ms))
         {
-          leaf.Write(bw, new byte[10000]);
+          leaf.Write(bw);
 
           ms.Position = 0;
           using (var br = new BinaryReader(ms))
           {
-            newLeaf.Read(br, new byte[10000]);
+            newLeaf.Read(br);
           }
         }
       }

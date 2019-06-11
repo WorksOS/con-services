@@ -103,16 +103,17 @@ namespace VSS.TRex.Storage
     /// <param name="streamName"></param>
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
-    /// <param name="segmentIdentifier"></param>
+    /// <param name="segmentEndDate"></param>
     /// <param name="version"></param>
     /// <param name="streamType"></param>
     /// <param name="mutableStream"></param>
     /// <param name="source"></param>
+    /// <param name="segmentStartDate"></param>
     /// <returns></returns>
     public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID,
       string streamName,
       int subGridX, int subGridY,
-      string segmentIdentifier,
+      long segmentStartDate, long segmentEndDate,
       long version,
       FileSystemStreamType streamType,
       MemoryStream mutableStream,
@@ -120,7 +121,7 @@ namespace VSS.TRex.Storage
     {
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentIdentifier);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentStartDate, segmentEndDate);
 
         using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
@@ -209,7 +210,8 @@ namespace VSS.TRex.Storage
     public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelID,
       string streamName,
       int subGridX, int subGridY,
-      string segmentIdentifier,
+      long segmentStartDate,
+      long segmentEndDate,
       long version,
       FileSystemStreamType streamType,
       out MemoryStream stream)
@@ -218,7 +220,7 @@ namespace VSS.TRex.Storage
 
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentIdentifier);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentStartDate, segmentEndDate);
 
         //Log.LogInformation($"Getting key:{streamName}");
 

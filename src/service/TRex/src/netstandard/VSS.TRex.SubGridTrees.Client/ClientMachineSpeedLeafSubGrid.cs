@@ -128,7 +128,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// Determines if the leaf content of this sub grid is equal to 'other'
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -148,15 +148,16 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Override to implement if needed.
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+    public override void Write(BinaryWriter writer)
     {
-      base.Write(writer, buffer);
+      base.Write(writer);
 
-      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(ushort));
-      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(ushort));
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(ushort);
 
-      //SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
+      var buffer = new byte[BUFFER_SIZE];
+
+      Buffer.BlockCopy(Cells, 0, buffer, 0, BUFFER_SIZE);
+      writer.Write(buffer, 0, BUFFER_SIZE);
     }
 
     /// <summary>
@@ -165,15 +166,16 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Override to implement if needed.
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader)
     {
-      base.Read(reader, buffer);
+      base.Read(reader);
 
-      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(ushort));
-      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(ushort));
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(ushort);
 
-      //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadUInt16());
+      var buffer = new byte[BUFFER_SIZE];
+
+      reader.Read(buffer, 0, BUFFER_SIZE);
+      Buffer.BlockCopy(buffer, 0, Cells, 0, BUFFER_SIZE);
     }
 
     /// <summary>

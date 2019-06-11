@@ -24,7 +24,9 @@ namespace VSS.TRex.Events
     /// <summary>
     /// The array of enumeration values represented by ProductionEventType
     /// </summary>
-    private static readonly Array _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType));
+    private static readonly ProductionEventType[] _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType)).Cast<ProductionEventType>().ToArray();
+ 
+    private static readonly IProductionEventsFactory _ProductionEventsFactory = DIContext.Obtain<IProductionEventsFactory>();
 
     /// <summary>
     /// The SiteModel these events relate to
@@ -225,7 +227,7 @@ namespace VSS.TRex.Events
         {
           if (allEventsForMachine[(int) eventType] == null) // This thread won the lock
           {
-            IProductionEvents temp = DIContext.Obtain<IProductionEventsFactory>().NewEventList(InternalSiteModelMachineIndex, SiteModel.ID, eventType);
+            var temp = _ProductionEventsFactory.NewEventList(InternalSiteModelMachineIndex, SiteModel.ID, eventType);
 
             if (temp != null) // The event is supported, load if the model is persistent (non-transient)
             {
