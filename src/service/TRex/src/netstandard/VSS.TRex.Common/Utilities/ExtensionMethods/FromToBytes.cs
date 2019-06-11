@@ -131,7 +131,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <param name="deserializer"></param>
     public static void FromStream(Stream stream, Action<BinaryReader> deserializer)
     {
-      using (BinaryReader reader = new BinaryReader(stream, Encoding.Default, true))
+      using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true))
       {
         deserializer(reader);
       }

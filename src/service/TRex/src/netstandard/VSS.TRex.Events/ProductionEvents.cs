@@ -464,7 +464,7 @@ namespace VSS.TRex.Events
     public MemoryStream GetImmutableStream()
     {
       var immutableStream = _recyclableMemoryStreamManager.GetStream();
-      var immutableWriter = new BinaryWriter(immutableStream);
+      var immutableWriter = new BinaryWriter(immutableStream, Encoding.UTF8, true);
 
       VersionSerializationHelper.EmitVersionByte(immutableWriter, VERSION_NUMBER);
 
