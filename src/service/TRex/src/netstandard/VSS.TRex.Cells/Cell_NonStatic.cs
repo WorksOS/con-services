@@ -105,22 +105,22 @@ namespace VSS.TRex.Cells
           }
         }
 
-    /// <summary>
-    /// LocateTime attempts to locate an entry in the passes list that has
-    /// the same time stamp as the Time parameter
-    /// It uses a binary search to locate any matching pass. As there will
-    /// only ever by a single pass that matches, finding an exact match
-    /// aborts the binary search and returns the result. If there is no
-    /// exact match the search returns the index in the list where a pass with
-    /// the given time should go. 
-    /// </summary>
-    /// <param name="time"></param>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    public bool LocateTime(DateTime time, out int index)
+        /// <summary>
+        /// LocateTime attempts to locate an entry in the passes list that has
+        /// the same time stamp as the Time parameter
+        /// It uses a binary search to locate any matching pass. As there will
+        /// only ever by a single pass that matches, finding an exact match
+        /// aborts the binary search and returns the result. If there is no
+        /// exact match the search returns the index in the list where a pass with
+        /// the given time should go. 
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public bool LocateTime(DateTime time, out int index)
         {
             int L = 0;
-            int H = (int)PassCount - 1;
+            int H = PassCount - 1;
 
             while (L <= H)
             {

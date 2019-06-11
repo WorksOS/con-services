@@ -28,12 +28,12 @@ namespace VSS.TRex.GridFabric.Interfaces
     /// <summary>
     /// The start date for the data held if this key refers to a segment. It will be -1 if it does not.
     /// </summary>
-    long SegmentStartDate { get; set; } // in ticks
+    long SegmentStartDateTicks { get; set; } // in ticks
 
     /// <summary>
     /// The end date for the data held if this key refers to a segment. It will be -1 if it does not.
     /// </summary>
-    long SegmentEndDate { get; set; } // in ticks
+    long SegmentEndDateTicks { get; set; } // in ticks
 
     /// <summary>
     /// Converts the spatial segment affinity key into a string representation suitable for use as a unique string
