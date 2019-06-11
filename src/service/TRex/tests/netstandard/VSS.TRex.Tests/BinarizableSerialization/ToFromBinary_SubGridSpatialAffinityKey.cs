@@ -40,8 +40,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
           ProjectUID = Guid.NewGuid(),
           SubGridX = 12345,
           SubGridY = 56789,
-          SegmentStartDate = 123,
-          SegmentEndDate = 456
+          SegmentStartDateTicks = 123,
+          SegmentEndDateTicks = 456
       },
         "SubGridSpatialAffinityKey with Project UID, location and segment identifier not same after round trip serialisation");
     }

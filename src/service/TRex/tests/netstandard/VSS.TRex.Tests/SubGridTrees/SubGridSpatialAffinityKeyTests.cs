@@ -12,7 +12,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridSpatialAffinityKey_NullConstructor()
         {
             ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey();
-            Assert.True(key.ProjectUID == Guid.Empty && key.SubGridX == 0 && key.SubGridY == 0 && key.SegmentStartDate == 0 && key.SegmentEndDate == 0,
+            Assert.True(key.ProjectUID == Guid.Empty && key.SubGridX == 0 && key.SubGridY == 0 && key.SegmentStartDateTicks == 0 && key.SegmentEndDateTicks == 0,
                 "Default constructor sub grid spatial affinity key produced unexpected result");
         }
 
@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             Guid ID = Guid.NewGuid();
             ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, ID, 12345678, 34567890);
-            Assert.True(key.Version == 1 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentStartDate == -1 && key.SegmentEndDate == -1,
+            Assert.True(key.Version == 1 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentStartDateTicks == -1 && key.SegmentEndDateTicks == -1,
                 "Sub grid origin constructor sub grid spatial affinity key produced unexpected result");
         }
 
@@ -30,7 +30,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             Guid ID = Guid.NewGuid();
             ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(2, ID, 12345678, 34567890, 123456, 7891012);
-            Assert.True(key.Version == 2 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentStartDate == 123456 && key.SegmentEndDate == 7891012,
+            Assert.True(key.Version == 2 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentStartDateTicks == 123456 && key.SegmentEndDateTicks == 7891012,
                 "Sub grid origin constructor sub grid spatial affinity key produced unexpected result");
         }
 
@@ -39,7 +39,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             Guid ID = Guid.NewGuid();
             ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, ID, new SubGridCellAddress(12345678, 34567890));
-            Assert.True(key.Version == 1 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890  && key.SegmentStartDate == -1 && key.SegmentEndDate == -1,
+            Assert.True(key.Version == 1 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890  && key.SegmentStartDateTicks == -1 && key.SegmentEndDateTicks == -1,
                 "Cell address constructor sub grid spatial affinity key produced unexpected result");
         }
 
@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             Guid ID = Guid.NewGuid();
             ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(2, ID, new SubGridCellAddress(12345678, 34567890), 123456, 789012);
-            Assert.True(key.Version == 2 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentStartDate == 123456 && key.SegmentEndDate == 789012,
+            Assert.True(key.Version == 2 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentStartDateTicks == 123456 && key.SegmentEndDateTicks == 789012,
                 "Cell address constructor sub grid spatial affinity key produced unexpected result");
         }
 

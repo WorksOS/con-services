@@ -62,7 +62,7 @@ namespace VSS.TRex.Storage
       {
         var cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
 
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
+        using (var compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
           if (Log.IsTraceEnabled())
             Log.LogInformation($"Putting key:{cacheKey} in {NonSpatialCache(streamType).Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
@@ -103,17 +103,17 @@ namespace VSS.TRex.Storage
     /// <param name="streamName"></param>
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
-    /// <param name="segmentEndDate"></param>
+    /// <param name="segmentEndDateTicks"></param>
     /// <param name="version"></param>
     /// <param name="streamType"></param>
     /// <param name="mutableStream"></param>
     /// <param name="source"></param>
-    /// <param name="segmentStartDate"></param>
+    /// <param name="segmentStartDateTicks"></param>
     /// <returns></returns>
     public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID,
       string streamName,
       int subGridX, int subGridY,
-      long segmentStartDate, long segmentEndDate,
+      long segmentStartDateTicks, long segmentEndDateTicks,
       long version,
       FileSystemStreamType streamType,
       MemoryStream mutableStream,
@@ -121,9 +121,9 @@ namespace VSS.TRex.Storage
     {
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentStartDate, segmentEndDate);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentStartDateTicks, segmentEndDateTicks);
 
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
+        using (var compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
           if (Log.IsTraceEnabled())
             Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
@@ -173,7 +173,7 @@ namespace VSS.TRex.Storage
 
         try
         {
-          using (MemoryStream MS = new MemoryStream(NonSpatialCache(streamType).Get(cacheKey)))
+          using (var MS = new MemoryStream(NonSpatialCache(streamType).Get(cacheKey)))
           {
             stream = MemoryStreamCompression.Decompress(MS);
             stream.Position = 0;
@@ -210,8 +210,8 @@ namespace VSS.TRex.Storage
     public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelID,
       string streamName,
       int subGridX, int subGridY,
-      long segmentStartDate,
-      long segmentEndDate,
+      long segmentStartDateTicks,
+      long segmentEndDateTicks,
       long version,
       FileSystemStreamType streamType,
       out MemoryStream stream)
@@ -220,13 +220,13 @@ namespace VSS.TRex.Storage
 
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentStartDate, segmentEndDate);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelID, subGridX, subGridY, segmentStartDateTicks, segmentEndDateTicks);
 
         //Log.LogInformation($"Getting key:{streamName}");
 
         try
         {
-          using (MemoryStream MS = new MemoryStream(spatialCache.Get(cacheKey)))
+          using (var MS = new MemoryStream(spatialCache.Get(cacheKey)))
           {
             stream = MemoryStreamCompression.Decompress(MS);
             stream.Position = 0;
