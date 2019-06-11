@@ -46,7 +46,6 @@ namespace VSS.FlowJSHandler
         TotalSize = long.Parse(form["flowTotalSize"]);
         Identifier = CleanIdentifier(form["flowIdentifier"]);
         FileName = form["flowFilename"];
-     //   TmpFilename = Guid.NewGuid().ToString();
         TotalChunks = int.Parse(form["flowTotalChunks"]);
       }
       catch (Exception)
