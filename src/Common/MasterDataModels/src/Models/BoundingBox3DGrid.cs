@@ -55,8 +55,7 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// Prevents a default instance of the <see cref="BoundingBox3DGrid"/> class from being created.
     /// </summary>
-    private BoundingBox3DGrid()
-    { }
+    public BoundingBox3DGrid() { }
 
     /// <summary>
     /// Overload constructor with parameters.
@@ -79,10 +78,6 @@ namespace VSS.MasterData.Models.Models
     {
       return $"minX:{MinX}, minY:{MinY}, minZ:{MinZ}, maxX:{MaxX}, maxY:{MaxY}, maxZ:{MaxZ}";
     }
-
-    public List<string> GetIdentifiers()
-    {
-      return new List<string>();
-    }
+    public List<string> GetIdentifiers() => new List<string>();
   }
 }
