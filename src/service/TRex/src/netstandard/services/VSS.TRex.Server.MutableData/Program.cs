@@ -44,10 +44,10 @@ namespace VSS.TRex.Server.MutableData
         .AddLogging()
         .Add(x => x.AddSingleton(new VSS.TRex.IO.RecyclableMemoryStreamManager
         {
-          // Allow up to 128Mb worth of freed small blocks used by the recyclable streams for later reuse
+          // Allow up to 256Mb worth of freed small blocks used by the recyclable streams for later reuse
           // NOte: The default value for this setting is zero which means every block allocated to a
           // recyclable stream is freed when the stream is disposed.
-          MaximumFreeSmallPoolBytes = 128 * 1024 * 1024
+          MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
         }))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)
