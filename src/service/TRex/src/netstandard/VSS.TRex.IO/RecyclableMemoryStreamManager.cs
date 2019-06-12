@@ -482,7 +482,7 @@ namespace VSS.TRex.IO
     /// <param name="tag">The tag of the stream returning these blocks, for logging if necessary.</param>
     /// <exception cref="ArgumentNullException">blocks is null</exception>
     /// <exception cref="ArgumentException">blocks contains buffers that are the wrong size (or null) for this memory manager</exception>
-    internal void ReturnBlocks(ICollection<byte[]> blocks, string tag)
+    internal void ReturnBlocks(List<byte[]> blocks, string tag)
     {
       if (blocks == null)
       {
@@ -492,16 +492,18 @@ namespace VSS.TRex.IO
       var bytesToReturn = blocks.Count * this.BlockSize;
       Interlocked.Add(ref this.smallPoolInUseSize, -bytesToReturn);
 
-      foreach (var block in blocks)
+      for (int i = 0, limit = blocks.Count; i < limit; i++)
       {
+        var block = blocks[i];
         if (block == null || block.Length != this.BlockSize)
         {
           throw new ArgumentException("blocks contains buffers that are not BlockSize in length");
         }
       }
 
-      foreach (var block in blocks)
+      for (int i = 0, limit = blocks.Count; i < limit; i++)
       {
+        var block = blocks[i];
         if (this.MaximumFreeSmallPoolBytes == 0 || this.SmallPoolFreeSize < this.MaximumFreeSmallPoolBytes)
         {
           Interlocked.Add(ref this.smallPoolFreeSize, this.BlockSize);
