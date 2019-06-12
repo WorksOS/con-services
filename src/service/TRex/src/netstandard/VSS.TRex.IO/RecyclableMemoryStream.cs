@@ -303,9 +303,9 @@ namespace VSS.TRex.IO
 
       if (this.dirtyBuffers != null)
       {
-        foreach (var buffer in this.dirtyBuffers)
+        for (int i = 0, limit = this.dirtyBuffers.Count; i < limit; i++)
         {
-          this.memoryManager.ReturnLargeBuffer(buffer, this.tag);
+          this.memoryManager.ReturnLargeBuffer(this.dirtyBuffers[i], this.tag);
         }
       }
 
