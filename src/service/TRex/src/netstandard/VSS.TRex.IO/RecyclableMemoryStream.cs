@@ -72,12 +72,6 @@ namespace VSS.TRex.IO
     /// </summary>
     private readonly List<byte[]> blocks = new List<byte[]>(1);
 
-    /// <summary>
-    /// This buffer exists so that WriteByte can forward all of its calls to Write
-    /// without creating a new byte[] buffer on every call.
-    /// </summary>
-    private readonly byte[] byteBuffer = new byte[1];
-
     private readonly Guid id;
 
     private readonly RecyclableMemoryStreamManager memoryManager;
@@ -104,6 +98,18 @@ namespace VSS.TRex.IO
     private byte[] largeBuffer;
 
     /// <summary>
+    /// The block size copied from the recyclable memory stream manager at the time this stream was constructed.
+    /// Block size is an immutable property of the manager so is safe to maintain a locally referencable copy in the stream
+    /// </summary>
+    private readonly int blockSize;
+
+    /// <summary>
+    /// The maximum stream capacity from the recyclable memory stream manager at the time this stream was constructed
+    /// Maximum stream capacity is an immutable property of the manager so is safe to maintain a locally referencable copy in the stream
+    /// </summary>
+    private readonly long maximumStreamCapacity;
+
+    /// <summary>
     /// Unique identifier for this stream across it's entire lifetime
     /// </summary>
     /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
@@ -111,7 +117,9 @@ namespace VSS.TRex.IO
     {
       get
       {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
         this.CheckDisposed();
+#endif
         return this.id;
       }
     }
@@ -124,7 +132,9 @@ namespace VSS.TRex.IO
     {
       get
       {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
         this.CheckDisposed();
+#endif
         return this.tag;
       }
     }
@@ -191,12 +201,15 @@ namespace VSS.TRex.IO
         : base(emptyArray)
     {
       this.memoryManager = memoryManager;
+      this.blockSize = memoryManager.BlockSize;
+      this.maximumStreamCapacity = memoryManager.MaximumStreamCapacity == 0 ? long.MaxValue : memoryManager.MaximumStreamCapacity;
+
       this.id = Guid.NewGuid();
       this.tag = tag;
 
-      if (requestedSize < memoryManager.BlockSize)
+      if (requestedSize < this.blockSize)
       {
-        requestedSize = memoryManager.BlockSize;
+        requestedSize = this.blockSize;
       }
 
       if (initialLargeBuffer == null)
@@ -206,6 +219,7 @@ namespace VSS.TRex.IO
       else
       {
         this.largeBuffer = initialLargeBuffer;
+        this.capacity = initialLargeBuffer.Length;
       }
 
       if (this.memoryManager.GenerateCallStacks)
@@ -315,6 +329,12 @@ namespace VSS.TRex.IO
     #endregion
 
     #region MemoryStream overrides
+
+    /// <summary>
+    /// Backing variable for capacity value
+    /// </summary>
+    private int capacity;
+
     /// <summary>
     /// Gets or sets the capacity
     /// </summary>
@@ -329,18 +349,16 @@ namespace VSS.TRex.IO
     {
       get
       {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
         this.CheckDisposed();
-        if (this.largeBuffer != null)
-        {
-          return this.largeBuffer.Length;
-        }
-
-        long size = (long)this.blocks.Count * this.memoryManager.BlockSize;
-        return (int)Math.Min(int.MaxValue, size);
+#endif
+        return capacity;
       }
       set
       {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
         this.CheckDisposed();
+#endif
         this.EnsureCapacity(value);
       }
     }
@@ -355,7 +373,9 @@ namespace VSS.TRex.IO
     {
       get
       {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
         this.CheckDisposed();
+#endif
         return this.length;
       }
     }
@@ -370,12 +390,16 @@ namespace VSS.TRex.IO
     {
       get
       {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
         this.CheckDisposed();
+#endif
         return this.position;
       }
       set
       {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
         this.CheckDisposed();
+#endif
         if (value < 0)
         {
           throw new ArgumentOutOfRangeException("value", "value must be non-negative");
@@ -424,7 +448,9 @@ namespace VSS.TRex.IO
     public override byte[] GetBuffer()
 #endif
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
+#endif
 
       if (this.largeBuffer != null)
       {
@@ -440,7 +466,7 @@ namespace VSS.TRex.IO
       // it's possible that people will manipulate the buffer directly
       // and set the length afterward. Capacity sets the expectation
       // for the size of the buffer.
-      var newBuffer = this.memoryManager.GetLargeBuffer(this.Capacity, this.tag);
+      var newBuffer = this.memoryManager.GetLargeBuffer(this.capacity, this.tag);
 
       // InternalRead will check for existence of largeBuffer, so make sure we
       // don't set it until after we've copied the data.
@@ -469,8 +495,10 @@ namespace VSS.TRex.IO
     public override bool TryGetBuffer(out ArraySegment<byte> buffer)
 #endif
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
-      buffer = new ArraySegment<byte>(this.GetBuffer(), 0, (int)this.Length);
+#endif
+      buffer = new ArraySegment<byte>(this.GetBuffer(), 0, (int)this.length);
       // GetBuffer has no failure modes, so this should always succeed
       return true;
     }
@@ -485,8 +513,10 @@ namespace VSS.TRex.IO
     [Obsolete("This method has degraded performance vs. GetBuffer and should be avoided.")]
     public override byte[] ToArray()
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
-      var newBuffer = new byte[this.Length];
+#endif
+      var newBuffer = new byte[this.length];
 
       this.InternalRead(newBuffer, 0, this.length, 0);
       string stack = this.memoryManager.GenerateCallStacks ? Environment.StackTrace : null;
@@ -510,24 +540,10 @@ namespace VSS.TRex.IO
     /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
     public override int Read(byte[] buffer, int offset, int count)
     {
-      return this.SafeRead(buffer, offset, count, ref this.position);
-    }
-
-    /// <summary>
-    /// Reads from the specified position into the provided buffer
-    /// </summary>
-    /// <param name="buffer">Destination buffer</param>
-    /// <param name="offset">Offset into buffer at which to start placing the read bytes.</param>
-    /// <param name="count">Number of bytes to read.</param>
-    /// <param name="streamPosition">Position in the stream to start reading from</param>
-    /// <returns>The number of bytes read</returns>
-    /// <exception cref="ArgumentNullException">buffer is null</exception>
-    /// <exception cref="ArgumentOutOfRangeException">offset or count is less than 0</exception>
-    /// <exception cref="ArgumentException">offset subtracted from the buffer length is less than count</exception>
-    /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
-    public int SafeRead(byte[] buffer, int offset, int count, ref int streamPosition)
-    {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
+#endif
+
       if (buffer == null)
       {
         throw new ArgumentNullException(nameof(buffer));
@@ -548,8 +564,8 @@ namespace VSS.TRex.IO
         throw new ArgumentException("buffer length must be at least offset + count");
       }
 
-      int amountRead = this.InternalRead(buffer, offset, count, streamPosition);
-      streamPosition += amountRead;
+      int amountRead = this.InternalRead(buffer, offset, count, this.position);
+      this.position += amountRead;
       return amountRead;
     }
 
@@ -574,7 +590,9 @@ namespace VSS.TRex.IO
     /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
     public int SafeRead(Span<byte> buffer, ref int streamPosition)
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
+#endif
 
       int amountRead = this.InternalRead(buffer, streamPosition);
       streamPosition += amountRead;
@@ -594,7 +612,10 @@ namespace VSS.TRex.IO
     /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
     public override void Write(byte[] buffer, int offset, int count)
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
+#endif
+
       if (buffer == null)
       {
         throw new ArgumentNullException(nameof(buffer));
@@ -602,8 +623,7 @@ namespace VSS.TRex.IO
 
       if (offset < 0)
       {
-        throw new ArgumentOutOfRangeException(nameof(offset), offset,
-                                              "Offset must be in the range of 0 - buffer.Length-1");
+        throw new ArgumentOutOfRangeException(nameof(offset), offset, "Offset must be in the range of 0 - buffer.Length-1");
       }
 
       if (count < 0)
@@ -616,42 +636,60 @@ namespace VSS.TRex.IO
         throw new ArgumentException("count must be greater than buffer.Length - offset");
       }
 
-      int blockSize = this.memoryManager.BlockSize;
       long end = (long)this.position + count;
+
       // Check for overflow
       if (end > MaxStreamLength)
       {
         throw new IOException("Maximum capacity exceeded");
       }
 
-      this.EnsureCapacity((int)end);
+      if (end >= this.capacity)
+      {
+        this.EnsureCapacity((int) end);
+      }
 
       if (this.largeBuffer == null)
       {
-        int bytesRemaining = count;
-        int bytesWritten = 0;
-        var blockAndOffset = this.GetBlockAndRelativeOffset(this.position);
+        int blockIndex = this.position / this.blockSize;
+        int blockOffset = (int)(this.position % this.blockSize);
 
-        while (bytesRemaining > 0)
+        if (this.blockSize - blockOffset >= count)
         {
-          byte[] currentBlock = this.blocks[blockAndOffset.Block];
-          int remainingInBlock = blockSize - blockAndOffset.Offset;
-          int amountToWriteInBlock = Math.Min(remainingInBlock, bytesRemaining);
+          // Happy path, only one block to consider
+          Buffer.BlockCopy(buffer, offset, this.blocks[blockIndex], blockOffset, count);
+        }
+        else
+        {
+          // Sad path, need to iterate across block boundaries
+          int bytesRemaining = count;
+          int bytesWritten = 0;
 
-          Buffer.BlockCopy(buffer, offset + bytesWritten, currentBlock, blockAndOffset.Offset,
-                           amountToWriteInBlock);
+          while (bytesRemaining > 0)
+          {
+            byte[] currentBlock = this.blocks[blockIndex];
+            int remainingInBlock = this.blockSize - blockOffset;
+            int amountToWriteInBlock = Math.Min(remainingInBlock, bytesRemaining);
 
-          bytesRemaining -= amountToWriteInBlock;
-          bytesWritten += amountToWriteInBlock;
+            Buffer.BlockCopy(buffer, offset + bytesWritten, currentBlock, blockOffset, amountToWriteInBlock);
 
-          ++blockAndOffset.Block;
-          blockAndOffset.Offset = 0;
+            bytesRemaining -= amountToWriteInBlock;
+
+            if (bytesRemaining > 0)
+            {
+              bytesWritten += amountToWriteInBlock;
+
+              ++blockIndex;
+              blockOffset = 0;
+            }
+          }
         }
       }
       else
       {
         Buffer.BlockCopy(buffer, offset, this.largeBuffer, this.position, count);
       }
+
       this.position = (int)end;
       this.length = Math.Max(this.position, this.length);
     }
@@ -665,9 +703,10 @@ namespace VSS.TRex.IO
     /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
     public override void Write(ReadOnlySpan<byte> source)
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
+#endif
 
-      int blockSize = this.memoryManager.BlockSize;
       long end = (long)this.position + source.Length;
       // Check for overflow
       if (end > MaxStreamLength)
@@ -675,7 +714,10 @@ namespace VSS.TRex.IO
         throw new IOException("Maximum capacity exceeded");
       }
 
-      this.EnsureCapacity((int)end);
+      if (end >= this.capacity)
+      {
+        this.EnsureCapacity((int) end);
+      }
 
       if (this.largeBuffer == null)
       {
@@ -684,7 +726,7 @@ namespace VSS.TRex.IO
         while (source.Length > 0)
         {
           byte[] currentBlock = this.blocks[blockAndOffset.Block];
-          int remainingInBlock = blockSize - blockAndOffset.Offset;
+          int remainingInBlock = this.blockSize - blockAndOffset.Offset;
           int amountToWriteInBlock = Math.Min(remainingInBlock, source.Length);
 
           source.Slice(0, amountToWriteInBlock)
@@ -710,7 +752,7 @@ namespace VSS.TRex.IO
     /// </summary>
     public override string ToString()
     {
-      return $"Id = {this.Id}, Tag = {this.Tag}, Length = {this.Length:N0} bytes";
+      return $"Id = {this.id}, Tag = {this.tag}, Length = {this.length:N0} bytes";
     }
 
     /// <summary>
@@ -720,9 +762,34 @@ namespace VSS.TRex.IO
     /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
     public override void WriteByte(byte value)
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
-      this.byteBuffer[0] = value;
-      this.Write(this.byteBuffer, 0, 1);
+#endif
+
+      long end = (long)this.position + 1;
+
+      // Check for overflow
+      if (end > MaxStreamLength)
+      {
+        throw new IOException("Maximum capacity exceeded");
+      }
+
+      if (end >= this.capacity)
+      {
+        this.EnsureCapacity((int) end);
+      }
+
+      if (this.largeBuffer == null)
+      {
+        this.blocks[this.position / this.blockSize][this.position % this.blockSize] = value;
+      }
+      else
+      {
+        this.largeBuffer[this.position] = value;
+      }
+
+      this.position = (int)end;
+      this.length = Math.Max(this.position, this.length);
     }
 
     /// <summary>
@@ -732,33 +799,25 @@ namespace VSS.TRex.IO
     /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
     public override int ReadByte()
     {
-      return this.SafeReadByte(ref this.position);
-    }
-
-    /// <summary>
-    /// Reads a single byte from the specified position in the stream.
-    /// </summary>
-    /// <param name="streamPosition">The position in the stream to read from</param>
-    /// <returns>The byte at the current position, or -1 if the position is at the end of the stream.</returns>
-    /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
-    public int SafeReadByte(ref int streamPosition)
-    {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
-      if (streamPosition == this.length)
+#endif
+
+      if (this.position == this.length)
       {
         return -1;
       }
+
       byte value;
       if (this.largeBuffer == null)
       {
-        var blockAndOffset = this.GetBlockAndRelativeOffset(streamPosition);
-        value = this.blocks[blockAndOffset.Block][blockAndOffset.Offset];
+        value = this.blocks[this.position / this.blockSize][this.position % this.blockSize];
       }
       else
       {
-        value = this.largeBuffer[streamPosition];
+        value = this.largeBuffer[this.position];
       }
-      streamPosition++;
+      this.position++;
       return value;
     }
 
@@ -769,7 +828,10 @@ namespace VSS.TRex.IO
     /// <exception cref="ObjectDisposedException">Object has been disposed</exception>
     public override void SetLength(long value)
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
+#endif
+
       if (value < 0 || value > MaxStreamLength)
       {
         throw new ArgumentOutOfRangeException(nameof(value),
@@ -797,7 +859,10 @@ namespace VSS.TRex.IO
     /// <exception cref="IOException">Attempt to set negative position</exception>
     public override long Seek(long offset, SeekOrigin loc)
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
+#endif
+
       if (offset > MaxStreamLength)
       {
         throw new ArgumentOutOfRangeException(nameof(offset), "offset cannot be larger than " + MaxStreamLength);
@@ -833,7 +898,10 @@ namespace VSS.TRex.IO
     /// <remarks>Important: This does a synchronous write, which may not be desired in some situations</remarks>
     public override void WriteTo(Stream stream)
     {
+#if USE_CHECK_DISPOSE_FASTIDIOUSLY
       this.CheckDisposed();
+#endif
+
       if (stream == null)
       {
         throw new ArgumentNullException(nameof(stream));
@@ -883,25 +951,32 @@ namespace VSS.TRex.IO
 
       if (this.largeBuffer == null)
       {
-        var blockAndOffset = this.GetBlockAndRelativeOffset(fromPosition);
+        //var blockAndOffset = this.GetBlockAndRelativeOffset(fromPosition);
+        int blockIndex = fromPosition / this.blockSize;
+        int blockOffset = fromPosition % this.blockSize;
+
+        var block = this.blocks[blockIndex];
+
         int bytesWritten = 0;
         int bytesRemaining = Math.Min(count, this.length - fromPosition);
-
         while (bytesRemaining > 0)
         {
-          amountToCopy = Math.Min(this.blocks[blockAndOffset.Block].Length - blockAndOffset.Offset,
-                                      bytesRemaining);
-          Buffer.BlockCopy(this.blocks[blockAndOffset.Block], blockAndOffset.Offset, buffer,
-                           bytesWritten + offset, amountToCopy);
+          amountToCopy = Math.Min(block.Length - blockOffset, bytesRemaining);
+          Buffer.BlockCopy(block, blockOffset, buffer, bytesWritten + offset, amountToCopy);
 
           bytesWritten += amountToCopy;
           bytesRemaining -= amountToCopy;
 
-          ++blockAndOffset.Block;
-          blockAndOffset.Offset = 0;
+          if (bytesRemaining <= 0)
+          {
+            return bytesWritten;
+          }
+
+          block = blocks[++blockIndex];
+          blockOffset = 0;
         }
-        return bytesWritten;
       }
+
       amountToCopy = Math.Min(count, this.length - fromPosition);
       Buffer.BlockCopy(this.largeBuffer, fromPosition, buffer, offset, amountToCopy);
       return amountToCopy;
@@ -958,37 +1033,39 @@ namespace VSS.TRex.IO
 
     private BlockAndOffset GetBlockAndRelativeOffset(int offset)
     {
-      var blockSize = this.memoryManager.BlockSize;
-      return new BlockAndOffset(offset / blockSize, offset % blockSize);
+      return new BlockAndOffset(offset / this.blockSize, offset % this.blockSize);
     }
 
     private void EnsureCapacity(int newCapacity)
     {
-      if (newCapacity > this.memoryManager.MaximumStreamCapacity && this.memoryManager.MaximumStreamCapacity > 0)
+      if (newCapacity > this.maximumStreamCapacity)
       {
         RecyclableMemoryStreamManager.Events.Writer.MemoryStreamOverCapacity(newCapacity,
-                                                                            this.memoryManager
-                                                                                .MaximumStreamCapacity, this.tag,
+                                                                            this.maximumStreamCapacity, this.tag,
                                                                             this.AllocationStack);
         throw new InvalidOperationException("Requested capacity is too large: " + newCapacity + ". Limit is " +
-                                            this.memoryManager.MaximumStreamCapacity);
+                                            this.maximumStreamCapacity);
       }
 
       if (this.largeBuffer != null)
       {
-        if (newCapacity > this.largeBuffer.Length)
+        if (newCapacity > this.capacity)
         {
           var newBuffer = this.memoryManager.GetLargeBuffer(newCapacity, this.tag);
           this.InternalRead(newBuffer, 0, this.length, 0);
           this.ReleaseLargeBuffer();
           this.largeBuffer = newBuffer;
+          this.capacity = newBuffer.Length;
         }
       }
       else
       {
-        while (this.Capacity < newCapacity)
+        while (this.capacity < newCapacity)
         {
-          blocks.Add((this.memoryManager.GetBlock()));
+          blocks.Add(this.memoryManager.GetBlock());
+
+          long size = (long)this.blocks.Count * this.blockSize;
+          this.capacity = (int)Math.Min(int.MaxValue, size);
         }
       }
     }
