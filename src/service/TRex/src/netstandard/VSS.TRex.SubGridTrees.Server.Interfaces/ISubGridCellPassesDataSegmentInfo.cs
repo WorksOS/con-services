@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// <returns></returns>
     bool IncludesTimeWithinBounds(DateTime time);
 
-    string FileName(uint OriginX, uint OriginY);
+    string FileName(int OriginX, int OriginY);
     void Write(BinaryWriter writer);
     void Read(BinaryReader reader);
 

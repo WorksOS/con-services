@@ -106,7 +106,5 @@ namespace VSS.TRex.SiteModels
       for (int i = 0; i < Count; i++)
         this[i].Write(writer);
     }
-
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }

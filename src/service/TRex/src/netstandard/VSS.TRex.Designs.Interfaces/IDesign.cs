@@ -17,13 +17,6 @@ namespace VSS.TRex.Designs.Interfaces
     void Write(BinaryWriter writer);
 
     /// <summary>
-    /// Binary serialization logic
-    /// </summary>
-    /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    void Write(BinaryWriter writer, byte[] buffer);
-
-    /// <summary>
     /// Binary deserialization logic
     /// </summary>
     /// <param name="reader"></param>

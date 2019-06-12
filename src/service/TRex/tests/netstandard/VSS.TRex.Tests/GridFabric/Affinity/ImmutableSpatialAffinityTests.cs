@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.GridFabric.Affinity
     {
       var aff = new ImmutableSpatialAffinityFunction();
 
-      var partition = aff.GetPartition(new SubGridSpatialAffinityKey(0, Guid.NewGuid(), 0, 0, ""));
+      var partition = aff.GetPartition(new SubGridSpatialAffinityKey(0, Guid.NewGuid(), 0, 0));
       partition.Should().Be(0);
     }
 
@@ -31,7 +31,7 @@ namespace VSS.TRex.Tests.GridFabric.Affinity
     {
       var aff = new ImmutableSpatialAffinityFunction();
 
-      var partition = aff.GetPartition(new SubGridSpatialAffinityKey(0, Guid.NewGuid(), SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, ""));
+      var partition = aff.GetPartition(new SubGridSpatialAffinityKey(0, Guid.NewGuid(), SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset));
       partition.Should().Be(0);
     }
 
@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.GridFabric.Affinity
         {
           partitions.Add(aff.GetPartition(new SubGridSpatialAffinityKey(0, Guid.NewGuid(),
             i * SubGridTreeConsts.SubGridTreeDimension, 
-            j * SubGridTreeConsts.SubGridTreeDimension, "")));
+            j * SubGridTreeConsts.SubGridTreeDimension)));
         }
       }
 

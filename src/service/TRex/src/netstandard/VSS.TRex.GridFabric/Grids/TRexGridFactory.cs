@@ -36,7 +36,7 @@ namespace VSS.TRex.GridFabric.Grids
 
     private void CreateCache()
     {
-      igniteGrids = new IIgnite[Enum.GetValues(typeof(StorageMutability)).Cast<int>().Max(x => x) + 1];
+      igniteGrids = new IIgnite[Enum.GetValues(typeof(StorageMutability)).Cast<int>().Max() + 1];
     }
 
     /// <summary>

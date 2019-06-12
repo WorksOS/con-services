@@ -36,8 +36,6 @@ namespace VSS.TRex.SiteModels
       writer.Write(Name);
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     /// <summary>
     /// Deserialises the machine design names using the given reader
     /// </summary>

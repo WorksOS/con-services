@@ -3,7 +3,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -22,6 +21,7 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<VSS.TRex.IO.RecyclableMemoryStreamManager>(new VSS.TRex.IO.RecyclableMemoryStreamManager()))
         .Add(x => x.AddSingleton<Mock<IConfigurationStore>>(mock =>
         {
           var config = new Mock<IConfigurationStore>();

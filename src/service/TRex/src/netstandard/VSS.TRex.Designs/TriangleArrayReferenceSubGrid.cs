@@ -11,8 +11,7 @@ namespace VSS.TRex.Designs
     /// Write the contents of the Items array using the supplied writer
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+    public override void Write(BinaryWriter writer)
     {
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
@@ -27,8 +26,7 @@ namespace VSS.TRex.Designs
     /// Override to implement if needed.
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader)
     {
       TriangleArrayReference arrayReference = new TriangleArrayReference();
 

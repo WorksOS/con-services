@@ -2,7 +2,6 @@
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
@@ -34,7 +33,13 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             base.ClearPasses();
 
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => PassData[x, y].Clear());
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            {
+              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              {
+                PassData[i, j].Clear();
+              }
+            }
         }
 
       public bool HasCCVData() => true;
@@ -53,15 +58,21 @@ namespace VSS.TRex.SubGridTrees.Server
 
       public bool HasCCAData() => true;
 
-      public override void Read(BinaryReader reader, byte [] buffer)
+      public override void Read(BinaryReader reader)
+      {
+        base.Read(reader);
+
+        // Read in the latest call passes themselves
+        for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
         {
-            base.Read(reader, buffer);
-
-            // Read in the latest call passes themselves
-            SubGridUtilities.SubGridDimensionalIterator((i, j) => PassData[i, j].Read(reader));
+          for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+          {
+            PassData[i, j].Read(reader);
+          }
         }
+      }
 
-        /// <summary>
+      /// <summary>
         /// ReadInternalMachineIndex will read the internal machine ID from the latest cell identified by the Row and Col
         /// </summary>
         /// <param name="Col"></param>
@@ -149,13 +160,18 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Writes the contents of the NonStatic latest passes using a supplied BinaryWriter
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="buffer"></param>
-        public override void Write(BinaryWriter writer, byte [] buffer)
+        public override void Write(BinaryWriter writer)
         {
-            base.Write(writer, buffer);
+          base.Write(writer);
 
-            // Write out the latest call passes themselves
-            SubGridUtilities.SubGridDimensionalIterator((i, j) => PassData[i, j].Write(writer));
+          // Write out the latest call passes themselves
+          for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+          {
+            for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+            {
+              PassData[i, j].Write(writer);
+            }
+          }
         }
     }
 }

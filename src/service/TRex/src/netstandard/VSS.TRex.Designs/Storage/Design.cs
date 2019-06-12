@@ -54,13 +54,6 @@ namespace VSS.TRex.Designs.Storage
     }
 
     /// <summary>
-    /// Binary serialization logic
-    /// </summary>
-    /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
-    /// <summary>
     /// Binary deserialization logic
     /// </summary>
     /// <param name="reader"></param>

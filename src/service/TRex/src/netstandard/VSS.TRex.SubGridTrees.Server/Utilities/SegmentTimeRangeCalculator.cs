@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Common;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Utilities
@@ -23,24 +24,28 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             DateTime _startTime = startTime;
             DateTime _endTime = endTime;
 
-            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            // TODO: Push this implementation down into the segment to avoid the PassCount()/PassTime() abstraction
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
+              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              {
                 int ThePassCount = segment.PassCount(i, j);
 
                 if (ThePassCount == 0)
-                    return;
+                  return;
 
                 for (int PassIndex = 0; PassIndex < ThePassCount; PassIndex++)
                 {
-                    DateTime theTime = segment.PassTime(i, j, PassIndex);
+                  DateTime theTime = segment.PassTime(i, j, PassIndex);
 
-                    if (theTime > _endTime)
-                        _endTime = theTime;
+                  if (theTime > _endTime)
+                    _endTime = theTime;
 
-                    if (theTime < _startTime)
-                        _startTime = theTime;
+                  if (theTime < _startTime)
+                    _startTime = theTime;
                 }
-            });
+              }
+            }
 
             startTime = _startTime;
             endTime = _endTime;
@@ -62,28 +67,32 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             int _totalPasses = totalPasses;
             int _maxPassCount = maxPassCount;
 
-          Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            // TODO: Push this implementation down into the segment to avoid the PassCount()/PassTime() abstraction
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
+              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              {
                 int thePassCount = segment.PassCount(i, j);
 
                 if (thePassCount == 0)
-                    return;
+                  return;
 
                 int countInCell = 0;
 
                 for (int PassIndex = 0; PassIndex < thePassCount; PassIndex++)
                 {
-                    DateTime theTime = segment.PassTime(i, j, PassIndex);
+                  DateTime theTime = segment.PassTime(i, j, PassIndex);
 
-                    if (theTime < searchTime)
-                        countInCell++;
+                  if (theTime < searchTime)
+                    countInCell++;
                 }
 
                 _totalPasses += countInCell;
 
                 if (countInCell > _maxPassCount)
-                    _maxPassCount = countInCell;
-            });
+                  _maxPassCount = countInCell;
+              }
+            }
 
             totalPasses = _totalPasses;
             maxPassCount = _maxPassCount;

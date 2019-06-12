@@ -44,8 +44,6 @@ namespace VSS.TRex.SubGridTrees.Client.Types
         CellPasses[i].Write(writer);
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     public bool Equals(ClientCellProfileAllPassesLeafSubgridRecord other)
     {
       return TotalPasses == other.TotalPasses && 

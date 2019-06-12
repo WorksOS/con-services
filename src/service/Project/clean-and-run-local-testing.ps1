@@ -16,8 +16,7 @@ Write-Host "Connecting to image host" -ForegroundColor DarkGray
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 IF (-not $?) {
-    Write-Host "Error: Logging in to AWS" -ForegroundColor Red
-    EXIT 1
+    Write-Host "Error: Logging in to AWS, won't pull latest images for container dependancies." -ForegroundColor Red
 }
 
 Write-Host "Building solution" -ForegroundColor DarkGray
@@ -46,11 +45,16 @@ Invoke-Expression "docker-compose --file docker-compose-local.yml pull"
 
 Write-Host "Building Docker containers" -ForegroundColor DarkGray
 
-# This legacy setting suppresses logging to the console by piping it to a file on disk. If you're looking for the application logs from within the container see .artifacts/logs/.
-$detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
-
 Set-Location $PSScriptRoot
+
+$detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
 Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach"
+
+IF ($args -contains "--no-test") { 
+    $acceptanceTestContainerName = "project_accepttest"
+    Write-Host "`nOpted out of running acceptance tests, stopping container $acceptanceTestContainerName..." -ForegroundColor DarkGray
+    docker ps -q --filter="name=$acceptanceTestContainerName" | ForEach-Object { docker stop $_ }
+}
 
 IF (-not $?) {
     Write-Host "Error: Environment failed to start" -ForegroundColor Red

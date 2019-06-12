@@ -21,7 +21,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// </summary>
     public long Version { get; set; }
 
-    public const long DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER = 1; // tick
+    public const long DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER = 1; // ticks
 
     /// <summary>
     /// The GUID for the project the sub grid data belongs to.
@@ -38,12 +38,8 @@ namespace VSS.TRex.GridFabric.Affinity
     /// </summary>
     public int SubGridY { get; set; }
 
-    /// <summary>
-    /// The segment identifier for the sub grid data. If the segment identifier is empty then the element represents
-    /// the sub grid directory (or SGL file). Otherwise, the segment identifier is a string representation of the start
-    /// and end times of the segment and the time duration the segment contains data for.
-    /// </summary>
-    public string SegmentIdentifier { get; set; }
+    public long SegmentStartDateTicks { get; set; } // in ticks
+    public long SegmentEndDateTicks { get; set; } // in ticks
 
     /// <summary>
     /// A constructor for the sub grid spatial affinity key that accepts the project and sub grid origin location
@@ -53,14 +49,16 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <param name="projectID"></param>
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
-    /// <param name="segmentIdentifier"></param>
-    public SubGridSpatialAffinityKey(long version, Guid projectID, int subGridX, int subGridY, string segmentIdentifier)
+    /// <param name="segmentStartDateTicks"></param>
+    /// <param name="segmentEndDateTicks"></param>
+    public SubGridSpatialAffinityKey(long version, Guid projectID, int subGridX, int subGridY, long segmentStartDateTicks, long segmentEndDateTicks)
     {
       Version = version;
       ProjectUID = projectID;
       SubGridX = subGridX;
       SubGridY = subGridY;
-      SegmentIdentifier = segmentIdentifier;
+      SegmentStartDateTicks = segmentStartDateTicks;
+      SegmentEndDateTicks = segmentEndDateTicks;
     }
 
     /// <summary>
@@ -70,14 +68,16 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <param name="version"></param>
     /// <param name="projectID"></param>
     /// <param name="address"></param>
-    /// <param name="segmentIdentifier"></param>
-    public SubGridSpatialAffinityKey(long version, Guid projectID, SubGridCellAddress address, string segmentIdentifier)
+    /// <param name="segmentStartDateTicks"></param>
+    /// <param name="segmentEndDateTicks"></param>
+    public SubGridSpatialAffinityKey(long version, Guid projectID, SubGridCellAddress address, long segmentStartDateTicks, long segmentEndDateTicks)
     {
       Version = version;
       ProjectUID = projectID;
       SubGridX = address.X;
       SubGridY = address.Y;
-      SegmentIdentifier = segmentIdentifier;
+      SegmentStartDateTicks = segmentStartDateTicks;
+      SegmentEndDateTicks = segmentEndDateTicks;
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <param name="projectID"></param>
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
-    public SubGridSpatialAffinityKey(long version, Guid projectID, int subGridX, int subGridY) : this(version, projectID, subGridX, subGridY, "")
+    public SubGridSpatialAffinityKey(long version, Guid projectID, int subGridX, int subGridY) : this(version, projectID, subGridX, subGridY, -1, -1)
     {
     }
 
@@ -99,7 +99,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <param name="version"></param>
     /// <param name="projectID"></param>
     /// <param name="address"></param>
-    public SubGridSpatialAffinityKey(long version, Guid projectID, SubGridCellAddress address) : this(version, projectID, address.X, address.Y, "")
+    public SubGridSpatialAffinityKey(long version, Guid projectID, SubGridCellAddress address) : this(version, projectID, address.X, address.Y, -1, -1)
     {
     }
 
@@ -110,9 +110,9 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <returns></returns>
     public override string ToString()
     {
-      return SegmentIdentifier == string.Empty
+      return SegmentStartDateTicks == -1
         ? $"{ProjectUID}-{SubGridX}-{SubGridY}"
-        : $"{ProjectUID}-{SubGridX}-{SubGridY}-{SegmentIdentifier}";
+        : $"{ProjectUID}-{SubGridX}-{SubGridY}-{SegmentStartDateTicks}-{SegmentEndDateTicks}";
     }
 
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
@@ -124,9 +124,10 @@ namespace VSS.TRex.GridFabric.Affinity
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(ProjectUID);
-      writer.WriteInt((int) SubGridX);
-      writer.WriteInt((int) SubGridY);
-      writer.WriteString(SegmentIdentifier);
+      writer.WriteInt(SubGridX);
+      writer.WriteInt(SubGridY);
+      writer.WriteLong(SegmentStartDateTicks);
+      writer.WriteLong(SegmentEndDateTicks);
     }
 
     public void FromBinary(IBinaryRawReader reader)
@@ -136,7 +137,8 @@ namespace VSS.TRex.GridFabric.Affinity
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       SubGridX = reader.ReadInt();
       SubGridY = reader.ReadInt();
-      SegmentIdentifier = reader.ReadString();
+      SegmentStartDateTicks = reader.ReadLong();
+      SegmentEndDateTicks = reader.ReadLong();
     }
   }
 }

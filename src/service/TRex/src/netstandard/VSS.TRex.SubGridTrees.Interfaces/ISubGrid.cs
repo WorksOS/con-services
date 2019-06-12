@@ -61,15 +61,14 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     void SetAbsoluteOriginPosition(int originX, int originY);
     void SetAbsoluteLevel(byte level);
 
-    void Write(BinaryWriter writer, byte[] buffer);
+    void Write(BinaryWriter writer);
 
-    void Read(BinaryReader reader, byte[] buffer);
+    void Read(BinaryReader reader);
 
     SubGridCellAddress OriginAsCellAddress();
 
     byte[] ToBytes();
-    byte[] ToBytes(byte[] helperBuffer);
-    void FromBytes(byte[] bytes, byte[] helperBuffer = null);
+    void FromBytes(byte[] bytes);
 
     /// <summary>
     /// Perform an action over all cells in the sub grid by calling the supplied action lambda with the coordinates of each cell

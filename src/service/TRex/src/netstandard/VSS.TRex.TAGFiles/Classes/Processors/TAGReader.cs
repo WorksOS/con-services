@@ -75,7 +75,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     private byte ReadANSIChar => (byte)ReadUnSignedIntegerValue(2);
 
     /// <summary>
-    /// THe byte buffer for reading bytes representing an ANSI string before construction of the string itself
+    /// The byte buffer for reading bytes representing an ANSI string before construction of the string itself
     /// </summary>
     private byte[] _readANSIString_ByteBuffer = new byte[100];
 
@@ -84,7 +84,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// c# does not have a native ANSI type
     /// </summary>
     /// <returns></returns>
-    public byte[] ReadANSIString()
+    public string ReadANSIString()
     {
       byte b;
       int count = 0;
@@ -96,10 +96,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
           Array.Resize(ref _readANSIString_ByteBuffer, _readANSIString_ByteBuffer.Length + 100);
       }
 
-      byte[] result = new byte[count];
-      Array.Copy(_readANSIString_ByteBuffer, result, count);
-
-      return result;
+      return Encoding.ASCII.GetString(_readANSIString_ByteBuffer, 0, count);
     }
 
     /// <summary>
@@ -186,21 +183,30 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       return BitConverter.ToChar(ReadUnicodeChar_ByteBuffer, 0);
     }
 
+    private char[] _readUnicodeString_Buffer = new char[100];
+
     /// <summary>
-  /// Read a Unicode string from the stream
-  /// </summary>
-  /// <returns></returns>
-  public string ReadUnicodeString()
+    /// Read a Unicode string from the stream
+    /// </summary>
+    /// <returns></returns>
+    public string ReadUnicodeString()
     {
       char c;
-      var sb = new StringBuilder();
+      int count = 0;
 
+      int bufferSize = _readANSIString_ByteBuffer.Length;
       while ((c = ReadUnicodeChar()) != char.MinValue)
       {
-        sb.Append(c);
+        _readUnicodeString_Buffer[count++] = c;
+
+        if (count >= bufferSize)
+        {
+          Array.Resize(ref _readUnicodeString_Buffer, bufferSize + 100);
+          bufferSize = _readANSIString_ByteBuffer.Length;
+        }
       }
 
-      return sb.ToString();
+      return new string(_readUnicodeString_Buffer, 0, count);
     }
 
     /// <summary>

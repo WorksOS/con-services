@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -7,12 +8,12 @@ namespace VSS.FlowJSHandler
 {
   public class FlowUploadAttribute : ActionFilterAttribute
   {
-
     public FlowUploadAttribute(params string[] extensions)
     {
       Extensions = extensions;
       Size = 5000000;
     }
+
     public int Size { get; set; }
     public string[] Extensions { get; set; }
     public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -26,19 +27,17 @@ namespace VSS.FlowJSHandler
 
       if (status.Status == PostChunkStatus.Done)
       {
-        var filepath = Path.Combine(Path.GetTempPath(), status.FileName);
-        var p = filterContext.ActionDescriptor.Parameters
-          .FirstOrDefault(x => x.ParameterType == typeof(FlowFile));
+        var parameterDescriptor = filterContext.ActionDescriptor
+                                               .Parameters
+                                               .FirstOrDefault(x => x.ParameterType == typeof(FlowFile));
 
-        if (filepath != null)
+        filterContext.ActionArguments[parameterDescriptor.Name] = new FlowFile
         {
-          filterContext.ActionArguments[p.Name] = new FlowFile
-          {
-            flowFilename = status.FileName,
-            path = filepath
-          };
-          return;
-        }
+          flowFilename = status.FileName,
+          path = Path.Combine(Path.GetTempPath(), status.FileName)
+        };
+
+        return;
       }
 
       filterContext.Result = new AcceptedResult();

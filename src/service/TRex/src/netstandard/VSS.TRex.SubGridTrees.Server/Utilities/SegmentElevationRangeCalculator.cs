@@ -1,4 +1,5 @@
-﻿using VSS.TRex.SubGridTrees.Server.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
@@ -20,24 +21,25 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             double min = minElevation;
             double max = maxElevation;
 
-          Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
+              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              {
                 int _PassCount = segment.PassCount(i, j);
-
-                if (_PassCount == 0)
-                    return;
 
                 for (int PassIndex = 0; PassIndex < _PassCount; PassIndex++)
                 {
-                    float _height = segment.PassHeight(i, j, PassIndex);
+                  // Todo: Delegate this down to the segment to avoid the PassHeight() abstraction
+                  float _height = segment.PassHeight(i, j, PassIndex);
 
-                    if (_height > max)
-                        max = _height;
+                  if (_height > max)
+                    max = _height;
 
-                    if (_height < min)
-                        min = _height;
+                  if (_height < min)
+                    min = _height;
                 }
-            });
+              }
+            }
 
             if (min <= max)
             {

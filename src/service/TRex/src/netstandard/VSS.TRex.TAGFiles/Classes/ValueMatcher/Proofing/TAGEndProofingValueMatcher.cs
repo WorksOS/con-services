@@ -18,9 +18,9 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
         public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessANSIStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
-          TAGDictionaryItem valueType, byte[] value)
+          TAGDictionaryItem valueType, string value)
         {
-            valueSink.EndProofingName = Encoding.ASCII.GetString(value);
+            valueSink.EndProofingName = value;
 
             return true;
         }

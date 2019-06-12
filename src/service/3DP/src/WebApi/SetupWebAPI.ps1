@@ -47,6 +47,10 @@ $dir = Split-Path $scriptpath
 Set-Location $dir
 Write-host "Running from folder $dir"
 
+Write-Host "Adding AWS Route"
+invoke-expression -Command .\SetupAwsRoute.ps1
+
+
 (Get-ChildItem Env:\RAPTORUSERNAME -ErrorAction SilentlyContinue).Value | ForEach-Object { IF ($null -eq $_) { $RAPTORUSERNAME = "ad-vspengg\svcRaptor" } ELSE { $RAPTORUSERNAME = $_ } };
 Write-host "RAPTORUSERNAME=$RAPTORUSERNAME"
 

@@ -128,10 +128,11 @@ data:
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_ROOT_FOLDER: alpha
 #Pegasus
-  PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
+  PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
-  PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7
+  PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
+  SCHEDULER_ENABLE_DXF_TILE_GENERATION: "true"
 #Slack
   SLACK_URL: https://hooks.slack.com/services/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
   SLACK_CHANNEL: "#notifications-alpha"

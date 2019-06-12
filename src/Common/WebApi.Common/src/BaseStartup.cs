@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using App.Metrics;
 using App.Metrics.Formatters;
 using App.Metrics.Formatters.Prometheus;
 using App.Metrics.Health;
-using App.Metrics.Health.Reporting.Metrics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.ServiceDiscovery;
@@ -35,8 +31,11 @@ namespace VSS.WebApi.Common
     /// </summary>
     /// <param name="env">Hosting Env</param>
     /// <param name="loggerRepoName">Logger Repo Name for Log4Net</param>
-    protected BaseStartup(IHostingEnvironment env, string loggerRepoName)
+    /// <param name="useSerilog">If set then we're opting to use Serilog and not the default Log4Net</param>
+    protected BaseStartup(IHostingEnvironment env, string loggerRepoName, bool useSerilog = false)
     {
+      if (useSerilog) return;
+
       Log4NetProvider.RepoName = loggerRepoName;
       env.ConfigureLog4Net("log4net.xml", loggerRepoName);
     }
@@ -45,51 +44,23 @@ namespace VSS.WebApi.Common
     private ILogger _logger;
     private IConfigurationStore _configuration;
 
-
-    /// <summary>
-    /// The service collection reference
-    /// </summary>
     protected IServiceCollection Services { get; private set; }
-
-    /// <summary>
-    /// Gets the default IServiceProvider.
-    /// </summary>
     protected ServiceProvider ServiceProvider { get; private set; }
-
-    /// <summary>
-    /// Provides access to configuration settings
-    /// </summary>
+    
     protected IConfigurationStore Configuration
     {
-      get
-      {
-        if (_configuration == null)
-        {
-          _configuration = new GenericConfiguration(new NullLoggerFactory());
-        }
-        return _configuration;
-      }
+      get { return _configuration ?? (_configuration = new GenericConfiguration(new NullLoggerFactory())); }
       set => _configuration = value;
     }
-      
 
     /// <summary>
     /// Gets the ILogger type used for logging.
     /// </summary>
     protected ILogger Log
     {
-      get
-      {
-        if (_logger == null)
-        {
-          _logger = new LoggerFactory().AddConsole().CreateLogger(nameof(BaseStartup));
-        }
-        return _logger;
-      }
+      get { return _logger ?? (_logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name)); }
       set => _logger = value;
     }
-
-
 
     /// <summary>
     /// The name of this service for swagger etc.
@@ -118,12 +89,6 @@ namespace VSS.WebApi.Common
           options.AddPolicy(name, corsPolicy);
         }
       });
-
-      //TODO this should be enabled for LibLog
-      /*XmlConfigurator.Configure(
-        LogManager.GetRepository(Assembly.GetAssembly(typeof(LogManager))),
-        new FileInfo("log4net.xml"));*/
-
 
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
       services.AddJaeger(ServiceName);
@@ -159,11 +124,10 @@ namespace VSS.WebApi.Common
         .HealthChecks.AddPingCheck("InternetAccess", "google.com", TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
         .BuildAndAddTo(services);
 
-
       services.AddHealth(healthMetrics);
       services.AddHealthEndpoints();
 
-
+      ServiceProvider = services.BuildServiceProvider();
       ConfigureAdditionalServices(services);
 
       services.AddMvc(
@@ -177,12 +141,10 @@ namespace VSS.WebApi.Common
         options.MetricsEndpointOutputFormatter =
           metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
       });
-
+      
       Services = services;
+      ServiceProvider = services.BuildServiceProvider();
 
-      ServiceProvider = Services.BuildServiceProvider();
-
-      Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
       Configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
       services.AddMetricsReportingHostedService();
