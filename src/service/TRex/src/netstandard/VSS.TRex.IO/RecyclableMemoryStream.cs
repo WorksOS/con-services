@@ -951,7 +951,6 @@ namespace VSS.TRex.IO
 
       if (this.largeBuffer == null)
       {
-        //var blockAndOffset = this.GetBlockAndRelativeOffset(fromPosition);
         int blockIndex = fromPosition / this.blockSize;
         int blockOffset = fromPosition % this.blockSize;
 
