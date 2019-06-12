@@ -149,7 +149,7 @@ namespace VSS.TRex.Rendering
       {
         if (mode == DisplayMode.CCA || mode == DisplayMode.CCASummary)
         {
-          Displayer.Palette = ComputeCCAPalette(processor.SiteModel, filters.Filters[0].AttributeFilter, mode);
+          Displayer.Palette = Utilities.ComputeCCAPalette(processor.SiteModel, filters.Filters[0].AttributeFilter, mode);
 
           if (Displayer.Palette == null)
           {
@@ -235,38 +235,6 @@ namespace VSS.TRex.Rendering
       Height = AHeight;
       NPixelsX = ANPixelsX;
       NPixelsY = ANPixelsY;
-    }
-
-    public IPlanViewPalette ComputeCCAPalette(ISiteModel siteModel,  ICellPassAttributeFilter filter, DisplayMode mode)
-    {
-      var machineUID = filter.MachinesList.Length > 0 ? filter.MachinesList[0] : Guid.Empty;
-      
-      var ccaMinimumPassesValue = siteModel.GetCCAMinimumPassesValue(machineUID, filter.StartTime, filter.EndTime, filter.LayerID);
-
-      if (ccaMinimumPassesValue == 0)
-        return null;
-
-      var ccaColorScale = CCAColorScaleManager.CreateCoverageScale(ccaMinimumPassesValue);
-
-      var transitions = new Transition[ccaColorScale.TotalColors];
-
-      for (var i = 0; i < transitions.Length; i++)
-        transitions[i] = new Transition(i + 1, ColorUtility.UIntToColor(ccaColorScale.ColorSegments[transitions.Length - i - 1].Color));
-
-      if (mode == DisplayMode.CCA)
-      {
-        var ccaPalette = new CCAPalette();
-        ccaPalette.PaletteTransitions = transitions;
-
-        return ccaPalette;
-      }
-
-      var ccaSummaryPalette = new CCASummaryPalette();
-      ccaSummaryPalette.UndercompactedColour = transitions[0].Color;
-      ccaSummaryPalette.CompactedColour = transitions[1].Color;
-      ccaSummaryPalette.OvercompactedColour = transitions[2].Color;
-
-      return ccaSummaryPalette;
     }
   }
 }
