@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using FluentAssertions.Common;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -71,24 +72,9 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
     private void TestStandardWrite(Type type)
     {
       var instance = Activator.CreateInstance(type) as IBinaryReaderWriter;
-      var ms = new MemoryStream();
+      var ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       var bw = new BinaryWriter(ms);
       instance.Write(bw);
-
-      ms.Position = 0;
-      var br = new BinaryReader(ms);
-      var instance2 = Activator.CreateInstance(type) as IBinaryReaderWriter;
-      instance2.Read(br);
-
-      instance.Should().BeEquivalentTo(instance2, options => options.RespectingRuntimeTypes().IgnoringCyclicReferences());
-    }
-
-    private void TestBufferedWrite(Type type)
-    {
-      var instance = Activator.CreateInstance(type) as IBinaryReaderWriter;
-      var ms = new MemoryStream();
-      var bw = new BinaryWriter(ms);
-      instance.Write(bw, new byte[10000]);
 
       ms.Position = 0;
       var br = new BinaryReader(ms);
@@ -112,7 +98,6 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
         typeHasReadWriteMembers.Should().BeTrue($"because class {type.FullName} implements IBinaryReaderWriter but no serialization logic which is suspicious");
 
         TestStandardWrite(type);
-        TestBufferedWrite(type);
       }
       else
       {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Tests.Common;
 using VSS.TRex.TAGFiles.Classes;
@@ -42,7 +43,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         byte[] bytes = new byte[fs.Length];
         fs.Read(bytes, 0, bytes.Length);
 
-        arg = new SubmitTAGFileRequestArgument()
+        arg = new SubmitTAGFileRequestArgument
         {
           ProjectID = projectID,
           AssetID = assetID,
@@ -69,13 +70,13 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         byte[] bytes = new byte[fs.Length];
         fs.Read(bytes, 0, bytes.Length);
 
-        arg = new ProcessTAGFileRequestArgument()
+        arg = new ProcessTAGFileRequestArgument
         {
           ProjectID = projectID,
           AssetUID = machineID,
-          TAGFiles = new List<ProcessTAGFileRequestFileItem>()
+          TAGFiles = new List<ProcessTAGFileRequestFileItem>
           {
-            new ProcessTAGFileRequestFileItem()
+            new ProcessTAGFileRequestFileItem
             {
               FileName = Path.GetFileName(fileName),
                             TagFileContent = bytes,
@@ -115,7 +116,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       processTAGFileRequest.Execute(arg);
     }
 
-    public void SubmitTAGFiles(Guid projectID, string[] files)
+    public void SubmitTAGFiles(Guid projectID, List<string> files)
     {
       //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
       Guid machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
@@ -123,31 +124,31 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         SubmitSingleTAGFile(projectID, machineID, file);
     }
 
-    public void CollectTAGFilesInFolder(string folder, List<string> fileNamesFromFolders)
+    public void CollectTAGFilesInFolder(string folder, List<List<string>> fileNamesFromFolders)
     {
       // If it is a single file, just include it
 
       if (File.Exists(folder))
       {
-        fileNamesFromFolders.Add(folder);
+        fileNamesFromFolders.Add(new List<string>{folder});
       }
       else
       {
         foreach (string f in Directory.GetDirectories(folder))
           CollectTAGFilesInFolder(f, fileNamesFromFolders);
 
-        fileNamesFromFolders.AddRange(Directory.GetFiles(folder, "*.tag"));
+        fileNamesFromFolders.Add(Directory.GetFiles(folder, "*.tag").ToList());
       }
     }
 
     public void ProcessSortedTAGFilesInFolder(Guid projectID, string folder)
     {
-      var fileNamesFromFolders = new List<string>();
+      var fileNamesFromFolders = new List<List<string>>();
       CollectTAGFilesInFolder(folder, fileNamesFromFolders);
 
-      fileNamesFromFolders.Sort(new TAGFileNameComparer());
+      fileNamesFromFolders.ForEach(x => x.Sort(new TAGFileNameComparer()));
 
-      SubmitTAGFiles(projectID, fileNamesFromFolders.ToArray());
+      fileNamesFromFolders.ForEach(x => SubmitTAGFiles(projectID, x));
     }
 
     public void ProcessTAGFilesInFolder(Guid projectID, string folder)
@@ -156,7 +157,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       if (File.Exists(folder))
       {
         // ProcessTAGFiles(projectID, new string[] { folder });
-        SubmitTAGFiles(projectID, new[] { folder });
+        SubmitTAGFiles(projectID, new List<string> { folder });
       }
       else
       {
@@ -167,7 +168,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         }
 
         // ProcessTAGFiles(projectID, Directory.GetFiles(folder, "*.tag"));
-        SubmitTAGFiles(projectID, Directory.GetFiles(folder, "*.tag"));
+        SubmitTAGFiles(projectID, Directory.GetFiles(folder, "*.tag").ToList());
       }
     }
 

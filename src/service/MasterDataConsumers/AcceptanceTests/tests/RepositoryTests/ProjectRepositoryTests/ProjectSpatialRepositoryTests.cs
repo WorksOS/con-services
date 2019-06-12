@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests.Internal;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
@@ -125,7 +126,6 @@ namespace RepositoryTests
       projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
 
       var g = projectContext.GetStandardProject(createCustomerEvent.CustomerUID.ToString(), 50, 180, createProjectEvent.ProjectStartDate.AddDays(1)); g.Wait();
-      var projects = g.Result;
       Assert.IsNotNull(g.Result, "Unable to call ProjectRepo");
       Assert.AreEqual(0, g.Result.Count(), "Should be no Projects retrieved from ProjectRepo");
     }
@@ -321,7 +321,6 @@ namespace RepositoryTests
       var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 50, 180,
         createProjectEvent.ProjectStartDate.AddDays(1),
         (int)createProjectEvent.ProjectType, subscriptionContext.ServiceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
-      var projects = g.Result;
       Assert.IsNotNull(g.Result, "Unable to call ProjectRepo");
       Assert.AreEqual(0, g.Result.Count(), "Should not retrieve Project from ProjectRepo");
     }
@@ -466,7 +465,6 @@ namespace RepositoryTests
       var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 15, 180,
         createProjectEvent.ProjectStartDate.AddDays(1),
         (int)createProjectEvent.ProjectType, subscriptionContext.ServiceTypes["Landfill"].ID); g.Wait();
-      var projects = g.Result;
       Assert.IsNotNull(g.Result, "Unable to call ProjectRepo");
       Assert.AreEqual(0, g.Result.Count(), "Should be no Projects retrieved from ProjectRepo");
     }
@@ -520,7 +518,6 @@ namespace RepositoryTests
       var testEndDate = createProjectEvent.ProjectStartDate.AddDays(3);
 
       var g = projectContext.DoesPolygonOverlap(testCustomerUID, testBoundary, testStartDate, testEndDate); g.Wait();
-      var projects = g.Result;
       Assert.IsTrue(g.Result, "Should be overlappingProjects retrieved from ProjectRepo");
     }
 
@@ -574,7 +571,6 @@ namespace RepositoryTests
       var testEndDate = createProjectEvent.ProjectEndDate.AddDays(3);
 
       var g = projectContext.DoesPolygonOverlap(testCustomerUID, testBoundary, testStartDate, testEndDate); g.Wait();
-      var projects = g.Result;
       Assert.IsFalse(g.Result, "Should be no overlappingProjects retrieved from ProjectRepo");
     }
 
@@ -627,7 +623,6 @@ namespace RepositoryTests
       var testEndDate = createProjectEvent.ProjectStartDate.AddDays(3);
 
       var g = projectContext.DoesPolygonOverlap(testCustomerUID, testBoundary, testStartDate, testEndDate); g.Wait();
-      var projects = g.Result;
       Assert.IsFalse(g.Result, "Should not be overlappingProjects retrieved from ProjectRepo");
     }
 
@@ -680,7 +675,6 @@ namespace RepositoryTests
       var testEndDate = createProjectEvent.ProjectStartDate.AddDays(3);
 
       var g = projectContext.DoesPolygonOverlap(testCustomerUID, testBoundary, testStartDate, testEndDate); g.Wait();
-      var projects = g.Result;
       Assert.IsTrue(g.Result, "Should be overlappingProjects retrieved from ProjectRepo");
     }
 
@@ -733,7 +727,6 @@ namespace RepositoryTests
       var testEndDate = createProjectEvent.ProjectStartDate.AddDays(3);
 
       var g = projectContext.DoesPolygonOverlap(testCustomerUID, testBoundary, testStartDate, testEndDate); g.Wait();
-      var projects = g.Result;
       Assert.IsTrue(g.Result, "Should be overlappingProjects retrieved from ProjectRepo");
     }
 
@@ -786,7 +779,6 @@ namespace RepositoryTests
       var testEndDate = createProjectEvent.ProjectStartDate.AddDays(3);
 
       var g = projectContext.DoesPolygonOverlap(testCustomerUID, testBoundary, testStartDate, testEndDate); g.Wait();
-      var projects = g.Result;
       Assert.IsTrue(g.Result, "Should be overlappingProjects retrieved from ProjectRepo");
     }
 
@@ -907,5 +899,124 @@ namespace RepositoryTests
       g = projectContext.DoesPolygonOverlap(createCustomerEvent.CustomerUID.ToString(), createProjectEvent.ProjectBoundary, createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate); g.Wait();
       Assert.IsTrue(g.Result, "Should recognize the project as not nominated ProjectUid");
     }
+
+    /// <summary>
+    /// Polygon is within (internal) a project boundary
+    /// </summary>
+    [TestMethod]
+    public void PolygonIntersection_InternalBoundary()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      string testBoundary = "POLYGON((175 15, 185 15, 185 35, 175 35, 175 15))";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
+      Assert.IsTrue(g.Result, "Should be overlap between project and geofence");
+    }
+
+    /// <summary>
+    /// Polygon is not within the project boundary
+    /// </summary>
+    [TestMethod]
+    public void PolygonIntersection_ExternalBoundary()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      string testBoundary = "POLYGON((200 10, 202 10, 202 20, 200 20, 200 10))";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
+      Assert.IsFalse(g.Result, "Should not be overlap between project and geofence");
+    }
+
+    /// <summary>
+    /// Polygon is completely overlapping the project boundary
+    /// </summary>
+    [TestMethod]
+    public void PolygonIntersection_OverlappingBoundary()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      string testBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
+      Assert.IsTrue(g.Result, "Should be overlap between project and geofence");
+    }
+
+    /// <summary>
+    /// Polygon touches at a point a project boundary
+    /// </summary>
+    [TestMethod]
+    public void PolygonIntersection_TouchingBoundary()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      string testBoundary = "POLYGON((200 10, 202 10, 202 20, 190 20, 200 10))";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
+      Assert.IsTrue(g.Result, "Should be overlap between project and geofence");
+    }
+
+    /// <summary>
+    /// Polygon overlaps but no internal points, the project boundary
+    /// </summary>
+    [TestMethod]
+    public void PolygonIntersection_OverlapExternalBoundary()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      string testBoundary = "POLYGON((200 10, 202 10, 202 20, 175 45, 200 10))";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
+      Assert.IsTrue(g.Result, "Should be overlap between project and geofence");
+    }
+
+    [TestMethod]
+    public void PolygonIntersections()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+
+      string testBoundary1 = "POLYGON((175 15, 185 15, 185 35, 175 35, 175 15))"; //Inside
+      string testBoundary2 = "POLYGON((200 10, 202 10, 202 20, 200 20, 200 10))"; //Outside
+      string testBoundary3 = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"; //Completely overlapping
+      string testBoundary4 = "POLYGON((200 10, 202 10, 202 20, 190 20, 200 10))"; //Touches at a point
+      string testBoundary5 = "POLYGON((200 10, 202 10, 202 20, 175 45, 200 10))"; //Overlaps but no internal points
+
+      var testBoundaries = new List<string>
+      {
+        testBoundary1, testBoundary2, testBoundary3, testBoundary4, testBoundary5
+      };
+      var g = projectContext.DoPolygonsOverlap(projectBoundary, testBoundaries); g.Wait();
+      var results = g.Result.ToList();
+      Assert.AreEqual(testBoundaries.Count, results.Count, "Wrong number of results returned");
+      for (var i=0; i<results.Count; i++)
+      {
+        Assert.AreEqual(i != 1, results[i], $"Wrong polygon overlap result: {i}");
+      }
+    }
+
+    [TestMethod]
+    public void PolygonIntersection_MissingGeofence()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, null); g.Wait();
+      Assert.IsFalse(g.Result, "Should be no overlap between project and geofence");
+    }
+
+    [TestMethod]
+    public void PolygonIntersection_NotPolygonGeofence()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      string testBoundary = "LINESTRING(30 10, 10 30, 40 40)";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
+      Assert.IsFalse(g.Result, "Should be no overlap between project and geofence");
+    }
+
+    [TestMethod]
+    public void PolygonIntersection_InvalidGeofence()
+    {
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      string testBoundary = "POLYGON((1 3,3 2,1 1,3 0,1 0,1 3))";
+
+      var g = projectContext.DoesPolygonOverlap(projectBoundary, testBoundary); g.Wait();
+      Assert.IsFalse(g.Result, "Should be no overlap between project and geofence");
+    }
+
   }
 }

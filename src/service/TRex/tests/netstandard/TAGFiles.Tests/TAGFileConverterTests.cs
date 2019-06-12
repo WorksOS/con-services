@@ -18,10 +18,10 @@ namespace TAGFiles.Tests
     {
       TAGFileConverter converter = new TAGFileConverter();
 
-      Assert.True(converter.Machine == null &&
-                  converter.SiteModel == null &&
-                  converter.SiteModelGridAggregator == null &&
-                  converter.MachineTargetValueChangesAggregator == null &&
+      Assert.True(converter.Machine != null &&
+                  converter.SiteModel != null &&
+                  converter.SiteModelGridAggregator != null &&
+                  converter.MachineTargetValueChangesAggregator != null &&
                   converter.ReadResult == TAGReadResult.NoError &&
                   converter.ProcessedCellPassCount == 0 &&
                   converter.ProcessedEpochCount == 0,
@@ -65,7 +65,7 @@ namespace TAGFiles.Tests
     [InlineData(10)]
     public void Test_TAGFileConverter_Execute_SingleFileMultipleTimesConcurrently(int instanceCount)
     {
-      var result = Enumerable.Range(1, instanceCount).Select(x => Task.Factory.StartNew(() => DITagFileFixture.ReadTAGFile("TestTAGFile.tag"))).WhenAll().Result;
+      var result = Enumerable.Range(1, instanceCount).Select(x => Task.Factory.Run(() => DITagFileFixture.ReadTAGFile("TestTAGFile.tag"))).WhenAll().Result;
 
       result.Length.Should().Be(instanceCount);
 
@@ -81,7 +81,7 @@ namespace TAGFiles.Tests
       converter.Processor.OnGroundFlagSet.Should().Be(true);
 
       DateTime theTime = new DateTime(2012, 11, 1, 20, 53, 23, 841, DateTimeKind.Utc);
-      converter.Processor.OnGrounds.GetOnGroundAtDateTime(theTime).Should().Be(OnGroundState.YesMachineSoftware);
+      converter.Processor.OnGrounds.GetValueAtDateTime(theTime, OnGroundState.No).Should().Be(OnGroundState.YesMachineSoftware);
     }
 
     /// <summary>

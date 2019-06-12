@@ -2,7 +2,6 @@
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -21,6 +20,8 @@ namespace VSS.TRex.TAGFiles.Executors
   public class SubmitTAGFileExecutor
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
+    private static readonly bool tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
 
     /// <summary>
     /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
@@ -75,7 +76,6 @@ namespace VSS.TRex.TAGFiles.Executors
           if (result.Code == (int) TRexTagFileResultCode.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tag file
-            var tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
             if (tagFileArchiving)
             {
               Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
@@ -104,12 +104,17 @@ namespace VSS.TRex.TAGFiles.Executors
               response.Success = true;
               response.Message = "";
               response.Code = (int)TRexTagFileResultCode.Valid;
+
+              // Commented out top reduce logging
+              // Log.LogInformation($"Added TAG file {tagKey.FileName} representing asset {tagKey.AssetUID} within project {tagKey.ProjectUID} into the buffer queue");
             }
             else
             {
-              response.Code = (int)TRexTagFileResultCode.TRexQueueSubmissionError;
               response.Success = false;
               response.Message = "SubmitTAGFileResponse. Failed to submit tag file to processing queue. Request already exists";
+              response.Code = (int)TRexTagFileResultCode.TRexQueueSubmissionError;
+
+              Log.LogWarning(response.Message);
             }
           }
           else

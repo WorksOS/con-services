@@ -2,6 +2,7 @@
 using System.Linq;
 using ASNodeDecls;
 using VLPDDecls;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Algorithms;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
@@ -40,7 +41,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 
       foreach (var boundary in LineworkBoundaries)
       {
-        var fencePoints = DouglasPeucker.DouglasPeuckerByCount(boundary.Boundary.FencePoints, maxVerticiesToApproximateTo);
+        var fencePoints = DouglasPeucker.DouglasPeuckerByCount(
+          boundary.Boundary.FencePoints.Select(p => new WGSPoint(p.Lat, p.Lon)).ToArray(), 
+          maxVerticiesToApproximateTo);
 
         geoJson.Features.Add(new Feature
         {

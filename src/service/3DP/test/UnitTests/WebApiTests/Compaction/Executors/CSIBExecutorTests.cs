@@ -12,11 +12,13 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -60,11 +62,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       MemoryStream responseData;
 
       var raptorClient = new Mock<IASNodeClient>();
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      var mockTrexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       raptorClient.Setup(x => x.GetCSIBFile(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, out responseData))
                   .Returns(TASNodeErrorStatus.asneUnknown);
 
-      var executor = RequestExecutorContainerFactory.Build<CSIBExecutor>(_logger, raptorClient.Object);
+      var executor = RequestExecutorContainerFactory.Build<CSIBExecutor>(_logger, raptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: mockTrexCompactionDataProxy.Object);
 
       var result = executor.Process(request);
 

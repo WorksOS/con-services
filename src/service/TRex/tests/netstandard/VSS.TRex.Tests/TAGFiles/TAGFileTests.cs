@@ -47,7 +47,7 @@ namespace VSS.TRex.Tests.TAGFiles
           segmentCount1++;
           TRex.SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
           {
-            var passCount = (int) iterator.CurrentSubGridSegment.PassesData.PassCount(x, y);
+            var passCount = iterator.CurrentSubGridSegment.PassesData.PassCount(x, y);
             sm1Count += passCount;
             if (passCount > 0)
             {
@@ -73,7 +73,7 @@ namespace VSS.TRex.Tests.TAGFiles
           segmentCount2++;
           TRex.SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
           {
-            var passCount = (int) iterator.CurrentSubGridSegment.PassesData.PassCount(x, y);
+            var passCount = iterator.CurrentSubGridSegment.PassesData.PassCount(x, y);
             sm2Count += passCount;
             if (passCount > 0)
             {

@@ -42,8 +42,8 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
       public static ISubGrid LocateSubGridContaining(IStorageProxy storageProxy,
                                  IServerSubGridTree forSubGridTree,
                                  //const GridDataCache : TICDataStoreCache;
-                                 uint cellX,
-                                 uint cellY,
+                                 int cellX,
+                                 int cellY,
                                  byte level,
                                  bool lookInCacheOnly,
                                  bool acceptSpeculativeReadFailure)

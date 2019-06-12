@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, null, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
     { }
 
     /// <summary>
@@ -47,12 +47,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns>If successful returns a <see cref="FilterDescriptorSingleResult"/> object containing the filter.</returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var filterRequest = item as FilterRequestFull;
-      if (filterRequest == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 5);
-        return null;
-      }
+      var request = CastRequestObjectTo<FilterRequestFull>(item, 5);
+      if (request == null) return null;
 
       MasterData.Repositories.DBModels.Filter filter = null;
       // get FilterUid where !deleted 
@@ -62,7 +58,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       //                     else get only those for the calling UserUid
       try
       {
-        filter = await ((IFilterRepository)Repository).GetFilter(filterRequest.FilterUid);
+        filter = await ((IFilterRepository)Repository).GetFilter(request.FilterUid);
       }
       catch (Exception e)
       {
@@ -70,16 +66,16 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
       if (filter == null
-          || !string.Equals(filter.CustomerUid, filterRequest.CustomerUid, StringComparison.OrdinalIgnoreCase)
-          || !string.Equals(filter.ProjectUid, filterRequest.ProjectUid, StringComparison.OrdinalIgnoreCase)
-          || !string.Equals(filter.UserId, filterRequest.UserId, StringComparison.OrdinalIgnoreCase) && !filterRequest.IsApplicationContext
+          || !string.Equals(filter.CustomerUid, request.CustomerUid, StringComparison.OrdinalIgnoreCase)
+          || !string.Equals(filter.ProjectUid, request.ProjectUid, StringComparison.OrdinalIgnoreCase)
+          || !string.Equals(filter.UserId, request.UserId, StringComparison.OrdinalIgnoreCase) && !request.IsApplicationContext
       )
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 36);
       }
 
 
-      await FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filter, raptorProxy, assetResolverProxy, filterRequest.CustomHeaders);
+      await FilterJsonHelper.ParseFilterJson(request.ProjectData, filter, raptorProxy, assetResolverProxy, request.CustomHeaders);
 
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
     }

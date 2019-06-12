@@ -85,9 +85,9 @@ namespace GuidHashCodeBenchmark
     [Benchmark]
     public void ScanAllSetBitsAsSubGridAddresses_AllAlloced()
     {
-      for (uint lots = 0; lots < 50; lots++)
-        for (uint i = 0; i < 32; i++)
-          for (uint j = 0; j < 32; j++)
+      for (int lots = 0; lots < 50; lots++)
+        for (int i = 0; i < 32; i++)
+          for (int j = 0; j < 32; j++)
             DoSomethingWithAddress(new SubGridCellAddress(i, j));
     }
 
@@ -96,9 +96,9 @@ namespace GuidHashCodeBenchmark
     {
       SubGridCellAddress address = new SubGridCellAddress();
 
-      for (uint lots = 0; lots < 50; lots++)
-      for (uint i = 0; i < 32; i++)
-      for (uint j = 0; j < 32; j++)
+      for (int lots = 0; lots < 50; lots++)
+      for (int i = 0; i < 32; i++)
+      for (int j = 0; j < 32; j++)
       {
         address.X = i;
         address.Y = j;
@@ -112,9 +112,9 @@ namespace GuidHashCodeBenchmark
     {
       SubGridCellAddress address = new SubGridCellAddress(12, 34);
 
-      for (uint lots = 0; lots < 50; lots++)
-      for (uint i = 0; i < 32; i++)
-      for (uint j = 0; j < 32; j++)
+      for (int lots = 0; lots < 50; lots++)
+      for (int i = 0; i < 32; i++)
+      for (int j = 0; j < 32; j++)
       {
         DoSomethingWithAddress(address);
       }
@@ -125,15 +125,15 @@ namespace GuidHashCodeBenchmark
     {
       SubGridCellAddress address = new SubGridCellAddress(12, 34);
 
-      for (uint lots = 0; lots < 50; lots++)
-      for (uint i = 0; i < 32; i++)
-      for (uint j = 0; j < 32; j++)
+      for (int lots = 0; lots < 50; lots++)
+      for (int i = 0; i < 32; i++)
+      for (int j = 0; j < 32; j++)
       {
         DoSomethingWithAddressAsStruct(address);
       }
     }
 
-    private void DoSomethingWithAddress2(uint x, uint y)
+    private void DoSomethingWithAddress2(int x, int y)
     {
       if (x == 123456 || y == 56789)
         Console.WriteLine("Ooops!");
@@ -142,9 +142,9 @@ namespace GuidHashCodeBenchmark
     [Benchmark]
     public void ScanAllSetBitsAsSubGridAddresses_NoStruct()
     {
-      for (uint lots = 0; lots < 50; lots++)
-      for (uint i = 0; i < 32; i++)
-      for (uint j = 0; j < 32; j++)
+      for (int lots = 0; lots < 50; lots++)
+      for (int i = 0; i < 32; i++)
+      for (int j = 0; j < 32; j++)
       {
         DoSomethingWithAddress2(i, j);
       }

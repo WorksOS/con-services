@@ -125,7 +125,7 @@ namespace VSS.TRex.Common
     /// <summary>
     /// The number of partitions configured for caches that store spatial subgrid data
     /// </summary>
-    public const uint NUMPARTITIONS_PERDATACACHE = 1024;                   // override with: NUMPARTITIONS_PERDATACACHE
+    public const int NUMPARTITIONS_PERDATACACHE = 1024;                   // override with: NUMPARTITIONS_PERDATACACHE
 
     /// <summary>
     /// The minimum tag file size required to contain even basic configuration
@@ -190,5 +190,14 @@ namespace VSS.TRex.Common
     /// </summary>
     public const int DEFAULT_MAX_EXPORT_ROWS = 10000000; // override with MAX_EXPORT_RECORDS 
 
+    /// <summary>
+    /// The number of concurrent tasks processing TAG files into site models in the mutable server nodes
+    /// </summary>
+    public const int NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS = 2; // override with NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS
+
+    /// <summary>
+    /// Rhe default capacity for memory streams created in a transient context, such as serialization
+    /// </summary>
+    public const int TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION = 32 * 1024; // override with TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION
   }
 }

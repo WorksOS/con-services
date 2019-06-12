@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -234,7 +233,7 @@ namespace VSS.TRex.Caching
     /// <param name="originX">The origin (bottom left) cell of the spatial data sub grid</param>
     /// <param name="originY">The origin (bottom left) cell of the spatial data sub grid</param>
     /// <returns></returns>
-    public ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, uint originX, uint originY)
+    public ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, int originX, int originY)
     {
       return context.Get(originX, originY);
     }

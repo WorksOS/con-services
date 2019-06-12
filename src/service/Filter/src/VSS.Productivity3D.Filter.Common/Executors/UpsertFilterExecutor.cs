@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     public UpsertFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, null)
     {
     }
 
@@ -46,29 +46,24 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
+      var request = CastRequestObjectTo<FilterRequestFull>(item, 38);
       FilterDescriptorSingleResult result;
-      var filterRequest = item as FilterRequestFull;
-      if (filterRequest == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
-      }
 
       // Hydrate the polygon filter if present.
-      filterRequest.FilterJson = await ValidationUtil.HydrateJsonWithBoundary(GeofenceProxy, auxRepository as GeofenceRepository, log, serviceExceptionHandler, filterRequest);
+      request.FilterJson = await ValidationUtil.HydrateJsonWithBoundary(GeofenceProxy, auxRepository as GeofenceRepository, log, serviceExceptionHandler, request);
 
-      if (filterRequest.FilterType == FilterType.Transient)
+      if (request.FilterType == FilterType.Transient)
       {
-        result = await ProcessTransient(filterRequest);
+        result = await ProcessTransient(request);
       }
       else
       {
         // Hydrate the alignment and design filenames if present (persistent filters only).
-        FilterFilenameUtil.GetFilterFileNames(log, serviceExceptionHandler, fileImportProxy, filterRequest);
-
-        result = await ProcessPersistent(filterRequest);
+        FilterFilenameUtil.GetFilterFileNames(log, serviceExceptionHandler, fileImportProxy, request);
+        result = await ProcessPersistent(request);
       }
 
-      await FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, result.FilterDescriptor, raptorProxy, assetResolverProxy, filterRequest.CustomHeaders);
+      await FilterJsonHelper.ParseFilterJson(request.ProjectData, result.FilterDescriptor, raptorProxy, assetResolverProxy, request.CustomHeaders);
 
       return result;
     }

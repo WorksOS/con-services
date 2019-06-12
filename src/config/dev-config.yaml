@@ -25,15 +25,15 @@ data:
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
 #Service references
   ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/associateprojectsubscription
-  DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/dissociateprojectsubscription
   CONNECTED_SITE_GATEWAY_URL: http://connectedsite.alpha.eks.vspengg.com/api/position
   COORDSYSPOST_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem
   COORDSYSVALIDATE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem/validation
   CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
+  DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/dissociateprojectsubscription
   FILTER_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3Dfilter/1.0
   GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/
-  IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
   IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfile
+  IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
   PROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project
   PROJECT_INTERNAL_BASE_URL: http://project.dev.eks.vspengg.com
@@ -44,12 +44,14 @@ data:
   SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.dev.eks.vspengg.com/internal/v1/background
   SCHEDULER_INTERNAL_BASE_URL: http://scheduler.dev.eks.vspengg.com/internal/v1
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.dev.eks.vspengg.com/internal/v1/export
-  VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
-  TREX_TAGFILE_API_URL: http://trex.mutable.dev.eks.vspengg.com/api/v2/tagfiles
   TILE_INTERNAL_BASE_URL: http://tile.dev.eks.vspengg.com/internal/v1
+  TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.dev.eks.vspengg.com/api/v1/design
+  TREX_TAGFILE_API_URL: http://trex.mutable.dev.eks.vspengg.com/api/v2/tagfiles
+  VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
 #SERVICE DISCOVERY REFERENCES
   assetdetails-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
   assetsummary-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
+  unifiedproductivity_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-dev-unifiedproductivity/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2  
 #CAP configuration  
@@ -105,7 +107,8 @@ data:
   CUSTOMER_CACHE_LIFE: 00:30:00
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
   FILTER_CACHE_LIFE: 00:15:00
-  GEOFENCE_CACHE_LIFE: 00:15:00
+  GEOFENCE_CACHE_LIFE: 00:00:03
+  UNIFIED_PRODUCTIVITY_CACHE_LIFE: 00:00:03
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
   ASSETMGMT_CACHE_LIFE: 00:30:00
@@ -127,10 +130,11 @@ data:
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_ROOT_FOLDER: dev
 #Pegasus
-  PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
+  PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
-  PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7
+  PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
+  SCHEDULER_ENABLE_DXF_TILE_GENERATION: "true"
 #Slack
   SLACK_URL: https://hooks.slack.com/services/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
   SLACK_CHANNEL: "#notifications-dev"

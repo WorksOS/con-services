@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Tests.BinaryReaderWriter
@@ -11,7 +12,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
       byte[]  buffer = new byte[10000];
 
       // Test using standard Read()/Write()
-      var writer = new BinaryWriter(new MemoryStream());
+      var writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       instance.Write(writer, buffer);
 
       (writer.BaseStream as MemoryStream).Position = 0;

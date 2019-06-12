@@ -57,11 +57,12 @@ namespace VSS.Productivity3D.Filter.Common.Validators
 
         if (filterBoundary == null)
         {
-          methodName = "geofenceProxy.GetFavoriteGeofence";
-          var favorite = await geofenceProxy.GetFavoriteGeofence(
-            filterRequestFull.CustomerUid, filterRequestFull.UserId, filterTempForHydration.PolygonUid, filterRequestFull.CustomHeaders);
-          if (favorite != null)
-            filterBoundary = AutoMapperUtility.Automapper.Map<Geofence>(favorite);
+          //Get geofence from geofence service. It could be a favorite or an associated geofence.
+          methodName = "geofenceProxy.GetGeofenceForCustomer";
+          var geofence = await geofenceProxy.GetGeofenceForCustomer(
+            filterRequestFull.CustomerUid, filterTempForHydration.PolygonUid, filterRequestFull.CustomHeaders);
+          if (geofence != null)
+            filterBoundary = AutoMapperUtility.Automapper.Map<Geofence>(geofence);
         }
       }
       catch (Exception e)

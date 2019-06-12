@@ -19,16 +19,17 @@ using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Servers.Compute;
+using VSS.TRex.IO;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
-using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.Models;
 
@@ -41,6 +42,13 @@ namespace VSS.TRex.Server.MutableData
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton(new VSS.TRex.IO.RecyclableMemoryStreamManager
+        {
+          // Allow up to 128Mb worth of freed small blocks used by the recyclable streams for later reuse
+          // NOte: The default value for this setting is zero which means every block allocated to a
+          // recyclable stream is freed when the stream is disposed.
+          MaximumFreeSmallPoolBytes = 128 * 1024 * 1024
+        }))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
@@ -140,6 +148,7 @@ namespace VSS.TRex.Server.MutableData
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelsHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new TAGFileProcessingHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)

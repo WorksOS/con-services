@@ -13,6 +13,8 @@ namespace VSS.Productivity3D.Models.Models
 
     public Guid? AssetUid { get; set; } 
 
+    public long AssetId { get; set; }
+
     public DateTime? LocationLastUpdatedUtc { get; set; }
 
     public double? Longitude { get; set; }
@@ -24,6 +26,13 @@ namespace VSS.Productivity3D.Models.Models
     public double? FuelLevel { get; set; }
 
     public DateTime? FuelLevelLastUpdatedUtc { get; set; }
+    public int AssetIcon { get; set; }
+    public int? LiftNumber { get; set; }
+    public string DeviceName { get; set; }
+
+    public AssetSummary UtilizationSummary { get; set; }
+    public string MachineName { get; set; }
+    public string AssetSerialNumber { get; set; }
 
     public List<string> GetIdentifiers()
     {

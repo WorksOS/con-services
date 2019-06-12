@@ -77,6 +77,7 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
+      services.AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>();
 
       services.AddServiceDiscovery();
       services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();

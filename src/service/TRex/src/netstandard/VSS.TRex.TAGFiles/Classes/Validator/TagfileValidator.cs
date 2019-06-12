@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -17,6 +15,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
+using System.IO;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -25,6 +24,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     private static bool WarnOnTFAServiceDisabled = false;
+
+    private static readonly int minTagFileLength = DIContext.Obtain<IConfigurationStore>().GetValueInt("MIN_TAGFILE_LENGTH", Consts.kMinTagFileLengthDefault);
+    private static readonly bool tfaServiceEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TFA_SERVICE", Consts.ENABLE_TFA_SERVICE);
 
     /// <summary>
     /// Calls the TFA service via the nuget Proxy,
@@ -142,19 +144,18 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <returns></returns>
     public static async Task<ContractExecutionResult> ValidSubmission(TagFileDetail tagDetail)
     {
-      // Perform some Validation Checks 
-
-      // get our settings
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var minTagFileLength = config.GetValueInt("MIN_TAGFILE_LENGTH", Consts.kMinTagFileLengthDefault);
-      var tfaServiceEnabled = config.GetValueBool("ENABLE_TFA_SERVICE", Consts.ENABLE_TFA_SERVICE);
+      // Perform some Validation Checks
       if (tagDetail.tagFileContent.Length <= minTagFileLength)
       {
         return new ContractExecutionResult((int) TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());
       }
 
       TAGFilePreScan tagFilePresScan = new TAGFilePreScan();
-      tagFilePresScan.Execute(new MemoryStream(tagDetail.tagFileContent));
+
+      using (var stream = new MemoryStream(tagDetail.tagFileContent))
+      {
+        tagFilePresScan.Execute(stream);
+      }
 
       if (tagFilePresScan.ReadResult != TAGReadResult.NoError)
       {

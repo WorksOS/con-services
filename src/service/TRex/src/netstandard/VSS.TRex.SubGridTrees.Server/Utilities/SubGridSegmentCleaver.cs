@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
@@ -19,11 +18,11 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridSegmentCleaver>();
 
-    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
+    private static readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
 
-    private readonly int _subGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
+    private static readonly int _subGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
 
-    private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
+    private static readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
     
     // PersistedClovenSegments contains a list of all the segments that exists in the
     // persistent data store that have been cloven since the last time this leaf
@@ -37,7 +36,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// </summary>
     /// <param name="storageProxy"></param>
     /// <param name="subGrid"></param>
-    public void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid)
+    public void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid, int subGridSegmentPassCountLimit = 0)
     {
       SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, storageProxy)
       {
@@ -58,9 +57,9 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         DateTime CleavedTimeRangeStart = Segment.SegmentInfo.StartTime;
         DateTime CleavedTimeRangeEnd = Segment.SegmentInfo.EndTime;
 
-        if (Segment.RequiresCleaving(out uint TotalPassCount, out uint MaximumPassCount))
+        if (Segment.RequiresCleaving(out int TotalPassCount, out int MaximumPassCount))
         {
-          if (subGrid.Cells.CleaveSegment(Segment, PersistedClovenSegments))
+          if (subGrid.Cells.CleaveSegment(Segment, PersistedClovenSegments, subGridSegmentPassCountLimit))
           {
               Iterator.SegmentListExtended();
 

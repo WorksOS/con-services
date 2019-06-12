@@ -34,8 +34,6 @@ namespace VSS.TRex.Designs.Models
              Math.Round(Offset, 3) == Math.Round(other.Offset, 3);//equal to nearest mm
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     public void Write(BinaryWriter writer)
     {
       writer.Write(DesignID.ToByteArray());

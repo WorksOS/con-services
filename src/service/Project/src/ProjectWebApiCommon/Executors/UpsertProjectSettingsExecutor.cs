@@ -17,20 +17,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   /// </summary>
   public class UpsertProjectSettingsExecutor : RequestExecutorContainer
   {
-
     /// <summary>
     /// Processes the UpsertProjectSettings request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ProjectSettingsResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       ContractExecutionResult result = null;
 
-      ProjectSettingsRequest request = item as ProjectSettingsRequest;
-      if (request == null)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
+      var request = CastRequestObjectTo<ProjectSettingsRequest>(item, errorCode: 68);
+
       await ValidateProjectWithCustomer(customerUid, request?.projectUid);
 
       if (request.ProjectSettingsType == ProjectSettingsType.Targets || request.ProjectSettingsType == ProjectSettingsType.Colors)

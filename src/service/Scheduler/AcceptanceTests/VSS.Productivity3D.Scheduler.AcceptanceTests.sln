@@ -36,6 +36,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Schedule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{48844869-6C0C-4760-AE8C-DF09A60AD33D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.SeriLog.Extensions", "..\..\..\Common\LoggingExtensions\SeriLogExtensions\VSS.SeriLog.Extensions.csproj", "{8753A0B0-2673-41B4-BA82-D21DA8496994}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{48844869-6C0C-4760-AE8C-DF09A60AD33D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48844869-6C0C-4760-AE8C-DF09A60AD33D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48844869-6C0C-4760-AE8C-DF09A60AD33D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8753A0B0-2673-41B4-BA82-D21DA8496994}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8753A0B0-2673-41B4-BA82-D21DA8496994}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8753A0B0-2673-41B4-BA82-D21DA8496994}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8753A0B0-2673-41B4-BA82-D21DA8496994}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

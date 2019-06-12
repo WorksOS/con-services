@@ -5,7 +5,7 @@ namespace TestUtility
   /// <summary>
   /// The Msg class is used for writing Console messages. These are picked up by the test run program and logs  
   /// </summary>
-  public class Msg
+  public static class Msg
   {
 
     private const string DASH = "----------------------------------------------------------------------------------------------------------------------";
@@ -16,13 +16,13 @@ namespace TestUtility
     private const string MYSQL = "MySql Query:";
     private const string RSLT = "Result checking:";
 
-    public string currentTest = string.Empty;
+    public static string currentTest = string.Empty;
 
     /// <summary>
     /// Console message a desciption of the test and it's purpose.
     /// </summary>
     /// <param name="descriptionOfTest">Consise description of the test</param>
-    public void Title(string descriptionOfTest)
+    public static void Title(string descriptionOfTest)
     {
       Console.WriteLine();
       Console.WriteLine(descriptionOfTest);
@@ -32,9 +32,7 @@ namespace TestUtility
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="testTag"></param>
-    /// <param name="descriptionOfTest"></param>
-    public void Title(string testTag, string descriptionOfTest)
+    public static void Title(string testTag, string descriptionOfTest)
     {
       currentTest = testTag;
       Console.WriteLine(STAR);
@@ -45,8 +43,7 @@ namespace TestUtility
     /// <summary>
     /// Display all the events in the console 
     /// </summary>
-    /// <param name="eventArray"></param>
-    public void DisplayEventsToConsoleKafka(string[] eventArray)
+    public static void DisplayEventsToConsoleKafka(string[] eventArray)
     {
       Console.WriteLine(DASH);
       Console.WriteLine(INJECT);
@@ -62,7 +59,7 @@ namespace TestUtility
     /// Display all the events in the console 
     /// </summary>
     /// <param name="eventArray"></param>
-    public void DisplayEventsToConsoleWeb(string[] eventArray)
+    public static void DisplayEventsToConsoleWeb(string[] eventArray)
     {
       Console.WriteLine(DASH);
       Console.WriteLine(INJECTWEB);
@@ -73,7 +70,7 @@ namespace TestUtility
       }
       Console.WriteLine(DASH);
     }
-    public void DisplayEventsForDbInjectToConsole(string[] eventArray)
+    public static void DisplayEventsForDbInjectToConsole(string[] eventArray)
     {
       Console.WriteLine(DASH);
       Console.WriteLine(INJSQL);
@@ -88,7 +85,7 @@ namespace TestUtility
     /// <summary>
     /// Console message the database query
     /// </summary>
-    public void DisplayMySqlQuery(string query)
+    public static void DisplayMySqlQuery(string query)
     {
       Console.WriteLine(MYSQL);
       Console.WriteLine(query);
@@ -98,7 +95,7 @@ namespace TestUtility
     /// <summary>
     /// Console message expected and actual
     /// </summary>
-    public void DisplayResults(string expected, string actual)
+    public static void DisplayResults(string expected, string actual)
     {
       Console.WriteLine(RSLT);
       Console.WriteLine("Expected: " + expected);
@@ -109,7 +106,7 @@ namespace TestUtility
     /// <summary>
     /// Display the web api request and response
     /// </summary>
-    public void DisplayWebApi(string webMethod, string webRequest, string webResponse, string payload)
+    public static void DisplayWebApi(string webMethod, string webRequest, string webResponse, string payload)
     {
       Console.WriteLine("WebApi Method   :" + webMethod);
       Console.WriteLine("WebApi Request  :" + webRequest.Replace('&', ' '));
@@ -118,7 +115,7 @@ namespace TestUtility
       Console.WriteLine();
     }
 
-    public void DisplayException(string exception)
+    public static void DisplayException(string exception)
     {
       Console.WriteLine(DASH);
       Console.WriteLine("**** EXCEPTION ****: " + exception);

@@ -19,7 +19,7 @@ namespace VSS.TRex.GridFabric.Affinity
     protected static readonly ILogger Log = Logging.Logger.CreateLogger<AffinityFunctionBase>();
 
     // Set NumPartitions to the default number of partitions
-    protected readonly uint NumPartitions = DIContext.Obtain<IConfigurationStore>().GetValueUint("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
+    protected static readonly int NumPartitions = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
 
     /// <summary>
     /// Return the number of partitions to use for affinity. 

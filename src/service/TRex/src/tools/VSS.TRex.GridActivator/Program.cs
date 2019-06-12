@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
@@ -25,27 +26,37 @@ namespace VSS.TRex.GridActivator
     static void Main(string[] args)
     {
       DependencyInjection();
-      Log = Logger.CreateLogger<Program>();
 
-      Log.LogInformation("Activating Grids");
-
-      Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
-      bool result2 = DIContext.Obtain<IActivatePersistentGridServer>().SetGridActive(TRexGrids.MutableGridName());
-
-      Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
-      bool result1 = DIContext.Obtain<IActivatePersistentGridServer>().SetGridActive(TRexGrids.ImmutableGridName());
-
-      Log.LogInformation($"Immutable Grid Active: {result1}");
-      if (!result1)
+      try
       {
-        Log.LogCritical("Immutable Grid failed to activate");
-      }
-      Log.LogInformation($"Mutable Grid Active: {result2}");
-      if (!result2)
-      {
-        Log.LogCritical("Mutable Grid failed to activate");
-      }
+        Log = Logger.CreateLogger<Program>();
 
+        Log.LogInformation("Activating Grids");
+
+        Log.LogInformation(
+          "About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
+        bool result2 = DIContext.Obtain<IActivatePersistentGridServer>().SetGridActive(TRexGrids.MutableGridName());
+
+        Log.LogInformation(
+          "About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
+        bool result1 = DIContext.Obtain<IActivatePersistentGridServer>().SetGridActive(TRexGrids.ImmutableGridName());
+
+        Log.LogInformation($"Immutable Grid Active: {result1}");
+        if (!result1)
+        {
+          Log.LogCritical("Immutable Grid failed to activate");
+        }
+
+        Log.LogInformation($"Mutable Grid Active: {result2}");
+        if (!result2)
+        {
+          Log.LogCritical("Mutable Grid failed to activate");
+        }
+      }
+      finally
+      {
+        DIContext.Obtain<ITRexGridFactory>()?.StopGrids();
+      }
     }
   }
 }

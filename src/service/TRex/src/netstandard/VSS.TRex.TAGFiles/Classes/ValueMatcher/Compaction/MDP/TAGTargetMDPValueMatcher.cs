@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.MDP
     /// </summary>
     public class TAGTargetMDPValueMatcher : TAGValueMatcher
     {
-        public TAGTargetMDPValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGTargetMDPValueMatcher()
         {
         }
 
@@ -16,7 +16,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.MDP
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = false;
 

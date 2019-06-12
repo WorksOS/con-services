@@ -6,9 +6,15 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class StorageProxyCacheTransacted_TestHarness<TK, TV> : StorageProxyCacheTransacted<TK, TV>, IStorageProxyCacheTransacted_TestHarness<TK, TV>
   {
-    public StorageProxyCacheTransacted_TestHarness(ICache<TK, TV> cache) : base(cache)
+    public StorageProxyCacheTransacted_TestHarness(ICache<TK, TV> cache, IEqualityComparer<TK> comparer) : base(cache, comparer)
     {
     }
+
+    /// <summary>
+    /// Override the name property which extracts the cache name from the storage proxy. Test harnesses don;t have a valid cache
+    /// reference so just return a dummy name for the cache.
+    /// </summary>
+    public override string Name => "StorageProxyCacheTransacted_TestHarness";
 
     /// <summary>
     /// Override the commit behaviour to make it a null operation for unit test activities

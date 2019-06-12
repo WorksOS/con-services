@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.ProjectTests
@@ -11,7 +10,6 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class ImportFileV2ValidationTests
   {
-    protected ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
     private readonly long _projectId;
     private readonly string _fileSpaceId;
     private readonly string _path;
@@ -27,7 +25,7 @@ namespace VSS.MasterData.ProjectTests
       _name = "CTCTSITECAL.dc";
       _importedFileTypeId = ImportedFileType.DesignSurface;
       _createdUtc = DateTime.UtcNow.AddDays(-0.5);
-  }
+    }
 
     [TestMethod]
     public void ValidateImportFile_InvalidProjectId()
@@ -90,7 +88,7 @@ namespace VSS.MasterData.ProjectTests
         Name = "TheLineWork.dxf",
         ImportedFileTypeId = ImportedFileType.Linework,
         CreatedUtc = _createdUtc,
-        LineworkFile = new LineworkFile() { DxfUnitsTypeId = DxfUnitsType.ImperialFeet}
+        LineworkFile = new LineworkFile() { DxfUnitsTypeId = DxfUnitsType.ImperialFeet }
       };
 
       FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);
@@ -120,10 +118,10 @@ namespace VSS.MasterData.ProjectTests
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
-        Name = "TheSurfaceFile.ttm", 
+        Name = "TheSurfaceFile.ttm",
         ImportedFileTypeId = ImportedFileType.SurveyedSurface,
         CreatedUtc = _createdUtc,
-        SurfaceFile = new SurfaceFile() {SurveyedUtc = DateTime.UtcNow.AddDays(-1)}
+        SurfaceFile = new SurfaceFile() { SurveyedUtc = DateTime.UtcNow.AddDays(-1) }
       };
 
       FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);

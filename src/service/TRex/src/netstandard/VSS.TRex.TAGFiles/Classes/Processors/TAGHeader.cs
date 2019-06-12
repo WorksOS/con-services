@@ -5,7 +5,7 @@
     /// </summary>
     public struct TAGHeader
     {
-        // Every TagFile has a header at the start the filethat looks like this
+        // Every TagFile has a header at the start the file that looks like this
         public uint MajorVer  { get; set; }
         public uint MinorVer { get; set; }
         public uint DictionaryID { get; set; }

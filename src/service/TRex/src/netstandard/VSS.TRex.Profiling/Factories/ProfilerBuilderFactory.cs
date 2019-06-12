@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
@@ -42,6 +43,7 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="referenceDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <param name="profileStyle"></param>
+    /// <param name="volumeComputationType"></param>
     /// <returns></returns>
     public ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
       ISiteModel siteModel,
@@ -49,7 +51,8 @@ namespace VSS.TRex.Profiling.Factories
       IFilterSet filterSet,
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
-      ICellLiftBuilder cellLiftBuilder)
+      ICellLiftBuilder cellLiftBuilder,
+      VolumeComputationType volumeComputationType)
     {
       switch (profileStyle)
       {
@@ -58,8 +61,8 @@ namespace VSS.TRex.Profiling.Factories
             (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder);
 
         case ProfileStyle.SummaryVolume:
-          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, IDesignWrapper, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
-            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, cellLiftBuilder);
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, cellLiftBuilder, volumeComputationType);
 
         default:
           throw new ArgumentOutOfRangeException(nameof(profileStyle), profileStyle, null);

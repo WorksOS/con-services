@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Designs.Interfaces;
+﻿using VSS.TRex.Common;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Models;
@@ -55,6 +56,7 @@ namespace VSS.TRex.Profiling.Interfaces
       IFilterSet filterSet,
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
-      ICellLiftBuilder cellLiftBuilder);
+      ICellLiftBuilder cellLiftBuilder,
+      VolumeComputationType volumeComputationType);
   }
 }

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.WebAPI", "src\WebApi\VSS.Productivity3D.TagFileAuth.WebAPI.csproj", "{108E9A08-995B-4C93-A7C1-D7B4FB107D9F}"
 EndProject
@@ -67,6 +67,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "..\..\Common\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj", "{D6AF46DE-3747-4363-BE11-C7800257FF7D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\..\Common\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{9A3592D7-DB94-47C5-A7EC-A2B7B6092573}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.SeriLog.Extensions", "..\..\Common\LoggingExtensions\SeriLogExtensions\VSS.SeriLog.Extensions.csproj", "{954BAD59-CA0F-4E55-80ED-2C918CE53C19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -366,6 +368,18 @@ Global
 		{9A3592D7-DB94-47C5-A7EC-A2B7B6092573}.Release|x64.Build.0 = Release|Any CPU
 		{9A3592D7-DB94-47C5-A7EC-A2B7B6092573}.Release|x86.ActiveCfg = Release|Any CPU
 		{9A3592D7-DB94-47C5-A7EC-A2B7B6092573}.Release|x86.Build.0 = Release|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Debug|x64.Build.0 = Debug|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Debug|x86.Build.0 = Debug|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Release|x64.ActiveCfg = Release|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Release|x64.Build.0 = Release|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Release|x86.ActiveCfg = Release|Any CPU
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -397,6 +411,7 @@ Global
 		{0382A5B8-8DA5-4169-A845-E9F8D9181B48} = {8CC81341-E20F-420A-8A44-462C6378941D}
 		{D6AF46DE-3747-4363-BE11-C7800257FF7D} = {8CC81341-E20F-420A-8A44-462C6378941D}
 		{9A3592D7-DB94-47C5-A7EC-A2B7B6092573} = {8CC81341-E20F-420A-8A44-462C6378941D}
+		{954BAD59-CA0F-4E55-80ED-2C918CE53C19} = {8CC81341-E20F-420A-8A44-462C6378941D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7AD682FF-5E0D-401B-8727-6AF5403DC985}

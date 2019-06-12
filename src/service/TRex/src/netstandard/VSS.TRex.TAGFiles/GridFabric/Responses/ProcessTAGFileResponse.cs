@@ -29,7 +29,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      for (int i = 0; i < reader.ReadInt(); i++)
+      var numResults = reader.ReadInt();
+      for (int i = 0; i < numResults; i++)
       {
         Results.Add(new ProcessTAGFileResponseItem(reader));
       }

@@ -9,13 +9,18 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -27,13 +32,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// </summary>
   [ProjectVerifier]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class CellController
+  public class CellController : BaseController<CellController>
   {
 #if RAPTOR
     private readonly IASNodeClient raptorClient;
 #endif
     private readonly ILoggerFactory logger;
-    private readonly IConfigurationStore configStore;
     private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
 
     /// <summary>
@@ -43,13 +47,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+      ILoggerFactory logger, 
+      IConfigurationStore configStore, 
+      ITRexCompactionDataProxy trexCompactionDataProxy, 
+      IFileImportProxy fileImportProxy,
+      ICompactionSettingsManager settingsManager) 
+      : base(configStore, fileImportProxy, settingsManager)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
 #endif
       this.logger = logger;
-      this.configStore = configStore;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
     }
 
@@ -62,9 +70,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/productiondata/cells/passes")]
     [HttpPost]
-    public CellPassesResult Post([FromBody]CellPassesRequest request)
+    public CellPassesResult CellPasses([FromBody]CellPassesRequest request)
     {
 #if RAPTOR
+      request.Validate();
+      
       return RequestExecutorContainerFactory.Build<CellPassesExecutor>(logger, raptorClient).Process(request) as CellPassesResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
@@ -88,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
         raptorClient,
 #endif
-        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResult;
+        configStore: ConfigStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResult;
     }
 
     /// <summary>

@@ -25,6 +25,7 @@ data:
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
   IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/importedfiles
   GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
+  unifiedproductivity_public_v1: http://localhost:5001/api/v1
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
   assetmgmt3d_service: http://localhost:5001
   project_service: http://localhost:5001

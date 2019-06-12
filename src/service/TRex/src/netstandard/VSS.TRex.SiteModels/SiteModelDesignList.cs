@@ -111,7 +111,5 @@ namespace VSS.TRex.SiteModels
         this[i].Extents.Write(writer);
       }
     }
-
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }

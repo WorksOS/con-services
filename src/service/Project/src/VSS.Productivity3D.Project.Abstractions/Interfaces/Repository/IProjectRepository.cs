@@ -30,9 +30,16 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
     Task<IEnumerable<Models.DatabaseModels.Project>> GetProjects_UnitTests();
     Task<Models.DatabaseModels.Project> GetProject_UnitTest(string projectUid);
 
+    /// <summary>
+    /// Transient, required only until the DataOcean migration is complete.
+    /// </summary>
+    Task<IEnumerable<Models.DatabaseModels.Project>> GetActiveProjects();
 
     Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
       DateTime endDate, string excludeProjectUid = "");
+    Task<bool> DoesPolygonOverlap(string projectGeometryWkt, string geometryWkt);
+    Task<IEnumerable<bool>> DoPolygonsOverlap(string projectGeometryWkt, IEnumerable<string> geometryWkts);
+
     Task<IEnumerable<Models.DatabaseModels.Project>> GetStandardProject(string customerUID, double latitude, double longitude,
       DateTime timeOfPosition);
     Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectMonitoringProject(string customerUID, double latitude, double longitude,

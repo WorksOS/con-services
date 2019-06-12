@@ -76,6 +76,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
     protected IGeofenceProxy GeofenceProxy;
 
+    protected IUnifiedProductivityProxy UnifiedProductivityProxy;
+
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
     /// </summary>
@@ -155,7 +157,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected RequestExecutorContainer(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy, RepositoryBase repository,
-      IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy) : this()
+      IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy) : this()
     {
       this.configStore = configStore;
       if (logger != null)
@@ -170,6 +172,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       this.auxRepository = auxRepository;
       this.fileImportProxy = fileImportProxy;
       GeofenceProxy = geofenceProxy;
+      UnifiedProductivityProxy = unifiedProductivityProxy;
     }
 
     /// <summary>
@@ -190,7 +193,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       RepositoryBase repository, RepositoryBase auxRepository,
       IProjectProxy projectProxy = null, IRaptorProxy raptorProxy = null, IAssetResolverProxy assetResolverProxy = null,
-      IKafka producer = null, string kafkaTopicName = null, IFileImportProxy fileImportProxy = null, IGeofenceProxy geofenceProxy = null)
+      IKafka producer = null, string kafkaTopicName = null, IFileImportProxy fileImportProxy = null, IGeofenceProxy geofenceProxy = null,
+      IUnifiedProductivityProxy unifiedProductivityProxy = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor
@@ -206,10 +210,26 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         producer = producer,
         kafkaTopicName = kafkaTopicName,
         auxRepository = auxRepository,
-        GeofenceProxy = geofenceProxy
+        GeofenceProxy = geofenceProxy,
+        UnifiedProductivityProxy = unifiedProductivityProxy
       };
 
       return executor;
+    }
+
+    /// <summary>
+    /// Casts input object to type T for use with child executors.
+    /// </summary>
+    protected T CastRequestObjectTo<T>(object item, int errorCode) where T : class
+    {
+      var request = item as T;
+
+      if (request == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCode);
+      }
+
+      return request;
     }
   }
 }

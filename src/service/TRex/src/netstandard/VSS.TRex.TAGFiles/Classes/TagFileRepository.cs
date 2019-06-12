@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Validator;
@@ -20,6 +19,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
+    private static readonly bool enableArchivingMetadata = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", Consts.ENABLE_TAGFILE_ARCHIVING_METADATA);
 
     private static string MakePath(TagFileDetail td)
     {
@@ -131,7 +131,6 @@ namespace VSS.TRex.TAGFiles.Classes
       // load xml data ArchiveTagFileMetaDataPath and put into tagDetail
       // if using location only for metadata then you would have to extract it from the path
 
-      var enableArchivingMetadata = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", Consts.ENABLE_TAGFILE_ARCHIVING_METADATA);
       if (enableArchivingMetadata && File.Exists(ArchiveTAGFileMetaDataPath))
       {
         FileStream ReadFileStream = new FileStream(ArchiveTAGFileMetaDataPath, FileMode.Open, FileAccess.Read, FileShare.Read);

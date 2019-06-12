@@ -13,6 +13,7 @@
     <Platforms>x64</Platforms>
     <PackageTags>vss-productivity3d-service</PackageTags>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -78,7 +79,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
     <Compile Remove=".\Report\Controllers\ConfigController.cs" />
   </ItemGroup>
-  
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
@@ -115,19 +116,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.localhost.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Update="web.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="kestrelsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.localhost.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Update="log4net.xml">

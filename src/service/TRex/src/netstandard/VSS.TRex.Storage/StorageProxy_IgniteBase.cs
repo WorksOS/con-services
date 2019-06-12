@@ -2,6 +2,7 @@
 using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using VSS.Log4NetExtensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
@@ -23,13 +24,27 @@ namespace VSS.TRex.Storage
 
     protected readonly IIgnite ignite;
 
-    protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> nonSpatialCache;
-
-    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache => nonSpatialCache;
-
+    protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> generalNonSpatialCache;
     protected IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> spatialCache;
 
-    public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache; 
+    public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
+
+
+    protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> siteModelCache;
+
+    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> SiteModelCache => siteModelCache;
+
+
+    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType)
+    {
+      switch (streamType)
+      {
+        case FileSystemStreamType.ProductionDataXML:
+          return siteModelCache;
+        default:
+          return generalNonSpatialCache;
+      }
+    }
 
     /// <summary>
     /// Controls which grid (Mutable or Immutable) this storage proxy performs reads and writes against.
@@ -83,16 +98,15 @@ namespace VSS.TRex.Storage
       }
 
       MemoryStream immutableStream;
-      using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)))
+      using (var MS = new MemoryStream(mutableCache.Get(cacheKey)))
       {
-        MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS);
-        {
-          immutableStream = PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
+        var mutableStream = MemoryStreamCompression.Decompress(MS);
 
-          if (mutableStream != immutableStream)
-          {
-            mutableStream.Dispose();
-          }
+        immutableStream = PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
+
+        if (mutableStream != immutableStream)
+        {
+          mutableStream.Dispose();
         }
       }
 
@@ -122,9 +136,10 @@ namespace VSS.TRex.Storage
       // Convert from the mutable to the immutable form and store it into the immutable cache
       if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out MemoryStream immutableStream) && immutableStream != null)
       {
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+        using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
         {
-          // Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
+          if (Log.IsTraceEnabled())
+            Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
 
           // Place the converted immutable item into the immutable cache
           immutableCache.Put(cacheKey, compressedStream.ToArray());
@@ -196,9 +211,10 @@ namespace VSS.TRex.Storage
       // Convert from the mutable to the immutable form and store it into the immutable cache
       if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out MemoryStream immutableStream) && immutableStream != null)
       {
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+        using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
         {
-          // Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
+          if (Log.IsTraceEnabled())
+            Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
 
           // Place the converted immutable item into the immutable cache
           immutableCache.Put(cacheKey, compressedStream.ToArray());

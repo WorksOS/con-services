@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Apache.Ignite.Core.Binary;
+using VSS.Log4NetExtensions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
@@ -65,7 +66,8 @@ namespace VSS.TRex.GridFabric
     /// </summary>
     public void AcquireIgniteTopologyProjections()
     {
-      Log.LogInformation($"Acquiring TRex topology projections for grid {GridName}");
+      if (Log.IsTraceEnabled())
+        Log.LogTrace($"Acquiring TRex topology projections for grid {GridName}");
 
       if (string.IsNullOrEmpty(GridName))
         throw new TRexException("GridName name not defined when acquiring topology projection");
@@ -91,7 +93,8 @@ namespace VSS.TRex.GridFabric
       if (Compute == null)
         throw new TRexException($"Compute projection is null in AcquireIgniteTopologyProjections on grid {GridName}");
 
-      Log.LogInformation($"Completed acquisition of TRex topology projections for grid {GridName}");
+      if (Log.IsTraceEnabled())
+        Log.LogTrace($"Completed acquisition of TRex topology projections for grid {GridName}");
     }
 
     public virtual void ToBinary(IBinaryRawWriter writer)

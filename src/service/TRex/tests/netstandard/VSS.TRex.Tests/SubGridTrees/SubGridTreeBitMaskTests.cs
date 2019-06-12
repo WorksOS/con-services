@@ -30,7 +30,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     [InlineData(10000000, 10000000)]
     [InlineData(100000000, 100000000)]
     [InlineData(1000000000, 1000000000)]
-    public void Test_SubGridTreeBitMask_GetCellAndSetCell(uint x, uint y)
+    public void Test_SubGridTreeBitMask_GetCellAndSetCell(int x, int y)
     {
       var mask = new SubGridTreeBitMask();
 
@@ -64,11 +64,11 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       var mask = new SubGridTreeBitMask();
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = i * 10;
-        uint y = j * 10;
+        int x = i * 10;
+        int y = j * 10;
 
         mask.SetCell(x, y, true);
       }
@@ -118,20 +118,20 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       var mask = new SubGridTreeBitMask();
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = i * 10;
-        uint y = j * 10;
+        int x = i * 10;
+        int y = j * 10;
 
         mask.SetCell(x, y, true);
       }
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = i * 10;
-        uint y = j * 10;
+        int x = i * 10;
+        int y = j * 10;
 
         mask.LeafExists(x, y).Should().BeTrue();
       }
@@ -142,20 +142,20 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       var mask = new SubGridTreeBitMask();
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = i * 10;
-        uint y = j * 10;
+        int x = i * 10;
+        int y = j * 10;
 
         mask.SetCell(x, y, true);
       }
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = (i + 1) * 1000000;
-        uint y = (j + 1) * 1000000;
+        int x = (i + 1) * 1000000;
+        int y = (j + 1) * 1000000;
 
         mask.LeafExists(x, y).Should().BeFalse();
       }
@@ -166,11 +166,11 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       var mask = new SubGridTreeBitMask();
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = i * 10;
-        uint y = j * 10;
+        int x = i * 10;
+        int y = j * 10;
 
         mask.SetCell(x, y, true);
       }
@@ -187,11 +187,11 @@ namespace VSS.TRex.Tests.SubGridTrees
       secondMask.SetOp_OR(thirdMask);
       secondMask.CountBits().Should().Be(expectedBitCount);
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = i * 10;
-        uint y = j * 10;
+        int x = i * 10;
+        int y = j * 10;
 
         secondMask[x, y].Should().BeTrue();
       }
@@ -202,11 +202,11 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       var mask = new SubGridTreeBitMask();
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = i * 10;
-        uint y = j * 10;
+        int x = i * 10;
+        int y = j * 10;
 
         mask.SetCell(x, y, true);
       }
@@ -223,11 +223,11 @@ namespace VSS.TRex.Tests.SubGridTrees
       secondMask.SetOp_AND(mask);
       secondMask.CountBits().Should().Be(expectedBitCount);
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = i * 10;
-        uint y = j * 10;
+        int x = i * 10;
+        int y = j * 10;
 
         mask[x, y].Should().BeTrue();
       }
@@ -255,7 +255,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     [InlineData(10000000, 10000000)]
     [InlineData(100000000, 100000000)]
     [InlineData(1000000000, 1000000000)]
-    public void Test_SubGridTreeBitMask_ClearCellIfSet_SingleCellAtLocation(uint x, uint y)
+    public void Test_SubGridTreeBitMask_ClearCellIfSet_SingleCellAtLocation(int x, int y)
     {
       var mask = new SubGridTreeBitMask();
       mask[x, y].Should().BeFalse();
@@ -274,11 +274,11 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       var mask = new SubGridTreeBitMask();
 
-      for (uint i = 0; i < 100; i++)
-      for (uint j = 0; j < 100; j++)
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
       {
-        uint x = i * 10;
-        uint y = j * 10;
+        int x = i * 10;
+        int y = j * 10;
 
         mask[x, y].Should().BeFalse();
         mask.ClearCellIfSet(x, y);

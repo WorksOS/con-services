@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null, null)
     { }
 
     /// <summary>
@@ -50,12 +50,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns>Returns an <see cref="BoundaryRequest"/> object if successful.</returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as BoundaryUidRequestFull;
-      if (request == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
-        return null;
-      }
+      var request = CastRequestObjectTo<BoundaryUidRequestFull>(item, 53);
+      if (request == null) return null;
 
       IEnumerable<ProjectGeofence> associations = null;
       try

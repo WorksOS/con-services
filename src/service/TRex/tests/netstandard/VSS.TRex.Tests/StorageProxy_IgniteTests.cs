@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
@@ -56,8 +57,8 @@ namespace VSS.TRex.Tests
           var projectUid = Guid.NewGuid();
           var streamName = "StreamToDelete";
 
-          proxy.WriteStreamToPersistentStore(projectUid, streamName, FileSystemStreamType.Designs, new MemoryStream(), null);
-          proxy.RemoveStreamFromPersistentStore(projectUid, streamName).Should().Be(FileSystemErrorStatus.OK);
+          proxy.WriteStreamToPersistentStore(projectUid, streamName, FileSystemStreamType.Designs, new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION), null);
+          proxy.RemoveStreamFromPersistentStore(projectUid, FileSystemStreamType.Designs, streamName).Should().Be(FileSystemErrorStatus.OK);
         }
 
         [Fact]
@@ -68,7 +69,7 @@ namespace VSS.TRex.Tests
           var projectUid = Guid.NewGuid();
           var streamName = "StreamToDelete";
     
-          proxy.RemoveStreamFromPersistentStore(projectUid, streamName).Should().Be(FileSystemErrorStatus.OK);
+          proxy.RemoveStreamFromPersistentStore(projectUid, FileSystemStreamType.Designs, streamName).Should().Be(FileSystemErrorStatus.OK);
         } 
 
         [Fact]
@@ -79,8 +80,8 @@ namespace VSS.TRex.Tests
           var projectUid = Guid.NewGuid();
           var streamName = "StreamToDelete";
     
-          proxy.WriteStreamToPersistentStore(projectUid, streamName, FileSystemStreamType.Designs, new MemoryStream(), null);
-          proxy.RemoveStreamFromPersistentStore(projectUid, streamName).Should().Be(FileSystemErrorStatus.OK);
+          proxy.WriteStreamToPersistentStore(projectUid, streamName, FileSystemStreamType.Designs, new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION), null);
+          proxy.RemoveStreamFromPersistentStore(projectUid, FileSystemStreamType.Designs, streamName).Should().Be(FileSystemErrorStatus.OK);
         }
     
         [Fact]
@@ -91,7 +92,7 @@ namespace VSS.TRex.Tests
           var projectUid = Guid.NewGuid();
           var streamName = "StreamToDelete";
      
-          proxy.RemoveStreamFromPersistentStore(projectUid, streamName).Should().Be(FileSystemErrorStatus.OK);
+          proxy.RemoveStreamFromPersistentStore(projectUid, FileSystemStreamType.Designs, streamName).Should().Be(FileSystemErrorStatus.OK);
         }
      
         [Fact(Skip = "Not Implemented")]

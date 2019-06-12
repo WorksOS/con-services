@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
     /// </summary>
     public class TAGLayerIDValueMatcher : TAGValueMatcher
     {
-        public TAGLayerIDValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGLayerIDValueMatcher()
         {
         }
 
@@ -16,7 +16,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = false;
 

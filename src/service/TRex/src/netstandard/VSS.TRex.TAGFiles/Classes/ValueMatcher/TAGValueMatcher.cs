@@ -9,17 +9,6 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
     public abstract class TAGValueMatcher
     {
         /// <summary>
-        /// The value sink that all TAG values read in will be sent to
-        /// </summary>
-        protected TAGProcessorStateBase valueSink;
-
-        /// <summary>
-        /// The state machine state updated as new TAG values are read in. Value matchers update this state
-        /// which in turn responds by emitted events to trigger further processing.
-        /// </summary>
-        protected TAGValueMatcherState state { get; set; }
-
-        /// <summary>
         /// The set of TAG values a TAG value matcher advertises it is interested in.
         /// </summary>
         /// <returns></returns>
@@ -32,60 +21,74 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <summary>
         /// Processes an integer TAG value
         /// </summary>
+        /// <param name="state"></param>
+        /// <param name="valueSink"></param>
         /// <param name="valueType"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public virtual bool ProcessIntegerValue(TAGDictionaryItem valueType, int value) => false;
+        public virtual bool ProcessIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, int value) => false;
 
         /// <summary>
         /// Processes an unsigned integer TAG value
         /// </summary>
+        /// <param name="state"></param>
+        /// <param name="valueSink"></param>
         /// <param name="valueType"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public virtual bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value) => false;
+        public virtual bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value) => false;
 
         /// <summary>
         /// Processes a double TAG value
         /// </summary>
+        /// <param name="state"></param>
+        /// <param name="valueSink"></param>
         /// <param name="valueType"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public virtual bool ProcessDoubleValue(TAGDictionaryItem valueType, double value) => false;
+        public virtual bool ProcessDoubleValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, double value) => false;
 
         /// <summary>
         /// Processes an empty TAG value (a value with a name but no value at all - the TAG itself is the value)
         /// </summary>
+        /// <param name="state"></param>
+        /// <param name="valueSink"></param>
         /// <param name="valueType"></param>
         /// <returns></returns>
-        public virtual bool ProcessEmptyValue(TAGDictionaryItem valueType) => false;
+        public virtual bool ProcessEmptyValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType) => false;
 
         /// <summary>
         /// Processes an ANSI string TAG value
         /// </summary>
+        /// <param name="state"></param>
+        /// <param name="valueSink"></param>
         /// <param name="valueType"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public virtual bool ProcessANSIStringValue(TAGDictionaryItem valueType, byte[] value) => false;
+        public virtual bool ProcessANSIStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, string value) => false;
 
         /// <summary>
         /// Processes an unicode TAG value
         /// </summary>
+        /// <param name="state"></param>
+        /// <param name="valueSink"></param>
         /// <param name="valueType"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public virtual bool ProcessUnicodeStringValue(TAGDictionaryItem valueType, string value) => false;
+        public virtual bool ProcessUnicodeStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, string value) => false;
 
         /// <summary>
         /// TAGValueMatcher constructor. The state machine state and the sink to send matched values to are
         /// provided as arguments.
         /// </summary>
-        /// <param name="valueSink"></param>
-        /// <param name="state"></param>
-        public TAGValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state)
+        public TAGValueMatcher()
         {
-            this.valueSink = valueSink;
-            this.state = state;
         }
     }
 }

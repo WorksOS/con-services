@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -65,7 +64,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             });
 
             //Check the total number of passes is 10240, and the maximum pass count is 10
-            segment.PassesData.CalculateTotalPasses(out uint totalPassCount, out uint maximumPassCount);
+            segment.PassesData.CalculateTotalPasses(out int totalPassCount, out int maximumPassCount);
 
             Assert.True(10240 == totalPassCount, "Initial total pass count not 10240");
             Assert.True(10240 == segment.PassesData.SegmentPassCount,
@@ -83,16 +82,16 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SegmentIterator_MoveToFirstSegment()
         {
-            IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+            var subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
-            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
+            var Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = true,
                 RetrieveAllPasses = true
             };
 
-            Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (forwards) when requesting only dirty segments");
+            Assert.True(Iterator.MoveToFirstSubGridSegment(), "Was not able to move to first segment (forwards) when requesting only dirty segments");
 
             Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {
@@ -101,7 +100,7 @@ namespace VSS.TRex.Tests.SubGridTrees
                 RetrieveAllPasses = true
             };
 
-            Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (backwards) when requesting only dirty segments");
+            Assert.True(Iterator.MoveToFirstSubGridSegment(), "Was not able to move to first segment (backwards) when requesting only dirty segments");
 
             Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {
@@ -185,15 +184,15 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SubgridSegmentCleaving_AdoptCellPassesFrom()
         {
-            // Create the subgrid with lots of cell passes
-            IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
-            ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
+            // Create the sub grid with lots of cell passes
+            var subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+            var segment1 = subGrid.Cells.PassesData[0];
 
             // Get the time range
             segment1.PassesData.CalculateTimeRange(out DateTime startSegmentTime, out DateTime endSegmentTime);
 
             // Create a second segment specially and use the cell pass adopter to move cell passes 
-            SubGridCellPassesDataSegment segment2 = new SubGridCellPassesDataSegment
+            var segment2 = new SubGridCellPassesDataSegment
             {
                 Owner = subGrid,
                 SegmentInfo = new SubGridCellPassesDataSegmentInfo()
@@ -206,8 +205,8 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.True(segment1.VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Segment1 has inappropriate cell pass time range compared to segment time range");
             Assert.True(segment2.VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Segment2 has inappropriate cell pass time range compared to segment time range");
 
-            segment1.PassesData.CalculateTotalPasses(out uint totalPassCount1, out uint maximumPassCount1);
-            segment2.PassesData.CalculateTotalPasses(out uint totalPassCount2, out uint maximumPassCount2);
+            segment1.PassesData.CalculateTotalPasses(out int totalPassCount1, out int maximumPassCount1);
+            segment2.PassesData.CalculateTotalPasses(out int totalPassCount2, out int maximumPassCount2);
 
             Assert.True(10240 == (totalPassCount1 + totalPassCount2), $"Totals ({totalPassCount1} and {totalPassCount2} don't add up to 10240 after cleaving");
             Assert.True(5 == maximumPassCount1, $"Maximum pass count 1 {maximumPassCount1}, is not 5");
@@ -229,24 +228,19 @@ namespace VSS.TRex.Tests.SubGridTrees
     [Fact()]
     public void Test_SubgridSegmentCleaving()
     {
-      // set the environment variable cleaving limit to 100000 to force the segment not to be cloven = the cleave result should be false
-      SetupDITfa(100000);
-
-      // Create a subgrid to hold the segment. the subGrid retains the limit in the subGrid constructor in MakeSubgridWith10240CellPassesAtOneSecondIntervals()
+      // Create a sub grid to hold the segment. the subGrid retains the limit in the subGrid constructor in MakeSubgridWith10240CellPassesAtOneSecondIntervals()
       IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
       ISubGridCellPassesDataSegment segment = subGrid.Cells.PassesData[0];
 
-      // Instruct the segment container to cleave the segment
+      // Instruct the segment container to cleave the segment with a limit of 100000
       var persistedClovenSegments = new List<ISubGridSpatialAffinityKey>();
-      Assert.False(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments), "Segment was cloven when cell pass count was below limit");
+      Assert.False(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments, 100000), "Segment was cloven when cell pass count was below limit");
 
       // Set the cleaving limit to 10000 to force the segment TO BE cloven = the cleave result should be true
-      SetupDITfa(10000);
-      // Since the cleaving limit is immutable in the subGrid, need to alter environment variable and re-read the subGrid according to the new limit.
       subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
       segment = subGrid.Cells.PassesData[0];
       persistedClovenSegments = new List<ISubGridSpatialAffinityKey>();
-      Assert.True(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments), "Segment failed to cleave with pass count above limit");
+      Assert.True(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments, 10000), "Segment failed to cleave with pass count above limit");
 
       //Check there are now two segments in total
       Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
@@ -255,10 +249,10 @@ namespace VSS.TRex.Tests.SubGridTrees
       ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
       ISubGridCellPassesDataSegment segment2 = subGrid.Cells.PassesData[1];
 
-      segment1.PassesData.CalculateTotalPasses(out uint totalPassCount1, out uint maximumPassCount1);
-      segment2.PassesData.CalculateTotalPasses(out uint totalPassCount2, out uint maximumPassCount2);
+      segment1.PassesData.CalculateTotalPasses(out int totalPassCount1, out int maximumPassCount1);
+      segment2.PassesData.CalculateTotalPasses(out int totalPassCount2, out int maximumPassCount2);
 
-      Assert.True(10240 == (totalPassCount1 + totalPassCount2), $"Totals ({totalPassCount1} and {totalPassCount2} don't add up to 10240 after cleaving");
+      Assert.True(10240 == totalPassCount1 + totalPassCount2, $"Totals ({totalPassCount1} and {totalPassCount2} don't add up to 10240 after cleaving");
       Assert.True(5 == maximumPassCount1, $"Maximum pass count 1 {maximumPassCount1}, is not 5");
       Assert.True(5 == maximumPassCount2, $"Maximum pass count 2 {maximumPassCount2}, is not 5");
 
@@ -270,9 +264,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     [Fact()]
     public void Test_SubgridSegment_Cleaver()
     {
-      // set the environment variable cleaving limit to 10000 to force the segment not to be cloven = the cleave result should be true
-      SetupDITfa(10000);
-      // Create a subgrid to hold the segment
+      // Create a sub grid to hold the segment
       IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
       // Exercise the cleaver!
@@ -281,14 +273,14 @@ namespace VSS.TRex.Tests.SubGridTrees
       subGrid.Cells.PassesData[0].Dirty = false;
 
       var cleaver = new SubGridSegmentCleaver();
-      cleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
+      cleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid, 10000);
 
       Assert.True(1 == subGrid.Cells.PassesData.Count, $"After cleaving with no dirty segments there are {subGrid.Cells.PassesData.Count} segments instead of the expected one segments");
 
       // Set the segment to not dirty - it should be ignored
       subGrid.Cells.PassesData[0].Dirty = true;
       cleaver = new SubGridSegmentCleaver();
-      cleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
+      cleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid, 10000);
 
       //Check there are now two segments in total
       Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
@@ -297,8 +289,8 @@ namespace VSS.TRex.Tests.SubGridTrees
       ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
       ISubGridCellPassesDataSegment segment2 = subGrid.Cells.PassesData[1];
 
-      segment1.PassesData.CalculateTotalPasses(out uint totalPassCount1, out uint maximumPassCount1);
-      segment2.PassesData.CalculateTotalPasses(out uint totalPassCount2, out uint maximumPassCount2);
+      segment1.PassesData.CalculateTotalPasses(out int totalPassCount1, out int maximumPassCount1);
+      segment2.PassesData.CalculateTotalPasses(out int totalPassCount2, out int maximumPassCount2);
 
       Assert.True(10240 == (totalPassCount1 + totalPassCount2), $"Totals ({totalPassCount1} and {totalPassCount2} don't add up to 10240 after cleaving");
       Assert.True(5 == maximumPassCount1, $"Maximum pass count 1 {maximumPassCount1}, is not 5");

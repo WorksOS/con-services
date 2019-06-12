@@ -11,6 +11,7 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockSchedulerController : Controller
   {
+    [Route("/internal/v1/mock/runjob")]
     [Route("/internal/v1/runjob")]
     [HttpPost]
     public ScheduleJobResult MockRunJob([FromBody] JobRequest request)
@@ -19,6 +20,7 @@ namespace MockProjectWebApi.Controllers
       return new ScheduleJobResult { JobId = "some job id" };
     }
 
+    [Route("/internal/v1/mock/export")]
     [Route("/internal/v1/export")] 
     [HttpPost]
     public ScheduleJobResult StartMockExport([FromBody] ScheduleJobRequest request)
@@ -34,6 +36,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     //I don't think this is called. It's done through the mick veta export in MockRaptorController
+    [Route("/api/v1/mock/export/{jobId}")]
     [Route("/api/v1/export/{jobId}")]
     [Route("/internal/v1/export/{jobId}")]
     [HttpGet]

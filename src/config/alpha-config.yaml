@@ -51,6 +51,7 @@ data:
 #SERVICE DISCOVERY REFERENCES
   assetdetails-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
   assetsummary-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
+  unifiedproductivity_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-alpha-unifiedproductivity/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
 #CAP configuration  
@@ -102,7 +103,8 @@ data:
   CUSTOMER_CACHE_LIFE: 00:30:00
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
   FILTER_CACHE_LIFE: 00:15:00
-  GEOFENCE_CACHE_LIFE: 00:15:00
+  GEOFENCE_CACHE_LIFE: 00:00:03
+  UNIFIED_PRODUCTIVITY_CACHE_LIFE: 00:00:03
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
   ASSETMGMT_CACHE_LIFE: 00:30:00
@@ -124,10 +126,11 @@ data:
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_ROOT_FOLDER: alpha
 #Pegasus
-  PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
+  PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
-  PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7
+  PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
+  SCHEDULER_ENABLE_DXF_TILE_GENERATION: "true"
 #Slack
   SLACK_URL: https://hooks.slack.com/services/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
   SLACK_CHANNEL: "#notifications-alpha"

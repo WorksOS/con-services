@@ -25,7 +25,6 @@ data:
   KAFKA_URI: 10.211.16.11
   KAFKA_PORT: "9092"
   KAFKA_OFFSET: latest
-  KAFKA_TOPIC_NAME_SUFFIX:
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
 #Service references  
   ASSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/associateprojectsubscription
@@ -53,6 +52,7 @@ data:
 #SERVICE DISCOVERY REFERENCES
   assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
   assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
+  unifiedproductivity_public_v1: https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2
 #Misc stuff
@@ -98,7 +98,8 @@ data:
   CUSTOMER_CACHE_LIFE: 00:30:00
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
   FILTER_CACHE_LIFE: 00:15:00
-  GEOFENCE_CACHE_LIFE: 00:15:00
+  GEOFENCE_CACHE_LIFE: 00:00:03
+  UNIFIED_PRODUCTIVITY_CACHE_LIFE: 00:00:03
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
   ASSETMGMT_CACHE_LIFE: 00:30:00
@@ -119,10 +120,11 @@ data:
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_ROOT_FOLDER: prod
 #Pegasus
-  PEGASUS_URL:  https://api-usw2.trimblepaas.com/pegasus-v1.0
+  PEGASUS_DXF_PROCEDURE_ID: cd1ef2a0-63fb-4469-809a-e650c4feb4ca
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
-  PEGASUS_DXF_PROCEDURE_ID: cd1ef2a0-63fb-4469-809a-e650c4feb4ca
+  PEGASUS_URL:  https://api-usw2.trimblepaas.com/pegasus-v1.0
+  SCHEDULER_ENABLE_DXF_TILE_GENERATION: "true"
 #Slack
   SLACK_URL: https://hooks.slack.com/services/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
   SLACK_CHANNEL: "#notifications-prod"

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -10,7 +9,6 @@ using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Services;
-using VSS.Productivity.Push.Models.Enums;
 using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;

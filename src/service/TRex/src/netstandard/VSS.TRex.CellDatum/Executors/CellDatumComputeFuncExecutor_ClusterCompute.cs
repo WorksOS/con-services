@@ -74,8 +74,8 @@ namespace VSS.TRex.CellDatum.Executors
         AreaControlSet.CreateAreaControlSet(), existenceMap);
 
       // Get the sub grid relative cell location
-      uint cellX = arg.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
-      uint cellY = arg.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
+      int cellX = arg.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
+      int cellY = arg.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
 
       // Reach into the sub-grid request layer and retrieve an appropriate sub-grid
       var cellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);

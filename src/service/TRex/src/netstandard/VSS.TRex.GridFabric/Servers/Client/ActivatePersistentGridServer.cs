@@ -87,7 +87,9 @@ namespace VSS.TRex.GridFabric.Servers.Client
         /// <param name="gridName">The name of the grid to wait for</param>
         public bool WaitUntilGridActive(string gridName)
         {
-            IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(gridName);
+            Log.LogInformation($"Checking if grid {gridName} is active.");
+
+            var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(gridName);
 
             if (ignite == null)
             {
@@ -101,8 +103,14 @@ namespace VSS.TRex.GridFabric.Servers.Client
                 isActive = ignite.GetCluster().IsActive();
 
                 if (!isActive)
+                {
+                    Log.LogInformation($"Grid {gridName} is not active, waiting...");
+
                     Thread.Sleep(1000);
+                }
             } while (!isActive);
+
+            Log.LogInformation($"Completing grid active check wait with active={ignite.GetCluster().IsActive()}.");
 
             return ignite.GetCluster().IsActive();
         }

@@ -10,7 +10,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <summary>
         /// The total number of cell passes present in this segment
         /// </summary>
-        uint SegmentPassCount { get; set; }
+        int SegmentPassCount { get; set; }
 
         /// <summary>
         /// The number of cell passes present in the cell within this sub grid segment identified by X and Y in 
@@ -18,7 +18,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns></returns>
-        uint PassCount(uint X, uint Y);
+        int PassCount(int X, int Y);
 
         /// <summary>
         /// Allocates a number of passes for a cell in this segment. Only valid for mutable representations exposing this interface.
@@ -26,7 +26,15 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="passCount"></param>
-        void AllocatePasses(uint X, uint Y, uint passCount);
+        void AllocatePasses(int X, int Y, int passCount);
+
+        /// <summary>
+        /// Allocates a number of passes for a cell in this segment. Only valid for mutable representations exposing this interface.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="passCount"></param>
+        void AllocatePassesExact(int X, int Y, int passCount);
 
         /// <summary>
         /// Adds a cell pass at an optional position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
@@ -35,7 +43,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="Y"></param>
         /// <param name="pass"></param>
         /// <param name="position"></param>
-        void AddPass(uint X, uint Y, CellPass pass, int position = -1);
+        void AddPass(int X, int Y, CellPass pass, int position = -1);
 
         /// <summary>
         /// Replaces a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
@@ -44,7 +52,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="Y"></param>
         /// <param name="position"></param>
         /// <param name="pass"></param>
-        void ReplacePass(uint X, uint Y, int position, CellPass pass);
+        void ReplacePass(int X, int Y, int position, CellPass pass);
 
         /// <summary>
         /// Removes a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
@@ -52,7 +60,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="position"></param>
-        void RemovePass(uint X, uint Y, int position);
+        void RemovePass(int X, int Y, int position);
 
         /// <summary>
         /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
@@ -64,7 +72,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="time"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        bool LocateTime(uint X, uint Y, DateTime time, out int index);
+        bool LocateTime(int X, int Y, DateTime time, out int index);
 
         /// <summary>
         /// Reads all the cell passes for this segment
@@ -85,7 +93,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="Y"></param>
         /// <param name="passNumber"></param>
         /// <returns></returns>
-        float PassHeight(uint X, uint Y, uint passNumber);
+        float PassHeight(int X, int Y, int passNumber);
 
         /// <summary>
         /// Retrieves the Time recorded by the cell pass at the given index from the cell passes for the cell within this segment
@@ -94,7 +102,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="Y"></param>
         /// <param name="passNumber"></param>
         /// <returns></returns>
-        DateTime PassTime(uint X, uint Y, uint passNumber);
+        DateTime PassTime(int X, int Y, int passNumber);
 
         /// <summary>
         /// Integrates the cell passes from two cell pass lists into a single cell pass list. Source contains the cell passes that
@@ -104,11 +112,12 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="sourcePasses"></param>
+        /// <param name="sourcePassCount"></param>
         /// <param name="StartIndex"></param>
         /// <param name="EndIndex"></param>
         /// <param name="AddedCount"></param>
         /// <param name="ModifiedCount"></param>
-        void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out uint AddedCount, out uint ModifiedCount);
+        void Integrate(int X, int Y, CellPass[] sourcePasses, int sourcePassCount, int StartIndex, int EndIndex, out int AddedCount, out int ModifiedCount);
 
         /// <summary>
         /// Returns a full cell pass with all attributes from the cell passes within this segment for the cell identified by X and Y
@@ -117,7 +126,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="Y"></param>
         /// <param name="passIndex"></param>
         /// <returns></returns>
-        CellPass Pass(uint X, uint Y, uint passIndex);
+        CellPass Pass(int X, int Y, int passIndex);
 
         /// <summary>
         /// An overloaded version of Pass() with the same functionality
@@ -126,22 +135,32 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="Y"></param>
         /// <param name="passNumber"></param>
         /// <returns></returns>
-        CellPass ExtractCellPass(uint X, uint Y, uint passNumber);
+        CellPass ExtractCellPass(int X, int Y, int passNumber);
 
         /// <summary>
         /// Returns a full mutable version of the cell passes contained within this segment for the cell identified by X and Y
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
+        /// <param name="passCount"></param>
         /// <returns></returns>
-        CellPass[] ExtractCellPasses(uint X, uint Y);
+        CellPass[] ExtractCellPasses(int X, int Y, out int passCount);
+
+        /// <summary>
+        /// Replaces the collection of passes at location (x, y) with the provided set of cell passes
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="cellPasses"></param>
+        void ReplacePasses(int X, int Y, CellPass[] cellPasses, int cellPassCount);
 
         /// <summary>
         /// Allows a caller to supply the raw cell pass information to the segment which may convert it to 
         /// it's internal representation
         /// </summary>
         /// <param name="cellPasses"></param>
-        void SetState(CellPass[,][] cellPasses);
+        /// <param name="cellPassCounts"></param>
+        void SetState(CellPass[,][] cellPasses, int[,] cellPassCounts);
 
         /// <summary>
         /// Allows a caller to query the set of all cell passes in the wrapper as a sub grid array 
@@ -149,7 +168,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// do no throwing NotImplemented exceptions.
         /// </summary>
         /// <returns></returns>
-        CellPass[,][] GetState();
+        CellPass[,][] GetState(out int[,] cellPassCounts);
 
         /// <summary>
         /// Indicates if this segment is immutable
@@ -162,7 +181,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
-        void CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount);
+        void CalculateTotalPasses(out int TotalPasses, out int MaxPassCount);
 
         /// <summary>
         /// Calculates the time range covering all the cell passes within the given sub grid segment
@@ -177,7 +196,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="searchTime"></param>
         /// <param name="totalPasses"></param>
         /// <param name="maxPassCount"></param>
-        void CalculatePassesBeforeTime(DateTime searchTime, out uint totalPasses, out uint maxPassCount);
+        void CalculatePassesBeforeTime(DateTime searchTime, out int totalPasses, out int maxPassCount);
 
         /// <summary>
         /// Causes this segment to adopt all cell passes from sourceSegment where those cell passes were 
@@ -200,7 +219,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="Y"></param>
         /// <param name="passNumber"></param>
         /// <param name="internalMachineID"></param>
-        void SetInternalMachineID(uint X, uint Y, int passNumber, short internalMachineID);
+        void SetInternalMachineID(int X, int Y, int passNumber, short internalMachineID);
 
         /// <summary>
         /// If the elevation range of the elevations stored in this segment is known then return it,

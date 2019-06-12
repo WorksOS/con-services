@@ -10,6 +10,7 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Events
 {
@@ -26,7 +27,11 @@ namespace VSS.TRex.Events
 
     private const int MinStreamLength = 16;
 
+    private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
+
     public bool EventsChanged { get; set; }
+
+    private readonly Func<T, T, bool> _eventStateComparator;
 
     /// <summary>
     /// The structure that contains all information about this type of event.
@@ -64,8 +69,6 @@ namespace VSS.TRex.Events
       public T State { get; set; }
 
       public byte Flags;
-
-      public bool EquivalentTo(Event other) => !IsCustomEvent && !other.IsCustomEvent && EqualityComparer<T>.Default.Equals(State, other.State);
     }
 
     /// <summary>
@@ -102,7 +105,8 @@ namespace VSS.TRex.Events
     public ProductionEvents(long machineID, Guid siteModelID,
       ProductionEventType eventListType,
       Action<BinaryWriter, T> serialiseStateOut,
-      Func<BinaryReader, T> serialiseStateIn)
+      Func<BinaryReader, T> serialiseStateIn,
+      Func<T, T, bool> eventStateComparator)
     {
       MachineID = machineID;
       SiteModelID = siteModelID;
@@ -114,7 +118,11 @@ namespace VSS.TRex.Events
 
       SerialiseStateIn = serialiseStateIn;
       SerialiseStateOut = serialiseStateOut;
+
+      _eventStateComparator = eventStateComparator;
     }
+
+    public bool EventsEquivalent(Event event1, Event event2) => !event1.IsCustomEvent && !event2.IsCustomEvent && _eventStateComparator(event1.State, event2.State);
 
     // Compare performs a date based comparison between the event identified
     // by <Item> and the date held in <Value>
@@ -362,7 +370,7 @@ namespace VSS.TRex.Events
           HaveStartEndEventPair = true;
         }
 
-        if (Events[FirstIdx].EquivalentTo(Events[SecondIdx]) &&
+        if (EventsEquivalent(Events[FirstIdx], Events[SecondIdx]) &&
             Range.InRange(Events[FirstIdx].Date, StartEvent, EndEvent) &&
             Range.InRange(Events[SecondIdx].Date, StartEvent, EndEvent))
         {
@@ -432,7 +440,7 @@ namespace VSS.TRex.Events
 
     public MemoryStream GetMutableStream()
     {
-      var mutablestream = new MemoryStream();
+      var mutablestream = _recyclableMemoryStreamManager.GetStream();
       var writer = new BinaryWriter(mutablestream);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -455,8 +463,8 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public MemoryStream GetImmutableStream()
     {
-      var immutableStream = new MemoryStream();
-      var immutableWriter = new BinaryWriter(immutableStream);
+      var immutableStream = _recyclableMemoryStreamManager.GetStream();
+      var immutableWriter = new BinaryWriter(immutableStream, Encoding.UTF8, true);
 
       VersionSerializationHelper.EmitVersionByte(immutableWriter, VERSION_NUMBER);
 
@@ -468,7 +476,7 @@ namespace VSS.TRex.Events
       immutableWriter.Write(filteredEventCount);
       for (int i = 0; i < Events.Count; i++)
       {
-        if (i == 0 || (i > 0 && !Events[i].State.Equals(lastState)))
+        if (i == 0 || (i > 0 && !_eventStateComparator(Events[i].State, lastState)))
         {
           immutableWriter.Write(Events[i].Date.ToBinary());
           immutableWriter.Write(Events[i].Flags);
@@ -493,7 +501,11 @@ namespace VSS.TRex.Events
     /// <param name="storageProxy"></param>
     public void SaveToStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, GetMutableStream(), this);
+      using (var mutableStream = GetMutableStream())
+      {
+        storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, mutableStream, this);
+      }
+
       EventsChanged = false;
     }
 
@@ -655,5 +667,11 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <returns></returns>
     public DateTime LastStateDate() => Events.Last().Date;
+
+    /// <summary>
+    /// Returns the date of the first element in the events list
+    /// </summary>
+    /// <returns></returns>
+    public DateTime FirstStateDate() => Events.First().Date;
   }
 }

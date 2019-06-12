@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client.Types;
 using Xunit;
@@ -94,7 +95,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var instance = new SubGridCellPassDataCMVEntryRecord(1, 2, 3, 4);
 
       // Test using standard Read()/Write()
-      var writer = new BinaryWriter(new MemoryStream());
+      var writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
       instance.Write(writer);
 
       (writer.BaseStream as MemoryStream).Position = 0;

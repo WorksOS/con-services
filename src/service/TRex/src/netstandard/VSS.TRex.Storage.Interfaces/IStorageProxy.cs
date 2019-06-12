@@ -8,7 +8,7 @@ namespace VSS.TRex.Storage.Interfaces
 {
   public interface IStorageProxy
   {
-    IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache { get; }
+    IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType);
     IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; }
 
     StorageMutability Mutability { get; set; }
@@ -21,8 +21,9 @@ namespace VSS.TRex.Storage.Interfaces
 
     FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID,
       string streamName,
-      uint subGridX, uint subGridY,
-      string segmentIdentifier,
+      int subGridX, int subGridY,
+      long segmentStartDateTicks, 
+      long segmentEndDateTicks,
       long version,
       FileSystemStreamType streamType,
       MemoryStream mutableStream,
@@ -35,13 +36,15 @@ namespace VSS.TRex.Storage.Interfaces
 
     FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelID,
       string streamName,
-      uint subGridX, uint subGridY,
-      string segmentIdentifier,
+      int subGridX, int subGridY,
+      long segmentStartDateTicks, 
+      long segmentEndDateTicks,
       long version,
       FileSystemStreamType streamType,
       out MemoryStream stream);
 
     FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelID,
+      FileSystemStreamType streamType,
       string streamName);
 
     void SetImmutableStorageProxy(IStorageProxy immutableProxy);

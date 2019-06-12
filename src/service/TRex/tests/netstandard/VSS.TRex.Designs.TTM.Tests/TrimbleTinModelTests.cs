@@ -44,7 +44,7 @@ namespace VSS.TRex.Designs.TTM.Tests
 
         private void Test_TTMWriteAndReadBack(TrimbleTINModel TTM)
         {
-          using (var bw = new BinaryWriter(new MemoryStream()))
+          using (var bw = new BinaryWriter(new MemoryStream(Common.Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION)))
           {
             TTM.Write(bw);
 

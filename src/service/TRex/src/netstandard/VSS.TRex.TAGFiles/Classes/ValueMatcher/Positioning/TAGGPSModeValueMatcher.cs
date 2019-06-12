@@ -10,7 +10,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
     /// </summary>
     public class TAGGPSModeValueMatcher : TAGValueMatcher
     {
-        public TAGGPSModeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGGPSModeValueMatcher()
         {
         }
 
@@ -18,9 +18,10 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
-          bool result = Enum.IsDefined(typeof(GPSMode), (byte) value);
+          bool result = (value >= GPSModeConstants.GPS_MODE_MIN_VALUE && value <= GPSModeConstants.GPS_MODE_MAX_VALUE) || value == (int)GPSMode.NoGPS;
 
           if (result)
             valueSink.SetGPSMode((GPSMode) value);

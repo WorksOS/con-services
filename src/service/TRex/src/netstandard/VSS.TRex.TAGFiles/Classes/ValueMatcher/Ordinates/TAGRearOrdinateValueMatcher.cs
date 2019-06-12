@@ -6,7 +6,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
 {
     public class TAGRearOrdinateValueMatcher : TAGValueMatcher
     {
-        public TAGRearOrdinateValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGRearOrdinateValueMatcher()
         {
         }
 
@@ -14,7 +14,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
+        public override bool ProcessIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, int value)
         {
             // Position value is integer number of millimeters offset from the current position
             bool result = false;
@@ -65,7 +66,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
             return result;
         }
 
-        public override bool ProcessDoubleValue(TAGDictionaryItem valueType, double value)
+        public override bool ProcessDoubleValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, double value)
         {
             state.HaveSeenAnAbsoluteRearPosition = true;
             bool result = false;
@@ -113,7 +115,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
             return result;
         }
 
-        public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
+        public override bool ProcessEmptyValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType)
         {
             state.HaveSeenAnAbsoluteRearPosition = false;
 

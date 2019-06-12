@@ -57,7 +57,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool HasLatestData();
         bool HasSubGridDirectoryDetails { get; }
 
-        void AddPass(uint cellX, uint cellY, CellPass Pass);
+        void AddPass(int cellX, int cellY, CellPass Pass);
 
         void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy);
 

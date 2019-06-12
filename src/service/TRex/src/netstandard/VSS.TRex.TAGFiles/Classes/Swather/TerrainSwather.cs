@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
@@ -19,7 +18,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TerrainSwather>();
 
-        private readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+        private static readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
 
         /// <summary>
         /// The maximum number of cell passes that may be generated when swathing a single interval between
@@ -84,9 +83,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
               int cellCount = 0;
 
               // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
-              for (uint I = (uint) CellExtent.MinX; I <= CellExtent.MaxX; I++)
+              for (int I = CellExtent.MinX; I <= CellExtent.MaxX; I++)
               {
-                for (uint J = (uint) CellExtent.MinY; J <= CellExtent.MaxY; J++)
+                for (int J = CellExtent.MinY; J <= CellExtent.MaxY; J++)
                 {
                   Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
 
@@ -99,9 +98,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             }
 
             // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
-            for (uint I = (uint)CellExtent.MinX; I <= CellExtent.MaxX; I++)
+            for (int I = CellExtent.MinX; I <= CellExtent.MaxX; I++)
             {
-                for (uint J = (uint)CellExtent.MinY; J <= CellExtent.MaxY; J++)
+                for (int J = CellExtent.MinY; J <= CellExtent.MaxY; J++)
                 {
                     Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
 
@@ -143,7 +142,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
                         if (!(passType == PassType.Track || passType == PassType.Wheel))
                         {
-                            if (Processor.OnGrounds.GetOnGroundAtDateTime(_TheTime) == OnGroundState.No)
+                            if (Processor.OnGrounds.GetValueAtDateTime(_TheTime, OnGroundState.No) == OnGroundState.No)
                                 continue;
                         }
 
@@ -162,7 +161,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
                             if (CompactionDataSupportedByMachine)
                             {
-                                ProcessedCellPass.MDP = Processor.ICMDPValues.GetMDPValueAtDateTime(_TheTime);
+                                ProcessedCellPass.MDP = Processor.ICMDPValues.GetValueAtDateTime(_TheTime, CellPassConsts.NullMDP);
 
                                 //    ProcessedCellPass.CCA = Processor.ICCCAValues.GetCCAValueAtDateTime(_TheTime);
                             
@@ -175,17 +174,17 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                 // temp bug fix AJR
                                 if (MachineTargetValueChanges.VibrationStateEvents.GetValueAtDate(ProcessedCellPass.Time, out int StateChangeIndex, VibrationState.Invalid) == VibrationState.On)
                                 {
-                                    ProcessedCellPass.CCV = Processor.ICCCVValues.GetCCVValueAtDateTime(_TheTime);
-                                    ProcessedCellPass.RMV = Processor.ICRMVValues.GetRMVValueAtDateTime(_TheTime);
-                                    ProcessedCellPass.Frequency = Processor.ICFrequencys.GetFrequencyValueAtDateTime(_TheTime);
-                                    ProcessedCellPass.Amplitude = Processor.ICAmplitudes.GetAmplitudeValueAtDateTime(_TheTime);
+                                    ProcessedCellPass.CCV = Processor.ICCCVValues.GetValueAtDateTime(_TheTime, CellPassConsts.NullCCV);
+                                    ProcessedCellPass.RMV = Processor.ICRMVValues.GetValueAtDateTime(_TheTime, CellPassConsts.NullRMV);
+                                    ProcessedCellPass.Frequency = Processor.ICFrequencys.GetValueAtDateTime(_TheTime, CellPassConsts.NullFrequency);
+                                    ProcessedCellPass.Amplitude = Processor.ICAmplitudes.GetValueAtDateTime(_TheTime, CellPassConsts.NullAmplitude);
                                 }
                             }
 
-                            ProcessedCellPass.RadioLatency = Processor.AgeOfCorrections.GetAgeOfCorrectionValueAtDateTime(_TheTime);
-                            ProcessedCellPass.MaterialTemperature = Processor.ICTemperatureValues.GetMaterialTemperatureValueAtDateTime(_TheTime);
+                            ProcessedCellPass.RadioLatency = Processor.AgeOfCorrections.GetValueAtDateTime(_TheTime, CellPassConsts.NullRadioLatency);
+                            ProcessedCellPass.MaterialTemperature = Processor.ICTemperatureValues.GetValueAtDateTime(_TheTime, CellPassConsts.NullMaterialTemperatureValue);
 
-                            double MachineSpd = Processor.ICMachineSpeedValues.GetMachineSpeedValueAtDateTime(_TheTime);
+                            double MachineSpd = Processor.ICMachineSpeedValues.GetValueAtDateTime(_TheTime, Consts.NullDouble);
                             if (MachineSpd == Consts.NullDouble)
                             {
                                 MachineSpd = Processor.CalculatedMachineSpeed;
@@ -199,7 +198,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                 ProcessedCellPass.MachineSpeed = (ushort)Math.Round(MachineSpd * 100);
                             }
 
-                            ProcessedCellPass.gpsMode = Processor.GPSModes.GetGPSModeAtDateTime(_TheTime);
+                            ProcessedCellPass.gpsMode = Processor.GPSModes.GetValueAtDateTime(_TheTime, CellPassConsts.NullGPSMode);
 
                             ProcessedCellPass.HalfPass = HalfPass;
                             ProcessedCellPass.PassType = passType;

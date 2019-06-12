@@ -74,7 +74,7 @@ namespace VSS.TRex.Profiling
     public float CellMaterialTemperatureElev;
 
     /// <summary>
-    /// Default no-args constructor that initialises internal state to 'null';
+    /// Default no-args constructor that initializes internal state to 'null';
     /// </summary>
     public ProfileCell()
     {
@@ -98,8 +98,19 @@ namespace VSS.TRex.Profiling
       CellMaxSpeed = 0;
       CellMinSpeed = CellPassConsts.NullMachineSpeed;
 
+      CellCCV = CellPassConsts.NullCCV;
+      CellCCVElev = Consts.NullHeight;
+      CellTargetCCV = CellPassConsts.NullCCV;
       CellPreviousMeasuredCCV = CellPassConsts.NullCCV;
       CellPreviousMeasuredTargetCCV = CellPassConsts.NullCCV;
+
+      CellCCA = CellPassConsts.NullCCA;
+      CellCCAElev = Consts.NullHeight;
+      CellTargetCCA = CellPassConsts.NullCCA;
+
+      CellMDP = CellPassConsts.NullMDP;
+      CellMDPElev = Consts.NullHeight;
+      CellTargetMDP = CellPassConsts.NullMDP;
     }
 
     public void SetFilteredPasses(FilteredPassData[] filteredPasses) => Passes.SetFilteredPasses(filteredPasses);
@@ -120,7 +131,7 @@ namespace VSS.TRex.Profiling
     /// <param name="interceptLength"></param>
     /// <param name="includesProductionData"></param>
     public ProfileCell(FilteredMultiplePassInfo filteredPassInfo,
-      uint oTGX, uint oTGY,
+      int oTGX, int oTGY,
       double station, double interceptLength,
       bool includesProductionData = true) : this()
     {

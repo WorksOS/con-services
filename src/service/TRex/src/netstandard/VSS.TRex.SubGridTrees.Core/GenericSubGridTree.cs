@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGridTrees
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <returns></returns>
-    public T this[uint x, uint y]
+    public T this[int x, int y]
     {
       get => GetCell(x, y); 
       set => SetCell(x, y, value); 
@@ -35,7 +35,7 @@ namespace VSS.TRex.SubGridTrees
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <returns></returns>
-    private T GetCell(uint cellX, uint cellY)
+    private T GetCell(int cellX, int cellY)
     {
       ISubGrid subGrid = LocateSubGridContaining(cellX, cellY, NumLevels);
 
@@ -56,7 +56,7 @@ namespace VSS.TRex.SubGridTrees
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <param name="value"></param>
-    private void SetCell(uint cellX, uint cellY, T value)
+    private void SetCell(int cellX, int cellY, T value)
     {
       ISubGrid subGrid = ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf);
 

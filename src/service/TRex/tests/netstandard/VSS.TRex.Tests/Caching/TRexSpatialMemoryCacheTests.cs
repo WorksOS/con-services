@@ -123,8 +123,8 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_AddAndRetrieveItem_OneContext()
     {
-      const uint _originX = 123;
-      const uint _originY = 456;
+      const int _originX = 123;
+      const int _originY = 456;
       const int _size = 1000;
 
       using (var cache = new TRexSpatialMemoryCache(100, 1000000, 0.5))
@@ -158,8 +158,8 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(10000)]
     public void Test_TRexSpatialMemoryCacheTests_AddAndRetrieveItem_ManyContexts(int numContexts)
     {
-      const uint _originX = 123;
-      const uint _originY = 456;
+      const int _originX = 123;
+      const int _originY = 456;
       const int _size = 10;
 
       // Create the cache with enough elements to hold one per context without eviction
@@ -171,8 +171,8 @@ namespace VSS.TRex.Tests.Caching
         var items = Enumerable.Range(0, numContexts).Select(x => new TRexSpatialMemoryCacheContextTests_Element
         {
           SizeInBytes = _size,
-          CacheOriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
-          CacheOriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+          CacheOriginX = (int) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginY = (int) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
         }).ToArray();
 
         for (int i = 0; i < numContexts; i++)
@@ -203,8 +203,8 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(10000)]
     public void Test_TRexSpatialMemoryCacheTests_AddAndRemoveItem_ManyContexts(int numContexts)
     {
-      const uint _originX = 123;
-      const uint _originY = 456;
+      const int _originX = 123;
+      const int _originY = 456;
       const int _size = 10;
 
       // Create the cache with enough elements to hold one per context without eviction
@@ -216,8 +216,8 @@ namespace VSS.TRex.Tests.Caching
         var items = Enumerable.Range(0, numContexts).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
         {
           SizeInBytes = _size,
-          CacheOriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
-          CacheOriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+          CacheOriginX = (int) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginY = (int) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
         }).ToArray();
 
         for (int i = 0; i < numContexts; i++)
@@ -244,8 +244,8 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_EvictedItemsRemoval()
     {
-      const uint _originX = 123;
-      const uint _originY = 456;
+      const int _originX = 123;
+      const int _originY = 456;
       const int _size = 1000;
 
       // Create the cache with enough elements to hold one per context without eviction
@@ -280,8 +280,8 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_ItemReplacement()
     {
-      const uint _originX = 123;
-      const uint _originY = 456;
+      const int _originX = 123;
+      const int _originY = 456;
       const int _size = 1000;
 
       // Create the cache with enough elements to hold one per context without eviction
@@ -310,8 +310,8 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(100000, 100000000, 10000)]
     public void Test_TRexSpatialMemoryCacheTests_SizeTrackingOnAddition(int capacity, int maxNumBytes, int elementSize)
     {
-      const uint _originX = 123;
-      const uint _originY = 456;
+      const int _originX = 123;
+      const int _originY = 456;
 
       // Create the cache with enough elements to hold one per context without eviction
       using (var cache = new TRexSpatialMemoryCache(capacity, maxNumBytes, 0.5))
@@ -324,8 +324,8 @@ namespace VSS.TRex.Tests.Caching
         var items = Enumerable.Range(0, numElementsToAdd).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
         {
           SizeInBytes = elementSize,
-          CacheOriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
-          CacheOriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+          CacheOriginX = (int) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginY = (int) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
         }).ToArray();
 
         for (int i = 0; i < numElementsToAdd; i++)
@@ -346,8 +346,8 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(100000000, 10000)]
     public void Test_TRexSpatialMemoryCacheTests_SizeConstraint(int maxNumBytes, int elementSize)
     {
-      const uint _originX = 123;
-      const uint _originY = 456;
+      const int _originX = 123;
+      const int _originY = 456;
 
       int numElementsToAdd = (maxNumBytes / elementSize) + 10;
 
@@ -360,8 +360,8 @@ namespace VSS.TRex.Tests.Caching
         var items = Enumerable.Range(0, numElementsToAdd).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
         {
           SizeInBytes = elementSize,
-          CacheOriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
-          CacheOriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+          CacheOriginX = (int) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+          CacheOriginY = (int) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
         }).ToArray();
 
         for (int i = 0; i < numElementsToAdd; i++)
@@ -378,8 +378,8 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_AddAndRetrieveManyItems_OneContext()
     {
-      const uint _originX = 0;
-      const uint _originY = 0;
+      const int _originX = 0;
+      const int _originY = 0;
       const int _size = 10;
 
       using (var cache = new TRexSpatialMemoryCache(100000, 1000000, 0.5))
@@ -393,8 +393,8 @@ namespace VSS.TRex.Tests.Caching
             Assert.True(cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element()
             {
               SizeInBytes = _size,
-              CacheOriginX = (uint) (_originX + i * SubGridTreeConsts.SubGridTreeDimension),
-              CacheOriginY = (uint) (_originY + j * SubGridTreeConsts.SubGridTreeDimension)
+              CacheOriginX = (int) (_originX + i * SubGridTreeConsts.SubGridTreeDimension),
+              CacheOriginY = (int) (_originY + j * SubGridTreeConsts.SubGridTreeDimension)
             }), $"Failed to add item to cache at {i}:{j}");
           }
         }
@@ -404,8 +404,8 @@ namespace VSS.TRex.Tests.Caching
         for (int i = 0; i < 100; i++)
         for (int j = 0; j < 100; j++)
         {
-          uint x = (uint) (_originX + i * SubGridTreeConsts.SubGridTreeDimension);
-          uint y = (uint) (_originY + j * SubGridTreeConsts.SubGridTreeDimension);
+          int x = (int) (_originX + i * SubGridTreeConsts.SubGridTreeDimension);
+          int y = (int) (_originY + j * SubGridTreeConsts.SubGridTreeDimension);
 
           var gotItem = context.Get(x, y);
           Assert.True(gotItem != null, "Failed to retrieve added entry");
@@ -504,8 +504,8 @@ namespace VSS.TRex.Tests.Caching
           {
             items[i, j] = new TRexSpatialMemoryCacheContextTests_Element
             {
-              CacheOriginX = (uint) (i * SubGridTreeConsts.SubGridTreeDimension),
-              CacheOriginY = (uint) (j * SubGridTreeConsts.SubGridTreeDimension),
+              CacheOriginX = (int) (i * SubGridTreeConsts.SubGridTreeDimension),
+              CacheOriginY = (int) (j * SubGridTreeConsts.SubGridTreeDimension),
               SizeInBytes = 1
             };
 
@@ -523,8 +523,8 @@ namespace VSS.TRex.Tests.Caching
           for (int j = 0; j < 100; j++)
             cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element
             {
-              CacheOriginX = (uint) (i * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
-              CacheOriginY = (uint) (j * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
+              CacheOriginX = (int) (i * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
+              CacheOriginY = (int) (j * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
               SizeInBytes = 1
             });
         }

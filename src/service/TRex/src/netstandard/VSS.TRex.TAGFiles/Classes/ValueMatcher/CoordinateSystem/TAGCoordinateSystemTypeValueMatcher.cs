@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.TAGFiles.Classes.States;
+﻿using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
 
@@ -10,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem
   /// </summary>
   public class TAGCoordinateSystemTypeValueMatcher : TAGValueMatcher
   {
-    public TAGCoordinateSystemTypeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+    public TAGCoordinateSystemTypeValueMatcher()
     {
     }
 
@@ -18,12 +17,13 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem
 
     public override string[] MatchedValueTypes() => valueTypes;
 
-    public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+    public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+      TAGDictionaryItem valueType, uint value)
     {
       bool result = false;
 
       if (valueType.Type == TAGDataType.t4bitUInt &&
-          Enum.IsDefined(typeof(CoordinateSystemType), (byte) value))
+          (value >= CoordinateSystemTypeConsts.COORDINATE_SYSTEM_MIN_VALUE && value <= CoordinateSystemTypeConsts.COORDINATE_SYSTEM_MAX_VALUE))
       {
         valueSink.CSType = (CoordinateSystemType) value;
 

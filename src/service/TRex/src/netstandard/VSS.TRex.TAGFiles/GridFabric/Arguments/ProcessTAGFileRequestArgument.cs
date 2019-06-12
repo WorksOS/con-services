@@ -59,7 +59,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       AssetUID = reader.ReadGuid() ?? Guid.Empty;
 
-      for (int i = 0; i < reader.ReadInt(); i++)
+      var numTAGFiles = reader.ReadInt();
+      TAGFiles = new List<ProcessTAGFileRequestFileItem>(numTAGFiles);
+
+      for (int i = 0; i < numTAGFiles; i++)
         TAGFiles.Add(new ProcessTAGFileRequestFileItem(reader));
     }
   }

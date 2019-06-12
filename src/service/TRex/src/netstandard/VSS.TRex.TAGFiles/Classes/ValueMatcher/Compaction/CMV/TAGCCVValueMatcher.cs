@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
     /// </summary>
     public class TAGCCVValueMatcher : TAGValueMatcher
     {
-        public TAGCCVValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGCCVValueMatcher()
         {
         }
 
@@ -17,7 +17,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
+        public override bool ProcessEmptyValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType)
         {
             state.HaveSeenAnAbsoluteCCV = false;
 
@@ -26,7 +27,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
             return true;
         }
 
-        public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
+        public override bool ProcessIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, int value)
         {
             bool result = false;
 
@@ -49,7 +51,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
             return result;
         }
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             state.HaveSeenAnAbsoluteCCV = true;
 

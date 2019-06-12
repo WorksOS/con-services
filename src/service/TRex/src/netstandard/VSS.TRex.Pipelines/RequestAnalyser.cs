@@ -206,10 +206,10 @@ namespace VSS.TRex.Pipelines
 
         SubGrid.Owner.CalculateIndexOfCellContainingPosition(WorldExtents.MinX - OTGCellSize,
           WorldExtents.MinY - OTGCellSize,
-          out uint ScanMinX, out uint ScanMinY);
+          out int ScanMinX, out int ScanMinY);
         SubGrid.Owner.CalculateIndexOfCellContainingPosition(WorldExtents.MaxX + OTGCellSize,
           WorldExtents.MaxY + OTGCellSize,
-          out uint ScanMaxX, out uint ScanMaxY);
+          out int ScanMaxX, out int ScanMaxY);
 
         ScanMinX = Math.Max(CastSubGrid.OriginX, ScanMinX);
         ScanMinY = Math.Max(CastSubGrid.OriginY, ScanMinY);

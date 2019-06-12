@@ -52,7 +52,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="level"></param>
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
-    public ClientHeightLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    public ClientHeightLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, int indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
       Initialise();
     }
@@ -183,15 +183,18 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Override to implement if needed.
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+    public override void Write(BinaryWriter writer)
     {
-      base.Write(writer, buffer);
+      base.Write(writer);
 
-      SurveyedSurfaceMap.Write(writer, buffer);
+      SurveyedSurfaceMap.Write(writer);
 
-      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
-      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+
+      var buffer = new byte[BUFFER_SIZE];
+
+      Buffer.BlockCopy(Cells, 0, buffer, 0, BUFFER_SIZE);
+      writer.Write(buffer, 0, BUFFER_SIZE);
     }
 
     /// <summary>
@@ -200,15 +203,18 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Override to implement if needed.
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader)
     {
-      base.Read(reader, buffer);
+      base.Read(reader);
 
-      SurveyedSurfaceMap.Read(reader, buffer);
+      SurveyedSurfaceMap.Read(reader);
 
-      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
-      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+
+      var buffer = new byte[BUFFER_SIZE];
+
+      reader.Read(buffer, 0, BUFFER_SIZE);
+      Buffer.BlockCopy(buffer, 0, Cells, 0, BUFFER_SIZE);
     }
 
     /// <summary>

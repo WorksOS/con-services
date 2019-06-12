@@ -26,10 +26,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// </summary>
     public abstract class TAGProcessorBase : TAGProcessorStateBase
     {
-    /// <summary>
-    /// Allow maximum of 10 meters separation between processed epochs
-    /// </summary>
-    private const double kMaxEpochInterval = 10;
+        /// <summary>
+        /// Allow maximum of 10 meters separation between processed epochs
+        /// </summary>
+        private const double kMaxEpochInterval = 10;
 
         /// <summary>
         /// Any gap of over this many seconds indicates the logging was paused
@@ -39,6 +39,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         private const int kPausedLoggingIntervalSeconds = 5; 
 //        private const int kPausedLoggingIntervalInDays = kPausedLoggingInterval* OneSecond;
 
+        /// <summary>
+        /// Determine the number of fence contexts that need ot be created depending on the machine sides in the TAG files
+        /// </summary>
+        private static readonly int NumFencesToCreate = Enum.GetValues(typeof(MachineSide)).Length;
 
         private void UpdateInterpolationStateForNextEpoch()
         {
@@ -157,8 +161,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             WheelTimeInterpolator1 = new SimpleTriangle(WheelTimes[0], WheelTimes[1], WheelTimes[2]);
             WheelTimeInterpolator2 = new SimpleTriangle(WheelTimes[1], WheelTimes[2], WheelTimes[3]);
 
-            int NumFences = Enum.GetValues(typeof(MachineSide)).Length;
-            InterpolationFences = Enumerable.Range(1, NumFences).Select(x => new List<Fence>()).ToArray();
+            InterpolationFences = Enumerable.Range(1, NumFencesToCreate).Select(x => new List<Fence>()).ToArray();
         }
 
         /// <summary>
@@ -656,10 +659,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             switch (machineSide)
             {
               case MachineSide.Left:
-                myResult = ICCCALeftFrontValues.GetCCAValueAtDateTime(dateTime);
+                myResult = ICCCALeftFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
               case MachineSide.Right:
-                myResult = ICCCARightFrontValues.GetCCAValueAtDateTime(dateTime);
+                myResult = ICCCARightFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
             }
             break;
@@ -668,17 +671,17 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             switch (machineSide)
             {
               case MachineSide.Left:
-                myResult = ICCCALeftRearValues.GetCCAValueAtDateTime(dateTime);
+                myResult = ICCCALeftRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
               case MachineSide.Right:
-                myResult = ICCCARightRearValues.GetCCAValueAtDateTime(dateTime);
+                myResult = ICCCARightRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
             }
             break;
         }
 
         if (myResult == CellPassConsts.NullCCA)
-             myResult = ICCCAValues.GetCCAValueAtDateTime(dateTime);
+             myResult = ICCCAValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
 
         return myResult;
       }

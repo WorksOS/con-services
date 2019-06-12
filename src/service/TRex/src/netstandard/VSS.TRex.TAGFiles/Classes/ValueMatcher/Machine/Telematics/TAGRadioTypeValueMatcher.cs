@@ -6,7 +6,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Telematics
 {
     public class TAGRadioTypeValueMatcher : TAGValueMatcher
     {
-        public TAGRadioTypeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGRadioTypeValueMatcher()
         {
         }
 
@@ -14,9 +14,10 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Telematics
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessANSIStringValue(TAGDictionaryItem valueType, byte[] value)
+        public override bool ProcessANSIStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, string value)
         {
-            valueSink.RadioType = Encoding.ASCII.GetString(value);
+            valueSink.RadioType = value;
             state.HaveSeenARadioSerial = true;
 
             return true;

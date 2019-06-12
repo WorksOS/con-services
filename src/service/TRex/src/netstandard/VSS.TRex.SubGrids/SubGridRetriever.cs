@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
@@ -246,7 +247,7 @@ namespace VSS.TRex.SubGrids
     /// <param name="cellPass"></param>
     /// <param name="x"></param>
     /// <param name="y"></param>
-    private void AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref CellPass cellPass, uint x, uint y)
+    private void AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref CellPass cellPass, int x, int y)
     {
       switch (_gridDataType)
       {
@@ -323,7 +324,7 @@ namespace VSS.TRex.SubGrids
     /// If the grid data type is not represented in the latest cell pass information this method returns false.
     /// </summary>
     /// <returns></returns>
-    private bool LatestCellPassAttributeIsNull(uint StripeIndex, uint J)
+    private bool LatestCellPassAttributeIsNull(int StripeIndex, int J)
     {
       switch (_gridDataType)
       {
@@ -634,7 +635,7 @@ namespace VSS.TRex.SubGrids
         _profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
         _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, new FilterSet(_filter),
-          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel));
+          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None);
 
         _cellProfile = new ProfileCell();
 

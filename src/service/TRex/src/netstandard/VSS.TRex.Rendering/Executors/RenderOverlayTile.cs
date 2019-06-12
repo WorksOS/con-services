@@ -500,10 +500,10 @@ namespace VSS.TRex.Rendering.Executors
 
         SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
           RotatedTileBoundingExtents.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
-          out uint CellExtents_MinX, out uint CellExtents_MinY);
+          out int CellExtents_MinX, out int CellExtents_MinY);
         SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
           RotatedTileBoundingExtents.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
-          out uint CellExtents_MaxX, out uint CellExtents_MaxY);
+          out int CellExtents_MaxX, out int CellExtents_MaxY);
 
         BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int)CellExtents_MinX, (int)CellExtents_MinY, (int)CellExtents_MaxX, (int)CellExtents_MaxY);
         CellExtents.Expand(1);

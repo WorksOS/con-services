@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard", "netstandard", "{60739A56-DAB5-4BDD-B54E-1ACA0FF82092}"
 EndProject
@@ -282,6 +282,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Abs
 	ProjectSection(ProjectDependencies) = postProject
 		{7ED58E75-7A99-4412-8C1A-A93250222422} = {7ED58E75-7A99-4412-8C1A-A93250222422}
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.SeriLog.Extensions", "..\..\Common\LoggingExtensions\SeriLogExtensions\VSS.SeriLog.Extensions.csproj", "{C50C3849-CA1C-483E-A79D-F3A63DF10423}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.IO", "src\netstandard\VSS.TRex.IO\VSS.TRex.IO.csproj", "{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}"
+EndProject
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Proxy", "src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj", "{FF4E1B55-8047-40F7-AAC0-087294667828}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -1234,6 +1239,22 @@ Global
 		{FF4E1B55-8047-40F7-AAC0-087294667828}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FF4E1B55-8047-40F7-AAC0-087294667828}.Release|x64.ActiveCfg = Release|Any CPU
 		{FF4E1B55-8047-40F7-AAC0-087294667828}.Release|x64.Build.0 = Release|Any CPU
+		{C50C3849-CA1C-483E-A79D-F3A63DF10423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C50C3849-CA1C-483E-A79D-F3A63DF10423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C50C3849-CA1C-483E-A79D-F3A63DF10423}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C50C3849-CA1C-483E-A79D-F3A63DF10423}.Debug|x64.Build.0 = Debug|Any CPU
+		{C50C3849-CA1C-483E-A79D-F3A63DF10423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C50C3849-CA1C-483E-A79D-F3A63DF10423}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C50C3849-CA1C-483E-A79D-F3A63DF10423}.Release|x64.ActiveCfg = Release|Any CPU
+		{C50C3849-CA1C-483E-A79D-F3A63DF10423}.Release|x64.Build.0 = Release|Any CPU
+		{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}.Debug|x64.Build.0 = Debug|Any CPU
+		{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}.Release|x64.ActiveCfg = Release|Any CPU
+		{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}.Release|x64.Build.0 = Release|Any CPU
 		{CC3B7973-6248-4456-AE1B-ABB2BDA0DABF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC3B7973-6248-4456-AE1B-ABB2BDA0DABF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC3B7973-6248-4456-AE1B-ABB2BDA0DABF}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -1368,10 +1389,15 @@ Global
 		{647F1FD5-3F54-4BC3-B29E-537213EA7ACC} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{73BFC3AF-CEE9-471F-A9CD-62395A61AF35} = {64D5B700-7799-4D1D-84DD-E0DCF51006B2}
 		{FF4E1B55-8047-40F7-AAC0-087294667828} = {64D5B700-7799-4D1D-84DD-E0DCF51006B2}
+		{C50C3849-CA1C-483E-A79D-F3A63DF10423} = {5ABC6984-0C9C-4A5C-80B4-5B559AF79F2D}
+		{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{CC3B7973-6248-4456-AE1B-ABB2BDA0DABF} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

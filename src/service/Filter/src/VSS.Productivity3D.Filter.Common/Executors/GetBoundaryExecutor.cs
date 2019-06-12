@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null, null)
     { }
 
     /// <summary>
@@ -52,12 +52,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns>a polygon boundary if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as BoundaryUidRequestFull;
-      if (request == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 51);
-        return null;
-      }
+      var request = CastRequestObjectTo<BoundaryUidRequestFull>(item, 51);
 
       IEnumerable<ProjectGeofence> associations = null;
       try

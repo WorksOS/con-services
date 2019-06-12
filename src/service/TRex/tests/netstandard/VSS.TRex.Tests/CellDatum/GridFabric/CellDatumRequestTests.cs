@@ -86,7 +86,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     {
       //The single cell is at world origin
       var coords = new XYZ(0.1, 0.1);
-      siteModel.Grid.CalculateIndexOfCellContainingPosition(coords.X, coords.Y, out uint OTGCellX, out uint OTGCellY);
+      siteModel.Grid.CalculateIndexOfCellContainingPosition(coords.X, coords.Y, out int OTGCellX, out int OTGCellY);
 
       return new CellDatumRequestArgument_ClusterCompute
       {

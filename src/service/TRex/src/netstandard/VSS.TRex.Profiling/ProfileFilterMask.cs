@@ -42,15 +42,15 @@ namespace VSS.TRex.Profiling
       {
         // Determine the on-the-ground cell underneath the midpoint of each cell on the intercept line
         SubGridTree.CalculateIndexOfCellContainingPosition(Intercepts.Items[InterceptIdx].MidPointX,
-          Intercepts.Items[InterceptIdx].MidPointY, out uint OTGCellX, out uint OTGCellY);
+          Intercepts.Items[InterceptIdx].MidPointY, out int OTGCellX, out int OTGCellY);
 
         SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
         if (!currentSubGridOrigin.Equals(ThisSubgridOrigin))
           break;
 
-        uint CellX = OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
-          uint CellY = OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
+        int CellX = OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
+          int CellY = OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
 
           if (cellFilter_HasSpatialOrPositionalFilters)
           {
@@ -96,7 +96,7 @@ namespace VSS.TRex.Profiling
           // Go over set bits and determine if they are in Design fence boundary
           mask.ForEachSetBit((X, Y) =>
           {
-            tree.GetCellCenterPosition((uint)(currentSubGridOrigin.X + X), (uint)(currentSubGridOrigin.Y + Y), out var CX, out var CY);
+            tree.GetCellCenterPosition(currentSubGridOrigin.X + X, currentSubGridOrigin.Y + Y, out var CX, out var CY);
             if (!cellFilter.AlignmentFence.IncludesPoint(CX, CY))
             {
               mask.ClearBit(X, Y); // remove interest as its not in design boundary

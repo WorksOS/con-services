@@ -121,6 +121,16 @@ namespace MockProjectWebApi.Services
         }
       };
       FilterData.Add(ConstantsUtil.KETTLEWELL_DRIVE_PROJECT_UID, kettlewellDriveFilters);
+
+      var christchurchTestSiteFilters = new FilterListData
+      {
+        filterDescriptors = new List<FilterDescriptor>
+        {
+          FilterDescriptors.ChristchurchTestSite.NegativeStartStationFilter
+        }
+      };
+
+      FilterData.Add(ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_UID, christchurchTestSiteFilters);
     }
 
     private readonly List<FilterDescriptor> goldenDataFilterDescriptors = new List<FilterDescriptor>

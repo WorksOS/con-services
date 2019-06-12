@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +16,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
+using VSS.Productivity3D.WebApi.Middleware;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.WebApi.Common;
 using WebApiContrib.Core.Formatter.Protobuf;
@@ -33,19 +33,14 @@ namespace VSS.Productivity3D.WebApi
 
     /// <inheritdoc />
     public override string ServiceVersion => "v1";
-    
-    /// <summary>
-    /// Log4net repository logger name.
-    /// </summary>
-    internal const string LoggerRepoName = "WebApi";
-    
+
     /// <summary>
     /// Gets the default configuration object.
     /// </summary>
-    public IConfigurationRoot Configuration { get; }
+    public IConfigurationRoot ConfigurationRoot{ get; }
 
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
     {
       var builder = new ConfigurationBuilder()
           .SetBasePath(env.ContentRootPath)
@@ -53,11 +48,11 @@ namespace VSS.Productivity3D.WebApi
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       builder.AddEnvironmentVariables();
-      Configuration = builder.Build();
+      ConfigurationRoot = builder.Build();
 
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
-    
+
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
@@ -95,8 +90,8 @@ namespace VSS.Productivity3D.WebApi
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<RaptorAuthentication>();
-  
-      app.UseRewriter(new RewriteOptions().Add(RewriteMalformedPath));
+
+      app.UseRewriter(new RewriteOptions().Add(URLRewriter.RewriteMalformedPath));
       app.UseResponseCaching();
       app.UseResponseCompression();
       app.UseMvc();
@@ -139,7 +134,7 @@ namespace VSS.Productivity3D.WebApi
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MACHINES") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MACHINEDESIGNS") != "true" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_LAYERS") != "true" )
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_LAYERS") != "true")
         ConfigureRaptor();
     }
 
@@ -166,28 +161,5 @@ namespace VSS.Productivity3D.WebApi
       }
     }
 #endif
-    /// <summary>
-    /// Custom URL rewriter. Replaces all occurrences of // with /.
-    /// </summary>
-    /// <remarks>
-    /// This catch all is needed to work around errant behaviour in TBC where invalid path strings are sent to 3DP.
-    /// If that issue is addressed this rewrite could be removed.
-    /// Note: Custom rewriter is required as framework AddRewrite() method doesn't cater for our needs.
-    /// </remarks>
-    private void RewriteMalformedPath(RewriteContext context)
-    {
-      var request = context.HttpContext.Request;
-      var regex = new Regex(@"(?<!:)(\/\/+)");
-
-      if (!regex.IsMatch(request.Path.Value))
-      {
-        return;
-      }
-
-      var newPathString = regex.Replace(request.Path.Value, "/");
-
-      Log.LogInformation($"Path rewritten to: '{newPathString}'");
-      request.Path = new PathString(newPathString);
-    }
   }
 }

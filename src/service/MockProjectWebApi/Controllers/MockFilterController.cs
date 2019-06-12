@@ -18,6 +18,7 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Get a filter for a project by filter id.
     /// </summary>
+    [HttpGet("api/v1/mock/filter/{projectUid}")]
     [HttpGet("api/v1/filter/{projectUid}")]
     public FilterData GetMockFilter(string projectUid, [FromUri] string filterUid)
     {
@@ -29,6 +30,7 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Gets the filters for a given project.
     /// </summary>
+    [HttpGet("api/v1/mock/filters/{projectUid}")]
     [HttpGet("api/v1/filters/{projectUid}")]
     public FilterListData GetMockFilters(string projectUid)
     {

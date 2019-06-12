@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
     /// </summary>
     public class TAGStartProofingValueMatcher : TAGValueMatcher
     {
-        public TAGStartProofingValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGStartProofingValueMatcher()
         {
         }
 
@@ -17,32 +17,34 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        private void SetProofingRunStartTime()
+        private void SetProofingRunStartTime(TAGValueMatcherState state, TAGProcessorStateBase valueSink)
         {
             if (state.HaveSeenATimeValue && state.HaveSeenAWeekValue)
                 valueSink.StartProofingDataTime = valueSink.DataTime;
         }
 
-        public override bool ProcessANSIStringValue(TAGDictionaryItem valueType, byte[] value)
+        public override bool ProcessANSIStringValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, string value)
         {
             if (!state.ProofingRunProcessed)
                 state.ProofingRunProcessed = valueSink.ProcessEpochContext();
 
-            valueSink.StartProofing = Encoding.ASCII.GetString(value);
+            valueSink.StartProofing = value;
 
-            SetProofingRunStartTime();
+            SetProofingRunStartTime(state, valueSink);
 
             return true;
         }
 
-        public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
+        public override bool ProcessEmptyValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType)
         {
             if (!state.ProofingRunProcessed)
                 state.ProofingRunProcessed = valueSink.ProcessEpochContext();
 
             valueSink.StartProofing = "";
 
-            SetProofingRunStartTime();
+            SetProofingRunStartTime(state, valueSink);
 
             return true;
         }

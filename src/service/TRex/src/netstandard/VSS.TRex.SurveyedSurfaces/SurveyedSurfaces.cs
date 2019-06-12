@@ -278,8 +278,6 @@ namespace VSS.TRex.SurveyedSurfaces
       }
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     /// <summary>
     /// Given a filter compute which of the surfaces in the list match any given time aspect
     /// of the filter, and the overall existence map of the surveyed surfaces that match the filter.

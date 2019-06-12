@@ -1,5 +1,4 @@
 ﻿using Apache.Ignite.Core.Compute;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Interfaces;
@@ -26,10 +25,10 @@ namespace VSS.TRex.GridFabric.Requests
     public override TResponse Execute(TArgument arg)
     {
       // Construct the function to be used
-      TComputeFunc func = new TComputeFunc();
+      var func = new TComputeFunc();
 
       // Broadcast the request to the compute pool and assemble a list of the results
-      ICollection<TResponse> Result = Compute?.Broadcast(func, arg);
+      var Result = Compute?.Broadcast(func, arg);
 
       // Reduce the set of results to a single aggregated result and send the result back
       // If there is no task result then return a null response
@@ -44,7 +43,7 @@ namespace VSS.TRex.GridFabric.Requests
     public override Task<TResponse> ExecuteAsync(TArgument arg)
     {
       // Construct the function to be used
-      TComputeFunc func = new TComputeFunc();
+      var func = new TComputeFunc();
 
       // Broadcast the request to the compute pool and assemble a list of the results
       return Compute?.BroadcastAsync(func, arg).ContinueWith(aggregate =>

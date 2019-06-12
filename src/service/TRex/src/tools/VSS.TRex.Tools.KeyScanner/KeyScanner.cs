@@ -114,7 +114,7 @@ namespace VSS.TRex.Tools.KeyScanner
         writer.WriteLine($"{count++}:{cacheEntry.Key}: retiree count = {cacheEntry.Value.SegmentKeys.Length}");
 
         foreach (var key in cacheEntry.Value.SegmentKeys)
-          writer.WriteLine($"  [{key.SubGridX}x{key.SubGridY}]: {key.SegmentIdentifier}");
+          writer.WriteLine($"  [{key.SubGridX}x{key.SubGridY}]: {key.SegmentStartDateTicks}={key.SegmentEndDateTicks}");
       }
 
       writer.WriteLine();

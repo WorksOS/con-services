@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, null, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
     { }
 
     /// <summary>
@@ -50,12 +50,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns>If successful returns a <see cref="FilterDescriptorListResult"/> containing a collection of filters for the project.</returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var filterRequest = item as FilterRequestFull;
-      if (filterRequest == null)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 9);
-        return null;
-      }
+      var request = CastRequestObjectTo<FilterRequestFull>(item, 9);
+      if (request == null) return null;
 
       List<MasterData.Repositories.DBModels.Filter> filters = null;
 
@@ -66,16 +62,16 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       //                     else get only those for the calling UserUid
       try
       {
-        if (filterRequest.IsApplicationContext)
+        if (request.IsApplicationContext)
         {
           filters = (List<MasterData.Repositories.DBModels.Filter>)await ((IFilterRepository)this.Repository)
-          .GetFiltersForProject(filterRequest.ProjectUid)
+          .GetFiltersForProject(request.ProjectUid)
           .ConfigureAwait(false);
         }
         else
         {
           filters = (List<MasterData.Repositories.DBModels.Filter>)await ((IFilterRepository)this.Repository)
-          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId)
+          .GetFiltersForProjectUser(request.CustomerUid, request.ProjectUid, request.UserId)
           .ConfigureAwait(false);
         }
       }
@@ -84,7 +80,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 10, e.Message);
       }
 
-      await FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filters, raptorProxy, assetResolverProxy, filterRequest.CustomHeaders);
+      await FilterJsonHelper.ParseFilterJson(request.ProjectData, filters, raptorProxy, assetResolverProxy, request.CustomHeaders);
 
       // may be none, return success and empty list
       return new FilterDescriptorListResult

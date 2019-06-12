@@ -20,4 +20,11 @@
         /// </summary>
         ACS
     }
+
+
+    public static class CoordinateSystemTypeConsts
+    {
+      public const int COORDINATE_SYSTEM_MIN_VALUE = (int)CoordinateSystemType.NoCoordSystem;
+      public const int COORDINATE_SYSTEM_MAX_VALUE = (int)CoordinateSystemType.ACS;
+    }
 }

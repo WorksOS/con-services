@@ -32,6 +32,7 @@
     <ProjectReference Include="..\VSS.TRex.Common.Exceptions\VSS.TRex.Common.Exceptions.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common.Interfaces\VSS.TRex.Common.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
+    <ProjectReference Include="..\VSS.TRex.IO\VSS.TRex.IO.csproj" />
     <ProjectReference Include="..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
     <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>

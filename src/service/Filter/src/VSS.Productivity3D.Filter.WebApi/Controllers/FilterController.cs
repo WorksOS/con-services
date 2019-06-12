@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -23,13 +20,11 @@ using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
-using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -125,7 +120,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, fileImportProxy, geofenceProxy);
       var upsertFilterResult = await UpsertFilter(filterExecutor, await GetProject(projectUid), request);
 
-      if (upsertFilterResult.FilterDescriptor.FilterType == FilterType.Persistent && upsertFilterResult.FilterDescriptor.ContainsBoundary)
+      if (upsertFilterResult.FilterDescriptor.FilterType == FilterType.Persistent)
       {
         await notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
       }

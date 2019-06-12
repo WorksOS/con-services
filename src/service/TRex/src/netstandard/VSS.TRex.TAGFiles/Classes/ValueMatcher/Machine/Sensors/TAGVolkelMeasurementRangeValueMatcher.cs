@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
     /// </summary>
     public class TAGVolkelMeasurementRangeValueMatcher : TAGValueMatcher
     {
-        public TAGVolkelMeasurementRangeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGVolkelMeasurementRangeValueMatcher()
         {
         }
 
@@ -16,13 +16,14 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = false;
 
             if (valueType.Type == TAGDataType.t4bitUInt)
             {
-                valueSink.SetVolkelMeasRange((int)value);
+                valueSink.SetVolkelMeasRange((byte)value);
                 result = true;
             }
 

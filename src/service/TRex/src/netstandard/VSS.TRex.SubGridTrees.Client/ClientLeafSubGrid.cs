@@ -18,7 +18,7 @@ namespace VSS.TRex.SubGridTrees.Client
   /// map records which cells in the sub grid contain information that has been
   /// retrieved from the server.
   /// </summary>
-    public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid, IBinaryReaderWriterBuffered
+    public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid, IBinaryReaderWriter
   {
     /// <summary>
     /// Enumeration indicating type of grid data held in this client leaf sub grid
@@ -40,7 +40,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// IndexOriginOffset is a copy of the IndexOriginOffset from the parent sub grid. It is replicated here
     ///to remove SubGridTree binding in other processing contexts
     /// </summary>
-    public uint IndexOriginOffset { get; set; }
+    public int IndexOriginOffset { get; set; }
 
     /// <summary>
     /// Is data extraction limited to the top identified layer of materials in each cell
@@ -137,7 +137,7 @@ namespace VSS.TRex.SubGridTrees.Client
         ISubGrid parent,
         byte level,
         double cellSize,
-        uint indexOriginOffset) : base(owner, parent, level)
+        int indexOriginOffset) : base(owner, parent, level)
     {
       CellSize = cellSize;
       IndexOriginOffset = indexOriginOffset;
@@ -233,35 +233,34 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="writer"></param>
     /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+    public override void Write(BinaryWriter writer)
     {
-      base.Write(writer, buffer);
+      base.Write(writer);
 
       writer.Write((int)GridDataType);
       writer.Write(CellSize);
       writer.Write(IndexOriginOffset);
 
-      ProdDataMap.Write(writer, buffer);
-      FilterMap.Write(writer, buffer);
+      ProdDataMap.Write(writer);
+      FilterMap.Write(writer);
     }
 
     /// <summary>
     /// Fill the items array by reading the binary representation using the provided reader. 
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader)
     {
-      base.Read(reader, buffer);
+      base.Read(reader);
 
       if ((GridDataType)reader.ReadInt32() != GridDataType)
         throw new TRexSubGridIOException("GridDataType in stream does not match GridDataType of local sub grid instance");
 
       CellSize = reader.ReadDouble();
-      IndexOriginOffset = reader.ReadUInt32();
+      IndexOriginOffset = reader.ReadInt32();
 
-      ProdDataMap.Read(reader, buffer);
-      FilterMap.Read(reader, buffer);
+      ProdDataMap.Read(reader);
+      FilterMap.Read(reader);
     }
 
     /// <summary>
@@ -280,12 +279,12 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Facades the OriginX property of this sub grid for use in the spatial caching implementation
     /// </summary>
-    public uint CacheOriginX => OriginX;
+    public int CacheOriginX => OriginX;
 
     /// <summary>
     /// Facades the OriginY property of this sub grid for use in the spatial caching implementation
     /// </summary>
-    public uint CacheOriginY => OriginY;
+    public int CacheOriginY => OriginY;
 
     public void DumpToLog()
     {

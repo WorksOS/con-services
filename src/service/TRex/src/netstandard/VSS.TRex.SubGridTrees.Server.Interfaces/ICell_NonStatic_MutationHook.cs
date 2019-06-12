@@ -8,9 +8,9 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
   /// </summary>
   public interface ICell_NonStatic_MutationHook
   {
-    void AddPass(uint X, uint Y, Cell_NonStatic cell, CellPass pass, int position = -1);
-    void ReplacePass(uint X, uint Y, Cell_NonStatic cell, int position, CellPass pass);
-    void RemovePass(uint X, uint Y, int passIndex);
+    void AddPass(int X, int Y, Cell_NonStatic cell, CellPass pass, int position = -1);
+    void ReplacePass(int X, int Y, Cell_NonStatic cell, int position, CellPass pass);
+    void RemovePass(int X, int Y, int passIndex);
 
     void EmitNote(string note);
 

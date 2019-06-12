@@ -29,8 +29,8 @@ namespace VSS.TRex.Filters
                 return;
             }
 
-            uint originX = SubGridAsLeaf.OriginX;
-            uint originY = SubGridAsLeaf.OriginY;
+            int originX = SubGridAsLeaf.OriginX;
+            int originY = SubGridAsLeaf.OriginY;
 
             double cellSize = SiteModel.CellSize;
 
@@ -77,7 +77,7 @@ namespace VSS.TRex.Filters
 
                 for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
                 {
-                    uint OriginXPlusI = originX + I;
+                    int OriginXPlusI = originX + I;
                     double CY = OY; // Set to the first row in the column about to be processed
 
                     for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
@@ -143,7 +143,7 @@ namespace VSS.TRex.Filters
                 // Go over set bits and determine if they are in Design fence boundary
                 FilterMask.ForEachSetBit((X, Y) =>
                 {
-                    SiteModel.Grid.GetCellCenterPosition((uint) (SubGridAsLeaf.OriginX + X), (uint) (SubGridAsLeaf.OriginY + Y), out var CX, out var CY);
+                    SiteModel.Grid.GetCellCenterPosition(SubGridAsLeaf.OriginX + X, SubGridAsLeaf.OriginY + Y, out var CX, out var CY);
                     if (!Filter.SpatialFilter.AlignmentFence.IncludesPoint(CX, CY))
                     {
                         FilterMask.ClearBit(X, Y); // remove interest as its not in design boundary

@@ -1,8 +1,6 @@
-﻿using System;
-using VSS.TRex.Common.Types;
+﻿using VSS.TRex.Common.Types;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
@@ -11,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
     /// </summary>
     public class TAGDirectionValueMatcher : TAGValueMatcher
     {
-        public TAGDirectionValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGDirectionValueMatcher()
         {
         }
 
@@ -19,14 +17,16 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
+        public override bool ProcessUnsignedIntegerValue(TAGValueMatcherState state, TAGProcessorStateBase valueSink,
+          TAGDictionaryItem valueType, uint value)
         {
             bool result = false;
 
-            if (valueType.Type == TAGDataType.t4bitUInt &&             
-                Enum.IsDefined(typeof(MachineDirection), (byte) (value - 1))) // Direction value in tag file is 1-based
+            var testValue = value - 1; // Direction value in tag file is 1-based
+            if (valueType.Type == TAGDataType.t4bitUInt &&  
+                (testValue >= MachineDirectionConsts.MACHINE_DIRECTION_MIN_VALUE && testValue <= MachineDirectionConsts.MACHINE_DIRECTION_MAX_VALUE)) 
             {
-                 valueSink.MachineDirection = (MachineDirection) (value - 1);
+                 valueSink.MachineDirection = (MachineDirection) testValue;
                  result = true;
             }
 

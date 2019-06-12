@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
@@ -37,13 +36,13 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public ISubGridCellLatestPassDataWrapper LatestPasses { get; set; }
 
-    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
-    private readonly int _subGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
-    private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
-    private readonly bool _itemsPersistedViaDataPersistorToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG", Consts.ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG);
+    private static readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
+    private static readonly int _subGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
+    private static readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
+    private static readonly bool _itemsPersistedViaDataPersistorToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG", Consts.ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG);
 
-    private readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
-    private readonly ISubGridCellSegmentPassesDataWrapperFactory subGridCellSegmentPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>();
+    private static readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
+    private static readonly ISubGridCellSegmentPassesDataWrapperFactory subGridCellSegmentPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>();
 
     /// <summary>
     /// Default no-arg constructor
@@ -108,7 +107,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       // Segments may not have any defined latest pass information
       writer.Write(LatestPasses != null);
-      LatestPasses?.Write(writer, new byte[50000]);
+      LatestPasses?.Write(writer);
 
       CellStacksOffset = (int) writer.BaseStream.Position;
 
@@ -135,7 +134,7 @@ namespace VSS.TRex.SubGridTrees.Server
       if (HasLatestData && loadLatestData)
       {
         if (reader.ReadBoolean())
-          LatestPasses.Read(reader, new byte[50000]);
+          LatestPasses.Read(reader);
         else
           LatestPasses = null;
       }
@@ -189,7 +188,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool Write(BinaryWriter writer)
     {
       // Write the version to the stream
-      SubGridStreamHeader Header = new SubGridStreamHeader
+      var Header = new SubGridStreamHeader
       {
         Identifier = SubGridStreamHeader.kICServerSubGridLeafFileMoniker,
         Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridSegmentFile,
@@ -225,7 +224,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (_segmentCleavingOperationsToLog || _itemsPersistedViaDataPersistorToLog)
       {
-        SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out uint TotalPasses, out uint MaxPasses);
+        SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out int TotalPasses, out int MaxPasses);
 
         if (_segmentCleavingOperationsToLog && TotalPasses > _subGridSegmentPassCountLimit)
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses}) which violates the maximum number of cell passes within a segment ({_subGridSegmentPassCountLimit})");
@@ -234,12 +233,14 @@ namespace VSS.TRex.SubGridTrees.Server
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses})");
       }
 
-      using (MemoryStream MStream = new MemoryStream())
+      using (MemoryStream MStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
       {
         using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))
         {
           Result = Write(writer);
         }
+
+        // Log.LogInformation($"Segment persistence stream (uncompressed) for segment {FileName} containing {PassesData.SegmentPassCount} cell passes using storage proxy {storage.Mutability} is {MStream.Length} bytes (average = {MStream.Length / (1.0 * PassesData.SegmentPassCount)})");
 
         if (Result)
         {
@@ -247,7 +248,8 @@ namespace VSS.TRex.SubGridTrees.Server
             Owner.Owner.ID,
             FileName,
             Owner.OriginX, Owner.OriginY,
-            FileName,
+            SegmentInfo.StartTime.Ticks,
+            SegmentInfo.EndTime.Ticks,
             SegmentInfo.Version,
             FileSystemStreamType.SubGridSegment,
             MStream,
@@ -267,7 +269,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// If either limit is breached, this segment requires cleaving
     /// </summary>
     /// <returns></returns>
-    public bool RequiresCleaving(out uint TotalPasses, out uint MaxPassCount)
+    public bool RequiresCleaving(out int TotalPasses, out int MaxPassCount)
     {
       SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out TotalPasses, out MaxPassCount);
 
