@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.IO;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
@@ -16,6 +15,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
+using System.IO;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -27,8 +27,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
     private static readonly int minTagFileLength = DIContext.Obtain<IConfigurationStore>().GetValueInt("MIN_TAGFILE_LENGTH", Consts.kMinTagFileLengthDefault);
     private static readonly bool tfaServiceEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TFA_SERVICE", Consts.ENABLE_TFA_SERVICE);
-
-    private static readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<RecyclableMemoryStreamManager>();
 
     /// <summary>
     /// Calls the TFA service via the nuget Proxy,
@@ -154,8 +152,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
       TAGFilePreScan tagFilePresScan = new TAGFilePreScan();
 
-      using (var stream = _recyclableMemoryStreamManager.GetStream("TagFileValidator", tagDetail.tagFileContent, 0,
-        tagDetail.tagFileContent.Length))
+      using (var stream = new MemoryStream(tagDetail.tagFileContent))
       {
         tagFilePresScan.Execute(stream);
       }

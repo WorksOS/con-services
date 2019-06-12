@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Storage.Utilities
 {
@@ -8,6 +9,8 @@ namespace VSS.TRex.Storage.Utilities
     /// </summary>
     public class MemoryStreamCompression
     {
+        private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
+
         /// <summary>
         /// Accepts a memory stream containing data to be compressed
         /// </summary>
@@ -21,7 +24,7 @@ namespace VSS.TRex.Storage.Utilities
             }
 
             // Assume compression will at least halve the size of the data so set initial capacity to this value
-            var compressStream = new MemoryStream((int)(input.Length / 2));
+            var compressStream = _recyclableMemoryStreamManager.GetStream();
 
             input.Position = 0;
             using (var compressor = new DeflateStream(compressStream, CompressionMode.Compress, true))
@@ -46,7 +49,7 @@ namespace VSS.TRex.Storage.Utilities
             }
 
             // Assume compression will at least halve the size of the data so set initial capacity to this value
-            var output = new MemoryStream((int)(input.Length * 2));
+            var output = _recyclableMemoryStreamManager.GetStream();
 
             input.Position = 0;
             using (var decompressor = new DeflateStream(input, CompressionMode.Decompress, true))

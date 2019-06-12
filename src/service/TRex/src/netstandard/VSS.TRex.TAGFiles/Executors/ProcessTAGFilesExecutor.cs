@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Microsoft.IO;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -24,8 +24,6 @@ namespace VSS.TRex.TAGFiles.Executors
     private static readonly int batchSize = DIContext.Obtain<IConfigurationStore>()
       .GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH",
         Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
-
-    private static readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<RecyclableMemoryStreamManager>();
 
     /*
     public static ProcessTAGFileResponse Execute_Legacy_IndividualModelsWithWhenAny(Guid ProjectID, Guid AssetID,
@@ -162,7 +160,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
       foreach (var tagFile in _TAGFiles)
       {
-        using (var fs = _recyclableMemoryStreamManager.GetStream("TagFileValidator", tagFile.TagFileContent, 0, tagFile.TagFileContent.Length))
+        using (var fs = new MemoryStream(tagFile.TagFileContent))
         {
           try
           {

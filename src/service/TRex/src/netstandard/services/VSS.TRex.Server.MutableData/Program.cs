@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IO;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
@@ -20,6 +19,7 @@ using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Servers.Compute;
+using VSS.TRex.IO;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
@@ -42,7 +42,13 @@ namespace VSS.TRex.Server.MutableData
       DIBuilder
         .New()
         .AddLogging()
-        .Add(x => x.AddSingleton<RecyclableMemoryStreamManager>(new RecyclableMemoryStreamManager()))
+        .Add(x => x.AddSingleton(new VSS.TRex.IO.RecyclableMemoryStreamManager
+        {
+          // Allow up to 128Mb worth of freed small blocks used by the recyclable streams for later reuse
+          // NOte: The default value for this setting is zero which means every block allocated to a
+          // recyclable stream is freed when the stream is disposed.
+          MaximumFreeSmallPoolBytes = 128 * 1024 * 1024
+        }))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
