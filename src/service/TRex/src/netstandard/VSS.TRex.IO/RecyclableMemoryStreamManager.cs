@@ -219,9 +219,9 @@ namespace VSS.TRex.IO
       get
       {
         long sum = 0;
-        foreach (long freeSize in this.largeBufferFreeSize)
+        for (int i = 0, limit = this.largeBufferFreeSize.Length; i < limit; i++)
         {
-          sum += freeSize;
+          sum += this.largeBufferFreeSize[i];
         }
 
         return sum;
@@ -236,9 +236,9 @@ namespace VSS.TRex.IO
       get
       {
         long sum = 0;
-        foreach (long inUseSize in this.largeBufferInUseSize)
+        for (int i = 0, limit = this.largeBufferInUseSize.Length; i < limit; i++)
         {
-          sum += inUseSize;
+          sum += this.largeBufferInUseSize[i];
         }
 
         return sum;
@@ -258,9 +258,9 @@ namespace VSS.TRex.IO
       get
       {
         long free = 0;
-        foreach (var pool in this.largePools)
+        for (int i = 0, limit = this.largePools.Length; i < limit; i++)
         {
-          free += pool.Count;
+          free += this.largePools[i].Count;
         }
         return free;
       }
