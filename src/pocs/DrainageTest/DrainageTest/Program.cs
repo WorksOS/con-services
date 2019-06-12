@@ -39,6 +39,9 @@ namespace DrainageTest
         //                                    should succeed, however sketchup warns that it's fixing minor errors
         //                                  ..\..\TestData\BuildingPad\TestCase.xml 
         //                                    should succeed, however sketchup warns that it's fixing minor errors
+        //                                  ..\..\TestData\JeannieTestSquare\TestCase.xml
+        //                                    simple horz square with 1 hill and 1 pond
+        //                                    throws exception "error in the application"????
         var stringBuilder = new StringBuilder();
         foreach (string str in args)
           stringBuilder.AppendFormat("{0} ", (object) str);
@@ -70,7 +73,7 @@ namespace DrainageTest
       var useCase = TestCase.Load(xmlPath);
       if (useCase == null)
         throw new ArgumentException("Unable to load surface configuration");
-      logger.LogInfo(nameof(Execute), $"XML loaded. surface Filename: {JsonConvert.SerializeObject(useCase.Surface)}");
+      logger.LogInfo(nameof(Execute), $"XML loaded: designFile {useCase.Surface} units: {(useCase.IsMetric ? "metres" : "us ft?")} points {(useCase.IsXYZ ? "xyz" : "nee")})");
 
       var surface = new Surface(useCase);
       using (var landLevelingInstance = ServiceLocator.Current.GetInstance<ILandLeveling>())

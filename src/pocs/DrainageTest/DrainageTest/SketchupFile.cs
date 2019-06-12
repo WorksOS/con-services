@@ -30,11 +30,11 @@ namespace DrainageTest
 
     protected internal string CreateTargetModels(string commandLineArgument)
     {
-      if (_useCase == null || _surfaceInfo == null || _design == null 
-          || string.IsNullOrEmpty(commandLineArgument) 
+      if (_useCase == null || _surfaceInfo == null || _design == null
+          || string.IsNullOrEmpty(commandLineArgument)
           || string.IsNullOrEmpty(Path.GetFullPath(commandLineArgument))
           || string.IsNullOrEmpty(Path.GetDirectoryName(Path.GetFullPath(commandLineArgument)))
-          )
+      )
         return null;
 
       var targetPath =
@@ -50,96 +50,166 @@ namespace DrainageTest
     /// <summary>
     /// Creates the .skp model which sketchup launches with
     ///    also generates pngs.
-    ///    But I think the guts of the design change must be in .skp as thats where the design triangles are added?     
     /// </summary>
     private void CreateSketchupFile(string skuFile)
     {
-      _logger.LogInfo(nameof(CreateSketchupFile), $"originalVisualization: {_useCase.OriginalVisualizationTools.Length} designVisualization: {_useCase.DesignVisualizationTools?.Length} bestFit: {_useCase.Compute}");
       using (var skuModel = new SkuModel(_useCase.IsMetric))
       {
         skuModel.Name = Path.GetFileNameWithoutExtension(skuFile);
+        _logger.LogInfo(nameof(CreateSketchupFile), $"Name: {skuModel.Name}");
 
-        // generate original horizontal ground with first OriginalVisualizationTools (so order of these significant to result)
-        // generates TestCase-original-<>-slope.png for each Original configuration in txt file
-        var originalHorizontalTexture = (BitmapSource)null;
-        if (_useCase.OriginalVisualizationTools != null)
-        {
-          foreach (var visualizationTool in _useCase.OriginalVisualizationTools)
-          {
-            var andSaveTexture = visualizationTool.GenerateAndSaveTexture(_surfaceInfo, skuFile, "original");
-            if (originalHorizontalTexture == null && andSaveTexture != null)
-              originalHorizontalTexture = andSaveTexture;
-          }
-        }
-        if (originalHorizontalTexture != null)
-          skuModel.AddSurfaceWithHorizontalTexture(_surfaceInfo.Points, _surfaceInfo.Triangles, "surface", originalHorizontalTexture, 0.75, "surface", null);
-        else
-          skuModel.AddSurface(_surfaceInfo.Points, _surfaceInfo.Triangles, "surface", "BurlyWood", 0.75, "surface", null);
+        AddOriginalLayers(skuModel);
 
-        // add surface flowLines
-        if (_useCase.Compute == ComputeEnum.SurfaceBestFit)
-        {
-          var flowSegments = _surfaceInfo.GenerateFlowSegments(_design.CellSize, out _,
-            null, null, new CancellationToken());
-          skuModel.AddLinestrings(flowSegments.Select(
-            fs => new Point3D[2] {fs.Point1, fs.Point2}),
-            "surface flows", "brown", 0.75, false, "");
-        }
+        //AddProposedLayers(skuModel);
 
-        // generate design horizontal ground with first DesignVisualizationTools (so order of these significant to result)
-        // generates TestCase-design-<>-slope.png for each Design configuration in txt file
-        var designHorizontalTexture = (BitmapSource)null;
-        if (_useCase.DesignVisualizationTools != null)
-        {
-          foreach (var visualizationTool in _useCase.DesignVisualizationTools)
-          {
-            var andSaveTexture = visualizationTool.GenerateAndSaveTexture(_design.Surface, skuFile, nameof(_design));
-            if (designHorizontalTexture == null && andSaveTexture != null)
-              designHorizontalTexture = andSaveTexture;
-          }
-        }
-        if (designHorizontalTexture != null)
-          skuModel.AddSurfaceWithHorizontalTexture(_design.Surface.Points, _design.Surface.Triangles, nameof(_design), designHorizontalTexture, 0.75, nameof(_design), null);
-        else
-          skuModel.AddSurface(_design.Surface.Points, _design.Surface.Triangles, nameof(_design), "Green", 0.75, nameof(_design), null);
-
-        // add design flowLines
-        if (_useCase.Compute == ComputeEnum.SurfaceBestFit)
-        {
-          var flowSegments = _design.Surface.GenerateFlowSegments(_design.CellSize, out _,
-            null, null, new CancellationToken());
-          skuModel.AddLinestrings(flowSegments.Select(
-            fs => new Point3D[2] {fs.Point1, fs.Point2}),
-            "design flows", "DarkGreen", 0.75, false, "");
-        }
-
-        // add vertical surface ie. cut-fill
-        string fullPath = Path.GetFullPath(Path.Combine("Sketchup", "AltitudeTexture.png"));
-        skuModel.AddSurfaceWithVerticalTexture(_design.CutFillSurface.Points, _design.CutFillSurface.Triangles, true, "cutfill", fullPath, 0.75, nameof(_design), null);
-
-        if (_useCase.TargetDitches != null && _useCase.TargetDitches.Any())
-        {
-          int num = 1;
-          foreach (var targetDitch in _useCase.TargetDitches)
-          {
-            if (targetDitch.Points.Any())
-              skuModel.AddLinestring(targetDitch.Points.Select(p => new Point3D(p.X, p.Y, 0.0)), $"ditch-{num++}", "Lime", 1.0, true, "");
-          }
-        }
-        if (_useCase.Pipeline != null && _useCase.Pipeline.Points.Any())
-          skuModel.AddLinestring(_useCase.Pipeline.Points.Select(p => new Point3D(p.X, p.Y, 0.0)), "pipeline", "Lime", 1.0, true, "");
-        if (_design.Rows.Any())
-          skuModel.AddLinestrings(_design.Rows.Select(ls => ls.Points), "Rows", "Green", 1.0, false, "Rows");
-        if (_design.Columns.Any())
-          skuModel.AddLinestrings(_design.Columns.Select(ls => ls.Points), "Columns", "Green", 1.0, false, "Columns");
-        foreach (var plane in _design.Planes)
-          skuModel.AddPlane(plane.Boundary.Points, plane.Tag, "Red", 0.75, "");
         skuModel.ZoomToExtents();
-
-        // save .skp model 
         skuModel.Save(skuFile, ModelVersion.SU2015);
       }
     }
+
+    private void AddOriginalLayers(SkuModel skuModel)
+    {
+      _logger.LogInfo(nameof(AddOriginalLayers),
+        $"originalVisualization: {_useCase.OriginalVisualizationTools.Length}");
+
+      // generate original horizontal ground with first OriginalVisualizationTools (so order of these significant to result)
+      // generates TestCase-original-<>-slope.png for each Original configuration in txt file
+      var originalHorizontalTexture = (BitmapSource) null;
+      var visualizationType = "unknown";
+
+      #region showInitialOriginalLayer
+      /*
+      if (_useCase.OriginalVisualizationTools != null)
+      {
+        foreach (var visualizationTool in _useCase.OriginalVisualizationTools)
+        {
+          var andSaveTexture =
+            visualizationTool.GenerateAndSaveTexture(_surfaceInfo, skuModel.Name, visualizationType);
+          if (originalHorizontalTexture == null && andSaveTexture != null)
+          {
+            visualizationType = visualizationTool.GetType().ToString();
+            originalHorizontalTexture = andSaveTexture;
+          }
+        }
+      }
+
+      var originalLayerName = "originalSurface " + visualizationType;
+      if (originalHorizontalTexture != null)
+        skuModel.AddSurfaceWithHorizontalTexture(_surfaceInfo.Points, _surfaceInfo.Triangles, originalLayerName,
+          originalHorizontalTexture, 0.75, originalLayerName, null);
+      else
+        skuModel.AddSurface(_surfaceInfo.Points, _surfaceInfo.Triangles, originalLayerName, "BurlyWood", 0.75,
+          originalLayerName, null);
+          */
+      #endregion showInitialOriginalLayer
+
+      #region showAllOriginalLayers
+      if (_useCase.OriginalVisualizationTools != null)
+      {
+        // note: DrainageViolations colors appear to apply to PondMap (green, red, yellow) rather than DrainageViolation map (shades of blue)
+        foreach (var visualizationTool in _useCase.OriginalVisualizationTools)
+        {
+          //if (visualizationTool is SkuTester.DataModel.PondMap || visualizationTool is SkuTester.DataModel.DrainageViolations || visualizationTool is SkuTester.DataModel.OmniSlope)
+          {
+            var andSaveTexture =
+              visualizationTool.GenerateAndSaveTexture(_surfaceInfo, skuModel.Name, visualizationType);
+            var originalLayerName = "originalSurface " + visualizationTool.GetType().ToString();
+            skuModel.AddSurfaceWithHorizontalTexture(_surfaceInfo.Points, _surfaceInfo.Triangles, originalLayerName,
+              andSaveTexture, 0.75, originalLayerName, null);
+          }
+        }
+      }
+      #endregion showAllOriginalLayers
+
+      //var elevationInterval = (double)10;
+      //var contours = _surfaceInfo.GetContours(startElevation: 0, elevationInterval: elevationInterval);
+      //skuModel.AddLinestrings(contours, "lineStringsOrig", "Red", 0.75, true, "linestringsOrig");
+
+
+      /*
+      // add surface flowLines
+      if (_useCase.Compute == ComputeEnum.SurfaceBestFit)
+      {
+        var flowSegments = _surfaceInfo.GenerateFlowSegments(_design.CellSize, out _,
+          null, null, new CancellationToken());
+        skuModel.AddLinestrings(flowSegments.Select(
+          fs => new Point3D[2] {fs.Point1, fs.Point2}),
+          "originalSurfaceFlows", "brown", 0.75, false, "originalSurfaceFlows");
+      }
+      */
+    }
+
+    private void AddProposedLayers(SkuModel skuModel)
+    {
+      _logger.LogInfo(nameof(AddProposedLayers),
+        $"designVisualization: {_useCase.DesignVisualizationTools?.Length} designFitType: {_useCase.Compute}");
+      
+      // generate design horizontal ground with first DesignVisualizationTools (so order of these significant to result)
+      // generates TestCase-design-<>-slope.png for each Design configuration in txt file
+      var designHorizontalTexture = (BitmapSource) null;
+      var visualizationType = "unknown";
+      if (_useCase.DesignVisualizationTools != null)
+      {
+
+        foreach (var visualizationTool in _useCase.DesignVisualizationTools)
+        {
+          // if (visualizationTool is SkuTester.DataModel.PondMap)
+          if (visualizationTool is SkuTester.DataModel.DrainageViolations)
+          {
+            var andSaveTexture = visualizationTool.GenerateAndSaveTexture(_design.Surface, skuModel.Name, "proposed");
+            if (designHorizontalTexture == null && andSaveTexture != null)
+            {
+              visualizationType = visualizationTool.GetType().ToString();
+              designHorizontalTexture = andSaveTexture;
+            }
+          }
+        }
+      }
+
+      var proposedLayerName = "proposedHorizontalSurface " + visualizationType;
+      if (designHorizontalTexture != null)
+        skuModel.AddSurfaceWithHorizontalTexture(_design.Surface.Points, _design.Surface.Triangles, proposedLayerName, 
+          designHorizontalTexture, 0.75, proposedLayerName, null);
+      else
+        skuModel.AddSurface(_design.Surface.Points, _design.Surface.Triangles, proposedLayerName, "Green",
+          0.75, proposedLayerName, null);
+
+      /*
+      // add design flowLines
+      if (_useCase.Compute == ComputeEnum.SurfaceBestFit)
+      {
+        var flowSegments = _design.Surface.GenerateFlowSegments(_design.CellSize, out _,
+          null, null, new CancellationToken());
+        skuModel.AddLinestrings(flowSegments.Select(
+          fs => new Point3D[2] {fs.Point1, fs.Point2}),
+          "proposedSurfaceFlows", "DarkGreen", 0.75, false, "proposedSurfaceFlows");
+      }
+
+      // add vertical surface ie. cut-fill
+      string fullPath = Path.GetFullPath(Path.Combine("Sketchup", "AltitudeTexture.png"));
+      skuModel.AddSurfaceWithVerticalTexture(_design.CutFillSurface.Points, _design.CutFillSurface.Triangles, true, "proposedVerticalSurface", fullPath, 0.75, "proposedVerticalSurface", null);
+
+      if (_useCase.TargetDitches != null && _useCase.TargetDitches.Any())
+      {
+        int num = 1;
+        foreach (var targetDitch in _useCase.TargetDitches)
+        {
+          if (targetDitch.Points.Any())
+            skuModel.AddLinestring(targetDitch.Points.Select(p => new Point3D(p.X, p.Y, 0.0)), $"ditch-{num++}", "Lime", 1.0, true, "");
+        }
+      }
+      if (_useCase.Pipeline != null && _useCase.Pipeline.Points.Any())
+        skuModel.AddLinestring(_useCase.Pipeline.Points.Select(p => new Point3D(p.X, p.Y, 0.0)), "pipeline", "Lime", 1.0, true, "");
+      if (_design.Rows.Any())
+        skuModel.AddLinestrings(_design.Rows.Select(ls => ls.Points), "Rows", "Green", 1.0, false, "Rows");
+      if (_design.Columns.Any())
+        skuModel.AddLinestrings(_design.Columns.Select(ls => ls.Points), "Columns", "Green", 1.0, false, "Columns");
+      foreach (var plane in _design.Planes)
+        skuModel.AddPlane(plane.Boundary.Points, plane.Tag, "Red", 0.75, "");
+      */
+
+    }
+
   }
 }
 

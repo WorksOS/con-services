@@ -4,8 +4,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media.Media3D;
+using Core.Contracts.SurfaceImportExport;
 using Microsoft.Practices.ServiceLocation;
+using Morph.Contracts.Interfaces;
+using Morph.Core.Utility;
+using Morph.Module.Services.Utility.MultiPlane;
 using Morph.Services.Core.DataModel;
+using Morph.Services.Core.Tools;
+using Newtonsoft.Json;
 using SkuTester.DataModel;
 
 namespace DrainageTest
@@ -29,8 +36,32 @@ namespace DrainageTest
         return null;
 
       if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(_useCase.Surface), ".dxf") == 0)
+      {
         _surfaceInfo = landLevelingInstance.ImportSurface(_useCase.Surface, (Action<float>) null);
-
+      }
+      else
+      {
+        // I think a multiPlane file is just a flat plane offset from a bench i.e. NOT a point cloud
+        var multiPlaneParser = new MultiPlaneParser(_logger,
+          new Morph.Core.Utility.UnitsManager.UnitsManager(ServiceLocator.Current.GetInstance<UnitConverter>(),
+            (IPreferences) null));
+        var multiPlaneSettings = new MultiPlaneSettings()
+        {
+          CoordinateSystem = _useCase.IsXYZ ? MulitplaneCoordinateSystems.Xyz : MulitplaneCoordinateSystems.Yxz,
+          DistanceType = _useCase.IsMetric ? MultiplaneDistanceTypes.Meters : MultiplaneDistanceTypes.Feet,
+          HasId = _useCase.HasPointIds
+        };
+        string surface = _useCase.Surface;
+        var settings = multiPlaneSettings;
+        var pointsFromTextFile =
+          multiPlaneParser.GetPointsFromTextFile(surface, settings, out var boundary, out _, out _);
+        var boundaryCopy = boundary;
+        _surfaceInfo = landLevelingInstance.CreateSurface(Path.GetFileNameWithoutExtension(_useCase.Surface),
+          (IEnumerable<Point3D>) pointsFromTextFile,
+          (IList<int>) null, boundaryCopy.Select<Point3D, Point>((Func<Point3D, Point>) (p => p.ToPoint())),
+          (IEnumerable<IEnumerable<Point>>) null,
+          double.NaN);
+      }
       //else if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(useCase.Surface), ".xml") == 0)
       //{
       //  FieldLevelData fieldLevelData = FieldLevelData.Load(useCase.Surface);
@@ -42,7 +73,6 @@ namespace DrainageTest
       //  }
       //  surfaceInfo = instance.CreateSurface(Path.GetFileNameWithoutExtension(useCase.Surface), fieldLevelData.BoundaryPoints.Union<Point3D>(fieldLevelData.SurveyPoints), (IList<int>)null, fieldLevelData.BoundaryPoints.Select<Point3D, Point>((Func<Point3D, Point>)(p => p.ToPoint())), (IEnumerable<IEnumerable<Point>>)null, double.NaN);
       //}
-      //
       //else if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(useCase.Surface), ".gbg") == 0)
       //{
       //  isGBG = true;
@@ -51,28 +81,26 @@ namespace DrainageTest
       //  surfaceInfo = instance.CreateSurface(Path.GetFileNameWithoutExtension(useCase.Surface), (IEnumerable<Point3D>)surfaceInfoDump.Points, surfaceInfoDump.Triangles, (IEnumerable<Point>)surfaceInfoDump.Boundary, (IEnumerable<IEnumerable<Point>>)null, double.NaN);
       //}
 
-      //else
-      //{
-      //  MultiPlaneParser multiPlaneParser = new MultiPlaneParser(logger, new Morph.Core.Utility.UnitsManager.UnitsManager(ServiceLocator.Current.GetInstance<UnitConverter>(), (IPreferences)null));
-      //  MultiPlaneSettings multiPlaneSettings = new MultiPlaneSettings()
-      //  {
-      //    CoordinateSystem = useCase.IsXYZ ? MulitplaneCoordinateSystems.Xyz : MulitplaneCoordinateSystems.Yxz,
-      //    DistanceType = useCase.IsMetric ? MultiplaneDistanceTypes.Meters : MultiplaneDistanceTypes.Feet,
-      //    HasId = useCase.HasPointIds
-      //  };
-      //  string surface = useCase.Surface;
-      //  MultiPlaneSettings settings = multiPlaneSettings;
-      //  List<Point3D> source;
-      //  ref List<Point3D> local1 = ref source;
-      //  Origin origin;
-      //  ref Origin local2 = ref origin;
-      //  IDesignEditImports designEditImports;
-      //  ref IDesignEditImports local3 = ref designEditImports;
-      //  List<Point3D> pointsFromTextFile = multiPlaneParser.GetPointsFromTextFile(surface, settings, out local1, out local2, out local3);
-      //  surfaceInfo = instance.CreateSurface(Path.GetFileNameWithoutExtension(useCase.Surface), (IEnumerable<Point3D>)pointsFromTextFile, (IList<int>)null, source.Select<Point3D, Point>((Func<Point3D, Point>)(p => p.ToPoint())), (IEnumerable<IEnumerable<Point>>)null, double.NaN);
-      //}
+      _logger.LogInfo(nameof(GenerateSurfaceInfo),
+        $"_surfaceInfo boundary count: {_surfaceInfo.Boundary.Count} point count: {_surfaceInfo.Points.Count} MaxElevation {_surfaceInfo.MaxElevation} MinElevation {_surfaceInfo.MinElevation}");
 
-      _logger.LogInfo(nameof(GenerateSurfaceInfo), $"_surfaceInfo boundary count: {_surfaceInfo.Boundary.Count}");
+      var elevationInterval = (double) 1;
+      _surfaceInfo.GetContourLines(true, elevationInterval, out var contourPoints, null);
+      _logger.LogInfo(nameof(GenerateSurfaceInfo),
+        $"_surfaceInfo ContourPoints {JsonConvert.SerializeObject(contourPoints)}");
+
+      var contourLines = _surfaceInfo.GetContours(startElevation: 0, elevationInterval: elevationInterval);
+      _logger.LogInfo(nameof(GenerateSurfaceInfo),
+        $"_surfaceInfo ContourLines {JsonConvert.SerializeObject(contourLines)}");
+
+      var cellSize = 3;
+      var inclusionZones = new List<IList<Point>>(1);
+      inclusionZones.Add(_surfaceInfo.Boundary);
+
+      _surfaceInfo.ComputeDrainageMinMaxSlopes(cellSize, inclusionZones, null, out var minSlope,
+        out var maxSlope);
+      _logger.LogInfo(nameof(GenerateSurfaceInfo), $"_surfaceInfo minSlope {minSlope} maxSlope {maxSlope}");
+
       return _surfaceInfo;
     }
 
@@ -86,16 +114,16 @@ namespace DrainageTest
         case ComputeEnum.SurfaceBestFit:
           _logger.LogInfo(nameof(ComputeSurfaces),
             $"Compute SurfaceBestFit. surface Name: {_surfaceInfo.Name} pointCount: {_surfaceInfo.Points.Count}");
-          var constraints1 = new SurfaceConstraints();
-          constraints1.Resolution = _useCase.Resolution;
-          constraints1.Boundary = _useCase.Boundary;
-          constraints1.TargetDitches = _useCase.TargetDitches;
-          constraints1.ExclusionZones.AddRange(_useCase.ExclusionZones);
-          constraints1.Areas.AddRange(_useCase.Areas);
-          if (!constraints1.Areas.Any())
-            constraints1.Areas.Add(new AreaConstraints()
+          var bestFitConstraints = new SurfaceConstraints();
+          bestFitConstraints.Resolution = _useCase.Resolution;
+          bestFitConstraints.Boundary = _useCase.Boundary;
+          bestFitConstraints.TargetDitches = _useCase.TargetDitches;
+          bestFitConstraints.ExclusionZones.AddRange(_useCase.ExclusionZones);
+          bestFitConstraints.Areas.AddRange(_useCase.Areas);
+          if (!bestFitConstraints.Areas.Any())
+            bestFitConstraints.Areas.Add(new AreaConstraints()
             {
-              Tag = "Field",
+              Tag = "Area",
               Boundary = _useCase.Boundary.Points.Count > 2
                 ? _useCase.Boundary
                 : new Linestring(_surfaceInfo.Boundary),
@@ -113,94 +141,110 @@ namespace DrainageTest
             area.Bulkage = _useCase.Bulkage;
           }
 
-          for (int index = 0; index < constraints1.Areas.Count; ++index)
+          for (int index = 0; index < bestFitConstraints.Areas.Count; ++index)
           {
-            if (string.IsNullOrEmpty(constraints1.Areas[index].Tag))
-              constraints1.Areas[index].Tag = $"Area{(object) (index + 1):00}";
+            if (string.IsNullOrEmpty(bestFitConstraints.Areas[index].Tag))
+              bestFitConstraints.Areas[index].Tag = $"Area{(object) (index + 1):00}";
           }
 
-          _design = landLevelingInstance.ComputeSurface(constraints1, (Predicate<float>) null);
-
+          _design = landLevelingInstance.ComputeSurface(bestFitConstraints, (Predicate<float>) null);
           break;
 
-        //    case ComputeEnum.SinglePlaneBestFit:
-        //      if (useCase.Sections.Count == 0)
-        //        useCase.Sections.Add(new PlanesConstraints()
-        //        {
-        //          Boundary = useCase.Boundary.Points.Count > 2 ? useCase.Boundary : new Linestring((IEnumerable<Point>)surfaceInfo.Boundary),
-        //          MinimumSlope = useCase.MinSlope,
-        //          MaximumSlope = useCase.MaxSlope,
-        //          Shrinkage = useCase.Shrinkage,
-        //          Bulkage = useCase.Bulkage
-        //        });
-        //      else if (!isGBG)
-        //      {
-        //        foreach (PlanesConstraints section in useCase.Sections)
-        //        {
-        //          section.Shrinkage = useCase.Shrinkage;
-        //          section.Bulkage = useCase.Bulkage;
-        //        }
-        //      }
-        //      design = instance.ComputePlanes((IList<PlanesConstraints>)useCase.Sections, (IEnumerable<Linestring>)useCase.ExclusionZones, useCase.ExportVolume, (Predicate<float>)null);
-        //      break;
-        //
-        //    case ComputeEnum.Furrows:
-        //      RowsConstraints constraints2 = new RowsConstraints();
-        //      constraints2.Boundary = useCase.Boundary;
-        //      constraints2.MinimumSlope = useCase.MinSlope;
-        //      constraints2.MaximumSlope = useCase.MaxSlope;
-        //      constraints2.MaximumSlopeChange = useCase.MaxSlopeChange;
-        //      constraints2.MinimumCrossSlope = useCase.MinCrossSlope;
-        //      constraints2.MaximumCrossSlope = useCase.MaxCrossSlope;
-        //      constraints2.MaximumCrossSlopeChange = useCase.MaxCrossSlopeChange;
-        //      constraints2.MaximumCutDepth = useCase.MaxCutDepth;
-        //      constraints2.Pipeline = useCase.Pipeline;
-        //      constraints2.RowsDirection = Morph.Services.Core.DataModel.Utils.NormalizeAngleRad(-useCase.FurrowHeading * (Math.PI / 180.0) + Math.PI / 2.0, -1.0 * Math.PI);
-        //      constraints2.Resolution = useCase.Resolution;
-        //      constraints2.Shrinkage = useCase.Shrinkage;
-        //      constraints2.Bulkage = useCase.Bulkage;
-        //      constraints2.ExportVolume = useCase.ExportVolume;
-        //      constraints2.ExclusionZones.AddRange((IEnumerable<Linestring>)useCase.ExclusionZones);
-        //      design = instance.ComputeRows(constraints2, (Predicate<float>)null);
-        //      break;
-        // 
-        //    case ComputeEnum.Subzones:
-        //      ZonesConstraints constraints3 = new ZonesConstraints();
-        //      constraints3.Boundary = useCase.Boundary;
-        //      constraints3.MainDirection = Morph.Services.Core.DataModel.Utils.NormalizeAngleRad(-useCase.MainHeading * (Math.PI / 180.0) + Math.PI / 2.0, -1.0 * Math.PI);
-        //      constraints3.Resolution = useCase.Resolution;
-        //      constraints3.ExclusionZones.AddRange((IEnumerable<Linestring>)useCase.ExclusionZones);
-        //      constraints3.Subzones.AddRange((IEnumerable<SubzoneConstraints>)useCase.Zones);
-        //      foreach (SubzoneConstraints zone in useCase.Zones)
-        //      {
-        //        zone.Shrinkage = useCase.Shrinkage;
-        //        zone.Bulkage = useCase.Bulkage;
-        //      }
-        //      for (int index = 0; index < constraints3.Subzones.Count; ++index)
-        //      {
-        //        if (string.IsNullOrEmpty(constraints3.Subzones[index].Tag))
-        //          constraints3.Subzones[index].Tag = string.Format("Subzone{0:00}", (object)(index + 1));
-        //      }
-        //      design = instance.ComputeZones(constraints3, (Predicate<float>)null);
-        //      break;
-        //
-        //    case ComputeEnum.Basins:
-        //      BasinConstraints constraints4 = new BasinConstraints();
-        //      constraints4.BasinBoundary = useCase.Boundary;
-        //      constraints4.ExitPoint = useCase.ExitPoint;
-        //      constraints4.Resolution = useCase.Resolution;
-        //      constraints4.MinimumSlope = useCase.MinSlope;
-        //      constraints4.MaximumSlope = useCase.MaxSlope;
-        //      constraints4.ExportVolume = useCase.ExportVolume;
-        //      constraints4.ExclusionZones.AddRange((IEnumerable<Linestring>)useCase.ExclusionZones);
-        //      constraints4.Shrinkage = useCase.Shrinkage;
-        //      constraints4.Bulkage = useCase.Bulkage;
-        //      design = instance.ComputeBasin(constraints4, (Predicate<float>)null);
-        //      break;
+        #region superfluous
+
+        /*
+            case ComputeEnum.SinglePlaneBestFit:
+              if (useCase.Sections.Count == 0)
+                useCase.Sections.Add(new PlanesConstraints()
+                {
+                  Boundary = useCase.Boundary.Points.Count > 2 ? useCase.Boundary : new Linestring((IEnumerable<Point>)surfaceInfo.Boundary),
+                  MinimumSlope = useCase.MinSlope,
+                  MaximumSlope = useCase.MaxSlope,
+                  Shrinkage = useCase.Shrinkage,
+                  Bulkage = useCase.Bulkage
+                });
+              else if (!isGBG)
+              {
+                foreach (PlanesConstraints section in useCase.Sections)
+                {
+                  section.Shrinkage = useCase.Shrinkage;
+                  section.Bulkage = useCase.Bulkage;
+                }
+              }
+              design = instance.ComputePlanes((IList<PlanesConstraints>)useCase.Sections, (IEnumerable<Linestring>)useCase.ExclusionZones, useCase.ExportVolume, (Predicate<float>)null);
+              break;
+
+            case ComputeEnum.Furrows:
+              RowsConstraints constraints2 = new RowsConstraints();
+              constraints2.Boundary = useCase.Boundary;
+              constraints2.MinimumSlope = useCase.MinSlope;
+              constraints2.MaximumSlope = useCase.MaxSlope;
+              constraints2.MaximumSlopeChange = useCase.MaxSlopeChange;
+              constraints2.MinimumCrossSlope = useCase.MinCrossSlope;
+              constraints2.MaximumCrossSlope = useCase.MaxCrossSlope;
+              constraints2.MaximumCrossSlopeChange = useCase.MaxCrossSlopeChange;
+              constraints2.MaximumCutDepth = useCase.MaxCutDepth;
+              constraints2.Pipeline = useCase.Pipeline;
+              constraints2.RowsDirection = Morph.Services.Core.DataModel.Utils.NormalizeAngleRad(-useCase.FurrowHeading * (Math.PI / 180.0) + Math.PI / 2.0, -1.0 * Math.PI);
+              constraints2.Resolution = useCase.Resolution;
+              constraints2.Shrinkage = useCase.Shrinkage;
+              constraints2.Bulkage = useCase.Bulkage;
+              constraints2.ExportVolume = useCase.ExportVolume;
+              constraints2.ExclusionZones.AddRange((IEnumerable<Linestring>)useCase.ExclusionZones);
+              design = instance.ComputeRows(constraints2, (Predicate<float>)null);
+              break;
+
+            case ComputeEnum.Subzones:
+              ZonesConstraints constraints3 = new ZonesConstraints();
+              constraints3.Boundary = useCase.Boundary;
+              constraints3.MainDirection = Morph.Services.Core.DataModel.Utils.NormalizeAngleRad(-useCase.MainHeading * (Math.PI / 180.0) + Math.PI / 2.0, -1.0 * Math.PI);
+              constraints3.Resolution = useCase.Resolution;
+              constraints3.ExclusionZones.AddRange((IEnumerable<Linestring>)useCase.ExclusionZones);
+              constraints3.Subzones.AddRange((IEnumerable<SubzoneConstraints>)useCase.Zones);
+              foreach (SubzoneConstraints zone in useCase.Zones)
+              {
+                zone.Shrinkage = useCase.Shrinkage;
+                zone.Bulkage = useCase.Bulkage;
+              }
+              for (int index = 0; index < constraints3.Subzones.Count; ++index)
+              {
+                if (string.IsNullOrEmpty(constraints3.Subzones[index].Tag))
+                  constraints3.Subzones[index].Tag = string.Format("Subzone{0:00}", (object)(index + 1));
+              }
+              design = instance.ComputeZones(constraints3, (Predicate<float>)null);
+              break;
+
+            case ComputeEnum.Basins:
+              BasinConstraints constraints4 = new BasinConstraints();
+              constraints4.BasinBoundary = useCase.Boundary;
+              constraints4.ExitPoint = useCase.ExitPoint;
+              constraints4.Resolution = useCase.Resolution;
+              constraints4.MinimumSlope = useCase.MinSlope;
+              constraints4.MaximumSlope = useCase.MaxSlope;
+              constraints4.ExportVolume = useCase.ExportVolume;
+              constraints4.ExclusionZones.AddRange((IEnumerable<Linestring>)useCase.ExclusionZones);
+              constraints4.Shrinkage = useCase.Shrinkage;
+              constraints4.Bulkage = useCase.Bulkage;
+              design = instance.ComputeBasin(constraints4, (Predicate<float>)null);
+              break;
+              */
+
+        #endregion superfluous
       }
 
+      _logger.LogInfo(nameof(ComputeSurfaces),
+        $"totalCut {_design.TotalCut} totalFill {_design.TotalFill} TotalSurfaceArea {_design.TotalSurfaceArea} TotalFlatArea {_design.TotalFlatArea}");
+      _logger.LogInfo(nameof(ComputeSurfaces),
+        $"surface: minElev {_design.Surface.MinElevation}  maxElev {_design.Surface.MaxElevation}");
+
+      _logger.LogInfo(nameof(ComputeSurfaces),
+        $"cutFillSurface minElev {_design.CutFillSurface.MinElevation}  maxElev {_design.CutFillSurface.MaxElevation}");
+      _logger.LogInfo(nameof(ComputeSurfaces),
+        $"cutFillSurface TrianglesCount {_design.CutFillSurface.Triangles.Count} BoundaryCount {_design.CutFillSurface.Boundary.Count}");
       return _design;
     }
+
+    #region superfluous
 
     /*
     private static IList<Point3D> ReadTxtPoints(string filename)
@@ -341,6 +385,9 @@ namespace DrainageTest
         pngBitmapEncoder.Save(stream);
     }
     */
+
+    #endregion superfluous
+
   }
 }
 
