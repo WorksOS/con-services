@@ -268,10 +268,10 @@ namespace VSS.TRex.SubGridTrees.Core
         return false;
 
       // Work out the on-the-ground cell extent needed to be scanned that this sub grid covers
-      int ScanMinX = Math.Max(OriginX, Extent.MinX);
-      int ScanMinY = Math.Max(OriginY, Extent.MinY);
-      int ScanMaxX = Math.Min(OriginX + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxX);
-      int ScanMaxY = Math.Min(OriginY + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxY);
+      int ScanMinX = Math.Max(originX, Extent.MinX);
+      int ScanMinY = Math.Max(originY, Extent.MinY);
+      int ScanMaxX = Math.Min(originX + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxX);
+      int ScanMaxY = Math.Min(originY + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxY);
 
       // Convert the on-the-ground cell indexes into sub grid indexes at this level in the sub grid tree
       GetSubGridCellIndex(ScanMinX, ScanMinY, out byte SubGridMinX, out byte SubGridMinY);
@@ -304,12 +304,12 @@ namespace VSS.TRex.SubGridTrees.Core
       // (ie: the caller is trying to be too clever!)
       if (Value != null)
       {
-        if (Value.Level != 0 && Value.Level != Level + 1)
+        if (Value.Level != 0 && Value.Level != level + 1)
           throw new ArgumentException("Level of sub grid being added is non-null and is not set correctly for the level it is being added to", nameof(Value.Level));
 
         Value.Parent = this;
         Value.SetOriginPosition(X, Y);
-        Value.Level = (byte) (Level + 1);
+        Value.Level = (byte) (level + 1);
       }
 
       if (_cells != null)

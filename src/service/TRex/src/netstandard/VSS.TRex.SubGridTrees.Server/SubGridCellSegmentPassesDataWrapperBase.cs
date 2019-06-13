@@ -6,10 +6,16 @@
     /// </summary>
     public abstract class SubGridCellSegmentPassesDataWrapperBase
     {
+        protected int segmentPassCount;
+
         /// <summary>
         /// The count of cell passes residing in this sub grid segment
         /// </summary>
-        public int SegmentPassCount { get; set; }
+        public int SegmentPassCount
+        {
+          get => segmentPassCount;
+          set => segmentPassCount = value;
+        }
 
         /// <summary>
         /// Default no-arg constructor

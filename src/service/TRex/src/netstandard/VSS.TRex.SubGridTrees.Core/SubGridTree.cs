@@ -90,6 +90,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public Guid ID { get; set; }
 
+        private byte numLevels;
         /// <summary>
         /// The number of levels defined in this sub grid tree. 
         /// A 6 level tree typically defines leaf cells as relating to on-the-ground cell in the real world
@@ -98,7 +99,7 @@ namespace VSS.TRex.SubGridTrees
         /// 6th layer of the tree containing on-the-ground leaf cells (eg: sub grid existence map)
         /// This property is assignable only at the time the sub grid tree is constructed.
         /// </summary>
-        public byte NumLevels { get; }
+        public byte NumLevels { get => numLevels; }
 
         /// <summary>
         /// Backing store field for the CellSize property
@@ -137,10 +138,12 @@ namespace VSS.TRex.SubGridTrees
         // it is unattached until explicitly inserted.
         public virtual ISubGrid CreateNewSubGrid(byte level) => SubGridFactory.GetSubGrid(this, level);
 
+        private int indexOriginOffset;
+
         /// <summary>
         /// The value of the index origin offset for this sub grid tree
         /// </summary>
-        public int IndexOriginOffset { get; }
+        public int IndexOriginOffset => indexOriginOffset; // { get; }
 
         /// <summary>
         /// Base Sub Grid Tree constructor. Creates a tree with the requested number of levels, 
@@ -166,9 +169,9 @@ namespace VSS.TRex.SubGridTrees
                 throw new ArgumentException("CellSize must be between 0.01 and 1000000", nameof(cellSize));
             }
 
-            NumLevels = numLevels;
+            this.numLevels = numLevels;
             SetCellSize(cellSize);
-            IndexOriginOffset = 1 << (NumBitsInKeys - 1);
+            indexOriginOffset = 1 << (NumBitsInKeys - 1);
 
             SubGridFactory = subGridFactory ?? throw new ArgumentException("A sub grid factory must be specified", nameof(subGridFactory));
 
@@ -236,7 +239,7 @@ namespace VSS.TRex.SubGridTrees
                 return false;
             }
 
-            CalculateIndexOfCellContainingPosition(X, Y, CellSize, IndexOriginOffset, out CellX, out CellY);
+            CalculateIndexOfCellContainingPosition(X, Y, cellSize, indexOriginOffset, out CellX, out CellY);
 
             return true;
         }
@@ -272,10 +275,10 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public BoundingWorldExtent3D FullGridExtent()
         {
-            return new BoundingWorldExtent3D(-IndexOriginOffset * CellSize,
-                                             -IndexOriginOffset * CellSize,
-                                             IndexOriginOffset * CellSize,
-                                             IndexOriginOffset * CellSize);
+            return new BoundingWorldExtent3D(-indexOriginOffset * cellSize,
+                                             -indexOriginOffset * cellSize,
+                                             indexOriginOffset * cellSize,
+                                             indexOriginOffset * cellSize);
         }
 
         /// <summary>
@@ -284,7 +287,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public BoundingIntegerExtent2D FullCellExtent()
         {
-            int numCellsAcrossGrid = 1 << (NumLevels * SubGridTreeConsts.SubGridIndexBitsPerLevel);
+            int numCellsAcrossGrid = 1 << (numLevels * SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
             return new BoundingIntegerExtent2D(0, 0, numCellsAcrossGrid, numCellsAcrossGrid);
         }
@@ -358,7 +361,7 @@ namespace VSS.TRex.SubGridTrees
             INodeSubGrid subGrid = Root;
 
             // First descend through the node levels of the tree
-            for (byte I = 1; I < NumLevels - 1; I++) // Yes, -1 because we choose a sub grid cell from the next level down...
+            for (byte I = 1; I < numLevels - 1; I++) // Yes, -1 because we choose a sub grid cell from the next level down...
             {
                 var testSubGrid = subGrid.GetSubGridContainingCell(cellX, cellY);
 
@@ -430,7 +433,7 @@ namespace VSS.TRex.SubGridTrees
                                 result = subGrid.GetSubGrid(subGridCellX, subGridCellY);
                                 if (result == null)
                                 {
-                                   result = CreateNewSubGrid(NumLevels);
+                                   result = CreateNewSubGrid(numLevels);
                                    subGrid.SetSubGrid(subGridCellX, subGridCellY, result);
                                 }
                             }
@@ -498,7 +501,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
         /// <returns></returns>
-        public ISubGrid LocateSubGridContaining(int cellX, int cellY) => LocateSubGridContaining(cellX, cellY, NumLevels);
+        public ISubGrid LocateSubGridContaining(int cellX, int cellY) => LocateSubGridContaining(cellX, cellY, numLevels);
 
         /// <summary>
         /// LocateClosestSubGridContaining behaves much like LocateSubGridContaining()
@@ -542,8 +545,8 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="cy"></param>
         public void GetCellCenterPosition(int X, int Y, out double cx, out double cy)
         {
-            cx = (X - IndexOriginOffset) * CellSize + CellSizeOver2;
-            cy = (Y - IndexOriginOffset) * CellSize + CellSizeOver2;
+            cx = (X - indexOriginOffset) * cellSize + CellSizeOver2;
+            cy = (Y - indexOriginOffset) * cellSize + CellSizeOver2;
         }
 
         /// <summary>
@@ -558,8 +561,8 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="oy"></param>
         public void GetCellOriginPosition(int X, int Y, out double ox, out double oy)
         {
-            ox = (X - IndexOriginOffset) * CellSize;
-            oy = (Y - IndexOriginOffset) * CellSize;
+            ox = (X - indexOriginOffset) * cellSize;
+            oy = (Y - indexOriginOffset) * cellSize;
         }
 
         /// <summary>
@@ -573,10 +576,10 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public BoundingWorldExtent3D GetCellExtents(int X, int Y)
         {
-            double OriginX = (X - IndexOriginOffset) * CellSize;
-            double OriginY = (Y - IndexOriginOffset) * CellSize;
+            double OriginX = (X - indexOriginOffset) * cellSize;
+            double OriginY = (Y - indexOriginOffset) * cellSize;
 
-            return new BoundingWorldExtent3D(OriginX, OriginY, OriginX + CellSize, OriginY + CellSize);
+            return new BoundingWorldExtent3D(OriginX, OriginY, OriginX + cellSize, OriginY + cellSize);
         }
 
       /// <summary>
@@ -591,13 +594,13 @@ namespace VSS.TRex.SubGridTrees
       /// <returns></returns>
       public void GetCellExtents(int X, int Y, ref BoundingWorldExtent3D extents)
       {
-        double OriginX = (X - IndexOriginOffset) * CellSize;
-        double OriginY = (Y - IndexOriginOffset) * CellSize;
+        double OriginX = (X - indexOriginOffset) * cellSize;
+        double OriginY = (Y - indexOriginOffset) * cellSize;
 
         extents.MinX = OriginX;
         extents.MinY = OriginY;
-        extents.MaxX = OriginX + CellSize;
-        extents.MaxY = OriginY + CellSize;
+        extents.MaxX = OriginX + cellSize;
+        extents.MaxY = OriginY + cellSize;
       }
 
       /// <summary>
@@ -605,7 +608,7 @@ namespace VSS.TRex.SubGridTrees
       /// it to the caller. The newly created sub grid is _not_ attached to this grid.
       /// </summary>
       /// <returns></returns>
-      public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubGrid(NumLevels) as ILeafSubGrid;
+      public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubGrid(numLevels) as ILeafSubGrid;
 
       /// <summary>
       /// The header string to be written into a serialized sub grid tree

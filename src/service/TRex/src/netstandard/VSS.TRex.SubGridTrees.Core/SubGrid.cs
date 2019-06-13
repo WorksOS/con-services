@@ -16,44 +16,56 @@ namespace VSS.TRex.SubGridTrees
         /// Create a human readable string representing the location and tree level this sub grid occupies in the tree.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $"Level:{Level}, OriginX:{OriginX}, OriginY:{OriginY}";
+        public override string ToString() => $"Level:{Level}, OriginX:{originX}, OriginY:{originY}";
+
+        protected ISubGridTree owner;
 
         /// <summary>
         /// The sub grid tree instance to which this sub grid belongs
         /// </summary>
-        public ISubGridTree Owner { get; set; }
+        public ISubGridTree Owner { get => owner; set => owner = value; }
+
+        protected ISubGrid parent;
 
         /// <summary>
         /// The parent sub grid that owns this sub grid as a cell.
         /// </summary>
-        public ISubGrid Parent { get; set; }
+        public ISubGrid Parent { get => parent; set => parent = value; }
+
+        protected byte level;
 
         /// <summary>
         /// ‘Level’ in the sub grid tree in which this sub grid resides. Level 1 is the root node in the tree, level 0 is invalid
         /// </summary>
-        public byte Level { get; set; } // Invalid
+        public byte Level { get => level; set => level = value; } // Invalid
+
+        protected int originX;
 
         /// <summary>
         /// Grid cell X Origin of the bottom left hand cell in this sub grid. 
         /// Origin is wrt to cells of the spatial dimension held by this sub grid
         /// </summary>
-        public int OriginX { get; set; } // int.MinValue;
+        public int OriginX { get => originX; set => originX = value; } // int.MinValue;
+
+        protected int originY;
 
         /// <summary>
         /// Grid cell Y Origin of the bottom left hand cell in this sub grid. 
         /// Origin is wrt to cells of the spatial dimension held by this sub grid
         /// </summary>
-        public int OriginY { get; set; } // int.MinValue;
+        public int OriginY { get => originY; set => originY = value; } // int.MinValue;
+
+        protected bool dirty;
 
         /// <summary>
         /// Dirty property used to indicate the presence of changes that are not persisted.
         /// </summary>
-        public bool Dirty { get; private set; }
+        public bool Dirty { get => dirty; private set => dirty = value; }
 
         /// <summary>
         /// Sets the dirty flag state for the sub grid to true. See AllChangesMigrated for clearing this flag.
         /// </summary>
-        public void SetDirty() => Dirty = true;
+        public void SetDirty() => dirty = true;
 
         /// <summary>
         /// Default no-arg constructor
@@ -71,23 +83,23 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="level"></param>
         public SubGrid(ISubGridTree owner, ISubGrid parent, byte level)
         {
-            Owner = owner;
-            Parent = parent;
-            Level = level;
+            this.Owner = owner;
+            this.parent = parent;
+            this.level = level;
         }
 
         /// <summary>
         /// The number of on-the-ground cells that the span of this sub grid covers along each axis
         /// </summary>
         /// <returns></returns>
-        public int AxialCellCoverageByThisSubGrid() => SubGridTreeConsts.SubGridTreeDimension << ((Owner.NumLevels - Level) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
+        public int AxialCellCoverageByThisSubGrid() => SubGridTreeConsts.SubGridTreeDimension << ((owner.NumLevels - level) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
         /// <summary>
         /// The number of on-the-ground cells that the span of a child sub grid of this sub grid covers along each axis
         /// </summary>
         public int AxialCellCoverageByChildSubGrid() => AxialCellCoverageByThisSubGrid() >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-        /// <summary>
+        /// <summary>o
         /// Sets the origin position of this sub grid to the supplied X and Y values within the cells of the parent sub grid. 
         /// This action locks the location of this sub grid in space with respect to the origin position of the parent sub grid.
         /// </summary>
@@ -95,7 +107,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellY"></param>
         public void SetOriginPosition(int CellX, int CellY)
         {
-            if (Parent == null)
+            if (parent == null)
             { 
                throw new ArgumentException("Cannot set origin position without parent");
             }
@@ -105,8 +117,8 @@ namespace VSS.TRex.SubGridTrees
                 throw new ArgumentException("Cell X, Y location is not in the valid cell address range for the sub grid");
             }
 
-            OriginX = Parent.OriginX + CellX * AxialCellCoverageByThisSubGrid();
-            OriginY = Parent.OriginY + CellY * AxialCellCoverageByThisSubGrid();
+            originX = parent.OriginX + CellX * AxialCellCoverageByThisSubGrid();
+            originY = parent.OriginY + CellY * AxialCellCoverageByThisSubGrid();
         }
 
         /// <summary>
@@ -119,13 +131,13 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="originY"></param>
         public void SetAbsoluteOriginPosition(int originX, int originY)
         {
-            if (Parent != null)
+            if (parent != null)
             {
                 throw new Exception("Nodes referencing parent nodes may not have their origin modified");
             }
 
-            OriginX = originX;
-            OriginY = originY;
+            this.originX = originX;
+            this.originY = originY;
         }
 
         /// <summary>
@@ -142,7 +154,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="SubGridY"></param>
         public void GetSubGridCellIndex(int CellX, int CellY, out byte SubGridX, out byte SubGridY)
         {
-            int SHRValue = (Owner.NumLevels - Level) * SubGridTreeConsts.SubGridIndexBitsPerLevel;
+            int SHRValue = (owner.NumLevels - level) * SubGridTreeConsts.SubGridIndexBitsPerLevel;
             SubGridX = (byte)((CellX >> SHRValue) & SubGridTreeConsts.SubGridLocalKeyMask);
             SubGridY = (byte)((CellY >> SHRValue) & SubGridTreeConsts.SubGridLocalKeyMask);
         }
@@ -167,13 +179,13 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Determine if this sub grid represents a leaf sub grid containing information for on-the-ground cells
         /// </summary>
-        public bool IsLeafSubGrid() => Level == Owner.NumLevels;
+        public bool IsLeafSubGrid() => level == owner.NumLevels;
 
         /// <summary>
         /// Returns a moniker string comprised of the X and Y origin ordinates in the sub grid cell address space
         /// separated by a colon, eg: in the form 1234:5678
         /// </summary>
-        public string Moniker() => OriginX.ToString() + ":" + OriginY.ToString(); // 30% faster than $"{OriginX}:{OriginY}";
+        public string Moniker() => originX.ToString() + ":" + originY.ToString(); // 30% faster than $"{originX}:{originY}";
 
         /// <summary>
         /// A virtual method representing an access mechanism to request a child sub grid at the X/Y location in this sub grid
@@ -206,8 +218,8 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="WorldOriginY"></param>
         public virtual void CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY)
         {
-            WorldOriginX = (OriginX - Owner.IndexOriginOffset) * Owner.CellSize;
-            WorldOriginY = (OriginY - Owner.IndexOriginOffset) * Owner.CellSize;
+            WorldOriginX = (originX - owner.IndexOriginOffset) * owner.CellSize;
+            WorldOriginY = (originY - owner.IndexOriginOffset) * owner.CellSize;
         }
 
         /// <summary>
@@ -226,7 +238,7 @@ namespace VSS.TRex.SubGridTrees
         /// externally to this sub grid
         /// 
         /// </summary>
-        public void AllChangesMigrated() => Dirty = false;
+        public void AllChangesMigrated() => dirty = false;
 
         /// <summary>
         /// IsEmpty determines if this sub grid contains any information. By default the base 
@@ -241,13 +253,13 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public void RemoveFromParent()
         {
-            if (Parent == null)
+            if (parent == null)
                 return;
 
-            Parent.GetSubGridCellIndex(OriginX, OriginY, out byte SubGridX, out byte SubGridY);
-            Parent.SetSubGrid(SubGridX, SubGridY, null);
+            parent.GetSubGridCellIndex(originX, originY, out byte SubGridX, out byte SubGridY);
+            parent.SetSubGrid(SubGridX, SubGridY, null);
 
-            Parent = null;
+            parent = null;
         }
 
         /// <summary>
@@ -260,7 +272,7 @@ namespace VSS.TRex.SubGridTrees
         {
            int AxialCoverage = AxialCellCoverageByThisSubGrid();
 
-           return (CellX >= OriginX) && (CellX < OriginX + AxialCoverage) && (CellY >= OriginY) && (CellY < OriginY + AxialCoverage);
+           return (CellX >= originX) && (CellX < originX + AxialCoverage) && (CellY >= originY) && (CellY < originY + AxialCoverage);
         }
 
         /// <summary>
@@ -307,7 +319,7 @@ namespace VSS.TRex.SubGridTrees
                 throw new TRexSubGridTreeException("Nodes referencing parent nodes may not have their level modified");
             }
 
-            Level = level;
+            this.level = level;
         }
 
         /// <summary>
@@ -316,9 +328,9 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="writer"></param>
         public virtual void Write(BinaryWriter writer)
         {
-            writer.Write(Level);
-            writer.Write(OriginX);
-            writer.Write(OriginY);
+            writer.Write(level);
+            writer.Write(originX);
+            writer.Write(originY);
         }
 
         /// <summary>
@@ -327,16 +339,16 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="reader"></param>
         public virtual void Read(BinaryReader reader)
         {
-            Level = reader.ReadByte();
-            OriginX = reader.ReadInt32();
-            OriginY = reader.ReadInt32();
+            level = reader.ReadByte();
+            originX = reader.ReadInt32();
+            originY = reader.ReadInt32();
         }
 
         /// <summary>
         /// Converts the sub grid origin cell location into a SubGridAddress identifying this sub grid
         /// </summary>
         /// <returns></returns>
-        public SubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(OriginX, OriginY);
+        public SubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(originX, originY);
 
         public byte[] ToBytes() => FromToBytes.ToBytes(Write);
 
