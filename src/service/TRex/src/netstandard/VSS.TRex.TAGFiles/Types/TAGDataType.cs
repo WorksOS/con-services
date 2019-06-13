@@ -3,7 +3,7 @@
     /// <summary>
     /// The types of TAGs (fields) supported in the TAG file. Field data types that may be found in the tag file
     /// </summary>
-    public enum TAGDataType
+    public enum TAGDataType : byte
     {
         /// <summary>
         /// Signed 4 bit integer

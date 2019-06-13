@@ -196,7 +196,7 @@ namespace VSS.TRex.Compression
               : value - descriptor.MinValue;
 
             // Be paranoid! Ensure there are no bits set in the high order bits above the least significant valueBits in Value
-            value &= (1 << ValueBits) - 1;
+            value &= (1L << ValueBits) - 1;
 
             int StoragePointer = StreamWriteBitPos >> BIT_LOCATION_TO_BLOCK_SHIFT;
             int AvailBitsInCurrentStorageElement = N_BITS_TO_READ_AT_A_TIME - unchecked((byte)(StreamWriteBitPos & BITS_REMAINING_IN_STORAGE_BLOCK_MASK));
@@ -257,7 +257,7 @@ namespace VSS.TRex.Compression
 
             // Be paranoid! Ensure there are no bits set in the high order bits above the
             // least significant valueBits in Value
-            value = value & ((1 << valueBits) - 1);
+            value &= ((1L << valueBits) - 1);
 
             int StoragePointer = StreamWriteBitPos >> BIT_LOCATION_TO_BLOCK_SHIFT;
             int AvailBitsInCurrentStorageElement = N_BITS_TO_READ_AT_A_TIME - (StreamWriteBitPos & BITS_REMAINING_IN_STORAGE_BLOCK_MASK);
@@ -352,8 +352,7 @@ namespace VSS.TRex.Compression
                 */
 
                 // Step 3: Read remaining bits from next block in Storage
-                if (BitsToRead > 0)
-                    Result = unchecked((long)((unchecked((ulong)Result) << BitsToRead) | (Storage[BlockPointer + 1] >> (N_BITS_TO_READ_AT_A_TIME - BitsToRead))));
+                Result = unchecked((long)((unchecked((ulong)Result) << BitsToRead) | (Storage[BlockPointer + 1] >> (N_BITS_TO_READ_AT_A_TIME - BitsToRead))));
             }
 
             // Compute the true result of the read by taking nullability and the offset of MinValue into account
@@ -398,7 +397,7 @@ namespace VSS.TRex.Compression
             // Read initial bits from storage block
             if (RemainingBitsInCurrentStorageBlock >= valueBits)
             {
-                Result = unchecked((long)(Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - valueBits)) & ((1 << valueBits) - 1));
+                Result = unchecked((long)(Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - valueBits)) & ((1L << valueBits) - 1));
             }
             else
             {
@@ -417,13 +416,148 @@ namespace VSS.TRex.Compression
                 */
 
                 // Step 3: Read remaining bits from next block in Storage
-                if (BitsToRead > 0)
-                    Result = unchecked((long)((unchecked((ulong)Result) << BitsToRead) | (Storage[BlockPointer + 1] >> (N_BITS_TO_READ_AT_A_TIME - BitsToRead))));
+                Result = unchecked((long)((unchecked((ulong)Result) << BitsToRead) | (Storage[BlockPointer + 1] >> (N_BITS_TO_READ_AT_A_TIME - BitsToRead))));
             }
 
             bitLocation += valueBits; // Advance the current bit position pointer;
 
             return Result;
         }
-    }
+
+        /// <summary>
+        /// Reads a consolidated vector of bit fields.
+        /// </summary>
+        /// <param name="bitLocation">The start bit index in the BitFieldArray to begin reading from</param>
+        /// <param name="valueBits">The number of bits per value present in the vector</param>
+        /// <param name="numValues">The number of values to be read from the vector</param>
+        /// <param name="values">The array of values to receive the values read from the vector. This array must be at least as large as the number of value requested from the vector</param>
+        public void ReadBitFieldVector(ref int bitLocation, int valueBits, int numValues, long[] values)
+        {
+          // Check the array is big enough
+          if (values == null || numValues > values.Length)
+          {
+            throw new ArgumentException($"Supplied values array is null or not large enough to accept value vector of {numValues} values");
+          }
+
+          // Check the bit field array allocated storage contains enough values
+          if (bitLocation + numValues * valueBits > NumBits)
+          {
+            throw new ArgumentException($"Insufficient values present to satisfy a read for {numValues} values from bit location {bitLocation}");
+          }
+
+          // Reading occurs in three stages:
+          // 1: Read the remaining bits in the element referenced by bitLocation
+          // 2: If there are still more than N_BITS_TO_READ_AT_A_TIME remaining bits to be read, then read
+          //    individual elements from Storage into Result until the remaining number of bits
+          //    to be read is less than N_BITS_TO_READ_AT_A_TIME
+          // 3: If there are still (less than N_BITS_TO_READ_AT_A_TIME) bits to be read, then read the remainder
+          //    of the bits from the most significant bits of the next element in Storage
+
+          if (valueBits == 0) // There's nothing to do!
+            return;
+
+          int BlockPointer = bitLocation >> BIT_LOCATION_TO_BLOCK_SHIFT;
+          int RemainingBitsInCurrentStorageBlock = N_BITS_TO_READ_AT_A_TIME - (bitLocation & BITS_REMAINING_IN_STORAGE_BLOCK_MASK);
+
+          // Read the first block containing the first value
+          ulong blockValue = Storage[BlockPointer];
+          long valueMask = (1L << valueBits) - 1;
+
+          for (int i = 0; i < numValues; i++)
+          {
+            if (RemainingBitsInCurrentStorageBlock >= valueBits)
+            {
+              values[i] = unchecked((long) (blockValue >> (RemainingBitsInCurrentStorageBlock - valueBits)) & valueMask);
+              RemainingBitsInCurrentStorageBlock -= valueBits;
+            }
+            else
+            {
+              // Work out the bits to be read from the next block
+              int BitsToRead = valueBits - RemainingBitsInCurrentStorageBlock;
+        
+              // There are more bits than can fit in RemainingBitsInCurrentStorageElement
+              // Step 1: Fill remaining bits
+              long Result = unchecked((long) blockValue & ((1 << RemainingBitsInCurrentStorageBlock) - 1)) << BitsToRead;
+
+              blockValue = Storage[++BlockPointer];
+              RemainingBitsInCurrentStorageBlock = N_BITS_TO_READ_AT_A_TIME - BitsToRead;
+
+              // Step 3: Read remaining bits from next block in Storage
+              values[i] = Result | unchecked((long)blockValue >> RemainingBitsInCurrentStorageBlock);
+            }
+          }
+
+          bitLocation += valueBits * numValues; // Advance the current bit position pointer;
+        }
+
+        /// <summary>
+        /// Writes a consolidated vector of bit fields.
+        /// </summary>
+        /// <param name="bitLocation">The start bit index in the BitFieldArray to begin writing from</param>
+        /// <param name="valueBits">The number of bits per value present in the vector</param>
+        /// <param name="numValues">The number of values to be written to the vector</param>
+        /// <param name="values">The array of values to provide the values written to the vector. This array must be at least as large as the number of value requested from the vector</param>
+        public void WriteBitFieldVector(ref int bitLocation, int valueBits, int numValues, long[] values)
+        {
+          if (values == null || numValues > values.Length)
+          {
+            throw new ArgumentException($"Supplied values array is null or not large enough to provide value vector of {numValues} values");
+          }
+       
+          // Check the bit field array allocated storage can receive enough values
+          if (bitLocation + numValues * valueBits > NumBits)
+          {
+            throw new ArgumentException($"Insufficient storage present to satisfy a write for {numValues} values from bit location {bitLocation}");
+          }
+
+          // Writing occurs in three stages:
+          // 1: Fill the remaining unwritten bits in the element referenced by FStreamWritePos
+          // 2: If there are still more than N_BITS_TO_READ_AT_A_TIME remaining bits to be written, then write
+          //    individual elements from value into Storage until the remaining number of bits
+          //    to be written is less than N_BITS_TO_READ_AT_A_TIME
+          // 3: If there are still (less than N_BITS_TO_READ_AT_A_TIME) bits to be written, then write the remainder
+          //    of the bits into the most significant bits of the next empty element in Storage
+       
+          if (valueBits == 0) // There's nothing to do!
+            return;
+
+          int StoragePointer = bitLocation >> BIT_LOCATION_TO_BLOCK_SHIFT;
+          ulong blockValue = Storage[StoragePointer];
+
+          int AvailBitsInCurrentStorageElement = N_BITS_TO_READ_AT_A_TIME - (StreamWriteBitPos & BITS_REMAINING_IN_STORAGE_BLOCK_MASK);
+          long valueMask = (1L << valueBits) - 1;
+
+          for (int i = 0; i < numValues; i++)
+          {
+              // Be paranoid! Ensure there are no bits set in the high order bits above the least significant valueBits in Value
+              long value = values[i] & valueMask;
+          
+              // Write initial bits into storage element
+              if (AvailBitsInCurrentStorageElement >= valueBits)
+              {
+                blockValue |= (unchecked((ulong)value) << (AvailBitsInCurrentStorageElement - valueBits));
+                StreamWriteBitPos += valueBits;   // Advance the current bit position pointer;
+                AvailBitsInCurrentStorageElement -= valueBits;
+                continue;
+              }
+          
+              // There are more bits than can fit in AvailBitsInCurrentStorageElement
+              // Step 1: Fill remaining bits
+              int RemainingBitsToWrite = valueBits - AvailBitsInCurrentStorageElement;
+              blockValue |= (unchecked((ulong)value) >> RemainingBitsToWrite);
+              Storage[StoragePointer++] = blockValue;
+          
+              AvailBitsInCurrentStorageElement = N_BITS_TO_READ_AT_A_TIME - RemainingBitsToWrite;
+          
+              // Step 3: Write remaining bits into next element in Storage
+              if (RemainingBitsToWrite > 0) // Mask out the bits we want...
+                blockValue = (unchecked((ulong)value) & (((ulong)1 << RemainingBitsToWrite) - 1)) << AvailBitsInCurrentStorageElement;
+          }
+
+          if (StoragePointer < Storage.Length)
+            Storage[StoragePointer] = blockValue;
+
+          bitLocation += valueBits * numValues;   // Advance the current bit position pointer;
+      }
+  }
 }

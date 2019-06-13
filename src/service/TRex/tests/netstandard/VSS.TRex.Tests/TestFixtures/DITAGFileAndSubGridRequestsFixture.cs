@@ -135,7 +135,7 @@ namespace VSS.TRex.Tests.TestFixtures
       {
         MaxMappedTagFilesToProcessPerAggregationEpoch = _tagFiles.Count
       };
-      worker.ProcessTask(ProcessedTasks);
+      worker.ProcessTask(ProcessedTasks, _tagFiles.Count);
 
       ProcessedTasks.Count.Should().Be(_tagFiles.Count);
 

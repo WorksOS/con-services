@@ -29,9 +29,10 @@ namespace VSS.TRex.Tests.BinarizableSerialization
           new SubGridSpatialAffinityKey
           {
             ProjectUID = projectGuid,
-            SegmentIdentifier = "SegmentIdentifier",
             SubGridX = 12345,
-            SubGridY = 67890
+            SubGridY = 67890,
+            SegmentStartDateTicks = 123,
+            SegmentEndDateTicks = 456
           }
         }
       };
@@ -41,7 +42,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       Assert.True(result.member.ProjectUID.Equals(projectGuid) &&
                   result.member.InsertUTCAsLong.Equals(1234567890) &&
                   result.member.SegmentKeys.Length == 1 &&
-                  result.member.SegmentKeys[0].SegmentIdentifier == "SegmentIdentifier" &&
+                  result.member.SegmentKeys[0].SegmentStartDateTicks == 123 &&
+                  result.member.SegmentKeys[0].SegmentEndDateTicks == 456 &&
                   result.member.SegmentKeys[0].ProjectUID.Equals(projectGuid) &&
                   result.member.SegmentKeys[0].SubGridX == 12345 &&
                   result.member.SegmentKeys[0].SubGridY == 67890,

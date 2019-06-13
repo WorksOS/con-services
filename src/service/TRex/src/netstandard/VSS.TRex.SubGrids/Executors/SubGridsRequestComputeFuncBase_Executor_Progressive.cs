@@ -1,11 +1,9 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Messaging;
-using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
@@ -28,6 +26,8 @@ namespace VSS.TRex.SubGrids.Executors
     private IMessaging rmtMsg;
     private string tRexNodeIDAsString = string.Empty;
 
+    private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
+
     /// <summary>
     /// Processes a sub grid result that consists of a client leaf sub grid for each of the filters in the request
     /// </summary>
@@ -37,12 +37,11 @@ namespace VSS.TRex.SubGrids.Executors
     protected override void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
     {
       // Package the resulting sub grids into the MemoryStream
-      using (var MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
+      using (var MS = _recyclableMemoryStreamManager.GetStream())
       {
-        using (BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true))
+        using (var writer = new BinaryWriter(MS, Encoding.UTF8, true))
         {
           writer.Write(resultCount);
-          var buffer = new byte[10000];
 
           for (int i = 0; i < resultCount; i++)
           {
@@ -50,7 +49,7 @@ namespace VSS.TRex.SubGrids.Executors
             foreach (IClientLeafSubGrid result in results[i])
             {
               writer.Write(result != null);
-              result?.Write(writer, buffer);
+              result?.Write(writer);
             }
           }
         }

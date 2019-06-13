@@ -24,9 +24,16 @@ namespace VSS.TRex.Cells
 
   /// <summary>
   /// Describes all the 'per-cell' state recorded for a pass recorded by a machine over a cell.
+  /// Note: Fields in CellPass are not ordinarily defined as automatic properties to avoid the function
+  /// call overhead related to them in CPU sensitive flows.
   /// </summary>
   public struct CellPass
   {
+    /// <summary>
+    /// A prebuilt cell pass cleared per the CellPass.Clear() method
+    /// </summary>
+    public static CellPass CLEARED_CELL_PASS = ClearCell();
+
     /// <summary>
     /// GPSModeStore stores the GPS mode in the lowest 4 bits of the GPSModeStore byte. The remaining 4 bits are
     /// available for use, probably as flags.
@@ -56,8 +63,8 @@ namespace VSS.TRex.Cells
     /// </summary>
     public PassType PassType
     {
-      get => PassTypeHelper.GetPassType(GPSModeStore); 
-      set => GPSModeStore = PassTypeHelper.SetPassType(GPSModeStore, value); 
+      get => PassTypeHelper.GetPassType(GPSModeStore);
+      set => GPSModeStore = PassTypeHelper.SetPassType(GPSModeStore, value);
     }
 
     /// <summary>
@@ -65,81 +72,81 @@ namespace VSS.TRex.Cells
     /// may always be referred to via this descriptor
     /// </summary>
     /// Note: This is removed in favor of CellPasses only ever containing the internal site model machine index
-    /// public long MachineID { get; set; }
+    /// public long MachineID
 
     /// <summary>
     /// The internal descriptor for a machine within a project. This is volatile and is not guaranteed to be the same value between references by
     /// an 'external' consumer of the project
     /// </summary>
-    public short InternalSiteModelMachineIndex { get; set; }
+    public short InternalSiteModelMachineIndex;
 
     /// <summary>
     /// The measured height (actually grid elevation from NEE) fo the cell pass
     /// </summary>
-    public float Height { get; set; }
+    public float Height;
 
     /// <summary>
     /// The UTC time at which the cell pass was measured
     /// </summary>
-    public DateTime Time { get; set; }
+    public DateTime Time;
 
     /// <summary>
     ///  The measured CCV (CMV - Compaction Meter Value) for this pass
     /// </summary>
-    public short CCV { get; set; }
+    public short CCV;
 
     /// <summary>
     /// The latency of CMR packets over the radio network
     /// </summary>
-    public byte RadioLatency { get; set; }
+    public byte RadioLatency;
 
     /// <summary>
     /// The Resonance Metered Value for this pass
     /// </summary>
-    public short RMV { get; set; }
+    public short RMV;
 
     /// <summary>
     /// Frequency of drum for this pass
     /// </summary>
-    public ushort Frequency { get; set; }
+    public ushort Frequency;
 
     /// <summary>
     /// Amplitude of drum for this pass
     /// </summary>
-    public ushort Amplitude { get; set; }
+    public ushort Amplitude;
 
     /// <summary>
     /// The speed of the machine, in centimeters per second, for this pass
     /// </summary>
-    public ushort MachineSpeed { get; set; }
+    public ushort MachineSpeed;
 
     /// <summary>
     /// Temperature of material being compacted (asphalt) for this pass
     /// </summary>
-    public ushort MaterialTemperature { get; set; }
+    public ushort MaterialTemperature;
 
     /// <summary>
     /// The measured Machine Drive Power value, for this pass
     /// </summary>
-    public short MDP { get; set; }
+    public short MDP;
 
     /// <summary>
     /// The measured CCA (Caterpillar Compaction Algorithm) value, for this pass
     /// </summary>
-    public byte CCA { get; set; }
+    public byte CCA;
 
     /// <summary>
     /// Initialise all attributes of a cell pass to null
     /// </summary>
-    public void Clear()
+    private void Clear()
     {
-      GPSModeStore = 0;
+      GPSModeStore        = 0;
 
-      Time = CellPassConsts.NullTime;
+      Time                = CellPassConsts.NullTime;
 
-      Height = CellPassConsts.NullHeight;
+      Height              = CellPassConsts.NullHeight;
       InternalSiteModelMachineIndex = CellPassConsts.NullInternalSiteModelMachineIndex;
-      gpsMode = CellPassConsts.NullGPSMode;
+      gpsMode             = CellPassConsts.NullGPSMode;
       CCV                 = CellPassConsts.NullCCV;
       RadioLatency        = CellPassConsts.NullRadioLatency;
       RMV                 = CellPassConsts.NullRMV;
@@ -149,6 +156,13 @@ namespace VSS.TRex.Cells
       MDP                 = CellPassConsts.NullMDP;
       MachineSpeed        = CellPassConsts.NullMachineSpeed;
       CCA                 = CellPassConsts.NullCCA;
+    }
+
+    private static CellPass ClearCell()
+    {
+      var cell = new CellPass();
+      cell.Clear();
+      return cell;
     }
 
     /// <summary>

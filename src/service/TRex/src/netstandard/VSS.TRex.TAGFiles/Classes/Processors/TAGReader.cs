@@ -11,6 +11,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
   public class TAGReader
   {
     private const byte BITS_PER_NYBBLE = 4;
+    private const byte BITS_PER_TWO_NYBBLES = 8;
     private const byte NYBBLES_PER_UNICODE_CHAR = 4;
 
     // The stream provided in the constructor to read the TAG information from
@@ -72,10 +73,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// Read an ANSI char from the stream. The result is returned as a byte as
     /// c# does not have a native ANSI type
     /// </summary>
-    private byte ReadANSIChar => (byte)ReadUnSignedIntegerValue(2);
+    private byte ReadANSIChar => (byte)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble()); //(byte)ReadUnSignedIntegerValue(2);
 
     /// <summary>
-    /// THe byte buffer for reading bytes representing an ANSI string before construction of the string itself
+    /// The byte buffer for reading bytes representing an ANSI string before construction of the string itself
     /// </summary>
     private byte[] _readANSIString_ByteBuffer = new byte[100];
 
@@ -84,22 +85,20 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// c# does not have a native ANSI type
     /// </summary>
     /// <returns></returns>
-    public byte[] ReadANSIString()
+    public string ReadANSIString()
     {
       byte b;
       int count = 0;
 
-      while ((b = ReadANSIChar) != 0)
+      //while ((b = ReadANSIChar) != 0)
+      while ((b = (byte)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble())) != 0)
       {
         _readANSIString_ByteBuffer[count++] = b;
         if (count == _readANSIString_ByteBuffer.Length)
           Array.Resize(ref _readANSIString_ByteBuffer, _readANSIString_ByteBuffer.Length + 100);
       }
 
-      byte[] result = new byte[count];
-      Array.Copy(_readANSIString_ByteBuffer, result, count);
-
-      return result;
+      return Encoding.ASCII.GetString(_readANSIString_ByteBuffer, 0, count);
     }
 
     /// <summary>
@@ -186,21 +185,30 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       return BitConverter.ToChar(ReadUnicodeChar_ByteBuffer, 0);
     }
 
+    private char[] _readUnicodeString_Buffer = new char[100];
+
     /// <summary>
-  /// Read a Unicode string from the stream
-  /// </summary>
-  /// <returns></returns>
-  public string ReadUnicodeString()
+    /// Read a Unicode string from the stream
+    /// </summary>
+    /// <returns></returns>
+    public string ReadUnicodeString()
     {
       char c;
-      var sb = new StringBuilder();
+      int count = 0;
 
+      int bufferSize = _readANSIString_ByteBuffer.Length;
       while ((c = ReadUnicodeChar()) != char.MinValue)
       {
-        sb.Append(c);
+        _readUnicodeString_Buffer[count++] = c;
+
+        if (count >= bufferSize)
+        {
+          Array.Resize(ref _readUnicodeString_Buffer, bufferSize + 100);
+          bufferSize = _readANSIString_ByteBuffer.Length;
+        }
       }
 
-      return sb.ToString();
+      return new string(_readUnicodeString_Buffer, 0, count);
     }
 
     /// <summary>
@@ -241,20 +249,20 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if ((firstNybble & 0xC) == 0x4) // There are two nybbles, value origin is 8
       {
-        varInt = (short)(((short)((firstNybble & 0x3) << 4) | (short)ReadUnSignedIntegerValue(1)) + 8);
+        varInt = (short)(((short)((firstNybble & 0x3) << BITS_PER_NYBBLE) | (short)ReadNybble()) + 8);
         return true;
       }
 
       if ((firstNybble & 0xE) == 0x2) // There are three nybbles, value origin is 72
       {
-        varInt = (short)(((short)((firstNybble & 0x1) << 8) | (short)ReadUnSignedIntegerValue(2)) + 72);
+        varInt = (short)(((short)((firstNybble & 0x1) << BITS_PER_TWO_NYBBLES) | (short)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble())) + 72);
         return true;
       }
 
       if (firstNybble == 1)  // There are four nybbles, value origin is 584, only
                              // the last three nybbles contain a value.
       {
-        varInt = (short)(ReadUnSignedIntegerValue(3) + 584);
+        varInt = (short)((ReadNybble() << BITS_PER_TWO_NYBBLES) | ((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble()) + 584);
         return true;
       }
 

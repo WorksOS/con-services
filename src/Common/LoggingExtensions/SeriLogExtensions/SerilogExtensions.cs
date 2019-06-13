@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace VSS.SeriLog.Extensions
@@ -13,6 +14,8 @@ namespace VSS.SeriLog.Extensions
 
       Log.Logger = new LoggerConfiguration()
                    .MinimumLevel.Debug()
+                   .MinimumLevel.Override("System", LogEventLevel.Information)
+                   .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                    .Enrich.FromLogContext()
                    .Enrich.WithThreadId()
                    .WriteTo.Console(

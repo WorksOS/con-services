@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -16,6 +15,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
+using System.IO;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -151,7 +151,11 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
 
       TAGFilePreScan tagFilePresScan = new TAGFilePreScan();
-      tagFilePresScan.Execute(new MemoryStream(tagDetail.tagFileContent));
+
+      using (var stream = new MemoryStream(tagDetail.tagFileContent))
+      {
+        tagFilePresScan.Execute(stream);
+      }
 
       if (tagFilePresScan.ReadResult != TAGReadResult.NoError)
       {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Geometry
@@ -141,15 +142,17 @@ namespace VSS.TRex.Geometry
       if (IsRectangle) // The point lies in the known rectangular area, so is contained in the filter
         return true;
 
-      //int pointsCount = Points.Count;
+      var points_Count = Points.Count;
 
-      if (Points.Count < 3)
+      if (points_Count < 3)
         return false;
 
       bool result = false;
-      var pt1 = Points.Last();
-      foreach (var pt2 in Points)
+      var pt1 = Points[points_Count - 1]; //.Last();
+
+      for (int i = 0; i < points_Count; i++) //foreach (var pt2 in Points)
       {
+        var pt2 = Points[i];
         if (pt2.X == x && pt2.Y == y)
           return true;
 

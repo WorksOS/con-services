@@ -98,16 +98,15 @@ namespace VSS.TRex.Storage
       }
 
       MemoryStream immutableStream;
-      using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)))
+      using (var MS = new MemoryStream(mutableCache.Get(cacheKey)))
       {
-        MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS);
-        {
-          immutableStream = PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
+        var mutableStream = MemoryStreamCompression.Decompress(MS);
 
-          if (mutableStream != immutableStream)
-          {
-            mutableStream.Dispose();
-          }
+        immutableStream = PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
+
+        if (mutableStream != immutableStream)
+        {
+          mutableStream.Dispose();
         }
       }
 
@@ -137,7 +136,7 @@ namespace VSS.TRex.Storage
       // Convert from the mutable to the immutable form and store it into the immutable cache
       if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out MemoryStream immutableStream) && immutableStream != null)
       {
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+        using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
         {
           if (Log.IsTraceEnabled())
             Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
@@ -212,7 +211,7 @@ namespace VSS.TRex.Storage
       // Convert from the mutable to the immutable form and store it into the immutable cache
       if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out MemoryStream immutableStream) && immutableStream != null)
       {
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+        using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
         {
           if (Log.IsTraceEnabled())
             Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");

@@ -7,6 +7,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -26,6 +27,8 @@ namespace VSS.TRex.SubGridTrees.Server
     public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTreeLeaf>();
+
+        private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
 
         /// <summary>
         /// The version number of this segment when it is stored in the persistent layer, defined
@@ -600,7 +603,11 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
              var FSError = storageProxy.ReadSpatialStreamFromPersistentStore
-                         (Owner.ID, FileName, OriginX, OriginY, FileName, Segment.SegmentInfo.Version, FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
+              (Owner.ID, FileName, OriginX, OriginY, 
+               Segment.SegmentInfo.StartTime.Ticks,
+               Segment.SegmentInfo.EndTime.Ticks,
+               Segment.SegmentInfo.Version, 
+               FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
 
              bool Result = FSError == FileSystemErrorStatus.OK;
 
@@ -649,18 +656,19 @@ namespace VSS.TRex.SubGridTrees.Server
         public bool SaveDirectoryToFile(IStorageProxy storage,
                                         string FileName)
         {
-            var MStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
-
+          using (var MStream = _recyclableMemoryStreamManager.GetStream())
+          {
             SaveDirectoryToStream(MStream);
 
             bool Result = storage.WriteSpatialStreamToPersistentStore
-             (Owner.ID, FileName, OriginX, OriginY, string.Empty, Version,
-              FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
+                          (Owner.ID, FileName, OriginX, OriginY, -1, -1, Version,
+                            FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
 
             if (!Result)
               Log.LogWarning($"Call to WriteSpatialStreamToPersistentStore failed. Filename:{FileName}");
 
             return Result;
+          }
         }
 
       /// <summary>
@@ -714,7 +722,7 @@ namespace VSS.TRex.SubGridTrees.Server
            if (Version == 0)
              Log.LogError($"Version for {Moniker()} is 0");
 
-            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty, Version,
+            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, -1, -1, Version,
                                                                        FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
 
             if (FSError != FileSystemErrorStatus.OK || SMS == null)

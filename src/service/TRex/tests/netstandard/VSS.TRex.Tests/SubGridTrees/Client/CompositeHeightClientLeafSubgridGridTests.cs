@@ -79,7 +79,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var clientGrid = TestSubGrid();
 
-      TestBinary_ReaderWriterBufferedHelper.RoundTripSerialise(clientGrid);
+      TestBinary_ReaderWriterHelper.RoundTripSerialise(clientGrid);
     }
 
     [Fact]

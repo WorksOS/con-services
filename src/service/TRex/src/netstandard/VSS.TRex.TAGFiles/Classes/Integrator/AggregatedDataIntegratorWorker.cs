@@ -16,9 +16,9 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.TAGFiles.Types;
@@ -88,7 +88,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     /// <param name="ProcessedTasks"></param>
     /// <returns></returns>
-    public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks)
+    public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks, int numTAGFilesRepresented)
     {
       var eventIntegrator = new EventIntegrator();
       long totalPassCountInAggregation = 0;
@@ -169,18 +169,26 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
-        var subGridTreeIntegrator = new GroupedSubGridTreeIntegrator
+        IServerSubGridTree groupedAggregatedCellPasses = null;
+        if (ProcessedTasks.Count > 1)
         {
-          Trees = ProcessedTasks
-            .Where(t => t.AggregatedCellPassCount > 0)
-            .Select(t => (t.AggregatedCellPasses, 
-                          t.AggregatedMachineEvents.StartEndRecordedDataEvents.FirstStateDate(),
-                          t.AggregatedMachineEvents.StartEndRecordedDataEvents.LastStateDate()))
-            .ToList()
-        };
+          var subGridTreeIntegrator = new GroupedSubGridTreeIntegrator
+          {
+            Trees = ProcessedTasks
+              .Where(t => t.AggregatedCellPassCount > 0)
+              .Select(t => (t.AggregatedCellPasses,
+                t.AggregatedMachineEvents.StartEndRecordedDataEvents.FirstStateDate(),
+                t.AggregatedMachineEvents.StartEndRecordedDataEvents.LastStateDate()))
+              .ToList()
+          };
 
-        // Assign the new grid into Task to represent the spatial aggregation of all of the tasks aggregated cell passes
-        var groupedAggregatedCellPasses = subGridTreeIntegrator.IntegrateSubGridTreeGroup();
+          // Assign the new grid into Task to represent the spatial aggregation of all of the tasks aggregated cell passes
+          groupedAggregatedCellPasses = subGridTreeIntegrator.IntegrateSubGridTreeGroup();
+        }
+        else
+        {
+          groupedAggregatedCellPasses = Task.AggregatedCellPasses;
+        }
 
         Log.LogDebug("Aggregation Task Process --> Integrate machine events and other clean up cell pass trees");
 
@@ -324,29 +332,26 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             foreach (var segment in serverLeaf.Cells.PassesData.Items)
             {
-              SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-              {
-                int passCount = segment.PassesData.PassCount(x, y);
-                for (int i = 0; i < passCount; i++)
-                  segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
-
-                totalPassCountInAggregation += passCount;
-              });
+              segment.PassesData.SetAllInternalMachineIDs(MachineFromDM.InternalSiteModelMachineIndex, out long modifiedPassCount);
+              totalPassCountInAggregation += modifiedPassCount;
             }
 
             return true;
           });
 
           // ... then integrate them
-          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes from {ProcessedTasks.Count} TAG files (spanning {groupedAggregatedCellPasses?.CountLeafSubGridsInMemory()} sub grids) into primary data model for {SiteModelFromDM.ID} spanning {SiteModelFromDM.ExistenceMap.CountBits()} sub grids");
+          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes from {numTAGFilesRepresented} TAG files (spanning {groupedAggregatedCellPasses?.CountLeafSubGridsInMemory()} sub grids) into primary data model for {SiteModelFromDM.ID} spanning {SiteModelFromDM.ExistenceMap.CountBits()} sub grids");
 
           var subGridIntegrator = new SubGridIntegrator(groupedAggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
-          if (!subGridIntegrator.IntegrateSubGridTree_ParallelisedTasks(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
-            return false; 
+          if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
+          {
+            Log.LogError("Aggregation Task Process --> Aborting due to failure in integration process");
+            return false;
+          }
 
           Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {SiteModelFromDM.ID}");
 
-          TAGProcessingStatistics.IncrementTotalTAGFilesProcessedIntoModels(ProcessedTasks.Count);
+          TAGProcessingStatistics.IncrementTotalTAGFilesProcessedIntoModels(numTAGFilesRepresented);
           TAGProcessingStatistics.IncrementTotalCellPassesAggregatedIntoModels(totalPassCountInAggregation);
 
           // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)

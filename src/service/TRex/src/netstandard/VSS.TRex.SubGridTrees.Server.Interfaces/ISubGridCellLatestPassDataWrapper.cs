@@ -31,8 +31,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// <returns></returns>
     CellPass this[int x, int y] { get; set; }
 
-    void Read(BinaryReader reader, byte[] buffer);
-    void Write(BinaryWriter writer, byte[] buffer);
+    void Read(BinaryReader reader);
+    void Write(BinaryWriter writer);
 
     short ReadInternalMachineIndex(int Col, int Row);
 

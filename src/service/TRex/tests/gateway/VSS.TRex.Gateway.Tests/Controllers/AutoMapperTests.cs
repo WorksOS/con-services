@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using Castle.Core.Internal;
 using VSS.MasterData.Models.Models;
@@ -6,8 +7,10 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
+using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Types;
 using Xunit;
+using Point = VSS.MasterData.Models.Models.Point;
 
 namespace VSS.TRex.Gateway.Tests.Controllers
 {
@@ -131,6 +134,35 @@ namespace VSS.TRex.Gateway.Tests.Controllers
 
       machineStatuses[2].AssetUid.HasValue.Equals(true);
       machineStatuses[2].AssetUid?.Equals(machineUid3);
+    }
+
+    [Fact]
+    public void MapTransitionToColorPalette()
+    {
+      var transitions = new Transition[]
+      {
+        new Transition(0, Color.Yellow),
+        new Transition(1, Color.Red),
+        new Transition(2, Color.Aqua),
+        new Transition(3, Color.Lime),
+      };
+
+      var expectedColors = new uint[]
+      {
+        4294967040,
+        4294901760,
+        4278255615,
+        4278255360
+      };
+
+      var palette = AutoMapperUtility.Automapper.Map<ColorPalette[]>(transitions);
+      Assert.Equal(transitions.Length, palette.Length);   
+      for (var i = 0; i < transitions.Length; i++)
+      {
+        Assert.Equal(expectedColors[i], palette[i].Color);
+        Assert.Equal(transitions[i].Value, palette[i].Value);
+      }
+      
     }
   }
 }

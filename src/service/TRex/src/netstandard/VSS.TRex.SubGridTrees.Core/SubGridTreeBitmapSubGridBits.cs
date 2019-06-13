@@ -42,11 +42,6 @@ namespace VSS.TRex.SubGridTrees
         public const long SumBitRowsFullCount = ((1L << SubGridTreeConsts.SubGridTreeDimension) - 1) * SubGridTreeConsts.SubGridTreeDimension;
 
         /// <summary>
-        /// The number of byte occupied by the Bits array
-        /// </summary>
-        private const int BytesOccupiedByBits = SubGridTreeConsts.SubGridTreeDimension * sizeof(uint);
-
-        /// <summary>
         /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
         /// </summary>
         public uint[] Bits { get; private set; }
@@ -460,8 +455,7 @@ namespace VSS.TRex.SubGridTrees
         /// Writes the contents of the mask in a binary form using the given binary write
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="buffer"></param>
-        public void Write(BinaryWriter writer, byte [] buffer)
+        public void Write(BinaryWriter writer)
         {
             switch (SumBitRows())
             {
@@ -474,8 +468,9 @@ namespace VSS.TRex.SubGridTrees
                 default:
                     writer.Write(Serialisation_ArbitraryBitsSet);
 
-                    Buffer.BlockCopy(Bits, 0, buffer, 0, BytesOccupiedByBits);
-                    writer.Write(buffer, 0, BytesOccupiedByBits);
+                    for (int i = 0, limit = Bits.Length; i < limit; i++)
+                      writer.Write(Bits[i]);
+
                     break;
             }
         }
@@ -484,8 +479,7 @@ namespace VSS.TRex.SubGridTrees
         /// Reads the contents of the mask from a binary form using the given binary reader
         /// </summary>
         /// <param name="reader"></param>
-        /// <param name="buffer"></param>
-        public void Read(BinaryReader reader, byte[] buffer)
+        public void Read(BinaryReader reader)
         {
             byte controlByte = reader.ReadByte();
             switch (controlByte)
@@ -497,14 +491,8 @@ namespace VSS.TRex.SubGridTrees
                     Fill();
                     break;
                 case Serialisation_ArbitraryBitsSet:
-                    reader.Read(buffer, 0, BytesOccupiedByBits);
-                    Buffer.BlockCopy(buffer, 0, Bits, 0, BytesOccupiedByBits);
-                    /*
-                    for (int i = 0; i < Bits.Length; i++)
-                    {
+                    for (int i = 0, limit = Bits.Length; i < limit; i++)
                         Bits[i] = reader.ReadUInt32();
-                    }
-                    */
                     break;
                 default:
                     throw new TRexSubGridTreeException($"Unknown SubGridTreeLeafBitmapSubGridBits control byte [{controlByte}] in read stream");
@@ -624,7 +612,7 @@ namespace VSS.TRex.SubGridTrees
         public string RowToString(int Row)
         {
             // Initialise a string builder with appropriate number of spaces
-            StringBuilder sb = new StringBuilder(new string(' ', 2 * SubGridTreeConsts.SubGridTreeDimension));
+            var sb = new StringBuilder(new string(' ', 2 * SubGridTreeConsts.SubGridTreeDimension));
 
             // Set each alternate space in the string with a 0 or 1 for each bit
             uint RowBits = Bits[Row];
@@ -662,11 +650,11 @@ namespace VSS.TRex.SubGridTrees
             if (other == null)
                 return false;
 
-            for (int i = 0; i < Bits.Length; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 if (Bits[i] != other.Bits[i])
                     return false;
          
-            return true;
+            return true; 
         }
 
       /// <summary>
@@ -677,9 +665,5 @@ namespace VSS.TRex.SubGridTrees
       {
         return Bits?.Length * 4 ?? 0; // Array of 32 bit uint values
       }
-
-    public void Read(BinaryReader reader) => Read(reader, new byte[200]);
-
-    public void Write(BinaryWriter writer) => Write(writer, new byte[200]);
-  }
+    }
 }

@@ -26,9 +26,7 @@ namespace VSS.TRex.Tests.Extensions
                 }
             }
 
-            public void Write(BinaryWriter writer) => Write(writer, new byte[10000]);
-
-            public void Write(BinaryWriter writer, byte[] buffer)
+            public void Write(BinaryWriter writer)
             {
                 foreach (int i in testArray)
                 {

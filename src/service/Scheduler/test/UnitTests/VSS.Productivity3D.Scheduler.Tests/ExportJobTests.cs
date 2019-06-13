@@ -5,13 +5,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Logging=Microsoft.Extensions.Logging;
+using Logging = Microsoft.Extensions.Logging;
 using Moq;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Http;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 
@@ -53,7 +54,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     {
       var customHeaders = new Dictionary<string, string>();
 
-      var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy"};
+      var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy" };
       var context = GetMockHangfireContext(typeof(ExportJobTests), TestContext.TestName, message);
 
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
@@ -78,17 +79,17 @@ namespace VSS.Productivity3D.Scheduler.Tests
       const string contentType = ContentTypeConstants.ApplicationJson;
       var customHeaders = new Dictionary<string, string>();
 
-      var scheduleRequest = new ScheduleJobRequest {Url = "some url", Filename = "dummy.mp3"};
-      var expectedFilename = scheduleRequest.Filename + extension; 
+      var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy.mp3" };
+      var expectedFilename = scheduleRequest.Filename + extension;
 
-      var ms = new MemoryStream(Encoding.UTF8.GetBytes( JsonConvert.SerializeObject(scheduleRequest)));
+      var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(scheduleRequest)));
       var fileStreamResult = new FileStreamResult(ms, ContentTypeConstants.ApplicationJson);
 
       var context = GetMockHangfireContext(typeof(ExportJobTests), TestContext.TestName, message);
 
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
 
-      var apiresult = new StringContent("some content",Encoding.UTF8,contentType);
+      var apiresult = new StringContent("some content", Encoding.UTF8, contentType);
 
 
       apiClient.Setup(a => a.SendRequest(It.IsAny<ScheduleJobRequest>(), customHeaders)).ReturnsAsync(apiresult);
@@ -110,7 +111,6 @@ namespace VSS.Productivity3D.Scheduler.Tests
     }
 
     [TestMethod]
-    [ExpectedException(typeof (Exception))]//Assert.ThrowsException doesn't work so use this instead
     [DataRow("BadRequest {\"Code\":2002,\"Message\":\"Failed to get requested export data with error: No data for export\"}")]
     [DataRow("InternalServerError Some general exception message")]
     public async Task CanGetExportDataFailure(string message)
@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var customHeaders = new Dictionary<string, string>();
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy" };
-      var ms = new MemoryStream(Encoding.UTF8.GetBytes( JsonConvert.SerializeObject(scheduleRequest)));
+      var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(scheduleRequest)));
       var fileStreamResult = new FileStreamResult(ms, ContentTypeConstants.ApplicationJson);
 
       var context = GetMockHangfireContext(typeof(ExportJobTests), TestContext.TestName, message);
@@ -134,8 +134,8 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Mock<Logging.ILoggerFactory> logger = new Mock<Logging.ILoggerFactory>();
 
       var exportJob = new ExportJob(apiClient.Object, transferProxy.Object, logger.Object);
- 
-      await exportJob.GetExportData(Guid.NewGuid(), customHeaders, context);
+
+      await Assert.ThrowsExceptionAsync<Exception>(() => exportJob.GetExportData(Guid.NewGuid(), customHeaders, context));
       ms.Dispose();
     }
   }

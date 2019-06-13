@@ -29,19 +29,18 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(Guid dataModelID, string streamName, int subGridX, int subGridY, string segmentIdentifier,
+    FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(Guid dataModelID, string streamName, int subGridX, int subGridY, long segmentStartDateTicks, long segmentEndDateTicks,
       long version, FileSystemStreamType streamType, MemoryStream mutableStream, object source)
     {
       throw new NotImplementedException();
     }
-
 
     FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, out MemoryStream stream)
     {
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(Guid dataModelID, string streamName, int subGridX, int subGridY, string segmentIdentifier, long version, FileSystemStreamType streamType, out MemoryStream stream)
+    FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(Guid dataModelID, string streamName, int subGridX, int subGridY, long segmentStartDateTicks, long segmentEndDateTicks, long version, FileSystemStreamType streamType, out MemoryStream stream)
     {
       throw new NotImplementedException();
     }

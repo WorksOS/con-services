@@ -1,6 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.Rendering.Palettes.CCAColorScale;
+using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Rendering
 {
@@ -68,5 +74,44 @@ namespace VSS.TRex.Rendering
         {
             return (WorldTileWidth / NPixelsX) >= SubGridCellSize || (WorldTileHeight / NPixelsY) >= SubGridCellSize;
         }
-    }
+
+        /// <summary>
+        /// Computes the CCA palette for the specified machine
+        /// </summary>
+        /// <param name="siteModel"></param>
+        /// <param name="filter"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        public static IPlanViewPalette ComputeCCAPalette(ISiteModel siteModel, ICellPassAttributeFilter filter, DisplayMode mode)
+        {
+          var machineUID = filter.MachinesList.Length > 0 ? filter.MachinesList[0] : Guid.Empty;
+
+          var ccaMinimumPassesValue = siteModel.GetCCAMinimumPassesValue(machineUID, filter.StartTime, filter.EndTime, filter.LayerID);
+
+          if (ccaMinimumPassesValue == 0)
+            return null;
+
+          var ccaColorScale = CCAColorScaleManager.CreateCoverageScale(ccaMinimumPassesValue);
+
+          var transitions = new Transition[ccaColorScale.TotalColors];
+
+          for (var i = 0; i < transitions.Length; i++)
+            transitions[i] = new Transition(i + 1, ColorUtility.UIntToColor(ccaColorScale.ColorSegments[transitions.Length - i - 1].Color));
+
+          if (mode == DisplayMode.CCA)
+          {
+            var ccaPalette = new CCAPalette();
+            ccaPalette.PaletteTransitions = transitions;
+
+            return ccaPalette;
+          }
+
+          var ccaSummaryPalette = new CCASummaryPalette();
+          ccaSummaryPalette.UndercompactedColour = transitions[0].Color;
+          ccaSummaryPalette.CompactedColour = transitions[1].Color;
+          ccaSummaryPalette.OvercompactedColour = transitions[2].Color;
+
+          return ccaSummaryPalette;
+        }
+  }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Compression;
 using Xunit;
 
@@ -533,5 +534,146 @@ namespace VSS.TRex.Tests.Compression
           Action act = () => bfa.StreamWriteEnd(); // throw exception
           act.Should().Throw<TRexException>().WithMessage("*Stream bit position is not after last bit in storage*");
         }
-    }
+
+        [Fact]
+        public void WriteBitFieldVector_Success()
+        {
+          long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+          int valueBits = 4;
+
+          BitFieldArray bfa = new BitFieldArray();
+          bfa.Initialise(valueBits, values.Length);
+
+          int bitLocation = 0;
+          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+
+          bitLocation.Should().Be(values.Length * valueBits);
+        }
+
+        [Fact]
+        public void WriteBitFieldVector_Success_PartialWrite()
+        {
+          long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+          int valueBits = 4;
+          int partialWriteSize = 5;
+
+          BitFieldArray bfa = new BitFieldArray();
+          bfa.Initialise(valueBits, values.Length);
+
+          int bitLocation = 0;
+          bfa.WriteBitFieldVector(ref bitLocation, valueBits, partialWriteSize, values);
+
+          bitLocation.Should().Be(valueBits * partialWriteSize);
+        }
+
+        [Fact]
+        public void WriteBitFieldVector_FailWithValuesArraySize()
+        {
+          long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+          int valueBits = 4;
+
+          BitFieldArray bfa = new BitFieldArray();
+          bfa.Initialise(valueBits, values.Length);
+
+          int bitLocation = 0;
+
+          Action act = () => bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length + 1, values);
+          act.Should().Throw<ArgumentException>().WithMessage("Supplied values array is null or not large enough*");
+        }
+
+        [Fact]
+        public void WriteBitFieldVector_FailWithStorageSize()
+        {
+          long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+          int valueBits = 4;
+
+          BitFieldArray bfa = new BitFieldArray();
+          bfa.Initialise(valueBits, values.Length - 1);
+
+          int bitLocation = 0;
+
+          Action act = () => bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+          act.Should().Throw<ArgumentException>().WithMessage("Insufficient storage present to satisfy*");
+        }
+
+        [Theory]
+        [InlineData(4)]
+        [InlineData(8)]
+        [InlineData(16)]
+        [InlineData(32)]
+        [InlineData(48)]
+        [InlineData(63)]
+        public void ReadBitFieldVector_Success(int valueBits)
+        {
+          long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+          BitFieldArray bfa = new BitFieldArray();
+          bfa.Initialise(valueBits, values.Length);
+
+          int bitLocation = 0;
+          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+
+          // Read the vector back
+          bitLocation = 0;
+          long[] outValues = new long[values.Length];
+          bfa.ReadBitFieldVector(ref bitLocation, valueBits, outValues.Length, outValues);
+          bitLocation.Should().Be(outValues.Length * valueBits);
+
+          outValues.Should().BeEquivalentTo(values);
+        }
+
+        [Fact]
+        public void ReadBitFieldVector_SuccessPartial()
+        {
+          long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+          int valueBits = 4;
+
+          BitFieldArray bfa = new BitFieldArray();
+          bfa.Initialise(valueBits, values.Length);
+
+          int bitLocation = 0;
+          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+
+          // Read the vector back
+          bitLocation = 0;
+          long[] outValues = new long[5];
+          bfa.ReadBitFieldVector(ref bitLocation, valueBits, outValues.Length, outValues);
+          bitLocation.Should().Be(outValues.Length * valueBits);
+
+          outValues.ForEach((l, i) => l.Should().Be(values[i]));
+        }
+
+        [Fact]
+        public void ReadBitFieldVector_FailWithValuesArraySize()
+        {
+          long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+          int valueBits = 4;
+
+          BitFieldArray bfa = new BitFieldArray();
+          bfa.Initialise(valueBits, values.Length);
+
+          int bitLocation = 0;
+
+          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+
+          Action act = () => bfa.ReadBitFieldVector(ref bitLocation, valueBits, values.Length + 1, values);
+          act.Should().Throw<ArgumentException>().WithMessage("Supplied values array is null or not large enough*");
+        }
+
+        [Fact]
+        public void ReadBitFieldVector_FailWithStorageSize()
+        {
+          long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+          int valueBits = 4;
+
+          BitFieldArray bfa = new BitFieldArray();
+          bfa.Initialise(valueBits, values.Length - 1);
+
+          int bitLocation = 0;
+          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length - 1, values);
+
+          Action act = () => bfa.ReadBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+          act.Should().Throw<ArgumentException>().WithMessage("Insufficient values present to satisfy a*");
+        }
+  }
 }

@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // This is not implemented and should throw an exception. Override to implement...
             try
             {
-                subgrid.Read(new BinaryReader(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION), Encoding.UTF8, true), new byte[10000]);
+                subgrid.Read(new BinaryReader(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION), Encoding.UTF8, true));
                 Assert.True(false,"Read with BinaryReader did not throw an exception");
             }
             catch (Exception)
@@ -125,7 +125,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // This is not implemented and should throw an exception. Override to implement...
             try
             {
-                subgrid.Write(new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION)), new byte[10000]);
+                subgrid.Write(new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION)));
                 Assert.True(false,"Read with BinaryWrite did not throw an exception");
             }
             catch (Exception)

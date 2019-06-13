@@ -180,8 +180,9 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
         /// <param name="TotalPasses"></param>
+        /// <param name="MinPassCount"></param>
         /// <param name="MaxPassCount"></param>
-        void CalculateTotalPasses(out int TotalPasses, out int MaxPassCount);
+        void CalculateTotalPasses(out int TotalPasses, out int MinPassCount, out int MaxPassCount);
 
         /// <summary>
         /// Calculates the time range covering all the cell passes within the given sub grid segment
@@ -220,6 +221,13 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="passNumber"></param>
         /// <param name="internalMachineID"></param>
         void SetInternalMachineID(int X, int Y, int passNumber, short internalMachineID);
+
+        /// <summary>
+        /// Sets the internal machine ID for all cell passes within the segment to the provided ID.
+        /// </summary>
+        /// <param name="internalMachineIndex"></param>
+        /// <param name="numModifiedPasses"></param>
+        void SetAllInternalMachineIDs(short internalMachineIndex, out long numModifiedPasses);
 
         /// <summary>
         /// If the elevation range of the elevations stored in this segment is known then return it,

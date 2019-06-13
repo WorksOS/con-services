@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using VSS.Productivity3D.Scheduler.Abstractions;
 
@@ -29,6 +29,5 @@ namespace VSS.Productivity3D.Scheduler.Tests
       TearDownInvoked?.Invoke(this, null);
       return Task.FromResult(true);
     }
-
   }
 }

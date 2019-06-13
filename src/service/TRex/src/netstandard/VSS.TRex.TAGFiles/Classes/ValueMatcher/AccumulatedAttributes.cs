@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
@@ -9,12 +8,14 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
     /// </summary>
     public class AccumulatedAttributes<T>
     {
+        private const int DEFAULT_ACCUMULATOR_LIST_SIZE_INCREMENT = 10;
+
         /// <summary>
         /// List of items being tracked. This list is managed with the aid of the NumAttrs field to
         /// remove the need to resize the attributes list frequently when all but the latest attributes are
         /// discarded.
         /// </summary>
-        private readonly List<AccumulatedAttribute<T>> list = new List<AccumulatedAttribute<T>>();
+        private AccumulatedAttribute<T>[] list = new AccumulatedAttribute<T>[DEFAULT_ACCUMULATOR_LIST_SIZE_INCREMENT];
 
         public AccumulatedAttributes()
         {
@@ -24,10 +25,9 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// Provides the count of the internal list of attributes being maintained
         /// </summary>
         /// <returns></returns>
-        public int NumAttrs { get; set; }
+        public int NumAttrs; 
 
-        // DiscardAllButLatest discards all but the most recently added
-        // value from the list;
+        // DiscardAllButLatest discards all but the most recently added value from the list;
         public void DiscardAllButLatest()
         {
             if (NumAttrs > 1)
@@ -50,12 +50,10 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
             throw new ArgumentException("Attribute time must be a UTC cell pass time", nameof(dateTime));
 
           // If there are available entries to reuse, then reuse them...
-          if (NumAttrs < list.Count)
-            list[NumAttrs] = new AccumulatedAttribute<T>(dateTime, value);
-          else
-            list.Add(new AccumulatedAttribute<T>(dateTime, value));
+          if (NumAttrs >= list.Length)
+            Array.Resize(ref list, list.Length + DEFAULT_ACCUMULATOR_LIST_SIZE_INCREMENT);
 
-          NumAttrs++;
+          list[NumAttrs++].Set(dateTime, value);
         }
 
         // GetLatest simply returns the last value in the list

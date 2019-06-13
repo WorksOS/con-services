@@ -23,6 +23,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
     public static bool TypeIsInteresting(Type x)
     {
       return !x.IsInterface && 
+             !x.IsAbstract &&
              !x.Implements(typeof(IBinaryReaderWriter)) &&
              !x.Implements(typeof(INonBinaryReaderWriterMimicable)) &&             
              HasMethod(x, "Write", new[] { typeof(BinaryWriter) }, true) &&
@@ -85,27 +86,14 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
 
     private void TestStandardWrite(Type type)
     {
+      if (type.IsAbstract)
+        return;
+
       var instance = Activator.CreateInstance(type);
       var ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       var bw = new BinaryWriter(ms);
 
       instance.GetType().InvokeMember("Write", BindingFlags.InvokeMethod, null, instance, new[] {bw});
-
-      ms.Position = 0;
-      var br = new BinaryReader(ms);
-      var instance2 = Activator.CreateInstance(type);
-
-      instance2.GetType().InvokeMember("Read", BindingFlags.InvokeMethod, null, instance2, new[] { br });
-      instance.Should().BeEquivalentTo(instance2, options => options.RespectingRuntimeTypes().IgnoringCyclicReferences());
-    }
-
-    private void TestBufferedWrite(Type type)
-    {
-      var instance = Activator.CreateInstance(type);
-      var ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
-      var bw = new BinaryWriter(ms);
-
-      instance.GetType().InvokeMember("Write", BindingFlags.InvokeMethod, null, instance, new object[] { bw, new byte[10000] });
 
       ms.Position = 0;
       var br = new BinaryReader(ms);
@@ -122,7 +110,6 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
       // Determine if the class implements the BinaryReaderWriter Read/Write members of the IBinaryReaderWriter interface
       var typeHasReadWriteMembers = HasMethod(type, "Write", new[] {typeof(BinaryWriter) }, true) &&
                                     HasMethod(type, "Read", new[] {typeof(BinaryReader) }, true);
-      var typeHasBufferedWriterMember = HasMethod(type, "Write", new[] {typeof(BinaryWriter), typeof(byte[])}, true);
 
       if (typeHasReadWriteMembers)
       {
@@ -133,11 +120,6 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
       else
       {
         typeHasReadWriteMembers.Should().BeFalse($"because class {type.FullName} implements IBinaryReaderWriter but does implement serialization logic which is suspicious");
-      }
-
-      if (typeHasBufferedWriterMember)
-      {
-        TestBufferedWrite(type);
       }
     }
   }

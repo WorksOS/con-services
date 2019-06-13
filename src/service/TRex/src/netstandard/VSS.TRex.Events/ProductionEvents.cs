@@ -10,6 +10,7 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Events
 {
@@ -25,6 +26,8 @@ namespace VSS.TRex.Events
     private byte VERSION_NUMBER = 1;
 
     private const int MinStreamLength = 16;
+
+    private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
 
     public bool EventsChanged { get; set; }
 
@@ -56,14 +59,14 @@ namespace VSS.TRex.Events
       /// <summary>
       /// The date/time at which this event occurred.
       /// </summary>
-      public DateTime Date { set; get; }
+      public DateTime Date;
 
       /// <summary>
       /// State defines the value of the generic event type. whose type is defined by the T generic type.
       /// It is assigned the default value for the type. Make sure all enumerated and other types specify an
       /// appropriate default (or null) value
       /// </summary>
-      public T State { get; set; }
+      public T State;
 
       public byte Flags;
     }
@@ -437,7 +440,7 @@ namespace VSS.TRex.Events
 
     public MemoryStream GetMutableStream()
     {
-      var mutablestream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
+      var mutablestream = _recyclableMemoryStreamManager.GetStream();
       var writer = new BinaryWriter(mutablestream);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -460,8 +463,8 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public MemoryStream GetImmutableStream()
     {
-      var immutableStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
-      var immutableWriter = new BinaryWriter(immutableStream);
+      var immutableStream = _recyclableMemoryStreamManager.GetStream();
+      var immutableWriter = new BinaryWriter(immutableStream, Encoding.UTF8, true);
 
       VersionSerializationHelper.EmitVersionByte(immutableWriter, VERSION_NUMBER);
 
@@ -498,7 +501,11 @@ namespace VSS.TRex.Events
     /// <param name="storageProxy"></param>
     public void SaveToStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, GetMutableStream(), this);
+      using (var mutableStream = GetMutableStream())
+      {
+        storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, mutableStream, this);
+      }
+
       EventsChanged = false;
     }
 

@@ -51,13 +51,6 @@ namespace VSS.TRex.SurveyedSurfaces
     }
 
     /// <summary>
-    /// Serialises state to a binary writer with a supplied intermediary buffer
-    /// </summary>
-    /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
-    /// <summary>
     /// Serialises state in from a binary reader
     /// </summary>
     /// <param name="reader"></param>

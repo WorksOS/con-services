@@ -11,17 +11,17 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// X ordinate - Units are meters
     /// </summary>
-    public double X { get; set; } = Consts.NullDouble;
+    public double X; // { get; set; } = Consts.NullDouble;
 
     /// <summary>
     /// X Ordinate - Units are meters
     /// </summary>
-    public double Y { get; set; } = Consts.NullDouble;
+    public double Y; // { get; set; } = Consts.NullDouble;
 
     /// <summary>
     /// Z Ordinate - Units are meters
     /// </summary>
-    public double Z { get; set; } = Consts.NullDouble;
+    public double Z; // { get; set; } = Consts.NullDouble;
 
     /// <summary>
     /// Default no-arg constructor

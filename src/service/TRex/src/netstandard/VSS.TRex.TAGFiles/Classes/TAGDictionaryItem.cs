@@ -5,17 +5,17 @@ namespace VSS.TRex.TAGFiles.Classes
     /// <summary>
     /// Describes an entry in the TAG file schema dictionary read in from the TAG file
     /// </summary>
-    public class TAGDictionaryItem
+    public struct TAGDictionaryItem
     {
         /// <summary>
         /// Name of the TAG, eg: Easting
         /// </summary>
-        public string Name { get; set; }
+        public string Name;
 
         /// <summary>
-        /// Typpe of value this name represents, // eg: Double precision IEEE real
+        /// Type of value this name represents, // eg: Double precision IEEE real
         /// </summary>
-        public TAGDataType Type { get; set; }
+        public TAGDataType Type;
 
         /// <summary>
         /// The internal value type id referred to by the value descriptor in the dictionary
