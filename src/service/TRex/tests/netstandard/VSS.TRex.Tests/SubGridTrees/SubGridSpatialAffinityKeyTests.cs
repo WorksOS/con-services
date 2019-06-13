@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridSpatialAffinityKey_SubGridOriginConstructor()
         {
             Guid ID = Guid.NewGuid();
-            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, ID, 12345678, 34567890);
+            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, ID, 12345678, 34567890);
             Assert.True(key.Version == 1 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentStartDateTicks == -1 && key.SegmentEndDateTicks == -1,
                 "Sub grid origin constructor sub grid spatial affinity key produced unexpected result");
         }
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridSpatialAffinityKey_CellAddressConstructor()
         {
             Guid ID = Guid.NewGuid();
-            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, ID, new SubGridCellAddress(12345678, 34567890));
+            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, ID, new SubGridCellAddress(12345678, 34567890));
             Assert.True(key.Version == 1 && key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890  && key.SegmentStartDateTicks == -1 && key.SegmentEndDateTicks == -1,
                 "Cell address constructor sub grid spatial affinity key produced unexpected result");
         }
@@ -56,7 +56,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridSpatialAffinityKey_ToStringSubGrid()
         {
             Guid ID = Guid.NewGuid();
-            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, ID, new SubGridCellAddress(12345678, 34567890));
+            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, ID, new SubGridCellAddress(12345678, 34567890));
             Assert.Equal($"{ID}-12345678-34567890", key.ToString());
         }
 
@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridSpatialAffinityKey_ToStringSegment()
         {
             Guid ID = Guid.NewGuid();
-            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, ID, new SubGridCellAddress(12345678, 34567890), 123456, 789012);
+            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, ID, new SubGridCellAddress(12345678, 34567890), 123456, 789012);
             Assert.Equal($"{ID}-12345678-34567890-123456-789012", key.ToString());
         }
     }

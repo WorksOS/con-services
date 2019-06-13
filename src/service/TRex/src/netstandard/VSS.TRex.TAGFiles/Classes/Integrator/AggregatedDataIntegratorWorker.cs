@@ -16,7 +16,6 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -333,17 +332,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             foreach (var segment in serverLeaf.Cells.PassesData.Items)
             {
-              for (int x = 0; x < SubGridTreeConsts.SubGridTreeDimension; x++)
-              {
-                for (int y = 0; y < SubGridTreeConsts.SubGridTreeDimension; y++)
-                {
-                  int passCount = segment.PassesData.PassCount(x, y);
-                  for (int i = 0; i < passCount; i++)
-                    segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
-
-                  totalPassCountInAggregation += passCount;
-                }
-              }
+              segment.PassesData.SetAllInternalMachineIDs(MachineFromDM.InternalSiteModelMachineIndex, out long modifiedPassCount);
+              totalPassCountInAggregation += modifiedPassCount;
             }
 
             return true;

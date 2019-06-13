@@ -15,7 +15,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         /// <summary>
         /// Processor responsible for accepting TAG values matched by the TAG value matcher
         /// </summary>
-        protected TAGProcessorStateBase Processor { get; }
+        protected readonly TAGProcessorStateBase Processor;
 
         /// <summary>
         /// The set of value matchers available to match TAG values being accepted
@@ -30,7 +30,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         /// <summary>
         /// Local value matcher state that the TAG value matchers use to coordinate values before sending them to the processor
         /// </summary>
-        protected TAGValueMatcherState ValueMatcherState { get; } = new TAGValueMatcherState();
+        protected readonly TAGValueMatcherState ValueMatcherState = new TAGValueMatcherState();
 
         /// <summary>
         /// Locate all value matcher classes and add them to the value matchers list using reflection (or just manually as below)

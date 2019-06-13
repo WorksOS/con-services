@@ -24,6 +24,27 @@ namespace VSS.TRex.Cells.Extensions
     /// Locates the earliest time contained in the set of cell passes.
     /// </summary>
     /// <param name="passes"></param>
+    /// <param name="minTime"></param>
+    /// <param name="maxTime"></param>
+    /// <returns></returns>
+    public static void TimeRange(this CellPass[] passes, out DateTime minTime, out DateTime maxTime)
+    {
+      minTime = DateTime.MaxValue;
+      maxTime = DateTime.MinValue;
+
+      for (int i = 0, length = passes.Length; i < length; i++)
+      {
+        if (passes[i].Time < minTime)
+          minTime = passes[i].Time;
+        if (passes[i].Time > maxTime)
+          maxTime = passes[i].Time;
+      }
+    }
+
+    /// <summary>
+    /// Locates the earliest time contained in the set of cell passes.
+    /// </summary>
+    /// <param name="passes"></param>
     /// <returns></returns>
     public static short MaxInternalSiteModelMachineIndex(this CellPass[] passes)
     {

@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             });
 
             //Check the total number of passes is 10240, and the maximum pass count is 10
-            segment.PassesData.CalculateTotalPasses(out int totalPassCount, out int maximumPassCount);
+            segment.PassesData.CalculateTotalPasses(out int totalPassCount, out _, out int maximumPassCount);
 
             Assert.True(10240 == totalPassCount, "Initial total pass count not 10240");
             Assert.True(10240 == segment.PassesData.SegmentPassCount,
@@ -205,8 +205,8 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.True(segment1.VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Segment1 has inappropriate cell pass time range compared to segment time range");
             Assert.True(segment2.VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Segment2 has inappropriate cell pass time range compared to segment time range");
 
-            segment1.PassesData.CalculateTotalPasses(out int totalPassCount1, out int maximumPassCount1);
-            segment2.PassesData.CalculateTotalPasses(out int totalPassCount2, out int maximumPassCount2);
+            segment1.PassesData.CalculateTotalPasses(out int totalPassCount1, out _, out int maximumPassCount1);
+            segment2.PassesData.CalculateTotalPasses(out int totalPassCount2, out _, out int maximumPassCount2);
 
             Assert.True(10240 == (totalPassCount1 + totalPassCount2), $"Totals ({totalPassCount1} and {totalPassCount2} don't add up to 10240 after cleaving");
             Assert.True(5 == maximumPassCount1, $"Maximum pass count 1 {maximumPassCount1}, is not 5");
@@ -249,8 +249,8 @@ namespace VSS.TRex.Tests.SubGridTrees
       ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
       ISubGridCellPassesDataSegment segment2 = subGrid.Cells.PassesData[1];
 
-      segment1.PassesData.CalculateTotalPasses(out int totalPassCount1, out int maximumPassCount1);
-      segment2.PassesData.CalculateTotalPasses(out int totalPassCount2, out int maximumPassCount2);
+      segment1.PassesData.CalculateTotalPasses(out int totalPassCount1, out _, out int maximumPassCount1);
+      segment2.PassesData.CalculateTotalPasses(out int totalPassCount2, out _, out int maximumPassCount2);
 
       Assert.True(10240 == totalPassCount1 + totalPassCount2, $"Totals ({totalPassCount1} and {totalPassCount2} don't add up to 10240 after cleaving");
       Assert.True(5 == maximumPassCount1, $"Maximum pass count 1 {maximumPassCount1}, is not 5");
@@ -289,8 +289,8 @@ namespace VSS.TRex.Tests.SubGridTrees
       ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
       ISubGridCellPassesDataSegment segment2 = subGrid.Cells.PassesData[1];
 
-      segment1.PassesData.CalculateTotalPasses(out int totalPassCount1, out int maximumPassCount1);
-      segment2.PassesData.CalculateTotalPasses(out int totalPassCount2, out int maximumPassCount2);
+      segment1.PassesData.CalculateTotalPasses(out int totalPassCount1, out _, out int maximumPassCount1);
+      segment2.PassesData.CalculateTotalPasses(out int totalPassCount2, out _, out int maximumPassCount2);
 
       Assert.True(10240 == (totalPassCount1 + totalPassCount2), $"Totals ({totalPassCount1} and {totalPassCount2} don't add up to 10240 after cleaving");
       Assert.True(5 == maximumPassCount1, $"Maximum pass count 1 {maximumPassCount1}, is not 5");

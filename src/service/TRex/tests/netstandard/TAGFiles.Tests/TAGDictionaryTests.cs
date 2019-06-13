@@ -11,7 +11,7 @@ namespace TAGFiles.Tests
         {
             TAGDictionaryItem item = new TAGDictionaryItem("name", TAGDataType.tUnicodeString, 10);
 
-            Assert.True(item != null && item.Name.Equals("name") && item.Type == TAGDataType.tUnicodeString && item.ID == 10,
+            Assert.True(item.Name.Equals("name") && item.Type == TAGDataType.tUnicodeString && item.ID == 10,
                 "TAG file dictionary item did not create as expected");
         }
 
@@ -42,7 +42,7 @@ namespace TAGFiles.Tests
 
             TAGDictionaryItem item = dict.Entries[10];
 
-            Assert.True(item != null && item.Name.Equals("name") && item.Type == TAGDataType.tUnicodeString && item.ID == 10,
+            Assert.True(item.Name.Equals("name") && item.Type == TAGDataType.tUnicodeString && item.ID == 10,
                 "TAG file dictionary item did retrieve as expected");
         }
 

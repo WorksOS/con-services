@@ -119,7 +119,7 @@ namespace VSS.TRex.SubGridTrees.Server
         subGridSegmentPassCountLimit = _subGridSegmentPassCountLimit;
 
       // Count up the number of cell passes in total in the segment
-      CleavingSegment.PassesData.CalculateTotalPasses(out int TotalPassCount, out int _ /*MaximumPassCount*/);
+      CleavingSegment.PassesData.CalculateTotalPasses(out int TotalPassCount, out int _, out int _ /*MaximumPassCount*/);
 
 #if DEBUG
       CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();

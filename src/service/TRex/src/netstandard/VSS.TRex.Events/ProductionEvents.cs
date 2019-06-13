@@ -59,14 +59,14 @@ namespace VSS.TRex.Events
       /// <summary>
       /// The date/time at which this event occurred.
       /// </summary>
-      public DateTime Date { set; get; }
+      public DateTime Date;
 
       /// <summary>
       /// State defines the value of the generic event type. whose type is defined by the T generic type.
       /// It is assigned the default value for the type. Make sure all enumerated and other types specify an
       /// appropriate default (or null) value
       /// </summary>
-      public T State { get; set; }
+      public T State;
 
       public byte Flags;
     }

@@ -30,6 +30,11 @@ namespace VSS.TRex.Cells
   public struct CellPass
   {
     /// <summary>
+    /// A prebuilt cell pass cleared per the CellPass.Clear() method
+    /// </summary>
+    public static CellPass CLEARED_CELL_PASS = ClearCell();
+
+    /// <summary>
     /// GPSModeStore stores the GPS mode in the lowest 4 bits of the GPSModeStore byte. The remaining 4 bits are
     /// available for use, probably as flags.
     /// </summary>
@@ -133,7 +138,7 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Initialise all attributes of a cell pass to null
     /// </summary>
-    public void Clear()
+    private void Clear()
     {
       GPSModeStore        = 0;
 
@@ -151,6 +156,13 @@ namespace VSS.TRex.Cells
       MDP                 = CellPassConsts.NullMDP;
       MachineSpeed        = CellPassConsts.NullMachineSpeed;
       CCA                 = CellPassConsts.NullCCA;
+    }
+
+    private static CellPass ClearCell()
+    {
+      var cell = new CellPass();
+      cell.Clear();
+      return cell;
     }
 
     /// <summary>

@@ -10,15 +10,5 @@ namespace VSS.TRex.SubGridTrees.Core
         public SubGridTreeNodeBitmapSubGrid()
         {
         }
-
-        /// <summary>
-        /// Constructor taking the tree reference, parent and level of the sub grid to be created
-        /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="parent"></param>
-        /// <param name="level"></param>
-  //      public SubGridTreeNodeBitmapSubGrid(ISubGridTree owner, ISubGrid parent, byte level) : base(owner, parent, level)
-    //    {
-      //  }
     }
 }
