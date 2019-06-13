@@ -20,7 +20,7 @@ namespace VSS.TRex.TAGFiles.Classes
         /// The core dictionary that maps the TAG file items by the ID used in the TAG file to the 
         /// description of that value type as used in the TAG file
         /// </summary>
-        public Dictionary<short, TAGDictionaryItem> Entries { get; }
+        public readonly Dictionary<short, TAGDictionaryItem> Entries;
 
         public TAGDictionary()
         {

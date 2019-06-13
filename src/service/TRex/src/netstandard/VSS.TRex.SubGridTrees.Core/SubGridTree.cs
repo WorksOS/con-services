@@ -546,7 +546,7 @@ namespace VSS.TRex.SubGridTrees
         public void GetCellCenterPosition(int X, int Y, out double cx, out double cy)
         {
             cx = (X - indexOriginOffset) * cellSize + CellSizeOver2;
-            cy = (Y - indexOriginOffset) * cellSize + CellSizeOver2;
+            cy = (Y - indexOriginOffset) * cellSize + CellSizeOver2;  
         }
 
         /// <summary>
