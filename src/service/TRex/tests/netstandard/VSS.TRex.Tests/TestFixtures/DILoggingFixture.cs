@@ -62,6 +62,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueInt("NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS", It.IsAny<int>())).Returns(Consts.NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS);
 
+          config.Setup(c => c.GetValueBool("TREX_USE_SYNC_TASKS_FOR_STORAGE_PROXY_IGNITE_TRANSACTIONAL_COMMITS", It.IsAny<bool>())).Returns(true);
+
           config.Setup(c => c.GetValueInt("MIN_TAGFILE_LENGTH", It.IsAny<int>())).Returns(Consts.kMinTagFileLengthDefault);
           config.Setup(c => c.GetValueBool("ENABLE_TFA_SERVICE", It.IsAny<bool>())).Returns(Consts.ENABLE_TFA_SERVICE);
           config.Setup(c => c.GetValueString("TAGFILE_ARCHIVE_FOLDER", It.IsAny<string>())).Returns("");
