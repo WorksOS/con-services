@@ -57,7 +57,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             Guid ID = Guid.NewGuid();
             ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, ID, new SubGridCellAddress(12345678, 34567890));
-            Assert.Equal($"{ID}-12345678-34567890", key.ToString());
+            Assert.Equal($"{ID}-1-12345678-34567890", key.ToString());
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             Guid ID = Guid.NewGuid();
             ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, ID, new SubGridCellAddress(12345678, 34567890), 123456, 789012);
-            Assert.Equal($"{ID}-12345678-34567890-123456-789012", key.ToString());
+            Assert.Equal($"{ID}-1-12345678-34567890-123456-789012", key.ToString());
         }
     }
 }
