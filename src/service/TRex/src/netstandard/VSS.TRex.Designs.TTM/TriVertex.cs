@@ -93,6 +93,21 @@ namespace VSS.TRex.Designs.TTM
     }
 
     /// <summary>
+    /// Expands a set 3D ordinate limits by the location of this vertex
+    /// </summary>
+    /// <param name="boundingExtent"></param>
+    public void AdjustLimits(BoundingWorldExtent3D boundingExtent)
+    {
+      if (X < boundingExtent.MinX) boundingExtent.MinX = X;
+      if (X > boundingExtent.MaxX) boundingExtent.MaxX = X;
+      if (Y < boundingExtent.MinY) boundingExtent.MinY = Y;
+      if (Y > boundingExtent.MaxY) boundingExtent.MaxY = Y;
+      if (Z < boundingExtent.MinZ) boundingExtent.MinZ = Z;
+      if (Z > boundingExtent.MaxZ) boundingExtent.MaxZ = Z;
+    }
+
+
+    /// <summary>
     /// Determine if an X, Y, Z coordinate is the same as the coordinate of this vertex within a given tolerance
     /// </summary>
     /// <param name="aX"></param>

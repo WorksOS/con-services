@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using VSS.TRex.Common;
 
@@ -437,6 +438,27 @@ namespace VSS.TRex.Geometry
     public void SetRectangleFence(double X1, double Y1, double X2, double Y2)
     {
       SetExtents(Math.Min(X1, X2), Math.Min(Y1, Y2), Math.Max(X1, X2), Math.Max(Y1, Y2));
+    }
+
+    public void Write(BinaryWriter writer)
+    {
+      writer.Write(Points.Count);
+
+      foreach (var point in Points)
+        point.Write(writer);
+    }
+
+    public void Read(BinaryReader reader)
+    {
+      var pointsCount = reader.ReadInt32();
+
+      for (var i = 0; i < pointsCount; i++)
+      {
+        var point = new FencePoint();
+        point.Read(reader);
+
+        Points.Add(point);
+      }
     }
   }
 }

@@ -57,6 +57,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
     }
 
+
     /**** Experimental code requiring unsafe code. Removed for now...
     /// <summary>
     /// Reads the collection of vertices using the provided reader

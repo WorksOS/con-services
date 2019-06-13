@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Common;
+﻿using System.IO;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Geometry
 {
@@ -113,6 +114,20 @@ namespace VSS.TRex.Geometry
     public bool SameInPlan(FencePoint other)
     {
       return X == other.X && Y == other.Y;
+    }
+
+    public void Write(BinaryWriter writer)
+    {
+      writer.Write(X);
+      writer.Write(Y);
+      writer.Write(Z);
+    }
+
+    public void Read(BinaryReader reader)
+    {
+      X = reader.ReadDouble();
+      Y = reader.ReadDouble();
+      Z = reader.ReadDouble();
     }
 
   }

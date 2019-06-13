@@ -7,6 +7,7 @@
     NoAlignmentsFound,
     UnableToLoadSubgridIndex,
     UnableToLoadSpatialIndex,
-    DesignDoesNotExist
+    DesignDoesNotExist,
+    UnableToLoadBoundary
   }
 }

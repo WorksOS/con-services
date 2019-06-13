@@ -80,15 +80,15 @@ namespace VSS.TRex.Designs
       //{
       //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
       //  if (!isDownloaded)
-      //  {
       //    return DesignLoadResult.UnableToLoadSubgridIndex;
-      //  }
-
+      //
       //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
       //  if (!isDownloaded)
-      //  {
       //    return DesignLoadResult.UnableToLoadSpatialIndex;
-      //  }
+      //
+      //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
+      //  if (!isDownloaded)
+      //    return DesignLoadResult.UnableToLoadBoundary;
       //}
 
       return DesignLoadResult.Success;
