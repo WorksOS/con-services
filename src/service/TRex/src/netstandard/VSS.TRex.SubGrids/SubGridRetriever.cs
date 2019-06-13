@@ -160,7 +160,7 @@ namespace VSS.TRex.SubGrids
             {
               // TODO: Assumption validation: Once this workflow is entered the only expected output is the cell pass with the lowest elevation per the selection rules below.
 
-              CellPass _nextCurrentPass = new CellPass();
+              CellPass _nextCurrentPass = CellPass.CLEARED_CELL_PASS;
               CellPass _lowestPass = _currentPass.FilteredPass;
 
               while (_cellPassIterator.MayHaveMoreFilterableCellPasses() && _cellPassIterator.GetNextCellPass(ref _nextCurrentPass))

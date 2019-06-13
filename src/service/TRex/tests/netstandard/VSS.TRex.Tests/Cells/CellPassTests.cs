@@ -63,9 +63,8 @@ namespace VSS.TRex.Tests.Cells
         [Fact]
         public void Test_CellPass_CreateNullPass()
         {
-            CellPass cp = new CellPass();
-            cp.Clear();
-
+            CellPass cp = CellPass.CLEARED_CELL_PASS;
+            
             Assert.True(
                 cp.Amplitude == CellPassConsts.NullAmplitude &&
                 cp.CCA == CellPassConsts.NullCCA &&

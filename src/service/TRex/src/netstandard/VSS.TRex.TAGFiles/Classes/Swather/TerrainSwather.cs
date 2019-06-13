@@ -149,7 +149,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                         // Fill in all the details for the processed cell pass, using the tag event lookups
                         // to make sure the appropriate values at the cell pass time are used.
 
-                        CellPass ProcessedCellPass = new CellPass();
+                        CellPass ProcessedCellPass = Cells.CellPass.CLEARED_CELL_PASS;
 
                         if (BaseProductionDataSupportedByMachine)
                         {

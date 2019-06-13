@@ -37,7 +37,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
               for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
               {
-                PassData[i, j].Clear();
+                PassData[i, j] = CellPass.CLEARED_CELL_PASS;
               }
             }
         }
