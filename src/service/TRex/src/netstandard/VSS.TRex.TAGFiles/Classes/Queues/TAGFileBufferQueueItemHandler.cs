@@ -7,10 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Log4NetExtensions;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
@@ -363,6 +363,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             // Note ToArray at end is important to activate tasks (ie lazy loading)
             var _ = Enumerable.Range(0, NumConcurrentProcessingTasks).Select(x => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
+            //var _ = Enumerable.Range(0, NumConcurrentProcessingTasks).Select(x => new Thread(ProcessTAGFilesFromGrouper2)).ToArray();
+            //_.ForEach(x => x.Start());
         }
 
         /// <summary>
