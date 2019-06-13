@@ -28,6 +28,7 @@ data:
   unifiedproductivity_public_v1: http://localhost:5001/api/v1
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
   assetmgmt3d_service: http://localhost:5001
+  project_service_public_v4: http://localhost:5001/api/v4/mockproject
   project_service: http://localhost:5001
   FILTERSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IFilterEvent
   WEBAPI_DEBUG_URI: http://localhost:80/
