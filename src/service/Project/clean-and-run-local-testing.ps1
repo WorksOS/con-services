@@ -19,24 +19,26 @@ IF (-not $?) {
     Write-Host "Error: Logging in to AWS, won't pull latest images for container dependancies." -ForegroundColor Red
 }
 
-Write-Host "Building solution" -ForegroundColor DarkGray
+IF ($args -notcontains "--no-build") {
+    Write-Host "Building solution" -ForegroundColor DarkGray
 
-$artifactsWorkingDir = "${PSScriptRoot}/artifacts/ProjectWebApi"
+    $artifactsWorkingDir = "${PSScriptRoot}/artifacts/ProjectWebApi"
 
-Remove-Item -Path ./artifacts -Recurse -Force -ErrorAction Ignore
-Invoke-Expression "dotnet publish ./src/ProjectWebApi/VSS.Project.WebApi.csproj -o ../../artifacts/ProjectWebApi -f netcoreapp2.1 -c Docker"
-Invoke-Expression "dotnet build ./test/UnitTests/MasterDataProjectTests/VSS.Project.WebApi.Tests.csproj"
-Copy-Item ./src/ProjectWebApi/appsettings.json $artifactsWorkingDir
-New-Item -ItemType directory ./artifacts/logs | out-null
+    Remove-Item -Path ./artifacts -Recurse -Force -ErrorAction Ignore
+    Invoke-Expression "dotnet publish ./src/ProjectWebApi/VSS.Project.WebApi.csproj -o ../../artifacts/ProjectWebApi -f netcoreapp2.1 -c Docker"
+    Invoke-Expression "dotnet build ./test/UnitTests/MasterDataProjectTests/VSS.Project.WebApi.Tests.csproj"
+    Copy-Item ./src/ProjectWebApi/appsettings.json $artifactsWorkingDir
+    New-Item -ItemType directory ./artifacts/logs | out-null
 
-Write-Host "Copying static deployment files" -ForegroundColor DarkGray
-Set-Location ./src/ProjectWebApi
-Copy-Item ./appsettings.json $artifactsWorkingDir
-Copy-Item ./Dockerfile $artifactsWorkingDir
-Copy-Item ./web.config $artifactsWorkingDir
-Copy-Item ./log4net.xml $artifactsWorkingDir
+    Write-Host "Copying static deployment files" -ForegroundColor DarkGray
+    Set-Location ./src/ProjectWebApi
+    Copy-Item ./appsettings.json $artifactsWorkingDir
+    Copy-Item ./Dockerfile $artifactsWorkingDir
+    Copy-Item ./web.config $artifactsWorkingDir
+    Copy-Item ./log4net.xml $artifactsWorkingDir
 
-& $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
+    & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
+}
 
 Write-Host "Building image dependencies" -ForegroundColor DarkGray
 
@@ -48,7 +50,7 @@ Write-Host "Building Docker containers" -ForegroundColor DarkGray
 Set-Location $PSScriptRoot
 
 $detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
-Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach"
+Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach > ${PSScriptRoot}/artifacts/logs/output.log"
 
 IF ($args -contains "--no-test") { 
     $acceptanceTestContainerName = "project_accepttest"
