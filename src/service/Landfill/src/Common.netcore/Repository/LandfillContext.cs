@@ -817,7 +817,7 @@ namespace Common.Repository
     {
       //Match on AssetID/AssetUID and IsJohnDoe only as MachineName can change.
       var query = @"SELECT ID, MachineName, AssetID, AssetUID FROM Machine
-                      WHERE (AssetID = @assetId OR AssetUID = @assetUid) 
+                      WHERE ((AssetID IS NOT NULL AND AssetID = @assetId) OR (AssetUID IS NOT NULL AND AssetUID = @assetUid)) 
                       AND IsJohnDoe = @isJohnDoe AND ProjectUID = @projectUid and MachineName = @machineName";
 
       long existingId = 0;
