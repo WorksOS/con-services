@@ -25,8 +25,9 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [HttpGet("api/v4/mockproject")]
-    [HttpGet("api/v4")]
+    [Route("api/v4/mockproject")]
+    [Route("api/v4")]
+    [HttpGet]
     public ProjectDataResult GetMockProjects()
     {
       Console.WriteLine($"{nameof(GetMockProjects)}");
@@ -40,9 +41,10 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [HttpGet("api/v4/mockproject/{projectUid}")]
-    [HttpGet("api/v4/{projectUid}")]
-    [HttpGet("api/v4/project/{projectUid}")]
+    [Route("api/v4/mockproject/{projectUid}")]
+    [Route("api/v4/{projectUid}")]
+    [Route("api/v4/project/{projectUid}")]
+    [HttpGet]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {
       Console.WriteLine($"{nameof(GetMockProject)}: projectUid={projectUid}");
@@ -56,8 +58,9 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The mocked settings</returns>
-    [HttpGet("api/v4/mock/projectsettings/{projectUid}")]
-    [HttpGet("api/v4/projectsettings/{projectUid}")]
+    [Route("api/v4/mock/projectsettings/{projectUid}")]
+    [Route("api/v4/projectsettings/{projectUid}")]
+    [HttpGet]
     public ProjectSettingsDataResult GetMockProjectSettingsTargets(string projectUid)
     {
       Console.WriteLine($"{nameof(GetMockProjectSettingsTargets)}: projectUid={projectUid}");
@@ -77,8 +80,9 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The mocked settings</returns>
-    [HttpGet("api/v4/mock/projectcolors/{projectUid}")]
-    [HttpGet("api/v4/projectcolors/{projectUid}")]
+    [Route("api/v4/mock/projectcolors/{projectUid}")]
+    [Route("api/v4/projectcolors/{projectUid}")]
+    [HttpGet]
     public ProjectSettingsDataResult GetMockProjectSettingsColors(string projectUid)
     {
       Console.WriteLine($"{nameof(GetMockProjectSettingsColors)}: projectUid={projectUid}");

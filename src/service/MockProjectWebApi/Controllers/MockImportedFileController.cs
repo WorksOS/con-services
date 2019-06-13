@@ -27,8 +27,9 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked imported files</returns>
-    [HttpGet("api/v4/mock/importedfiles")]
-    [HttpGet("api/v4/importedfiles")]
+    [Route("api/v4/mock/importedfiles")]
+    [Route("api/v4/importedfiles")]
+    [HttpGet]
     public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid)
     {
       Console.WriteLine($"{nameof(GetMockImportedFiles)}: projectUid={projectUid}");
@@ -44,14 +45,16 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Used as a callback by Flow.JS
     /// </summary>
-    [HttpGet("api/v4/importedfile")]
+    [Route("api/v4/importedfile")]
+    [HttpGet]
     public ActionResult Upload()
     {
       return new NoContentResult();
     }
 
-    [HttpPost("api/v4/mock/importedfile")]
-    [HttpPost("api/v4/importedfile")]
+    [Route("api/v4/mock/importedfile")]
+    [Route("api/v4/importedfile")]
+    [HttpPost]
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]
     {
@@ -82,8 +85,9 @@ namespace MockProjectWebApi.Controllers
       return new FileDataSingleResult { Code = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to create imported file" };
     }
 
-    [HttpPut("api/v4/mock/importedfile")]
-    [HttpPut("api/v4/importedfile")]
+    [Route("api/v4/mock/importedfile")]
+    [Route("api/v4/importedfile")]
+    [HttpPut]
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]
     {
@@ -119,8 +123,9 @@ namespace MockProjectWebApi.Controllers
       };
     }
 
-    [HttpDelete("api/v4/mock/importedfile")]
-    [HttpDelete("api/v4/importedfile")]
+    [Route("api/v4/mock/importedfile")]
+    [Route("api/v4/importedfile")]
+    [HttpDelete]
     public BaseDataResult DeleteMockImportedFile([FromQuery] Guid projectUid, [FromQuery] Guid importedFileUid)
     {
       Console.WriteLine($"DeleteMockImportedFile. projectUid {projectUid} importedFileUid: {importedFileUid}");
