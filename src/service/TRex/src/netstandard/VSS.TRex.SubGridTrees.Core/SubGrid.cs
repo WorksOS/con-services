@@ -99,7 +99,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public int AxialCellCoverageByChildSubGrid() => AxialCellCoverageByThisSubGrid() >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-        /// <summary>o
+        /// <summary>
         /// Sets the origin position of this sub grid to the supplied X and Y values within the cells of the parent sub grid. 
         /// This action locks the location of this sub grid in space with respect to the origin position of the parent sub grid.
         /// </summary>

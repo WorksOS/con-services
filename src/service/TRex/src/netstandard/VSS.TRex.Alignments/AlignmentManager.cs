@@ -81,7 +81,11 @@ namespace VSS.TRex.Alignments
     {
       try
       {
-        _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, alignments.ToStream(), this);
+        using (var stream = alignments.ToStream())
+        {
+          _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, stream, this);
+        }
+
         _writeStorageProxy.Commit();
 
         // Notify the  grid listeners that attributes of this site model have changed.

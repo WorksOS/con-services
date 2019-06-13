@@ -66,8 +66,14 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <param name="surveyedSurfaces"></param>
     private void Store(Guid siteModelUid, ISurveyedSurfaces surveyedSurfaces)
     {
-      _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, surveyedSurfaces.ToStream(), this);
-      _writeStorageProxy.Commit();
+      using (var stream = surveyedSurfaces.ToStream())
+      {
+        if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME,
+          FileSystemStreamType.SurveyedSurfaces, stream, this) == FileSystemErrorStatus.OK)
+        {
+          _writeStorageProxy.Commit();
+        }
+      }
 
       // Notify the  grid listeners that attributes of this site model have changed.
       var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();

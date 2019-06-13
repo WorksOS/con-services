@@ -572,11 +572,14 @@ versionMap = null;
     /// <returns></returns>
     public bool SaveMetadataToPersistentStore(IStorageProxy storageProxy)
     {
-      if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML,
-            this.ToStream(), this) == FileSystemErrorStatus.OK)
+      using (var stream = this.ToStream())
       {
-        storageProxy.Commit();
-        return true;
+        if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML,
+              stream, this) == FileSystemErrorStatus.OK)
+        {
+          storageProxy.Commit();
+          return true;
+        }
       }
 
       Log.LogError($"Failed to save site model metadata for site model {ID} to persistent store");
@@ -594,11 +597,14 @@ versionMap = null;
 
       lock (this)
       {
-        if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML,
-              this.ToStream(), this) != FileSystemErrorStatus.OK)
+        using (var stream = this.ToStream())
         {
-          Log.LogError($"Failed to save site model metadata for site model {ID} to persistent store");
-          Result = false;
+          if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName,
+                FileSystemStreamType.ProductionDataXML, stream, this) != FileSystemErrorStatus.OK)
+          {
+            Log.LogError($"Failed to save site model metadata for site model {ID} to persistent store");
+            Result = false;
+          }
         }
 
         if (ExistenceMapLoaded && SaveProductionDataExistenceMapToStorage(storageProxy) != FileSystemErrorStatus.OK)
@@ -665,8 +671,13 @@ Result = false;
       var result = FileSystemErrorStatus.OK;
 
       if (existenceMap != null)
-        result = storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName,
-          FileSystemStreamType.SubGridExistenceMap, existenceMap.ToStream(), existenceMap);
+      {
+        using (var stream = existenceMap.ToStream())
+        {
+          result = storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName,
+            FileSystemStreamType.SubGridExistenceMap, stream, existenceMap);
+        }
+      }
 
       return result;
     }
@@ -694,13 +705,20 @@ Result = false;
         var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName,
           FileSystemStreamType.SubGridExistenceMap, out MemoryStream MS);
 
-        if (MS == null)
+        if (MS != null)
+        {
+          using (MS)
+          {
+            localExistenceMap.FromStream(MS);
+          }
+        }
+        else
+        {
           Log.LogInformation(
             $"Attempt to read existence map for site model {ID} failed [with result {readResult}] as the map does not exist, creating new existence map");
-        else
-          localExistenceMap.FromStream(MS);
+        }
 
-// Replace existence map with the newly read map
+        // Replace existence map with the newly read map
         existenceMap = localExistenceMap;
         return localExistenceMap;
       }
