@@ -58,7 +58,10 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(DataModelID, PROOFING_RUN_LIST_STREAM_NAME, FileSystemStreamType.ProofingRuns, this.ToStream(), this);
+      using (var stream = this.ToStream())
+      {
+        storageProxy.WriteStreamToPersistentStore(DataModelID, PROOFING_RUN_LIST_STREAM_NAME, FileSystemStreamType.ProofingRuns, stream, this);
+      }
     }
 
     /// <summary>

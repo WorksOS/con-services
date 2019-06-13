@@ -522,10 +522,13 @@ namespace VSS.TRex.Events
 
       if (MS != null)
       {
-        MS.Position = 0;
-        using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
+        using (MS)
         {
-          ReadEvents(reader);
+          MS.Position = 0;
+          using (var reader = new BinaryReader(MS))
+          {
+            ReadEvents(reader);
+          }
         }
       }
     }

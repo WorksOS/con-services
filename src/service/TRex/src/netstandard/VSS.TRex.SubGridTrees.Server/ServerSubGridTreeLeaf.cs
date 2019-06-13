@@ -611,22 +611,30 @@ namespace VSS.TRex.SubGridTrees.Server
 
              bool Result = FSError == FileSystemErrorStatus.OK;
 
-             if (!Result)
+             try
              {
-               Log.LogError(FSError == FileSystemErrorStatus.FileDoesNotExist
-                 ? $"Expected leaf sub grid segment {FileName}, model {Owner.ID} does not exist."
-                 : $"Unable to load leaf sub grid segment {FileName}, model {Owner.ID}. Details: {FSError}");
-             }
-             else
-             {
-               SMS.Position = 0;
-               using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
+               if (!Result)
                {
-                 Result = Segment.Read(reader, loadLatestData, loadAllPasses);
-
-                 if (loadAllPasses && Segment.PassesData == null)
-                   Log.LogError($"Segment {FileName} passes data is null after reading from store with LoadAllPasses=true.");
+                 Log.LogError(FSError == FileSystemErrorStatus.FileDoesNotExist
+                   ? $"Expected leaf sub grid segment {FileName}, model {Owner.ID} does not exist."
+                   : $"Unable to load leaf sub grid segment {FileName}, model {Owner.ID}. Details: {FSError}");
                }
+               else
+               {
+                 SMS.Position = 0;
+                 using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
+                 {
+                   Result = Segment.Read(reader, loadLatestData, loadAllPasses);
+
+                   if (loadAllPasses && Segment.PassesData == null)
+                     Log.LogError(
+                       $"Segment {FileName} passes data is null after reading from store with LoadAllPasses=true.");
+                 }
+               }
+             }
+             finally
+             {
+                SMS?.Dispose();
              }
 
              return Result;
@@ -656,13 +664,13 @@ namespace VSS.TRex.SubGridTrees.Server
         public bool SaveDirectoryToFile(IStorageProxy storage,
                                         string FileName)
         {
-          using (var MStream = _recyclableMemoryStreamManager.GetStream())
+          using (var stream = _recyclableMemoryStreamManager.GetStream())
           {
-            SaveDirectoryToStream(MStream);
+            SaveDirectoryToStream(stream);
 
             bool Result = storage.WriteSpatialStreamToPersistentStore
                           (Owner.ID, FileName, OriginX, OriginY, -1, -1, Version,
-                            FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
+                            FileSystemStreamType.SubGridDirectory, stream, this) == FileSystemErrorStatus.OK;
 
             if (!Result)
               Log.LogWarning($"Call to WriteSpatialStreamToPersistentStore failed. Filename:{FileName}");
@@ -724,27 +732,33 @@ namespace VSS.TRex.SubGridTrees.Server
 
             var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, -1, -1, Version,
                                                                        FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
-
-            if (FSError != FileSystemErrorStatus.OK || SMS == null)
+            try
             {
+              if (FSError != FileSystemErrorStatus.OK || SMS == null)
+              {
                 if (FSError == FileSystemErrorStatus.FileDoesNotExist)
                   Log.LogError($"Expected leaf sub grid file {fileName} does not exist.");
-                else
-                   if (FSError != FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull && FSError != FileSystemErrorStatus.GranuleDoesNotExist)
-                      Log.LogWarning($"Unable to load leaf sub grid file '{fileName}'. Details: {FSError}");
+                else if (FSError != FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull &&
+                         FSError != FileSystemErrorStatus.GranuleDoesNotExist)
+                  Log.LogWarning($"Unable to load leaf sub grid file '{fileName}'. Details: {FSError}");
 
                 return false;
+              }
+
+              // To ensure integrity of partial cache memory updates we need to ensure that
+              // any sub grid passed to this function is either not contained in the cache,
+              // or if it is, that it does not have the out-of-date cache flag set.
+              // If the sub grid is in the cache and has it's cache size out of date flag set,
+              // then reset the flag by explicitly making that cache size adjustment on behalf of
+              // the sub grid prior to reading the directory.
+
+              SMS.Position = 0;
+              return LoadDirectoryFromStream(SMS);
             }
-
-            // To ensure integrity of partial cache memory updates we need to ensure that
-            // any sub grid passed to this function is either not contained in the cache,
-            // or if it is, that it does not have the out-of-date cache flag set.
-            // If the sub grid is in the cache and has it's cache size out of date flag set,
-            // then reset the flag by explicitly making that cache size adjustment on behalf of
-            // the sub grid prior to reading the directory.
-
-            SMS.Position = 0;
-            return LoadDirectoryFromStream(SMS);
+            finally
+            {
+              SMS?.Dispose();
+            }
         }
 
         public void Integrate(IServerLeafSubGrid Source,

@@ -235,9 +235,9 @@ namespace VSS.TRex.SubGridTrees.Server
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses})");
       }
 
-      using (var MStream = _recyclableMemoryStreamManager.GetStream())
+      using (var stream = _recyclableMemoryStreamManager.GetStream())
       {
-        using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))
+        using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
         {
           Result = Write(writer);
         }
@@ -254,7 +254,7 @@ namespace VSS.TRex.SubGridTrees.Server
             SegmentInfo.EndTime.Ticks,
             SegmentInfo.Version,
             FileSystemStreamType.SubGridSegment,
-            MStream,
+            stream,
             this);
 
           Result = FSError == FileSystemErrorStatus.OK;
