@@ -175,6 +175,7 @@ namespace LandfillService.Common.Models
     public string geofenceUid { get; set; }
     public DateTime date { get; set; }
     public long machineId { get; set; }
+    public Guid assetUid { get; set; }
     public int? liftId { get; set; }
     public double incomplete { get; set; }
     public double complete { get; set; }
@@ -447,6 +448,7 @@ namespace LandfillService.Common.Models
   public class MachineDetails
   {
     public long assetId;
+    public Guid assetUid { get; set; }
     public bool isJohnDoe;
     public string machineName;
 
@@ -456,7 +458,7 @@ namespace LandfillService.Common.Models
     /// <returns>A string representation of machine details params</returns>
     public override string ToString()
     {
-      return string.Format("({0},{1},{2})", assetId, machineName, isJohnDoe);
+      return $"({assetId},{assetUid},{machineName},{isJohnDoe})";
     }
   }
 
