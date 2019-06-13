@@ -623,8 +623,8 @@ namespace LandfillService.WebApi.netcore.Controllers
           : LandfillDb.GetMachineId(project.projectUid,
             new MachineDetails
             {
-              assetId = assetId.Value,
-              assetUid = assetUid.Value,
+              assetId = assetId ?? 0,
+              assetUid = assetUid,
               machineName = machineName,
               isJohnDoe = isJohnDoe.Value
             });

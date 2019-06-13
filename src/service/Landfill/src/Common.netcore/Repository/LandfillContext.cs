@@ -784,7 +784,7 @@ namespace Common.Repository
           var parms = new List<MySqlParameter>
           {
             new MySqlParameter("@assetId", details.assetId),
-            new MySqlParameter("@assetUid", details.assetUid),
+            new MySqlParameter("@assetUid", (object)details.assetUid ?? DBNull.Value),
             new MySqlParameter("@machineName", details.machineName),
             new MySqlParameter("@isJohnDoe", details.isJohnDoe),
             new MySqlParameter("@projectUid", projectUid)
@@ -823,7 +823,7 @@ namespace Common.Repository
       long existingId = 0;
       var updateName = false;
       var updateId = details.assetId != 0;
-      var updateUid = details.assetUid != Guid.Empty;
+      var updateUid = details.assetUid.HasValue;
       using (var reader = MySqlHelper.ExecuteReader(sqlConn, query, sqlParams.ToArray()))
       {
         while (reader.Read())
@@ -834,7 +834,8 @@ namespace Common.Repository
               StringComparison.OrdinalIgnoreCase);
           //Raptor uses AssetID, TRex uses AssetUID.
           updateId = updateId && reader.GetInt64(reader.GetOrdinal("AssetID")) != details.assetId;
-          updateUid = updateUid && reader.GetGuid(reader.GetOrdinal("AssetUID")) != details.assetUid;
+          var dbAssetUid = reader.IsDBNull(reader.GetOrdinal("AssetUID")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("AssetUID"));
+          updateUid = updateUid &&  dbAssetUid != details.assetUid;
         }
       }
 
@@ -883,7 +884,7 @@ namespace Common.Repository
             machine = new MachineDetails
             {
               assetId = reader.GetInt64(reader.GetOrdinal("AssetID")),
-              assetUid = reader.GetGuid(reader.GetOrdinal("AssetUID")),
+              assetUid = reader.IsDBNull(reader.GetOrdinal("AssetUID")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("AssetUID")),
               machineName = reader.GetString(reader.GetOrdinal("MachineName")),
               isJohnDoe = reader.GetInt16(reader.GetOrdinal("IsJohnDoe")) == 1
             };

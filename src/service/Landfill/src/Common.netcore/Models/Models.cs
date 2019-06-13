@@ -448,7 +448,7 @@ namespace LandfillService.Common.Models
   public class MachineDetails
   {
     public long assetId;
-    public Guid assetUid { get; set; }
+    public Guid? assetUid { get; set; }
     public bool isJohnDoe;
     public string machineName;
 
