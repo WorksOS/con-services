@@ -669,7 +669,7 @@ namespace VSS.TRex.IO
           {
             byte[] currentBlock = this.blocks[blockIndex];
             int remainingInBlock = this.blockSize - blockOffset;
-            int amountToWriteInBlock = Math.Min(remainingInBlock, bytesRemaining);
+            int amountToWriteInBlock = remainingInBlock < bytesRemaining ? remainingInBlock : bytesRemaining;
 
             Buffer.BlockCopy(buffer, offset + bytesWritten, currentBlock, blockOffset, amountToWriteInBlock);
 
@@ -691,7 +691,11 @@ namespace VSS.TRex.IO
       }
 
       this.position = (int)end;
-      this.length = Math.Max(this.position, this.length);
+
+      if (this.position > this.Length)
+      {
+        this.length = this.position;
+      }
     }
 
 #if NETCOREAPP2_1 || NETSTANDARD2_1
@@ -789,7 +793,10 @@ namespace VSS.TRex.IO
       }
 
       this.position = (int)end;
-      this.length = Math.Max(this.position, this.length);
+      if (this.position > this.length)
+      {
+        this.length = this.position;
+      }
     }
 
     /// <summary>
