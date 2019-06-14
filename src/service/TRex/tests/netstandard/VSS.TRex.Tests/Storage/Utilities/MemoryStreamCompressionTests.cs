@@ -1,15 +1,12 @@
 ﻿using VSS.TRex.Storage.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Storage.Utilities
 {
-        public class MemoryStreamCompressionTests
+        public class MemoryStreamCompressionTests : IClassFixture<DILoggingFixture>
     {
         [Fact()]
         public void CompressTest()

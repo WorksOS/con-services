@@ -100,9 +100,12 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, this.ToStream(), this);
+      using (var stream = this.ToStream())
+      {
+        storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, stream, this);
+      }
     }
-    
+
     /// <summary>
     /// Loads the content of the machine designs list from the persistent store. If there is no item in the persistent store containing
     /// machine designs for this site model them return an empty list.

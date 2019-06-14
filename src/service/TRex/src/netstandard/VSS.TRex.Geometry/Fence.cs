@@ -148,9 +148,9 @@ namespace VSS.TRex.Geometry
         return false;
 
       bool result = false;
-      var pt1 = Points[points_Count - 1]; //.Last();
+      var pt1 = Points[points_Count - 1];
 
-      for (int i = 0; i < points_Count; i++) //foreach (var pt2 in Points)
+      for (int i = 0; i < points_Count; i++)
       {
         var pt2 = Points[i];
         if (pt2.X == x && pt2.Y == y)
