@@ -72,7 +72,6 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
 
-      services.AddServiceDiscovery();
       services.AddSingleton<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
       services.AddSingleton<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
 

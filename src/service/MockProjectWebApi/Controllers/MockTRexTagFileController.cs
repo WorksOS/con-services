@@ -11,7 +11,6 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Mock for TRex gateways:   [Route("api/v2/tagfiles")]
     /// </summary>
-    [Route("api/v2/mocktrextagfile")]
     [Route("api/v2")]
     [HttpPost]
     public ContractExecutionResult SendTagFileNonDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)
@@ -23,7 +22,6 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Mock for TRex gateways:   [Route("api/v2/tagfiles/direct")]
     /// </summary>
-    [Route("api/v2/mocktrextagfile/direct")]
     [Route("api/v2/direct")]
     [HttpPost]
     public ContractExecutionResult SendTagFileDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)

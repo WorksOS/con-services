@@ -21,16 +21,14 @@ data:
   KAFKA_CREATE_TOPICS: VSS.Interfaces.Events.MasterData.IBoundaryEvent-Filter:1:1,VSS.Interfaces.Events.MasterData.IFilterEvent-Filter:1:1
   KAFKA_ADVERTISED_PORT: "9092"  
   KAFKA_PRODUCER_SESSION_TIMEOUT: "1000"
-  RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
-  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
-  IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/importedfiles
-  GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
-  unifiedproductivity_public_v1: http://localhost:5001/api/v1
-  RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
+  FILTERSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IFilterEvent  
   assetmgmt3d_service: http://localhost:5001
-  project_service_public_v4: http://localhost:5001/api/v4/mockproject
+  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
+  GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
+  RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
+  RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
   project_service: http://localhost:5001
-  FILTERSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IFilterEvent
+  unifiedproductivity_public_v1: http://localhost:5001
   WEBAPI_DEBUG_URI: http://localhost:80/
   WEBAPI_URI: http://localhost:80/
   LOG_MAX_CHAR: "1000"

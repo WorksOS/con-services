@@ -49,8 +49,8 @@ data:
   TREX_TAGFILE_API_URL: http://trex.mutable.dev.eks.vspengg.com/api/v2/tagfiles
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
 #SERVICE DISCOVERY REFERENCES
-  assetdetails-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
-  assetsummary-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
+  assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
+  assetsummary_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
   unifiedproductivity_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-dev-unifiedproductivity/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2  

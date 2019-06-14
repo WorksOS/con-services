@@ -27,9 +27,7 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked imported files</returns>
-    [Route("api/v4/mock/importedfiles")]
     [Route("api/v4/importedfiles")]
-    [Route("api/v4/mockproject/importedfiles")]
     [HttpGet]
     public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid)
     {
@@ -53,7 +51,6 @@ namespace MockProjectWebApi.Controllers
       return new NoContentResult();
     }
 
-    [Route("api/v4/mock/importedfile")]
     [Route("api/v4/importedfile")]
     [HttpPost]
     [ActionName("Upload")]
@@ -86,7 +83,6 @@ namespace MockProjectWebApi.Controllers
       return new FileDataSingleResult { Code = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to create imported file" };
     }
 
-    [Route("api/v4/mock/importedfile")]
     [Route("api/v4/importedfile")]
     [HttpPut]
     [ActionName("Upload")]
@@ -124,7 +120,6 @@ namespace MockProjectWebApi.Controllers
       };
     }
 
-    [Route("api/v4/mock/importedfile")]
     [Route("api/v4/importedfile")]
     [HttpDelete]
     public BaseDataResult DeleteMockImportedFile([FromQuery] Guid projectUid, [FromQuery] Guid importedFileUid)
