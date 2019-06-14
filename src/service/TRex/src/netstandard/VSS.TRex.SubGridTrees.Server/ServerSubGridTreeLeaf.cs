@@ -745,13 +745,6 @@ namespace VSS.TRex.SubGridTrees.Server
                 return false;
               }
 
-              // To ensure integrity of partial cache memory updates we need to ensure that
-              // any sub grid passed to this function is either not contained in the cache,
-              // or if it is, that it does not have the out-of-date cache flag set.
-              // If the sub grid is in the cache and has it's cache size out of date flag set,
-              // then reset the flag by explicitly making that cache size adjustment on behalf of
-              // the sub grid prior to reading the directory.
-
               SMS.Position = 0;
               return LoadDirectoryFromStream(SMS);
             }

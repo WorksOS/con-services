@@ -44,7 +44,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
         /// </summary>
-        public uint[] Bits { get; private set; }
+        public readonly uint[] Bits;
 
         /// <summary>
         /// Default indexer for bit values in the mask
@@ -111,7 +111,6 @@ namespace VSS.TRex.SubGridTrees
             // This is about as fast as a managed copy of array items can be.
             if (Bits != null)
               Buffer.BlockCopy(SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear, 0, Bits, 0, SubGridBitsHelper.BytesInBitsArray);
-            //Array.Clear(Bits, 0, Bits.Length);
         }
 
         /// <summary>
