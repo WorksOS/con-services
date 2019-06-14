@@ -9,6 +9,7 @@
     public const string ASSETMGMT3D_SERVICE = "assetmgmt3d-service";
     public const string PUSH_SERVICE = "push-service";
     public const string TILE_SERVICE = "tile-service";
+    public const string TAGFIELAUTH_SERVICE = "tagfileauth-service";
     public const string TREX_SERVICE_IMMUTABLE = "trex-service-immutable";
     public const string TREX_SERVICE_MUTABLE = "trex-service-mutable";
     public const string TREX_SERVICE_CONNECTEDSITE = "trex-service-connectedsite";

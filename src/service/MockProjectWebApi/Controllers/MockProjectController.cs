@@ -43,6 +43,7 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The list of mocked projects</returns>
     [Route("api/v4/mockproject/{projectUid}")]
     [Route("api/v4/{projectUid}")]
+    [Route("api/v4/mock/project/{projectUid}")]
     [Route("api/v4/project/{projectUid}")]
     [HttpGet]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)

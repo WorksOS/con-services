@@ -22,6 +22,7 @@ using VSS.TRex.SiteModels;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.ServiceDiscovery;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;
@@ -35,6 +36,8 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Proxy;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi
 {
@@ -74,7 +77,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
          .Build();
 
-      services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>();
+      services.AddServiceDiscovery();
+      services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV2ServiceDiscoveryProxy>();
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
 
       services.AddOpenTracing(builder =>

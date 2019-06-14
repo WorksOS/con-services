@@ -4,16 +4,15 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 
-namespace VSS.MasterData.Proxies
+namespace VSS.Productivity3D.TagFileAuth.Proxy
 {
+  [Obsolete("Use TagFileAuthProjectV2ServiceDiscoveryProxy instead")]
   public class TagFileAuthProjectProxy : BaseProxy, ITagFileAuthProjectProxy
   {
     public TagFileAuthProjectProxy(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore, logger)

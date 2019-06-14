@@ -29,6 +29,7 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The list of mocked imported files</returns>
     [Route("api/v4/mock/importedfiles")]
     [Route("api/v4/importedfiles")]
+    [Route("api/v4/mockproject/importedfiles")]
     [HttpGet]
     public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid)
     {

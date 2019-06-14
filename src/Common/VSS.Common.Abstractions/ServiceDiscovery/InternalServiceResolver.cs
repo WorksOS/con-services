@@ -106,6 +106,8 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
           return Constants.ServiceNameConstants.PUSH_SERVICE;
         case ApiService.Tile:
           return Constants.ServiceNameConstants.TILE_SERVICE;
+        case ApiService.TagFileAuth:
+          return Constants.ServiceNameConstants.TAGFIELAUTH_SERVICE;
 
         default:
           // There are unit tests to ensure this does not happen 
