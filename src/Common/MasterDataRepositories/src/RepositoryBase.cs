@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using Polly;
 using VSS.Common.Abstractions.Configuration;
-using VSS.SeriLog.Extensions;
+using VSS.Serilog.Extensions;
 
 namespace VSS.MasterData.Repositories
 {

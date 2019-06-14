@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using VSS.WebApi.Common;
 using Serilog;
-using VSS.SeriLog.Extensions;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.WebApi
 {

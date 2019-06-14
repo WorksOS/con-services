@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using VSS.SeriLog.Extensions;
+using VSS.Serilog.Extensions;
 
 namespace MockProjectWebApi
 {

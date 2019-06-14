@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeriLogExtensions", "SeriLogExtensions\VSS.SeriLog.Extensions.csproj", "{7D6290D4-9EDA-425B-A88A-B9C00021D6C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerilogExtensions", "SerilogExtensions\VSS.Serilog.Extensions.csproj", "{7D6290D4-9EDA-425B-A88A-B9C00021D6C5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "src\VSS.Log4NetExtensions.csproj", "{69EBDCA8-B301-4360-AFED-DC31511EDC4E}"
 EndProject

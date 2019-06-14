@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 
-namespace VSS.SeriLog.Extensions
+namespace VSS.Serilog.Extensions
 {
   public class SerilogLogger<T> : ILogger
   {

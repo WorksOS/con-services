@@ -7,7 +7,7 @@ using SVOICVolumeCalculationsDecls;
 using VSS.Productivity3D.Common.Proxies;
 #endif
 using Microsoft.Extensions.Logging;
-using VSS.SeriLog.Extensions;
+using VSS.Serilog.Extensions;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
