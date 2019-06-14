@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using Microsoft.Extensions.Logging;
@@ -25,6 +25,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   /// </summary>
   public class CompactionExportExecutor : RequestExecutorContainer
   {
+#if RAPTOR
+    private static readonly Dictionary<ExportTypes, string> configKeys = new Dictionary<ExportTypes, string>
+    {
+      {ExportTypes.SurfaceExport, "ENABLE_TREX_GATEWAY_SURFACE"},
+      {ExportTypes.VedaExport, "ENABLE_TREX_GATEWAY_VETA"},
+      {ExportTypes.PassCountExport, "ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT"},
+    };
+#endif
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -41,56 +49,40 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = CastRequestObjectTo<ExportReport>(item);
-
-        if (
 #if RAPTOR
-          UseTRexGateway("ENABLE_TREX_GATEWAY_SURFACE") &&
-#endif
-          request?.ExportType == ExportTypes.SurfaceExport)
+        if (UseTRexGateway(configKeys[request.ExportType]))
         {
-          var compactionSurfaceExportRequest =
-            new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.Tolerance);
+#endif
+          switch (request.ExportType)
+          {
+            case ExportTypes.SurfaceExport:
+              var compactionSurfaceExportRequest =
+                new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.Tolerance);
 
-          log.LogInformation($"Calling TRex SendSurfaceExportRequest for projectUid: {request.ProjectUid}");
-          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionSurfaceExportRequest>(compactionSurfaceExportRequest, "/export/surface/ttm", customHeaders).Result;
-        }
-        else if (
+              log.LogInformation($"Calling TRex SendSurfaceExportRequest for projectUid: {request.ProjectUid}");
+              return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionSurfaceExportRequest>(compactionSurfaceExportRequest, "/export/surface/ttm", customHeaders).Result;
+
+            case ExportTypes.VedaExport:             
+            default://to satisfy the compiler
+              // can't change ExportReport as it's used by ProcessWithRaptor().
+              var requestHelper = item as ExportRequestHelper;
+
+              var compactionVetaExportRequest =
+                new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs,
+                  requestHelper.GetMachineNameList());
+
+              log.LogInformation($"Calling TRex SendVetaExportRequest for projectUid: {request.ProjectUid}");
+              return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders).Result;
+
+            case ExportTypes.PassCountExport:
+              var compactionPassCountExportRequest =
+                new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
+
+              log.LogInformation($"Calling TRex SendPassCountExportRequest for projectUid: {request.ProjectUid}");
+              return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionPassCountExportRequest>(compactionPassCountExportRequest, "/export/passcount", customHeaders).Result;
+          }
 #if RAPTOR
-          UseTRexGateway("ENABLE_TREX_GATEWAY_VETA") &&
-#endif
-          request?.ExportType == ExportTypes.VedaExport)
-        {
-          // can't change ExportReport as it's used by ProcessWithRaptor().
-          var requestHelper = item as ExportRequestHelper;
-
-          var compactionVetaExportRequest =
-            new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs,
-                             requestHelper.GetMachineNameList());
-
-          log.LogInformation($"Calling TRex SendVetaExportRequest for projectUid: {request.ProjectUid}");
-          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders).Result;
         }
-        else if (
-#if RAPTOR
-            UseTRexGateway("ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT") &&
-#endif
-            request?.ExportType == ExportTypes.PassCountExport)
-        {
-          var compactionPassCountExportRequest =
-            new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
-
-          log.LogInformation($"Calling TRex SendPassCountExportRequest for projectUid: {request.ProjectUid}");
-          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionPassCountExportRequest>(compactionPassCountExportRequest, "/export/passcount", customHeaders).Result;
-#if !RAPTOR
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-        }
-#else
-        }
-
         log.LogInformation($"Calling Raptor ProcessWithRaptor for projectUid: {request.ProjectUid}");
         return ProcessWithRaptor(request);
 #endif

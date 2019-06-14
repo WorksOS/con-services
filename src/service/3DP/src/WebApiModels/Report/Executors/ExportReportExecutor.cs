@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Logging;
+#if RAPTOR
 using ASNodeDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
@@ -18,6 +25,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// </summary>
   public class ExportReportExecutor : RequestExecutorContainer
   {
+#if RAPTOR
+    private static readonly Dictionary<ExportTypes, string> configKeys = new Dictionary<ExportTypes, string>
+    {
+      {ExportTypes.SurfaceExport, "ENABLE_TREX_GATEWAY_SURFACE"},
+      {ExportTypes.VedaExport, "ENABLE_TREX_GATEWAY_VETA"},
+      {ExportTypes.PassCountExport, "ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT"},
+    };
+#endif
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
@@ -31,7 +46,54 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = CastRequestObjectTo<ExportReport>(item);
+      try
+      {
+        var request = CastRequestObjectTo<ExportReport>(item);
+#if RAPTOR
+        if (UseTRexGateway(configKeys[request.ExportType]))
+        {
+#endif
+          switch (request.ExportType)
+          {
+            case ExportTypes.SurfaceExport:
+              var compactionSurfaceExportRequest =
+                new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.Tolerance);
+
+              log.LogInformation($"Calling TRex SendSurfaceExportRequest for projectUid: {request.ProjectUid}");
+              return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionSurfaceExportRequest>(compactionSurfaceExportRequest, "/export/surface/ttm", customHeaders).Result;
+
+            case ExportTypes.VedaExport:
+            default://to satisfy the compiler
+              var compactionVetaExportRequest =
+                new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs,
+                  request.MachineList.Select(m => m.MachineName).ToArray());
+              //Note: this way of setting the machine name list is slightly different to the code in CompactionExportExecutor so we don't change the historical behaviour
+
+              log.LogInformation($"Calling TRex SendVetaExportRequest for projectUid: {request.ProjectUid}");
+              return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders).Result;
+
+            case ExportTypes.PassCountExport:
+              var compactionPassCountExportRequest =
+                new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
+
+              log.LogInformation($"Calling TRex SendPassCountExportRequest for projectUid: {request.ProjectUid}");
+              return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionPassCountExportRequest>(compactionPassCountExportRequest, "/export/passcount", customHeaders).Result;
+          }
+  #if RAPTOR
+        }
+        log.LogInformation($"Calling Raptor ProcessWithRaptor for projectUid: {request.ProjectUid}");
+        return ProcessWithRaptor(request);
+  #endif
+      }
+      finally
+      {
+        ContractExecutionStates.ClearDynamic();
+      }
+    }
+
+#if RAPTOR
+    private ContractExecutionResult ProcessWithRaptor(ExportReport request)
+    {
       var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient);
 
       bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
@@ -43,7 +105,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         request.Tolerance, request.IncludeSurveydSurface,
         request.Precheckonly, request.Filename, RaptorConverters.convertToRaptorMachines(request.MachineList), (int)request.CoordType, (int)request.OutputType,
         request.DateFromUTC, request.DateToUTC,
-        RaptorConverters.convertToRaptorTranslations(request.Translations), 
+        RaptorConverters.convertToRaptorTranslations(request.Translations),
         RaptorConverters.convertToRaptorProjectExtents(request.ProjectExtents), out var dataexport);
 
       if (success)
@@ -63,8 +125,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       }
 
       throw CreateServiceException<ExportReportExecutor>(dataexport.ReturnCode);
+
     }
-    
+#endif
+
     private string BuildFilePath(long projectid, string callerid, string filename, bool zipped)
     {
       string prodFolder = configStore.GetValueString("RaptorProductionDataFolder");
@@ -74,7 +138,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddExportErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }
