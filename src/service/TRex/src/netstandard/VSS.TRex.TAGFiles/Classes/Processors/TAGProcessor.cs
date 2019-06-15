@@ -95,8 +95,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// </summary>
     protected bool EpochContainsProofingRunDescription()
     {
-      return (StartProofingDataTime != Consts.MIN_DATETIME_AS_UTC) && // We have a start time for the run
-             (DataTime > StartProofingDataTime); // The current epoch time is greater than the start
+      return (_StartProofingDataTime != Consts.MIN_DATETIME_AS_UTC) && // We have a start time for the run
+             (_DataTime > _StartProofingDataTime); // The current epoch time is greater than the start
     }
 
     // If there has been sufficient information read in from the compaction
@@ -104,20 +104,19 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     // we process it here.
     protected bool ProcessProofingPassInformation()
     {
-      string tempStr = EndProofingName != string.Empty ?
-        EndProofingName :
-         Design == string.Empty ? "No Design" : Design;
+      string tempStr = _EndProofingName != string.Empty ?
+        _EndProofingName : _Design == string.Empty ? "No Design" : _Design;
 
-      DateTime localTime = StartProofingDataTime + Common.Time.GPS.GetLocalGMTOffset();
+      DateTime localTime = _StartProofingDataTime + Common.Time.GPS.GetLocalGMTOffset();
 
       EndProofingName = $"{tempStr} ({localTime:yyyy/MM/dd} {localTime:HH:mm:ss})";
 
       // Create and add a new proofing run entry to represent this run.
       var result = SiteModel.SiteProofingRuns.CreateAndAddProofingRun(
-                     EndProofingName,
+                     _EndProofingName,
                      Machine.InternalSiteModelMachineIndex,
-                     StartProofingDataTime,
-                     DataTime,
+                     _StartProofingDataTime,
+                     _DataTime,
                      ProofingRunExtent);
 
       ProofingRunExtent.SetInverted();
@@ -152,7 +151,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
     protected override void SetDataTime(DateTime Value)
     {
-      bool RecordEvent = DataTime == Consts.MIN_DATETIME_AS_UTC;
+      bool RecordEvent = _DataTime == Consts.MIN_DATETIME_AS_UTC;
 
       base.SetDataTime(Value);
 
@@ -170,12 +169,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       // If the design being loaded changed, then update the extents of the design
       // in the designs list in the site model
 
-      if (Design != "" && Design != Value)
+      if (_Design != "" && _Design != Value)
         UpdateCurrentDesignExtent();
 
       base.SetDesign(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
         Value = Value.Trim();
         var siteModelMachineDesign = SiteModel.SiteModelMachineDesigns.Locate(Value);
@@ -184,7 +183,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
           siteModelMachineDesign = SiteModel.SiteModelMachineDesigns.CreateNew(Value);
         }
 
-        MachineTargetValueChangesAggregator.MachineDesignNameIDStateEvents.PutValueAtDate(DataTime, siteModelMachineDesign.Id);
+        MachineTargetValueChangesAggregator.MachineDesignNameIDStateEvents.PutValueAtDate(_DataTime, siteModelMachineDesign.Id);
       }
 
       // Get the current design extent for the newly selected design
@@ -195,7 +194,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       lock (SiteModel.SiteModelDesigns)
       {
-        int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(Design);
+        int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(_Design);
 
         if (DesignIndex == -1)
         {
@@ -206,8 +205,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
           // Clear the design extent being maintained in the processor.
           DesignExtent.SetInverted();
 
-          if (Design != "")
-            SiteModel.SiteModelDesigns.CreateNew(Design, DesignExtent);
+          if (_Design != "")
+            SiteModel.SiteModelDesigns.CreateNew(_Design, DesignExtent);
         }
         else
           DesignExtent = SiteModel.SiteModelDesigns[DesignIndex].Extents;
@@ -226,9 +225,9 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       VibrationState TempVibrationState = VibrationState.Invalid;
       AutoVibrationState TempAutoVibrationState = AutoVibrationState.Unknown;
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
-        switch (ICSensorType)
+        switch (_ICSensorType)
         {
           case CompactionSensorType.Volkel:
             {
@@ -252,17 +251,17 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
               break;
             }
           default:
-            throw new TRexTAGFileProcessingException($"Unknown sensor type: {(int)ICSensorType}");
+            throw new TRexTAGFileProcessingException($"Unknown sensor type: {(int)_ICSensorType}");
         }
 
-        MachineTargetValueChangesAggregator.VibrationStateEvents.PutValueAtDate(DataTime, TempVibrationState);
-        MachineTargetValueChangesAggregator.AutoVibrationStateEvents.PutValueAtDate(DataTime, TempAutoVibrationState);
-        MachineTargetValueChangesAggregator.ICFlagsStateEvents.PutValueAtDate(DataTime, value);
+        MachineTargetValueChangesAggregator.VibrationStateEvents.PutValueAtDate(_DataTime, TempVibrationState);
+        MachineTargetValueChangesAggregator.AutoVibrationStateEvents.PutValueAtDate(_DataTime, TempAutoVibrationState);
+        MachineTargetValueChangesAggregator.ICFlagsStateEvents.PutValueAtDate(_DataTime, value);
       }
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICMode',slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICMode',slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -275,12 +274,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICCCVTargetValue(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.TargetCCVStateEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.TargetCCVStateEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICCCVTargetValue', slpmcDebug); 
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICCCVTargetValue', slpmcDebug); 
         //{$ENDIF}
       //}
     }
@@ -293,12 +292,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICCCATargetValue(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.TargetCCAStateEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.TargetCCAStateEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICCCATargetValue', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICCCATargetValue', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -311,12 +310,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICMDPTargetValue(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.TargetMDPStateEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.TargetMDPStateEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICMDPTargetValue', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICMDPTargetValue', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -329,12 +328,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICPassTargetValue(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.TargetPassCountStateEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.TargetPassCountStateEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICPassTargetValue', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICPassTargetValue', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -357,12 +356,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       else if (Value == MachineDirection.Reverse)
         Gear = MachineGear.Reverse;
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC && (Gear == MachineGear.Forward || Gear == MachineGear.Reverse))
-        MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(DataTime, Gear);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC && (Gear == MachineGear.Forward || Gear == MachineGear.Reverse))
+        MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(_DataTime, Gear);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 or Gear not Forward/Reverse in SetMachineDirection', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 or Gear not Forward/Reverse in SetMachineDirection', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -375,30 +374,30 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICGear(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC && Value != MachineGear.SensorFailedDeprecated)
-        MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC && Value != MachineGear.SensorFailedDeprecated)
+        MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICGear', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICGear', slpmcDebug);
         //{$ENDIF}
       //}
     }
 
     /// <summary>
-    /// Sets the target minimum material temperture into the machine target material temperature events list
+    /// Sets the target minimum material temperature into the machine target material temperature events list
     /// </summary>
     /// <param name="Value"></param>
     protected override void SetICTempWarningLevelMinValue(ushort Value)
     {
       base.SetICTempWarningLevelMinValue(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.TargetMinMaterialTemperature.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.TargetMinMaterialTemperature.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICTempWarningLevelMinValue', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICTempWarningLevelMinValue', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -412,12 +411,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICTempWarningLevelMaxValue(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.TargetMaxMaterialTemperature.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.TargetMaxMaterialTemperature.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICTempWarningLevelMaxValue', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICTempWarningLevelMaxValue', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -430,12 +429,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICTargetLiftThickness(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.TargetLiftThicknessStateEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.TargetLiftThicknessStateEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICTargetLiftThickness', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICTargetLiftThickness', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -492,12 +491,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetRMVJumpThresholdValue(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.RMVJumpThresholdEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.RMVJumpThresholdEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetRMVJumpThresholdValue', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetRMVJumpThresholdValue', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -506,7 +505,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICSensorType(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
         // Tell the machine object itself what the current sensor type is
         Machine.CompactionSensorType = Value;
@@ -514,7 +513,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       //else
       //{
         // {$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICSensorType', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICSensorType', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -523,12 +522,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetAutomaticsMode(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.MachineAutomaticsStateEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.MachineAutomaticsStateEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetAutomaticsMode', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetAutomaticsMode', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -537,12 +536,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICLayerIDValue(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.LayerIDStateEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.LayerIDStateEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICLayerIDValue', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetICLayerIDValue', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -551,24 +550,24 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetGPSMode(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
         if (PositioningTech == TRex.Types.PositioningTech.Unknown || PositioningTech == TRex.Types.PositioningTech.UTS)
         {
           if (Value != GPSMode.NoGPS)
-            MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, TRex.Types.PositioningTech.GPS);
+            MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(_DataTime, TRex.Types.PositioningTech.GPS);
           else
-            MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, TRex.Types.PositioningTech.UTS);
+            MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(_DataTime, TRex.Types.PositioningTech.UTS);
         }
 
-        MachineTargetValueChangesAggregator.GPSModeStateEvents.PutValueAtDate(DataTime, Value);
+        MachineTargetValueChangesAggregator.GPSModeStateEvents.PutValueAtDate(_DataTime, Value);
 
         HasGPSModeBeenSet = true;
       }
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetGPSMode', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetGPSMode', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -577,12 +576,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetElevationMappingModeState(Value);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.PutValueAtDate(DataTime, Value);
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.PutValueAtDate(_DataTime, Value);
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetElevationMappingModeState', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetElevationMappingModeState', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -591,12 +590,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetGPSAccuracyState(accuracy, tolerance);
 
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-        MachineTargetValueChangesAggregator.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(DataTime, new GPSAccuracyAndTolerance(accuracy, tolerance));
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+        MachineTargetValueChangesAggregator.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(_DataTime, new GPSAccuracyAndTolerance(accuracy, tolerance));
       //else
       //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetGPSAccuracyState', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, '_DataTime = 0 in SetGPSAccuracyState', slpmcDebug);
         //{$ENDIF}
       //}
     }
@@ -620,7 +619,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       lock (SiteModel.SiteModelDesigns)
       {
-        int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(Design);
+        int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(_Design);
 
         if (DesignIndex != -1)
         {
@@ -679,9 +678,9 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     public override void DoPostProcessFileAction(bool successState)
     {
       // Record the last data time as the data end event
-      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
+      if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
-        MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(DataTime, ProductionEventType.EndEvent);
+        MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(_DataTime, ProductionEventType.EndEvent);
 
         if (!HasGPSModeBeenSet)
         {
@@ -697,7 +696,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       SiteModel.SiteModelExtent.Expand(SiteModelGridAggregator.CellSize / 2, SiteModelGridAggregator.CellSize / 2);
 
       // Update the design extent...
-      if (!string.IsNullOrEmpty(Design))
+      if (!string.IsNullOrEmpty(_Design))
       {
         UpdateCurrentDesignExtent();
       }
@@ -714,26 +713,26 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       switch (eventType)
       {
         case EpochStateEvent.MachineStartup:
-          if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-            MachineTargetValueChangesAggregator.MachineStartupShutdownEvents.PutValueAtDate(DataTime, ProductionEventType.StartEvent);
+          if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+            MachineTargetValueChangesAggregator.MachineStartupShutdownEvents.PutValueAtDate(_DataTime, ProductionEventType.StartEvent);
           break;
 
         case EpochStateEvent.MachineShutdown:
-          if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-            MachineTargetValueChangesAggregator.MachineStartupShutdownEvents.PutValueAtDate(DataTime, ProductionEventType.EndEvent);
+          if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+            MachineTargetValueChangesAggregator.MachineStartupShutdownEvents.PutValueAtDate(_DataTime, ProductionEventType.EndEvent);
           break;
 
         case EpochStateEvent.MachineMapReset:
           // Todo: Map reset events not implemented yet
-          //if (DataTime != Consts.MIN_DATETIME_AS_UTC)
-          //MachineTargetValueChangesAggregator.MapResetEvents.PutValueAtDate(DataTime, Design);
+          //if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
+          //MachineTargetValueChangesAggregator.MapResetEvents.PutValueAtDate(_DataTime, Design);
           break;
 
         case EpochStateEvent.MachineInUTSMode:
-          if (DataTime != Consts.MIN_DATETIME_AS_UTC)
+          if (_DataTime != Consts.MIN_DATETIME_AS_UTC)
           {
             PositioningTech = PositioningTech.UTS;
-            MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, PositioningTech);
+            MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(_DataTime, PositioningTech);
           }
           break;
 
