@@ -692,7 +692,7 @@ namespace VSS.TRex.IO
 
       this.position = (int)end;
 
-      if (this.position > this.Length)
+      if (this.position > this.length)
       {
         this.length = this.position;
       }
