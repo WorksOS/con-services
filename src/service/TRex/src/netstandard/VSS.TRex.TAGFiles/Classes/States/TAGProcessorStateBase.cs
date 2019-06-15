@@ -74,6 +74,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     protected bool _HaveFirstEpoch;
     protected bool _HaveFirstRearEpoch;
     protected bool _HaveFirstTrackEpoch;
+    public bool HaveFirstTrackEpoch { get => _HaveFirstTrackEpoch; set => _HaveFirstTrackEpoch = value; }
     protected bool _HaveFirstWheelEpoch;
 
     protected void InitialiseAttributeAccumulators()
@@ -392,7 +393,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     private AccumulatedAttributes<ushort> _ICFrequencys = new AccumulatedAttributes<ushort>();
     public AccumulatedAttributes<ushort> ICFrequencys { get => _ICFrequencys; } 
 
-    private AccumulatedAttributes<ushort> _ICAmplitudes { get; } = new AccumulatedAttributes<ushort>();
+    private AccumulatedAttributes<ushort> _ICAmplitudes = new AccumulatedAttributes<ushort>();
     public AccumulatedAttributes<ushort> ICAmplitudes { get => _ICAmplitudes; }
 
     protected MachineGear _ICGear = CellPassConsts.NullMachineGear;

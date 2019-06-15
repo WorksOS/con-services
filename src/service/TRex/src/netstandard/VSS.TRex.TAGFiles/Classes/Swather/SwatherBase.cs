@@ -22,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     public abstract class SwatherBase
     {
         // SiteModel is the site model that the read data is being contributed to
-        protected ISiteModel SiteModel { get; set; }
+        protected ISiteModel SiteModel;
 
         // Grid is the grid into which the cell passes are to be aggregated into prior
         // to final insertion into the site model proper
@@ -30,7 +30,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
         //MachineTargetValueChanges is a reference to an object that records all the
         // machine state events of interest that we encounter while processing the file
-        protected IProductionEventLists MachineTargetValueChanges { get; set; }
+        protected IProductionEventLists MachineTargetValueChanges;
 
         protected TAGProcessorBase Processor; 
 

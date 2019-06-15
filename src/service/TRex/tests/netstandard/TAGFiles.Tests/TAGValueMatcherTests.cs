@@ -1225,7 +1225,7 @@ namespace TAGFiles.Tests
 
       state.TrackSide = TAGValueSide.Left;
 
-      sink._HaveFirstTrackEpoch.Should().BeFalse();
+      sink.HaveFirstTrackEpoch.Should().BeFalse();
 
       TAGDictionaryItem absoluteItem =
           new TAGDictionaryItem(TAGValueNames.kTagFileEastingTrackTag, TAGDataType.tIEEEDouble, 0);
@@ -1270,7 +1270,7 @@ namespace TAGFiles.Tests
       Assert.True(matcher.ProcessEmptyValue(state, sink, absoluteItem), "Matcher process function returned false");
       Assert.False(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
 
-      sink._HaveFirstTrackEpoch.Should().BeFalse();
+      sink.HaveFirstTrackEpoch.Should().BeFalse();
     }
 
     [Fact()]
