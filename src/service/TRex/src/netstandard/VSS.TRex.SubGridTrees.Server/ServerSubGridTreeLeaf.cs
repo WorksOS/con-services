@@ -402,13 +402,28 @@ namespace VSS.TRex.SubGridTrees.Server
               throw new TRexSubGridTreeException($"Cell passes store for {Moniker()} not instantiated");
 
             Segment.AllocateLatestPassGrid();
-            Segment.LatestPasses.Clear();
+
+            var segment_passesData = Segment.PassesData;
+            var segment_latestPasses = Segment.LatestPasses;
+            segment_latestPasses.Clear();
             Segment.Dirty = true;
 
+            var segment_latestPasses_PassDataExistenceMap = segment_latestPasses.PassDataExistenceMap;
+            var segment_latestPasses_CCVValuesAreFromLastPass = segment_latestPasses.CCVValuesAreFromLastPass;
+            var segment_latestPasses_RMVValuesAreFromLastPass = segment_latestPasses.RMVValuesAreFromLastPass;
+            var segment_latestPasses_FrequencyValuesAreFromLastPass = segment_latestPasses.FrequencyValuesAreFromLastPass;
+            var segment_latestPasses_AmplitudeValuesAreFromLastPass = segment_latestPasses.AmplitudeValuesAreFromLastPass;
+            var segment_latestPasses_GPSModeValuesAreFromLatestCellPass = segment_latestPasses.GPSModeValuesAreFromLatestCellPass;
+            var segment_latestPasses_TemperatureValuesAreFromLastPass = segment_latestPasses.TemperatureValuesAreFromLastPass;
+            var segment_latestPasses_MDPValuesAreFromLastPass = segment_latestPasses.MDPValuesAreFromLastPass;
+            var segment_latestPasses_CCAValuesAreFromLastPass = segment_latestPasses.CCAValuesAreFromLastPass;
+
+            var temporallyPrecedingSegmentLatestPasses = TemporallyPrecedingSegment?.LatestPasses;
+
             // Seed the latest value tags for this segment with the latest data from the previous segment
-            if (TemporallyPrecedingSegment != null)
+            if (temporallyPrecedingSegmentLatestPasses != null)
             {
-                 Segment.LatestPasses.AssignValuesFromLastPassFlags(TemporallyPrecedingSegment.LatestPasses);
+              segment_latestPasses.AssignValuesFromLastPassFlags(temporallyPrecedingSegmentLatestPasses);
             }
 
             // Iterate over the values in the child leaf sub grid looking for
@@ -417,20 +432,20 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 bool UpdatedCell = false;
 
-                if (TemporallyPrecedingSegment != null &&
-                    TemporallyPrecedingSegment.LatestPasses.PassDataExistenceMap.BitSet(I, J))
+                if (temporallyPrecedingSegmentLatestPasses != null &&
+                    temporallyPrecedingSegmentLatestPasses.PassDataExistenceMap.BitSet(I, J))
                 {
-                    // Seed the latest data for this segment with the latest data from the previous segment
-                    Segment.LatestPasses[I, J] = TemporallyPrecedingSegment.LatestPasses[I, J];
+                // Seed the latest data for this segment with the latest data from the previous segment
+                    segment_latestPasses[I, J] = temporallyPrecedingSegmentLatestPasses[I, J];
 
                     UpdatedCell = true;
                 }
 
                 // Update the latest data from any previous segment with the information contained in this segment
-                if (Segment.PassesData.PassCount(I, J) > 0)
+                if (segment_passesData.PassCount(I, J) > 0)
                 {
-                    CalculateLatestPassDataForPassStack(Segment.PassesData.ExtractCellPasses(I, J, out int passCount), passCount,
-                        ref ((SubGridCellLatestPassDataWrapper_NonStatic)Segment.LatestPasses).PassData[I, J],
+                    CalculateLatestPassDataForPassStack(segment_passesData.ExtractCellPasses(I, J, out int passCount), passCount,
+                        ref ((SubGridCellLatestPassDataWrapper_NonStatic)segment_latestPasses).PassData[I, J],
                         out bool CCVFromLatestCellPass,
                         out bool RMVFromLatestCellPass,
                         out bool FrequencyFromLatestCellPass,
@@ -440,34 +455,34 @@ namespace VSS.TRex.SubGridTrees.Server
                         out bool MDPFromLatestCellPass,
                         out bool CCAFromLatestCellPass);
 
-                    Segment.LatestPasses.CCVValuesAreFromLastPass.SetBitValue(I, J, CCVFromLatestCellPass);
-                    Segment.LatestPasses.RMVValuesAreFromLastPass.SetBitValue(I, J, RMVFromLatestCellPass);
-                    Segment.LatestPasses.FrequencyValuesAreFromLastPass.SetBitValue(I, J, FrequencyFromLatestCellPass);
-                    Segment.LatestPasses.AmplitudeValuesAreFromLastPass.SetBitValue(I, J, AmplitudeFromLatestCellPass);
-                    Segment.LatestPasses.GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, GPSModeFromLatestCellPass);
-                    Segment.LatestPasses.TemperatureValuesAreFromLastPass.SetBitValue(I, J, TemperatureFromLatestCellPass);
-                    Segment.LatestPasses.MDPValuesAreFromLastPass.SetBitValue(I, J, MDPFromLatestCellPass);
-                    Segment.LatestPasses.CCAValuesAreFromLastPass.SetBitValue(I, J, CCAFromLatestCellPass);
+                    segment_latestPasses_CCVValuesAreFromLastPass.SetBitValue(I, J, CCVFromLatestCellPass);
+                    segment_latestPasses_RMVValuesAreFromLastPass.SetBitValue(I, J, RMVFromLatestCellPass);
+                    segment_latestPasses_FrequencyValuesAreFromLastPass.SetBitValue(I, J, FrequencyFromLatestCellPass);
+                    segment_latestPasses_AmplitudeValuesAreFromLastPass.SetBitValue(I, J, AmplitudeFromLatestCellPass);
+                    segment_latestPasses_GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, GPSModeFromLatestCellPass);
+                    segment_latestPasses_TemperatureValuesAreFromLastPass.SetBitValue(I, J, TemperatureFromLatestCellPass);
+                    segment_latestPasses_MDPValuesAreFromLastPass.SetBitValue(I, J, MDPFromLatestCellPass);
+                    segment_latestPasses_CCAValuesAreFromLastPass.SetBitValue(I, J, CCAFromLatestCellPass);
 
                     UpdatedCell = true;
                 }
                 else
                 {
-                    if (TemporallyPrecedingSegment != null)
+                    if (temporallyPrecedingSegmentLatestPasses != null)
                     {
-                        Segment.LatestPasses.CCVValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.CCVValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.RMVValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.RMVValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.FrequencyValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.FrequencyValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.AmplitudeValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.AmplitudeValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.GPSModeValuesAreFromLatestCellPass.BitSet(I, J));
-                        Segment.LatestPasses.TemperatureValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.TemperatureValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.MDPValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.MDPValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.CCAValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.CCAValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_CCVValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.CCVValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_RMVValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.RMVValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_FrequencyValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.FrequencyValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_AmplitudeValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.AmplitudeValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.GPSModeValuesAreFromLatestCellPass.BitSet(I, J));
+                        segment_latestPasses_TemperatureValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.TemperatureValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_MDPValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.MDPValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_CCAValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.CCAValuesAreFromLastPass.BitSet(I, J));
                     }
                 }
 
                 if (UpdatedCell)
-                    Segment.LatestPasses.PassDataExistenceMap.SetBit(I, J);
+                  segment_latestPasses_PassDataExistenceMap.SetBit(I, J);
             });
         }
 
