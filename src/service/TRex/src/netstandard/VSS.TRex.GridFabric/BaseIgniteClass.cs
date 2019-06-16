@@ -16,25 +16,33 @@ namespace VSS.TRex.GridFabric
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<BaseIgniteClass>();
 
+    private IIgnite _ignite;
     /// <summary>
     /// Ignite instance.
     /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
     /// </summary>
-    protected IIgnite Ignite { get; private set; }
+    protected IIgnite Ignite { get => _ignite; private set => _ignite = value; }
 
     /// <summary>
     /// The cluster group of nodes in the grid that are available for responding to design/profile requests
     /// </summary>
-    private IClusterGroup _Group { get; set; }
+    private IClusterGroup _Group;
 
+    private ICompute _compute;
     /// <summary>
     /// The compute interface from the cluster group projection
     /// </summary>
-    protected ICompute Compute { get; private set; }
+    protected ICompute Compute { get => _compute; private set => _compute = value; }
 
-    public string Role { get; set; } = "";
+    private readonly ITRexGridFactory _tRexGrudFactory = DIContext.Obtain<ITRexGridFactory>();
 
-    public string GridName { get; set; }
+    private string _role = "";
+    public string Role { get => _role; }
+
+    private string _gridName;
+    public string GridName { get => _gridName; }
+
+    private string _roleAttribute;
 
     /// <summary>
     /// Initializes the GridName and Role parameters and uses them to establish grid connectivity and compute projections
@@ -43,8 +51,10 @@ namespace VSS.TRex.GridFabric
     /// <param name="role"></param>
     private void InitialiseIgniteContext(string gridName, string role)
     {
-      GridName = gridName;
-      Role = role;
+      _gridName = gridName;
+      _role = role;
+
+      _roleAttribute = $"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{_role}";
 
       AcquireIgniteTopologyProjections();
     }
@@ -56,7 +66,7 @@ namespace VSS.TRex.GridFabric
     /// <summary>
     /// Constructor that sets up cluster and compute projections available for use
     /// </summary>
-    protected BaseIgniteClass(string gridName, string role)
+    public BaseIgniteClass(string gridName, string role)
     {
       InitialiseIgniteContext(gridName, role);
     }
@@ -67,34 +77,34 @@ namespace VSS.TRex.GridFabric
     public void AcquireIgniteTopologyProjections()
     {
       if (Log.IsTraceEnabled())
-        Log.LogTrace($"Acquiring TRex topology projections for grid {GridName}");
+        Log.LogTrace($"Acquiring TRex topology projections for grid {_gridName}");
 
-      if (string.IsNullOrEmpty(GridName))
+      if (string.IsNullOrEmpty(_gridName))
         throw new TRexException("GridName name not defined when acquiring topology projection");
 
-      if (string.IsNullOrEmpty(Role))
+      if (string.IsNullOrEmpty(_role))
         throw new TRexException("Role name not defined when acquiring topology projection");
 
-      Ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName);
+      _ignite = _tRexGrudFactory?.Grid(_gridName);
 
-      if (Ignite == null)
+      if (_ignite == null)
         throw new TRexException("Ignite reference is null in AcquireIgniteTopologyProjections");
 
-      _Group = Ignite?.GetCluster()?.ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
+      _Group = _ignite?.GetCluster()?.ForAttribute(_roleAttribute, "True");
 
       if (_Group == null)
-        throw new TRexException($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {Role} on grid {GridName}");
+        throw new TRexException($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {_role} on grid {_gridName}");
 
       if (_Group.GetNodes()?.Count == 0)
-        throw new TRexException($"Group cluster topology is empty for role {Role} on grid {GridName}");
+        throw new TRexException($"Group cluster topology is empty for role {_role} on grid {_gridName}");
 
-      Compute = _Group.GetCompute();
+      _compute = _Group.GetCompute();
 
-      if (Compute == null)
-        throw new TRexException($"Compute projection is null in AcquireIgniteTopologyProjections on grid {GridName}");
+      if (_compute == null)
+        throw new TRexException($"Compute projection is null in AcquireIgniteTopologyProjections on grid {_gridName}");
 
       if (Log.IsTraceEnabled())
-        Log.LogTrace($"Completed acquisition of TRex topology projections for grid {GridName}");
+        Log.LogTrace($"Completed acquisition of TRex topology projections for grid {_gridName}");
     }
 
     public virtual void ToBinary(IBinaryRawWriter writer)
