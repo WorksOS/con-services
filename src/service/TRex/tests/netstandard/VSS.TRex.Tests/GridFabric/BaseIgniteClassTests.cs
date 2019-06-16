@@ -19,32 +19,23 @@ namespace VSS.TRex.Tests.GridFabric
     [Fact]
     public void AcquireIgniteTopologyProjections_FailWithNullOrEmptyRole()
     {
-      var ignite = new BaseIgniteClass
-      {
-        Role = null,
-        GridName = TRexGrids.GridName(StorageMutability.Immutable)
-      };
+      string GridName = TRexGrids.GridName(StorageMutability.Immutable);
+      string Role = null;
 
-      Action act = () => ignite.AcquireIgniteTopologyProjections();
+      Action act = () => new BaseIgniteClass(GridName, Role);
       act.Should().Throw<TRexException>().WithMessage("Role name not defined when acquiring topology projection");
 
-      ignite.Role = null;
+      act = () => new BaseIgniteClass(GridName, "");
       act.Should().Throw<TRexException>().WithMessage("Role name not defined when acquiring topology projection");
     }
 
     [Fact]
     public void AcquireIgniteTopologyProjections_FailWithNullGridName()
     {
-      var ignite = new BaseIgniteClass
-      {
-        Role = "Test",
-        GridName = ""
-      };
-
-      Action act = () => ignite.AcquireIgniteTopologyProjections();
+      Action act = () => new BaseIgniteClass("", "Test");
       act.Should().Throw<TRexException>().WithMessage("GridName name not defined when acquiring topology projection");
 
-      ignite.GridName = null;
+      act = () => new BaseIgniteClass(null, "Test");
       act.Should().Throw<TRexException>().WithMessage("GridName name not defined when acquiring topology projection");
     }
 
@@ -58,13 +49,10 @@ namespace VSS.TRex.Tests.GridFabric
         .RemoveSingle<ITRexGridFactory>()
         .Complete();
 
-      var ignite = new BaseIgniteClass
-      {
-        Role = "TestRole",
-        GridName = TRexGrids.GridName(StorageMutability.Immutable)
-      };
+      string GridName = TRexGrids.GridName(StorageMutability.Immutable);
+      string Role = "TestRole";
 
-      Action act = () => ignite.AcquireIgniteTopologyProjections();
+      Action act = () => new BaseIgniteClass(GridName, Role);
 
       act.Should().Throw<TRexException>().WithMessage("Ignite reference is null in AcquireIgniteTopologyProjections");
     }
@@ -85,15 +73,12 @@ namespace VSS.TRex.Tests.GridFabric
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
-      var ignite = new BaseIgniteClass
-      {
-        Role = "TestRole",
-        GridName = TRexGrids.GridName(StorageMutability.Immutable)
-      };
+      string GridName = TRexGrids.GridName(StorageMutability.Immutable);
+      string Role = "TestRole";
 
-      Action act = () => ignite.AcquireIgniteTopologyProjections();
+      Action act = () => new BaseIgniteClass(GridName, Role);
 
-      act.Should().Throw<TRexException>().WithMessage($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {ignite.Role} on grid {ignite.GridName}");
+      act.Should().Throw<TRexException>().WithMessage($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {Role} on grid {GridName}");
     }
 
     [Fact]
@@ -112,15 +97,12 @@ namespace VSS.TRex.Tests.GridFabric
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
-      var ignite = new BaseIgniteClass
-      {
-        Role = "TestRole",
-        GridName = TRexGrids.GridName(StorageMutability.Immutable)
-      };
+      string GridName = TRexGrids.GridName(StorageMutability.Immutable);
+      string Role = "TestRole";
 
-      Action act = () => ignite.AcquireIgniteTopologyProjections();
+      Action act = () => new BaseIgniteClass(GridName, Role);
 
-      act.Should().Throw<TRexException>().WithMessage($"Group cluster topology is empty for role {ignite.Role} on grid {ignite.GridName}");
+      act.Should().Throw<TRexException>().WithMessage($"Group cluster topology is empty for role {Role} on grid {GridName}");
     }
 
     [Fact]
@@ -138,15 +120,12 @@ namespace VSS.TRex.Tests.GridFabric
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
-      var ignite = new BaseIgniteClass
-      {
-        Role = "TestRole",
-        GridName = TRexGrids.GridName(StorageMutability.Immutable)
-      };
+      string GridName = TRexGrids.GridName(StorageMutability.Immutable);
+      string Role = "TestRole";
 
-      Action act = () => ignite.AcquireIgniteTopologyProjections();
+      Action act = () => new BaseIgniteClass(GridName, Role);
 
-      act.Should().Throw<TRexException>().WithMessage($"Compute projection is null in AcquireIgniteTopologyProjections on grid {ignite.GridName}");
+      act.Should().Throw<TRexException>().WithMessage($"Compute projection is null in AcquireIgniteTopologyProjections on grid {GridName}");
     }
 
     [Fact]
@@ -161,15 +140,12 @@ namespace VSS.TRex.Tests.GridFabric
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
-      var ignite = new BaseIgniteClass
-      {
-        Role = "TestRole",
-        GridName = "TestGrid"
-      };
+      string GridName = "TestGrid";
+      string Role = "TestRole";
 
-      Action act = () => ignite.AcquireIgniteTopologyProjections();
+      Action act = () => new BaseIgniteClass(GridName, Role);
 
-      act.Should().Throw<TRexException>().WithMessage($"{ignite.GridName} is an unknown grid to create a reference for.");
+      act.Should().Throw<TRexException>().WithMessage($"{GridName} is an unknown grid to create a reference for.");
     }
 
     [Fact]
@@ -184,11 +160,7 @@ namespace VSS.TRex.Tests.GridFabric
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
-      var ignite = new BaseIgniteClass
-      {
-        Role = "TestRole",
-        GridName = TRexGrids.GridName(StorageMutability.Immutable)
-      };
+      var ignite = new BaseIgniteClass(TRexGrids.GridName(StorageMutability.Immutable), "TestRole");
 
       ignite.AcquireIgniteTopologyProjections();
     }

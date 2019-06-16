@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
@@ -330,6 +331,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearBit(int CellX, int CellY) => Bits[CellY] &= ~(SubGridBitMapHighBitMask >> CellX);
 
         /// <summary>
@@ -413,6 +415,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBit(int CellX, int CellY) => Bits[CellY] |= SubGridBitMapHighBitMask >> CellX;
 
         /// <summary>
@@ -420,6 +423,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBit(uint CellX, uint CellY) => Bits[CellY] |= SubGridBitMapHighBitMask >> (int)CellX;
 
         /// <summary>
@@ -428,6 +432,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <param name="Value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBitValue(int CellX, int CellY, bool Value)
         {
             if (Value)
@@ -442,6 +447,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <param name="Value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBitValue(uint CellX, uint CellY, bool Value)
         {
             if (Value)

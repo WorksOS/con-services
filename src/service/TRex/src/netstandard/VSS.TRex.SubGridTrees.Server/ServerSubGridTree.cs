@@ -56,7 +56,7 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       var subGrid = base.CreateNewSubGrid(level);
 
-      if (level == NumLevels) 
+      if (level == numLevels) 
       {
         // It is a leaf sub grid, decorate it with the required mutability. Note, this subGrid is guaranteed to be an instance
         // of leaf generic type supplied to the factory in the constructor for this sub grid tree.

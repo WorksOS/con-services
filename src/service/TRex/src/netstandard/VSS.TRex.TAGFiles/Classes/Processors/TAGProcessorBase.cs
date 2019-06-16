@@ -192,9 +192,9 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         {
             if (ClearInterpolators)
             {
-                foreach (var t in InterpolationFences)
+                for (int i = 0, limit = InterpolationFences.Length; i < limit; i++)
                 {
-                    t.Clear();
+                  InterpolationFences[i].Clear();
                 }
             }
 
@@ -252,12 +252,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         protected virtual void ClearEpochSpecificData()
         {
             // Clear the proofing run related information
-            StartProofing = "";
-            StartProofingTime = 0;
-            StartProofingWeek = 0;
-            EndProofingName = "";
+            _StartProofing = "";
+            _StartProofingTime = 0;
+            _StartProofingWeek = 0;
+            _EndProofingName = "";
 
-            StartProofingDataTime = Consts.MIN_DATETIME_AS_UTC;
+            _StartProofingDataTime = Consts.MIN_DATETIME_AS_UTC;
         }
 
         /// <summary>
@@ -273,57 +273,57 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         /// <returns></returns>
         protected virtual bool IgnoreInvalidPositions() => false;
 
-        public Fence FrontLeftInterpolationFence { get; set; }
-        public Fence FrontRightInterpolationFence { get; set; }
+        public Fence FrontLeftInterpolationFence;
+        public Fence FrontRightInterpolationFence;
 
-        public Fence RearLeftInterpolationFence { get; set; }
-        public Fence RearRightInterpolationFence { get; set; }
+        public Fence RearLeftInterpolationFence;
+        public Fence RearRightInterpolationFence;
 
-        public Fence TrackLeftInterpolationFence { get; set; }
-        public Fence TrackRightInterpolationFence { get; set; }
+        public Fence TrackLeftInterpolationFence;
+        public Fence TrackRightInterpolationFence;
 
-        public Fence WheelLeftInterpolationFence { get; set; }
-        public Fence WheelRightInterpolationFence { get; set; }
+        public Fence WheelLeftInterpolationFence;
+        public Fence WheelRightInterpolationFence;
 
-        public List<Fence>[] InterpolationFences { get; set; }
+        public List<Fence>[] InterpolationFences;
 
-        public SimpleTriangle FrontHeightInterpolator1 { get; set; }
-        public SimpleTriangle FrontHeightInterpolator2 { get; set; }
-        public SimpleTriangle FrontTimeInterpolator1 { get; set; }
-        public SimpleTriangle FrontTimeInterpolator2 { get; set; }
+        public SimpleTriangle FrontHeightInterpolator1;
+        public SimpleTriangle FrontHeightInterpolator2;
+        public SimpleTriangle FrontTimeInterpolator1;
+        public SimpleTriangle FrontTimeInterpolator2;
 
-        public bool HasRearAxleInThisEpoch { get; set; }
-        public bool HasTrackInThisEpoch { get; set; }
-        public bool HasWheelInThisEpoch { get; set; }
+        public bool HasRearAxleInThisEpoch;
+        public bool HasTrackInThisEpoch;
+        public bool HasWheelInThisEpoch;
 
-        public SimpleTriangle RearHeightInterpolator1 { get; set; }
-        public SimpleTriangle RearHeightInterpolator2 { get; set; }
-        public SimpleTriangle RearTimeInterpolator1 { get; set; }
-        public SimpleTriangle RearTimeInterpolator2 { get; set; }
+        public SimpleTriangle RearHeightInterpolator1;
+        public SimpleTriangle RearHeightInterpolator2;
+        public SimpleTriangle RearTimeInterpolator1;
+        public SimpleTriangle RearTimeInterpolator2;
 
-        public SimpleTriangle TrackHeightInterpolator1 { get; set; }
-        public SimpleTriangle TrackHeightInterpolator2 { get; set; }
-        public SimpleTriangle TrackTimeInterpolator1 { get; set; }
-        public SimpleTriangle TrackTimeInterpolator2 { get; set; }
+        public SimpleTriangle TrackHeightInterpolator1;
+        public SimpleTriangle TrackHeightInterpolator2;
+        public SimpleTriangle TrackTimeInterpolator1;
+        public SimpleTriangle TrackTimeInterpolator2;
 
-        public SimpleTriangle WheelHeightInterpolator1 { get; set; }
-        public SimpleTriangle WheelHeightInterpolator2 { get; set; }
-        public SimpleTriangle WheelTimeInterpolator1 { get; set; }
-        public SimpleTriangle WheelTimeInterpolator2 { get; set; }
+        public SimpleTriangle WheelHeightInterpolator1;
+        public SimpleTriangle WheelHeightInterpolator2;
+        public SimpleTriangle WheelTimeInterpolator1;
+        public SimpleTriangle WheelTimeInterpolator2;
 
-        private DateTime PrevEpochTime { get; set; } = Consts.MIN_DATETIME_AS_UTC;
+        private DateTime PrevEpochTime = Consts.MIN_DATETIME_AS_UTC;
 
-        XYZ[] FrontHeights = new XYZ[4];  // First and second Epoch points for front axle
-        XYZ[] FrontTimes = new XYZ[4];  // First and second Epoch points for front axle
+        readonly XYZ[] FrontHeights = new XYZ[4];  // First and second Epoch points for front axle
+        readonly XYZ[] FrontTimes = new XYZ[4];  // First and second Epoch points for front axle
 
-        XYZ[] RearHeights = new XYZ[4];  // First and second Epoch points for rear axle
-        XYZ[] RearTimes = new XYZ[4];  // First and second Epoch points for rear axle
+        readonly XYZ[] RearHeights = new XYZ[4];  // First and second Epoch points for rear axle
+        readonly XYZ[] RearTimes = new XYZ[4];  // First and second Epoch points for rear axle
 
-        XYZ[] TrackHeights = new XYZ[4];  // First and second Epoch points for track
-        XYZ[] TrackTimes = new XYZ[4];  // First and second Epoch points for track
+        readonly XYZ[] TrackHeights = new XYZ[4];  // First and second Epoch points for track
+        readonly XYZ[] TrackTimes = new XYZ[4];  // First and second Epoch points for track
 
-        XYZ[] WheelHeights = new XYZ[4];  // First and second Epoch points for wheel
-        XYZ[] WheelTimes = new XYZ[4];  // First and second Epoch points for wheel
+        readonly XYZ[] WheelHeights = new XYZ[4];  // First and second Epoch points for wheel
+        readonly XYZ[] WheelTimes = new XYZ[4];  // First and second Epoch points for wheel
 
         /// <summary>
         /// No argument constructor
@@ -405,12 +405,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                   if (IgnoreInvalidPositions()) return false; // // Don't process this interval...
                 }
 
-                if (!HaveFirstEpoch)
+                if (!_HaveFirstEpoch)
                 {
                     // We do not have a viable processing context yet. Set up the first
                     // epoch and leave...
-                    HaveFirstEpoch = true;
-                    PrevEpochTime = DataTime;
+                    _HaveFirstEpoch = true;
+                    PrevEpochTime = _DataTime;
 
                     //------------ FRONT AXLE ----------------
                     SetupInterpolators(true,
@@ -419,13 +419,13 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                                        FrontRightInterpolationFence[1], FrontRightInterpolationFence[0],
                                        ref FrontHeights[0], ref FrontHeights[1],
                                        ref FrontTimes[0], ref FrontTimes[1],
-                                       DataTime.ToOADate(), DataLeft, DataRight);
+                                       _DataTime.ToOADate(), DataLeft, DataRight);
                 }
 
                 //------------ REAR AXLE ----------------
-                if (HasRearAxleInThisEpoch && !HaveFirstRearEpoch)
+                if (HasRearAxleInThisEpoch && !_HaveFirstRearEpoch)
                 {
-                    HaveFirstRearEpoch = true;
+                    _HaveFirstRearEpoch = true;
 
                     SetupInterpolators(false,
                                        RearLeftInterpolationFence, RearRightInterpolationFence,
@@ -433,14 +433,14 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                                        RearRightInterpolationFence[1], RearRightInterpolationFence[0],
                                        ref RearHeights[0], ref RearHeights[1],
                                        ref RearTimes[0], ref RearTimes[1],
-                                       DataTime.ToOADate(), DataRearLeft, DataRearRight);
+                                       _DataTime.ToOADate(), DataRearLeft, DataRearRight);
                 }
 
 
                 //------------ Track ----------------
-                if (HasTrackInThisEpoch && !HaveFirstTrackEpoch)
+                if (HasTrackInThisEpoch && !_HaveFirstTrackEpoch)
                 {
-                    HaveFirstTrackEpoch = true;
+                    _HaveFirstTrackEpoch = true;
 
                     SetupInterpolators(false,
                                        TrackLeftInterpolationFence, TrackRightInterpolationFence,
@@ -448,13 +448,13 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                                        TrackRightInterpolationFence[1], TrackRightInterpolationFence[0],
                                        ref TrackHeights[0], ref TrackHeights[1],
                                        ref TrackTimes[0], ref TrackTimes[1],
-                                       DataTime.ToOADate(), DataTrackLeft, DataTrackRight);
+                                       _DataTime.ToOADate(), DataTrackLeft, DataTrackRight);
                 }
 
                 //------------ Wheel ----------------
-                if (HasWheelInThisEpoch && !HaveFirstWheelEpoch)
+                if (HasWheelInThisEpoch && !_HaveFirstWheelEpoch)
                 {
-                    HaveFirstWheelEpoch = true;
+                    _HaveFirstWheelEpoch = true;
 
                     SetupInterpolators(false,
                                        WheelLeftInterpolationFence, WheelRightInterpolationFence,
@@ -462,10 +462,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                                        WheelRightInterpolationFence[1], WheelRightInterpolationFence[0],
                                        ref WheelHeights[0], ref WheelHeights[1],
                                        ref WheelTimes[0], ref WheelTimes[1],
-                                       DataTime.ToOADate(), DataWheelLeft, DataWheelRight);
+                                       _DataTime.ToOADate(), DataWheelLeft, DataWheelRight);
                 }
 
-                if (!HaveFirstEpoch)
+                if (!_HaveFirstEpoch)
                 {
                     return false;
                 }
@@ -478,10 +478,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                                    FrontRightInterpolationFence[2], FrontRightInterpolationFence[3],
                                    ref FrontHeights[2], ref FrontHeights[3],
                                    ref FrontTimes[2], ref FrontTimes[3],
-                                   DataTime.ToOADate(), DataLeft, DataRight);
+                                   _DataTime.ToOADate(), DataLeft, DataRight);
 
                 //------------ REAR AXLE ----------------
-                if (HasRearAxleInThisEpoch && HaveFirstRearEpoch)
+                if (HasRearAxleInThisEpoch && _HaveFirstRearEpoch)
                 {
                     SetupInterpolators(false,
                              RearLeftInterpolationFence, RearRightInterpolationFence,
@@ -489,11 +489,11 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                              RearRightInterpolationFence[2], RearRightInterpolationFence[3],
                              ref RearHeights[2], ref RearHeights[3],
                              ref RearTimes[2], ref RearTimes[3],
-                             DataTime.ToOADate(), DataRearLeft, DataRearRight);
+                             _DataTime.ToOADate(), DataRearLeft, DataRearRight);
                 }
 
                 //------------ Track ----------------
-                if (HasTrackInThisEpoch && HaveFirstTrackEpoch)
+                if (HasTrackInThisEpoch && _HaveFirstTrackEpoch)
                 {
                     SetupInterpolators(false,
                              TrackLeftInterpolationFence, TrackRightInterpolationFence,
@@ -501,12 +501,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                              TrackRightInterpolationFence[2], TrackRightInterpolationFence[3],
                              ref TrackHeights[2], ref TrackHeights[3],
                              ref TrackTimes[2], ref TrackTimes[3],
-                             DataTime.ToOADate(), DataTrackLeft, DataTrackRight);
+                             _DataTime.ToOADate(), DataTrackLeft, DataTrackRight);
                 }
 
 
                 //------------ Wheel ----------------
-                if (HasWheelInThisEpoch && HaveFirstWheelEpoch)
+                if (HasWheelInThisEpoch && _HaveFirstWheelEpoch)
                 {
                     SetupInterpolators(false,
                              WheelLeftInterpolationFence, WheelRightInterpolationFence,
@@ -514,7 +514,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                              WheelRightInterpolationFence[2], WheelRightInterpolationFence[3],
                              ref WheelHeights[2], ref WheelHeights[3],
                              ref WheelTimes[2], ref WheelTimes[3],
-                             DataTime.ToOADate(), DataWheelLeft, DataWheelRight);
+                             _DataTime.ToOADate(), DataWheelLeft, DataWheelRight);
                 }
 
                 UpdateInterpolationStateForNextEpoch();
@@ -522,16 +522,16 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 ProcessedEpochCount++;
                 double MaxEpochIntervalSquared = MaxEpochInterval() * MaxEpochInterval();
 
-        // If the time interval between the two epochs is > kPausedLoggingInterval then
-        // don't process this epoch pair as this indicates logging has been paused.
-        // If the distance between the two epochs is > kMaxEpochInterval, then don't process this epoch pair
-        // Test both sides of the quadrilateral to see if either is longer than the largest inter-epoch gap
+              // If the time interval between the two epochs is > kPausedLoggingInterval then
+              // don't process this epoch pair as this indicates logging has been paused.
+              // If the distance between the two epochs is > kMaxEpochInterval, then don't process this epoch pair
+              // Test both sides of the quadrilateral to see if either is longer than the largest inter-epoch gap
 
-          for (int J = 0; J < InterpolationFences.Length; J++)
+              for (int J = 0; J < InterpolationFences.Length; J++)
               {
                 for (int I = 0; I < InterpolationFences[J].Count; I++)
                 {
-                  if (DataTime < PrevEpochTime.AddSeconds(kPausedLoggingIntervalSeconds) && !InterpolationFences[J][I].IsNull())
+                  if (_DataTime < PrevEpochTime.AddSeconds(kPausedLoggingIntervalSeconds) && !InterpolationFences[J][I].IsNull())
                   {
                     if (Math.Pow(InterpolationFences[J][I][0].X - InterpolationFences[J][I][3].X, 2) +
                         Math.Pow(InterpolationFences[J][I][0].Y - InterpolationFences[J][I][3].Y, 2) <= MaxEpochIntervalSquared &&
@@ -547,8 +547,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
                // Set first epoch to second for next loop
              
-               //------------ FRONT AXLE ----------------
-               FrontLeftInterpolationFence[0].Assign(FrontLeftInterpolationFence[3]);
+                //------------ FRONT AXLE ----------------
+                FrontLeftInterpolationFence[0].Assign(FrontLeftInterpolationFence[3]);
                 FrontLeftInterpolationFence[1].Assign(FrontLeftInterpolationFence[2]);
 
                 FrontRightInterpolationFence[0].Assign(FrontRightInterpolationFence[3]);
@@ -561,7 +561,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 FrontTimes[1] = FrontTimes[3];
 
                 //------------ REAR AXLE ----------------
-                if (HasRearAxleInThisEpoch && HaveFirstRearEpoch)
+                if (HasRearAxleInThisEpoch && _HaveFirstRearEpoch)
                 {
                     RearLeftInterpolationFence[0].Assign(RearLeftInterpolationFence[3]);
                     RearLeftInterpolationFence[1].Assign(RearLeftInterpolationFence[2]);
@@ -577,7 +577,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 }
 
                 //------------ Track ----------------
-                if (HasTrackInThisEpoch && HaveFirstTrackEpoch)
+                if (HasTrackInThisEpoch && _HaveFirstTrackEpoch)
                 {
                     TrackLeftInterpolationFence[0].Assign(TrackLeftInterpolationFence[3]);
                     TrackLeftInterpolationFence[1].Assign(TrackLeftInterpolationFence[2]);
@@ -593,7 +593,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 }
 
                 //------------ Wheel ----------------
-                if (HasWheelInThisEpoch && HaveFirstWheelEpoch)
+                if (HasWheelInThisEpoch && _HaveFirstWheelEpoch)
                 {
                     WheelLeftInterpolationFence[0].Assign(WheelLeftInterpolationFence[3]);
                     WheelLeftInterpolationFence[1].Assign(WheelLeftInterpolationFence[2]);
@@ -608,7 +608,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     WheelTimes[1] = WheelTimes[3];
                 }
 
-                PrevEpochTime = DataTime;
+                PrevEpochTime = _DataTime;
 
                 DiscardAllButLatestAttributeAccumulatorValues();
             }
@@ -659,10 +659,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             switch (machineSide)
             {
               case MachineSide.Left:
-                myResult = ICCCALeftFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+                myResult = _ICCCALeftFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
               case MachineSide.Right:
-                myResult = ICCCARightFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+                myResult = _ICCCARightFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
             }
             break;
@@ -671,17 +671,17 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             switch (machineSide)
             {
               case MachineSide.Left:
-                myResult = ICCCALeftRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+                myResult = _ICCCALeftRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
               case MachineSide.Right:
-                myResult = ICCCARightRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+                myResult = _ICCCARightRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
             }
             break;
         }
 
         if (myResult == CellPassConsts.NullCCA)
-             myResult = ICCCAValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+             myResult = _ICCCAValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
 
         return myResult;
       }

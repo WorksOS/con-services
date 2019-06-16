@@ -43,7 +43,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>                        
         public bool GetCell(int CellX, int CellY)
         {
-            var SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
+            var SubGrid = LocateSubGridContaining(CellX, CellY, numLevels);
 
             if (SubGrid == null)
                 return false;
@@ -109,7 +109,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellY"></param>
         public void RemoveLeafOwningCell(int CellX, int CellY)
         {
-            var SubGrid = LocateSubGridContaining(CellX, CellY, (byte)(NumLevels - 1));
+            var SubGrid = LocateSubGridContaining(CellX, CellY, (byte)(numLevels - 1));
 
             if (SubGrid == null)
                 return;
@@ -255,7 +255,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool ClearCellIfSet(int CellX, int CellY)
         {
-            var SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
+            var SubGrid = LocateSubGridContaining(CellX, CellY, numLevels);
 
             if (SubGrid == null)
                 return false;

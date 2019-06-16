@@ -28,37 +28,37 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Target Compaction Meter Value at the time a cell pass was recorded
     /// </summary>
-    public short TargetCCV { get; set; }
+    public short TargetCCV;
 
     /// <summary>
     ///  Target Machine Drive Power at the time a cell pass was recorded
     /// </summary>
-    public short TargetMDP { get; set; }
+    public short TargetMDP;
 
     /// <summary>
     /// Target material layer thickness at the time a cell pass was recorded
     /// </summary>
-    public float TargetLiftThickness { get; set; }
+    public float TargetLiftThickness;
 
     /// <summary>
     /// Target machine pass count at the time a cell pass was recorded
     /// </summary>
-    public ushort TargetPassCount { get; set; }
+    public ushort TargetPassCount;
 
     /// <summary>
     /// Target minimum temperature sensor warning level at the time a cell pass was recorded
     /// </summary>
-    public ushort TempWarningLevelMin { get; set; }
+    public ushort TempWarningLevelMin;
 
     /// <summary>
     /// Target maximum temperature sensor warning level at the time a cell pass was recorded
     /// </summary>
-    public ushort TempWarningLevelMax { get; set; }
+    public ushort TempWarningLevelMax;
 
     /// <summary>
     /// Target Caterpillar Compaction algorithm value at the time a cell pass was recorded
     /// </summary>
-    public byte TargetCCA { get; set; }
+    public byte TargetCCA;
 
     /// <summary>
     /// Set all state in this structure to null values
