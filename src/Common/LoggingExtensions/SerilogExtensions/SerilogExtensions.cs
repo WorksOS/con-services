@@ -3,7 +3,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace VSS.SeriLog.Extensions
+namespace VSS.Serilog.Extensions
 {
   public class SerilogExtensions
   {

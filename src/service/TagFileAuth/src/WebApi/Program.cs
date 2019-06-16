@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using VSS.SeriLog.Extensions;
+using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI

@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\..\..\..\.editorconfig = ..\..\..\..\.editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.SeriLog.Extensions", "..\..\LoggingExtensions\SeriLogExtensions\VSS.SeriLog.Extensions.csproj", "{926CE40D-7F5D-4B91-A310-03E5A3B8F7D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{926CE40D-7F5D-4B91-A310-03E5A3B8F7D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
