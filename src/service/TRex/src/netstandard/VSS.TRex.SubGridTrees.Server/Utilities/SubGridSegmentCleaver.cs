@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
@@ -36,54 +35,54 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// </summary>
     /// <param name="storageProxy"></param>
     /// <param name="subGrid"></param>
+    /// <param name="subGridSegmentPassCountLimit"></param>
     public void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid, int subGridSegmentPassCountLimit = 0)
     {
-      SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, storageProxy)
+      var Iterator = new SubGridSegmentIterator(subGrid, storageProxy)
       {
         IterationDirection = IterationDirection.Forwards,
         ReturnDirtyOnly = true,
         RetrieveAllPasses = true
       };
 
-      SubGridCellAddress Origin = new SubGridCellAddress(subGrid.OriginX, subGrid.OriginY);
+      var Origin = new SubGridCellAddress(subGrid.OriginX, subGrid.OriginY);
 
       if (!Iterator.MoveToFirstSubGridSegment())
         return;
 
       do
       {
-        ISubGridCellPassesDataSegment Segment = Iterator.CurrentSubGridSegment;
+        var Segment = Iterator.CurrentSubGridSegment;
 
-        DateTime CleavedTimeRangeStart = Segment.SegmentInfo.StartTime;
-        DateTime CleavedTimeRangeEnd = Segment.SegmentInfo.EndTime;
+        var CleavedTimeRangeStart = Segment.SegmentInfo.StartTime;
+        var CleavedTimeRangeEnd = Segment.SegmentInfo.EndTime;
 
         if (Segment.RequiresCleaving(out int TotalPassCount, out int MaximumPassCount))
         {
           if (subGrid.Cells.CleaveSegment(Segment, PersistedClovenSegments, subGridSegmentPassCountLimit))
           {
-              Iterator.SegmentListExtended();
+            Iterator.SegmentListExtended();
 
-              if (_segmentCleavingOperationsToLog)
-                Log.LogInformation($"Info: Performed cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of sub grid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)}");
+            if (_segmentCleavingOperationsToLog)
+              Log.LogInformation(
+                $"Info: Performed cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of sub grid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)}");
           }
           else
           {
-            // The segment cleave failed. Currently the only cause of this is a
-            // database modification lock acquisition failure. While this is not
-            // a serious problem (as the sub grid will be cleaved at some point in
-            // the future when it is modified again via tag file processing etc)
+            // The segment cleave failed. While this is not a serious problem (as the sub grid will be
+            // cleaved at some point in the future when it is modified again via tag file processing etc)
             // it will be noted in the log.
 
-            if (_segmentCleavingOperationsToLog)
-              Log.LogInformation($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of sub grid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)} failed");
+            Log.LogWarning(
+              $"Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of sub grid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)} failed");
           }
-        }
 
-        if (_segmentCleavingOperationsToLog)
-        {
-          if (Segment.RequiresCleaving(out TotalPassCount, out MaximumPassCount))
-            Log.LogInformation(
-              $"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of sub grid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {TotalPassCount}/{_subGridSegmentPassCountLimit}, per cell = {MaximumPassCount}/{_subGridMaxSegmentCellPassesLimit})");
+          if (_segmentCleavingOperationsToLog)
+          {
+            if (Segment.RequiresCleaving(out TotalPassCount, out MaximumPassCount))
+              Log.LogWarning(
+                $"Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of sub grid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {TotalPassCount}/{_subGridSegmentPassCountLimit}, per cell = {MaximumPassCount}/{_subGridMaxSegmentCellPassesLimit})");
+          }
         }
       } while (Iterator.MoveToNextSubGridSegment());
     }
