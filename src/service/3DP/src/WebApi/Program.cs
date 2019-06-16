@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using Microsoft.AspNetCore.Http;
 using VSS.WebApi.Common;
-using Serilog;
 using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.WebApi
@@ -20,12 +20,12 @@ namespace VSS.Productivity3D.WebApi
   /// </summary>
   public class Program
   {
-    const string LIBUV_THREAD_COUNT = "LIBUV_THREAD_COUNT";
-    const string MAX_WORKER_THREADS = "MAX_WORKER_THREADS";
-    const string MAX_IO_THREADS = "MAX_IO_THREADS";
-    const string MIN_WORKER_THREADS = "MAX_WORKER_THREADS";
-    const string MIN_IO_THREADS = "MIN_IO_THREADS";
-    const string DEFAULT_CONNECTION_LIMIT = "DEFAULT_CONNECTION_LIMIT";
+    private const string LIBUV_THREAD_COUNT = "LIBUV_THREAD_COUNT";
+    private const string MAX_WORKER_THREADS = "MAX_WORKER_THREADS";
+    private const string MAX_IO_THREADS = "MAX_IO_THREADS";
+    private const string MIN_WORKER_THREADS = "MAX_WORKER_THREADS";
+    private const string MIN_IO_THREADS = "MIN_IO_THREADS";
+    private const string DEFAULT_CONNECTION_LIMIT = "DEFAULT_CONNECTION_LIMIT";
 
     /// <summary>
     /// Default program entry point.
@@ -61,8 +61,12 @@ namespace VSS.Productivity3D.WebApi
         })
         .UseContentRoot(pathToContentRoot)
         .UseStartup<Startup>()
-        .ConfigureLogging(x => SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log"))
-        .UseSerilog()
+        .ConfigureLogging((hostContext, loggingBuilder) =>
+        {
+          loggingBuilder.AddProvider(p =>
+            new SerilogProvider(
+              SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log"), p.GetService<IHttpContextAccessor>()));
+        })
         .Build();
       });
 
