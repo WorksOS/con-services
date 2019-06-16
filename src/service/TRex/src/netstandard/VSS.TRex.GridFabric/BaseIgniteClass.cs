@@ -34,9 +34,9 @@ namespace VSS.TRex.GridFabric
     /// </summary>
     protected ICompute Compute { get => _compute; private set => _compute = value; }
 
-    private readonly ITRexGridFactory _tRexGrudFactory = DIContext.Obtain<ITRexGridFactory>();
+    private readonly ITRexGridFactory _tRexGridFactory = DIContext.Obtain<ITRexGridFactory>();
 
-    private string _role = "";
+    private string _role = string.Empty;
     public string Role { get => _role; }
 
     private string _gridName;
@@ -85,7 +85,7 @@ namespace VSS.TRex.GridFabric
       if (string.IsNullOrEmpty(_role))
         throw new TRexException("Role name not defined when acquiring topology projection");
 
-      _ignite = _tRexGrudFactory?.Grid(_gridName);
+      _ignite = _tRexGridFactory?.Grid(_gridName);
 
       if (_ignite == null)
         throw new TRexException("Ignite reference is null in AcquireIgniteTopologyProjections");

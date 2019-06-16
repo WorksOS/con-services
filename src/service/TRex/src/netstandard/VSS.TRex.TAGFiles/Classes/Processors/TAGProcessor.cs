@@ -169,7 +169,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       // If the design being loaded changed, then update the extents of the design
       // in the designs list in the site model
 
-      if (_Design != "" && _Design != Value)
+      if (_Design != string.Empty && _Design != Value)
         UpdateCurrentDesignExtent();
 
       base.SetDesign(Value);
@@ -205,7 +205,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
           // Clear the design extent being maintained in the processor.
           DesignExtent.SetInverted();
 
-          if (_Design != "")
+          if (_Design != string.Empty)
             SiteModel.SiteModelDesigns.CreateNew(_Design, DesignExtent);
         }
         else
