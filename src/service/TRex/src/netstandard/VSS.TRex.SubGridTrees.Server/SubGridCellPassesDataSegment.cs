@@ -17,7 +17,7 @@ namespace VSS.TRex.SubGridTrees.Server
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegment>();
 
-    private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
+    private static readonly IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<IO.RecyclableMemoryStreamManager>();
 
     /// <summary>
     /// Tracks whether there are unsaved changes in this segment
@@ -226,7 +226,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (_segmentCleavingOperationsToLog || _itemsPersistedViaDataPersistorToLog)
       {
-        SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out int TotalPasses, out _, out int MaxPasses);
+        PassesData.CalculateTotalPasses(out int TotalPasses, out _, out int MaxPasses);
 
         if (_segmentCleavingOperationsToLog && TotalPasses > _subGridSegmentPassCountLimit)
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses}) which violates the maximum number of cell passes within a segment ({_subGridSegmentPassCountLimit})");
@@ -273,7 +273,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <returns></returns>
     public bool RequiresCleaving(out int TotalPasses, out int MaxPassCount)
     {
-      SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out TotalPasses, out _, out MaxPassCount);
+      PassesData.CalculateTotalPasses(out TotalPasses, out _, out MaxPassCount);
 
       return TotalPasses > _subGridSegmentPassCountLimit ||
              MaxPassCount > _subGridMaxSegmentCellPassesLimit;
@@ -286,7 +286,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool VerifyComputedAndRecordedSegmentTimeRangeBounds()
     {
       // Determine the actual time range of the passes within the segment
-      SegmentTimeRangeCalculator.CalculateTimeRange(PassesData, out DateTime CoveredTimeRangeStart, out DateTime CoveredTimeRangeEnd);
+      PassesData.CalculateTimeRange(out var CoveredTimeRangeStart, out var CoveredTimeRangeEnd);
 
       bool Result = CoveredTimeRangeStart >= SegmentInfo.StartTime && CoveredTimeRangeEnd <= SegmentInfo.EndTime;
 
