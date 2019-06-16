@@ -43,6 +43,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     [JsonProperty(PropertyName = "liftId", Required = Required.Default)]
     public int? liftId { get; private set; }
 
+    /// <summary>
+    /// TRex's machine identifier.
+    /// </summary>
+    /// 
+    [JsonProperty(PropertyName = "assetUid", Required = Required.Default)]
+    [Required]
+    public Guid? assetUid { get; private set; }
 
     /// <summary>
     /// Private constructor.
@@ -52,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       // ...
     }
-    
+
     /// <summary>
     /// Creates an instance of the CCAColorPaletteRequest class.
     /// </summary>
@@ -62,11 +69,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// <param name="endUtc">The UTC end date of the CCA data for which to get the color palettes.</param>
     /// <param name="liftId">The lift identifier for which to get the color palettes.</param>
     /// <param name="projectUid">Raptor's data model/project unique identifier.</param>
+    /// <param name="assetUid">TRex's machine identifier.</param>
     /// <returns>An instance of the CCAColorPaletteRequest class.</returns>    
     /// 
-    public static CCAColorPaletteRequest CreateCCAColorPaletteRequest(long projectId, long assetId, DateTime? startUtc, DateTime? endUtc, int? liftId)
+    public static CCAColorPaletteRequest CreateCCAColorPaletteRequest(long projectId, long assetId, DateTime? startUtc, DateTime? endUtc, int? liftId, Guid projectUid, Guid? assetUid)
     {
-      return new CCAColorPaletteRequest { ProjectId = projectId, assetId = assetId, startUtc = startUtc, endUtc = endUtc, liftId = liftId};
+      return new CCAColorPaletteRequest { ProjectId = projectId, assetId = assetId, startUtc = startUtc, endUtc = endUtc, liftId = liftId, ProjectUid = projectUid, assetUid = assetUid};
     }
     
     /// <summary>

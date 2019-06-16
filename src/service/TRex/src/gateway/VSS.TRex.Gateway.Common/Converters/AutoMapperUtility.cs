@@ -52,6 +52,7 @@ namespace VSS.TRex.Gateway.Common.Converters
           cfg.AddProfile<ExportingProfile>();
           cfg.AddProfile<PointProfile>();
           cfg.AddProfile<MachineProfile>();
+          cfg.AddProfile<PaletteProfile>();
         }
       );
 
