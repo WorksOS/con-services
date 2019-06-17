@@ -64,13 +64,19 @@ namespace VSS.TRex.IO
   public sealed class RecyclableMemoryStream : MemoryStream
   {
     private const long MaxStreamLength = Int32.MaxValue;
+    private const int InitialBlocksArraySizeAndIncrement = 4;
 
     private static readonly byte[] emptyArray = new byte[0];
 
     /// <summary>
     /// All of these blocks must be the same size
     /// </summary>
-    private readonly List<byte[]> blocks = new List<byte[]>(1);
+    private byte[][] blocks = new byte[InitialBlocksArraySizeAndIncrement][];
+
+    /// <summary>
+    /// The number of used blocks in the blocks array
+    /// </summary>
+    private int blocksCount = 0;
 
     private readonly Guid id;
 
@@ -309,8 +315,12 @@ namespace VSS.TRex.IO
         }
       }
 
-      this.memoryManager.ReturnBlocks(this.blocks, this.tag);
-      this.blocks.Clear();
+      this.memoryManager.ReturnBlocks(this.blocks, this.blocksCount, this.tag);
+
+      for (int i = 0; i < blocksCount; i++)
+      {
+        this.blocks[i] = null;
+      }
 
       base.Dispose(disposing);
     }
@@ -457,7 +467,7 @@ namespace VSS.TRex.IO
         return this.largeBuffer;
       }
 
-      if (this.blocks.Count == 1)
+      if (this.blocksCount == 1)
       {
         return this.blocks[0];
       }
@@ -473,10 +483,14 @@ namespace VSS.TRex.IO
       this.InternalRead(newBuffer, 0, this.length, 0);
       this.largeBuffer = newBuffer;
 
-      if (this.blocks.Count > 0 && this.memoryManager.AggressiveBufferReturn)
+      if (this.blocksCount > 0 && this.memoryManager.AggressiveBufferReturn)
       {
-        this.memoryManager.ReturnBlocks(this.blocks, this.tag);
-        this.blocks.Clear();
+        this.memoryManager.ReturnBlocks(this.blocks, this.blocksCount, this.tag);
+
+        for (int i = 0; i < blocksCount; i++)
+        {
+          this.blocks[i] = null;
+        }
       }
 
       return this.largeBuffer;
@@ -669,7 +683,7 @@ namespace VSS.TRex.IO
           {
             byte[] currentBlock = this.blocks[blockIndex];
             int remainingInBlock = this.blockSize - blockOffset;
-            int amountToWriteInBlock = Math.Min(remainingInBlock, bytesRemaining);
+            int amountToWriteInBlock = remainingInBlock < bytesRemaining ? remainingInBlock : bytesRemaining;
 
             Buffer.BlockCopy(buffer, offset + bytesWritten, currentBlock, blockOffset, amountToWriteInBlock);
 
@@ -691,7 +705,11 @@ namespace VSS.TRex.IO
       }
 
       this.position = (int)end;
-      this.length = Math.Max(this.position, this.length);
+
+      if (this.position > this.length)
+      {
+        this.length = this.position;
+      }
     }
 
 #if NETCOREAPP2_1 || NETSTANDARD2_1
@@ -789,7 +807,10 @@ namespace VSS.TRex.IO
       }
 
       this.position = (int)end;
-      this.length = Math.Max(this.position, this.length);
+      if (this.position > this.length)
+      {
+        this.length = this.position;
+      }
     }
 
     /// <summary>
@@ -1060,10 +1081,13 @@ namespace VSS.TRex.IO
       else
       {
         while (this.capacity < newCapacity)
-        {
-          blocks.Add(this.memoryManager.GetBlock());
+        { 
+          if (this.blocksCount == this.blocks.Length)
+            Array.Resize(ref this.blocks, this.blocks.Length + InitialBlocksArraySizeAndIncrement);
 
-          long size = (long)this.blocks.Count * this.blockSize;
+          this.blocks[this.blocksCount++] = this.memoryManager.GetBlock();
+
+          long size = (long)this.blocksCount * this.blockSize;
           this.capacity = (int)Math.Min(int.MaxValue, size);
         }
       }

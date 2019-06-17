@@ -28,7 +28,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
         private readonly BoundingWorldExtent3D swathBounds = new BoundingWorldExtent3D();
 
-        public int ProcessedEpochNumber { get; set; }
+        private int _processedEpochNumber;
+        public int ProcessedEpochNumber { get => _processedEpochNumber; set => _processedEpochNumber = value; }
 
         public TerrainSwather(TAGProcessorBase processor,
                               IProductionEventLists machineTargetValueChanges,
@@ -46,7 +47,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                              PassType passType,
                                              MachineSide machineSide)
         {
-            ProcessedEpochNumber++;
+            _processedEpochNumber++;
 
             // MinX/Y, MaxX/Y describe the world coordinate rectangle the encompasses
             // the pair of epochs denoting a processing interval.

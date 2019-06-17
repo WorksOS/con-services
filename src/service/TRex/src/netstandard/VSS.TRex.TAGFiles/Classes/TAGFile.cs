@@ -118,7 +118,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
         private TAGHeader Header = new TAGHeader();
 
-        private TAGDictionary Dictionary { get; } = new TAGDictionary();
+        private readonly TAGDictionary Dictionary = new TAGDictionary();
 
         /// <summary>
         /// Default no-arg constructor
@@ -137,7 +137,7 @@ namespace VSS.TRex.TAGFiles.Classes
         {
             try
             {
-                if (reader.GetSize() == 0)
+                if (reader.StreamSizeInNybbles == 0)
                     return TAGReadResult.ZeroLengthFile;
 
                 try
@@ -171,7 +171,7 @@ namespace VSS.TRex.TAGFiles.Classes
                         if (!Dictionary.Read(reader))
                             return TAGReadResult.InvalidDictionary;
 
-                        DataEndPos = reader.GetSize();
+                        DataEndPos = reader.StreamSizeInNybbles;
                     }
                 }
                 catch (Exception E)

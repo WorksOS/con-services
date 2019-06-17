@@ -482,28 +482,33 @@ namespace VSS.TRex.IO
     /// <param name="tag">The tag of the stream returning these blocks, for logging if necessary.</param>
     /// <exception cref="ArgumentNullException">blocks is null</exception>
     /// <exception cref="ArgumentException">blocks contains buffers that are the wrong size (or null) for this memory manager</exception>
-    internal void ReturnBlocks(List<byte[]> blocks, string tag)
+    internal void ReturnBlocks(byte[][] blocks, int blocksCount, string tag)
     {
       if (blocks == null)
       {
         throw new ArgumentNullException(nameof(blocks));
       }
 
-      var bytesToReturn = blocks.Count * this.BlockSize;
+      int bytesToReturn = blocksCount * this.blockSize;
       Interlocked.Add(ref this.smallPoolInUseSize, -bytesToReturn);
 
-      for (int i = 0, limit = blocks.Count; i < limit; i++)
+      for (int i = 0; i < blocksCount; i++)
       {
         var block = blocks[i];
-        if (block == null || block.Length != this.BlockSize)
+
+        if (block != null && block.Length != this.BlockSize)
         {
           throw new ArgumentException("blocks contains buffers that are not BlockSize in length");
         }
       }
-
-      for (int i = 0, limit = blocks.Count; i < limit; i++)
+      
+      for (int i = 0; i < blocksCount; i++)
       {
         var block = blocks[i];
+
+        if (block == null)
+          continue;
+
         if (this.MaximumFreeSmallPoolBytes == 0 || this.SmallPoolFreeSize < this.MaximumFreeSmallPoolBytes)
         {
           Interlocked.Add(ref this.smallPoolFreeSize, this.BlockSize);
@@ -512,7 +517,7 @@ namespace VSS.TRex.IO
         else
         {
           Events.Writer.MemoryStreamDiscardBuffer(Events.MemoryStreamBufferType.Small, tag,
-                                                 Events.MemoryStreamDiscardReason.EnoughFree);
+                                                  Events.MemoryStreamDiscardReason.EnoughFree);
           ReportBlockDiscarded();
           break;
         }

@@ -17,6 +17,9 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     // The stream provided in the constructor to read the TAG information from
     private readonly Stream stream;
 
+    // The size of the stream in nybbles
+    public readonly long StreamSizeInNybbles;
+
     /// <summary>
     /// The current nybble being read from the stream. 
     /// </summary>for(
@@ -44,13 +47,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       this.stream = stream;
       nybble = 0;
+      StreamSizeInNybbles = stream.Length * 2;
     }
-
-    /// <summary>
-    /// Retrieves the size of the stream in nybbles
-    /// </summary>
-    /// <returns></returns>
-    public long GetSize() => stream.Length * 2;
 
     /// <summary>
     /// Read the next nybble from the stream
@@ -58,8 +56,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <returns></returns>
     private byte ReadNybble()
     {
-      if (nybblePosition < 0 || nybblePosition / 2 > GetSize())
-        throw new IndexOutOfRangeException($"NybblePosition {nybblePosition} in file is out of range (size = {GetSize()})");
+      if (nybblePosition < 0 || nybblePosition / 2 > StreamSizeInNybbles)
+        throw new IndexOutOfRangeException($"NybblePosition {nybblePosition} in file is out of range (size = {StreamSizeInNybbles})");
 
       var nybbleIndex = nybblePosition++ % 2;
 

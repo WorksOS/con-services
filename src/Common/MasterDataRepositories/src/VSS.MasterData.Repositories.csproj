@@ -29,7 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\ITask\src\VSS.ITask.csproj" />
-    <ProjectReference Include="..\..\LoggingExtensions\SeriLogExtensions\VSS.SeriLog.Extensions.csproj" />
+    <ProjectReference Include="..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
   </ItemGroup>
 

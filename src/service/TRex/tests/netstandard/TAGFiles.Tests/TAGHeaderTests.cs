@@ -37,7 +37,7 @@ namespace TAGFiles.Tests
             Assert.Equal(4U, header.DictionaryMinorVer);
             Assert.Equal(1U, header.MajorVer);
             Assert.Equal(0U, header.MinorVer);
-            Assert.True(header.FieldAndTypeTableOffset > 0 && header.FieldAndTypeTableOffset < reader.GetSize() / 2,
+            Assert.True(header.FieldAndTypeTableOffset > 0 && header.FieldAndTypeTableOffset < reader.StreamSizeInNybbles / 2,
                           "Field and type table offset read from header is invalid");           
         }
     }

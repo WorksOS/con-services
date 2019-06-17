@@ -277,7 +277,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.CellDatum", "src\netstandard\VSS.TRex.CellDatum\VSS.TRex.CellDatum.csproj", "{647F1FD5-3F54-4BC3-B29E-537213EA7ACC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.SeriLog.Extensions", "..\..\Common\LoggingExtensions\SeriLogExtensions\VSS.SeriLog.Extensions.csproj", "{C50C3849-CA1C-483E-A79D-F3A63DF10423}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{C50C3849-CA1C-483E-A79D-F3A63DF10423}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.IO", "src\netstandard\VSS.TRex.IO\VSS.TRex.IO.csproj", "{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}"
 EndProject

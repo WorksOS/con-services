@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace VSS.SeriLog.Extensions
+namespace VSS.Serilog.Extensions
 {
   public static class LoggerExtensions
   {
