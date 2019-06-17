@@ -208,7 +208,7 @@ namespace VSS.TRex.SubGridTrees.Server
                     AllocatePasses(i, j, PassCounts[i, j]);
                     Read(i, j, reader);
 
-                    SegmentPassCount += PassCount_;
+                    segmentPassCount += PassCount_;
                   }
                 }
               }
@@ -239,10 +239,11 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
         /// <param name="TotalPasses"></param>
+        /// <param name="MinPassCount"></param>
         /// <param name="MaxPassCount"></param>
-        public void CalculateTotalPasses(out int TotalPasses, out int MaxPassCount)
+        public void CalculateTotalPasses(out int TotalPasses, out int MinPassCount, out int MaxPassCount)
         {
-            SegmentTotalPassesCalculator.CalculateTotalPasses(this, out TotalPasses, out MaxPassCount);
+            SegmentTotalPassesCalculator.CalculateTotalPasses(this, out TotalPasses, out MinPassCount, out MaxPassCount);
         }
 
         /// <summary>
@@ -289,7 +290,17 @@ namespace VSS.TRex.SubGridTrees.Server
         {
           throw new InvalidOperationException("Immutable cell pass segment.");
         }
-    
+
+        /// <summary>
+        /// Sets the internal machine ID for all cell passes within the segment to the provided ID.
+        /// </summary>
+        /// <param name="internalMachineIndex"></param>
+        /// <param name="numModifiedPasses"></param>
+        public void SetAllInternalMachineIDs(short internalMachineIndex, out long numModifiedPasses)
+        {
+          throw new InvalidOperationException("Immutable cell pass segment.");
+        }
+
         public void GetSegmentElevationRange(out double MinElev, out double MaxElev)
         {
           MinElev = Consts.NullDouble;
@@ -298,7 +309,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void Write(BinaryWriter writer)
         {
-            CalculateTotalPasses(out int TotalPasses, out int MaxPassCount);
+            CalculateTotalPasses(out int TotalPasses, out _, out int MaxPassCount);
 
             writer.Write(TotalPasses);
             writer.Write(MaxPassCount);

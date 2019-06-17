@@ -392,7 +392,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             int CellPassBitLocation = ((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * NumBitsPerCellPass;
 
-            var Result = new CellPass();
+            var Result = Cells.CellPass.CLEARED_CELL_PASS;
 
             Result.InternalSiteModelMachineIndex = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.InternalMachineID);
 

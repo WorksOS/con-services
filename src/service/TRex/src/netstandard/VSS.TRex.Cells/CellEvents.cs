@@ -25,77 +25,77 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// The elevation mapping mode in use on the machine
     /// </summary>
-    public ElevationMappingMode EventElevationMappingMode { get; set; }
+    public ElevationMappingMode EventElevationMappingMode;
 
     /// <summary>
     /// Is the machine is a defined avoidance zone
     /// </summary>
-    public byte EventInAvoidZoneState { get; set; }
+    public byte EventInAvoidZoneState;
 
     /// <summary>
     /// The ID of the loaded design on the machine control system
     /// </summary>
-    public int EventDesignNameID { get; set; }
+    public int EventDesignNameID;
 
     /// <summary>
     /// Compaction drum vibration state
     /// </summary>
-    public VibrationState EventVibrationState { get; set; }
+    public VibrationState EventVibrationState;
 
     /// <summary>
     /// Automatics control state for vibratory drums
     /// </summary>
-    public AutoVibrationState EventAutoVibrationState { get; set; }
+    public AutoVibrationState EventAutoVibrationState;
 
     /// <summary>
     /// Transmission gear the machine is in
     /// </summary>
-    public MachineGear EventMachineGear { get; set; }
+    public MachineGear EventMachineGear;
 
     /// <summary>
     /// Resonance Meter Threshold value above which decoupling exists at the drum/ground boundary
     /// </summary>
-    public short EventMachineRMVThreshold { get; set; }
+    public short EventMachineRMVThreshold;
 
     /// <summary>
     /// Automatics controls state the machine control system is operating in
     /// </summary>
-    public AutomaticsType EventMachineAutomatics { get; set; }
+    public AutomaticsType EventMachineAutomatics;
 
     /// <summary>
     /// Positioning technology used to calculate machine position
     /// </summary>
-    public PositioningTech PositioningTechnology { get; set; }
+    public PositioningTech PositioningTechnology;
 
     /// <summary>
     /// GPS error tolerance metric published by machine control system
     /// </summary>
-    public ushort GPSTolerance { get; set; }
+    public ushort GPSTolerance;
 
     /// <summary>
     /// GPS accuracy band (find/medium/coarse) for positioning reported by the machine control system
     /// </summary>
-    public GPSAccuracy GPSAccuracy { get; set; }
+    public GPSAccuracy GPSAccuracy;
 
     /// <summary>
     /// The date at which the closest preceding Map Reset event was triggered on a machine control system
     /// </summary>
-    public DateTime MapReset_PriorDate { get; set; }
+    public DateTime MapReset_PriorDate;
 
     /// <summary>
     /// The ID of the design loaded at the time of the closest preceding Map Reset event triggered on a machine control system
     /// </summary>
-    public int MapReset_DesignNameID { get; set; }
+    public int MapReset_DesignNameID;
 
     /// <summary>
     /// Layer ID selected by the machine control system operator
     /// </summary>
-    public ushort LayerID { get; set; }
+    public ushort LayerID;
 
     /// <summary>
     /// Grouped flags related to compaction and earthworks state
     /// </summary>
-    public byte EventFlags { get; set; }
+    public byte EventFlags;
 
     public void Clear()
     {

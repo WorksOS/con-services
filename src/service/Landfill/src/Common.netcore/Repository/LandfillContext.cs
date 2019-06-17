@@ -4,6 +4,7 @@ using System.Linq;
 using Common.Models;
 using Common.Utilities;
 using LandfillService.Common.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using MySql.Data.MySqlClient;
 using NodaTime;
@@ -783,20 +784,21 @@ namespace Common.Repository
           var parms = new List<MySqlParameter>
           {
             new MySqlParameter("@assetId", details.assetId),
+            new MySqlParameter("@assetUid", (object)details.assetUid ?? DBNull.Value),
             new MySqlParameter("@machineName", details.machineName),
             new MySqlParameter("@isJohnDoe", details.isJohnDoe),
             new MySqlParameter("@projectUid", projectUid)
-          }.ToArray();
+          };
 
-          var existingId = GetMachineId(conn, parms, details.machineName);
+          var existingId = GetMachineId(conn, parms, details);
           if (existingId == 0)
           {
             var command =
-              @"INSERT INTO Machine (AssetID, MachineName, IsJohnDoe, ProjectUID)
-                  VALUES (@assetId, @machineName, @isJohnDoe, @projectUid)";
+              @"INSERT INTO Machine (AssetID, AssetUID, MachineName, IsJohnDoe, ProjectUID)
+                  VALUES (@assetId, @assetUid, @machineName, @isJohnDoe, @projectUid)";
 
-            MySqlHelper.ExecuteNonQuery(conn, command, parms);
-            existingId = GetMachineId(conn, parms, details.machineName);
+            MySqlHelper.ExecuteNonQuery(conn, command, parms.ToArray());
+            existingId = GetMachineId(conn, parms, details);
           }
 
           return existingId;
@@ -809,32 +811,55 @@ namespace Common.Repository
     /// </summary>
     /// <param name="sqlConn">SQL database connection</param>
     /// <param name="sqlParams">SQL parameters for the machine to get</param>
-    /// <param name="machineName">Machine name. Updates this in database if necessary</param>
+    /// <param name="details">Machine details</param>
     /// <returns>The machine ID</returns>
-    private static long GetMachineId(MySqlConnection sqlConn, MySqlParameter[] sqlParams, string machineName)
+    private static long GetMachineId(MySqlConnection sqlConn, List<MySqlParameter> sqlParams, MachineDetails details)
     {
-      //Match on AssetID and IsJohnDoe only as MachineName can change.
-      var query = @"SELECT ID, MachineName FROM Machine
-                      WHERE AssetID = @assetId AND IsJohnDoe = @isJohnDoe AND ProjectUID = @projectUid and MachineName = @machineName";
+      //Match on AssetID/AssetUID and IsJohnDoe only as MachineName can change.
+      var query = @"SELECT ID, MachineName, AssetID, AssetUID FROM Machine
+                      WHERE ((AssetID IS NOT NULL AND AssetID = @assetId) OR (AssetUID IS NOT NULL AND AssetUID = @assetUid)) 
+                      AND IsJohnDoe = @isJohnDoe AND ProjectUID = @projectUid and MachineName = @machineName";
 
       long existingId = 0;
       var updateName = false;
-      using (var reader = MySqlHelper.ExecuteReader(sqlConn, query, sqlParams))
+      var updateId = details.assetId != 0;
+      var updateUid = details.assetUid.HasValue;
+      using (var reader = MySqlHelper.ExecuteReader(sqlConn, query, sqlParams.ToArray()))
       {
         while (reader.Read())
         {
           existingId = reader.GetUInt32(reader.GetOrdinal("ID"));
           updateName =
-            !machineName.Equals(reader.GetString(reader.GetOrdinal("MachineName")),
+            !details.machineName.Equals(reader.GetString(reader.GetOrdinal("MachineName")),
               StringComparison.OrdinalIgnoreCase);
+          //Raptor uses AssetID, TRex uses AssetUID.
+          updateId = updateId && reader.GetInt64(reader.GetOrdinal("AssetID")) != details.assetId;
+          var dbAssetUid = reader.IsDBNull(reader.GetOrdinal("AssetUID")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("AssetUID"));
+          updateUid = updateUid &&  dbAssetUid != details.assetUid;
         }
       }
 
-      if (updateName)
+      if (updateName || updateId || updateUid)
       {
-        var command = @"UPDATE Machine SET MachineName = @machineName WHERE ID = @machineId";
-        MySqlHelper.ExecuteNonQuery(sqlConn, command, new MySqlParameter("@machineId", existingId),
-          new MySqlParameter("@machineName", machineName));
+        var addComma = false;
+        var command = @"UPDATE Machine SET ";
+        if (updateName)
+        {
+          command += @"MachineName = @machineName";
+          addComma = true;
+        }
+        if (updateId)
+        {
+          command += (addComma ? ", " : string.Empty) + @"AssetID = @assetId";
+          addComma = true;
+        }
+        if (updateUid)
+        {
+          command += (addComma ? ", " : string.Empty) + @"AssetUID = @assetUid";
+        }
+        command += @" WHERE ID = @machineId";
+        sqlParams.Add(new MySqlParameter("@machineId", existingId));
+        MySqlHelper.ExecuteNonQuery(sqlConn, command, sqlParams.ToArray());
       }
 
       return existingId;
@@ -850,7 +875,7 @@ namespace Common.Repository
     {
       return WithConnection(conn =>
       {
-        var command = @"SELECT AssetID, MachineName, IsJohnDoe FROM Machine WHERE ID = @machineId";
+        var command = @"SELECT AssetID, AssetUID, MachineName, IsJohnDoe FROM Machine WHERE ID = @machineId";
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@machineId", machineId)))
         {
@@ -859,6 +884,7 @@ namespace Common.Repository
             machine = new MachineDetails
             {
               assetId = reader.GetInt64(reader.GetOrdinal("AssetID")),
+              assetUid = reader.IsDBNull(reader.GetOrdinal("AssetUID")) ? (Guid?)null : reader.GetGuid(reader.GetOrdinal("AssetUID")),
               machineName = reader.GetString(reader.GetOrdinal("MachineName")),
               isJohnDoe = reader.GetInt16(reader.GetOrdinal("IsJohnDoe")) == 1
             };

@@ -11,10 +11,14 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
   public class TAGReader
   {
     private const byte BITS_PER_NYBBLE = 4;
+    private const byte BITS_PER_TWO_NYBBLES = 8;
     private const byte NYBBLES_PER_UNICODE_CHAR = 4;
 
     // The stream provided in the constructor to read the TAG information from
     private readonly Stream stream;
+
+    // The size of the stream in nybbles
+    public readonly long StreamSizeInNybbles;
 
     /// <summary>
     /// The current nybble being read from the stream. 
@@ -43,13 +47,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       this.stream = stream;
       nybble = 0;
+      StreamSizeInNybbles = stream.Length * 2;
     }
-
-    /// <summary>
-    /// Retrieves the size of the stream in nybbles
-    /// </summary>
-    /// <returns></returns>
-    public long GetSize() => stream.Length * 2;
 
     /// <summary>
     /// Read the next nybble from the stream
@@ -57,8 +56,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <returns></returns>
     private byte ReadNybble()
     {
-      if (nybblePosition < 0 || nybblePosition / 2 > GetSize())
-        throw new IndexOutOfRangeException($"NybblePosition {nybblePosition} in file is out of range (size = {GetSize()})");
+      if (nybblePosition < 0 || nybblePosition / 2 > StreamSizeInNybbles)
+        throw new IndexOutOfRangeException($"NybblePosition {nybblePosition} in file is out of range (size = {StreamSizeInNybbles})");
 
       var nybbleIndex = nybblePosition++ % 2;
 
@@ -72,7 +71,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// Read an ANSI char from the stream. The result is returned as a byte as
     /// c# does not have a native ANSI type
     /// </summary>
-    private byte ReadANSIChar => (byte)ReadUnSignedIntegerValue(2);
+    private byte ReadANSIChar => (byte)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble()); //(byte)ReadUnSignedIntegerValue(2);
 
     /// <summary>
     /// The byte buffer for reading bytes representing an ANSI string before construction of the string itself
@@ -89,7 +88,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       byte b;
       int count = 0;
 
-      while ((b = ReadANSIChar) != 0)
+      //while ((b = ReadANSIChar) != 0)
+      while ((b = (byte)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble())) != 0)
       {
         _readANSIString_ByteBuffer[count++] = b;
         if (count == _readANSIString_ByteBuffer.Length)
@@ -247,20 +247,20 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if ((firstNybble & 0xC) == 0x4) // There are two nybbles, value origin is 8
       {
-        varInt = (short)(((short)((firstNybble & 0x3) << 4) | (short)ReadUnSignedIntegerValue(1)) + 8);
+        varInt = (short)(((short)((firstNybble & 0x3) << BITS_PER_NYBBLE) | (short)ReadNybble()) + 8);
         return true;
       }
 
       if ((firstNybble & 0xE) == 0x2) // There are three nybbles, value origin is 72
       {
-        varInt = (short)(((short)((firstNybble & 0x1) << 8) | (short)ReadUnSignedIntegerValue(2)) + 72);
+        varInt = (short)(((short)((firstNybble & 0x1) << BITS_PER_TWO_NYBBLES) | (short)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble())) + 72);
         return true;
       }
 
       if (firstNybble == 1)  // There are four nybbles, value origin is 584, only
                              // the last three nybbles contain a value.
       {
-        varInt = (short)(ReadUnSignedIntegerValue(3) + 584);
+        varInt = (short)((ReadNybble() << BITS_PER_TWO_NYBBLES) | ((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble()) + 584);
         return true;
       }
 

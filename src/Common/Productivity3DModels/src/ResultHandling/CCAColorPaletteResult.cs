@@ -2,7 +2,7 @@
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling
 {
   /// <summary>
   /// The request represents CCA data color palette to be used by a map legend.
@@ -15,26 +15,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "palettes", Required = Required.Default)]
-    public ColorPalette[] palettes { get; private set; }
+    public ColorPalette[] Palettes { get; set; }
 
     /// <summary>
     /// Private constructor
     /// </summary>
-    /// 
-    private CCAColorPaletteResult()
-    {
-      // ...
-    }
-    
+    public CCAColorPaletteResult()
+    { }
+
     /// <summary>
     /// Creates an instance of the CCAColorPaletteResult class.
     /// </summary>
     /// <param name="colorPalettes">A list of color palettes.</param>
     /// <returns>An instance of the CreateCCAColorPaletteResult class.</returns>
-    /// 
-    public static CCAColorPaletteResult CreateCCAColorPaletteResult(ColorPalette[] colorPalettes)
+    public CCAColorPaletteResult(ColorPalette[] colorPalettes)
     {
-      return new CCAColorPaletteResult { palettes = colorPalettes };
+      Palettes = colorPalettes;
     }
   }
 }

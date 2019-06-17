@@ -105,6 +105,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="height">Height of the requested CCA data tile.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
     /// <param name="geofenceUid">Geofence boundary unique identifier.</param>
+    /// <param name="assetUid">TRex's machine identifier.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     [ProjectVerifier]
     [Route("api/v1/ccatiles/png")]
@@ -121,12 +122,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       [FromQuery] ushort width,
       [FromQuery] ushort height,
       [FromQuery] int? liftId = null,
-      [FromQuery] Guid? geofenceUid = null
+      [FromQuery] Guid? geofenceUid = null,
+      [FromQuery] Guid? assetUid = null
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
 
-      var request = CreateAndValidateRequest(projectId, null, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
+      var request = CreateAndValidateRequest(projectId, null, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid, assetUid);
 
       return GetCCADataTile(request);
     }
@@ -146,6 +148,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="height">Height of the requested CCA data tile.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
     /// <param name="geofenceUid">Geofence boundary unique identifier.</param>
+    /// <param name="assetUid">TRex's machine identifier.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     [ProjectVerifier]
     [Route("api/v2/ccatiles/png")]
@@ -162,12 +165,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       [FromQuery] ushort width,
       [FromQuery] ushort height,
       [FromQuery] int? liftId = null,
-      [FromQuery] Guid? geofenceUid = null
+      [FromQuery] Guid? geofenceUid = null,
+      [FromQuery] Guid? assetUid = null
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var request = CreateAndValidateRequest(projectId, projectUid, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
+      var request = CreateAndValidateRequest(projectId, projectUid, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid, assetUid);
 
       return GetCCADataTile(request);
     }
@@ -210,7 +214,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ushort width,
       ushort height,
       int? liftId,
-      Guid? geofenceUid)
+      Guid? geofenceUid,
+      Guid? assetUid)
     {
       if (liftId == 0)
       {
@@ -246,7 +251,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         geometry,
         liftId.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None,
         liftId,
-        new List<MachineDetails> { new MachineDetails(assetId, machineName, isJohnDoe) }
+        new List<MachineDetails> { new MachineDetails(assetId, machineName, isJohnDoe, assetUid) }
        );
 
       var request = new TileRequest

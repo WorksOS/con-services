@@ -17,6 +17,8 @@ namespace VSS.TRex.SubGridTrees.Server
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegment>();
 
+    private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
+
     /// <summary>
     /// Tracks whether there are unsaved changes in this segment
     /// </summary>
@@ -224,7 +226,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (_segmentCleavingOperationsToLog || _itemsPersistedViaDataPersistorToLog)
       {
-        SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out int TotalPasses, out int MaxPasses);
+        SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out int TotalPasses, out _, out int MaxPasses);
 
         if (_segmentCleavingOperationsToLog && TotalPasses > _subGridSegmentPassCountLimit)
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses}) which violates the maximum number of cell passes within a segment ({_subGridSegmentPassCountLimit})");
@@ -233,9 +235,9 @@ namespace VSS.TRex.SubGridTrees.Server
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses})");
       }
 
-      using (MemoryStream MStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
+      using (var stream = _recyclableMemoryStreamManager.GetStream())
       {
-        using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))
+        using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
         {
           Result = Write(writer);
         }
@@ -252,7 +254,7 @@ namespace VSS.TRex.SubGridTrees.Server
             SegmentInfo.EndTime.Ticks,
             SegmentInfo.Version,
             FileSystemStreamType.SubGridSegment,
-            MStream,
+            stream,
             this);
 
           Result = FSError == FileSystemErrorStatus.OK;
@@ -271,7 +273,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <returns></returns>
     public bool RequiresCleaving(out int TotalPasses, out int MaxPassCount)
     {
-      SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out TotalPasses, out MaxPassCount);
+      SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out TotalPasses, out _, out MaxPassCount);
 
       return TotalPasses > _subGridSegmentPassCountLimit ||
              MaxPassCount > _subGridMaxSegmentCellPassesLimit;

@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\..\..\..\.editorconfig = ..\..\..\..\.editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeriLogExtensions", "..\SeriLogExtensions\SeriLogExtensions.csproj", "{E289D30B-FC17-4452-B63F-B8E04E5FF4D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerilogExtensions", "..\SerilogExtensions\SerilogExtensions.csproj", "{E289D30B-FC17-4452-B63F-B8E04E5FF4D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

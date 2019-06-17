@@ -87,30 +87,23 @@ namespace VSS.TRex.Storage
     /// <param name="cacheKey"></param>
     /// <param name="streamType"></param>
     /// <returns></returns>
-    protected MemoryStream PerformNonSpatialImmutabilityConversion(IStorageProxyCache<INonSpatialAffinityKey, byte[]> mutableCache,
+    protected bool PerformNonSpatialImmutabilityConversion(IStorageProxyCache<INonSpatialAffinityKey, byte[]> mutableCache,
       IStorageProxyCache<INonSpatialAffinityKey, byte[]> immutableCache,
       INonSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType)
     {
       if (mutableCache == null || immutableCache == null)
       {
-        return null;
+        return false;
       }
 
-      MemoryStream immutableStream;
       using (var MS = new MemoryStream(mutableCache.Get(cacheKey)))
       {
-        var mutableStream = MemoryStreamCompression.Decompress(MS);
-
-        immutableStream = PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
-
-        if (mutableStream != immutableStream)
+        using (var mutableStream = MemoryStreamCompression.Decompress(MS))
         {
-          mutableStream.Dispose();
+          return PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
         }
       }
-
-      return immutableStream;
     }
 
     /// <summary>
@@ -122,7 +115,7 @@ namespace VSS.TRex.Storage
     /// <param name="streamType"></param>
     /// <param name="source"></param>
     /// <returns></returns>
-    protected MemoryStream PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
+    protected bool PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
       IStorageProxyCache<INonSpatialAffinityKey, byte[]> immutableCache,
       INonSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType,
@@ -130,35 +123,44 @@ namespace VSS.TRex.Storage
     {
       if ((mutableStream == null && source == null) || immutableCache == null)
       {
-        return null;
+        return false;
       }
 
-      // Convert from the mutable to the immutable form and store it into the immutable cache
-      if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out MemoryStream immutableStream) && immutableStream != null)
-      {
-        using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
-        {
-          if (Log.IsTraceEnabled())
-            Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
+      MemoryStream immutableStream = null;
 
-          // Place the converted immutable item into the immutable cache
-          immutableCache.Put(cacheKey, compressedStream.ToArray());
+      try
+      {
+        // Convert from the mutable to the immutable form and store it into the immutable cache
+        if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out immutableStream) && immutableStream != null)
+        {
+          using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+          {
+            if (Log.IsTraceEnabled())
+              Log.LogInformation(
+                $"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
+
+            // Place the converted immutable item into the immutable cache
+            immutableCache.Put(cacheKey, compressedStream.ToArray());
+
+            return true;
+          }
+        }
+        else
+        {
+          // There was no immutable version of the requested information. Allow this to bubble up the stack...
+          Log.LogError(
+            $"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
+
+          return false;
         }
       }
-      else
+      finally
       {
-        // There was no immutable version of the requested information. Allow this to bubble up the stack...
-        Log.LogError($"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
-
-        immutableStream = null;
+        if (immutableStream != null && immutableStream != mutableStream)
+        {
+          immutableStream.Dispose();
+        }
       }
-
-      if (mutableStream != immutableStream)
-      {
-        mutableStream?.Dispose();
-      }
-
-      return immutableStream;
     }
 
     /// <summary>
@@ -169,23 +171,20 @@ namespace VSS.TRex.Storage
     /// <param name="cacheKey"></param>
     /// <param name="streamType"></param>
     /// <returns></returns>
-    protected MemoryStream PerformSpatialImmutabilityConversion(IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> mutableCache,
+    protected void PerformSpatialImmutabilityConversion(IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> mutableCache,
       IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> immutableCache,
       ISubGridSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType)
     {
       if (mutableCache == null || immutableCache == null)
       {
-        return null;
+        return;
       }
 
-      MemoryStream immutableStream;
       using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)), mutableStream = MemoryStreamCompression.Decompress(MS))
       {
-        immutableStream = PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
+        PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
       }
-
-      return immutableStream;
     }
 
     /// <summary>
@@ -197,7 +196,7 @@ namespace VSS.TRex.Storage
     /// <param name="streamType"></param>
     /// <param name="source"></param>
     /// <returns></returns>
-    protected MemoryStream PerformSpatialImmutabilityConversion(MemoryStream mutableStream,
+    protected void PerformSpatialImmutabilityConversion(MemoryStream mutableStream,
       IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> immutableCache,
       ISubGridSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType,
@@ -205,30 +204,43 @@ namespace VSS.TRex.Storage
     {
       if (mutableStream == null || immutableCache == null)
       {
-        return null;
+        return;
       }
 
-      // Convert from the mutable to the immutable form and store it into the immutable cache
-      if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out MemoryStream immutableStream) && immutableStream != null)
-      {
-        using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
-        {
-          if (Log.IsTraceEnabled())
-            Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
+      MemoryStream immutableStream = null;
 
-          // Place the converted immutable item into the immutable cache
-          immutableCache.Put(cacheKey, compressedStream.ToArray());
+      try
+      {
+        // Convert from the mutable to the immutable form and store it into the immutable cache
+        if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out immutableStream) &&
+            immutableStream != null)
+        {
+          using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
+          {
+            if (Log.IsTraceEnabled())
+              Log.LogInformation(
+                $"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
+
+            // Place the converted immutable item into the immutable cache
+            immutableCache.Put(cacheKey, compressedStream.ToArray());
+          }
+        }
+        else
+        {
+          // There was no immutable version of the requested information. Allow this to bubble up the stack...
+          Log.LogError(
+            $"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
+
+          immutableStream = null;
         }
       }
-      else
+      finally
       {
-        // There was no immutable version of the requested information. Allow this to bubble up the stack...
-        Log.LogError($"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
-
-        immutableStream = null;
+        if (immutableStream != null && immutableStream != mutableStream)
+        {
+          immutableStream.Dispose();
+        }
       }
-
-      return immutableStream;
     }
   }
 }

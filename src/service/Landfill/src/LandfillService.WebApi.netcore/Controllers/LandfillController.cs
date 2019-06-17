@@ -587,13 +587,14 @@ namespace LandfillService.WebApi.netcore.Controllers
     /// <param name="date">Date in project time zone for which to return data</param>
     /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="assetId">Asset ID (from MachineDetails)</param>
+    /// <param name="assetUid">Asset UID (from MachineDetails)</param>
     /// <param name="machineName">Machine name (from MachineDetails)</param>
     /// <param name="isJohnDoe">IsJohnDoe flag (from MachineDetails)</param>
     /// <param name="liftId">Lift/Layer ID</param>
     /// <returns>CCA summary for the date</returns>
     [Route("api/v2/projects/{id}/ccasummary")]
     public object GetCCASummary(uint id, DateTime? date, Guid? geofenceUid = null,
-      uint? assetId = null, string machineName = null, bool? isJohnDoe = null, int? liftId = null)
+      uint? assetId = null, Guid? assetUid = null, string machineName = null, bool? isJohnDoe = null, int? liftId = null)
     {
       //NOTE: CCA summary is not cumulative. 
       //If data for more than one day is required, client must call Raptor service directly
@@ -607,8 +608,8 @@ namespace LandfillService.WebApi.netcore.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing date"));
 
-      var gotMachine = assetId.HasValue && isJohnDoe.HasValue && !string.IsNullOrEmpty(machineName);
-      var noMachine = !assetId.HasValue && !isJohnDoe.HasValue && string.IsNullOrEmpty(machineName);
+      var gotMachine = (assetId.HasValue || assetUid.HasValue) && isJohnDoe.HasValue && !string.IsNullOrEmpty(machineName);
+      var noMachine = !assetId.HasValue && !assetUid.HasValue && !isJohnDoe.HasValue && string.IsNullOrEmpty(machineName);
       if (!gotMachine && !noMachine)
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -622,7 +623,8 @@ namespace LandfillService.WebApi.netcore.Controllers
           : LandfillDb.GetMachineId(project.projectUid,
             new MachineDetails
             {
-              assetId = assetId.Value,
+              assetId = assetId ?? 0,
+              assetUid = assetUid,
               machineName = machineName,
               isJohnDoe = isJohnDoe.Value
             });

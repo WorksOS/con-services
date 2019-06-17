@@ -37,7 +37,7 @@ namespace VSS.TRex.SubGridTrees
     /// <returns></returns>
     private T GetCell(int cellX, int cellY)
     {
-      ISubGrid subGrid = LocateSubGridContaining(cellX, cellY, NumLevels);
+      ISubGrid subGrid = LocateSubGridContaining(cellX, cellY, numLevels);
 
       if (subGrid == null)
         return NullCellValue;

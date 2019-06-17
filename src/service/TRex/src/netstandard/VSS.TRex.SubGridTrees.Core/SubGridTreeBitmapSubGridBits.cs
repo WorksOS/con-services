@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
@@ -44,7 +45,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
         /// </summary>
-        public uint[] Bits { get; private set; }
+        public readonly uint[] Bits;
 
         /// <summary>
         /// Default indexer for bit values in the mask
@@ -111,7 +112,6 @@ namespace VSS.TRex.SubGridTrees
             // This is about as fast as a managed copy of array items can be.
             if (Bits != null)
               Buffer.BlockCopy(SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear, 0, Bits, 0, SubGridBitsHelper.BytesInBitsArray);
-            //Array.Clear(Bits, 0, Bits.Length);
         }
 
         /// <summary>
@@ -331,6 +331,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearBit(int CellX, int CellY) => Bits[CellY] &= ~(SubGridBitMapHighBitMask >> CellX);
 
         /// <summary>
@@ -414,6 +415,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBit(int CellX, int CellY) => Bits[CellY] |= SubGridBitMapHighBitMask >> CellX;
 
         /// <summary>
@@ -421,6 +423,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBit(uint CellX, uint CellY) => Bits[CellY] |= SubGridBitMapHighBitMask >> (int)CellX;
 
         /// <summary>
@@ -429,6 +432,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <param name="Value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBitValue(int CellX, int CellY, bool Value)
         {
             if (Value)
@@ -443,6 +447,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <param name="Value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBitValue(uint CellX, uint CellY, bool Value)
         {
             if (Value)

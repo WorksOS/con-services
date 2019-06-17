@@ -263,7 +263,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
                 else
                 {
-                    Result.PassCount = SegmentPassCount - Result.FirstCellPass;
+                    Result.PassCount = segmentPassCount - Result.FirstCellPass;
                 }
             }
 
@@ -317,7 +317,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             // IMPORTANT: The fields read in this method must be read in the  same order as they were written during encoding
 
-            var Result = new CellPass();
+            var Result = Cells.CellPass.CLEARED_CELL_PASS;
 
             int CellPassBitLocation = Index * NumBitsPerCellPass;
 
@@ -405,7 +405,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {            
             FirstRealCellPassTime = DateTime.FromBinary(reader.ReadInt64());
 
-            SegmentPassCount = reader.ReadInt32();
+            segmentPassCount = reader.ReadInt32();
 
             BF_CellPasses.Read(reader);
             BF_PassCounts.Read(reader);
@@ -466,7 +466,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public void Write(BinaryWriter writer)
         {
             writer.Write(FirstRealCellPassTime.ToBinary());
-            writer.Write(SegmentPassCount);
+            writer.Write(segmentPassCount);
 
             BF_CellPasses.Write(writer);
             BF_PassCounts.Write(writer);
@@ -512,12 +512,12 @@ namespace VSS.TRex.SubGridTrees.Server
             // and the lowest elevation of all cell passes in the segment.
 
             // Determine the total number of passes that need to be stored and create the array to hold them
-            SegmentPassCount = 0;
+            segmentPassCount = 0;
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
               for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
               {
-                SegmentPassCount += cellPassCounts[i, j];
+                segmentPassCount += cellPassCounts[i, j];
               }
             }
 
@@ -637,7 +637,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // For ease of management convert all the cell passes into a single list for the following operations
             // Compute the earliest cell pass time while we are at it
             FirstRealCellPassTime = Consts.MAX_DATETIME_AS_UTC;
-            CellPass[] allCellPassesArray = new CellPass[SegmentPassCount];
+            CellPass[] allCellPassesArray = new CellPass[segmentPassCount];
             cellPassIndex = 0;
 
             for (int col = 0; col < SubGridTreeConsts.SubGridTreeDimension; col++)
@@ -775,7 +775,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Copy the call passes themselves into BF
             recordDescriptors = new [] 
             {            
-                new BitFieldArrayRecordsDescriptor { NumRecords = SegmentPassCount, BitsPerRecord = NumBitsPerCellPass }
+                new BitFieldArrayRecordsDescriptor { NumRecords = segmentPassCount, BitsPerRecord = NumBitsPerCellPass }
             };
 
             BF_CellPasses.Initialise(recordDescriptors);
@@ -839,10 +839,11 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
         /// <param name="TotalPasses"></param>
+        /// <param name="MinPassCount"></param>
         /// <param name="MaxPassCount"></param>
-        public void CalculateTotalPasses(out int TotalPasses, out int MaxPassCount)
+        public void CalculateTotalPasses(out int TotalPasses, out int MinPassCount, out int MaxPassCount)
         {
-            SegmentTotalPassesCalculator.CalculateTotalPasses(this, out TotalPasses, out MaxPassCount);
+            SegmentTotalPassesCalculator.CalculateTotalPasses(this, out TotalPasses, out MinPassCount, out MaxPassCount);
         }
 
         /// <summary>
@@ -887,6 +888,16 @@ namespace VSS.TRex.SubGridTrees.Server
       /// <param name="passNumber"></param>
       /// <param name="internalMachineID"></param>
       public void SetInternalMachineID(int X, int Y, int passNumber, short internalMachineID)
+      {
+        throw new InvalidOperationException("Immutable cell pass segment.");
+      }
+
+      /// <summary>
+      /// Sets the internal machine ID for all cell passes within the segment to the provided ID.
+      /// </summary>
+      /// <param name="internalMachineIndex"></param>
+      /// <param name="numModifiedPasses"></param>
+      public void SetAllInternalMachineIDs(short internalMachineIndex, out long numModifiedPasses)
       {
         throw new InvalidOperationException("Immutable cell pass segment.");
       }
