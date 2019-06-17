@@ -19,6 +19,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     [Route("api/v1/mock/geofences")]
+    [Route("api/v1")]
     [HttpGet]
     public GeofenceDataResult GetMockGeofences(long[] geofenceTypeIds)
     {
@@ -31,6 +32,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     [Route("api/v1/mock/geofences/favorite")]
+    [Route("api/v1/favorite")]
     [HttpGet]
     public GeofenceDataResult GetMockFavoriteGeofences()
     {
@@ -39,6 +41,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     [Route("api/v1/mock/geofences")]
+    [Route("api/v1")]
     [HttpPost]
     public GeofenceCreateResult CreateMockGeofence([FromBody] GeofenceData geofenceData)
     {
@@ -48,6 +51,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     [Route("api/v1/mock/geofences")]
+    [Route("api/v1")]
     [HttpPut]
     public OkResult UdpateMockGeofence([FromBody] GeofenceData geofenceData)
     {

@@ -9,7 +9,9 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockCustomerController : Controller
   {
-    [HttpGet("api/v1/mock/getcustomersforme")]
+    [Route("api/v1/mock/getcustomersforme")]
+    [Route("api/v1")]
+    [HttpGet]
     public CustomerDataResult DummyGetCustomersForMe()
     {
       if (Request.Headers == null)
