@@ -3,3 +3,4 @@ KAFKA_GROUP_NAME: TagFileAuth-Consumer-Alpha-3
 KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IProjectEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent,VSS.Interfaces.Events.MasterData.IAssetEvent,VSS.Interfaces.Events.MasterData.IDeviceEvent
 CUSTOM_INIT_SCRIPT: zookeeper_check.sh
 JAEGER_SERVICE_NAME: Alpha TagFileAuth Service API
+ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "false"
