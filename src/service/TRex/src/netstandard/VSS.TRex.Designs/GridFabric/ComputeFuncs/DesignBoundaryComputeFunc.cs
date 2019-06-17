@@ -22,17 +22,17 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       {
         var executor = new CalculateDesignBoundary();
 
-        var fences = executor.Execute(arg.ProjectID, arg.ReferenceDesign.DesignID, arg.Tolerance);
+        var fences = executor.Execute(arg, out var calcResult);
 
         if (fences == null || fences.Count == 0)
           return new DesignBoundaryResponse
           {
-            RequestResult = DesignProfilerRequestResult.FailedToComputeAlignmentVertices
+            RequestResult = calcResult
           };
 
         return new DesignBoundaryResponse
         {
-          RequestResult = DesignProfilerRequestResult.OK,
+          RequestResult = calcResult,
           Boundary = fences
         };
       }

@@ -21,8 +21,7 @@ namespace VSS.TRex.Designs.GridFabric.Requests
 
       return request.Execute(new DesignBoundaryArgument
       {
-        ReferenceDesign = referenceDesign,
-        Tolerance = tolerance
+        ReferenceDesign = referenceDesign
       });
     }
 

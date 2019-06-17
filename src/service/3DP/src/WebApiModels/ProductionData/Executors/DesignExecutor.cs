@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
 #if RAPTOR
 using DesignProfilerDecls;
 using VLPDDecls;
@@ -49,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
             if (useTrexGateway)
 #endif
-              ProcessWithTRex(request, fileList[i].ImportedFileUid, ref geoJsonList);
+              ProcessWithTRex(request, fileList[i].ImportedFileUid, fileList[i].Name, ref geoJsonList);
 #if RAPTOR
             else
             {
@@ -76,12 +77,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
     }
 
-    private void ProcessWithTRex(DesignBoundariesRequest request, string designUid, ref List<JObject> geoJsonList)
+    private void ProcessWithTRex(DesignBoundariesRequest request, string designUid, string fileName, ref List<JObject> geoJsonList)
     {
       var siteModelId = request.ProjectUid.ToString();
-      var queryParams = $"?projectUid={siteModelId}&designUid={designUid}&tolerance={request.Tolerance}";
+      var queryParams = $"?projectUid={siteModelId}&designUid={designUid}&fileName={fileName}&tolerance={request.Tolerance}";
 
       var returnedResult = trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, $"/design/boundaries", customHeaders, queryParams).Result;
+
+      if (returnedResult != null && returnedResult.GeoJSON != null)
+      {
+        var jo = JObject.FromObject(returnedResult.GeoJSON);
+        geoJsonList.Add(jo);
+      }
+
+      throw new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          $"Failed to get design boundary for file: {fileName}"));
     }
 
 #if RAPTOR

@@ -194,5 +194,15 @@ namespace VSS.TRex.Designs
       // todo when SDK available
       return null;
     }
+
+    /// <summary>
+    /// Computes the requested boundary.
+    /// </summary>
+    /// <returns></returns>
+    public override List<Fence> GetBoundary()
+    {
+      // todo when SDK available
+      return null;
+    }
   }
 }

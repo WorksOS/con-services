@@ -99,16 +99,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     /// <param name="projectUid">The site model/project unique identifier.</param>
     /// <param name="designUid">The design file unique identidier.</param>
+    /// <param name="fileName">The design file name.</param>
     /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
     /// <returns>Execution result with a list of design boundaries.</returns>
     [HttpGet("boundaries")]
-    public ContractExecutionResult GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] Guid designUid, [FromQuery] double? tolerance)
+    public ContractExecutionResult GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] Guid designUid, [FromQuery] string fileName, [FromQuery] double? tolerance)
     {
-      Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid:{projectUid}, designUid:{designUid}, tolerance: {tolerance}");
+      Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid:{projectUid}, designUid:{designUid}, fileName:{fileName}, tolerance: {tolerance}");
 
       const double BOUNDARY_POINTS_INTERVAL = 1.00;
 
-      var designBoundariesRequest = new TRexDesignBoundariesRequest(projectUid, designUid, tolerance ?? BOUNDARY_POINTS_INTERVAL);
+      var designBoundariesRequest = new TRexDesignBoundariesRequest(projectUid, designUid, fileName, tolerance ?? BOUNDARY_POINTS_INTERVAL);
 
       designBoundariesRequest.Validate();
 

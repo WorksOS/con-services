@@ -463,5 +463,145 @@ namespace VSS.TRex.Geometry
         Points.Add(point);
       }
     }
+
+    /// <summary>
+    /// Compress the line chain to the specified tolerance using the Douglas and Peucker algorithm - always include one interior point
+    /// </summary>
+    /// <param name="tolerance"></param>
+    public void Compress(double tolerance)
+    {
+      const double TOLERANCE_MIN = 0.0;
+      const int POLYGON_POINTS_MIN = 3;
+
+      if (tolerance < TOLERANCE_MIN || Points.Count < POLYGON_POINTS_MIN)
+        return;
+
+      var first = true;
+      var includePoints = new bool[Points.Count];
+      includePoints[0] = true;
+      includePoints[Points.Count - 1] = true;
+
+      var toleranceSquared = Math.Sqrt(tolerance);
+
+      for (var i = 1; i < Points.Count - 2; i++)
+        includePoints[i] = false;
+
+      CompressLine(0, Points.Count - 1);
+
+      for (var i = Points.Count - 1; i >= 0; i--)
+      {
+        if (!includePoints[i])
+          Points[i] = null;
+      }
+
+      Points.RemoveAll(p => p == null);
+
+      #region Local functions
+      //===================================================================
+      // Compress the line segment from point i to point j.
+      void CompressLine(int i, int j)
+      {
+        if (i - j == 1)
+          return;
+
+        FindFurthest(i, j, out var maxDistanceSquared, out var furthest);
+
+        if (maxDistanceSquared > toleranceSquared || first)
+        {
+          first = false;
+          includePoints[furthest] = true;
+          CompressLine(i, furthest);
+          CompressLine(furthest, j);
+        }
+      }
+      //===================================================================
+      #endregion
+    }
+
+    /// <summary>
+    /// Find the perpendicularly furthest point from the partial line chain from i to j and return the square of the distance and the index.
+    /// </summary>
+    /// <param name="i"></param>
+    /// <param name="j"></param>
+    /// <param name="d2Max"></param>
+    /// <param name="index"></param>
+    private void FindFurthest(int i, int j, out double d2Max, out int index)
+    {
+      d2Max = -1.0;
+      index = -1;
+
+      for (var k = i + 1; k <= j - 1; k++)
+      {
+        var d2 = TDistance2(Points[k], Points[i], Points[j]);
+        if (d2 > d2Max)
+        {
+          d2Max = d2;
+          index = k;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Returns the square of the perpendicular distance of pt1 from the straight line connecting pt2 and pt3
+    /// </summary>
+    /// <param name="pt1"></param>
+    /// <param name="pt2"></param>
+    /// <param name="pt3"></param>
+    /// <returns></returns>
+    private double TDistance2(FencePoint pt1, FencePoint pt2, FencePoint pt3)
+    {
+      var d1x = pt3.X - pt2.X;
+      var d1y = pt3.Y - pt2.Y;
+      var d2x = pt1.X - pt3.X;
+      var d2y = pt1.Y - pt3.Y;
+      var d3x = pt2.X - pt1.X;
+      var d3y = pt2.Y - pt1.Y;
+      var s1 = d1x * d1x + d1y * d1y;
+      var s2 = d2x * d2x + d2y * d2y;
+      var s3 = d3x * d3x + d3y * d3y;
+
+      if (s1 + s2 <= s3)
+        return s2;
+
+      if (s1 + s3 == s2)
+        return s3;
+
+      var d = d1y * d2x - d1x * d2y;
+      return d * d / s1;
+    }
+
+    /// <summary>
+    /// Based on the Area calucation.
+    /// </summary>
+    /// <returns></returns>
+    public bool IsWindingClockwise()
+    {
+      const double INITIAL_AREA = 0.0;
+
+      if (Points.Count == 0)
+        return false;
+
+      // Calc the area by suming the trapeziums to a base line...
+      var lastPoint = Points[Points.Count - 1];  // The last point...
+      var baseY = lastPoint.Y;
+
+      var lastX = lastPoint.X;
+      var lastY = lastPoint.Y - baseY;
+
+      var area = INITIAL_AREA;
+
+      for (var i = 0; i < Points.Count; i++)
+      {
+        var x = Points[i].X;
+        var y = Points[i].Y - baseY;
+
+        area += (lastY + y) / 2.0 * (x - lastX);
+
+        lastX = x;
+        lastY = y;
+      }
+
+      return area >= INITIAL_AREA;
+    }
   }
 }

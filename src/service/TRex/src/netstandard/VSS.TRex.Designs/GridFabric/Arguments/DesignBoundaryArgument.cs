@@ -11,9 +11,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
-    /// Boundary points interval.
+    /// The cell stepping size to move between points in the patch being interpolated
     /// </summary>
-    public double Tolerance { get; set; }
+    public double CellSize { get; set; }
 
     /// <summary>
     /// Serialises content to the writer
@@ -25,7 +25,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteDouble(Tolerance);
+      writer.WriteDouble(CellSize);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      Tolerance = reader.ReadDouble();
+      CellSize = reader.ReadDouble();
     }
   }
 }

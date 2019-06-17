@@ -597,7 +597,7 @@ namespace VSS.TRex.Designs
 
     /// <summary>
     /// Loads the TTM design file/s, from storage
-    /// Includes design file and 2 index files (if they exist)
+    /// Includes design file, 2 index files and a boundary file (if they exist)
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <param name="fileName"></param>
@@ -629,7 +629,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Loads the TTM design from a TTM file, along with the sub grid existence map file if it exists (created otherwise)
+    /// Loads the TTM design from a TTM file, along with the sub grid existence map file and  if it exists (created otherwise)
     /// </summary>
     /// <param name="localPathAndFileName"></param>
     /// <param name="saveIndexFiles"></param>
@@ -993,6 +993,15 @@ namespace VSS.TRex.Designs
     {
       var profiler = DIContext.Obtain<IOptimisedTTMProfilerFactory>().NewInstance(Data, SpatialIndexOptimised, SpatialIndexOptimisedTriangles);
       return profiler.Compute(profilePath);
+    }
+
+    /// <summary>
+    /// Computes the requested boundary.
+    /// </summary>
+    /// <returns></returns>
+    public override List<Fence> GetBoundary()
+    {
+      return null;
     }
   }
 }
