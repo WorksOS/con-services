@@ -137,7 +137,7 @@ namespace VSS.MasterData.Proxies
       customHeaders.StripHeaders(IsInsideAuthBoundary);
 
       var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method);
-      log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result)}");
+      log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result).Truncate(_logMaxChar)}");
 
       return result;
 
