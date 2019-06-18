@@ -3,11 +3,13 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.IO;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -22,6 +24,10 @@ namespace VSS.TRex.Tests.TestFixtures
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<VSS.TRex.IO.RecyclableMemoryStreamManager>(new VSS.TRex.IO.RecyclableMemoryStreamManager()))
+        .Add(x => x.AddSingleton<IMemoryBufferCaches>(new MemoryBufferCaches()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(1000)))
+
         .Add(x => x.AddSingleton<Mock<IConfigurationStore>>(mock =>
         {
           var config = new Mock<IConfigurationStore>();

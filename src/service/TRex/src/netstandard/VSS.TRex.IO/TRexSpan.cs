@@ -13,12 +13,12 @@ namespace VSS.TRex.IO
     /// <summary>
     /// Is the span allocated in a slab allocated buffer?
     /// </summary>
-    public bool PoolAllocated;
+    public readonly bool PoolAllocated;
 
     /// <summary>
     /// The offset within Elements array that the first element in the span occurs
     /// </summary>
-    public int Offset;
+    public readonly int Offset;
 
     /// <summary>
     /// The number of defined elements present in the space Count is less than or equal to Length
@@ -28,19 +28,24 @@ namespace VSS.TRex.IO
     /// <summary>
     /// The capacity of the span
     /// </summary>
-    public int Capacity;
+    public readonly int Capacity;
+
+    private T[] _elements;
 
     /// <summary>
     /// The reference to the slab allocated array that this span's elements are contained
     /// </summary>
-    public T[] Elements;
+    public T[] Elements
+    {
+      get => _elements;
+    }
 
     /* Note: TR deliberately does not provide an indexer as it can contain structs which causes issues with
   return of copies of the struct. GetElement/SetElement semantics are provided to make this clear.
     public T this[int index]
     {
-      get => Elements[Offset + index];
-      set => Elements[Offset + index] = value;
+      get => _elements[Offset + index];
+      set => _elements[Offset + index] = value;
     }*/
 
     /// <summary>
@@ -57,7 +62,7 @@ namespace VSS.TRex.IO
     /// <param name="poolAllocated"></param>
     public TRexSpan(T[] elements, int offset, int capacity, bool poolAllocated = true)
     {
-      Elements = elements;
+      _elements = elements;
       Offset = offset;
       Count = 0;
       Capacity = capacity;
@@ -76,8 +81,8 @@ namespace VSS.TRex.IO
         throw new ArgumentException("Index out of range");
       }
 
-      Array.Copy(Elements, Offset + index, Elements, index + 1, Count - index);
-      Elements[Offset + index] = element;
+      Array.Copy(_elements, Offset + index, _elements, index + 1, Count - index);
+      _elements[Offset + index] = element;
       Count++;
     }
 
@@ -93,7 +98,7 @@ namespace VSS.TRex.IO
         throw new ArgumentException("Index out of range");
       }
 
-      Elements[Offset + index] = element;
+      _elements[Offset + index] = element;
     }
 
     /// <summary>
@@ -108,7 +113,7 @@ namespace VSS.TRex.IO
         throw new ArgumentException("Index out of range");
       }
 
-      return Elements[Offset + index];
+      return _elements[Offset + index];
     }
 
     /// <summary>
@@ -122,20 +127,21 @@ namespace VSS.TRex.IO
         throw new ArgumentException($"No spare capacity to add new element, capacity = {Capacity}, element count = {Count}");
       }
 
-      Elements[Offset + Count++] = element;
+      _elements[Offset + Count] = element;
+      Count++;
     }
 
     /// <summary>
     /// Returns the first element in the slab
     /// </summary>
     /// <returns></returns>
-    public T First() => Elements[Offset];
+    public T First() => _elements[Offset];
 
     /// <summary>
     /// Returns the last element in the slab
     /// </summary>
     /// <returns></returns>
-    public T Last() => Elements[Offset + Count - 1];
+    public T Last() => _elements[Offset + Count - 1];
 
     /// <summary>
     /// Copies a number of elements from the start of the source span to the start of the target span
@@ -154,8 +160,40 @@ namespace VSS.TRex.IO
         throw new ArgumentException($"Target has insufficient capacity ({Capacity}) to contain required items from source ({sourceCount})");
       }
 
-      Array.Copy(source.Elements, source.Offset, Elements, Offset, sourceCount);
+      Array.Copy(source.Elements, source.Offset, _elements, Offset, sourceCount);
       Count = Math.Max(Count, sourceCount);
+    }
+
+    /// <summary>
+    /// Copies a number of elements from the start of the source span to the start of the target span
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="sourceCount"></param>
+    public void Copy(T[] source, int sourceCount)
+    {
+      if (sourceCount < 0 || sourceCount > source.Length)
+      {
+        throw new ArgumentException("Source count may not be negative or greater than the count of elements in the source");
+      }
+
+      if (Capacity < sourceCount)
+      {
+        throw new ArgumentException($"Target has insufficient capacity ({Capacity}) to contain required items from source ({sourceCount})");
+      }
+
+      Array.Copy(source, 0, _elements, Offset, sourceCount);
+      Count = Math.Max(Count, sourceCount);
+    }
+
+    /// <summary>
+    /// Indicates if this span should be returned to the pool at a future point in time
+    /// </summary>
+    /// <returns></returns>
+    public bool NeedsToBeReturned() => PoolAllocated && _elements != null;
+
+    public void MarkReturned()
+    {
+      _elements = null;
     }
   }
 }

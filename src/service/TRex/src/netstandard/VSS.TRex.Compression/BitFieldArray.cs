@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.DI;
+using VSS.TRex.IO;
 
 // This unit implements support for storing attribute values as variable bit field arrays and records 
 
@@ -110,8 +112,8 @@ namespace VSS.TRex.Compression
         {
             long _numBits = 0;
 
-            foreach (var descriptor in recordsArray)
-                _numBits += (long)descriptor.NumRecords * descriptor.BitsPerRecord;
+            for (int i = 0, limit = recordsArray.Length; i < limit; i++)
+              _numBits += (long)recordsArray[i].NumRecords * recordsArray[i].BitsPerRecord;
 
             if (_numBits > int.MaxValue)
                throw new TRexPersistencyException($"Attempt to create bit field array with {_numBits} which is more than the {int.MaxValue} limit");
@@ -132,9 +134,17 @@ namespace VSS.TRex.Compression
             if (NumBits == 0)
                 return;
 
-            byte[] buffer = new byte[Storage.Length * sizeof(ulong)];
-            Buffer.BlockCopy(Storage, 0, buffer, 0, Storage.Length * sizeof(ulong));
-            writer.Write(buffer);
+            var bufferSize = Storage.Length * sizeof(ulong);
+            byte[] buffer = MemoryBufferCachesHelper.Caches.Rent(bufferSize);
+            try
+            {
+              Buffer.BlockCopy(Storage, 0, buffer, 0, bufferSize);
+              writer.Write(buffer, 0, bufferSize);
+            }
+            finally
+            {
+               MemoryBufferCachesHelper.Caches.Return(buffer);
+            }
         }
 
         /// <summary>
@@ -151,9 +161,17 @@ namespace VSS.TRex.Compression
 
             Storage = NewStorage();
 
-            byte[] buffer = new byte[Storage.Length * sizeof(ulong)];
-            reader.Read(buffer, 0, buffer.Length);
-            Buffer.BlockCopy(buffer, 0, Storage, 0, buffer.Length);
+            var bufferSize = Storage.Length * sizeof(ulong);
+            byte[] buffer = MemoryBufferCachesHelper.Caches.Rent(bufferSize);
+            try
+            {
+              reader.Read(buffer, 0, bufferSize);
+              Buffer.BlockCopy(buffer, 0, Storage, 0, bufferSize);
+            }
+            finally
+            {
+              MemoryBufferCachesHelper.Caches.Return(buffer);
+            }
         }
 
         /// <summary>

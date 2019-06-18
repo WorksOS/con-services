@@ -24,8 +24,8 @@ namespace VSS.TRex.Tests.Cells.Extensions
         new CellPass {Time = baseTime.AddMinutes(5)},
       };
 
-      passes.MinimumTime().Should().Be(baseTime);
-      passes.MinimumTime().Should().Be(passes.Min(x => x.Time));
+      passes.MinimumTime(passes.Length).Should().Be(baseTime);
+      passes.MinimumTime(passes.Length).Should().Be(passes.Min(x => x.Time));
     }
 
     [Fact]
@@ -43,8 +43,8 @@ namespace VSS.TRex.Tests.Cells.Extensions
         new CellPass {Time = baseTime.AddMinutes(-5)},
       };
 
-      passes.MinimumTime().Should().Be(baseTime.AddMinutes(-5));
-      passes.MinimumTime().Should().Be(passes.Min(x => x.Time));
+      passes.MinimumTime(passes.Length).Should().Be(baseTime.AddMinutes(-5));
+      passes.MinimumTime(passes.Length).Should().Be(passes.Min(x => x.Time));
     }
 
     [Fact]
@@ -62,8 +62,8 @@ namespace VSS.TRex.Tests.Cells.Extensions
         new CellPass {Time = baseTime.AddMinutes(5)},
       };
 
-      passes.MinimumTime().Should().Be(baseTime.AddMinutes(-10));
-      passes.MinimumTime().Should().Be(passes.Min(x => x.Time));
+      passes.MinimumTime(passes.Length).Should().Be(baseTime.AddMinutes(-10));
+      passes.MinimumTime(passes.Length).Should().Be(passes.Min(x => x.Time));
     }
 
     [Fact]
@@ -79,8 +79,8 @@ namespace VSS.TRex.Tests.Cells.Extensions
         new CellPass {InternalSiteModelMachineIndex = 5},
       };
 
-      passes.MaxInternalSiteModelMachineIndex().Should().Be(5);
-      passes.MaxInternalSiteModelMachineIndex().Should().Be(passes.Max(x => x.InternalSiteModelMachineIndex));
+      passes.MaxInternalSiteModelMachineIndex(passes.Length).Should().Be(5);
+      passes.MaxInternalSiteModelMachineIndex(passes.Length).Should().Be(passes.Max(x => x.InternalSiteModelMachineIndex));
     }
 
     [Fact]
@@ -96,8 +96,8 @@ namespace VSS.TRex.Tests.Cells.Extensions
         new CellPass {InternalSiteModelMachineIndex = 0},
       };
 
-      passes.MaxInternalSiteModelMachineIndex().Should().Be(5);
-      passes.MaxInternalSiteModelMachineIndex().Should().Be(passes.Max(x => x.InternalSiteModelMachineIndex));
+      passes.MaxInternalSiteModelMachineIndex(passes.Length).Should().Be(5);
+      passes.MaxInternalSiteModelMachineIndex(passes.Length).Should().Be(passes.Max(x => x.InternalSiteModelMachineIndex));
     }
 
     [Fact]
@@ -113,8 +113,8 @@ namespace VSS.TRex.Tests.Cells.Extensions
         new CellPass {InternalSiteModelMachineIndex = 0},
       };
 
-      passes.MaxInternalSiteModelMachineIndex().Should().Be(5);
-      passes.MaxInternalSiteModelMachineIndex().Should().Be(passes.Max(x => x.InternalSiteModelMachineIndex));
+      passes.MaxInternalSiteModelMachineIndex(passes.Length).Should().Be(5);
+      passes.MaxInternalSiteModelMachineIndex(passes.Length).Should().Be(passes.Max(x => x.InternalSiteModelMachineIndex));
     }
   }
 }

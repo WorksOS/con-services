@@ -95,24 +95,11 @@ namespace VSS.TRex.IO
       _pools[log2].Return(buffer);
     }
 
-    public TRexSpan<T> Resize(TRexSpan<T> oldBuffer, int minSize)
-    {
-      // Get a new buffer
-      var newBuffer = Rent(minSize);
-
-      // Copy elements from the old buffer to the new buffer
-      Array.Copy(oldBuffer.Elements, oldBuffer.Offset, 
-                 newBuffer.Elements, newBuffer.Offset, 
-                 Math.Min(oldBuffer.Capacity, newBuffer.Capacity));
-
-      // ... and return the newly resized result
-      return newBuffer;
-    }
-
     public TRexSpan<T> Clone(TRexSpan<T> oldBuffer)
     {
       // Get a new buffer
       var newBuffer = Rent(oldBuffer.Capacity);
+      newBuffer.Count = oldBuffer.Count;
 
       // Copy elements from the old buffer to the new buffer
       Array.Copy(oldBuffer.Elements, oldBuffer.Offset, newBuffer.Elements, newBuffer.Offset, oldBuffer.Capacity);

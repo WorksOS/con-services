@@ -225,7 +225,7 @@ namespace VSS.TRex.SubGridTrees.Server
           EndTime = originSource.SegmentInfo.EndTime
         };
 
-        segment.PassesData.SetState(originSource.PassesData.GetState(out var cellPassCounts), cellPassCounts);
+        segment.PassesData.SetState(originSource.PassesData.GetState());
 
         // Write out the segment to the immutable stream
         immutableStream = _recyclableMemoryStreamManager.GetStream();
@@ -272,7 +272,7 @@ namespace VSS.TRex.SubGridTrees.Server
         var mutablePassesData = segment.PassesData;
 
         segment.PassesData = subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
-        segment.PassesData.SetState(mutablePassesData.GetState(out var cellPassCounts), cellPassCounts);
+        segment.PassesData.SetState(mutablePassesData.GetState());
 
         // Write out the segment to the immutable stream
         immutableStream = _recyclableMemoryStreamManager.GetStream(); 

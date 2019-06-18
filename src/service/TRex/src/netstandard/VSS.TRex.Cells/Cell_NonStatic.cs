@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.IO;
 
 namespace VSS.TRex.Cells
 {
@@ -22,13 +23,14 @@ namespace VSS.TRex.Cells
         /// entry representing the oldest value, the last cell representing the most
         /// current reading.
         /// </summary>
-        public CellPass[] Passes;
+     
+        public TRexSpan<CellPass> Passes;
 
         /// <summary>
         /// Number of cell passes recorded for this cell. It may be less than the actual size of Passes
         /// </summary>
         /// <returns></returns>
-        public int PassCount;
+        public int PassCount => Passes.Count;
 
         /// <summary>
         /// Determines if the cell is empty of all cell passes
@@ -40,40 +42,37 @@ namespace VSS.TRex.Cells
         /// Determines the height (Elevation from NEE) of the 'top most', or latest recorded in time, cell pass. If there are no passes a null height is returned.
         /// </summary>
         /// <returns></returns>
-        public float TopMostHeight => IsEmpty ? CellPassConsts.NullHeight : Passes[PassCount - 1].Height;
+        public float TopMostHeight => IsEmpty ? CellPassConsts.NullHeight : Passes.Last().Height;
 
         /// <summary>
-        /// Allocate or resize an array of passes to a new size
+        /// Allocate or resize an array of passes to a new size, with additional space provided for expansion
         /// </summary>
         /// <param name="capacity"></param>
         public void AllocatePasses(int capacity)
         {
-          const int CELL_PASS_ARRAY_INCREMENT_SIZE = 5;
+          const int CELL_PASS_ARRAY_INCREMENT_SIZE = 2;
 
-          if (PassCount > capacity)
+          if (Passes.Elements == null)
           {
-            // Reset pass count to capacity, but don't reduce the allocated array size
-            PassCount = capacity;
-          }
-
-          if (Passes == null)
-          {
-            Passes = capacity >= CELL_PASS_ARRAY_INCREMENT_SIZE ? new CellPass[capacity] : new CellPass[CELL_PASS_ARRAY_INCREMENT_SIZE];
+            Passes = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(capacity >= CELL_PASS_ARRAY_INCREMENT_SIZE ? capacity : CELL_PASS_ARRAY_INCREMENT_SIZE);
           }
           else
           {
-            int currentSize = Passes.Length;
-
-            if (currentSize >= capacity)
+            if (Passes.Count >= capacity)
             {
               // Current allocated capacity is sufficient.
+              Passes.Count = capacity;
               return;
             }
 
-            if (capacity - currentSize >= CELL_PASS_ARRAY_INCREMENT_SIZE)
-              Array.Resize(ref Passes, capacity);
-            else
-              Array.Resize(ref Passes, capacity + CELL_PASS_ARRAY_INCREMENT_SIZE);
+            // Get a new buffer and copy the content into it
+            var newPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(capacity);
+            newPasses.Copy(Passes, Passes.Count);
+            if (Passes.NeedsToBeReturned())
+            {
+              SlabAllocatedCellPassArrayPoolHelper.Caches.Return(Passes);
+            }
+            Passes = newPasses;
           }
         }
 
@@ -83,6 +82,9 @@ namespace VSS.TRex.Cells
         /// <param name="capacity"></param>
         public void AllocatePassesExact(int capacity)
         {
+          AllocatePasses(capacity);
+
+          /*
           if (PassCount == capacity)
           {
             // Current allocated capacity is correct
@@ -101,8 +103,9 @@ namespace VSS.TRex.Cells
             if (Passes == null)
               Passes = new CellPass[capacity];
             else
-              Array.Resize(ref Passes, capacity);
+              Elements.Resize(ref Passes, capacity);
           }
+          */
         }
 
         /// <summary>
@@ -119,13 +122,13 @@ namespace VSS.TRex.Cells
         /// <returns></returns>
         public bool LocateTime(DateTime time, out int index)
         {
-            int L = 0;
-            int H = PassCount - 1;
+            int L = Passes.Offset;
+            int H = Passes.OffsetPlusCount - 1;
 
             while (L <= H)
             {
                 int I = (L + H) >> 1;
-                int C = Passes[I].Time.CompareTo(time);
+                int C = Passes.Elements[I].Time.CompareTo(time);
 
                 if (C < 0)
                 {
@@ -135,7 +138,7 @@ namespace VSS.TRex.Cells
                 {
                     if (C == 0)
                     {
-                        index = I;
+                        index = I - Passes.Offset;
                         return true;
                     }
 
@@ -143,7 +146,8 @@ namespace VSS.TRex.Cells
                 }
             }
 
-            index = L;
+            index = L - Passes.Offset;
+
             return false;
         }
 
@@ -160,12 +164,15 @@ namespace VSS.TRex.Cells
                 throw new TRexException("Pass with same time being added to cell");
 
             AllocatePasses(PassCount + 1);
-            if (position < PassCount)
-                Array.Copy(Passes, position, Passes, position + 1, PassCount - position);
 
-            // Add the new pass to the passes list.
-            Passes[position] = pass;
-            PassCount++;
+            if (position < PassCount)
+            {
+              Passes.Insert(pass, position);
+            }
+            else // Add the new pass to the passes list.
+            {
+              Passes.Add(pass);
+            }
 
 #if CELLDEBUG
             for (int i = 0; i < PassCount - 1; i++)
@@ -174,47 +181,17 @@ namespace VSS.TRex.Cells
             }
 #endif
         }
-     
-        /// <summary>
-        /// ReplacePass takes a pass record containing pass information processed
-        /// for a machine crossing this cell and replaces the pass at the given
-        /// position in the cell pass stack
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="pass"></param>
-        public void ReplacePass(int position, CellPass pass)
-        {
-            Passes[position] = pass;
-        }
-
-        /// <summary>
-        /// Removes the pass at the given index from the list of passes, and resizes the resulting array
-        /// </summary>
-        /// <param name="passIndex"></param>
-        public void RemovePass(int passIndex)
-        {
-            if (PassCount > passIndex)
-            {
-              Array.Copy(Passes, passIndex + 1, Passes, passIndex, PassCount - passIndex - 1);
-              PassCount--;
-
-              // Don't reallocate the array to save allocation and additional copy.
-              //AllocatePasses(PassCount - 1);
-            }
-        }
 
         /// <summary>
         /// Takes a cell pass stack and integrates its contents into this cell pass stack ensuring all duplicates are resolved
         /// and that cell pass ordering on time is preserved
         /// </summary>
         /// <param name="sourcePasses"></param>
-        /// <param name="sourcePassCount"></param>
         /// <param name="startIndex"></param>
         /// <param name="endIndex"></param>
         /// <param name="addedCount"></param>
         /// <param name="modifiedCount"></param>
-        public void Integrate(CellPass[] sourcePasses,
-                              int sourcePassCount,
+        public void Integrate(Cell_NonStatic sourcePasses, 
                               int startIndex,
                               int endIndex,
                               out int addedCount,
@@ -223,7 +200,7 @@ namespace VSS.TRex.Cells
             addedCount = 0;
             modifiedCount = 0;
 
-            if (sourcePassCount == 0)
+            if (sourcePasses.Passes.Count == 0)
                 return;
 
             int ThisIndex = 0;
@@ -239,7 +216,8 @@ namespace VSS.TRex.Cells
             // where the actual number of passes are less than the total that are initially set here
             // will be cleaned up when the sub grid next exits the cache, or is integrated with
             // another aggregated sub grid from TAG file processing
-            CellPass[] IntegratedPasses = new CellPass[IntegratedPassCount];
+            
+            var IntegratedPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(IntegratedPassCount);
 
             // Combine the two (sorted) lists of cell passes together to arrive at a single
             // integrated list of passes.
@@ -247,28 +225,30 @@ namespace VSS.TRex.Cells
             {
                 if (ThisIndex >= PassCount)
                 {
-                    IntegratedPasses[IntegratedIndex] = sourcePasses[SourceIndex];
-                    SourceIndex++;
+                  IntegratedPasses.Add(sourcePasses.Passes.GetElement(SourceIndex));
+                  SourceIndex++;
                 }
                 else if (SourceIndex > endIndex)
                 {
-                    IntegratedPasses[IntegratedIndex] = Passes[ThisIndex];
-                    ThisIndex++;
+                  IntegratedPasses.Add(Passes.GetElement(ThisIndex));
+                  ThisIndex++;
                 }
-                else switch (Passes[ThisIndex].Time.CompareTo(sourcePasses[SourceIndex].Time))
+                else
+                {
+                  switch (Passes.GetElement(ThisIndex).Time.CompareTo(sourcePasses.Passes.GetElement(SourceIndex).Time))
                     {
                         case -1:
                             {
-                                IntegratedPasses[IntegratedIndex] = Passes[ThisIndex];
+                                IntegratedPasses.Add(Passes.GetElement(ThisIndex));
                                 ThisIndex++;
                                 break;
                             }
                         case 0:
                             {
-                                if (!Passes[ThisIndex].Equals(sourcePasses[SourceIndex]))
+                                if (!Passes.GetElement(ThisIndex).Equals(sourcePasses.Passes.GetElement(SourceIndex)))
                                     modifiedCount++;
 
-                                IntegratedPasses[IntegratedIndex] = sourcePasses[SourceIndex];
+                                IntegratedPasses.Add(Passes.GetElement(ThisIndex));
                                 SourceIndex++;
                                 ThisIndex++;
                                 IntegratedPassCount--;
@@ -276,31 +256,31 @@ namespace VSS.TRex.Cells
                             }
                         case 1:
                             {
-                                IntegratedPasses[IntegratedIndex] = sourcePasses[SourceIndex];
+                                IntegratedPasses.Add(Passes.GetElement(ThisIndex));
                                 SourceIndex++;
                                 break;
                             }
                     }
+                }
 
                 IntegratedIndex++;
             } while (IntegratedIndex <= IntegratedPassCount - 1);
 
-            // Don't resize the cell pass list downwards as this costs an allocation and array copy
-            // This workflow is specific to TAG file ingest and the segments being manipulated are transient
-            // and will be removed shortly in general operations.
-            // if (IntegratedPasses.Length > IntegratedPassCount)
-            //    Array.Resize(ref IntegratedPasses, (int)IntegratedPassCount);
-
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
+            // Return the original cell pass span and replace it with the integrated one
+            SlabAllocatedCellPassArrayPoolHelper.Caches.Return(Passes);
             Passes = IntegratedPasses;
-            PassCount = IntegratedPassCount;
+
             addedCount = IntegratedPassCount - OriginalPassCount;
         }
 
+        /// <summary>
+        /// Creates a new Cell_StaticNon with a cell pass capacity greater than or equal to cellPassCapacity
+        /// </summary>
+        /// <param name="cellPassCapacity"></param>
         public Cell_NonStatic(int cellPassCapacity)
         {
-            Passes = null;
-            PassCount = 0;
+            Passes = new TRexSpan<CellPass>();
             AllocatePasses(cellPassCapacity);
         }
     }

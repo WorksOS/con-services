@@ -20,15 +20,6 @@
     void Return(TRexSpan<T> buffer);
 
     /// <summary>
-    /// Takes a buffers and return a new buffer resized to the requested size and with as many elements from the
-    /// original buffer as can be copied into it.
-    /// </summary>
-    /// <param name="oldBuffer"></param>
-    /// <param name="minSize"></param>
-    /// <returns></returns>
-    TRexSpan<T> Resize(TRexSpan<T> oldBuffer, int minSize);
-
-    /// <summary>
     /// Clone the contents in 'oldBuffer' and return a new TRexSPan containing the cloned content
     /// </summary>
     /// <param name="oldBuffer"></param>
