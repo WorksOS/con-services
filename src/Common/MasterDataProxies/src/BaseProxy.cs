@@ -53,6 +53,7 @@ namespace VSS.MasterData.Proxies
       log = logger.CreateLogger<BaseProxy>();
       this.logger = logger;
       this.configurationStore = configurationStore;
+
     }
 
     private async Task<T> SendRequestInternal<T>(string url, IDictionary<string, string> customHeaders,
