@@ -44,6 +44,7 @@ namespace VSS.Productivity3D.WebApiTests
     }
 
     [TestMethod]
+    [Ignore]
     public void CanUploadFileToS3()
     {
       var result = @"{
@@ -58,6 +59,7 @@ namespace VSS.Productivity3D.WebApiTests
     }
 
     [TestMethod]
+    [Ignore]
     public async Task CanDownloadFileFromS3()
     {
       var transfer = serviceProvider.GetRequiredService<ITransferProxy>();
@@ -74,6 +76,7 @@ namespace VSS.Productivity3D.WebApiTests
     }
 
     [TestMethod]
+    [Ignore]
     public void CanGeneratePreSignedUrl()
     {
       var transfer = serviceProvider.GetRequiredService<ITransferProxy>();
