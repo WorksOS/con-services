@@ -5,13 +5,9 @@ using Serilog.Events;
 namespace VSS.Serilog.Extensions.Enrichers
 {
   /// <summary>
-  /// Custom Serilog enricher to parse out line feeds from exception stack messages.
-  /// This is so the console output plays nice with FluentD/Kabana and we get only one 'entry' for the exception
-  /// instead of one per line.
+  /// Custom Serilog enricher that allows us to dig into the IHttpContextAccess::HttpContext object
+  /// for the RequestID used to track requests across micro services.
   /// </summary>
-  /// <remarks>
-  /// Replaces the default {Exception} enricher.
-  /// </remarks>
   public class HttpContextEnricher : ILogEventEnricher
   {
     private readonly IHttpContextAccessor _httpContextAccessor;
