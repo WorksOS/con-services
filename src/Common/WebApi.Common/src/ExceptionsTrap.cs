@@ -72,7 +72,7 @@ namespace VSS.WebApi.Common
       context.Response.StatusCode = (int)ex.Code;
       context.Response.ContentType = ContentTypeConstants.ApplicationJson;
       
-      context.Response.WriteAsync(ex.GetContent);
+      return context.Response.WriteAsync(ex.GetContent);
     }
   }
   
