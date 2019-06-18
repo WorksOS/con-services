@@ -9,5 +9,10 @@ namespace VSS.MasterData.Proxies
     {
       return headers == null ? null : JsonConvert.SerializeObject(headers);
     }
+
+    public static string LogHeaders(this IDictionary<string, string> headers, int logMaxChar)
+    {
+      return headers == null ? null : JsonConvert.SerializeObject(headers).Truncate(logMaxChar);
+    }
   }
 }

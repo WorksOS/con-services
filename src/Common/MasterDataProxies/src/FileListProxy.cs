@@ -27,7 +27,7 @@ namespace VSS.MasterData.Proxies
           return result.ImportedFileDescriptors;
         }
 
-        log.LogDebug("Failed to get list of files: {0}, {1}", result.Code, result.Message);
+        log.LogDebug($"Failed to get list of files: {result.Code} {result.Message}");
         return null;
       }
 

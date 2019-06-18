@@ -99,7 +99,7 @@ namespace VSS.MasterData.Proxies
       _log.LogDebug(
         $"ExecuteRequest() Stream: endpoint {endpoint} " +
         $"method {method}, " +
-        $"customHeaders {customHeaders.LogHeaders()} " +
+        $"customHeaders {customHeaders.LogHeaders(_logMaxChar)} " +
         $"has payloadStream: {payloadStream != null}, length: {payloadStream?.Length ?? 0}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
@@ -175,8 +175,7 @@ namespace VSS.MasterData.Proxies
       if (method == null)
         method = HttpMethod.Post;
 
-      _log.LogDebug(
-        $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
+      _log.LogDebug($"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders(_logMaxChar)}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)
@@ -213,9 +212,7 @@ namespace VSS.MasterData.Proxies
       {
         if (!suppressExceptionLogging)
         {
-          _log.LogDebug(
-            "ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
-            policyResult.FinalException.ToString(), endpoint, customHeaders);
+          _log.LogDebug($"ExecuteRequest_multi(). exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint}");
         }
 
         throw policyResult.FinalException;
@@ -250,8 +247,7 @@ namespace VSS.MasterData.Proxies
       if (method == null)
         method = HttpMethod.Post;
 
-      _log.LogDebug(
-        $"ExecuteRequest() ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
+      _log.LogDebug($"ExecuteRequest() ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders(_logMaxChar)}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)
@@ -273,7 +269,7 @@ namespace VSS.MasterData.Proxies
           if (!okCodes.Contains(result.StatusCode))
           {
             var contents = await result.Content.ReadAsStringAsync();
-            _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
+            _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents.Truncate(_logMaxChar)}");
             var serviceException = ParseServiceError(result.StatusCode, contents);
             throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
           }
@@ -285,9 +281,7 @@ namespace VSS.MasterData.Proxies
       {
         if (!suppressExceptionLogging)
         {
-          _log.LogDebug(
-            "ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
-            policyResult.FinalException.ToString(), endpoint, customHeaders);
+          _log.LogDebug($"ExecuteRequest_multi(). exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint} customHeaders: {customHeaders}");
         }
 
         throw policyResult.FinalException;

@@ -1,14 +1,10 @@
 ﻿using System;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
@@ -32,11 +28,10 @@ namespace VSS.MasterData.Proxies
       // e.g. https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/customers/me
       const string urlKey = "CUSTOMERSERVICE_API_URL";
       string url = configurationStore.GetValueString(urlKey);
-      log.LogDebug($"CustomerProxy.GetCustomersForMe: userUid:{userUid} urlKey: {urlKey}  url: {url} customHeaders: {customHeaders.LogHeaders()}");
+      log.LogDebug($"{nameof(GetCustomersForMe)} userUid:{userUid} urlKey: {urlKey}  url: {url}");
 
       var response = await GetContainedMasterDataList<CustomerDataResult>(userUid, null, "CUSTOMER_CACHE_LIFE", urlKey, customHeaders);
-      var message = string.Format("CustomerProxy.GetCustomersForMe: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
-      log.LogDebug(message);
+      log.LogDebug($"{nameof(GetCustomersForMe)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
       return response;
     }
 

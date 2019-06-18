@@ -29,8 +29,7 @@ namespace VSS.MasterData.Proxies
     public async Task<UserPreferenceData> GetUserPreferences(IDictionary<string, string> customHeaders=null)
     {
       var response = await GetMasterDataItem<UserPreferenceResult>("PREFERENCE_API_URL", customHeaders, "/user?keyName=global");
-      var message = string.Format("PreferenceProxy.GetUserPreferences: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
-      log.LogDebug(message);
+      log.LogDebug($"{nameof(GetUserPreferences)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response == null ? null : JsonConvert.DeserializeObject<UserPreferenceData>(response.PreferenceJson);
     }
@@ -42,8 +41,7 @@ namespace VSS.MasterData.Proxies
     public async Task<UserPreferenceData> GetShortCachedUserPreferences(string userId, TimeSpan invalidation, IDictionary<string, string> customHeaders = null)
     {
       var response = await GetMasterDataItem<UserPreferenceResult>("GlobalSettings", userId, invalidation, "PREFERENCE_API_URL", customHeaders, "/user?keyName=global");
-      var message = string.Format("PreferenceProxy.GetUserPreferences: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
-      log.LogDebug(message);
+      log.LogDebug($"{nameof(GetShortCachedUserPreferences)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response == null ? null : JsonConvert.DeserializeObject<UserPreferenceData>(response.PreferenceJson);
     }
