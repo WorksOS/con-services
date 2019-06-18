@@ -39,8 +39,6 @@ namespace VSS.Serilog.Extensions
         else
           _dispose = Log.CloseAndFlush;
       }
-
-      _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
     }
 
     /// <inheritdoc />
