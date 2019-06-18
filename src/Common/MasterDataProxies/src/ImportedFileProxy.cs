@@ -32,9 +32,9 @@ namespace VSS.MasterData.Proxies
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"ImportedFileProxy.CreateImportedFile: request for file {utf8filename}");
-      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
+      var response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
         importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, HttpMethod.Post);
-      log.LogDebug("ImportedFileProxy.CreateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(CreateImportedFile)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response;
     }
@@ -44,9 +44,9 @@ namespace VSS.MasterData.Proxies
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
-      FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
+      var response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
         importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, HttpMethod.Put);
-      log.LogDebug("ImportedFileProxy.UpdateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(UpdateImportedFile)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response;
     }
@@ -54,9 +54,9 @@ namespace VSS.MasterData.Proxies
 
     public async Task<BaseDataResult> DeleteImportedFile(Guid projectUid, Guid importedFileUid, IDictionary<string, string> customHeaders = null)
     {
-      BaseDataResult response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL2", string.Empty, customHeaders, null, HttpMethod.Delete, 
+      var response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL2", string.Empty, customHeaders, null, HttpMethod.Delete, 
         $"?projectUid={projectUid}&importedFileUid={importedFileUid}");
-      log.LogDebug("ImportedFileProxy.DeleteImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(DeleteImportedFile)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response;
     }

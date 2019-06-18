@@ -131,20 +131,22 @@ namespace VSS.TRex.SubGridTrees.Server
       CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
 #endif
 
-      if (TotalPassCount < subGridSegmentPassCountLimit)
+      if (TotalPassCount <= subGridSegmentPassCountLimit)
       {
+        Log.LogInformation("There is no need to cleave this segment as it's number of passes does not breach the limit");
         return false; // There is no need to cleave this segment
       }
-
 
       int NumRequiredClovenSegments = (TotalPassCount - 1) / subGridSegmentPassCountLimit + 1;
 
       // Determine the actual time range of the passes within the segment
-      CleavingSegment.PassesData.CalculateTimeRange(out DateTime CoveredTimeRangeStart,
-        out DateTime CoveredTimeRangeEnd);
+      CleavingSegment.PassesData.CalculateTimeRange(out var CoveredTimeRangeStart, out var CoveredTimeRangeEnd);
 
       if (CoveredTimeRangeStart >= CoveredTimeRangeEnd) // There's nothing to do
+      {
+        Log.LogWarning($"Segment cleaving resolved no time range to assign cloven cell passes to. No cleaving performed. TotalPassCount = {TotalPassCount}, CoveredTimeRangeStart = {CoveredTimeRangeStart}, CoveredTimeRangeEnd {CoveredTimeRangeEnd}, NumRequiredClovenSegments = {NumRequiredClovenSegments}");
         return false;
+      }
 
       // Preserve the allotted time range of the segment being cleaved
       DateTime OldEndTime = CleavingSegment.SegmentInfo.EndTime;
@@ -164,17 +166,18 @@ namespace VSS.TRex.SubGridTrees.Server
       int PassesInFirstTimeRange;
       DateTime TestTime;
 
+      int desiredCallPassCount = TotalPassCount / NumRequiredClovenSegments;
       do
       {
         TestTime = TestTimeRangeStart + new TimeSpan((TestTimeRangeEnd.Ticks - TestTimeRangeStart.Ticks) / 2);
 
         CleavingSegment.PassesData.CalculatePassesBeforeTime(TestTime, out PassesInFirstTimeRange, out int _);
 
-        if (PassesInFirstTimeRange < TotalPassCount / NumRequiredClovenSegments)
+        if (PassesInFirstTimeRange < desiredCallPassCount)
           TestTimeRangeStart = TestTime;
         else
           TestTimeRangeEnd = TestTime;
-      } while (Math.Abs(PassesInFirstTimeRange - TotalPassCount / NumRequiredClovenSegments) > 100);
+      } while (Math.Abs(PassesInFirstTimeRange - desiredCallPassCount) > 100);
 
       // Create the new segment that will contain the overflow from the given segment
       // and copy the cell passes after the test time from the segment being cleaved
@@ -195,7 +198,7 @@ namespace VSS.TRex.SubGridTrees.Server
       // Create a new segment info entry for the new segment and add it into the segment directory
       // so it fills the time space just created by modifying the end time of the
       // segment being cleaved
-      SubGridCellPassesDataSegmentInfo NewSegmentInfo = new SubGridCellPassesDataSegmentInfo
+      var NewSegmentInfo = new SubGridCellPassesDataSegmentInfo
       {
         StartTime = TestTime,
         EndTime = OldEndTime,
