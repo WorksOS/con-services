@@ -21,10 +21,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             startTime = Consts.MAX_DATETIME_AS_UTC;
             endTime = Consts.MIN_DATETIME_AS_UTC;
 
-            DateTime _startTime = startTime;
-            DateTime _endTime = endTime;
-
-            // TODO: Push this implementation down into the segment to avoid the PassCount()/PassTime() abstraction
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
               for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
@@ -32,23 +28,20 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                 int ThePassCount = segment.PassCount(i, j);
 
                 if (ThePassCount == 0)
-                  return;
+                  continue;
 
                 for (int PassIndex = 0; PassIndex < ThePassCount; PassIndex++)
                 {
-                  DateTime theTime = segment.PassTime(i, j, PassIndex);
+                  var theTime = segment.PassTime(i, j, PassIndex);
 
-                  if (theTime > _endTime)
-                    _endTime = theTime;
+                  if (theTime > endTime)
+                    endTime = theTime;
 
-                  if (theTime < _startTime)
-                    _startTime = theTime;
+                  if (theTime < startTime)
+                    startTime = theTime;
                 }
               }
             }
-
-            startTime = _startTime;
-            endTime = _endTime;
         }
 
         /// <summary>
@@ -64,10 +57,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             totalPasses = 0;
             maxPassCount = 0;
 
-            int _totalPasses = totalPasses;
-            int _maxPassCount = maxPassCount;
-
-            // TODO: Push this implementation down into the segment to avoid the PassCount()/PassTime() abstraction
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
               for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
@@ -75,27 +64,24 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                 int thePassCount = segment.PassCount(i, j);
 
                 if (thePassCount == 0)
-                  return;
+                  continue;
 
                 int countInCell = 0;
 
                 for (int PassIndex = 0; PassIndex < thePassCount; PassIndex++)
                 {
-                  DateTime theTime = segment.PassTime(i, j, PassIndex);
+                  var theTime = segment.PassTime(i, j, PassIndex);
 
                   if (theTime < searchTime)
                     countInCell++;
                 }
 
-                _totalPasses += countInCell;
+                totalPasses += countInCell;
 
-                if (countInCell > _maxPassCount)
-                  _maxPassCount = countInCell;
+                if (countInCell > maxPassCount)
+                  maxPassCount = countInCell;
               }
             }
-
-            totalPasses = _totalPasses;
-            maxPassCount = _maxPassCount;
         }
     }
 }

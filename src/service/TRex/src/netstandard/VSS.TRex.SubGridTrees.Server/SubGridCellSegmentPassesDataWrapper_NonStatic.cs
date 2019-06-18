@@ -25,10 +25,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
         }
 
-        public int PassCount(int X, int Y)
-        {
-            return PassData[X, Y].PassCount;
-        }
+        public int PassCount(int X, int Y) => PassData[X, Y].PassCount;
 
         /// <summary>
         /// Ensures there are sufficient passes in the local cell pass array for this cell. Note: THe actual
@@ -38,10 +35,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="passCount"></param>
-        public void AllocatePasses(int X, int Y, int passCount)
-        {
-            PassData[X, Y].AllocatePasses(passCount);
-        }
+        public void AllocatePasses(int X, int Y, int passCount) => PassData[X, Y].AllocatePasses(passCount);
 
         /// <summary>
         /// Ensures there are sufficient passes in the local cell pass array for this cell. The exact number of
@@ -50,10 +44,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="passCount"></param>
-        public void AllocatePassesExact(int X, int Y, int passCount)
-        {
-          PassData[X, Y].AllocatePassesExact(passCount);
-        }
+        public void AllocatePassesExact(int X, int Y, int passCount) => PassData[X, Y].AllocatePassesExact(passCount);
 
         public void AddPass(int X, int Y, CellPass pass, int position = -1)
         {
@@ -86,10 +77,7 @@ namespace VSS.TRex.SubGridTrees.Server
            //throw new NotImplementedException("Removal of cell passes is not yet supported");
         }
 
-        public CellPass ExtractCellPass(int X, int Y, int passNumber)
-        {
-            return PassData[X, Y].Passes[passNumber];
-        }
+        public CellPass ExtractCellPass(int X, int Y, int passNumber) => PassData[X, Y].Passes[passNumber];
 
         /// <summary>
         /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
@@ -101,10 +89,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="time"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public bool LocateTime(int X, int Y, DateTime time, out int index)
-        {
-            return PassData[X, Y].LocateTime(time, out index);
-        }
+        public bool LocateTime(int X, int Y, DateTime time, out int index) => PassData[X, Y].LocateTime(time, out index);
 
         public void Read(BinaryReader reader)
         {
@@ -214,9 +199,6 @@ namespace VSS.TRex.SubGridTrees.Server
           startTime = Consts.MAX_DATETIME_AS_UTC;
           endTime = Consts.MIN_DATETIME_AS_UTC;
 
-          DateTime _startTime = startTime;
-          DateTime _endTime = endTime;
-
           for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
           {
             for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
@@ -224,25 +206,22 @@ namespace VSS.TRex.SubGridTrees.Server
               var cell = PassData[i, j];
 
               if (cell.PassCount == 0)
-                return;
+                continue;
 
               var passes = cell.Passes;
 
               for (int PassIndex = 0, limit = cell.PassCount; PassIndex < limit; PassIndex++)
               {
-                DateTime theTime = passes[PassIndex].Time; 
+                var theTime = passes[PassIndex].Time; 
 
-                if (theTime > _endTime)
-                  _endTime = theTime;
+                if (theTime > endTime)
+                  endTime = theTime;
 
-                if (theTime < _startTime)
-                  _startTime = theTime;
+                if (theTime < startTime)
+                  startTime = theTime;
               }
             }
           }
-
-          startTime = _startTime;
-          endTime = _endTime;
         }
 
         /// <summary>
@@ -253,7 +232,35 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="maxPassCount"></param>
         public void CalculatePassesBeforeTime(DateTime searchTime, out int totalPasses, out int maxPassCount)
         {
-            SegmentTimeRangeCalculator.CalculatePassesBeforeTime(this, searchTime, out totalPasses, out maxPassCount);
+          totalPasses = 0;
+          maxPassCount = 0;
+
+          for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+          {
+            for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+            {
+              var cell = PassData[i, j];
+              int thePassCount = cell.PassCount;
+
+              if (thePassCount == 0)
+                continue;
+
+              int countInCell = 0;
+
+              for (int PassIndex = 0; PassIndex < thePassCount; PassIndex++)
+              {
+                var theTime = PassTime(i, j, PassIndex);
+
+                if (theTime < searchTime)
+                  countInCell++;
+              }
+
+              totalPasses += countInCell;
+
+              if (countInCell > maxPassCount)
+                maxPassCount = countInCell;
+            }
+          }
         }
 
         /// <summary>
@@ -369,15 +376,9 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public float PassHeight(int X, int Y, int passNumber)
-        {
-            return PassData[X, Y].Passes[passNumber].Height;
-        }
+        public float PassHeight(int X, int Y, int passNumber) => PassData[X, Y].Passes[passNumber].Height;
 
-        public DateTime PassTime(int X, int Y, int passNumber)
-        {
-            return PassData[X, Y].Passes[passNumber].Time;
-        }
+        public DateTime PassTime(int X, int Y, int passNumber) => PassData[X, Y].Passes[passNumber].Time;
 
         public void Integrate(int X, int Y, CellPass[] sourcePasses, int sourcePassCount, int StartIndex, int EndIndex, out int AddedCount, out int ModifiedCount)
         {
@@ -392,10 +393,7 @@ namespace VSS.TRex.SubGridTrees.Server
             return cell.Passes;
         }
 
-        public CellPass Pass(int X, int Y, int passIndex)
-        {
-            return PassData[X, Y].Passes[passIndex];
-        }
+        public CellPass Pass(int X, int Y, int passIndex) => PassData[X, Y].Passes[passIndex];
 
         public void SetState(CellPass[,][] cellPasses, int[,] cellPassCounts)
         {
