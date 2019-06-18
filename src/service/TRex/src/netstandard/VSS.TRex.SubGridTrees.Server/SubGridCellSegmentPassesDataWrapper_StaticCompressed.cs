@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Cells.Extensions;
 using VSS.TRex.Common;
@@ -20,7 +21,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public class SubGridCellSegmentPassesDataWrapper_StaticCompressed : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
-        // private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellSegmentPassesDataWrapper_StaticCompressed>();
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellSegmentPassesDataWrapper_StaticCompressed>();
 
         /// <summary>
         /// The set of field descriptors for the attribute being stored in the bit field array compressed form
@@ -520,6 +521,9 @@ namespace VSS.TRex.SubGridTrees.Server
                 segmentPassCount += cellPassCounts[i, j];
               }
             }
+
+            if (segmentPassCount > 10000)
+              Log.LogInformation($"Converting segment with {segmentPassCount} cell passes into compressed form - suspicious?");
 
             // Construct the first cell pass index map for the segment
             // First calculate the values of the first cell pass index for each column in the segment
