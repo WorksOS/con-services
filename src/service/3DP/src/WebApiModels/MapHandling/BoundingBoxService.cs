@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -76,6 +75,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     }
 
     /// <summary>
+    /// Indicates whether to use the TRex Gateway instead of calling to the Raptor client.
+    /// </summary>
+    private bool UseTRexGateway(string key) => bool.TryParse(configStore.GetValueString(key), out var useTrexGateway) && useTrexGateway;
+
+    /// <summary>
     /// Get a list of all boundaries or polygons used by the filters. 
     /// For design boundaries there may be multiple polygons per design. 
     /// For custom boundaries and alignments there is at most one.
@@ -85,13 +89,14 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="baseFilter">The base filter for summary volumes</param>
     /// <param name="topFilter">The top filter for summary volumes</param>
     /// <param name="boundaryType">Type of boundary to get: custom polygon or design boundaries or both</param>
+    /// <param name="customHeaders"></param>
     /// <returns>A list of boundaries (polygons). Points are latitude/longitude in degrees.</returns>
     public List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter,
-                                                    FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType)
+                                                    FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders)
     {
-      var boundaries = GetFilterBoundaries(project, filter, boundaryType);
-      boundaries.AddRange(GetFilterBoundaries(project, baseFilter, boundaryType));
-      boundaries.AddRange(GetFilterBoundaries(project, topFilter, boundaryType));
+      var boundaries = GetFilterBoundaries(project, filter, boundaryType, customHeaders);
+      boundaries.AddRange(GetFilterBoundaries(project, baseFilter, boundaryType, customHeaders));
+      boundaries.AddRange(GetFilterBoundaries(project, topFilter, boundaryType, customHeaders));
       return boundaries;
     }
 
@@ -104,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="filter">The filter to get boundaries for</param>
     /// <param name="boundaryType">Type of boundary to get: custom polygon or design boundaries or both</param>
     /// <returns>A list of boundaries (polygons). Points are latitude/longitude in degrees.</returns>
-    public List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter, FilterBoundaryType boundaryType)
+    public List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter, FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders)
     {
       var boundaries = new List<List<WGSPoint>>();
       if (filter != null)
@@ -123,7 +128,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           if (filter.DesignFile != null)
           {
             log.LogDebug($"GetFilterBoundaries: adding design boundary polygons for projectId={project.LegacyProjectId}, filter name={filter.Name}");
-            boundaries.AddRange(GetDesignBoundaryPolygons(project.LegacyProjectId, filter.DesignFile));
+            boundaries.AddRange(GetDesignBoundaryPolygons(project, filter.DesignFile, customHeaders));
           }
         }
         if (boundaryType == FilterBoundaryType.Polygon || boundaryType == FilterBoundaryType.All)
@@ -147,10 +152,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="filter">The filter for production data tiles</param>
     /// <param name="baseFilter">The base filter for summary volumes</param>
     /// <param name="topFilter">The top filter for summary volumes</param>
+    /// <param name="customHeaders"></param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
-    private List<WGSPoint> GetFilterPoints(ProjectData project, FilterResult filter, FilterResult baseFilter, FilterResult topFilter)
+    private List<WGSPoint> GetFilterPoints(ProjectData project, FilterResult filter, FilterResult baseFilter, FilterResult topFilter, IDictionary<string, string> customHeaders)
     {
-      var boundaries = GetFilterBoundaries(project, filter, baseFilter, topFilter, FilterBoundaryType.All);
+      var boundaries = GetFilterBoundaries(project, filter, baseFilter, topFilter, FilterBoundaryType.All, customHeaders);
       return GetPointsFromPolygons(boundaries);
     }
 
@@ -190,7 +196,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       MapBoundingBox bbox = null;
 
       //If the filter has an area then use it as the bounding box
-      List<WGSPoint> filterPoints = GetFilterPoints(project, filter, baseFilter, topFilter);
+      var filterPoints = GetFilterPoints(project, filter, baseFilter, topFilter, customHeaders);
       if (filterPoints.Count > 0)
       {
         log.LogDebug("GetBoundingBox: Using area filter");
@@ -206,7 +212,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       else
       {
         //If no spatial filter then use cut-fill/volumes design
-        var boundaryPoints = GetPointsFromPolygons(GetDesignBoundaryPolygons(project.LegacyProjectId, designDescriptor));
+        var boundaryPoints = GetPointsFromPolygons(GetDesignBoundaryPolygons(project, designDescriptor, customHeaders));
         if (boundaryPoints.Count > 0)
         {
           log.LogDebug("GetBoundingBox: Using cut-fill design boundary");
@@ -336,13 +342,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="designDescriptor">The design to get the boundary of</param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
-    public List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor)
+    public List<List<WGSPoint>> GetDesignBoundaryPolygons(ProjectData project, DesignDescriptor designDescriptor, IDictionary<string, string> customHeaders)
     {
       var polygons = new List<List<WGSPoint>>();
       var description = TileServiceUtils.DesignDescriptionForLogging(designDescriptor);
-      log.LogDebug($"GetDesignBoundaryPolygons: projectId={projectId}, design={description}");
+      log.LogDebug($"GetDesignBoundaryPolygons: projectUid={project.ProjectUid}, projectId={project.LegacyProjectId}, design={description}");
       if (designDescriptor == null) return polygons;
-      var geoJson = GetDesignBoundary(projectId, designDescriptor);
+      var geoJson = GetDesignBoundary(project, designDescriptor, customHeaders);
       log.LogDebug($"GetDesignBoundaryPolygons: geoJson={geoJson}");
       if (string.IsNullOrEmpty(geoJson)) return polygons;
       var root = JsonConvert.DeserializeObject<GeoJson>(geoJson);
@@ -365,12 +371,38 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Gets the boundary of the design surface as GeoJson
     /// </summary>
-    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="project">The project data</param>
     /// <param name="designDescriptor">The design to get the boundary for</param>
+    /// <param name="customHeaders"></param>
     /// <returns>A GeoJSON representation of the design boundary</returns>
-    private string GetDesignBoundary(long projectId, DesignDescriptor designDescriptor)
+    private string GetDesignBoundary(ProjectData project, DesignDescriptor designDescriptor, IDictionary<string, string> customHeaders)
     {
 #if RAPTOR
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
+#endif
+        return ProcessWithTRex(project.ProjectUid, designDescriptor, customHeaders);
+#if RAPTOR
+      return ProcessWithRaptor(project.LegacyProjectId, designDescriptor);
+#endif
+    }
+
+    private string ProcessWithTRex(string projectUid, DesignDescriptor designDescriptor, IDictionary<string, string> customHeaders)
+    {
+      var queryParams = $"?projectUid={projectUid}&designUid={designDescriptor.FileUid}&fileName={designDescriptor.File.FileName}&tolerance={DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL}";
+
+      var returnedResult = tRexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(projectUid, "/design/boundaries", customHeaders, queryParams).Result;
+
+      if (returnedResult != null && returnedResult.GeoJSON != null)
+        return returnedResult.GeoJSON.ToString();
+
+      throw new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          $"Failed to get design boundary for file: {designDescriptor.File.FileName}"));
+    }
+
+#if RAPTOR
+    private string ProcessWithRaptor(long projectId, DesignDescriptor designDescriptor)
+    {
       MemoryStream memoryStream = null;
       try
       {
@@ -411,12 +443,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       {
         memoryStream?.Close();
       }
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
-
+#endif
     /// <summary>
     /// Gets the list of points making up the alignment boundary. 
     /// If the start & end station and left & right offsets are zero,

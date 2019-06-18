@@ -40,7 +40,7 @@ namespace VSS.Serilog.Extensions
           _dispose = Log.CloseAndFlush;
       }
 
-      _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+      //_accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
     }
 
     /// <inheritdoc />

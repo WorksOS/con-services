@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         if (fileList != null && fileList.Count > 0)
         {
 #if RAPTOR
-          bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNBOUNDARIES"), out var useTrexGateway);
+          bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"), out var useTrexGateway);
 #endif
 
           var geoJsonList = new List<JObject>();
@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var siteModelId = request.ProjectUid.ToString();
       var queryParams = $"?projectUid={siteModelId}&designUid={designUid}&fileName={fileName}&tolerance={request.Tolerance}";
 
-      var returnedResult = trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, $"/design/boundaries", customHeaders, queryParams).Result;
+      var returnedResult = trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, "/design/boundaries", customHeaders, queryParams).Result;
 
       if (returnedResult != null && returnedResult.GeoJSON != null)
       {

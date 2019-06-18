@@ -17,14 +17,14 @@ namespace VSS.Productivity3D.WebApi.Models.Interfaces
       string userId, IDictionary<string, string> customHeaders);
 
     List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter,
-      FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType);
+      FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders);
 
-    List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter, FilterBoundaryType boundaryType);
+    List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter, FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders);
 
     IEnumerable<WGSPoint> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor,
       double startStation = 0, double endStation = 0, double leftOffset = 0, double rightOffset = 0);
 
-    List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor);
+    List<List<WGSPoint>> GetDesignBoundaryPolygons(ProjectData project, DesignDescriptor designDescriptor, IDictionary<string, string> customHeaders);
 
     AlignmentStationResult GetAlignmentStationRange(long projectId, DesignDescriptor alignDescriptor);
 

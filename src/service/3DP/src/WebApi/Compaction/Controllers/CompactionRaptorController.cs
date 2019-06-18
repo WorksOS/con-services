@@ -11,6 +11,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -62,7 +63,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      var cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, baseUid, topUid);
       var designDescriptor = (!volumeCalcType.HasValue || volumeCalcType.Value == VolumeCalcType.None)
         ? cutFillDesign
@@ -94,10 +95,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogInformation("GetDesignBoundaryPoints: " + Request.QueryString);
 
       var projectId = await GetLegacyProjectId(projectUid);
-      DesignDescriptor designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUid);
-
-      PointsListResult result = new PointsListResult();
-      var polygons = boundingBoxService.GetDesignBoundaryPolygons(projectId, designDescriptor);
+      var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUid);
+      
+      var project = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId};
+      var result = new PointsListResult();
+      var polygons = boundingBoxService.GetDesignBoundaryPolygons(project, designDescriptor, CustomHeaders);
       result.PointsList = ConvertPoints(polygons);
 
       return result;
@@ -123,7 +125,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (filter != null)
       {
         var polygons = boundingBoxService.GetFilterBoundaries(
-          project, filter, FilterBoundaryType.All);
+          project, filter, FilterBoundaryType.All, CustomHeaders);
         result.PointsList = ConvertPoints(polygons);
       }
 
@@ -157,7 +159,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       await Task.WhenAll(projectTask, filterTask, baseFilterTask, topFilterTask);
 
-      var polygons = boundingBoxService.GetFilterBoundaries(projectTask.Result, filterTask.Result, baseFilterTask.Result, topFilterTask.Result, boundaryType);
+      var polygons = boundingBoxService.GetFilterBoundaries(projectTask.Result, filterTask.Result, baseFilterTask.Result, topFilterTask.Result, boundaryType, CustomHeaders);
 
       result.PointsList = ConvertPoints(polygons);
 

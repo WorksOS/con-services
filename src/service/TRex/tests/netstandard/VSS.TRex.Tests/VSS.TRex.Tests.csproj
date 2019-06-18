@@ -117,6 +117,9 @@
     <None Update="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Common\Bug36372.ttm.%24DesignBoundary%24">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Common\Bug36372.ttm.%24DesignSpatialIndex%24">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -80,29 +80,11 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     private DesignBoundaryResult ConvertResult(List<Fence> boundary, double tolerance, double cellSize, string csib, string fileName)
     {
-      const string PROPERTY_TYPE = "type";
-      const string PROPERTY_FEATURES = "features";
-      const string PROPERTY_COORDINATES = "coordinates";
-      const string PROPERTY_GEOMETRY = "geometry";
-      const string PROPERTY_NAME = "name";
-      const string PROPERTY_PROPERTIES = "properties";
-
-      const string CONTENT_FEATURE_COLLECTION = "FeatureCollection";
-      const string CONTENT_FEATURE = "Feature";
-      const string CONTENT_POLYGON = "Polygon";
       const int VERTICES_LIMIT = 10000;
 
       var vertsCount = 0;
 
       // Create a main header...
-      //var featuresArray = new JArray();
-
-      //var jo = new JObject
-      //{
-      //  new JProperty(PROPERTY_TYPE, CONTENT_FEATURE_COLLECTION),
-      //  new JProperty(PROPERTY_FEATURES, featuresArray)
-      //};
-
       var geoJson = new GeoJson
       {
         Type = GeoJson.FeatureType.FEATURE_COLLECTION,
@@ -113,10 +95,6 @@ namespace VSS.TRex.Gateway.Common.Executors
       foreach (var fence in boundary)
       {
         // Create a header for each polygon...
-        //var featuresObj = new JObject {new JProperty(PROPERTY_TYPE, CONTENT_FEATURE) };
-        //var geo = new JObject {new JProperty(PROPERTY_TYPE, CONTENT_POLYGON) };
-        //var coords = new JArray();
-
         var geo = new FenceGeometry();
         geo.Type = FenceGeometry.Types.POLYGON;
         geo.Coordinates = new List<List<double[]>>();
@@ -127,10 +105,6 @@ namespace VSS.TRex.Gateway.Common.Executors
           Geometry = geo,
           Properties = new Properties() { Name = fileName }
         };
-
-
-
-
 
         // Reduce vertices if too large...
         if (fence.Points.Count > VERTICES_LIMIT || tolerance > 0)
@@ -172,24 +146,13 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           var llhCoords = coordConversionResult.LLHCoordinates;
 
-          //var polygon = new JArray();
           var fencePoints = new List<double[]>();
 
           for (var fencePointIdx = 0; fencePointIdx < llhCoords.Length; fencePointIdx++)
             AddPoint(llhCoords[fencePointIdx].X, llhCoords[fencePointIdx].Y, fencePoints);
 
-          //coords.Add(polygon);
           geo.Coordinates.Add(fencePoints);
 
-          //geo.Add(new JProperty(PROPERTY_COORDINATES, coords));
-
-          //featuresObj.Add(new JProperty(PROPERTY_GEOMETRY, geo)); // Attach geometry obj to master...
-
-          //var property = new JObject {new JProperty(PROPERTY_NAME, fileName)};
-
-          //featuresObj.Add(new JProperty(PROPERTY_PROPERTIES, property));
-
-          //featuresArray.Add(featuresObj);
           geoJson.Features.Add(feature);
         }
         else
