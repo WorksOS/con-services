@@ -39,9 +39,9 @@ namespace VSS.WebApi.Common
       catch (Exception ex)
       {
         //Exceptions may get wrapped depending on order of middleware
-        if (ex.InnerException != null && ex.InnerException is ServiceException)
+        if (ex.InnerException is ServiceException innerException)
         {
-          await HandleServiceException(context, ex.InnerException as ServiceException);
+          await HandleServiceException(context, innerException);
         }
         else
         {
@@ -52,32 +52,30 @@ namespace VSS.WebApi.Common
           }
           finally
           {
-            log.LogCritical($"EXCEPTION: {nameof(ex)} {ex.Message} {ex.Source} {ex.StackTrace}");
-            if (ex is AggregateException)
+            log.LogCritical(ex, $"EXCEPTION: {ex.Message} {ex.Source}");
+
+            if (ex is AggregateException exception)
             {
-              var exception = ex as AggregateException;
               log.LogCritical("EXCEPTION AGGREGATED: {0}, {1}, {2}",
                 exception.InnerExceptions.Select(i => i.Message).Aggregate((i, j) => i + j),
                 exception.InnerExceptions.Select(i => i.Source).Aggregate((i, j) => i + j),
                 exception.InnerExceptions.Select(i => i.StackTrace).Aggregate((i, j) => i + j));
-
             }
           }
         }
       }
     }
 
-    private async Task HandleServiceException(HttpContext context, ServiceException ex)
+    private Task HandleServiceException(HttpContext context, ServiceException ex)
     {
-      log.LogWarning($"Service exception: {nameof(ex)} {ex.Source} {ex.GetFullContent} statusCode: {ex.Code} {ex.StackTrace}");
+      log.LogWarning(ex, $"Service exception: {ex.Source} {ex.GetFullContent} statusCode: {ex.Code}");
       context.Response.StatusCode = (int)ex.Code;
       context.Response.ContentType = ContentTypeConstants.ApplicationJson;
-      await context.Response.WriteAsync(ex.GetContent);
+      
+      context.Response.WriteAsync(ex.GetContent);
     }
-
   }
-
-
+  
   public static class ExceptionsTrapExtensions
   {
     public static IApplicationBuilder UseExceptionTrap(this IApplicationBuilder builder)
