@@ -4,14 +4,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Cells;
+using VSS.TRex.Cells.Helpers;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.IO;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Helpers;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Tests.TestFixtures
@@ -104,14 +107,24 @@ namespace VSS.TRex.Tests.TestFixtures
       configuration.GetValueInt("MAX_EXPORT_ROWS").Should().Be(rowCount);
       configuration.GetValueInt("MAX_EXPORT_ROWS", 1).Should().Be(rowCount);
     }
-    
+
+    public void ClearHelpers()
+    {
+      RecyclableMemoryStreamManagerHelper.Clear();
+      MemoryBufferCachesHelper.Clear();
+      CellPassArrayPoolCacheHelper.Clear();
+      SlabAllocatedCellPassArrayPoolHelper.Clear();
+    }
+
     public DILoggingFixture()
     {
+      ClearHelpers();
       SetupFixture();
     }
 
     public void Dispose()
     {
+      ClearHelpers();
       DIBuilder.Eject();
     }
   }

@@ -3,6 +3,7 @@ using System.IO;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.IO;
+using VSS.TRex.IO.Helpers;
 
 // This unit implements support for storing attribute values as variable bit field arrays and records 
 

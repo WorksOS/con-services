@@ -8,5 +8,7 @@ namespace VSS.TRex.SubGridTrees.Server.Helpers
   {
     private static IGenericArrayPoolCaches<CellPass> _caches;
     public static IGenericArrayPoolCaches<CellPass> Caches => _caches ?? (_caches = DIContext.Obtain<IGenericArrayPoolCaches<CellPass>>());
+
+    public static void Clear() => _caches = null;
   }
 }

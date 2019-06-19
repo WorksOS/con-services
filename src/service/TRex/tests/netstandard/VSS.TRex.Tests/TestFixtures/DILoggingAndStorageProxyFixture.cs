@@ -26,8 +26,6 @@ namespace VSS.TRex.Tests.TestFixtures
     public void Dispose()
     {
       base.Dispose();
-
-      DIBuilder.Eject();
     }
   }
 }

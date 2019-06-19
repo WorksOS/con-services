@@ -2,6 +2,7 @@
 using System.Collections;
 using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Cells.Helpers;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
