@@ -62,8 +62,7 @@ namespace VSS.AWS.TransferProxy
 
     private IAmazonS3 GetS3Client()
     {
-       return new AmazonS3Client(new InstanceProfileAWSCredentials(),
-         RegionEndpoint.USWest2);
+       return new AmazonS3Client(RegionEndpoint.USWest2);
     }
 
     public async Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName)
