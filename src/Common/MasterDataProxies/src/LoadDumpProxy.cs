@@ -33,7 +33,7 @@ namespace VSS.MasterData.Proxies
       //Note: May not be able to use caching and GetContainedMasterDataList. Can always do directly like raptorProxy production data tile
       const string urlKey = "LOADDUMP_API_URL";
       string url = configurationStore.GetValueString(urlKey);
-      log.LogDebug($"LoadDumpProxy.GetLoadDumpLocations: urlKey: {urlKey}  url: {url} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
+      log.LogDebug($"{nameof(GetLoadDumpLocations)}: urlKey: {urlKey}  url: {url}");
 
       var queryParams = $"?projectUid={projectUid}";
       var response = await GetContainedMasterDataList<LoadDumpResult>(projectUid, null, "LOADDUMP_CACHE_LIFE", urlKey, customHeaders, queryParams);

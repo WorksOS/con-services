@@ -5,10 +5,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
@@ -30,15 +28,15 @@ namespace VSS.MasterData.Proxies
     public async Task<BaseDataResult> InvalidateCache(string projectUid,
       IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.InvalidateCache: Project UID: {projectUid}");
-      BaseDataResult response = await SendRequest<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL","" , customHeaders, "/invalidatecache", HttpMethod.Get, $"?projectUid={projectUid}");
-      log.LogDebug("RaptorProxy.InvalidateCache: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(InvalidateCache)} Project UID: {projectUid}");
+      var response = await SendRequest<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL","" , customHeaders, "/invalidatecache", HttpMethod.Get, $"?projectUid={projectUid}");
+      log.LogDebug($"{nameof(InvalidateCache)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
       return response;
     }
 
     public Task<Stream> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid, IDictionary<string, string> customHeaders)
     {
-      Dictionary<string, string> parameters = new Dictionary<string, string>
+      var parameters = new Dictionary<string, string>
       {
         { "projectUid", projectUid.ToString() }, { "alignmentUid", alignmentUid.ToString() }
       };
@@ -56,7 +54,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.CoordinateSystemValidate: coordinateSystemFileName: {coordinateSystemFileName}");
+      log.LogDebug($"{nameof(CoordinateSystemValidate)} coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = new CoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName);
 
       return await CoordSystemPost(JsonConvert.SerializeObject(payLoadToSend), customHeaders, "/validation");
@@ -71,7 +69,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<CoordinateSystemSettingsResult> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.CoordinateSystemPost: coordinateSystemFileName: {coordinateSystemFileName}");
+      log.LogDebug($"{nameof(CoordinateSystemPost)} coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = CoordinateSystemFile.CreateCoordinateSystemFile(legacyProjectId, coordinateSystemFileContent, coordinateSystemFileName);
 
       return await CoordSystemPost(JsonConvert.SerializeObject(payLoadToSend), customHeaders, null);
@@ -89,9 +87,8 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<AddFileResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.AddFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} dxfUnitsType: {dxfUnitsType}");
-
-      Dictionary<string,string> parameters = new Dictionary<string, string>
+      log.LogDebug($"{nameof(AddFile)} projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} dxfUnitsType: {dxfUnitsType}");
+      var parameters = new Dictionary<string, string>
       {
         { "projectUid", projectUid.ToString() }, {"fileType" , fileType.ToString() }, { "fileUid", fileUid.ToString() },
         { "fileDescriptor", fileDescriptor}, {"fileId", fileId.ToString()}, {"dxfUnitsType",dxfUnitsType.ToString()}
@@ -115,10 +112,8 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<BaseDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, long? legacyFileId, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.DeleteFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} legacyFileId: {legacyFileId}");
-      //var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&legacyFileId={legacyFileId}";
-
-      Dictionary<string, string> parameters = new Dictionary<string, string>
+      log.LogDebug($"{nameof(DeleteFile)} projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} legacyFileId: {legacyFileId}");
+      var parameters = new Dictionary<string, string>
       {
         { "projectUid", projectUid.ToString() }, {"fileType" , fileType.ToString() }, { "fileUid", fileUid.ToString() },
         { "fileDescriptor", fileDescriptor}, {"fileId", fileId.ToString()}
@@ -138,7 +133,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<BaseDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.UpdateFiles: projectUid: {projectUid} fileUids: {string.Join<Guid>(",", fileUids)}");
+      log.LogDebug($"{nameof(UpdateFiles)} projectUid: {projectUid} fileUids: {string.Join<Guid>(",", fileUids)}");
       var queryParams = $"?projectUid={projectUid}&fileUids={string.Join<Guid>("&fileUids=", fileUids)}";
 
       return await NotifyFile<BaseDataResult>("/updatefiles", queryParams, customHeaders);
@@ -153,10 +148,9 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<BaseDataResult> NotifyImportedFileChange(Guid projectUid, Guid fileUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.NotifyImportedFileChange: projectUid: {projectUid} fileUid: {fileUid}");
+      log.LogDebug($"{nameof(NotifyImportedFileChange)} projectUid: {projectUid} fileUid: {fileUid}");
       var queryParams = $"?projectUid={projectUid}&fileUid={fileUid}";
-      //log.LogDebug($"RaptorProxy.DeleteFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
-
+      
       return await NotifyFile<BaseDataResult>("/importedfilechange", queryParams, customHeaders);
     }
 
@@ -168,11 +162,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
+      log.LogDebug($"{nameof(ValidateProjectSettings)} 1) projectUid: {projectUid}");
       var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}";
-      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
-      log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
-
+      var response = await GetMasterDataItem<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      log.LogDebug($"{nameof(ValidateProjectSettings)} 1) response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+      
       return response;
     }
 
@@ -185,10 +179,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, ProjectSettingsType settingsType, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
+      log.LogDebug($"{nameof(ValidateProjectSettings)} 2) projectUid: {projectUid} settings type: {settingsType}");
       var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}&settingsType={settingsType}";
-      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
-      log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      var response = await GetMasterDataItem<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      log.LogDebug($"{nameof(ValidateProjectSettings)} 2) response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response;
     }
@@ -200,9 +194,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<BaseDataResult> ValidateProjectSettings(ProjectSettingsRequest request, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {request.projectUid}");
-      BaseDataResult response = await SendRequest<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", HttpMethod.Post, string.Empty);
-      log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(ValidateProjectSettings)} 3) projectUid: {request.projectUid}");
+      var response = await SendRequest<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", HttpMethod.Post, string.Empty);
+      log.LogDebug($"{nameof(ValidateProjectSettings)} 3) response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response;
     }
@@ -216,8 +210,8 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<ProjectStatisticsResult> GetProjectStatistics(Guid projectUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetProjectStatistics: {projectUid}");
-      ProjectStatisticsResult response = await SendRequest<ProjectStatisticsResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+      log.LogDebug($"{nameof(GetProjectStatistics)} projectUid: {projectUid}");
+      var response = await SendRequest<ProjectStatisticsResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
         string.Empty, customHeaders, "/projectstatistics", HttpMethod.Get, $"?projectUid={projectUid}");
 
       return response;
@@ -231,8 +225,8 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetAlignmentPointsList: {projectUid}");
-      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
+      log.LogDebug($"{nameof(GetAlignmentPointsList)} projectUid: {projectUid}");
+      var response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/alignmentpointslist", HttpMethod.Get, $"?projectUid={projectUid}");
 
       return response;
@@ -246,8 +240,8 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<AlignmentPointsResult> GetAlignmentPoints(Guid projectUid, Guid alignmentUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetAlignmentPoints: projectUid={projectUid}, alignmentUid={alignmentUid}");
-      AlignmentPointsResult response = await SendRequest<AlignmentPointsResult>("RAPTOR_3DPM_API_URL",
+      log.LogDebug($"{nameof(GetAlignmentPoints)}: projectUid: {projectUid}, alignmentUid: {alignmentUid}");
+      var response = await SendRequest<AlignmentPointsResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/alignmentpoints", HttpMethod.Get, $"?projectUid={projectUid}&alignmentUid={alignmentUid}");
 
       return response;
@@ -262,8 +256,8 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<PointsListResult> GetDesignBoundaryPoints(Guid projectUid, Guid designUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetDesignBoundaryPoints: projectUid={projectUid}, designUid={designUid}");
-      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
+      log.LogDebug($"{nameof(GetDesignBoundaryPoints)} projectUid: {projectUid}, designUid: {designUid}");
+      var response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/designboundarypoints", HttpMethod.Get, $"?projectUid={projectUid}&designUid={designUid}");
 
       return response;
@@ -277,8 +271,8 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<PointsListResult> GetFilterPoints(Guid projectUid, Guid filterUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetFilterPoints: projectUid={projectUid}, filterUid={filterUid}");
-      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
+      log.LogDebug($"{nameof(GetFilterPoints)} projectUid: {projectUid}, filterUid: {filterUid}");
+      var response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/filterpoints", HttpMethod.Get, $"?projectUid={projectUid}&filterUid={filterUid}");
 
       return response;
@@ -295,8 +289,8 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<PointsListResult> GetFilterPointsList(Guid projectUid, Guid? filterUid, Guid? baseUid, Guid? topUid, FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetFilterPointsList: projectUid={projectUid}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, boundaryType={boundaryType}");
-      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
+      log.LogDebug($"{nameof(GetFilterPointsList)} projectUid={projectUid}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, boundaryType={boundaryType}");
+      var response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/filterpointslist", HttpMethod.Get, $"?projectUid={projectUid}&filterUid={filterUid}&baseUid={baseUid}&topUid={topUid}&boundaryType={boundaryType}");
 
       return response;
@@ -309,7 +303,7 @@ namespace VSS.MasterData.Proxies
     public async Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
       string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null, bool explicitFilters = false)
     {
-      log.LogDebug($"RaptorProxy.{nameof(GetProductionDataTile)}: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
+      log.LogDebug($"{nameof(GetProductionDataTile)}: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
 
       var parameters = new Dictionary<string, string>
       {
@@ -353,9 +347,9 @@ namespace VSS.MasterData.Proxies
     public async Task<string> GetBoundingBox(Guid projectUid, TileOverlayType[] overlays, Guid? filterUid, Guid? cutFillDesignUid, Guid? baseUid, 
       Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetBoundingBox: projectUid={projectUid}, overlays={JsonConvert.SerializeObject(overlays)}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}, headers {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
+      log.LogDebug($"{nameof(GetBoundingBox)} projectUid={projectUid}, overlays={JsonConvert.SerializeObject(overlays)}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
 
-      Dictionary<string, string> parameters = new Dictionary<string, string>
+      var parameters = new Dictionary<string, string>
       {
         {"projectUid", projectUid.ToString()}
 
@@ -396,10 +390,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<BaseDataResult> NotifyFilterChange(Guid filterUid, Guid projectUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.NotifyFilterChange: filterUid: {filterUid}, projectUid: {projectUid}");
+      log.LogDebug($"{nameof(NotifyFilterChange)} filterUid: {filterUid}, projectUid: {projectUid}");
       var queryParams = $"?filterUid={filterUid}&projectUid={projectUid}";
-      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, "/filterchange");
-      log.LogDebug("RaptorProxy.NotifyFilterChange: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      var response = await GetMasterDataItem<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, "/filterchange");
+      log.LogDebug($"{nameof(NotifyFilterChange)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response;
     }
@@ -414,8 +408,7 @@ namespace VSS.MasterData.Proxies
     private async Task<T> NotifyFile<T>(string route, string queryParams, IDictionary<string, string> customHeaders)
     {
       T response = await GetMasterDataItem<T>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, route);
-      var message = string.Format("RaptorProxy.NotifyFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
-      log.LogDebug(message);
+      log.LogDebug($"{nameof(NotifyFile)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response;
     }
@@ -429,8 +422,8 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private async Task<CoordinateSystemSettingsResult> CoordSystemPost(string payload, IDictionary<string, string> customHeaders, string route)
     {
-      CoordinateSystemSettingsResult response = await SendRequest<CoordinateSystemSettingsResult>("COORDSYSPOST_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
-      log.LogDebug("RaptorProxy.CoordSystemPost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      var response = await SendRequest<CoordinateSystemSettingsResult>("COORDSYSPOST_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
+      log.LogDebug($"{nameof(CoordSystemPost)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response;
     }
@@ -446,11 +439,12 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<BaseDataResult> UploadTagFile(string filename, byte[] data, string orgId = null, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.UploadTagFile: filename: {filename}, orgId: {orgId}");
+      log.LogDebug($"{nameof(UploadTagFile)} filename: {filename}, orgId: {orgId}");
       var request = CompactionTagFileRequest.CreateCompactionTagFileRequest(filename, data, orgId);
       var response = await SendRequest<BaseDataResult>("TAGFILEPOST_API_URL", JsonConvert.SerializeObject(request),
         customHeaders, "", HttpMethod.Post, string.Empty);
-      log.LogDebug("RaptorProxy.UploadTagFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(UploadTagFile)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+
       return response;
     }
 
@@ -465,10 +459,10 @@ namespace VSS.MasterData.Proxies
     public async Task<T> ExecuteGenericV1Request<T>(string route, object payload,
       IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.ExecuteGenericV1Request: route: {route}");
+      log.LogDebug($"{nameof(ExecuteGenericV1Request)} route: {route}");
       var response = await SendRequest<T>("RAPTOR_V1_BASE_API_URL", JsonConvert.SerializeObject(payload),
         customHeaders, route, HttpMethod.Post, string.Empty);
-      log.LogDebug("RaptorProxy.ExecuteGenericV1Request: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(ExecuteGenericV1Request)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
       return response;
     }
 
@@ -482,9 +476,9 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<T> ExecuteGenericV1Request<T>(string route, string query, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.ExecuteGenericV1Request: route: {route}");
+      log.LogDebug($"{nameof(ExecuteGenericV1Request)} route: {route}");
       var response = await SendRequest<T>("RAPTOR_V1_BASE_API_URL", string.Empty, customHeaders, route, HttpMethod.Get, query);
-      log.LogDebug("RaptorProxy.ExecuteGenericV1Request: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(ExecuteGenericV1Request)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
       return response;
     }
 
@@ -498,9 +492,9 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<T> ExecuteGenericV2Request<T>(string route, HttpMethod method, Stream body = null, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.ExecuteGenericV2Request: route: {route}");
+      log.LogDebug($"{nameof(ExecuteGenericV2Request)} route: {route}");
       var response = await SendRequest<T>("RAPTOR_3DPM_API_URL", body, customHeaders, route, method);
-      log.LogDebug("RaptorProxy.ExecuteGenericV2Request: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"{nameof(ExecuteGenericV2Request)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
       return response;
     }
   }

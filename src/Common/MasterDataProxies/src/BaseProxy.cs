@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Cache.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Proxies
@@ -32,7 +30,7 @@ namespace VSS.MasterData.Proxies
     protected readonly ILoggerFactory logger;
     
     private const int DefaultLogMaxChar = 1000;
-    private readonly int _logMaxChar;
+    protected readonly int _logMaxChar;
 
     protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache)
     {
@@ -53,6 +51,7 @@ namespace VSS.MasterData.Proxies
       log = logger.CreateLogger<BaseProxy>();
       this.logger = logger;
       this.configurationStore = configurationStore;
+      _logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
     }
 
     private async Task<T> SendRequestInternal<T>(string url, IDictionary<string, string> customHeaders,
@@ -62,7 +61,7 @@ namespace VSS.MasterData.Proxies
       if (method == null)
         method = HttpMethod.Post;
       var result = default(T);
-      log.LogDebug($"{nameof(SendRequestInternal)}: Preparing {url} ({method}) headers {customHeaders.LogHeaders()}");
+      log.LogDebug($"{nameof(SendRequestInternal)}: Preparing {url} ({method}) headers {customHeaders.LogHeaders(_logMaxChar)}");
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
@@ -113,7 +112,7 @@ namespace VSS.MasterData.Proxies
     protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
       string route = null, HttpMethod method = null, string queryParameters = null, int ? timeout = null, int retries = 3)
     {
-      log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders()}");
+      log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters.Truncate(_logMaxChar)} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders(_logMaxChar)}");
       return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload, timeout:timeout, retries:retries);
     }
 
@@ -130,7 +129,7 @@ namespace VSS.MasterData.Proxies
     protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
       string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null)
     {
-      log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders()}");
+      log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters.LogHeaders(_logMaxChar)} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders(_logMaxChar)}");
       return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
     }
 
@@ -179,7 +178,7 @@ namespace VSS.MasterData.Proxies
       {
         var request = new GracefulWebRequest(logger, configurationStore);
         result = await request.ExecuteRequest<K>(url, customHeaders: customHeaders, method: HttpMethod.Get);
-        log.LogDebug($"{nameof(GetObjectsFromMasterdata)}: Result of get item request: {JsonConvert.SerializeObject(result)}");
+        log.LogDebug($"{nameof(GetObjectsFromMasterdata)}: Result of get item request: {JsonConvert.SerializeObject(result).Truncate(_logMaxChar)}");
         BaseProxyHealthCheck.SetStatus(true,this.GetType());
       }
       catch (Exception ex)
@@ -224,9 +223,9 @@ namespace VSS.MasterData.Proxies
       var url = ExtractUrl(urlKey, route, queryParams);
       try
       {
-	  	if (method == null)
-	      method = HttpMethod.Get;
-		  
+        if (method == null)
+          method = HttpMethod.Get;
+
         var request = new GracefulWebRequest(logger, configurationStore);
         if (method != HttpMethod.Get)
         {
@@ -287,7 +286,7 @@ namespace VSS.MasterData.Proxies
 
       if (string.IsNullOrEmpty(uid) && string.IsNullOrEmpty(userId))
       {
-        log.LogWarning($"Attempting to execute method with cache, but cannot generate a cache key - not caching the result.");
+        log.LogWarning("Attempting to execute method with cache, but cannot generate a cache key - not caching the result.");
         var noCacheResult = await action.Invoke();
         if (noCacheResult != null)
           return noCacheResult;
@@ -551,7 +550,7 @@ namespace VSS.MasterData.Proxies
       }
 
       log.LogWarning($"{nameof(LogWebRequestExceptionAndSetHealth)}: Error sending data from master data: ", message);
-      log.LogWarning($"{nameof(LogWebRequestExceptionAndSetHealth)}:Stacktrace: ", stacktrace);
+      log.LogWarning($"{nameof(LogWebRequestExceptionAndSetHealth)}: Stacktrace: ", stacktrace);
 
       //WE want to exclude business exceptions as they are valid cases for health monitoring
       if (ex.InnerException != null && ex.InnerException is ServiceException serviceException &&
