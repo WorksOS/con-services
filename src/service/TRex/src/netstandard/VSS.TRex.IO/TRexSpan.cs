@@ -81,7 +81,7 @@ namespace VSS.TRex.IO
         throw new ArgumentException("Index out of range");
       }
 
-      Array.Copy(_elements, Offset + index, _elements, index + 1, Count - index);
+      Array.Copy(_elements, Offset + index, _elements, Offset + index + 1, Count - index);
       _elements[Offset + index] = element;
       Count++;
     }
