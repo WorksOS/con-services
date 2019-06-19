@@ -156,6 +156,7 @@ namespace VSS.TRex.Server.MutableData
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new RecycledMemoryStreamHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelsHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new TAGFileProcessingHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SlabAllocatedCellPassArrayPoolHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)

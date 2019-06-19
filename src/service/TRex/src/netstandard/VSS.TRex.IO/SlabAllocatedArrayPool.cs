@@ -95,6 +95,11 @@ namespace VSS.TRex.IO
       _pools[log2].Return(buffer);
     }
 
+    /// <summary>
+    /// Clones the content 'oldBuffer' by creating a new TRexSPan and copying the elements from oldBuffer into it
+    /// </summary>
+    /// <param name="oldBuffer"></param>
+    /// <returns></returns>
     public TRexSpan<T> Clone(TRexSpan<T> oldBuffer)
     {
       // Get a new buffer
@@ -106,6 +111,22 @@ namespace VSS.TRex.IO
 
       // ... and return the newly resized result
       return newBuffer;
+    }
+
+    /// <summary>
+    /// Returns detailed statistics on each of the slab allocated array pools
+    /// </summary>
+    /// <returns></returns>
+    public (int poolIndex, int arraySize, int capacity, int availableItems)[] Statistics()
+    {
+      var result = new (int poolIndex, int arraySize, int capacity, int availableItems)[_pools.Length];
+
+      for (int i = 0, limit = _pools.Length; i < limit; i++)
+      {
+        result[i] = (i, _pools[i].ArraySize, _pools[i].SpanCount, _pools[i].AvailCount);
+      }
+
+      return result;
     }
   }
 }
