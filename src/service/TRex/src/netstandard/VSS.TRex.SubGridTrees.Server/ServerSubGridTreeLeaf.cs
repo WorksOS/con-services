@@ -867,6 +867,33 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <returns></returns>
     public static string FileNameFromOriginPosition(SubGridCellAddress Origin) => $"{Origin.X:D10}-{Origin.Y:D10}";
 
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
+        for (int i = 0, limit = Cells.PassesData.Count; i < limit; i++)
+        {
+         Cells.PassesData[i].PassesData?.Dispose();
+        }
+
+        disposedValue = true;
+      }
     }
+
+    ~ServerSubGridTreeLeaf()
+    {
+      Dispose(false);
+    }
+
+    public void Dispose()
+    {
+      Dispose(true);
+    }
+    #endregion
+  }
 }
 

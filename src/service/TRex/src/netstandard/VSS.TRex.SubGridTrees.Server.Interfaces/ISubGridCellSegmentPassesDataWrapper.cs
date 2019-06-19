@@ -2,11 +2,10 @@
 using System.Collections;
 using System.IO;
 using VSS.TRex.Cells;
-using VSS.TRex.IO;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
-    public interface ISubGridCellSegmentPassesDataWrapper
+    public interface ISubGridCellSegmentPassesDataWrapper : IDisposable
     {
         /// <summary>
         /// The total number of cell passes present in this segment

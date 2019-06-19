@@ -960,5 +960,31 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         throw new NotImplementedException("Does not support AllocatePassesExact()");
       }
+
+    #region IDisposable Support
+
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
+        // No IDisposable obligation in this class
+
+        disposedValue = true;
+      }
     }
+
+    ~SubGridCellSegmentPassesDataWrapper_StaticCompressed()
+    {
+      Dispose(false);
+    }
+
+    public void Dispose()
+    {
+      Dispose(true);
+    }
+    #endregion
+  }
 }

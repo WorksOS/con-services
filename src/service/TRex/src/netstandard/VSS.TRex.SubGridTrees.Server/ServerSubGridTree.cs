@@ -440,5 +440,35 @@ namespace VSS.TRex.SubGridTrees.Server
 
       return false;
     }
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
+        // Traverse all loaded sub grids and advise each to dispose themselves
+        ScanAllSubGrids(leaf =>
+        {
+          (leaf as IServerLeafSubGrid)?.Dispose();
+          return true;
+        });
+
+        disposedValue = true;
+      }
+    }
+
+    ~ServerSubGridTree()
+    {
+      Dispose(false);
+    }
+
+    public void Dispose()
+    {
+      Dispose(true);
+    }
+    #endregion
   }
 }

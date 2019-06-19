@@ -14,10 +14,10 @@ namespace VSS.TRex.Tests.IO
       var slab = new SlabAllocatedPool<CellPass>(1024, 16);
 
       slab.Should().NotBeNull();
-      slab.PoolSize.Should().Be(1000);
-      slab.ArraySize.Should().Be(10);
+      slab.PoolSize.Should().Be(1024);
+      slab.ArraySize.Should().Be(16);
 
-      slab.AvailCount.Should().Be(100);
+      slab.AvailCount.Should().Be(1024 / 16);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Rent_Success_RentFromSlab()
     {
-      var slab = new SlabAllocatedPool<CellPass>(1000, 10);
+      var slab = new SlabAllocatedPool<CellPass>(1024, 16);
 
       var rental = slab.Rent();
       rental.Elements.Should().NotBeNull();
@@ -47,7 +47,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Rent_Success_RentFromEmptySlab()
     {
-      var slab = new SlabAllocatedPool<CellPass>(10, 10);
+      var slab = new SlabAllocatedPool<CellPass>(16, 16);
 
       var rental = slab.Rent();
       rental.Elements.Should().NotBeNull();

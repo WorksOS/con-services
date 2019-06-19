@@ -404,22 +404,21 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       if (!disposedValue)
       {
-        if (disposing)
+        // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
+
+        if (PassData != null)
         {
-          if (PassData != null)
+          // Return all the rented TRexSpans in the current segment
+          for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
           {
-            // Return all the rented TRexSpans in the current segment
-            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
             {
-              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              var cellPasses = PassData[i, j];
+
+              if (cellPasses.Passes.NeedsToBeReturned())
               {
-                var cellPasses = PassData[i, j];
-                
-                if (cellPasses.Passes.NeedsToBeReturned())
-                {
-                  SlabAllocatedCellPassArrayPoolHelper.Caches.Return(cellPasses.Passes);
-                  cellPasses.Passes.MarkReturned();
-                }
+                SlabAllocatedCellPassArrayPoolHelper.Caches.Return(cellPasses.Passes);
+                cellPasses.Passes.MarkReturned();
               }
             }
           }
@@ -427,6 +426,11 @@ namespace VSS.TRex.SubGridTrees.Server
 
         disposedValue = true;
       }
+    }
+
+    ~SubGridCellSegmentPassesDataWrapper_NonStatic()
+    {
+      Dispose(false);
     }
 
     public void Dispose()

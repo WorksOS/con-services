@@ -7,7 +7,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
-    public interface IServerLeafSubGrid : ILeafSubGrid
+    public interface IServerLeafSubGrid : ILeafSubGrid, IDisposable
     {
         /// <summary>
         /// The version number of this spatial element when it is stored in the persistent layer, defined
