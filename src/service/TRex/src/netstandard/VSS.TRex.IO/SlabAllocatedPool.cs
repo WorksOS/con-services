@@ -11,8 +11,8 @@
     public readonly int ArraySize;
     public readonly int SpanCount;
 
-    private T[] _slab;
-    private TRexSpan<T>[] _arrays;
+    private readonly T[] _slab;
+    private readonly TRexSpan<T>[] _arrays;
 
     private int _availCount;
     public int AvailCount => _availCount;
@@ -38,14 +38,14 @@
 
     public TRexSpan<T> Rent()
     {
-      if (_availCount == 0)
-      {
-        // The pool is empty. Synthesize a new span and return it. This span will be discarded when returned
-        return new TRexSpan<T>(new T[ArraySize], 0, ArraySize, false);
-      }
-
       lock (_arrays)
-      { 
+      {
+        if (_availCount == 0)
+        {
+          // The pool is empty. Synthesize a new span and return it. This span will be discarded when returned
+          return new TRexSpan<T>(new T[ArraySize], 0, ArraySize, false);
+        }
+
         return _arrays[--_availCount];
       }
     }
@@ -54,10 +54,8 @@
     {
       lock (_arrays)
       {
-        //if (_availCount < SpanCount)
-        {
-          _arrays[_availCount++] = buffer;
-        }
+        buffer.Count = 0;
+        _arrays[_availCount++] = buffer;
       }
     }
   }
