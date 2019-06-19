@@ -436,6 +436,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public void Dispose()
     {
       Dispose(true);
+      GC.SuppressFinalize(this);
     }
     #endregion
   }  

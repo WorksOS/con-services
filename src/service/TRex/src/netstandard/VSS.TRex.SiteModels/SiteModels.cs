@@ -112,13 +112,20 @@ namespace VSS.TRex.SiteModels
     /// Note: This may be performed safely at any time irrespective of the concurrently executing requests
     /// referencing that site model
     /// </summary>
-    /// <param name="ID">The UID identifying the site model to be dropped from the cache</param>
-    public void DropSiteModel(Guid ID)
+    /// <param name="id">The UID identifying the site model to be dropped from the cache</param>
+    public void DropSiteModel(Guid id)
     {
+      ISiteModel siteModel;
+
       lock (CachedModels)
       {
-        CachedModels.Remove(ID);
+        if (CachedModels.TryGetValue(id, out siteModel))
+        {
+          CachedModels.Remove(id);
+        }
       }
+
+      siteModel.Dispose();
     }
 
     /// <summary>
