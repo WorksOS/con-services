@@ -38,7 +38,7 @@ namespace VSS.TRex.Server.MutableData
 {
   public class Program
   {
-    public const int ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL = 1000000;
+    public const int ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL = 1 << 20; // 2^20 = ~1 million
 
     private static void DependencyInjection()
     {
