@@ -31,7 +31,7 @@ namespace VSS.MasterData.Proxies
       }
       else
       {
-        log.LogWarning("Failed to get custom boundaries: {0}, {1}", result.Code, result.Message);
+        log.LogWarning($"Failed to get custom boundaries: {result.Code}, {result.Message}");
         return null;
       }
     }

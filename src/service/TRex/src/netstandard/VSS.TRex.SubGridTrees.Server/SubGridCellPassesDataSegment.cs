@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
@@ -17,6 +16,8 @@ namespace VSS.TRex.SubGridTrees.Server
   public class SubGridCellPassesDataSegment : ISubGridCellPassesDataSegment
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegment>();
+
+    private static readonly IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<IO.RecyclableMemoryStreamManager>();
 
     /// <summary>
     /// Tracks whether there are unsaved changes in this segment
@@ -108,7 +109,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       // Segments may not have any defined latest pass information
       writer.Write(LatestPasses != null);
-      LatestPasses?.Write(writer, new byte[50000]);
+      LatestPasses?.Write(writer);
 
       CellStacksOffset = (int) writer.BaseStream.Position;
 
@@ -135,7 +136,7 @@ namespace VSS.TRex.SubGridTrees.Server
       if (HasLatestData && loadLatestData)
       {
         if (reader.ReadBoolean())
-          LatestPasses.Read(reader, new byte[50000]);
+          LatestPasses.Read(reader);
         else
           LatestPasses = null;
       }
@@ -225,7 +226,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (_segmentCleavingOperationsToLog || _itemsPersistedViaDataPersistorToLog)
       {
-        SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out uint TotalPasses, out uint MaxPasses);
+        PassesData.CalculateTotalPasses(out int TotalPasses, out _, out int MaxPasses);
 
         if (_segmentCleavingOperationsToLog && TotalPasses > _subGridSegmentPassCountLimit)
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses}) which violates the maximum number of cell passes within a segment ({_subGridSegmentPassCountLimit})");
@@ -234,12 +235,14 @@ namespace VSS.TRex.SubGridTrees.Server
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses})");
       }
 
-      using (MemoryStream MStream = new MemoryStream())
+      using (var stream = _recyclableMemoryStreamManager.GetStream())
       {
-        using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))
+        using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
         {
           Result = Write(writer);
         }
+
+        // Log.LogInformation($"Segment persistence stream (uncompressed) for segment {FileName} containing {PassesData.SegmentPassCount} cell passes using storage proxy {storage.Mutability} is {MStream.Length} bytes (average = {MStream.Length / (1.0 * PassesData.SegmentPassCount)})");
 
         if (Result)
         {
@@ -247,10 +250,11 @@ namespace VSS.TRex.SubGridTrees.Server
             Owner.Owner.ID,
             FileName,
             Owner.OriginX, Owner.OriginY,
-            FileName,
+            SegmentInfo.StartTime.Ticks,
+            SegmentInfo.EndTime.Ticks,
             SegmentInfo.Version,
             FileSystemStreamType.SubGridSegment,
-            MStream,
+            stream,
             this);
 
           Result = FSError == FileSystemErrorStatus.OK;
@@ -267,9 +271,9 @@ namespace VSS.TRex.SubGridTrees.Server
     /// If either limit is breached, this segment requires cleaving
     /// </summary>
     /// <returns></returns>
-    public bool RequiresCleaving(out uint TotalPasses, out uint MaxPassCount)
+    public bool RequiresCleaving(out int TotalPasses, out int MaxPassCount)
     {
-      SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out TotalPasses, out MaxPassCount);
+      PassesData.CalculateTotalPasses(out TotalPasses, out _, out MaxPassCount);
 
       return TotalPasses > _subGridSegmentPassCountLimit ||
              MaxPassCount > _subGridMaxSegmentCellPassesLimit;
@@ -282,7 +286,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool VerifyComputedAndRecordedSegmentTimeRangeBounds()
     {
       // Determine the actual time range of the passes within the segment
-      SegmentTimeRangeCalculator.CalculateTimeRange(PassesData, out DateTime CoveredTimeRangeStart, out DateTime CoveredTimeRangeEnd);
+      PassesData.CalculateTimeRange(out var CoveredTimeRangeStart, out var CoveredTimeRangeEnd);
 
       bool Result = CoveredTimeRangeStart >= SegmentInfo.StartTime && CoveredTimeRangeEnd <= SegmentInfo.EndTime;
 

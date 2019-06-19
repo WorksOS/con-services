@@ -2,8 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace TestUtility
 {
@@ -30,16 +29,14 @@ namespace TestUtility
     public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, HttpStatusCode httpResponseCode = HttpStatusCode.OK, string mediaType = "application/json", string customerUid = null, string jwt = null)
     {
       Console.WriteLine($"{nameof(DoHttpRequest)}: [{httpMethod}] {resourceUri}, expected response code: {httpResponseCode}");
-      Thread.Sleep(500);
 
-      var msg = new Msg();
       var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid, jwt);
 
       if (payloadData != null)
       {
         request.ContentType = mediaType;
         var writeStream = request.GetRequestStreamAsync().Result;
-        byte[] bytes = new UTF8Encoding().GetBytes(payloadData);
+        var bytes = new UTF8Encoding().GetBytes(payloadData);
         writeStream.Write(bytes, 0, bytes.Length);
       }
 
@@ -51,8 +48,8 @@ namespace TestUtility
         using (var response = (HttpWebResponse)request.GetResponseAsync().Result)
         {
           responseString = GetStringFromResponseStream(response);
-          msg.DisplayWebApi(httpMethod, resourceUri, responseString, payloadData);
-          Assert.AreEqual(httpResponseCode, response.StatusCode, "Expected this response code, " + httpResponseCode + ", but the actual response code was this instead, " + response.StatusCode);
+          Msg.DisplayWebApi(httpMethod, resourceUri, responseString, payloadData);
+          Assert.Equal(httpResponseCode, response.StatusCode);
         }
 
         return responseString;
@@ -63,14 +60,15 @@ namespace TestUtility
         {
           if (!(e is WebException)) continue;
           var webException = (WebException)e;
-          var response = webException.Response as HttpWebResponse;
-          if (response == null) continue;
+          if (!(webException.Response is HttpWebResponse response)) continue;
           var resp = GetStringFromResponseStream(response);
-          msg.DisplayWebApi(httpMethod, resourceUri, resp, payloadData);
+          Msg.DisplayWebApi(httpMethod, resourceUri, resp, payloadData);
           return resp;
         }
+
         Console.WriteLine(ex.InnerException.Message);
-        msg.DisplayException(ex.Message);
+        Msg.DisplayException(ex.Message);
+
         return string.Empty;
       }
     }

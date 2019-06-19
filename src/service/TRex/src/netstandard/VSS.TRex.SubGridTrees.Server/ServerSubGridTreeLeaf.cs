@@ -7,6 +7,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -27,11 +28,15 @@ namespace VSS.TRex.SubGridTrees.Server
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTreeLeaf>();
 
+        private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
+
+        private long _version = 1;
+
         /// <summary>
         /// The version number of this segment when it is stored in the persistent layer, defined
         /// as the number of ticks in DateTime.UtcNow at the time it is written.
         /// </summary>
-        public long Version { get; set; } = 1;
+        public long Version { get => _version; set => _version = value; }
           
         /// <summary>
         /// Controls whether segment and cell pass information held within this sub grid is represented
@@ -42,7 +47,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public void SetIsMutable(bool isMutable)
         {
           IsMutable = isMutable;
-          Directory = new SubGridDirectory
+          _directory = new SubGridDirectory
           {
             IsMutable = isMutable
           };
@@ -51,27 +56,31 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Does this sub grid contain directory information for all the segments that exist within it?
         /// </summary>
-        public bool HasSubGridDirectoryDetails => Directory.SegmentDirectory.Count > 0; 
+        public bool HasSubGridDirectoryDetails => _directory.SegmentDirectory.Count > 0;
 
+        private DateTime _leafEndTime;
         /// <summary>
         /// The date time of the last observed cell pass within this sub grid
         /// </summary>
-        public DateTime LeafEndTime { get; set; }
+        public DateTime LeafEndTime { get => _leafEndTime; set => _leafEndTime = value; }
 
+        private DateTime _leafStartTime;
         /// <summary>
         /// The date time of the first observed cell pass within this sub grid
         /// </summary>
-        public DateTime LeafStartTime { get; set; }
+        public DateTime LeafStartTime { get => _leafStartTime; set => _leafStartTime = value; }
 
+        private ISubGridDirectory _directory;
         /// <summary>
         /// A directory containing metadata regarding the segments present within this sub grid
         /// </summary>
-        public ISubGridDirectory Directory { get; set; } 
+        public ISubGridDirectory Directory { get => _directory; set => _directory = value; }
 
+        private ISubGridCellPassesDataWrapper _cells;
         /// <summary>
         /// The primary wrapper containing all segments that have been loaded
         /// </summary>
-        public ISubGridCellPassesDataWrapper Cells { get; set; } // Use AllocateLeafFullPassStacks() to create new SubGridCellPassesDataWrapper();
+        public ISubGridCellPassesDataWrapper Cells { get => _cells; set => _cells = value; } // Use AllocateLeafFullPassStacks() to create new SubGridCellPassesDataWrapper();
 
         /// <summary>
         /// 
@@ -89,8 +98,8 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             InitialiseStartEndTime();
 
-            Cells?.Clear();
-            Directory?.Clear();
+            _cells?.Clear();
+            _directory?.Clear();
         }
 
         private void CellPassAdded(CellPass pass)
@@ -106,11 +115,11 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="time"></param>
         private void UpdateStartEndTimeRange(DateTime time)
         {
-            if (time < LeafStartTime)
-                LeafStartTime = time;
+            if (time < _leafStartTime)
+                _leafStartTime = time;
 
-            if (time > LeafEndTime)
-                LeafEndTime = time;
+            if (time > _leafEndTime)
+                _leafEndTime = time;
         }
 
         /// <summary>
@@ -128,9 +137,9 @@ namespace VSS.TRex.SubGridTrees.Server
           SetIsMutable(mutability == StorageMutability.Mutable);
         }
 
-        public void AddPass(uint cellX, uint cellY, CellPass Pass)
+        public void AddPass(int cellX, int cellY, CellPass Pass)
         {
-            var Segment = Cells.SelectSegment(Pass.Time);
+            var Segment = _cells.SelectSegment(Pass.Time);
 
             if (Segment == null)
                 throw new TRexSubGridTreeException("Cells.SelectSegment failed to return a segment");
@@ -147,7 +156,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 // Replace the existing cell pass with the new one. The assumption
                 // here is that more than one machine will never cross a cell center position
-                // within the same second (the resolution of the cell pass time stamps)
+                // within the resolution of the cell pass time stamps
                 Segment.PassesData.ReplacePass(cellX, cellY, PassIndex, Pass);
 
                 SetDirty(); 
@@ -159,7 +168,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
           Segment.Dirty = true;
-    }
+        }
 
         /// <summary>
         /// Creates the default segment metadata within the segment directory. This is only called to create the first 
@@ -167,7 +176,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         public void CreateDefaultSegment()
         {
-            Directory.CreateDefaultSegment();
+            _directory.CreateDefaultSegment();
         }
 
         public void AllocateFullPassStacks(ISubGridCellPassesDataSegmentInfo SegmentInfo)
@@ -192,14 +201,14 @@ namespace VSS.TRex.SubGridTrees.Server
             //                FCachedMemorySizeOutOfDate:= True;
         }
 
-        public bool HasAllCellPasses() => Cells != null;
+        public bool HasAllCellPasses() => _cells != null;
 
         public void AllocateLeafFullPassStacks()
         {
-            if (Cells == null)
+            if (_cells == null)
             {
                 //                Include(FLeafStorageClasses, icsscAllPasses);
-                Cells = new SubGridCellPassesDataWrapper
+                _cells = new SubGridCellPassesDataWrapper
                 {
                     Owner = this
                 };
@@ -208,16 +217,16 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void DeAllocateLeafFullPassStacks() => Cells = null;
+        public void DeAllocateLeafFullPassStacks() => _cells = null;
 
-        public bool HasLatestData() => Directory.GlobalLatestCells != null;
+        public bool HasLatestData() => _directory.GlobalLatestCells != null;
 
         public void AllocateLeafLatestPassGrid()
         {
-            if (Directory.GlobalLatestCells == null)
+            if (_directory.GlobalLatestCells == null)
             {
                 // Include(FLeafStorageClasses, icsscLatestData);
-                Directory.AllocateGlobalLatestCells();
+                _directory.AllocateGlobalLatestCells();
 
                 // FCachedMemorySizeOutOfDate:= True;
             }
@@ -225,9 +234,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void DeAllocateLeafLatestPassGrid()
         {
-            if (Directory != null)
+            if (_directory != null)
             {
-                Directory.GlobalLatestCells = null;
+                _directory.GlobalLatestCells = null;
             }
         }
 
@@ -257,7 +266,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             ValueFromLatestCellPass = false;
 
-            for (int I = LastPassIndex; I >= 0; I--)
+            for (int I = (int)LastPassIndex; I >= 0; I--)
             {
                 switch (TypeToCheck)
                 {
@@ -335,6 +344,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         private void CalculateLatestPassDataForPassStack(CellPass[] CellPasses,
+                                                         int passCount,
                                                          ref CellPass LatestData,
                                                          out bool CCVFromLatestCellPass,
                                                          out bool RMVFromLatestCellPass,
@@ -345,20 +355,22 @@ namespace VSS.TRex.SubGridTrees.Server
                                                          out bool MDPFromLatestCellPass,
                                                          out bool CCAFromLatestCellPass)
         {
-            int LastPassIndex = CellPasses.Length - 1;
+            int LastPassIndex = passCount - 1;
 
             if (LastPassIndex >= 0)
             {
-              LatestData.Time = CellPasses[LastPassIndex].Time;
-              LatestData.InternalSiteModelMachineIndex = CellPasses[LastPassIndex].InternalSiteModelMachineIndex;
+              var lastCellPass = CellPasses[LastPassIndex];
 
-              if (CellPasses[LastPassIndex].Height != Consts.NullHeight)
-                LatestData.Height = CellPasses[LastPassIndex].Height;
+              LatestData.Time = lastCellPass.Time;
+              LatestData.InternalSiteModelMachineIndex = lastCellPass.InternalSiteModelMachineIndex;
 
-              if (CellPasses[LastPassIndex].RadioLatency != CellPassConsts.NullRadioLatency)
-                LatestData.RadioLatency = CellPasses[LastPassIndex].RadioLatency;
+              if (lastCellPass.Height != Consts.NullHeight)
+                LatestData.Height = lastCellPass.Height;
 
-              LatestData.MachineSpeed = CellPasses[LastPassIndex].MachineSpeed;
+              if (lastCellPass.RadioLatency != CellPassConsts.NullRadioLatency)
+                LatestData.RadioLatency = lastCellPass.RadioLatency;
+
+              LatestData.MachineSpeed = lastCellPass.MachineSpeed;
             }
 
             GetAppropriateLatestValueFor(CellPasses, ref LatestData, LastPassIndex, GridDataType.GPSMode, out GPSModeFromLatestCellPass);
@@ -376,14 +388,14 @@ namespace VSS.TRex.SubGridTrees.Server
             if (segmentInfo.Segment != null)
               throw new TRexSubGridTreeException("Cannot allocate a segment that is already allocated");
 
-            Cells.PassesData.AddNewSegment(this, segmentInfo);
+            _cells.PassesData.AddNewSegment(this, segmentInfo);
 
             //        CachedMemorySizeOutOfDate:= True;
         }
 
         public override bool CellHasValue(byte CellX, byte CellY)
         {
-            return Directory.GlobalLatestCells.PassDataExistenceMap.BitSet(CellX, CellY);
+            return _directory.GlobalLatestCells.PassDataExistenceMap.BitSet(CellX, CellY);
         }
 
         private void CalculateLatestPassGridForSegment(ISubGridCellPassesDataSegment Segment,
@@ -392,17 +404,32 @@ namespace VSS.TRex.SubGridTrees.Server
             if (Segment.PassesData == null)
               throw new TRexSubGridTreeException($"{nameof(CalculateLatestPassGridForSegment)} passed a segment in {Moniker()} with no cell passes allocated");
 
-            if (Cells == null)
+            if (_cells == null)
               throw new TRexSubGridTreeException($"Cell passes store for {Moniker()} not instantiated");
 
             Segment.AllocateLatestPassGrid();
-            Segment.LatestPasses.Clear();
+
+            var segment_passesData = Segment.PassesData;
+            var segment_latestPasses = Segment.LatestPasses;
+            segment_latestPasses.Clear();
             Segment.Dirty = true;
 
+            var segment_latestPasses_PassDataExistenceMap = segment_latestPasses.PassDataExistenceMap;
+            var segment_latestPasses_CCVValuesAreFromLastPass = segment_latestPasses.CCVValuesAreFromLastPass;
+            var segment_latestPasses_RMVValuesAreFromLastPass = segment_latestPasses.RMVValuesAreFromLastPass;
+            var segment_latestPasses_FrequencyValuesAreFromLastPass = segment_latestPasses.FrequencyValuesAreFromLastPass;
+            var segment_latestPasses_AmplitudeValuesAreFromLastPass = segment_latestPasses.AmplitudeValuesAreFromLastPass;
+            var segment_latestPasses_GPSModeValuesAreFromLatestCellPass = segment_latestPasses.GPSModeValuesAreFromLatestCellPass;
+            var segment_latestPasses_TemperatureValuesAreFromLastPass = segment_latestPasses.TemperatureValuesAreFromLastPass;
+            var segment_latestPasses_MDPValuesAreFromLastPass = segment_latestPasses.MDPValuesAreFromLastPass;
+            var segment_latestPasses_CCAValuesAreFromLastPass = segment_latestPasses.CCAValuesAreFromLastPass;
+
+            var temporallyPrecedingSegmentLatestPasses = TemporallyPrecedingSegment?.LatestPasses;
+
             // Seed the latest value tags for this segment with the latest data from the previous segment
-            if (TemporallyPrecedingSegment != null)
+            if (temporallyPrecedingSegmentLatestPasses != null)
             {
-                 Segment.LatestPasses.AssignValuesFromLastPassFlags(TemporallyPrecedingSegment.LatestPasses);
+              segment_latestPasses.AssignValuesFromLastPassFlags(temporallyPrecedingSegmentLatestPasses);
             }
 
             // Iterate over the values in the child leaf sub grid looking for
@@ -411,20 +438,20 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 bool UpdatedCell = false;
 
-                if (TemporallyPrecedingSegment != null &&
-                    TemporallyPrecedingSegment.LatestPasses.PassDataExistenceMap.BitSet(I, J))
+                if (temporallyPrecedingSegmentLatestPasses != null &&
+                    temporallyPrecedingSegmentLatestPasses.PassDataExistenceMap.BitSet(I, J))
                 {
-                    // Seed the latest data for this segment with the latest data from the previous segment
-                    Segment.LatestPasses[I, J] = TemporallyPrecedingSegment.LatestPasses[I, J];
+                // Seed the latest data for this segment with the latest data from the previous segment
+                    segment_latestPasses[I, J] = temporallyPrecedingSegmentLatestPasses[I, J];
 
                     UpdatedCell = true;
                 }
 
                 // Update the latest data from any previous segment with the information contained in this segment
-                if (Segment.PassesData.PassCount(I, J) > 0)
+                if (segment_passesData.PassCount(I, J) > 0)
                 {
-                    CalculateLatestPassDataForPassStack(Segment.PassesData.ExtractCellPasses(I, J),
-                        ref ((SubGridCellLatestPassDataWrapper_NonStatic)Segment.LatestPasses).PassData[I, J],
+                    CalculateLatestPassDataForPassStack(segment_passesData.ExtractCellPasses(I, J, out int passCount), passCount,
+                        ref ((SubGridCellLatestPassDataWrapper_NonStatic)segment_latestPasses).PassData[I, J],
                         out bool CCVFromLatestCellPass,
                         out bool RMVFromLatestCellPass,
                         out bool FrequencyFromLatestCellPass,
@@ -434,34 +461,34 @@ namespace VSS.TRex.SubGridTrees.Server
                         out bool MDPFromLatestCellPass,
                         out bool CCAFromLatestCellPass);
 
-                    Segment.LatestPasses.CCVValuesAreFromLastPass.SetBitValue(I, J, CCVFromLatestCellPass);
-                    Segment.LatestPasses.RMVValuesAreFromLastPass.SetBitValue(I, J, RMVFromLatestCellPass);
-                    Segment.LatestPasses.FrequencyValuesAreFromLastPass.SetBitValue(I, J, FrequencyFromLatestCellPass);
-                    Segment.LatestPasses.AmplitudeValuesAreFromLastPass.SetBitValue(I, J, AmplitudeFromLatestCellPass);
-                    Segment.LatestPasses.GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, GPSModeFromLatestCellPass);
-                    Segment.LatestPasses.TemperatureValuesAreFromLastPass.SetBitValue(I, J, TemperatureFromLatestCellPass);
-                    Segment.LatestPasses.MDPValuesAreFromLastPass.SetBitValue(I, J, MDPFromLatestCellPass);
-                    Segment.LatestPasses.CCAValuesAreFromLastPass.SetBitValue(I, J, CCAFromLatestCellPass);
+                    segment_latestPasses_CCVValuesAreFromLastPass.SetBitValue(I, J, CCVFromLatestCellPass);
+                    segment_latestPasses_RMVValuesAreFromLastPass.SetBitValue(I, J, RMVFromLatestCellPass);
+                    segment_latestPasses_FrequencyValuesAreFromLastPass.SetBitValue(I, J, FrequencyFromLatestCellPass);
+                    segment_latestPasses_AmplitudeValuesAreFromLastPass.SetBitValue(I, J, AmplitudeFromLatestCellPass);
+                    segment_latestPasses_GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, GPSModeFromLatestCellPass);
+                    segment_latestPasses_TemperatureValuesAreFromLastPass.SetBitValue(I, J, TemperatureFromLatestCellPass);
+                    segment_latestPasses_MDPValuesAreFromLastPass.SetBitValue(I, J, MDPFromLatestCellPass);
+                    segment_latestPasses_CCAValuesAreFromLastPass.SetBitValue(I, J, CCAFromLatestCellPass);
 
                     UpdatedCell = true;
                 }
                 else
                 {
-                    if (TemporallyPrecedingSegment != null)
+                    if (temporallyPrecedingSegmentLatestPasses != null)
                     {
-                        Segment.LatestPasses.CCVValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.CCVValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.RMVValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.RMVValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.FrequencyValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.FrequencyValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.AmplitudeValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.AmplitudeValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.GPSModeValuesAreFromLatestCellPass.BitSet(I, J));
-                        Segment.LatestPasses.TemperatureValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.TemperatureValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.MDPValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.MDPValuesAreFromLastPass.BitSet(I, J));
-                        Segment.LatestPasses.CCAValuesAreFromLastPass.SetBitValue(I, J, TemporallyPrecedingSegment.LatestPasses.CCAValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_CCVValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.CCVValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_RMVValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.RMVValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_FrequencyValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.FrequencyValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_AmplitudeValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.AmplitudeValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.GPSModeValuesAreFromLatestCellPass.BitSet(I, J));
+                        segment_latestPasses_TemperatureValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.TemperatureValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_MDPValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.MDPValuesAreFromLastPass.BitSet(I, J));
+                        segment_latestPasses_CCAValuesAreFromLastPass.SetBitValue(I, J, temporallyPrecedingSegmentLatestPasses.CCAValuesAreFromLastPass.BitSet(I, J));
                     }
                 }
 
                 if (UpdatedCell)
-                    Segment.LatestPasses.PassDataExistenceMap.SetBit(I, J);
+                  segment_latestPasses_PassDataExistenceMap.SetBit(I, J);
             });
         }
 
@@ -475,9 +502,9 @@ namespace VSS.TRex.SubGridTrees.Server
             // which in turn will cause the latest cells in the affected segments to be
             // modified which will always cause the latest cells in the latest segment to be
             // modified.
-            var Segment = Directory.SegmentDirectory.Last().Segment;
+            var Segment = _directory.SegmentDirectory.Last().Segment;
 
-            var _GlobalLatestCells = Directory.GlobalLatestCells;
+            var _GlobalLatestCells = _directory.GlobalLatestCells;
             var _LatestPasses = Segment.LatestPasses;
 
             if (_LatestPasses != null)
@@ -501,7 +528,7 @@ namespace VSS.TRex.SubGridTrees.Server
             if (!Dirty)
               throw new TRexSubGridTreeException($"Sub grid {Moniker()} not marked as dirty when computing latest pass information");
 
-            var Iterator = new SubGridSegmentIterator(this, Directory, storageProxy)
+            var Iterator = new SubGridSegmentIterator(this, _directory, storageProxy)
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = !fullRecompute
@@ -519,13 +546,14 @@ namespace VSS.TRex.SubGridTrees.Server
 
             // Locate the segment immediately previous to the first dirty segment in the list of segments
 
-            for (int I = 0; I < Directory.SegmentDirectory.Count; I++)
+            var _segmentDirectory = _directory.SegmentDirectory;
+            for (int I = 0, limit = _segmentDirectory.Count; I < limit; I++)
             {
-                if (Directory.SegmentDirectory[I].Segment != null && Directory.SegmentDirectory[I].Segment.Dirty)
+                if (_segmentDirectory[I].Segment != null && _segmentDirectory[I].Segment.Dirty)
                 {
                     if (I > 0)
                     {
-                        SeedSegmentInfo = Directory.SegmentDirectory[I - 1];
+                        SeedSegmentInfo = _segmentDirectory[I - 1];
                     }
                     break;
                 }
@@ -597,26 +625,38 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
              var FSError = storageProxy.ReadSpatialStreamFromPersistentStore
-                         (Owner.ID, FileName, OriginX, OriginY, FileName, Segment.SegmentInfo.Version, FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
+              (Owner.ID, FileName, OriginX, OriginY, 
+               Segment.SegmentInfo.StartTime.Ticks,
+               Segment.SegmentInfo.EndTime.Ticks,
+               Segment.SegmentInfo.Version, 
+               FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
 
              bool Result = FSError == FileSystemErrorStatus.OK;
 
-             if (!Result)
+             try
              {
-               Log.LogError(FSError == FileSystemErrorStatus.FileDoesNotExist
-                 ? $"Expected leaf sub grid segment {FileName}, model {Owner.ID} does not exist."
-                 : $"Unable to load leaf sub grid segment {FileName}, model {Owner.ID}. Details: {FSError}");
-             }
-             else
-             {
-               SMS.Position = 0;
-               using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
+               if (!Result)
                {
-                 Result = Segment.Read(reader, loadLatestData, loadAllPasses);
-
-                 if (loadAllPasses && Segment.PassesData == null)
-                   Log.LogError($"Segment {FileName} passes data is null after reading from store with LoadAllPasses=true.");
+                 Log.LogError(FSError == FileSystemErrorStatus.FileDoesNotExist
+                   ? $"Expected leaf sub grid segment {FileName}, model {Owner.ID} does not exist."
+                   : $"Unable to load leaf sub grid segment {FileName}, model {Owner.ID}. Details: {FSError}");
                }
+               else
+               {
+                 SMS.Position = 0;
+                 using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
+                 {
+                   Result = Segment.Read(reader, loadLatestData, loadAllPasses);
+
+                   if (loadAllPasses && Segment.PassesData == null)
+                     Log.LogError(
+                       $"Segment {FileName} passes data is null after reading from store with LoadAllPasses=true.");
+                 }
+               }
+             }
+             finally
+             {
+                SMS?.Dispose();
              }
 
              return Result;
@@ -630,15 +670,15 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 Identifier = SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker,
                 Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridDirectoryFile,
-                StartTime = LeafStartTime,
-                EndTime = LeafEndTime,
+                StartTime = _leafStartTime,
+                EndTime = _leafEndTime,
                 LastUpdateTimeUTC = DateTime.UtcNow
             };
 
             // Write the header/version to the stream
             Header.Write(writer);
 
-            Directory.Write(writer);
+            _directory.Write(writer);
 
             return true;
         }
@@ -646,25 +686,26 @@ namespace VSS.TRex.SubGridTrees.Server
         public bool SaveDirectoryToFile(IStorageProxy storage,
                                         string FileName)
         {
-            MemoryStream MStream = new MemoryStream();
-
-            SaveDirectoryToStream(MStream);
+          using (var stream = _recyclableMemoryStreamManager.GetStream())
+          {
+            SaveDirectoryToStream(stream);
 
             bool Result = storage.WriteSpatialStreamToPersistentStore
-             (Owner.ID, FileName, OriginX, OriginY, string.Empty, Version,
-              FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
+                          (Owner.ID, FileName, OriginX, OriginY, -1, -1, _version,
+                            FileSystemStreamType.SubGridDirectory, stream, this) == FileSystemErrorStatus.OK;
 
             if (!Result)
               Log.LogWarning($"Call to WriteSpatialStreamToPersistentStore failed. Filename:{FileName}");
 
             return Result;
+          }
         }
 
       /// <summary>
       /// Generates the affinity key for this sub grid that identifies this element in the persistent data store
       /// </summary>
       /// <returns></returns>
-      public ISubGridSpatialAffinityKey AffinityKey() => new SubGridSpatialAffinityKey(Version, Owner.ID, OriginX, OriginY);
+      public ISubGridSpatialAffinityKey AffinityKey() => new SubGridSpatialAffinityKey(_version, Owner.ID, OriginX, OriginY);
 
       public bool LoadDirectoryFromStream(Stream stream)
         {
@@ -684,8 +725,8 @@ namespace VSS.TRex.SubGridTrees.Server
               throw new TRexSubGridIOException("Sub grid directory file does not identify itself as such in extended header flags");
 
             //  FLastUpdateTimeUTC := Header.LastUpdateTimeUTC;
-            LeafStartTime = Header.StartTime;
-            LeafEndTime = Header.EndTime;
+            _leafStartTime = Header.StartTime;
+            _leafEndTime = Header.EndTime;
 
             // Global latest cell passes are always read in from the sub grid directory, even if the 'latest
             // cells' storage class is not contained in the leaf storage classes. This is currently done due
@@ -696,10 +737,10 @@ namespace VSS.TRex.SubGridTrees.Server
             // reading the latest cells does impose a small performance penalty, however, this
             // data is likely to be required in common use cases so we will load it until a
             // more concrete case for not doing this is made.
-            Directory.AllocateGlobalLatestCells();
+            _directory.AllocateGlobalLatestCells();
 
             if (Header.Version == 1)
-              Directory.Read(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
+              _directory.Read(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
             else
               Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
 
@@ -708,32 +749,31 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
         {
-           if (Version == 0)
+           if (_version == 0)
              Log.LogError($"Version for {Moniker()} is 0");
 
-            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty, Version,
+            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, -1, -1, _version,
                                                                        FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
-
-            if (FSError != FileSystemErrorStatus.OK || SMS == null)
+            try
             {
+              if (FSError != FileSystemErrorStatus.OK || SMS == null)
+              {
                 if (FSError == FileSystemErrorStatus.FileDoesNotExist)
                   Log.LogError($"Expected leaf sub grid file {fileName} does not exist.");
-                else
-                   if (FSError != FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull && FSError != FileSystemErrorStatus.GranuleDoesNotExist)
-                      Log.LogWarning($"Unable to load leaf sub grid file '{fileName}'. Details: {FSError}");
+                else if (FSError != FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull &&
+                         FSError != FileSystemErrorStatus.GranuleDoesNotExist)
+                  Log.LogWarning($"Unable to load leaf sub grid file '{fileName}'. Details: {FSError}");
 
                 return false;
+              }
+
+              SMS.Position = 0;
+              return LoadDirectoryFromStream(SMS);
             }
-
-            // To ensure integrity of partial cache memory updates we need to ensure that
-            // any sub grid passed to this function is either not contained in the cache,
-            // or if it is, that it does not have the out-of-date cache flag set.
-            // If the sub grid is in the cache and has it's cache size out of date flag set,
-            // then reset the flag by explicitly making that cache size adjustment on behalf of
-            // the sub grid prior to reading the directory.
-
-            SMS.Position = 0;
-            return LoadDirectoryFromStream(SMS);
+            finally
+            {
+              SMS?.Dispose();
+            }
         }
 
         public void Integrate(IServerLeafSubGrid Source,
@@ -759,23 +799,20 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
             Iterator.SubGrid = this;
-            Iterator.Directory = Directory;
+            Iterator.Directory = _directory;
 
             var SourceSegment = Source.Cells.PassesData[0];
 
             UpdateStartEndTimeRange(Source.LeafStartTime);
             UpdateStartEndTimeRange(Source.LeafEndTime);
 
-            uint AddedCount = 0;
-            uint ModifiedCount = 0;
-
-            for (uint I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
+            for (int I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
             {
-                for (uint J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
+                for (int J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                 {
                     // Perform the physical integration of the new cell passes into the target sub grid
-                    uint StartIndex = 0;
-                    uint localPassCount = SourceSegment.PassesData.PassCount(I, J);
+                    int StartIndex = 0;
+                    int localPassCount = SourceSegment.PassesData.PassCount(I, J);
 
                     if (localPassCount == 0)
                         continue;
@@ -794,14 +831,14 @@ namespace VSS.TRex.SubGridTrees.Server
                         if (StartIndex < localPassCount && SourceSegment.PassesData.PassTime(I, J, StartIndex) >= Segment.SegmentInfo.EndTime)
                             continue;
 
-                        uint EndIndex = StartIndex;
+                        int EndIndex = StartIndex;
                         DateTime EndTime = Segment.SegmentInfo.EndTime;
-                        int PassCountMinusOne = (int)localPassCount - 1;
+                        int PassCountMinusOne = localPassCount - 1;
 
                         while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
                             EndIndex++;
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out AddedCount, out ModifiedCount);
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J, out int sourcePassCount), sourcePassCount, StartIndex, EndIndex, out int AddedCount, out int ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
                             Segment.Dirty = true;

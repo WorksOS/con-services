@@ -14,12 +14,12 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <summary>
     /// The bottom left on-the-ground cell origin X location for the patch of elevations to be computed from
     /// </summary>
-    uint OTGCellBottomLeftX { get; }
+    int OTGCellBottomLeftX { get; }
 
     /// <summary>
     /// The bottom left on-the-ground cell origin Y location for the patch of elevations to be computed from
     /// </summary>
-    uint OTGCellBottomLeftY { get; }
+    int OTGCellBottomLeftY { get; }
 
     /// <summary>
     /// The cell stepping size to move between points in the patch being interpolated
@@ -59,6 +59,6 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <returns></returns>
     string CacheFingerprint();
 
-    void SetOTGBottomLeftLocation(uint oTGCellBottomLeftX, uint oTGCellBottomLeftY);
+    void SetOTGBottomLeftLocation(int oTGCellBottomLeftX, int oTGCellBottomLeftY);
   }
 }

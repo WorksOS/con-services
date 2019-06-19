@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -133,10 +134,10 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.Equal(bits.CountBits(), SubGridTreeConsts.CellsPerSubGrid);
 
             bits.Clear();
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
             bits.SetBit(1, 1);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
         }
 
         [Fact]
@@ -145,15 +146,15 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Test serialisation with full mask
             SubGridTreeBitmapSubGridBits bits = SubGridTreeBitmapSubGridBits.FullMask;
 
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
-            bits.Write(bw, new byte[1000]);
+            bits.Write(bw);
             BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
             SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-            bits2.Read(br, new byte[10000]);
+            bits2.Read(br);
 
             Assert.True(bits.Equals(bits2), "Bits not equal after serialisation with full mask");
         }
@@ -164,15 +165,15 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Test serialisation with full mask
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
-            bits.Write(bw, new byte[1000]);
+            bits.Write(bw);
             BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
             SubGridTreeBitmapSubGridBits bits2 = SubGridTreeBitmapSubGridBits.FullMask;
-            bits2.Read(br, new byte[10000]);
+            bits2.Read(br);
 
             Assert.True(bits.Equals(bits2), "Bits not equal after serialisation with empty mask");
         }
@@ -187,18 +188,18 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.SetBit(20, 20);
             bits.SetBit(31, 31);
 
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
-            bits.Write(bw, new byte[1000]);
+            bits.Write(bw);
             BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
             SubGridTreeBitmapSubGridBits bits2 = SubGridTreeBitmapSubGridBits.FullMask;
-            bits2.Read(br, new byte[10000]);
+            bits2.Read(br);
 
             Assert.True(bits.Equals(bits2), "Bits not equal after serialisation with arbitrary mask");
-            Assert.Equal(4U, bits.CountBits());
+            Assert.Equal(4, bits.CountBits());
         }
 
         [Fact]
@@ -209,14 +210,14 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Test serialisation with arbitrary bits set
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
        
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
             bw.Write(INVALID_CONTROL_BYTE);      
 
             BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
-            Action act = () => bits.Read(br, new byte[10000]);
+            Action act = () => bits.Read(br);
 
             act.Should().Throw<TRexSubGridTreeException>().WithMessage($"Unknown SubGridTreeLeafBitmapSubGridBits control byte [{INVALID_CONTROL_BYTE}] in read stream");
         }
@@ -229,22 +230,22 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.SetBitValue(0, 0, true);
 
             Assert.NotEqual(0U, bits.Bits[0]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.SetBitValue(0, 0, false);
 
             Assert.Equal(0U, bits.Bits[0]);
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
             bits.SetBitValue(31, 31, true);
 
             Assert.NotEqual(0U, bits.Bits[31]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.SetBitValue(31, 31, false);
                          
             Assert.Equal(0U, bits.Bits[31]);
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
         }
 
@@ -256,12 +257,12 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.SetBit(0, 0);
 
             Assert.NotEqual(0U, bits.Bits[0]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.SetBit(31, 31);
 
             Assert.NotEqual(0U, bits.Bits[31]);
-            Assert.Equal(2U, bits.CountBits());
+            Assert.Equal(2, bits.CountBits());
         }
 
         [Fact]
@@ -272,22 +273,22 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.SetBit(0, 0);
 
             Assert.NotEqual(0U, bits.Bits[0]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.ClearBit(0, 0);
 
             Assert.Equal(0U, bits.Bits[0]);
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
             bits.SetBit(31, 31);
 
             Assert.NotEqual(0U, bits.Bits[31]);
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
 
             bits.ClearBit(31, 31);
 
             Assert.Equal(0U, bits.Bits[31]);
-            Assert.Equal(0U, bits.CountBits());
+            Assert.Equal(0, bits.CountBits());
 
         }
 
@@ -312,13 +313,13 @@ namespace VSS.TRex.Tests.SubGridTrees
           // Test testing a bit is on or off, at two corners to test boundary conditions
           SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-          Assert.False(bits.BitSet(0U, 0U));
-          Assert.False(bits.BitSet(31U, 31U));
+          Assert.False(bits.BitSet(0, 0U));
+          Assert.False(bits.BitSet(31, 31U));
 
           bits.Fill();
 
-          Assert.True(bits.BitSet(0U, 0U));
-          Assert.True(bits.BitSet(31U, 31U));
+          Assert.True(bits.BitSet(0, 0U));
+          Assert.True(bits.BitSet(31, 31U));
         }
 
     [Fact]
@@ -378,7 +379,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             bits.Clear();
             bits.ForEach((x, y) => { return (x == 1) && (y == 1); });
-            Assert.Equal(1U, bits.CountBits());
+            Assert.Equal(1, bits.CountBits());
         }
 
         [Fact]
@@ -410,11 +411,11 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Test iteration action for empty, full and arbitrary masks
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
-            uint sum;
+            int sum;
 
             sum = 0;
             bits.ForEachClearBit((x, y) => { sum++; });
-            Assert.Equal(0U, sum);
+            Assert.Equal(0, sum);
 
             sum = 0;
             bits.Clear();

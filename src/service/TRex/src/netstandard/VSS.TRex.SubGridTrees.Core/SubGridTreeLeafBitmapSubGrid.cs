@@ -16,20 +16,18 @@ namespace VSS.TRex.SubGridTrees
         /// Writes the contents of the sub grid bit mask to the writer
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="buffer"></param>
-        public override void Write(BinaryWriter writer, byte [] buffer)
+        public override void Write(BinaryWriter writer)
         {
-            Bits.Write(writer, buffer);
+            Bits.Write(writer);
         }
 
         /// <summary>
         /// Reads the contents of the sub grid bit mask from the reader
         /// </summary>
         /// <param name="reader"></param>
-        /// <param name="buffer"></param>
-        public override void Read(BinaryReader reader, byte [] buffer)
+        public override void Read(BinaryReader reader)
         {
-            Bits.Read(reader, buffer);
+            Bits.Read(reader);
         }
 
         /// <summary>
@@ -55,7 +53,7 @@ namespace VSS.TRex.SubGridTrees
         /// CountBits counts the number of bits that are set to 1 (true) in the sub grid 
         /// </summary>
         /// <returns></returns>
-        public uint CountBits() => Bits.CountBits();
+        public int CountBits() => Bits.CountBits();
 
         /// <summary>
         /// Computes the bounding extent of the cells (bits) in the sub grid that are set to 1 (true)

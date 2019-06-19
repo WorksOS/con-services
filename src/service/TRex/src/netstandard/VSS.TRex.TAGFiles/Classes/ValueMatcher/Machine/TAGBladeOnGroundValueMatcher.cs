@@ -24,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
             bool result = false;
 
             if (valueType.Type == TAGDataType.t4bitUInt &&
-                Enum.IsDefined(typeof(OnGroundState), (byte)value))
+                (value >= OnGroundStateConsts.ON_GROUND_STATE_MIN_VALUE && value <= OnGroundStateConsts.ON_GROUND_STATE_MAX_VALUE))
             {
                 valueSink.SetOnGround((OnGroundState)value);
                 result = true;

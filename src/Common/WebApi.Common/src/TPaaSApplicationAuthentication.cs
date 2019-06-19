@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.WebApi.Common
@@ -24,12 +24,15 @@ namespace VSS.WebApi.Common
     private ITPaasProxy tpaas;
     private ILogger<TPaaSApplicationAuthentication> Log;
     private object _lock = new object();
+    private const int DefaultLogMaxChar = 1000;
+    private readonly int _logMaxChar;
 
     public TPaaSApplicationAuthentication(IConfigurationStore config, ITPaasProxy tpaasProxy, ILogger<TPaaSApplicationAuthentication> log)
     {
       configuration = config;
       tpaas = tpaasProxy;
       Log = log;
+      _logMaxChar = configuration.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
     }
 
 
@@ -76,7 +79,7 @@ namespace VSS.WebApi.Common
 
             var tPaasUrl = configuration.GetValueString("TPAAS_OAUTH_URL") ?? "null";
             Log.LogInformation(
-              $"GetApplicationBearerToken() Got new bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
+              $"GetApplicationBearerToken() Got new bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
           }
           catch (Exception e)
           {

@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Runs a test case with specified parameters.
+  - Surface: the filename of the input surface. It can be a dxf, csv, or xml formats.  
+             For multiplane format files, one can specify further specify if the first column is the 
+             point id (HasPointIds=true), the order of the three coordinates columns (IsXYZ=true), 
+             and the length units (m or ft) (IsMetric=true)
+             
+  - Compute: SinglePlaneBestFit (Land leveling), SurfaceBestFit (Land forming), Furrows (Irrigation), Subzones (Subzones)
+             Note: SinglePlaneBestFit only complies with Boundary and PlaneConstraints
+                   SurfaceBestFit only complies with Boundary, MinSlope, MaxSlope, Boundary, and TargetDitch
+                   Furrows only complies with Boundary, MinSlope, MaxSlope, MaxSlopeChange, MinCrossSlope, MaxCrossSlope, MaxCrossSlopeChange, Resolution, FurrowHeading, Boundary, and Pipeline
+                   Subzones only complies with Boundary, FurrowHeading, Resolution and SubzoneConstraints
+                   All cases comply with Shrinkage, and Bulkage
+                   ExportVolume is global, but for Land Leveling, Surface, and Subzone every item (PlaneConstraint, AreaConstraint, SubzoneConstraint) can have its own ExportVolume. 
+                   To enable per item ExportVolume, the global ExportVolume should be NaN.
+                   SubzoneConstraints only complies with MinSlope, MaxSlope, MaxSlopeChange, MinCrossSlope, MaxCrossSlope, MaxCrossSlopeChange, MaxFillHeight, MaxCutDepth, MaxElevation, MinElevation, ExportVolumne
+                   SubzoneConstraints can have +/- main and cross slopes: (+) means down flow on the main/cross direction and (-) means up flow the main/cross direction
+                   
+  - MinSlope: Specifies the minimum slope as a fraction: vertical/horizontal.
+              All row segments should have this slope or more, subject to precision.
+              Valid range is [0.0, ∞], which means non-negative value.  To ignore use value NaN.
+              MinSlope should be lesser than MaxSlope (if defined).
+              
+  - MaxSlope: Specifies the maxmum slope as a fraction: vertical/horizontal.
+              All row segments should have this slope or less, subject to precision.
+              Valid range is (0.0, ∞], which means positive value (excluding 0).  To ignore use value NaN.
+              MaxSlope should be greater than MinSlope (if defined).
+              
+  - MaxSlopeChange: (Irrigation and SubzoneConstraints only) Specifies the maxmum rate of slope change: (previous slope - current slope)/resolution.
+              The absolute value of the slope change rate between two consecutive segments in a row should be less than this value, subject to precision.
+              Valid range is (0.0, ∞], which means positive value (excluding 0).  To ignore use value NaN.
+              
+  - MinCrossSlope: (Irrigation and SubzoneConstraints only) Specifies the minimum cross-slope as a fraction: vertical/horizontal.
+              The slope between two consecutive rows should have this value or more, subject to precision.
+              Valid range is [0.0, ∞], which means non-negative value.  To ignore use value NaN.
+              MinCrossSlope should be lesser than MaxCrossSlope (if defined).
+              
+  - MaxCrossSlope: (Irrigation and SubzoneConstraints only) Specifies the maxmum cross-slope as a fraction: vertical/horizontal.
+              The slope between two consecutive rows should have this value or less, subject to precision.
+              Valid range is [0.0, ∞], which means non-negative value.  To ignore use value NaN.
+              MaxCrossSlope should be greater than MinCrossSlope (if defined).
+              
+  - MaxCrossSlopeChange: (Irrigation and SubzoneConstraints only) Specifies the maximum rate of slope change along the cross direction: (previous slope - current slope)/resolution.
+              The absolute value of the slope rate change between two consecutive segments in a row should be less than this value, subject to precision.
+              Valid range is (0.0, ∞], which means positive value (excluding 0).  To ignore use value NaN.
+              
+  - MaxFillHeight: (SubzoneConstraints only) Specifies the maxmum fill that can be applied to the original surface.
+              Valid range is [0.0, ∞], which means non-negative value.  To ignore use value NaN.
+              
+  - MaxCutDepth: (Drainage, Irrigation, and SubzoneConstraints only) Specifies the maxmum cut that can be applied to the original surface.
+              Valid range is [0.0, ∞], which means non-negative value.  To ignore use value NaN.
+              
+  - MaxElevation: (SubzoneConstraints only) The maximum elevation for the design surface..
+              Valid range is [-∞, ∞], which means any value, but must be greater that MinElevation.  To ignore use value NaN.
+              
+  - MinElevation: (SubzoneConstraints only) The minimum elevation for the design surface.
+              Valid range is [-∞, ∞], which means any value, but must be lesser than MaxElevation.  To ignore use value NaN.
+              
+  - ExportVolume: The resulting export loose haul volume to produce: cut - fill. 
+              Valid range is [-∞, ∞], which means any value.  To ignore use value NaN.
+              
+  - FurrowHeading: (Irrigation only) Specifies the absolute direction of the furrows comming out of the pipeline (0 degrees is north and increasing clockwise).
+              Valid range is [0.0, 360]. 
+              
+  - MainHeading: (Subzone only) Specifies the absolute direction of the main axis of grid in subzones computation (0 degrees is north and increasing clockwise).
+              Valid range is [0.0, 360]. 
+              
+  - Resolution: (Surface, Irrigation and Subzone only) Specifies the desired separation between furrows. The actual separation
+              may vary so that a there are no fractional position of furrows along the pipeline. For drainage (SurfaceBestFit) this parameter is optional
+              (if it is not specified, then the engine will compute the equivalent cell size based on the number of points and the area of the surface).
+              Valid range is (0.0, ∞], which means positive value (excluding 0).
+              
+  - Heading: (LandLeveling and Subzone only) Specifies the absolute direction to measure main slope (0 degrees is north and increasing clockwise).
+              Valid range is [0.0, 360]. 
+              
+  - MainSlope: (LandLeveling only: <PlaneConstraints> and <Segment>) Specifies the slope as a fraction (vertical/horizontal) along the main direction:
+              from point 1 to point 2 of the hinge. Positive means down hill.
+              Valid range is [-∞, ∞], which means any value.  To ignore use value NaN.
+              
+  - CrossSlope: (LandLeveling only: <PlaneConstraints> and <Segment>) Specifies the slope as a fraction (vertical/horizontal) along the left orthogonal of
+              the main direction. Positive means down hill.
+              Valid range is [-∞, ∞], which means any value.  To ignore use value NaN.
+              
+  - CrossSlopeLeft: (LandLeveling only under PlaneConstraints: <Segment>) Specifies the slope as a fraction (vertical/horizontal) along the left orthogonal of
+              the main direction: from point 1 to point 2 of the hinge. Positive means down hill.
+              Valid range is [-∞, ∞], which means any value.  To ignore use value NaN.
+              
+  - CrossSlopeRight: (LandLeveling only under PlaneConstraints: <Segment>) Specifies the slope as a fraction (vertical/horizontal) along the right orthogonal of
+              the main direction: from point 1 to point 2 of the hinge. Positive means down hill.
+              Valid range is [-∞, ∞], which means any value.  To ignore use value NaN.
+              
+  - FixedPoints: (LandLeveling only under PlaneConstraints) Specifies 3D points that the plane should contain. Every section can have at most 3 fixed points.
+  
+  - Hinges: (LandLeveling only under PlaneConstraints) Specifies a list of segments (<Segment> nodes) that defines the hinges of that section. 
+              Hinges cannot intersect each other. Hinges must intersect the boundary of the section.
+              
+  - Boundary: This is a closed linestring that limits the scope of the computation to the surface within the boundary
+  
+  - TargetDitch: This is an open linestring. Every triangle should face towards the closest point in the ditch polyline within 60 degrees
+  
+  - Pipeline: This is an open linestring that represents the pipepline. Furrows originate from the linestring
+  
+  - Bulkage: The percentage volume expantion between bank cut and loose haul volumes.
+              Valid range is [0.0, 1.0), which means exclude 1.  Common value: 0.097 (9.7%)
+              
+  - Shrinkage: The percentage volume reduction between bank cut and bank fill volumes.
+              Valid range is [0.0, 1.0), which means exclude 1.  Common value: 0.078 (7.8%)
+              
+  - ExclusionZones: This is a list of closed linestring. Each linestring is an exclusion zone. It most be completely contained within the boundary.
+  
+  - Zones: This list specifies the constraints for each subzone. Each subzone has a boundary and constraint parameters.
+  
+  - Tag (PlanesConstraints, Segment, and SubzoneConstraints):  Any string associated with this instance to appear in exceptions and/or result.
+  
+  - VisualizationTools: There are two elements to specify visualization tools: OriginalVisualizationTools for the original surface and 
+              DesignVisualizationTools for the design surface.  One can add one visualization nodes of each type to each list.
+              Each visualization tool element generates a texture file. The first tools is used as a texture in the sketchup model.
+              The following list describes the tools and their parameters:
+          - OmniSlope: generates a map color-coded slopes magnitudes regardless of direction
+                - Pixels: the image resolution of the tool (note that it is related to a cell size in world coordinates)
+                - MinSlope: the value of the minimum slope: lower slopes generate transparent pixels
+                - MaxSlope: the value of the maximum slope: highier slopes generate transparent pixels
+                - GradientStops: list of color/offset pairs of a linear gradient
+                    - ColorStop: color/offset pair
+                        - Color: string with color name or #argb
+                        - Offset: the relative offset for this stop [0,1]
+          - DirectionalSlope:
+                - Resolution: the cell size to use for computation
+                - HeadingAngle: the heading angle of the main direction in degreees [0,360)
+                - MinSlope: the value of the minimum slope: lower slopes generate transparent pixels
+                - MaxSlope: the value of the maximum slope: highier slopes generate transparent pixels
+                - GradientStops: list of color/offset pairs of a linear gradient
+                    - ColorStop: color/offset pair
+                        - Color: string with color name or #argb
+                        - Offset: the relative offset for this stop [0,1]
+          
+          - WaterShed:
+                - Resolution: the cell size to use for computation
+                - Levels: The number of color levels [2,240]
+          
+          - PondMap:
+                - Resolution: the cell size to use for computation
+                - Levels: The number of color levels [2,240]
+                
+          - DrainageViolation:
+                - Resolution: the cell size to use for computation
+                - MinSlope: the value of the minimum slope: lower slopes generate transparent pixels
+                - MaxSlope: the value of the maximum slope: highier slopes generate transparent pixels
+                - MinSlopeColor: the color to use when slope is lower than minimum: default blue
+                - MaxSlopeColor: the color to use when slope is highier than minimum: default red
+                - VortexColor: the color to use when slope is lower than minimum: default yellow
+                - NoViolationColor: the color to use when slope is within range: default green
+                
+-->
+<TestCase Surface="OG_1m_Clipped.dxf" Resolution="1" MinSlope="0.05" MaxSlope="0.1" MaxCutDepth="NaN" ExportVolume="NaN" Compute="SurfaceBestFit" IsXYZ="true">
+  <OriginalVisualizationTools>
+    <OmniSlope Pixels="1024" MinSlope="0.05" MaxSlope="0.1">
+      <GradientStops>
+        <!--<ColorStop Color="Blue" Offset="0.0" />
+        <ColorStop Color="Violet" Offset="0.25" />
+        <ColorStop Color="Pink" Offset="0.5" />
+        <ColorStop Color="Red" Offset="1.0" />-->
+      </GradientStops>
+    </OmniSlope>
+    <DrainageViolations Resolution="1" MinSlope="0.05" MaxSlope="0.1" />
+    <DirectionalSlope Resolution="1" HeadingAngle="45" MinSlope="0.05" MaxSlope="0.1" />
+    <WaterShed Resolution="1" Levels="10" />
+    <PondMap Resolution="1" Levels="10" />
+  </OriginalVisualizationTools>
+
+  <DesignVisualizationTools>
+    <DrainageViolations Resolution="1" MinSlope="0.05" MaxSlope="0.1" />
+    <OmniSlope Pixels="1024" MinSlope="0.05" MaxSlope="0.1" >
+    </OmniSlope>
+    <DirectionalSlope Resolution="1" HeadingAngle="45" MinSlope="0.1" MaxSlope="0.5" />
+    <WaterShed Resolution="1" Levels="10" />
+    <PondMap Resolution="1" Levels="10" />
+  </DesignVisualizationTools>
+
+  <Boundary>
+    <Points>
+      <!--
+      <Point x="20" y="-20" />
+      <Point x="20" y="20" />
+      <Point x="-20" y="20" />
+      <Point x="-20" y="-20" />
+      -->
+    </Points>
+  </Boundary>
+  <TargetDitch>
+    <Points>
+      <!--<Point x="-110" y="-110" />-->
+      <!--<Point x="210" y="-110" />-->
+      <!--<Point x="210" y="110" />-->
+    </Points>
+  </TargetDitch>
+  <Pipeline>
+    <Points>
+      <!--<Point x="-90" y="-90" />-->
+      <!--<Point x="110" y="90" />-->
+    </Points>
+  </Pipeline>
+  <!--<Sections>
+    <PlanesConstraints Heading="0" MainSlope="0.05" CrossSlope="0.02" >
+      <Boundary>
+        <Points>
+          <Point x="20" y="-20" />
+          <Point x="20" y="20" />
+          <Point x="-20" y="20" />
+          <Point x="-20" y="-20" />
+        </Points>
+      </Boundary>
+    </PlanesConstraints>
+    <PlanesConstraints Heading="90" MainSlope="0.05" CrossSlope="0.02" >
+      <Boundary>
+        <Points>
+          <Point x="-20" y="-40" />
+          <Point x="-20" y="40" />
+          <Point x="-60" y="40" />
+          <Point x="-60" y="-40" />
+        </Points>
+      </Boundary>
+    </PlanesConstraints>-->
+  
+  <!-- Fixed points example -->
+  <!--
+    <PlanesConstraints >
+      <Boundary>
+        <Points>
+          <Point x="20" y="-20" />
+          <Point x="20" y="20" />
+          <Point x="-20" y="20" />
+          <Point x="-20" y="-20" />
+        </Points>
+      </Boundary>
+      <FixedPoints>
+        <Point3D x="0" y="0" z="50" />
+        <Point3D x="-20" y="20" z="51" />
+      </FixedPoints>
+    </PlanesConstraints> -->
+  
+  <!-- Hinges example -->
+  <!--
+    <PlanesConstraints >
+      <Boundary>
+        <Points>
+          <Point x="20" y="-20" />
+          <Point x="20" y="20" />
+          <Point x="-20" y="20" />
+          <Point x="-20" y="-20" />
+        </Points>
+      </Boundary>
+      <Hinges>
+        <Segment>
+          <Point1 x="5" y="-30" z="NaN" />
+          <Point2 x="-5" y="30" z="NaN" />
+        </Segment>
+      </Hinges>
+    </PlanesConstraints>
+  </Sections>-->
+
+  <!-- Exclusion zone example -->
+  <!--<ExclusionZones>
+    <Zone>
+      <Points>
+        <Point x="20" y="-20" />
+        <Point x="20" y="20" />
+        <Point x="-20" y="20" />
+        <Point x="-20" y="-20" />
+      </Points>
+    </Zone>
+  </ExclusionZones>-->
+  
+  <!-- Subzones example -->
+  <!--<Zones>
+    <SubzoneConstraints MinSlope="0.05" MaxSlope="0.1" MaxCutDepth="NaN">
+      <Boundary>
+        <Points>
+          <Point x="20" y="-20" />
+          <Point x="20" y="20" />
+          <Point x="-20" y="20" />
+          <Point x="-20" y="-20" />
+        </Points>
+      </Boundary>
+    </SubzoneConstraints>
+  </Zones>-->
+</TestCase>

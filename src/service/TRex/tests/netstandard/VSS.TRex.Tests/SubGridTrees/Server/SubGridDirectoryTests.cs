@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.Tests.TestFixtures;
@@ -26,7 +27,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Server
     {
       var dir = new SubGridDirectory();
 
-      Action act = () => dir.Read(new BinaryReader(new MemoryStream()));
+      Action act = () => dir.Read(new BinaryReader(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION)));
       act.Should().Throw<TRexSubGridIOException>().WithMessage("Cannot read sub grid directory without global latest values available");
     }
 
@@ -35,7 +36,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Server
     {
       var dir = new SubGridDirectory();
 
-      Action act = () => dir.Write(new BinaryWriter(new MemoryStream()));
+      Action act = () => dir.Write(new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION)));
       act.Should().Throw<TRexSubGridIOException>().WithMessage("Cannot write sub grid directory without global latest values available");
     }
 
@@ -45,7 +46,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Server
       var dir = new SubGridDirectory();
       dir.AllocateGlobalLatestCells();
 
-      Action act = () => dir.Write(new BinaryWriter(new MemoryStream()));
+      Action act = () => dir.Write(new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION)));
       act.Should().Throw<TRexSubGridIOException>().WithMessage("Writing a segment directory with no segments");
     }
   }

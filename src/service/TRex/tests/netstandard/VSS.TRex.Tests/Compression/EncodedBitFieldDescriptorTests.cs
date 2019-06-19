@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using VSS.TRex.Common;
 using VSS.TRex.Compression;
 using Xunit;
 
@@ -40,7 +41,7 @@ namespace VSS.TRex.Tests.Compression
                 RequiredBits = 35
             };
 
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
 
             using (var writer = new BinaryWriter(ms, Encoding.UTF8, true))
             {

@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.Rendering
     }
 
     private ISiteModel BuildModelForSingleCellTileRender(float heightIncrement,
-      uint cellX = SubGridTreeConsts.DefaultIndexOriginOffset, uint cellY = SubGridTreeConsts.DefaultIndexOriginOffset)
+      int cellX = SubGridTreeConsts.DefaultIndexOriginOffset, int cellY = SubGridTreeConsts.DefaultIndexOriginOffset)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
@@ -325,7 +325,7 @@ namespace VSS.TRex.Tests.Rendering
 
       // Find the location of the cell in the site model for that location
       SubGridTree.CalculateIndexOfCellContainingPosition
-        (TTMLocationX, TTMLocationY, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset, out uint cellX, out uint cellY);
+        (TTMLocationX, TTMLocationY, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset, out int cellX, out int cellY);
 
       // Create the site model containing a single cell and add the design to it for the cut/fill
       var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, cellX, cellY);

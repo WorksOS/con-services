@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
   /// <typeparam name="S"></typeparam>
   public interface IGenericSubGridTree<T, S> : ISubGridTree where S : IGenericLeafSubGrid<T>, ILeafSubGrid
   {
-    T this[uint x, uint y] { get; set; }
+    T this[int x, int y] { get; set; }
 
     void ForEach(Func<T, bool> functor);
   }

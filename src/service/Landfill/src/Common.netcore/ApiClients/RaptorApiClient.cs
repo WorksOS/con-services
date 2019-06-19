@@ -389,6 +389,7 @@ namespace Common.netstandard.ApiClients
       var details = new MachineDetails
       {
         assetId = machine.assetId,
+        assetUid = machine.assetUid,
         machineName = machine.machineName,
         isJohnDoe = machine.isJohnDoe
       };
@@ -447,6 +448,7 @@ namespace Common.netstandard.ApiClients
         var machineLift = new MachineLifts
         {
           assetId = machine.assetId,
+          assetUid = machine.assetUid,
           machineName = machine.machineName,
           isJohnDoe = machine.isJohnDoe
         };

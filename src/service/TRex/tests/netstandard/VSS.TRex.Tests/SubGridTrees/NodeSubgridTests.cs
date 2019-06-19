@@ -139,7 +139,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       }
 
       Assert.False(parentSubgrid.IsEmpty(), "Parent node subgrid is empty after adding subgrids to parent");
-      Assert.Equal((uint) parentSubgrid.CountChildren(), SubGridTreeConsts.CellsPerSubGrid);
+      Assert.Equal((int) parentSubgrid.CountChildren(), SubGridTreeConsts.CellsPerSubGrid);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         return SubGridProcessNodeSubGridResult.OK;
       });
 
-      Assert.Equal((uint) count, SubGridTreeConsts.CellsPerSubGrid / 2);
+      Assert.Equal((int) count, SubGridTreeConsts.CellsPerSubGrid / 2);
 
       // Fill all of the parent subgrid with new child subgrids using SetSubGrid
       for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
@@ -192,7 +192,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         return SubGridProcessNodeSubGridResult.OK;
       });
 
-      Assert.Equal((uint) count, SubGridTreeConsts.CellsPerSubGrid);
+      Assert.Equal((int) count, SubGridTreeConsts.CellsPerSubGrid);
     }
 
     [Fact]

@@ -132,6 +132,5 @@ namespace VSS.TRex.TAGFiles.Executors
 
       return true;
     }
-
   }
 }

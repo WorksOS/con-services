@@ -23,6 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
     /// <param name="height">Height of the requested CCA data tile.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
     /// <param name="geofenceUid">Geofence boundary unique identifier.</param>
+    /// <param name="assetUid">TRex's machine identifier.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     /// 
     FileResult Get([FromQuery] long projectId,
@@ -35,7 +36,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
                    [FromQuery] ushort width,
                    [FromQuery] ushort height,
                    [FromQuery] int? liftId = null,
-                   [FromQuery] Guid? geofenceUid = null);
+                   [FromQuery] Guid? geofenceUid = null,
+                   [FromQuery] Guid? assetUid = null);
 
     /// <summary>
     /// Gets tiles of rendered overlays for a CCA data set from Raptor.
@@ -51,6 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
     /// <param name="height">Height of the requested CCA data tile.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
     /// <param name="geofenceUid">Geofence boundary unique identifier.</param>
+    /// <param name="assetUid">TRex's machine identifier.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     /// 
     Task<FileResult> Get([FromQuery] Guid projectUid,
@@ -63,6 +66,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
                    [FromQuery] ushort width,
                    [FromQuery] ushort height,
                    [FromQuery] int? liftId = null,
-                   [FromQuery] Guid? geofenceUid = null);
+                   [FromQuery] Guid? geofenceUid = null,
+                   [FromQuery] Guid? assetUid = null);
   }
 }

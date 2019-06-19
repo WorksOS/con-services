@@ -48,7 +48,7 @@ namespace VSS.TRex.CellDatum.Executors
       var existenceMap = siteModel.ExistenceMap;
 
       // Determine the on-the-ground cell 
-      siteModel.Grid.CalculateIndexOfCellContainingPosition(arg.Point.X, arg.Point.Y, out uint OTGCellX, out uint OTGCellY);
+      siteModel.Grid.CalculateIndexOfCellContainingPosition(arg.Point.X, arg.Point.Y, out int OTGCellX, out int OTGCellY);
 
       if (!existenceMap[OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel])
       {
@@ -60,7 +60,7 @@ namespace VSS.TRex.CellDatum.Executors
       var argClusterCompute = new CellDatumRequestArgument_ClusterCompute(
         arg.ProjectID, arg.Mode, arg.Point, OTGCellX, OTGCellY, arg.Filters, arg.ReferenceDesign);
       var request = new CellDatumRequest_ClusterCompute();
-      var response = request.Execute(argClusterCompute, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER, arg.ProjectID, OTGCellX, OTGCellY));
+      var response = request.Execute(argClusterCompute, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, OTGCellX, OTGCellY));
       result.ReturnCode = response.ReturnCode;
       result.Value = response.Value;
       result.TimeStampUTC = response.TimeStampUTC;

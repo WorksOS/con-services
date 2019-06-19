@@ -22,9 +22,16 @@ namespace VSS.TRex.Events
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
+    /// The array of enumeration values represented by ProductionEventType
+    /// </summary>
+    private static readonly ProductionEventType[] _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType)).Cast<ProductionEventType>().ToArray();
+ 
+    private static readonly IProductionEventsFactory _ProductionEventsFactory = DIContext.Obtain<IProductionEventsFactory>();
+
+    /// <summary>
     /// The SiteModel these events relate to
     /// </summary>
-    private ISiteModel SiteModel { get; set; }
+    private ISiteModel SiteModel;
 
     /// <summary>
     /// The collection of concrete event lists for a machine. Each element in the array is indexed by the
@@ -32,11 +39,12 @@ namespace VSS.TRex.Events
     /// </summary>
     private readonly IProductionEvents[] allEventsForMachine;
 
+    private short _internalSiteModelMachineIndex;
     /// <summary>
     /// The ID of the machine these events were recorded by. The ID is the (short) internal machine ID
     /// used within the data model, not the GUID descriptor for the machine
     /// </summary>
-    public short InternalSiteModelMachineIndex { get; set; }
+    public short InternalSiteModelMachineIndex { get => _internalSiteModelMachineIndex; set => _internalSiteModelMachineIndex = value; }
 
     public IStartEndProductionEvents MachineStartupShutdownEvents
     {
@@ -220,7 +228,7 @@ namespace VSS.TRex.Events
         {
           if (allEventsForMachine[(int) eventType] == null) // This thread won the lock
           {
-            IProductionEvents temp = DIContext.Obtain<IProductionEventsFactory>().NewEventList(InternalSiteModelMachineIndex, SiteModel.ID, eventType);
+            var temp = _ProductionEventsFactory.NewEventList(_internalSiteModelMachineIndex, SiteModel.ID, eventType);
 
             if (temp != null) // The event is supported, load if the model is persistent (non-transient)
             {
@@ -252,7 +260,7 @@ namespace VSS.TRex.Events
     public ProductionEventLists(ISiteModel siteModel, short internalSiteModelMachineIndex)
     {
       SiteModel = siteModel;
-      InternalSiteModelMachineIndex = internalSiteModelMachineIndex;
+      _internalSiteModelMachineIndex = internalSiteModelMachineIndex;
 
       // Create an array large enough to hold all the possible enumeration values for production events
       allEventsForMachine = new IProductionEvents[NumEventListTypes];
@@ -285,9 +293,9 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public bool LoadEventsForMachine(IStorageProxy storageProxy)
     {
-      foreach (ProductionEventType evt in Enum.GetValues(typeof(ProductionEventType)))
+      foreach (ProductionEventType evt in _productionEventTypeValues)
       {
-        Log.LogDebug($"Loading {evt} events for machine {InternalSiteModelMachineIndex} in project {SiteModel.ID}");
+        Log.LogDebug($"Loading {evt} events for machine {_internalSiteModelMachineIndex} in project {SiteModel.ID}");
 
         GetEventList(evt)?.LoadFromStore(storageProxy);
       }

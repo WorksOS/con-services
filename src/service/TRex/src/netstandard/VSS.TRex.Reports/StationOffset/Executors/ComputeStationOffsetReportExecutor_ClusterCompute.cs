@@ -108,7 +108,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
       foreach (var point in requestArgument.Points)
       {
         // Determine the on-the-ground cell 
-        siteModel.Grid.CalculateIndexOfCellContainingPosition(point.Easting, point.Northing, out uint OTGCellX, out uint OTGCellY);
+        siteModel.Grid.CalculateIndexOfCellContainingPosition(point.Easting, point.Northing, out int OTGCellX, out int OTGCellY);
 
         var thisSubGridOrigin = new SubGridCellAddress(OTGCellX, OTGCellY);
 
@@ -116,8 +116,8 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           continue;
 
         // Get the sub grid relative cell location
-        uint cellX = OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
-        uint cellY = OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
+        int cellX = OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
+        int cellY = OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
 
         // Reach into the sub-grid request layer and retrieve an appropriate sub-grid
         cellOverrideMask.Clear();
@@ -142,7 +142,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     }
 
 
-    private StationOffsetRow ExtractRequiredValues(IDesign cutFillDesign, StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, uint cellX, uint cellY)
+    private StationOffsetRow ExtractRequiredValues(IDesign cutFillDesign, StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, int cellX, int cellY)
     {
       clientGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
       ClientCellProfileLeafSubgridRecord cell = clientGrid.Cells[cellX, cellY];

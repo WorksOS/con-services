@@ -159,7 +159,13 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public bool MarkReturnedSegmentsAsTouched { get; set; }
 
-        public int NumberOfSegmentsScanned { get; set; }
+        private int numberOfSegmentsScanned;
+
+        public int NumberOfSegmentsScanned
+        {
+          get => numberOfSegmentsScanned;
+          set => numberOfSegmentsScanned = value;
+        }
 
         public SubGridSegmentIterator(IServerLeafSubGrid subGrid, IStorageProxy storageProxy)
         {
@@ -192,7 +198,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // MoveToFirstSubGridSegment moves to the first segment in the sub grid
         public bool MoveToFirstSubGridSegment()
         {
-            NumberOfSegmentsScanned = 0;
+            numberOfSegmentsScanned = 0;
 
             InitialiseIterator();
 
@@ -212,7 +218,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
             CurrentSubGridSegment = SubGridSegment;
 
-            NumberOfSegmentsScanned++;
+            numberOfSegmentsScanned++;
 
             return true;
         }

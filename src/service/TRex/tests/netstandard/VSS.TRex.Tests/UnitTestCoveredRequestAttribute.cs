@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.VisionLink.Interfaces.Events.Commands.MTS;
 
 namespace VSS.TRex.Tests
 {

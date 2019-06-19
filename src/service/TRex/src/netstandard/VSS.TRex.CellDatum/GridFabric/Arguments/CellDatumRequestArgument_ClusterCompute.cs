@@ -30,8 +30,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
     /// <summary>
     /// On the ground coordinates for the cell
     /// </summary>
-    public uint OTGCellX { get; set; }
-    public uint OTGCellY { get; set; }
+    public int OTGCellX { get; set; }
+    public int OTGCellY { get; set; }
 
     public CellDatumRequestArgument_ClusterCompute()
     { }
@@ -40,8 +40,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       Guid siteModelID,
       DisplayMode mode,
       XYZ neeCoords,
-      uint otgCellX,
-      uint otgCellY,
+      int otgCellX,
+      int otgCellY,
       IFilterSet filters,
       DesignOffset referenceDesign)
     {
@@ -66,8 +66,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
 
       writer.WriteInt((int)Mode);
       NEECoords.ToBinary(writer);
-      writer.WriteInt((int)OTGCellX);
-      writer.WriteInt((int)OTGCellY);
+      writer.WriteInt(OTGCellX);
+      writer.WriteInt(OTGCellY);
     }
 
     /// <summary>
@@ -82,8 +82,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
 
       Mode = (DisplayMode)reader.ReadInt();
       NEECoords = NEECoords.FromBinary(reader);
-      OTGCellX = (uint)reader.ReadInt();
-      OTGCellY = (uint)reader.ReadInt();
+      OTGCellX = reader.ReadInt();
+      OTGCellY = reader.ReadInt();
     }
   }
 }

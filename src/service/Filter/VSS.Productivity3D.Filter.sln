@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0B4DA880-E91B-44E8-8B2E-FC0FA2A747B6}"
 EndProject
@@ -92,6 +92,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetMgmt.Abstractions", "..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj", "{7A056F93-8B50-427A-BC04-BBD57BB009B1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetMgmt.Proxy", "..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Proxy\VSS.Productivity3D.3DAssetMgmt.Proxy.csproj", "{B81E3F6E-EC2F-4234-AA1A-5FDE10E7422C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{A4D1680A-FB6D-4C8A-A78C-A3D46600FE34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -231,6 +233,10 @@ Global
 		{B81E3F6E-EC2F-4234-AA1A-5FDE10E7422C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B81E3F6E-EC2F-4234-AA1A-5FDE10E7422C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B81E3F6E-EC2F-4234-AA1A-5FDE10E7422C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4D1680A-FB6D-4C8A-A78C-A3D46600FE34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4D1680A-FB6D-4C8A-A78C-A3D46600FE34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4D1680A-FB6D-4C8A-A78C-A3D46600FE34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4D1680A-FB6D-4C8A-A78C-A3D46600FE34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -276,6 +282,7 @@ Global
 		{7FCB2548-BB69-489B-9ACA-F3C0AF746E04} = {33448EDF-8D57-47F8-B702-F21DEA204323}
 		{7A056F93-8B50-427A-BC04-BBD57BB009B1} = {7FCB2548-BB69-489B-9ACA-F3C0AF746E04}
 		{B81E3F6E-EC2F-4234-AA1A-5FDE10E7422C} = {7FCB2548-BB69-489B-9ACA-F3C0AF746E04}
+		{A4D1680A-FB6D-4C8A-A78C-A3D46600FE34} = {1ED51BDC-5ABE-4348-A22D-61600795C649}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7D2BA766-D429-41F3-A2EA-489911F8D544}

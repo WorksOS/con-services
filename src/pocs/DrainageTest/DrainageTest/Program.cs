@@ -1,7 +1,6 @@
 ﻿using Microsoft.Practices.Prism.Logging;
 using Microsoft.Practices.ServiceLocation;
 using Morph.Services.Core.Interfaces;
-using Newtonsoft.Json;
 using SkuTester.DataModel;
 using System;
 using System.Collections.Generic;
@@ -42,6 +41,8 @@ namespace DrainageTest
         //                                  ..\..\TestData\JeannieTestSquare\TestCase.xml
         //                                    simple horz square with 1 hill and 1 pond
         //                                    throws exception "error in the application"????
+        //                                   ..\..\TestData\2018_3dFace\TestCase.xml
+        // Grant_DroneSurveyWithPonds
         var stringBuilder = new StringBuilder();
         foreach (string str in args)
           stringBuilder.AppendFormat("{0} ", (object) str);
@@ -90,7 +91,7 @@ namespace DrainageTest
 
         // may be able to get the info we need from surface._design?
         // this may only be needed for display in sketchup
-        var targetPath = sketchupFile.CreateTargetModels(xmlPath);
+        var targetPath = sketchupFile.CreateModel(xmlPath);
         Morph.Services.Core.DataModel.Utils.LaunchSketchup(targetPath);
       }
     }

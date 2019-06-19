@@ -34,7 +34,7 @@ namespace VSS.TRex.Designs.Executors
       /// <param name="originX"></param>
       /// <param name="originY"></param>
       /// <returns></returns>
-      private IClientHeightLeafSubGrid Calc(Guid projectUID, DesignOffset referenceDesign, double cellSize, uint originX, uint originY,
+      private IClientHeightLeafSubGrid Calc(Guid projectUID, DesignOffset referenceDesign, double cellSize, int originX, int originY,
           out DesignProfilerRequestResult CalcResult)
         {
             CalcResult = DesignProfilerRequestResult.UnknownError;
@@ -65,8 +65,8 @@ namespace VSS.TRex.Designs.Executors
 
                 IClientHeightLeafSubGrid Result = new ClientHeightLeafSubGrid(null, null, SubGridTreeConsts.SubGridTreeLevels, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset);
 
-                Result.SetAbsoluteOriginPosition((uint)(originX & ~SubGridTreeConsts.SubGridLocalKeyMask),
-                                                 (uint)(originY & ~SubGridTreeConsts.SubGridLocalKeyMask));
+                Result.SetAbsoluteOriginPosition(originX & ~SubGridTreeConsts.SubGridLocalKeyMask,
+                                                 originY & ~SubGridTreeConsts.SubGridLocalKeyMask);
                 Result.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
 
                 CalcResult = Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, cellSize, referenceDesign.Offset) 
@@ -85,7 +85,7 @@ namespace VSS.TRex.Designs.Executors
         /// Performs execution business logic for this executor
         /// </summary>
         /// <returns></returns>
-        public IClientHeightLeafSubGrid Execute(Guid projectUID, DesignOffset referenceDesign, double cellSize, uint originX, uint originY, out DesignProfilerRequestResult calcResult)
+        public IClientHeightLeafSubGrid Execute(Guid projectUID, DesignOffset referenceDesign, double cellSize, int originX, int originY, out DesignProfilerRequestResult calcResult)
         {
             calcResult = DesignProfilerRequestResult.UnknownError;
 

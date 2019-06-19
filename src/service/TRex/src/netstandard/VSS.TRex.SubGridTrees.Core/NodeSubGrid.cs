@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -34,7 +33,7 @@ namespace VSS.TRex.SubGridTrees.Core
     /// The limit under which node sub grids are represented by sparse lists rather than a complete sub grid array of child sub grid references
     /// </summary>
     /// <returns></returns>
-    public static uint SubGridTreeNodeCellSparcityLimit { get; } = DIContext.Obtain<IConfigurationStore>()?.GetValueUint("SUBGRIDTREENODE_CELLSPARCITYLIMIT", Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT) ?? Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT;
+    public static int SubGridTreeNodeCellSparcityLimit { get; } = DIContext.Obtain<IConfigurationStore>()?.GetValueInt("SUBGRIDTREENODE_CELLSPARCITYLIMIT", Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT) ?? Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT;
 
     /// <summary>
     /// Default no-arg constructor
@@ -125,7 +124,7 @@ namespace VSS.TRex.SubGridTrees.Core
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
     /// <returns></returns>
-    public virtual ISubGrid GetSubGridContainingCell(uint CellX, uint CellY)
+    public virtual ISubGrid GetSubGridContainingCell(int CellX, int CellY)
     {
       GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
@@ -269,10 +268,10 @@ namespace VSS.TRex.SubGridTrees.Core
         return false;
 
       // Work out the on-the-ground cell extent needed to be scanned that this sub grid covers
-      uint ScanMinX = (uint) Math.Max(OriginX, Extent.MinX);
-      uint ScanMinY = (uint) Math.Max(OriginY, Extent.MinY);
-      uint ScanMaxX = (uint) Math.Min(OriginX + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxX);
-      uint ScanMaxY = (uint) Math.Min(OriginY + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxY);
+      int ScanMinX = Math.Max(originX, Extent.MinX);
+      int ScanMinY = Math.Max(originY, Extent.MinY);
+      int ScanMaxX = Math.Min(originX + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxX);
+      int ScanMaxY = Math.Min(originY + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxY);
 
       // Convert the on-the-ground cell indexes into sub grid indexes at this level in the sub grid tree
       GetSubGridCellIndex(ScanMinX, ScanMinY, out byte SubGridMinX, out byte SubGridMinY);
@@ -305,12 +304,12 @@ namespace VSS.TRex.SubGridTrees.Core
       // (ie: the caller is trying to be too clever!)
       if (Value != null)
       {
-        if (Value.Level != 0 && Value.Level != Level + 1)
+        if (Value.Level != 0 && Value.Level != level + 1)
           throw new ArgumentException("Level of sub grid being added is non-null and is not set correctly for the level it is being added to", nameof(Value.Level));
 
         Value.Parent = this;
-        Value.SetOriginPosition((uint) X, (uint) Y);
-        Value.Level = (byte) (Level + 1);
+        Value.SetOriginPosition(X, Y);
+        Value.Level = (byte) (level + 1);
       }
 
       if (_cells != null)

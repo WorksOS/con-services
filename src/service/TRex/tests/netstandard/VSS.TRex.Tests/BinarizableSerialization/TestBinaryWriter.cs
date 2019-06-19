@@ -2,6 +2,7 @@
 using System.Collections;
 using System.IO;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Extensions;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
@@ -13,7 +14,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
   public class TestBinaryWriter : IBinaryWriter, IBinaryRawWriter
   {
     /** Stream. */
-    public readonly BinaryWriter _stream = new BinaryWriter(new MemoryStream());
+    public readonly BinaryWriter _stream = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION));
 
     /// <summary>
     /// Write named boolean value.

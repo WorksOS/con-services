@@ -25,7 +25,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     public async Task<TPaasOauthResult> GetApplicationBearerToken(string grantType, Dictionary<string, string> customHeaders)
     {
-      log.LogDebug($"GetApplicationBearerToken: grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
+      log.LogDebug($"GetApplicationBearerToken: grantType: {grantType} customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
       var payLoadToSend = $"grant_type={grantType}";
       var tPaasOauthResult = new TPaasOauthResult();
       try
@@ -50,7 +50,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     public async Task<BaseDataResult> RevokeApplicationBearerToken(string token, Dictionary<string, string> customHeaders)
     {
-      log.LogDebug($"RevokeApplicationBearerToken: token: {token} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
+      log.LogDebug($"RevokeApplicationBearerToken: token: {token} customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
       var payLoadToSend = $"token={token}";
       var tPaasOauthResult = new BaseDataResult();
       try

@@ -10,6 +10,7 @@
     <RootNamespace>VSS.Productivity3D.WebApi.Models</RootNamespace>
     <Platforms>x64</Platforms>
     <PackageTags>vss-productivity3d-service</PackageTags>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -59,7 +60,6 @@
     <Compile Remove=".\Notification\Executors\AddFileExecutor.cs" />
     <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />
 
-    <Compile Remove=".\ProductionData\Executors\CCAColorPaletteExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\CellPassesExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\DesignExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />

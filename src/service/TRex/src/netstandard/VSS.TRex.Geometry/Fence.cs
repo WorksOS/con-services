@@ -61,8 +61,10 @@ namespace VSS.TRex.Geometry
         return true;
       }
 
-      foreach (FencePoint fp in Points)
+      for (int i = 0, limit = Points.Count; i < limit; i++)
       {
+        var fp = Points[i];
+
         if (fp.X == Consts.NullDouble || fp.Y == Consts.NullDouble)
         {
           return true;
@@ -75,29 +77,29 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Minimum X ordinate for all points in the fence
     /// </summary>
-    public double MinX { get; private set; }
+    public double MinX;
 
     /// <summary>
     /// Maximum X ordinate for all points in the fence
     /// </summary>
-    public double MaxX { get; private set; }
+    public double MaxX;
 
     /// <summary>
     /// Minimum Y ordinate for all points in the fence
     /// </summary>
-    public double MinY { get; private set; }
+    public double MinY;
 
 
     /// <summary>
     /// Maximum Y ordinate for all points in the fence
     /// </summary>
-    public double MaxY { get; private set; }
+    public double MaxY;
 
 
     /// <summary>
     /// Is the fence intrinsically a rectangle?
     /// </summary>
-    public bool IsRectangle { get; set; }
+    public bool IsRectangle;
 
     /// <summary>
     /// Set the min/max x/y values to inverted (invalid) values
@@ -117,8 +119,10 @@ namespace VSS.TRex.Geometry
     {
       InitialiseMaxMins();
 
-      foreach(var pt in Points)
+      for (int i = 0, limit = Points.Count; i < limit; i++)
       {
+        var pt = Points[i];
+
         if (pt.X < MinX) MinX = pt.X;
         if (pt.Y < MinY) MinY = pt.Y;
         if (pt.X > MaxX) MaxX = pt.X;
@@ -140,15 +144,17 @@ namespace VSS.TRex.Geometry
       if (IsRectangle) // The point lies in the known rectangular area, so is contained in the filter
         return true;
 
-      //int pointsCount = Points.Count;
+      var points_Count = Points.Count;
 
-      if (Points.Count < 3)
+      if (points_Count < 3)
         return false;
 
       bool result = false;
-      var pt1 = Points.Last();
-      foreach (var pt2 in Points)
+      var pt1 = Points[points_Count - 1];
+
+      for (int i = 0; i < points_Count; i++)
       {
+        var pt2 = Points[i];
         if (pt2.X == x && pt2.Y == y)
           return true;
 
@@ -289,8 +295,9 @@ namespace VSS.TRex.Geometry
       }
 
       // Check fence vertex inclusion in Extents
-      foreach (FencePoint pt in Points)
+      for (int i = 0, limit = Points.Count; i < limit; i++)
       {
+        var pt = Points[i];
         if (extent.Includes(pt.X, pt.Y))
         {
           // There must be some area of the extent that does not reside in the filter
@@ -397,8 +404,10 @@ namespace VSS.TRex.Geometry
       double LastY = Points.Last().Y - BaseY;
       double result = 0.0;
 
-      foreach (FencePoint pt in Points)
+      for (int i = 0, limit = Points.Count; i < limit; i++)
       {
+        var pt = Points[i];
+
         double X = pt.X;
         double Y = pt.Y - BaseY;
 

@@ -86,32 +86,32 @@ namespace VSS.TRex.SubGridTrees.Server
             AssignValuesFromLastPassFlags(Source);
         }
 
-        public virtual void Read(BinaryReader reader, byte[] buffer)
+        public virtual void Read(BinaryReader reader)
         {
             // Read in the latest call pass flags
-            PassDataExistenceMap.Read(reader, buffer);
-            CCVValuesAreFromLastPass.Read(reader, buffer);
-            RMVValuesAreFromLastPass.Read(reader, buffer);
-            FrequencyValuesAreFromLastPass.Read(reader, buffer);
-            GPSModeValuesAreFromLatestCellPass.Read(reader, buffer);
-            AmplitudeValuesAreFromLastPass.Read(reader, buffer);
-            TemperatureValuesAreFromLastPass.Read(reader, buffer);
-            MDPValuesAreFromLastPass.Read(reader, buffer);
-            CCAValuesAreFromLastPass.Read(reader, buffer);
+            PassDataExistenceMap.Read(reader);
+            CCVValuesAreFromLastPass.Read(reader);
+            RMVValuesAreFromLastPass.Read(reader);
+            FrequencyValuesAreFromLastPass.Read(reader);
+            GPSModeValuesAreFromLatestCellPass.Read(reader);
+            AmplitudeValuesAreFromLastPass.Read(reader);
+            TemperatureValuesAreFromLastPass.Read(reader);
+            MDPValuesAreFromLastPass.Read(reader);
+            CCAValuesAreFromLastPass.Read(reader);
         }
 
-        public virtual void Write(BinaryWriter writer, byte [] buffer)
+        public virtual void Write(BinaryWriter writer)
         {
             // Write out the latest call pass flags
-            PassDataExistenceMap.Write(writer, buffer);
-            CCVValuesAreFromLastPass.Write(writer, buffer);
-            RMVValuesAreFromLastPass.Write(writer, buffer);
-            FrequencyValuesAreFromLastPass.Write(writer, buffer);
-            GPSModeValuesAreFromLatestCellPass.Write(writer, buffer);
-            AmplitudeValuesAreFromLastPass.Write(writer, buffer);
-            TemperatureValuesAreFromLastPass.Write(writer, buffer);
-            MDPValuesAreFromLastPass.Write(writer, buffer);
-            CCAValuesAreFromLastPass.Write(writer, buffer);
+            PassDataExistenceMap.Write(writer);
+            CCVValuesAreFromLastPass.Write(writer);
+            RMVValuesAreFromLastPass.Write(writer);
+            FrequencyValuesAreFromLastPass.Write(writer);
+            GPSModeValuesAreFromLatestCellPass.Write(writer);
+            AmplitudeValuesAreFromLastPass.Write(writer);
+            TemperatureValuesAreFromLastPass.Write(writer);
+            MDPValuesAreFromLastPass.Write(writer);
+            CCAValuesAreFromLastPass.Write(writer);
         }
 
         /// <summary>

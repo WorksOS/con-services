@@ -17,7 +17,7 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientCCALeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataCCAEntryRecord>
   {
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client sub grid
     /// </summary>
     static ClientCCALeafSubGrid()
     {
@@ -25,7 +25,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// CCA subgrids require lift processing result...
+    /// CCA sub grids require lift processing result...
     /// </summary>
     /// <returns></returns>
     public override bool WantsLiftProcessingResults() => true;
@@ -48,7 +48,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredCCA != CellPassConsts.NullCCA;
 
     /// <summary>
-    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
     /// and using the default cell size and index origin offset
     /// </summary>
     public ClientCCALeafSubGrid()
@@ -127,7 +127,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// Fills the contents of the client leaf sub grid with a known, non-null test pattern of values
     /// </summary>
     public override void FillWithTestPattern()
     {
@@ -135,7 +135,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// Determines if the leaf content of this sub grid is equal to 'other'
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -160,7 +160,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Dumps CCA values from subgrid to the log
+    /// Dumps CCA values from sub grid to the log
     /// </summary>
     /// <param name="title"></param>
     public override void DumpToLog(string title)
@@ -174,10 +174,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Override to implement if needed.
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+    public override void Write(BinaryWriter writer)
     {
-      base.Write(writer, buffer);
+      base.Write(writer);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
     }
@@ -188,10 +187,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Override to implement if needed.
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader)
     {
-      base.Read(reader, buffer);
+      base.Read(reader);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }

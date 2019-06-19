@@ -304,8 +304,8 @@ namespace VSS.TRex.Tests.Events
         events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 0), DateTimeKind.Utc), ProductionEventType.EndEvent);
         events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 2, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
 
-        Assert.False(events.Events[0].EquivalentTo(events.Events[1]), "Events 0 & 1 are equivalent-to when they are not");
-        Assert.True(events.Events[0].EquivalentTo(events.Events[2]), "Events 1 & 2 are not equivalent-to when they are");
+        Assert.False(events.EventsEquivalent(events.Events[0], events.Events[1]), "Events 0 & 1 are equivalent-to when they are not");
+        Assert.True(events.EventsEquivalent(events.Events[0], events.Events[2]), "Events 1 & 2 are not equivalent-to when they are");
       }
 
       [Fact]

@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using FluentAssertions;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Tests.BinarizableSerialization;
 using VSS.TRex.Types;
@@ -62,9 +63,8 @@ namespace VSS.TRex.Tests.Cells
         [Fact]
         public void Test_CellPass_CreateNullPass()
         {
-            CellPass cp = new CellPass();
-            cp.Clear();
-
+            CellPass cp = CellPass.CLEARED_CELL_PASS;
+            
             Assert.True(
                 cp.Amplitude == CellPassConsts.NullAmplitude &&
                 cp.CCA == CellPassConsts.NullCCA &&
@@ -177,7 +177,7 @@ namespace VSS.TRex.Tests.Cells
         public void Test_CellPass_BinaryReadWrite()
         {
             CellPass cp1 = ATestCellPass();
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
             cp1.Write(bw);
@@ -194,7 +194,7 @@ namespace VSS.TRex.Tests.Cells
             // to ensure they are different
 
             cp2 = ATestCellPass2();
-            MemoryStream ms2 = new MemoryStream();
+            MemoryStream ms2 = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
             BinaryWriter bw2 = new BinaryWriter(ms2, Encoding.UTF8, true);
 
             cp2.Write(bw2);

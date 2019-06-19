@@ -176,10 +176,10 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Write the contents of the Items array using the supplied writer
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+
+    public override void Write(BinaryWriter writer)
     {
-      base.Write(writer, buffer);
+      base.Write(writer);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
     }
@@ -188,10 +188,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Fill the items array by reading the binary representation using the provided reader. 
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader)
     {
-      base.Read(reader, buffer);
+      base.Read(reader);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }

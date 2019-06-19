@@ -532,7 +532,5 @@ namespace VSS.TRex.Geometry
       MaxX = maxX;
       MaxY = maxY;
     }
-
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }

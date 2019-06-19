@@ -59,8 +59,6 @@ namespace VSS.TRex.Designs.Models
 
     public static DesignDescriptor Null() => new DesignDescriptor();
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     public void Write(BinaryWriter writer)
     {
       writer.Write(DesignID.ToByteArray());

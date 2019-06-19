@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Types;
 
@@ -11,15 +12,19 @@ namespace VSS.TRex.TAGFiles.Classes
     /// </summary>
     public class TAGDictionary
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGDictionary>();
+
+        private const int DEFAULT_TAG_FILE_SCHEMA_DICTIONARY_CAPACITY = 100;
+
         /// <summary>
         /// The core dictionary that maps the TAG file items by the ID used in the TAG file to the 
         /// description of that value type as used in the TAG file
         /// </summary>
-        public Dictionary<short, TAGDictionaryItem> Entries { get; }
+        public readonly Dictionary<short, TAGDictionaryItem> Entries;
 
         public TAGDictionary()
         {
-            Entries = new Dictionary<short, TAGDictionaryItem>();
+            Entries = new Dictionary<short, TAGDictionaryItem>(DEFAULT_TAG_FILE_SCHEMA_DICTIONARY_CAPACITY);
         }
 
         /// <summary>
@@ -30,7 +35,7 @@ namespace VSS.TRex.TAGFiles.Classes
         public bool Read(TAGReader reader)
         {
             string fieldName;
-            while ((fieldName = Encoding.ASCII.GetString(reader.ReadANSIString())) != string.Empty)
+            while ((fieldName = reader.ReadANSIString()) != string.Empty)
             {
                 uint tempFieldType = reader.ReadUnSignedIntegerValue(1);
 
@@ -44,7 +49,7 @@ namespace VSS.TRex.TAGFiles.Classes
                     tempFieldType += (uint)tempFieldTypeExtended;
                 }
 
-                TAGDataType fieldType = (TAGDataType)tempFieldType;
+                var fieldType = (TAGDataType)tempFieldType;
 
                 if  (!reader.ReadVarInt(out var id))
                 {
@@ -53,6 +58,9 @@ namespace VSS.TRex.TAGFiles.Classes
 
                 Entries.Add(id, new TAGDictionaryItem(fieldName, fieldType, id));
             }
+
+            if (Entries.Count > DEFAULT_TAG_FILE_SCHEMA_DICTIONARY_CAPACITY)
+              Log.LogInformation($"TAG file schema dictionary final size of {Entries.Count} exceeds default capacity for dictionary of {DEFAULT_TAG_FILE_SCHEMA_DICTIONARY_CAPACITY}. Consider increasing it.");
 
             return true;
         }

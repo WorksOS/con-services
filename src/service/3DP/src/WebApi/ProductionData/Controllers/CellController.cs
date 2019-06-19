@@ -61,38 +61,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     /// <summary>
     /// Retrieve passes for a single cell and process them according to the provided filter and layer analysis parameters
-    /// The version 2 endpoint supports FilterUID values being passed, as opposed to raw filters or filter ID values
-    /// Other than that, the request and response is the same.
-    /// </summary>
-    /// <param name="request">The request representation for the operation</param>
-    /// <returns>A representation of the cell that contains summary information relative to the cell as a whole, a collection of layers derived from layer analysis and the collection of cell passes that met the filter conditions.</returns>
-    /// <executor>CellPassesExecutor</executor>
-    [PostRequestVerifier]
-    [Route("api/v2/productiondata/cells/passes")]
-    [HttpPost]
-    public async Task<CellPassesV2Result> CellPassesV2([FromBody] CellPassesRequestV2 request)
-    {
-#if RAPTOR
-      request.Validate();
-      var projectUid = request.ProjectUid 
-                       ?? await ((RaptorPrincipal) User).GetProjectUid(request.ProjectId.Value);
-
-      if (request.FilterUid.HasValue)
-      {
-        var filter = await GetCompactionFilter(projectUid, request.FilterUid.Value);
-        if (filter != null)
-          request.SetFilter(filter);
-      }
-
-      return RequestExecutorContainerFactory.Build<CellPassesV2Executor>(logger, raptorClient).Process(request) as CellPassesV2Result;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
-    }
-
-    /// <summary>
-    /// Retrieve passes for a single cell and process them according to the provided filter and layer analysis parameters
     /// </summary>
     /// <param name="request">The request representation for the operation</param>
     /// <returns>A representation of the cell that contains summary information relative to the cell as a whole, a collection of layers derived from layer analysis and the collection of cell passes that met the filter conditions.</returns>

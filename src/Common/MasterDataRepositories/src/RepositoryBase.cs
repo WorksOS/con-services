@@ -1,15 +1,13 @@
-﻿using Dapper;
-using Microsoft.Extensions.Logging;
-using MySql.Data.MySqlClient;
-using Polly;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions;
+using Dapper;
+using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
+using Polly;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.Log4NetExtensions;
+using VSS.Serilog.Extensions;
 
 namespace VSS.MasterData.Repositories
 {
@@ -35,7 +33,6 @@ namespace VSS.MasterData.Repositories
       _connectionString = configurationStore.GetConnectionString("VSPDB");
       Log = logger.CreateLogger<RepositoryBase>();
     }
-
 
     private T WithConnection<T>(Func<MySqlConnection, T> body)
     {

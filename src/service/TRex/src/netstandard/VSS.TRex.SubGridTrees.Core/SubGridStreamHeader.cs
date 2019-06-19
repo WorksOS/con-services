@@ -18,7 +18,7 @@ namespace VSS.TRex.SubGridTrees
         public static readonly byte[] kICServerSubGridLeafFileMoniker = new byte[] { 73, 67, 83, 71, 76, 69, 65, 70 }; // 'ICSGLEAF' 
         public static readonly byte[] kICServerSubGridDirectoryFileMoniker = new byte[] { 73, 67, 83, 71, 68, 73, 82, 76 }; // 'ICSGDIRL';
 
-        public byte[] Identifier = new byte[8];
+        public byte[] Identifier { get; set; }
 
         public byte Version;
 
@@ -35,7 +35,7 @@ namespace VSS.TRex.SubGridTrees
 
         public void Read(BinaryReader reader)
         {
-          Version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+            Version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
             Identifier = reader.ReadBytes(8);
 

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
@@ -19,7 +18,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TerrainSwather>();
 
-        private readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+        private static readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
 
         /// <summary>
         /// The maximum number of cell passes that may be generated when swathing a single interval between
@@ -29,7 +28,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
         private readonly BoundingWorldExtent3D swathBounds = new BoundingWorldExtent3D();
 
-        public int ProcessedEpochNumber { get; set; }
+        private int _processedEpochNumber;
+        public int ProcessedEpochNumber { get => _processedEpochNumber; set => _processedEpochNumber = value; }
 
         public TerrainSwather(TAGProcessorBase processor,
                               IProductionEventLists machineTargetValueChanges,
@@ -47,7 +47,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                              PassType passType,
                                              MachineSide machineSide)
         {
-            ProcessedEpochNumber++;
+            _processedEpochNumber++;
 
             // MinX/Y, MaxX/Y describe the world coordinate rectangle the encompasses
             // the pair of epochs denoting a processing interval.
@@ -84,9 +84,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
               int cellCount = 0;
 
               // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
-              for (uint I = (uint) CellExtent.MinX; I <= CellExtent.MaxX; I++)
+              for (int I = CellExtent.MinX; I <= CellExtent.MaxX; I++)
               {
-                for (uint J = (uint) CellExtent.MinY; J <= CellExtent.MaxY; J++)
+                for (int J = CellExtent.MinY; J <= CellExtent.MaxY; J++)
                 {
                   Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
 
@@ -99,9 +99,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             }
 
             // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
-            for (uint I = (uint)CellExtent.MinX; I <= CellExtent.MaxX; I++)
+            for (int I = CellExtent.MinX; I <= CellExtent.MaxX; I++)
             {
-                for (uint J = (uint)CellExtent.MinY; J <= CellExtent.MaxY; J++)
+                for (int J = CellExtent.MinY; J <= CellExtent.MaxY; J++)
                 {
                     Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
 
@@ -150,7 +150,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                         // Fill in all the details for the processed cell pass, using the tag event lookups
                         // to make sure the appropriate values at the cell pass time are used.
 
-                        CellPass ProcessedCellPass = new CellPass();
+                        CellPass ProcessedCellPass = Cells.CellPass.CLEARED_CELL_PASS;
 
                         if (BaseProductionDataSupportedByMachine)
                         {

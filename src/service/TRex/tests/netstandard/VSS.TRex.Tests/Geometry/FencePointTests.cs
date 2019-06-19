@@ -27,7 +27,8 @@ namespace VSS.TRex.Tests.Geometry
         {
             FencePoint fp = new FencePoint();
 
-            Assert.True(fp.X == Consts.NullDouble && fp.Y == Consts.NullDouble && fp.Z == Consts.NullDouble, "Fence point not created as expected");
+            //Assert.True(fp.X == Consts.NullDouble && fp.Y == Consts.NullDouble && fp.Z == Consts.NullDouble, "Fence point not created as expected");
+            Assert.True(fp.X == 0.0 && fp.Y == 0.0 && fp.Z == 0.0, "Fence point not created as expected");
         }
 
         [Fact()]

@@ -58,7 +58,10 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void SaveToPersistentStore(Guid projectUid, IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, this.ToStream(), this);
+      using (var stream = this.ToStream())
+      {
+        storageProxy.WriteStreamToPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, stream, this);
+      }
     }
 
     /// <summary>
@@ -111,7 +114,5 @@ namespace VSS.TRex.SiteModels
         this[i].Extents.Write(writer);
       }
     }
-
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }

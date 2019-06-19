@@ -3,7 +3,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -22,10 +21,11 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<VSS.TRex.IO.RecyclableMemoryStreamManager>(new VSS.TRex.IO.RecyclableMemoryStreamManager()))
         .Add(x => x.AddSingleton<Mock<IConfigurationStore>>(mock =>
         {
           var config = new Mock<IConfigurationStore>();
-          config.Setup(c => c.GetValueUint("NUMPARTITIONS_PERDATACACHE", It.IsAny<uint>())).Returns(Consts.NUMPARTITIONS_PERDATACACHE);
+          config.Setup(c => c.GetValueInt("NUMPARTITIONS_PERDATACACHE", It.IsAny<int>())).Returns(Consts.NUMPARTITIONS_PERDATACACHE);
 
           config.Setup(c => c.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", It.IsAny<int>())).Returns(Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
           config.Setup(c => c.GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", It.IsAny<int>())).Returns(Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
@@ -46,7 +46,7 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueLong("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE", It.IsAny<long>())).Returns(Consts.GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE);
           config.Setup(c => c.GetValueDouble("GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION", It.IsAny<double>())).Returns(Consts.GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION);
 
-          config.Setup(c => c.GetValueUint("SUBGRIDTREENODE_CELLSPARCITYLIMIT", It.IsAny<uint>())).Returns(Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT);
+          config.Setup(c => c.GetValueInt("SUBGRIDTREENODE_CELLSPARCITYLIMIT", It.IsAny<int>())).Returns(Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT);
 
           config.Setup(c => c.GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", It.IsAny<bool>())).Returns(Consts.ENABLE_TAGFILE_ARCHIVING_METADATA);
           config.Setup(c => c.GetValueBool("ENABLE_TAGFILE_ARCHIVING", It.IsAny<bool>())).Returns(Consts.ENABLE_TAGFILE_ARCHIVING);
@@ -61,6 +61,8 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueInt("SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS", It.IsAny<int>())).Returns(Consts.SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS);
 
           config.Setup(c => c.GetValueInt("NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS", It.IsAny<int>())).Returns(Consts.NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS);
+
+          config.Setup(c => c.GetValueBool("TREX_USE_SYNC_TASKS_FOR_STORAGE_PROXY_IGNITE_TRANSACTIONAL_COMMITS", It.IsAny<bool>())).Returns(true);
 
           config.Setup(c => c.GetValueInt("MIN_TAGFILE_LENGTH", It.IsAny<int>())).Returns(Consts.kMinTagFileLengthDefault);
           config.Setup(c => c.GetValueBool("ENABLE_TFA_SERVICE", It.IsAny<bool>())).Returns(Consts.ENABLE_TFA_SERVICE);

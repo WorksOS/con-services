@@ -39,7 +39,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <summary>
         /// The value of the index origin offset for this sub grid tree
         /// </summary>
-        uint IndexOriginOffset { get; }
+        int IndexOriginOffset { get; }
 
         /// <summary>
         /// Root is the top level sub grid in a sub grid tree. All other sub grids are children or descendents from
@@ -119,7 +119,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="cellY"></param>
         /// <param name="pathType"></param>
         /// <returns></returns>
-        ISubGrid ConstructPathToCell(uint cellX, uint cellY, SubGridPathConstructionType pathType);
+        ISubGrid ConstructPathToCell(int cellX, int cellY, SubGridPathConstructionType pathType);
 
         /// <summary>
         /// CalculateIndexOfCellContainingPosition takes a world position and determines
@@ -132,7 +132,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="CellY"></param>
         /// <returns></returns>
         bool CalculateIndexOfCellContainingPosition(double X, double Y,
-                                                    out uint CellX, out uint CellY);
+                                                    out int CellX, out int CellY);
 
         /// <summary>
         /// LocateSubGridContaining attempts to locate a sub grid at the level in the tree
@@ -143,7 +143,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="cellY"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        ISubGrid LocateSubGridContaining(uint cellX, uint cellY, byte level);
+        ISubGrid LocateSubGridContaining(int cellX, int cellY, byte level);
 
         /// <summary>
         /// LocateSubGridContaining attempts to locate a sub grid at the level in the tree,
@@ -153,7 +153,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
         /// <returns></returns>
-        ISubGrid LocateSubGridContaining(uint cellX, uint cellY);
+        ISubGrid LocateSubGridContaining(int cellX, int cellY);
 
         /// <summary>
         /// LocateClosestSubGridContaining behaves much like LocateSubGridContaining()
@@ -165,7 +165,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="cellY"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        ISubGrid LocateClosestSubGridContaining(uint cellX, uint cellY, byte level);
+        ISubGrid LocateClosestSubGridContaining(int cellX, int cellY, byte level);
 
         /// <summary>
         /// GetCellCenterPosition computes the real world location of the center
@@ -177,7 +177,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="Y"></param>
         /// <param name="cx"></param>
         /// <param name="cy"></param>
-        void GetCellCenterPosition(uint X, uint Y, out double cx, out double cy);
+        void GetCellCenterPosition(int X, int Y, out double cx, out double cy);
 
         /// <summary>
         /// GetCellOriginPosition computes the real world location of the origin
@@ -189,7 +189,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="Y"></param>
         /// <param name="ox"></param>
         /// <param name="oy"></param>
-        void GetCellOriginPosition(uint X, uint Y, out double ox, out double oy);
+        void GetCellOriginPosition(int X, int Y, out double ox, out double oy);
 
         /// <summary>
         /// GetCellExtents computes the real world extents of the OTG cell identified
@@ -200,7 +200,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns></returns>
-        BoundingWorldExtent3D GetCellExtents(uint X, uint Y);
+        BoundingWorldExtent3D GetCellExtents(int X, int Y);
 
         /// <summary>
         /// GetCellExtents computes the real world extents of the OTG cell identified
@@ -212,7 +212,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="Y"></param>
         /// <param name="extents"></param>
         /// <returns></returns>
-        void GetCellExtents(uint X, uint Y, ref BoundingWorldExtent3D extents);
+        void GetCellExtents(int X, int Y, ref BoundingWorldExtent3D extents);
    
         /// <summary>
         /// CreateUnattachedLeaf Creates an instance of a sub grid leaf node and returns

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Media3D;
+using Accord.Math;
 using Core.Contracts.SurfaceImportExport;
 using Microsoft.Practices.ServiceLocation;
 using Morph.Contracts.Interfaces;
@@ -84,22 +85,29 @@ namespace DrainageTest
       _logger.LogInfo(nameof(GenerateSurfaceInfo),
         $"_surfaceInfo boundary count: {_surfaceInfo.Boundary.Count} point count: {_surfaceInfo.Points.Count} MaxElevation {_surfaceInfo.MaxElevation} MinElevation {_surfaceInfo.MinElevation}");
 
-      var elevationInterval = (double) 1;
-      _surfaceInfo.GetContourLines(true, elevationInterval, out var contourPoints, null);
-      _logger.LogInfo(nameof(GenerateSurfaceInfo),
-        $"_surfaceInfo ContourPoints {JsonConvert.SerializeObject(contourPoints)}");
+      var cellSizeInPixels = 10.0;
+      var numLevels = 10;
 
-      var contourLines = _surfaceInfo.GetContours(startElevation: 0, elevationInterval: elevationInterval);
-      _logger.LogInfo(nameof(GenerateSurfaceInfo),
-        $"_surfaceInfo ContourLines {JsonConvert.SerializeObject(contourLines)}");
-
-      var cellSize = 3;
       var inclusionZones = new List<IList<Point>>(1);
       inclusionZones.Add(_surfaceInfo.Boundary);
+      var bitmapSource = _surfaceInfo.GeneratePondMap(cellSizeInPixels, numLevels, inclusionZones, null);
 
-      _surfaceInfo.ComputeDrainageMinMaxSlopes(cellSize, inclusionZones, null, out var minSlope,
-        out var maxSlope);
-      _logger.LogInfo(nameof(GenerateSurfaceInfo), $"_surfaceInfo minSlope {minSlope} maxSlope {maxSlope}");
+      //var elevationInterval = (double) 1;
+      //_surfaceInfo.GetContourLines(true, elevationInterval, out var contourPoints, null);
+      //_logger.LogInfo(nameof(GenerateSurfaceInfo),
+      //  $"_surfaceInfo ContourPoints {JsonConvert.SerializeObject(contourPoints)}");
+
+      //var contourLines = _surfaceInfo.GetContours(startElevation: 0, elevationInterval: elevationInterval);
+      //_logger.LogInfo(nameof(GenerateSurfaceInfo),
+      //  $"_surfaceInfo ContourLines {JsonConvert.SerializeObject(contourLines)}");
+
+      //var cellSize = 3;
+      //var inclusionZones = new List<IList<Point>>(1);
+      //inclusionZones.Add(_surfaceInfo.Boundary);
+
+      //_surfaceInfo.ComputeDrainageMinMaxSlopes(cellSize, inclusionZones, null, out var minSlope,
+      //  out var maxSlope);
+      //_logger.LogInfo(nameof(GenerateSurfaceInfo), $"_surfaceInfo minSlope {minSlope} maxSlope {maxSlope}");
 
       return _surfaceInfo;
     }

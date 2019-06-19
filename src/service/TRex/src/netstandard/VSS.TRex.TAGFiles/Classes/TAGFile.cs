@@ -65,7 +65,7 @@ using VSS.TRex.TAGFiles.Types;
   actual meaning of the record and field names found in the file.
 
   File Header
-  Width (Nybbles)	Data Type	Meaning
+  Width (GetNybbles)	Data Type	Meaning
   1	Unsigned Int	File Major version
   1	Unsigned Int	File Minor version
   4	Unsigned Int	Data Dictionary ID number
@@ -88,7 +88,7 @@ using VSS.TRex.TAGFiles.Types;
   ends in the middle of a byte.
 
   Data [Repeated]
-  Width (Nybbles)	Type / Value	Meaning
+  Width (GetNybbles)	Type / Value	Meaning
   1-4	Var Int	Field and Type ID	Repeated
       Field data
 
@@ -101,7 +101,7 @@ using VSS.TRex.TAGFiles.Types;
 
 
   Field And Type Table
-  Width (Nybbles)	Type / Value	Meaning
+  Width (GetNybbles)	Type / Value	Meaning
   N*2	ASCII string	Field name (Max 64. characters)	Repeated
   2	0x00	Field name NUL terminator
   1	Int	Field type
@@ -118,7 +118,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
         private TAGHeader Header = new TAGHeader();
 
-        private TAGDictionary Dictionary { get; } = new TAGDictionary();
+        private readonly TAGDictionary Dictionary = new TAGDictionary();
 
         /// <summary>
         /// Default no-arg constructor
@@ -137,7 +137,7 @@ namespace VSS.TRex.TAGFiles.Classes
         {
             try
             {
-                if (reader.GetSize() == 0)
+                if (reader.StreamSizeInNybbles == 0)
                     return TAGReadResult.ZeroLengthFile;
 
                 try
@@ -171,7 +171,7 @@ namespace VSS.TRex.TAGFiles.Classes
                         if (!Dictionary.Read(reader))
                             return TAGReadResult.InvalidDictionary;
 
-                        DataEndPos = reader.GetSize();
+                        DataEndPos = reader.StreamSizeInNybbles;
                     }
                 }
                 catch (Exception E)
@@ -209,7 +209,7 @@ namespace VSS.TRex.TAGFiles.Classes
                             case TAGDataType.t12bitInt:
                             case TAGDataType.t16bitInt:
                             case TAGDataType.t32bitInt:
-                                sink.ReadIntegerValue(DictionaryEntry, reader.ReadSignedIntegerValue(IntegerNybbleSizes.Nybbles(DictionaryEntry.Type)));
+                                sink.ReadIntegerValue(DictionaryEntry, reader.ReadSignedIntegerValue(IntegerNybbleSizes.Nybbles[(byte)DictionaryEntry.Type]));
                                 break;
 
                             case TAGDataType.t4bitUInt:
@@ -217,7 +217,7 @@ namespace VSS.TRex.TAGFiles.Classes
                             case TAGDataType.t12bitUInt:
                             case TAGDataType.t16bitUInt:
                             case TAGDataType.t32bitUInt:
-                                sink.ReadUnsignedIntegerValue(DictionaryEntry, reader.ReadUnSignedIntegerValue(IntegerNybbleSizes.Nybbles(DictionaryEntry.Type)));
+                                sink.ReadUnsignedIntegerValue(DictionaryEntry, reader.ReadUnSignedIntegerValue(IntegerNybbleSizes.Nybbles[(byte)DictionaryEntry.Type]));
                                 break;
 
                             case TAGDataType.tIEEESingle:

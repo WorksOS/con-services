@@ -16,28 +16,29 @@ Write-Host "Connecting to image host" -ForegroundColor DarkGray
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 IF (-not $?) {
-    Write-Host "Error: Logging in to AWS" -ForegroundColor Red
-    EXIT 1
+    Write-Host "Error: Logging in to AWS, won't pull latest images for container dependancies." -ForegroundColor Red
 }
 
-Write-Host "Building solution" -ForegroundColor DarkGray
+IF ($args -notcontains "--no-build") {
+    Write-Host "Building solution" -ForegroundColor DarkGray
 
-$artifactsWorkingDir = "${PSScriptRoot}/artifacts/ProjectWebApi"
+    $artifactsWorkingDir = "${PSScriptRoot}/artifacts/ProjectWebApi"
 
-Remove-Item -Path ./artifacts -Recurse -Force -ErrorAction Ignore
-Invoke-Expression "dotnet publish ./src/ProjectWebApi/VSS.Project.WebApi.csproj -o ../../artifacts/ProjectWebApi -f netcoreapp2.1 -c Docker"
-Invoke-Expression "dotnet build ./test/UnitTests/MasterDataProjectTests/VSS.Project.WebApi.Tests.csproj"
-Copy-Item ./src/ProjectWebApi/appsettings.json $artifactsWorkingDir
-New-Item -ItemType directory ./artifacts/logs | out-null
+    Remove-Item -Path ./artifacts -Recurse -Force -ErrorAction Ignore
+    Invoke-Expression "dotnet publish ./src/ProjectWebApi/VSS.Project.WebApi.csproj -o ../../artifacts/ProjectWebApi -f netcoreapp2.1 -c Docker"
+    Invoke-Expression "dotnet build ./test/UnitTests/MasterDataProjectTests/VSS.Project.WebApi.Tests.csproj"
+    Copy-Item ./src/ProjectWebApi/appsettings.json $artifactsWorkingDir
+    New-Item -ItemType directory ./artifacts/logs | out-null
 
-Write-Host "Copying static deployment files" -ForegroundColor DarkGray
-Set-Location ./src/ProjectWebApi
-Copy-Item ./appsettings.json $artifactsWorkingDir
-Copy-Item ./Dockerfile $artifactsWorkingDir
-Copy-Item ./web.config $artifactsWorkingDir
-Copy-Item ./log4net.xml $artifactsWorkingDir
+    Write-Host "Copying static deployment files" -ForegroundColor DarkGray
+    Set-Location ./src/ProjectWebApi
+    Copy-Item ./appsettings.json $artifactsWorkingDir
+    Copy-Item ./Dockerfile $artifactsWorkingDir
+    Copy-Item ./web.config $artifactsWorkingDir
+    Copy-Item ./log4net.xml $artifactsWorkingDir
 
-& $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
+    & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
+}
 
 Write-Host "Building image dependencies" -ForegroundColor DarkGray
 
@@ -46,11 +47,16 @@ Invoke-Expression "docker-compose --file docker-compose-local.yml pull"
 
 Write-Host "Building Docker containers" -ForegroundColor DarkGray
 
-# This legacy setting suppresses logging to the console by piping it to a file on disk. If you're looking for the application logs from within the container see .artifacts/logs/.
-$detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
-
 Set-Location $PSScriptRoot
-Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach"
+
+$detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
+Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach > ${PSScriptRoot}/artifacts/logs/output.log"
+
+IF ($args -contains "--no-test") { 
+    $acceptanceTestContainerName = "project_accepttest"
+    Write-Host "`nOpted out of running acceptance tests, stopping container $acceptanceTestContainerName..." -ForegroundColor DarkGray
+    docker ps -q --filter="name=$acceptanceTestContainerName" | ForEach-Object { docker stop $_ }
+}
 
 IF (-not $?) {
     Write-Host "Error: Environment failed to start" -ForegroundColor Red

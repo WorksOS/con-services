@@ -435,8 +435,8 @@ namespace VSS.TRex.SubGrids
 
             clientGrid = ClientLeafSubGridFactory.GetSubGridEx(Utilities.IntermediaryICGridDataTypeForDataType(GridDataType, subGridAddress.SurveyedSurfaceDataRequested), 
                                                                SiteModel.CellSize, SubGridTreeConsts.SubGridTreeLevels,
-                                                               (uint)(subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
-                                                               (uint)(subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
+                                                               subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask,
+                                                               subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask);
             ClientGrid = clientGrid;
 
             if (!InitialiseFilterContext())

@@ -1,8 +1,6 @@
 [Console]::ResetColor()
 
-IF (-NOT($args -contains "--no-var")) {
-    & $PSScriptRoot/set-environment-variables.ps1
-}
+IF ($args -contains "--set-vars") { & ./set-environment-variables.ps1 }
 
 Write-Host "Removing old Filter service application containers" -ForegroundColor DarkGray
 
@@ -23,6 +21,14 @@ FOR ($i = 0; $i -lt $array.length; $i++) {
 
 Write-Host "Done" -ForegroundColor Green
 
+Write-Host "Connecting to image host" -ForegroundColor DarkGray
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
+
+IF (-not $?) {
+    Write-Host "Error: Logging in to AWS" -ForegroundColor Red
+    Exit 1
+}
+
 Write-Host "Building solution" -ForegroundColor DarkGray
 
 $artifactsWorkingDir = "${PSScriptRoot}/artifacts/VSS.Productivity3D.Filter.WebApi"
@@ -41,9 +47,6 @@ Copy-Item ./web.config $artifactsWorkingDir
 Copy-Item ./log4net.xml $artifactsWorkingDir
 
 & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
-
-Write-Host "Connecting to image host" -ForegroundColor DarkGray
-Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 Write-Host "Building image dependencies" -ForegroundColor DarkGray
 

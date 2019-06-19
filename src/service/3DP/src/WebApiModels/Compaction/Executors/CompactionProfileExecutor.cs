@@ -636,8 +636,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       var profileCells = pdsiProfile.Cells.Select(c => new SummaryVolumeProfileCell(
         c.station,
         c.interceptLength,
-        (uint)c.OTGCellX,
-        (uint)c.OTGCellY,
+        c.OTGCellX,
+        c.OTGCellY,
         c.designElevation,
         c.lastCellPassElevation1,
         c.lastCellPassElevation2

@@ -10,11 +10,11 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
     /// the supplied action functor.
     /// </summary>
     /// <param name="functor"></param>
-    public static void SubGridDimensionalIterator(Action<uint, uint> functor)
+    public static void SubGridDimensionalIterator(Action<int, int> functor)
     {
-      for (uint I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
+      for (int I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
       {
-        for (uint J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
+        for (int J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
         {
           functor(I, J);
         }
@@ -26,11 +26,11 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
     /// the supplied action functor.
     /// </summary>
     /// <param name="functor"></param>
-    public static bool SubGridDimensionalIterator(Func<uint, uint, bool> functor)
+    public static bool SubGridDimensionalIterator(Func<int, int, bool> functor)
     {
-      for (uint I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
+      for (int I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
       {
-        for (uint J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
+        for (int J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
         {
           if (!functor(I, J))
             return false;

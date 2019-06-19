@@ -125,8 +125,6 @@ namespace VSS.TRex.Machines
         this[i].Write(writer);
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     /// <summary>
     /// Deserializes the list of machines using the given reader
     /// </summary>
@@ -153,7 +151,10 @@ namespace VSS.TRex.Machines
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, this.ToStream(), this);
+      using (var stream = this.ToStream())
+      {
+        storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, stream, this);
+      }
     }
 
     /// <summary>

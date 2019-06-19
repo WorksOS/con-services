@@ -51,8 +51,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Guid siteModelID = Guid.NewGuid();
       DisplayMode mode = DisplayMode.MachineSpeed;
       XYZ neeCoords = new XYZ(12345.6789, 98765.4321);
-      uint otgCellX = 16234;
-      uint otgCellY = 55236;
+      int otgCellX = 16234;
+      int otgCellY = 55236;
       IFilterSet filters = new FilterSet();
       var referenceDesign = new DesignOffset(Guid.NewGuid(), 12.34);
       var arg = new CellDatumRequestArgument_ClusterCompute(siteModelID, mode, neeCoords, otgCellX, otgCellY, filters, referenceDesign);

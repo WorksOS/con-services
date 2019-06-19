@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
     /// <returns></returns>                        
-    bool GetCell(uint CellX, uint CellY);
+    bool GetCell(int CellX, int CellY);
 
     /// <summary>
     /// Performs the fundamental SetCell operation that sets the state of bit in the tree at the 
@@ -22,7 +22,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// <param name="CellY"></param>
     /// <param name="Value"></param>
     /// <returns></returns>     
-    void SetCell(uint CellX, uint CellY, bool Value);
+    void SetCell(int CellX, int CellY, bool Value);
 
     /// <summary>
     /// Default array indexer for the bits in the sub grid tree mask
@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
     /// <returns></returns>
-    bool this[uint CellX, uint CellY] { get; set; }
+    bool this[int CellX, int CellY] { get; set; }
 
     /// <summary>
     /// RemoveLeafOwningCell locates the leaf sub grid that contains the OTG cell identified by CellX and CellY and removes it from the
@@ -38,7 +38,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// </summary>
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
-    void RemoveLeafOwningCell(uint CellX, uint CellY);
+    void RemoveLeafOwningCell(int CellX, int CellY);
 
     /// <summary>
     /// CountBits performs a scan of the sub grid bit mask tree and counts all the bits that are set within it
@@ -59,7 +59,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
     /// <returns></returns>
-    bool LeafExists(uint CellX, uint CellY);
+    bool LeafExists(int CellX, int CellY);
 
     /// <summary>
     /// Takes a source SubGridBitMask instance and performs a bitwise OR of the contents of source against the
@@ -91,12 +91,12 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
     /// <returns></returns>
-    bool ClearCellIfSet(uint CellX, uint CellY);
+    bool ClearCellIfSet(int CellX, int CellY);
 
     /// <summary>
     /// Scan all the bits in the bit mask sub grid tree treating each set bit as the address of a sub grid
     /// call the supplied Action 'functor' with a leaf sub grid origin address calculated from each of the bits
-    /// Note: As each bit represents an on-the-ground leaf sub grid, cell address of that bit needs to be transformed
+    /// Note: As each bit represents an on-the-ground leaf sub grid, cell address of that bit is transformed
     /// from the level 5 (node) layer to the level 6 (leaf) layer
     /// </summary>
     /// <param name="functor"></param>

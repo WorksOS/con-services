@@ -1,6 +1,7 @@
 ﻿using VSS.TRex.SubGridTrees;
 using System.IO;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
@@ -28,16 +29,16 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       var newLeaf = new SubGridTreeLeafBitmapSubGrid();
 
-      using (var ms = new MemoryStream())
+      using (var ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
       {
         using (var bw = new BinaryWriter(ms))
         {
-          leaf.Write(bw, new byte[10000]);
+          leaf.Write(bw);
 
           ms.Position = 0;
           using (var br = new BinaryReader(ms))
           {
-            newLeaf.Read(br, new byte[10000]);
+            newLeaf.Read(br);
           }
         }
       }

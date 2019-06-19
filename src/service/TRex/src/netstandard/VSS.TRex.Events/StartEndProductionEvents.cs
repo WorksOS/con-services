@@ -20,7 +20,7 @@ namespace VSS.TRex.Events
             ProductionEventType eventListType,
             Action<BinaryWriter, ProductionEventType> serialiseStateOut,
             Func<BinaryReader, ProductionEventType> serialiseStateIn) : base(machineID, siteModelID,
-            eventListType, serialiseStateOut, serialiseStateIn)
+            eventListType, serialiseStateOut, serialiseStateIn, ProductionEventStateEqualityComparer.Equals_ProductionEventType)
         {}
 
         public int IndexOfClosestEventPriorToDate(DateTime eventDate, ProductionEventType eventType)

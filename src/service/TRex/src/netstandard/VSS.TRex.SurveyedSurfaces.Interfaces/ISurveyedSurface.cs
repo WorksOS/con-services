@@ -26,13 +26,6 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     void Write(BinaryWriter writer);
 
     /// <summary>
-    /// Serialises state to a binary writer with a supplied intermediary buffer
-    /// </summary>
-    /// <param name="writer"></param>
-    /// <param name="buffer"></param>
-    void Write(BinaryWriter writer, byte[] buffer);
-
-    /// <summary>
     /// Serialises state in from a binary reader
     /// </summary>
     /// <param name="reader"></param>

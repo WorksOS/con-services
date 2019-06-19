@@ -13,12 +13,12 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       if (ReferenceEquals(x, y))
         return true;
 
+      //Note: associated geofences don't set the CustomerUID so don't include it here
       return x != null && y != null &&
              x.GeofenceUID == y.GeofenceUID &&
              x.GeofenceType == y.GeofenceType &&
              x.GeofenceName == y.GeofenceName &&
-             x.GeometryWKT == y.GeometryWKT &&
-             x.CustomerUID == y.CustomerUID;
+             x.GeometryWKT == y.GeometryWKT;
     }
 
     public int GetHashCode(GeofenceData obj)
@@ -29,7 +29,6 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
         hashCode = (hashCode * 397) ^ obj.GeofenceType.GetHashCode();
         hashCode = (hashCode * 397) ^ obj.GeofenceName.GetHashCode();
         hashCode = (hashCode * 397) ^ obj.GeometryWKT.GetHashCode();
-        hashCode = (hashCode * 397) ^ obj.CustomerUID.GetHashCode();
         return hashCode;
       }
     }

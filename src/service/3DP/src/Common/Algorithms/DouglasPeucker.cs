@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using C5;
-using VLPDDecls;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Common.Algorithms
 {
@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// create point reduction based on the maximum distance between the original curve and simplified curve.
     /// </remarks>
     /// <returns>Returns coorindate array reduced to the target point count.</returns>
-    public static List<double[]> DouglasPeuckerByCount(TWGS84Point[] coordinates, int maxVertexLimit)
+    public static List<double[]> DouglasPeuckerByCount(WGSPoint[] coordinates, int maxVertexLimit)
     {
       if (maxVertexLimit < 0) maxVertexLimit = coordinates.GetLength(0);
       if (maxVertexLimit > 1500) maxVertexLimit = 1500;
@@ -82,13 +82,10 @@ namespace VSS.Productivity3D.Common.Algorithms
     public static List<double[]> DouglasPeuckerByCount(double[,] coordinates, int maxVertexLimit)
     {
       var pointCount = coordinates.GetLength(0);
-      var wgsPointArray = new TWGS84Point[pointCount];
+      var wgsPointArray = new WGSPoint[pointCount];
 
       for (var i = 0; i < pointCount; i++)
-      {
-        wgsPointArray[i].Lon = coordinates[i, 0];
-        wgsPointArray[i].Lat = coordinates[i, 1];
-      }
+        wgsPointArray[i] = new WGSPoint(coordinates[i, 1], coordinates[i, 0]);
 
       return DouglasPeuckerByCount(wgsPointArray, maxVertexLimit);
     }
@@ -96,7 +93,7 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// <summary>
     /// Compute the dot product AB . AC
     /// </summary>
-    private static double ComputeDotProduct(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint)
+    private static double ComputeDotProduct(WGSPoint firstPoint, WGSPoint lastPoint, WGSPoint currentPoint)
     {
       double abx = lastPoint.Lon - firstPoint.Lon;
       double aby = lastPoint.Lat - firstPoint.Lat;
@@ -110,7 +107,7 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// <summary>
     /// Compute the cross product AB x AC
     /// </summary>
-    private static double ComputeCrossProduct(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint)
+    private static double ComputeCrossProduct(WGSPoint firstPoint, WGSPoint lastPoint, WGSPoint currentPoint)
     {
       double abx = lastPoint.Lon - firstPoint.Lon;
       double aby = lastPoint.Lat - firstPoint.Lat;
@@ -124,9 +121,9 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// <summary>
     /// Compute the distance from A to B
     /// </summary>
-    private static double ComputeDistance(TWGS84Point firstPoint, TWGS84Point lastPoint) => Math.Sqrt(ComputeSquaredDistance(firstPoint, lastPoint));
+    private static double ComputeDistance(WGSPoint firstPoint, WGSPoint lastPoint) => Math.Sqrt(ComputeSquaredDistance(firstPoint, lastPoint));
 
-    private static double ComputeSquaredDistance(TWGS84Point firstPoint, TWGS84Point lastPoint)
+    private static double ComputeSquaredDistance(WGSPoint firstPoint, WGSPoint lastPoint)
     {
       double d1 = firstPoint.Lon - lastPoint.Lon;
       double d2 = firstPoint.Lat - lastPoint.Lat;
@@ -138,7 +135,7 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// Compute the distance from AB to C.
     /// If isSegment is true, AB is a segment, not a line.
     /// </summary>
-    private static double LineToPointDistance2D(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint, bool isSegment)
+    private static double LineToPointDistance2D(WGSPoint firstPoint, WGSPoint lastPoint, WGSPoint currentPoint, bool isSegment)
     {
       double dist = ComputeCrossProduct(firstPoint, lastPoint, currentPoint) / ComputeDistance(firstPoint, lastPoint);
 
@@ -156,7 +153,7 @@ namespace VSS.Productivity3D.Common.Algorithms
       return Math.Abs(dist);
     }
 
-    private static KeyInfo FindKey(TWGS84Point[] coords, int first, int last)
+    private static KeyInfo FindKey(WGSPoint[] coords, int first, int last)
     {
       var keyInfo = new KeyInfo();
 
