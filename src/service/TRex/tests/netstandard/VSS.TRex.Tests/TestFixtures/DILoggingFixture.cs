@@ -26,10 +26,10 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .New()
         .AddLogging()
-        .Add(x => x.AddSingleton<VSS.TRex.IO.RecyclableMemoryStreamManager>(new VSS.TRex.IO.RecyclableMemoryStreamManager()))
+        .Add(x => x.AddSingleton<RecyclableMemoryStreamManager>(new RecyclableMemoryStreamManager()))
         .Add(x => x.AddSingleton<IMemoryBufferCaches>(new MemoryBufferCaches()))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
-        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(1000)))
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(1024)))
 
         .Add(x => x.AddSingleton<Mock<IConfigurationStore>>(mock =>
         {
