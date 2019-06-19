@@ -160,18 +160,18 @@ namespace VSS.TRex.Tests.Cells
             c.AddPass(cp2);
 
             // Check cp1 and cp2 are present in that order
-            Assert.True(c.Passes.Elements[0].Equals(cp1) && c.Passes.Elements[1].Equals(cp2), "Two passes added are not in expected order");
+            Assert.True(c.Passes.GetElement(0).Equals(cp1) && c.Passes.GetElement(1).Equals(cp2), "Two passes added are not in expected order");
 
             // Locate both with the time present in each of the contributing cell passes to ensure exact time matches
             // at the boundaries are preserved
 
             c.LocateTime(cp1.Time, out int cellPassIndex);
             Assert.Equal(0, cellPassIndex);
-            Assert.True(c.Passes.Elements[cellPassIndex].Equals(cp1), "Select (first) cell pass does not match pass added to cell");
+            Assert.True(c.Passes.GetElement(cellPassIndex).Equals(cp1), "Select (first) cell pass does not match pass added to cell");
 
             c.LocateTime(cp2.Time, out cellPassIndex);
             Assert.Equal(1, cellPassIndex);
-            Assert.True(c.Passes.Elements[cellPassIndex].Equals(cp2), "Select (second) cell pass does not match pass added to cell");
+            Assert.True(c.Passes.GetElement(cellPassIndex).Equals(cp2), "Select (second) cell pass does not match pass added to cell");
 
             // Locate the cell passes with modified times to cause no exact match to text the 
             // returned insertion position is correct
@@ -321,13 +321,15 @@ namespace VSS.TRex.Tests.Cells
             Assert.Equal(0, addedCount);
             Assert.Equal(0, modifiedCount);
 
-            Assert.True(c2.PassCount == 1 && c2.Passes.Elements[0].Equals(cp1), "Integration unexpectedly modified source cell");
-            Assert.True(c1.PassCount == 1 && c1.Passes.Elements[0].Equals(cp1),
+            Assert.True(c2.PassCount == 1 && c2.Passes.GetElement(0).Equals(cp1), "Integration unexpectedly modified source cell");
+            Assert.True(c1.PassCount == 1 && c1.Passes.GetElement(0).Equals(cp1),
                           "Result of integration two cells with the same single passes does not contain a single pass of the expected content");
 
             // Modify the cell pass in cell 2 to have a different machine ID, but same remaining state to determine if the modification count is set
 
-            c2.Passes.Elements[0].InternalSiteModelMachineIndex = 10000;
+            var cellPass = c2.Passes.GetElement(0);
+            cellPass.InternalSiteModelMachineIndex = 10000;
+            c2.Passes.SetElement(cellPass, 0);
 
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 1 modified (as identical cell passes are not a modification)
             c1.Integrate(c2, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
@@ -337,7 +339,5 @@ namespace VSS.TRex.Tests.Cells
 
             Assert.Equal(1, c1.PassCount);
         }
-
     }
-
 }

@@ -69,9 +69,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         var cell = _subGridGroup[i].Cells.PassesData[0].PassesData.ExtractCellPasses(x, y);
         var passes = cell.Passes;
 
-        for (int cpi = passes.Offset, limit = passes.OffsetPlusCount; cpi < limit; cpi++)
+        for (int cpi = 0, limit = passes.Count; cpi < limit; cpi++)
         {
-          var cellPass = passes.Elements[cpi];
+          var cellPass = passes.GetElement(cpi);
 
           if (_numTotalCellPasses == 0 || lastTime < cellPass.Time)
           {
