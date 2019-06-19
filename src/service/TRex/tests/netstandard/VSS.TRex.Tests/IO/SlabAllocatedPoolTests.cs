@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.IO;
@@ -13,13 +11,27 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Creation()
     {
-      var slab = new SlabAllocatedPool<CellPass>(1000, 10);
+      var slab = new SlabAllocatedPool<CellPass>(1024, 16);
 
       slab.Should().NotBeNull();
       slab.PoolSize.Should().Be(1000);
       slab.ArraySize.Should().Be(10);
 
       slab.AvailCount.Should().Be(100);
+    }
+
+    [Fact]
+    public void Creation_FailWithInvalidPoolSize()
+    {
+      Action act = () => new SlabAllocatedPool<CellPass>(1024, 10);
+      act.Should().Throw<ArgumentException>("Pool size of 1024 is not a power of two as required.");
+    }
+
+    [Fact]
+    public void Creation_FailWithInvalidArraySize()
+    {
+      Action act = () => new SlabAllocatedPool<CellPass>(1000, 16);
+      act.Should().Throw<ArgumentException>("Array size of 16 is not a power of two as required.");
     }
 
     [Fact]

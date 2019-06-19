@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.IO
+﻿using System;
+
+namespace VSS.TRex.IO
 {
   /// <summary>
   /// Implements a pool of small arrays that are allocated together into a single allocated slab
@@ -17,8 +19,25 @@
     private int _availCount;
     public int AvailCount => _availCount;
 
+    /// <summary>
+    /// Creates a new pool of sub-arrays of arraySize size within an overall slab allocated array
+    /// of poolSize size.
+    /// Both poolSize and arraySize are required to be a power of two for optimal use of allocated memory
+    /// </summary>
+    /// <param name="poolSize"></param>
+    /// <param name="arraySize"></param>
     public SlabAllocatedPool(int poolSize, int arraySize)
     {
+      if (1 << (Utilities.Log2(poolSize) - 1) != poolSize)
+      {
+        throw new ArgumentException($"Pool size of {poolSize} is not a power of two as required.");
+      }
+
+      if (1 << (Utilities.Log2(arraySize) - 1) != arraySize)
+      {
+        throw new ArgumentException($"Array size of {arraySize} is not a power of two as required.");
+      }
+
       PoolSize = poolSize;
       ArraySize = arraySize;
 
