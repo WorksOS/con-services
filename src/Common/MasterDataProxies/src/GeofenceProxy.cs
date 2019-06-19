@@ -105,7 +105,7 @@ namespace VSS.MasterData.Proxies
       //var updatedGeofences = await GetGeofences(customerGuid.ToString(), customHeaders);
       //var geofence = updatedGeofences.FirstOrDefault(g => g.GeofenceUID == geofenceGuid || Equals(g, payLoadToSend));
 
-      log.LogInformation($"GeofenceProxy.CreateGeofence. payloadToSend: {JsonConvert.SerializeObject(payLoadToSend)} result: {JsonConvert.SerializeObject(result)}");
+      log.LogInformation($"{nameof(CreateGeofence)} result: {JsonConvert.SerializeObject(result).Truncate(_logMaxChar)}");
       var guidToReturn = Guid.Empty;
       if (result != null)
       {
