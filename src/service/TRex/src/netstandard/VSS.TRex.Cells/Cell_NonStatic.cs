@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Cells.Helpers;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.IO;
@@ -65,14 +66,18 @@ namespace VSS.TRex.Cells
               return;
             }
 
-            // Get a new buffer and copy the content into it
-            var newPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(capacity);
-            newPasses.Copy(Passes, Passes.Count);
-            if (Passes.NeedsToBeReturned())
+            if (capacity > Passes.Capacity)
             {
-              SlabAllocatedCellPassArrayPoolHelper.Caches.Return(Passes);
+              // Get a new buffer and copy the content into it
+              var newPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(capacity);
+              newPasses.Copy(Passes, Passes.Count);
+              if (Passes.NeedsToBeReturned())
+              {
+                SlabAllocatedCellPassArrayPoolHelper.Caches.Return(Passes);
+              }
+
+              Passes = newPasses;
             }
-            Passes = newPasses;
           }
         }
 
