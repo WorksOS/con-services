@@ -136,7 +136,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //TODO this should not be here but will do for the moment
       TRexServerConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
 
-      cfg.SpringConfigUrl = @".\immutablePersistence.xml";
+      //cfg.SpringConfigUrl = @".\immutablePersistence.xml";
 
       // Enforce using only the LocalHost interface
       cfg.DiscoverySpi = new TcpDiscoverySpi

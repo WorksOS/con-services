@@ -143,7 +143,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
     {
       //temp
-      cfg.SpringConfigUrl = @".\mutablePersistence.xml";
+      //cfg.SpringConfigUrl = @".\mutablePersistence.xml";
 
 
       //TODO this should not be here but will do for the moment
