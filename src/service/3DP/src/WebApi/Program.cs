@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.AspNetCore.Http;
+using Serilog.Extensions.Logging;
 using VSS.WebApi.Common;
 using VSS.Serilog.Extensions;
 
@@ -64,8 +65,8 @@ namespace VSS.Productivity3D.WebApi
         .ConfigureLogging((hostContext, loggingBuilder) =>
         {
           loggingBuilder.AddProvider(p =>
-            new SerilogProvider(
-              SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log"), p.GetService<IHttpContextAccessor>()));
+            new SerilogLoggerProvider(
+              SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log", p.GetRequiredService<IHttpContextAccessor>())));
         })
         .Build();
       });
