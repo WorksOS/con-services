@@ -106,14 +106,7 @@ namespace VSS.TRex.IO
       var log2 = Utilities.Log2(buffer.Capacity) - 1;
 
       // Return the span to the pool if it is not the zero element
-      try
-      {
-        _pools[log2].Return(buffer);
-      }
-      catch (Exception e)
-      {
-        Log.LogError($"Exception occured returning buffer: log2={log2}, Capacity = {buffer.Capacity}, Count={buffer.Count}, slab index = {buffer.SlabIndex}, Offset = {buffer.Offset} ");
-      }
+      _pools[log2].Return(buffer);
     }
 
     /// <summary>

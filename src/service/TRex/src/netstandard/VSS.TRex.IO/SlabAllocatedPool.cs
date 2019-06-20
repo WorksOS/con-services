@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.IO
 {
@@ -9,6 +10,8 @@ namespace VSS.TRex.IO
   /// <typeparam name="T"></typeparam>
   public class SlabAllocatedPool<T>
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SlabAllocatedPool<T>>();
+
     public const int MAXIMUM_PROVISIONED_SLAB_COUNT = 250;
 
     public readonly int PoolSize;
@@ -21,6 +24,8 @@ namespace VSS.TRex.IO
 
     private int _capacity;
     public int Capacity => _capacity;
+
+    private readonly int _maxCapacity;
 
     public readonly int SpanCountPerSlabPage;
 
@@ -51,25 +56,27 @@ namespace VSS.TRex.IO
       _slabPages = new SlabAllocatedPoolPage<T>[0];
 
       _rentalTideLevel = -1;
+      _maxCapacity = MAXIMUM_PROVISIONED_SLAB_COUNT * SpanCountPerSlabPage;
     }
 
     public TRexSpan<T> Rent()
     {
       lock (this)
       {
+        if (_rentalTideLevel >= _maxCapacity)
+        {
+          // The pool is empty. Synthesize a new span and return it. This span will be discarded when returned
+          Log.LogInformation($"Array pool for spans of size {ArraySize} has reached max capacity - returning non pool allocated span");
+
+          return new TRexSpan<T>(new T[ArraySize], TRexSpan<T>.NO_SLAB_INDEX, 0, ArraySize, false);
+        }
+
         _rentalTideLevel++;
         var slabIndex = _rentalTideLevel / SpanCountPerSlabPage;
         var slabOffset = _rentalTideLevel % SpanCountPerSlabPage;
 
         if (slabIndex >= _slabPages.Length)
         { 
-          // Has the maximum number of slabs been provisioned?
-          if (_slabPages.Length >= MAXIMUM_PROVISIONED_SLAB_COUNT)
-          {
-            // The pool is empty. Synthesize a new span and return it. This span will be discarded when returned
-            return new TRexSpan<T>(new T[ArraySize], TRexSpan<T>.NO_SLAB_INDEX, 0, ArraySize, false);
-          }
-
           // Need to provision a new slab. This is no optimal code from a performance perspective,
           // but it will happen very rarely in level flight operations.
           Array.Resize(ref _slabPages, _slabPages.Length + 1);
