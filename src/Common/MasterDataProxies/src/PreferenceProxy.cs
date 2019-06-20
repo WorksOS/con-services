@@ -28,7 +28,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<UserPreferenceData> GetUserPreferences(IDictionary<string, string> customHeaders=null)
     {
-      var response = await GetMasterDataItem<UserPreferenceResult>("PREFERENCE_API_URL", customHeaders, "/user?keyName=global");
+      var response = await GetMasterDataItem<UserPreferenceResult>("PREFERENCE_API_URL", customHeaders,  "?keyName=global", "/user");
       log.LogDebug($"{nameof(GetUserPreferences)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response == null ? null : JsonConvert.DeserializeObject<UserPreferenceData>(response.PreferenceJson);

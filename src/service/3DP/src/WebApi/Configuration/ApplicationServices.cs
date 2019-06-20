@@ -97,7 +97,6 @@ namespace VSS.Productivity3D.WebApi
 
       /* todoJeannie 
       // service discovery
-      services.AddServiceDiscovery();
       services.AddTransient<IProjectSettingsProxy, ProjectSettingsV4ServiceDiscoveryProxy>();
       services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
       services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();

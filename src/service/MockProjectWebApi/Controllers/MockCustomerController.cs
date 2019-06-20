@@ -10,7 +10,7 @@ namespace MockProjectWebApi.Controllers
   public class MockCustomerController : Controller
   {
     [Route("api/v1/mock/getcustomersforme")]
-    [Route("api/v1")]
+    [Route("api/v1/Customers/me")]
     [HttpGet]
     public CustomerDataResult DummyGetCustomersForMe()
     {

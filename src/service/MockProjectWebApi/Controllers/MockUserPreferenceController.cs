@@ -11,7 +11,7 @@ namespace MockProjectWebApi.Controllers
     /// Dummies the get user preferences. keyName always equals "global"
     /// </summary>
     [Route("api/v1/mock/preferences/user")]
-    [Route("api/v1")]
+    [Route("api/v1/user")]
     [HttpGet]
     public UserPreferenceResult DummyGetUserPreferences([FromQuery] string keyName)
     {
