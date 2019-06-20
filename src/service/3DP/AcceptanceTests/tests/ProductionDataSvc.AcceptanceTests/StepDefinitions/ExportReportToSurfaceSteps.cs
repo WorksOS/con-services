@@ -1,10 +1,11 @@
-﻿using Xunit;
+﻿using Newtonsoft.Json.Linq;
+using Xunit;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("ExportReportToSurface.feature")]
-  public class ExportReportToSurfaceSteps : FeatureGetRequestBase
+  public class ExportReportToSurfaceSteps : FeatureGetRequestBase<JObject>
   {
     [Then(@"the export result should be of a minimum length")]
     public void ThenTheExportResultShouldSuccessful()

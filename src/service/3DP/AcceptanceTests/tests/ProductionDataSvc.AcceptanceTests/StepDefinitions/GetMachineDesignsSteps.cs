@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("GetMachineDesigns.feature")]
-  public class GetMachineDesignsSteps : FeatureGetRequestBase
+  public class GetMachineDesignsSteps : FeatureGetRequestBase<JObject>
   {
     [Then(@"the following machine designs should be returned:")]
     public void ThenTheFollowingMachineDesignsShouldBeReturned(Gherkin.Ast.DataTable dataTable)

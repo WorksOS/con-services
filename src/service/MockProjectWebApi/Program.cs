@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog.Extensions.Logging;
 using VSS.Serilog.Extensions;
 
 namespace MockProjectWebApi
@@ -43,9 +44,8 @@ namespace MockProjectWebApi
         .ConfigureLogging((hostContext, loggingBuilder) =>
         {
           loggingBuilder.AddProvider(p =>
-            new SerilogProvider(
-              SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log"),
-              p.GetService<IHttpContextAccessor>()));
+            new SerilogLoggerProvider(
+              SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log", p.GetService<IHttpContextAccessor>())));
         })
         .UseUrls("http://0.0.0.0:5001")
         .Build();
