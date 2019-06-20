@@ -11,11 +11,12 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Tile.Service.Common.Executors;
 using VSS.Tile.Service.Common.Filters;
 using VSS.Tile.Service.Common.Interfaces;
@@ -33,10 +34,10 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public LineworkTileController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy,
+    public LineworkTileController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
       IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore,
       IBoundingBoxHelper boundingBoxHelper, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
-      : base(raptorProxy, prefProxy, fileListProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
+      : base(raptorProxy, prefProxy, fileImportProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
     {
       this.dataOceanClient = dataOceanClient;
     }
@@ -190,7 +191,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders()) ?? new List<FileData>();
+      var fileList = await fileImportProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders()) ?? new List<FileData>();
 
       //Select the required ones from the list
       var filesOfType = fileList.Where(f => f.ImportedFileType == importedFileType && f.IsActivated).ToList();

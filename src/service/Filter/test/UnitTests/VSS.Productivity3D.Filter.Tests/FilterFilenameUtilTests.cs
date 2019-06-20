@@ -18,6 +18,8 @@ using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using FilterModel = VSS.MasterData.Repositories.DBModels.Filter;
 
@@ -124,8 +126,8 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<UpdateFilterEvent>())).ReturnsAsync(1);
       filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<CreateFilterEvent>())).ReturnsAsync(1);
 
-      var fileListProxy = new Mock<IFileListProxy>();
-      fileListProxy.As<IFileListProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new List<FileData>());
+      var fileImportProxy = new Mock<IFileImportProxy>();
+      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new List<FileData>());
 
       var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -139,7 +141,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileListProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -193,8 +195,8 @@ namespace VSS.Productivity3D.Filter.Tests
 
         }};
 
-      var fileListProxy = new Mock<IFileListProxy>();
-      fileListProxy.As<IFileListProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(fileData);
+      var fileImportProxy = new Mock<IFileImportProxy>();
+      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(fileData);
 
       var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -208,7 +210,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileListProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -263,8 +265,8 @@ namespace VSS.Productivity3D.Filter.Tests
           MaxZoomLevel = 17
         }};
 
-      var fileListProxy = new Mock<IFileListProxy>();
-      fileListProxy.As<IFileListProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(fileData);
+      var fileImportProxy = new Mock<IFileImportProxy>();
+      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(fileData);
 
       var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -278,7 +280,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileListProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -343,8 +345,8 @@ namespace VSS.Productivity3D.Filter.Tests
           IsActivated = true
         }};
 
-      var fileListProxy = new Mock<IFileListProxy>();
-      fileListProxy.As<IFileListProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(fileData);
+      var fileImportProxy = new Mock<IFileImportProxy>();
+      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(fileData);
 
       var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -358,7 +360,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileListProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 

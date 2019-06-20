@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Abstractions.Proxy.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
@@ -27,12 +27,15 @@ namespace VSS.MasterData.Proxies
   {
     private readonly IWebRequest webRequest;
     private readonly IServiceResolution serviceResolution;
+    private const int DefaultLogMaxchar = 1000;
+    protected readonly int logMaxChar = DefaultLogMaxchar;
 
     protected BaseServiceDiscoveryProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
       : base(configurationStore, logger, dataCache)
     {
       this.webRequest = webRequest;
       this.serviceResolution = serviceResolution;
+      logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxchar);
     }
 
     #region Properties
@@ -104,6 +107,12 @@ namespace VSS.MasterData.Proxies
         return RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters);
     }
 
+    protected Task<Stream> GetMasterDataStreamItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
+     HttpMethod method, IDictionary<string, string> queryParameters = null, string payload = null)
+    {
+      return RequestAndReturnDataStream(customHeaders, method, route, queryParameters, payload);
+    }
+
     protected Task<T> PostMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
       IDictionary<string, string> queryParameters = null, Stream payload = null)
       where T : class, IMasterDataModel
@@ -111,11 +120,31 @@ namespace VSS.MasterData.Proxies
       return RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload);
     }
 
+    protected Task<T> PutMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
+      IDictionary<string, string> queryParameters = null, Stream payload = null)
+      where T : class, IMasterDataModel
+    {
+      return RequestAndReturnData<T>(customHeaders, HttpMethod.Put, route, queryParameters, payload);
+    }
+
+    /// <summary>
+    /// Execute a Post/Put/Delete to an endpoint, do not cache the result, and return a ContractExecutionResult
+    /// NOTE: Must have a uid or userid for cache key
+    /// </summary>
+    protected Task<ContractExecutionResult> MasterDataItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
+      HttpMethod method, IDictionary<string, string> queryParameters = null, Stream payload = null)
+    {
+      return RequestAndReturnResult(customHeaders, method, route, queryParameters, payload);
+    }
+
     #endregion
 
     #region Private Methods
 
-    private Task<string> GetUrl(string route = null, IDictionary<string, string> queryParameters = null)
+    /// <summary>
+    /// TRex uses its own resolver in BaseTRexServiceDiscoveryProxy
+    /// </summary>
+    protected virtual Task<string> GetUrl(string route = null, IDictionary<string, string> queryParameters = null)
     {
       if (IsInsideAuthBoundary && InternalServiceType == ApiService.None)
         throw new ArgumentException($"{nameof(InternalServiceType)} has not been defined, it is required for Services Inside our Authentication Boundary");
@@ -128,8 +157,24 @@ namespace VSS.MasterData.Proxies
         : serviceResolution.ResolveRemoteServiceEndpoint(ExternalServiceName, Type, Version, route, queryParameters));
     }
 
+    private async Task<Stream> RequestAndReturnDataStream(IDictionary<string, string> customHeaders,
+     HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, string payload = null)  
+    {
+      var url = await GetUrl(route, queryParameters);
+
+      // If we are calling to our own services, keep the JWT assertion
+      customHeaders.StripHeaders(IsInsideAuthBoundary);
+
+      var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
+      var result = await (await webRequest.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
+      BaseProxyHealthCheck.SetStatus(true, this.GetType());
+
+      log.LogDebug($"{nameof(RequestAndReturnDataStream)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
+      return result;
+    }
+
     private async Task<TResult> RequestAndReturnData<TResult>(IDictionary<string, string> customHeaders,
-     HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, System.IO.Stream payload = null)  where TResult : class, IMasterDataModel
+      HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, System.IO.Stream payload = null) where TResult : class, IMasterDataModel
     {
       var url = await GetUrl(route, queryParameters);
 
@@ -137,12 +182,25 @@ namespace VSS.MasterData.Proxies
       customHeaders.StripHeaders(IsInsideAuthBoundary);
 
       var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method);
-      log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result).Truncate(_logMaxChar)}");
+      log.LogDebug($"{nameof(RequestAndReturnData)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
 
       return result;
-
     }
 
+    private async Task<ContractExecutionResult> RequestAndReturnResult(IDictionary<string, string> customHeaders,
+      HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, System.IO.Stream payload = null) 
+    {
+      var url = await GetUrl(route, queryParameters);
+
+      // If we are calling to our own services, keep the JWT assertion
+      customHeaders.StripHeaders(IsInsideAuthBoundary);
+
+      var result = await webRequest.ExecuteRequest<ContractExecutionResult>(url, payload: payload, customHeaders: customHeaders, method: method);
+      log.LogDebug($"{nameof(RequestAndReturnResult)} Result: {JsonConvert.SerializeObject(result)}");
+
+      return result;
+    }
+    
     #endregion
   }
 }

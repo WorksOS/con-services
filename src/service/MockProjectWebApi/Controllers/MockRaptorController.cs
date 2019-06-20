@@ -17,7 +17,9 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockRaptorController
   {
-    [HttpGet("api/v2/mock/linework/alignment")]
+    [Route("api/v2/mock/linework/alignment")]
+    [Route("api/v2/linework/alignment")]
+    [HttpGet]
     public FileResult GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid)
     {
       var zipStream = new FileStream("Resources/Large Sites Road_AlignmentCenterline$.zip", FileMode.Open);
@@ -25,6 +27,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     [Route("api/v2/mock/export/veta")]
+    [Route("api/v2/export/veta")]
     [HttpGet]
     public async Task<FileResult> GetMockVetaExportData(
       [FromQuery] Guid projectUid,
@@ -73,6 +76,7 @@ namespace MockProjectWebApi.Controllers
     /// Dummies the post.
     /// </summary>
     [Route("api/v1/mock/coordsystem/validation")]
+    [Route("api/v1/coordsystem/validation")]
     [HttpPost]
     public CoordinateSystemSettingsResult DummyCoordsystemValidationPost(
       [FromBody] CoordinateSystemFileValidationRequest request)
@@ -105,6 +109,7 @@ namespace MockProjectWebApi.Controllers
     /// Dummies the post.
     /// </summary>
     [Route("api/v1/mock/coordsystem")]
+    [Route("api/v1/coordsystem")]
     [HttpPost]
     public CoordinateSystemSettingsResult DummyCoordsystemPost([FromBody] CoordinateSystemFile request)
     {
@@ -135,7 +140,7 @@ namespace MockProjectWebApi.Controllers
     /// Dummies the project projectSettings validation.
     /// </summary>
     [Route("api/v2/validatesettings")]
-    [Route("api/v2/compaction/validatesettings")]
+    [Route("api/v2/compaction/validatesettings")] // obsolete?
     [HttpGet]
     public BaseDataResult DummyValidateProjectSettingsGet(
       [FromQuery] Guid projectUid,
@@ -151,7 +156,7 @@ namespace MockProjectWebApi.Controllers
     /// Dummies the project projectSettings validation.
     /// </summary>
     [Route("api/v2/validatesettings")]
-    [Route("api/v2/compaction/validatesettings")]
+    [Route("api/v2/compaction/validatesettings")] // obsolete?
     [HttpPost]
     public BaseDataResult DummyValidateProjectSettingsPost([FromBody] ProjectSettingsRequest request)
     {

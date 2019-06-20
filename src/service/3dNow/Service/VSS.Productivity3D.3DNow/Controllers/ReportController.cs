@@ -20,20 +20,20 @@ namespace VSS.Productivity3D.Now3D.Controllers
 {
   public class ReportController : BaseController
   {
-    private readonly IProjectListProxy projectListProxy;
-    private readonly IFileListProxy fileListProxy;
+    private readonly IProjectProxy projectProxy;
+    private readonly IFileImportProxy fileImportProxy;
     private readonly IFilterServiceProxy filterServiceProxy;
     private readonly IRaptorProxy raptorProxy;
 
     public ReportController(ILoggerFactory loggerFactory, 
-      IServiceExceptionHandler serviceExceptionHandler, 
-      IProjectListProxy projectListProxy, 
-      IFileListProxy fileListProxy, 
+      IServiceExceptionHandler serviceExceptionHandler,
+      IProjectProxy projectProxy,
+      IFileImportProxy fileImportProxy, 
       IFilterServiceProxy filterServiceProxy,
       IRaptorProxy raptorProxy) : base(loggerFactory, serviceExceptionHandler)
     {
-      this.projectListProxy = projectListProxy;
-      this.fileListProxy = fileListProxy;
+      this.projectProxy = projectProxy;
+      this.fileImportProxy = fileImportProxy;
       this.filterServiceProxy = filterServiceProxy;
       this.raptorProxy = raptorProxy;
     }
@@ -184,7 +184,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
           "No Simple Filter found");
       }
 
-      var project = await projectListProxy.GetProjectForCustomer(CustomerUid, simpleFilter.ProjectUid, CustomHeaders);
+      var project = await projectProxy.GetProjectForCustomer(CustomerUid, simpleFilter.ProjectUid, CustomHeaders);
       if (project == null)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 
@@ -193,7 +193,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
           $"Cannot find project {simpleFilter.ProjectUid} for Customer {CustomerUid}");
       }
 
-      var file = await fileListProxy.GetFileForProject(simpleFilter.ProjectUid, UserId, simpleFilter.DesignFileUid,
+      var file = await fileImportProxy.GetFileForProject(simpleFilter.ProjectUid, UserId, simpleFilter.DesignFileUid,
         CustomHeaders);
 
       if (file == null)

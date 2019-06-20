@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
   /// </summary>
   public class FilterPrincipal : TIDCustomPrincipal
   {
-    private readonly IProjectListProxy ProjectProxy;
+    private readonly IProjectProxy ProjectProxy;
     private readonly IDictionary<string, string> ContextHeaders;
 
     /// <inheritdoc />
@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
     /// <param name="projectProxy">Project proxy to use</param>
     /// <param name="contextHeaders">HTTP request context headers</param>
     public FilterPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userEmail, bool isApplication,
-      IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders)
+      IProjectProxy projectProxy, IDictionary<string, string> contextHeaders)
       : base(identity, customerUid, customerName, userEmail, isApplication)
     {
       ProjectProxy = projectProxy;

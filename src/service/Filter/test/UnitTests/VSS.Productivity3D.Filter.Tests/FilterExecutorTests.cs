@@ -227,7 +227,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var projectListProxy = new Mock<IProjectListProxy>();
+      var projectProxy = new Mock<IProjectProxy>();
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
 
@@ -265,7 +265,7 @@ namespace VSS.Productivity3D.Filter.Tests
           new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType }
         );
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, projectListProxy.Object, 
+        filterRepo.Object, geofenceRepo.Object, projectProxy.Object, 
         raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
@@ -449,7 +449,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var projectListProxy = new Mock<IProjectListProxy>();
+      var projectProxy = new Mock<IProjectProxy>();
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
 
@@ -477,7 +477,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var request =
         FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, null, projectListProxy.Object, raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
+        filterRepo.Object, null, projectProxy.Object, raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       Assert.IsNotNull(result, "executor failed");

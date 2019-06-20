@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
@@ -57,7 +58,8 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaces.SurveyedSurfaceFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
         .Build()
-        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>())
+        .Add(x => x.AddServiceDiscovery())
+        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV2ServiceDiscoveryProxy>())
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))

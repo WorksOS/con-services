@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
-namespace VSS.MasterData.Proxies
+namespace VSS.Productivity3D.Project.Proxy
 {
-  public class FileListProxy : BaseProxy, IFileListProxy
+  [Obsolete("Use FileImportV4ServiceDiscoveryProxy instead")]
+  public class FileImportProxy : BaseProxy, IFileImportProxy
   {
-      public FileListProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(configurationStore, logger, cache)
+    public FileImportProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(configurationStore, logger, cache)
       { }
      
       public async Task<List<FileData>> GetFiles(string projectUid, string userId, IDictionary<string, string> customHeaders)
@@ -23,9 +22,7 @@ namespace VSS.MasterData.Proxies
         var result = await GetContainedMasterDataList<FileDataResult>(projectUid, userId, 
           "IMPORTED_FILE_CACHE_LIFE", "IMPORTED_FILE_API_URL", customHeaders, $"?projectUid={projectUid}");
         if (result.Code == 0)
-        {
           return result.ImportedFileDescriptors;
-        }
 
         log.LogDebug($"Failed to get list of files: {result.Code} {result.Message}");
         return null;

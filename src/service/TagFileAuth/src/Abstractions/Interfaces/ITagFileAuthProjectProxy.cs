@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 
-namespace VSS.MasterData.Proxies.Interfaces
+namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
 {
   public interface ITagFileAuthProjectProxy
   {

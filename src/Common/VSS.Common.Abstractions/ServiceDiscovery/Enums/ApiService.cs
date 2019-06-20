@@ -12,6 +12,7 @@
     Scheduler,
     AssetMgmt3D,
     Push,
-    Tile
+    Tile,
+    TagFileAuth
   }
 }

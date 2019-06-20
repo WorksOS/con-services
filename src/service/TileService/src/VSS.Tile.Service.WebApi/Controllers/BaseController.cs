@@ -22,6 +22,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Models;
@@ -35,7 +37,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
   {
     private readonly IPreferenceProxy prefProxy;
     private readonly IRaptorProxy raptorProxy;
-    protected readonly IFileListProxy fileListProxy;
+    protected readonly IFileImportProxy fileImportProxy;
     private readonly IMapTileGenerator tileGenerator;
     protected readonly IGeofenceProxy geofenceProxy;
     private ILogger<T> logger;
@@ -66,13 +68,13 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, 
+    protected BaseController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy, 
       IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore, 
       IBoundingBoxHelper boundingBoxHelper, ITPaaSApplicationAuthentication authn)
     {
       this.raptorProxy = raptorProxy;
       this.prefProxy = prefProxy;
-      this.fileListProxy = fileListProxy;
+      this.fileImportProxy = fileImportProxy;
       this.tileGenerator = tileGenerator;
       this.geofenceProxy = geofenceProxy;
       tileCache = cache;
@@ -323,7 +325,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <returns>List of active imported files of specified type</returns>
     private async Task<List<FileData>> GetFilesOfType(Guid projectUid, ImportedFileType fileType)
     {
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
+      var fileList = await fileImportProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return new List<FileData>();

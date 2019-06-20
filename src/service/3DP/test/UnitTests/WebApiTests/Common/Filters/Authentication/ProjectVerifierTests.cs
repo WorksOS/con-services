@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = new Random().Next() };
       var contextHeaders = new Dictionary<string, string>();
 
-      var mockProxy = new Mock<IProjectListProxy>();
+      var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), projectUid.ToString(), contextHeaders)).ReturnsAsync(projectData);
 
       httpContext.User = new RaptorPrincipal(new ClaimsIdentity(), Guid.NewGuid().ToString(), "customerName", "merino@vss.com", true, "3D Productivity", mockProxy.Object, contextHeaders);
@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = new Random().Next() };
       var contextHeaders = new Dictionary<string, string>();
 
-      var mockProxy = new Mock<IProjectListProxy>();
+      var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), projectUid.ToString(), contextHeaders)).ReturnsAsync(projectData);
 
       httpContext.User = new RaptorPrincipal(new ClaimsIdentity(), Guid.NewGuid().ToString(), "customerName", "merino@vss.com", true, "3D Productivity", mockProxy.Object, contextHeaders);
@@ -189,7 +189,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = new Random().Next() };
       var contextHeaders = new Dictionary<string, string>();
 
-      var mockProxy = new Mock<IProjectListProxy>();
+      var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), projectUid.ToString(), contextHeaders)).ReturnsAsync(projectData);
 
       httpContext.User = new RaptorPrincipal(new ClaimsIdentity(), Guid.NewGuid().ToString(), "customerName", "merino@vss.com", true, "3D Productivity", mockProxy.Object, contextHeaders);
@@ -226,7 +226,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = legacyProjectId };
       var contextHeaders = new Dictionary<string, string>();
 
-      var mockProxy = new Mock<IProjectListProxy>();
+      var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), projectUid.ToString(), contextHeaders)).ReturnsAsync(projectData);
 
       httpContext.User = new RaptorPrincipal(new ClaimsIdentity(), customerUid.ToString(), "customerName", "merino@vss.com", true, "3D Productivity", mockProxy.Object, contextHeaders);

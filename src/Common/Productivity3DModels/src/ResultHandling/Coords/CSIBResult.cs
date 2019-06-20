@@ -1,8 +1,10 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using System.Collections.Generic;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.ResultHandling.Coords
 {
-  public class CSIBResult : ContractExecutionResult
+  public class CSIBResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// The coordinate system definition as a string.
@@ -17,5 +19,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
     {
       CSIB = csib;
     }
+
+    public List<string> GetIdentifiers() => string.IsNullOrEmpty(CSIB) ? new List<string>() : new List<string>() { CSIB };
   }
 }

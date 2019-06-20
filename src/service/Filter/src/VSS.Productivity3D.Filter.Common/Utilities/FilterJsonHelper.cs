@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using DbFilter = VSS.MasterData.Repositories.DBModels.Filter;
 
 namespace VSS.Productivity3D.Filter.Common.Utilities

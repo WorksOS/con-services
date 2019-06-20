@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
@@ -25,8 +24,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionDataBaseController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
-      : base(configStore, fileListProxy, settingsManager)
+    public CompactionDataBaseController(IConfigurationStore configStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
+      : base(configStore, fileImportProxy, settingsManager)
     {
       RequestFactory = requestFactory;
     }

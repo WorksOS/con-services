@@ -9,22 +9,21 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Report.Contracts;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
@@ -59,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// For getting list of imported files for a project
     /// </summary>
-    private readonly IFileListProxy fileListProxy;
+    private readonly IFileImportProxy fileImportProxy;
 
     /// <summary>
     /// Gets the custom headers for the request.
@@ -90,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy tRexCompactionDataProxy, IFileListProxy fileListProxy)
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy tRexCompactionDataProxy, IFileImportProxy fileImportProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -99,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log = logger.CreateLogger<ReportController>();
       this.configStore = configStore;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
-      this.fileListProxy = fileListProxy;
+      this.fileImportProxy = fileImportProxy;
     }
 
     /// <summary>
@@ -295,7 +294,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
 
-      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileListProxy, tRexCompactionDataProxy
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy
 #if RAPTOR
         , raptorClient
 #endif
