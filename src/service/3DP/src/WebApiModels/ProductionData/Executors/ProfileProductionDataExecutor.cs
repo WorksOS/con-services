@@ -40,6 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var productionDataProfileDataRequest = new ProductionDataProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
         request.Filter,
+        request.ReturnAllPassesAndLayers,
         request.AlignmentDesign?.FileUid,
         request.AlignmentDesign?.Offset,
         request.GridPoints != null,
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y1 ?? request.WGS84Points.lat1,
         request.GridPoints?.y2 ?? request.WGS84Points.lat2,
-        request.ReturnAllPassesAndLayers
+        new OverridingTargets()//TODO:
       );
 
       var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders).Result;
