@@ -909,11 +909,11 @@ namespace VSS.TRex.Profiling
                 }
               }
               else // reset as rules broken
-                {
-                  lowestHeight = Consts.NullHeight;
-                  LowPassIdx = -1;
-                  CurrentLayer.LastPassHeight = hgt;
-                };
+              {
+                lowestHeight = Consts.NullHeight;
+                LowPassIdx = -1;
+                CurrentLayer.LastPassHeight = hgt;
+              };
 
             };
 
