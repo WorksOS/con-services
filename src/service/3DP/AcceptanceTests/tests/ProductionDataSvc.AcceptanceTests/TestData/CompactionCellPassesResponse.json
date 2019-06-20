@@ -1,6 +1,132 @@
 {
-  "ZeroPassCount": {
-    "code": 0,
-    "message": "success"
-  }
+  "OnePassCount": [
+    {
+      "filteredPass": {
+        "amplitude": null,
+        "ccv": null,
+        "frequency": null,
+        "height": 596.934,
+        "machineId": 1219470261494388,
+        "machineSpeed": 300,
+        "materialTemperature": null,
+        "mdp": null,
+        "radioLatency": 0,
+        "rmv": null,
+        "time": "2012-11-07T20:35:52.928",
+        "gpsModeStore": 3
+      },
+      "eventsValue": {
+        "eventAutoVibrationState": 3,
+        "eventDesignNameId": 9,
+        "eventIcFlags": 0,
+        "eventMachineAutomatics": 2,
+        "eventMachineGear": 1,
+        "eventMachineRmvThreshold": null,
+        "eventOnGroundState": 0,
+        "eventVibrationState": 2,
+        "gpsAccuracy": 1,
+        "gpsTolerance": 50,
+        "layerId": 65535,
+        "mapResetDesignNameId": 0,
+        "mapResetPriorDate": "1899-12-30T00:00:00",
+        "positioningTech": 0,
+        "eventInAvoidZoneState": 0,
+        "eventMinElevMapping": 0
+      },
+      "targetsValue": {
+        "targetCcv": null,
+        "targetMdp": null,
+        "targetPassCount": 0,
+        "targetThickness": null,
+        "tempWarningLevelMax": null,
+        "tempWarningLevelMin": null
+      }
+    }
+  ],
+  "TwoPassCounts": [
+    {
+      "filteredPass": {
+        "amplitude": null,
+        "ccv": null,
+        "frequency": null,
+        "height": 596.406,
+        "machineId": 3385342403242252,
+        "machineSpeed": 105,
+        "materialTemperature": null,
+        "mdp": null,
+        "radioLatency": 0,
+        "rmv": null,
+        "time": "2012-10-30T19:57:48.805",
+        "gpsModeStore": 3
+      },
+      "eventsValue": {
+        "eventAutoVibrationState": 3,
+        "eventDesignNameId": 1,
+        "eventIcFlags": 0,
+        "eventMachineAutomatics": 2,
+        "eventMachineGear": 1,
+        "eventMachineRmvThreshold": null,
+        "eventOnGroundState": 0,
+        "eventVibrationState": 2,
+        "gpsAccuracy": 1,
+        "gpsTolerance": 50,
+        "layerId": 65535,
+        "mapResetDesignNameId": 0,
+        "mapResetPriorDate": "1899-12-30T00:00:00",
+        "positioningTech": 0,
+        "eventInAvoidZoneState": 0,
+        "eventMinElevMapping": 0
+      },
+      "targetsValue": {
+        "targetCcv": null,
+        "targetMdp": null,
+        "targetPassCount": 0,
+        "targetThickness": null,
+        "tempWarningLevelMax": null,
+        "tempWarningLevelMin": null
+      }
+    },
+    {
+      "filteredPass": {
+        "amplitude": null,
+        "ccv": null,
+        "frequency": null,
+        "height": 596.397,
+        "machineId": 3385342403242252,
+        "machineSpeed": 116,
+        "materialTemperature": null,
+        "mdp": null,
+        "radioLatency": 0,
+        "rmv": null,
+        "time": "2012-10-30T19:58:29.805",
+        "gpsModeStore": 3
+      },
+      "eventsValue": {
+        "eventAutoVibrationState": 3,
+        "eventDesignNameId": 1,
+        "eventIcFlags": 0,
+        "eventMachineAutomatics": 2,
+        "eventMachineGear": 1,
+        "eventMachineRmvThreshold": null,
+        "eventOnGroundState": 0,
+        "eventVibrationState": 2,
+        "gpsAccuracy": 1,
+        "gpsTolerance": 50,
+        "layerId": 65535,
+        "mapResetDesignNameId": 0,
+        "mapResetPriorDate": "1899-12-30T00:00:00",
+        "positioningTech": 0,
+        "eventInAvoidZoneState": 0,
+        "eventMinElevMapping": 0
+      },
+      "targetsValue": {
+        "targetCcv": null,
+        "targetMdp": null,
+        "targetPassCount": 0,
+        "targetThickness": null,
+        "tempWarningLevelMax": null,
+        "tempWarningLevelMin": null
+      }
+    }
+  ]
 }

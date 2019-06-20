@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit;
 using Xunit.Gherkin.Quick;
@@ -7,7 +8,7 @@ using Xunit.Gherkin.Quick;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("Report.feature")]
-  public class ReportSteps : FeatureGetRequestBase
+  public class ReportSteps : FeatureGetRequestBase<JObject>
   {
     [Then(@"the complex response object should match ""(.*)"" from the repository")]
     public void ValidateResponse(string resultName)

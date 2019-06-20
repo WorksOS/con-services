@@ -70,7 +70,11 @@
     <None Update="CellDatum.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="CompactionCellPasses.feature">
+    <None Update="CompactionCellPassesGood.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Generator></Generator>
+    </None>
+    <None Update="CompactionCellPassesBad.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="CellPasses.feature">
