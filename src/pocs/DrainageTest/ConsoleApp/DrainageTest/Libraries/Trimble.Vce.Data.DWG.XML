@@ -1,0 +1,529 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Trimble.Vce.Data.DWG</name>
+    </assembly>
+    <members>
+        <member name="T:Trimble.Vce.Data.DWG.AssemblyContext">
+            <remarks>
+            Provides information about the environment this assembly is running in.
+            </remarks>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.AssemblyContext.StringResources">
+            <summary>
+            Get the ResourceManager for this assemblies StringTable.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.AssemblyContext.StringTableBaseName">
+            <value>
+            The root name of the string resources.
+            </value>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.AssemblyContext.GetResourceString(System.String)">
+            <summary>
+            Gets the value of the specified String resource for the current culture from
+            this assemblies StringTable resource.
+            </summary>
+            <param name="key">
+            The name of the resource to get.
+            </param>
+            <returns>
+             The value of the resource localized for the caller's current culture settings. If a
+            match is not possible, a string containing the key and BaseName is returned.
+            </returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acEntityBuilder.FinalSummary">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acEntityBuilder.GetLineWeightByLayer(Teigha.TD.OdDbObjectId)">
+            <summary>
+            Get line weight by layer
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acEntityBuilder.GetLineWeight(Teigha.TD.OdDbObjectId,Teigha.Core.LineWeight)">
+            <summary>
+            Get line weight
+            </summary>
+            <param name="id"></param>
+            <param name="weight"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Trimble.Vce.Data.DWG.IDwgImportReader">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.DemandDependentSerial(System.Object,Trimble.Vce.Interfaces.SnapIn.IMemberManagement)">
+            <summary>
+            
+            </summary>
+            <param name="ID"></param>
+            <param name="container"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.GetTextStyleSerial(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.GetLayerSerial(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.GetLineStyleSerial(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.GetSymbolSerial(System.String,System.String)">
+            <summary>
+            get symbol from file
+            </summary>
+            <param name="filename">file name</param>
+            <param name="symbolname">symbol name</param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.GetBlockSerial(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.GetDimensionStyle(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.Inch2Millimeter(System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="d"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.Inch2Millimeter(System.Double[])">
+            <summary>
+            
+            </summary>
+            <param name="d"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.Convert2Meter(System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="dbl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.IDwgImportReader.Convert2Meter(System.Double[])">
+            <summary>
+            
+            </summary>
+            <param name="dbl"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Trimble.Vce.Data.DWG.ShowProgressDelegate">
+            <summary>
+            Delegate declaration for import call back
+            </summary>
+        </member>
+        <member name="T:Trimble.Vce.Data.DWG.DwgReader">
+            <summary>
+            Summary description for DwgReader.
+            </summary>
+        </member>
+        <member name="E:Trimble.Vce.Data.DWG.DwgReader.DwgImportEvent">
+            <summary>
+            hold the event listeners
+            </summary>
+        </member>
+        <member name="F:Trimble.Vce.Data.DWG.DwgReader.m_SkipLayout">
+            <summary>
+            set to skip importing layout.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.#ctor(Trimble.Vce.Core.Components.Project,Trimble.Vce.Data.ImportInformation)">
+            <summary>
+            Initializes a new instance of a DwgReader.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.OnProgress(System.Int32,System.Int32)">
+            <summary>
+            inform the status on importing.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.Import(System.String)">
+            <summary>
+            import the dwg file into a project.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.Import(System.String,System.String)">
+            <summary>
+            import the dwg file into a project.
+            </summary>
+            <param name="file">The file that is being imported.</param>
+            <param name="fileNameForImportReport">The file name and location that we are using in the import report.</param>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.GetLoadedEntities">
+            <summary>
+            Returns an array of serial numbers to all entities read in by the current DwgReader
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.Pre_ReadBlocks(Teigha.TD.OdDbDatabase)">
+            <summary>
+            considering a block may reference to another block, it loops through and creates all blocks
+            before populating them.
+            </summary>
+            <param name="db"></param>
+            <returns>The number of blocks exclude model space and paper space.</returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.DemandDependentSerial(System.Object,Trimble.Vce.Interfaces.SnapIn.IMemberManagement)">
+            <summary>
+            request a serial number of a dependent by giving an acad object id
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.GetTextStyleSerial(System.Object)">
+            <summary>
+            get a symphony textstyle serial number by giving an acad object id
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.GetLayerSerial(System.Object)">
+            <summary>
+            get a symphony layer serial number by giving a name
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.GetBlockSerial(System.String)">
+            <summary>
+            get a block serial number by giving a name
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.GetSymbolSerial(System.String,System.String)">
+            <summary>
+            get a symphony symbol serial number by giving a name
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.GetLineStyleSerial(System.String)">
+            <summary>
+            get a symphony linestyle serial number by giving an acad object id
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.GetDimensionStyle(System.Object)">
+            <summary>
+            get the dimension style object by giving a name.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgReader.FileUnit">
+            <summary>
+            Exposes access to the units used while importing the DXF/DWG file
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgReader.PlotScale">
+            <summary>
+            The plot scale used by this reader
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgReader.LayerPrefix">
+            <summary>
+            String to add before each layer name
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgReader.CreatePoints">
+            <summary>
+            Flag to turn on the creation of 3D points from input point blocks
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgReader.IgnoreDuplicateBlockNames">
+            <summary>
+            Flag to turn on the creation of 3D points from input point blocks
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgReader.DestinationContainer">
+            <summary>
+            If set, the reader will put all of the entities into this container.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgReader.RawDataBlock">
+            <summary>
+            Return the Geodetic coordinate pointer
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.GetMainContainer(System.Double)">
+            <summary>
+            returns the most outer container of the blockview
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.Inch2Millimeter(System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="d"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.Inch2Millimeter(System.Double[])">
+            <summary>
+            
+            </summary>
+            <param name="d"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.Convert2Meter(System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="dbl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.Convert2Meter(System.Double[])">
+            <summary>
+            
+            </summary>
+            <param name="dbl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.ImportBlocks(System.String,System.String,Trimble.Vce.Geometry.Point3D,Trimble.Vce.Core.Components.Project,System.Boolean)">
+            <summary>
+            Import dwg file as plotting blocks.
+            </summary>
+            <param name="block_name">the name of the block</param>
+            <param name="file">The autocad files to be imporeted.</param>
+            <param name="origin">The base location of the block</param>
+            <param name="project">The current <see cref="P:Trimble.Vce.Data.DWG.DwgReader.Project"/>.</param>
+            <param name="replace_block">true to replace existing block.</param>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgReader.GetThumbNailBitmap(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgBlockReader.Origin">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgBlockReader.ReplaceExistingBlock">
+            <summary>
+            not used
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgBlockReader.RawDataBlock">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Trimble.Vce.Data.DWG.DwgImporter">
+            <summary>
+            Import a dwg file into the current project.
+            </summary>
+        </member>
+        <member name="E:Trimble.Vce.Data.DWG.DwgImporter.Progress">
+            <summary>
+            Notifies of the progress of the process.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.Description">
+            <summary>
+            Short description of the importer. For example DC file importer
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.Rank">
+            <summary>
+            Returns the rank of this importer.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgImporter.CanImport(System.String,Trimble.Vce.Interfaces.Client.IProject)">
+            <summary>
+            Test if this importer can import the file.
+            The importer should not rely solely on the file extension.
+            </summary>
+            <param name="FileName">Full path to the file to investigate</param>
+            <param name="iProject">A reference to the current office environment.</param>
+            <returns>returns true if the importer can import this file</returns>
+            <remarks>The description should be kept short (less than 25 chars)</remarks>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.ImportTypeDescriptionFoundDuringCanImport">
+            <summary>
+            Gets the type description that was found when the CanImport was last done.
+            </summary>
+            <remarks>The description should be kept short (less than 25 chars)</remarks>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.Settings">
+            <summary>
+            Object containing the settings/parameters the importer needs.
+            Parameters will be shown and edited in a Property Grid control.
+            Any parameters the user needs to edit should be public properties of the
+            Settings object.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.ResultSummary">
+            <summary>
+            This string contains a "report" (can be multiline) of the result 
+            of the import operation. It is displayed as feedback to the user
+            after the operation is complete.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.DestinationContainer">
+            <summary>
+            If Set, the Dwg will be read into this Container.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.DwgImporter.Import(System.String,Trimble.Vce.Interfaces.Client.IProject,Trimble.Vce.Data.ImportInformation,Trimble.Vce.Coordinates.CoordinateSystemDefinition.ICoordinateSystemUI,System.Boolean@)">
+            <summary>
+            Function to actually read the file and import the data to the current project
+            </summary>
+            <param name="fileName">Full path to the file to be imported</param>
+            <param name="iProject">The current projecct.</param>
+            <param name="importInformation">The reference to the import information. May be null.</param>
+            <param name="iImportDlgs">Interface to the import dialogs.</param>
+            <param name="needRecomputeProject">
+            This is an out parameter indicating wether the project needs to be recomputed or not.
+            </param>
+        </member>
+        <member name="T:Trimble.Vce.Data.DWG.DwgImporter.DwgImportSettings">
+            <summary>
+            Dwg import settings.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.DwgImportSettings.FileUnit">
+            <summary>
+            The unit used in the importing AutoCAD file.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.DwgImportSettings.PlotScale">
+            <summary>
+            The plot scale which is used to draw eneities in the importing file.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.DwgImportSettings.CreatePoints">
+            <summary>
+            Set to true to create database points and false to create CAD points.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.DwgImportSettings.LayerPrefix">
+            <summary>
+            The string to add before each layer name.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.DwgImporter.DwgImportSettings.IgnoreDuplicateBlockNames">
+            <summary>
+            True ignores duplicate block names on import, false appends new serial number to make
+            duplicate block name unique in project.
+            </summary>
+        </member>
+        <member name="T:Trimble.Vce.Data.DWG.DwgImporter.DwgImportSettings.LinearTypeConverter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Trimble.Vce.Data.DWG.AutoCadLineType">
+            <summary>
+            Summary description for AutoCadLineType.
+            </summary>
+        </member>
+        <member name="F:Trimble.Vce.Data.DWG.Logger.DefaultTraceSourceName">
+            <summary>
+            Name of the <c>TraceSource</c> used to log events.
+            </summary>
+        </member>
+        <member name="F:Trimble.Vce.Data.DWG.Logger.mTraceSource">
+            <summary>
+            Trace source for all messages generated by this instance. 
+            This trace source may be defined in the <c>App.config</c> file under the <c>system.diagnostics</c> section.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.Logger.Log(System.Diagnostics.TraceEventType,System.String,System.String,System.Object[])">
+            <summary>
+            Builds and writes a message using <c>System.Diagnostics.TraceSource</c> for this component.
+            <seealso cref="T:System.Diagnostics.TraceSource"/>
+            </summary>
+            <param name="eventType">Type of the event.</param>
+            <param name="source">The place where this message originated</param>
+            <param name="message">The message</param>
+            <param name="args">optional argument to format with the message</param>
+        </member>
+        <member name="T:Trimble.Vce.Data.DWG.acPatternFile">
+            <summary>
+            Summary description for DwgPatternFile.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acPatternFile.#ctor">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acPatternFile.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of a acShapeFile.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acPatternFile.LoadFile(System.String)">
+            <summary>
+            read symbols from another file
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acPatternFile.GetPatternNames">
+            <summary>
+            get pattern names
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.Data.DWG.acPatternFile.PatternFile">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acPatternFile.GetHatchPattern(System.String,Trimble.Vce.ForeignCad.HatchEntity.PatternDefinition@)">
+            <summary>
+            get a single symbol from the shape file
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acPatternFile.GetPreDefinedPatternFileName(System.Boolean,System.String[]@,Trimble.Vce.Interfaces.Units.LinearType@)">
+            <summary>
+            Returns the name of the hatch file that we will use for PreDefined hatch types.  Looks for Acad.pat and AcadIso.pat first,
+            then defaults to the tmodel.pat.
+            </summary>
+            <param name="isMetric"></param>
+            <param name="missingFiles"></param>
+            <param name="patternLinearType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acPatternFile.GetPredefinedHatchPatternNames(System.Boolean,System.String[]@)">
+            <summary>
+            Reads the available hatch patterns from the .pat files and returns a list of strings
+            </summary>
+            <param name="isMetric">Used to find if the current project is Metric</param>
+            <param name="missingFiles">Files that were not found</param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acPatternFile.GetPreDefinedHatchPatternDefinition(System.String,System.Boolean,System.String[]@)">
+            <summary>
+            Returns the PatternDefinition for the hatch name provided.  Returns null if not found.
+            </summary>
+            <param name="hatchName"></param>
+            <param name="isMetric"></param>
+            <param name="missingFiles"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Trimble.Vce.Data.DWG.acPatternFile.GetCustomDefinedHatchPatternDefinition(System.String,System.String[]@)">
+            <summary>
+            Returns the PatternDefinition for the hatch name provided.  Returns null if not found.
+            </summary>
+            <param name="hatchName"></param>
+            <param name="missingFiles"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

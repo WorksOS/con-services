@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydroTask", "HydroTask\HydroTask.csproj", "{BB677D43-C93A-4453-8E05-BE74078C30E7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB677D43-C93A-4453-8E05-BE74078C30E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB677D43-C93A-4453-8E05-BE74078C30E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB677D43-C93A-4453-8E05-BE74078C30E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB677D43-C93A-4453-8E05-BE74078C30E7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {732FA0B9-AB64-476B-979F-25743DCFDE6E}
+	EndGlobalSection
+EndGlobal
