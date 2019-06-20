@@ -9,6 +9,24 @@ namespace VSS.TRex.IO
   /// </summary>
   public class GenericArrayPoolCaches<T> : IGenericArrayPoolCaches<T>
   {
+    /// <summary>
+    /// For arrays with sizes up to and including 1024 elements, this is the number of slots to
+    /// provide for each size bucket (1, 2, 4, 16, 32, 64, 126, 256, 512 & 1024)
+    /// </summary>
+    public const int SMALL_POOL_CACHE_SIZE = 100;
+
+    /// <summary>
+    /// For arrays with sizes above 1024 items, and less than 512k elements, this is the number of slots to
+    /// provide for each size bucket (2048, 4096, 8192, 16384, 65536, 128K, 256K)
+    /// </summary>
+    public const int MEDIUM_POOL_CACHE_SIZE = 20;
+    
+    /// <summary>
+    /// For arrays with sizes above 256k items this is the number of slots to
+    /// provide for each size bucket (512K, 1024K only)
+    /// </summary>
+    public const int LARGE_POOL_CACHE_SIZE = 10;
+
     private static readonly ILogger Log = Logging.Logger.CreateLogger<GenericArrayPoolCaches<T>>();
 
     /// <summary>
@@ -33,29 +51,24 @@ namespace VSS.TRex.IO
 
     public GenericArrayPoolCaches()
     {
-      if (NumExponentialPoolsToProvide != 21)
-      {
-        throw new ArgumentException($"NumExponentialPoolsToProvide expected to be 20, but found to be {NumExponentialPoolsToProvide}");
-      }
-
       _pools = new T[NumExponentialPoolsToProvide][][];
 
       // Establish 100 small rentable buffers for anything up to 1024 items
       for (int i = 0; i < 10; i++)
       {
-        _pools[i] = new T[100][];
+        _pools[i] = new T[SMALL_POOL_CACHE_SIZE][];
       }
 
       // Establish 20 small rentable buffers for anything up to 256K items
 
       for (int i = 10; i < 19; i++)
       {
-        _pools[i] = new T[100][];
+        _pools[i] = new T[MEDIUM_POOL_CACHE_SIZE][];
       }
 
       // Establish 10 512K and 1M item buffers
-      _pools[19] = new T[10][];
-      _pools[20] = new T[10][];
+      _pools[19] = new T[LARGE_POOL_CACHE_SIZE][];
+      _pools[20] = new T[LARGE_POOL_CACHE_SIZE][];
     }
 
     /// <summary>
@@ -106,8 +119,8 @@ namespace VSS.TRex.IO
           return buffer;
         }
 
-        // No rentable elements, so create an appropriate sized buffer for the rental
-      //  Log.LogInformation($"Memory buffer pool serviced request for buffer of {minSize} bytes, but the appropriate pool has ");
+        // No rent able elements, so create an appropriate sized buffer for the rental
+        //  Log.LogInformation($"Memory buffer pool serviced request for buffer of {minSize} bytes, but the appropriate pool has ");
         return new T[1 << log2];
       }
     }

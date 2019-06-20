@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.TRex.Cells.Helpers;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.IO;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Cells
 {
@@ -55,7 +55,7 @@ namespace VSS.TRex.Cells
 
           if (Passes.Elements == null)
           {
-            Passes = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(capacity >= CELL_PASS_ARRAY_INCREMENT_SIZE ? capacity : CELL_PASS_ARRAY_INCREMENT_SIZE);
+            Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity >= CELL_PASS_ARRAY_INCREMENT_SIZE ? capacity : CELL_PASS_ARRAY_INCREMENT_SIZE);
           }
           else
           {
@@ -69,7 +69,7 @@ namespace VSS.TRex.Cells
             if (capacity > Passes.Capacity)
             {
               // Get a new buffer and copy the content into it
-              var newPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(capacity);
+              var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
 
               #if CELLDEBUG
               if (newPasses.Count != 0)
@@ -81,7 +81,7 @@ namespace VSS.TRex.Cells
               newPasses.Copy(Passes, Passes.Count);
               if (Passes.NeedsToBeReturned())
               {
-                SlabAllocatedCellPassArrayPoolHelper.Caches.Return(Passes);
+                SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(Passes);
                 // No need to mark Passes as returned as it is immediately overwritten by newPasses below.
                 //Passes.MarkReturned();
               }
@@ -239,7 +239,7 @@ namespace VSS.TRex.Cells
             // will be cleaned up when the sub grid next exits the cache, or is integrated with
             // another aggregated sub grid from TAG file processing
             
-            var IntegratedPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(IntegratedPassCount);
+            var IntegratedPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(IntegratedPassCount);
 
             #if CELLDEBUG
             if (IntegratedPasses.Count != 0)
@@ -297,9 +297,9 @@ namespace VSS.TRex.Cells
 
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             // Return the original cell pass span and replace it with the integrated one
-            SlabAllocatedCellPassArrayPoolHelper.Caches.Return(Passes);
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(Passes);
 
-            // No need to mark Passes as beign returned as it is immediately replace by IntegratedPasses below
+            // No need to mark Passes as being returned as it is immediately replace by IntegratedPasses below
             // Passes.MarkReturned();
             Passes = IntegratedPasses;
 
