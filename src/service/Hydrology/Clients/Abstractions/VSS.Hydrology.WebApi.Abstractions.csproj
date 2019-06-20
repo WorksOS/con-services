@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net471;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>VSS.Hydrology.WebApi.Abstractions</AssemblyName>
-    <PackageId>WebApiModels</PackageId>
+    <PackageId>WebApiAbstractions</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -77,6 +77,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net471|x64'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net471|x64'">
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
 </Project>

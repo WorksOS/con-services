@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Morph.Services.Core.Interfaces;
+using Newtonsoft.Json;
+using SkuTester.DataModel;
 using VSS.Common.ServiceDiscovery;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -52,6 +56,9 @@ namespace VSS.Hydrology.WebApi
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       
       services.AddTransient<IWebRequest, GracefulWebRequest>();
+#if NET_4_7
+      //services.AddTransient<ILandLeveling, Morph.Services.Engine.TBC.Engine>();
+#endif
       services.AddServiceDiscovery();
 
       /*services.AddOpenTracing(builder =>
@@ -67,6 +74,31 @@ namespace VSS.Hydrology.WebApi
       services.AddOpenTracing();*/
 
       ConfigureApplicationServices(services);
+
+
+# if NET_4_7
+      var configPathAndFilename = "..\\..\\TestData\\Sample\\TestCase.xml";
+      var useCase = TestCase.Load(configPathAndFilename);
+      if (useCase == null)
+        throw new ArgumentException("Unable to load surface configuration");
+      Log.LogInformation($"{nameof(ConfigureAdditionalServices)}: hydro surface configuration loaded: designFile {useCase.Surface} units: {(useCase.IsMetric ? "meters" : "us ft?")} points {(useCase.IsXYZ ? "xyz" : "nee")})");
+
+      //var landLevelingInstance = ServiceLocator.GetRequiredService<ILandLeveling>();
+      //var landLevelingInstance = ServiceProvider.GetRequiredService<ILandLeveling>();
+      //using (var landLevelingInstance = services.ge.Current.GetInstance<ILandLeveling>())
+      //{
+      //  var surfaceInfo = (ISurfaceInfo) null;
+      //  if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(useCase.Surface), ".dxf") == 0)
+      //    surfaceInfo = landLevelingInstance.ImportSurface(useCase.Surface, (Action<float>) null);
+      //  else
+      //    throw new ArgumentException("Only DXF surface file type supported at present");
+
+      //  if (surfaceInfo == null)
+      //    throw new ArgumentException($"Unable to create Surface from: {useCase.Surface}");
+      //}
+
+#endif
+
     }
 
     /// <inheritdoc />

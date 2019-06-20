@@ -65,14 +65,14 @@ namespace VSS.Hydrology.WebApi
         {
           loggingBuilder.AddProvider(p =>
             new SerilogProvider(
-              SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log"), p.GetService<IHttpContextAccessor>()));
+              SerilogExtensions.Configure(config, "VSS.Hydrology.WebAPI.log"), p.GetService<IHttpContextAccessor>()));
         })
         .Build();
       });
 
       var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
-      log.LogInformation("Productivity3D service starting");
+      log.LogInformation("Hydrology service starting");
       log.LogInformation($"Num Libuv Threads = {(libuvConfigured ? libuvThreads.ToString() : "Default")}");
 
       if (int.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out var maxWorkers) &&

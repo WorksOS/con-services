@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net471;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>VSS.Hydrology.WebApi.Proxy</AssemblyName>
-    <PackageId>WebApiModels</PackageId>
+    <PackageId>WebApiProxy</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

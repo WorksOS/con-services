@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net471;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>VSS.Hydrology.WebApi.Common</AssemblyName>
-    <PackageId>WebApiModels</PackageId>
+    <PackageId>WebApiCommon</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\Clients\Abstractions\VSS.Hydrology.WebApi.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

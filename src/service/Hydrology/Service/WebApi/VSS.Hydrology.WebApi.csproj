@@ -71,7 +71,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7;RAPTOR</DefineConstants>
+    <DefineConstants>TRACE;STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -94,6 +94,12 @@
   <ItemGroup>
     <Reference Include="log4net">
       <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Service.Core">
+      <HintPath>..\Libraries\Morph.Service.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Service.Engine">
+      <HintPath>..\Libraries\Morph.Service.Engine.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media.Imaging;
+using Morph.Services.Core.Tools;
 using Trimble.Geodetic.Math.Adjustment;
 using Trimble.Vce.Data.Skp;
 
@@ -19,6 +21,7 @@ namespace HydroTask
       if (args == null || args.Length < 1)
         throw new ArgumentException("Missing command line argument");
 
+      // ..\..\TestData\Sample\TestCase.xml
       var configFilePath = Path.GetFullPath(ParseCommandLineArguments(args)["input"]);
       if (!File.Exists(configFilePath))
         throw new ArgumentException($"Unable to locate the xml configuration file: {configFilePath}");
@@ -70,12 +73,11 @@ namespace HydroTask
         if (surfaceInfo == null)
           throw new ArgumentException($"Unable to create Surface from: {useCase.Surface}");
 
-        var xmlPath = Path.GetFullPath(configFilePath);
         var targetPath =
           Path.ChangeExtension(
             Path.Combine(Path.GetDirectoryName(Path.GetFullPath(configFilePath)),
               Path.GetFileNameWithoutExtension(configFilePath)), "skp");
-
+        
         using (var skuModel = new SkuModel(useCase.IsMetric))
         {
           skuModel.Name = Path.GetFileNameWithoutExtension(targetPath);
@@ -97,6 +99,17 @@ namespace HydroTask
 
           logger.LogInfo(nameof(Execute), $"targetPath: {targetPath}");
         }
+
+        /* todo could exclude sketchup stuff
+       var Levels = 10;
+       BitmapSource pondMap = surfaceInfo.GeneratePondMap(useCase.Resolution, Levels, (IEnumerable<IEnumerable<Point>>) null,
+             (IEnumerable<IEnumerable<Point>>) null);
+       string filename = Path.Combine(Path.GetDirectoryName(targetPath),
+                       string.Format("{0}-{1}-pondmap.png", (object)Path.GetFileNameWithoutExtension(targetPath), "original"));
+       SaveBitmap(pondMap, filename);
+       logger.LogInfo(nameof(Execute), $"targetPath: {targetPath}");
+       */
+
       }
     }
 
