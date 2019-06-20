@@ -51,7 +51,7 @@ namespace VSS.TRex.IO
       _arrays = new TRexSpan<T>[_availCount];
       for (int i = 0, limit = _arrays.Length; i < limit; i++)
       {
-        _arrays[i] = new TRexSpan<T>(_slab, i * ArraySize, ArraySize);
+        _arrays[i] = new TRexSpan<T>(_slab, i * ArraySize, ArraySize, true, true);
       }
     }
 
@@ -62,18 +62,33 @@ namespace VSS.TRex.IO
         if (_availCount == 0)
         {
           // The pool is empty. Synthesize a new span and return it. This span will be discarded when returned
-          return new TRexSpan<T>(new T[ArraySize], 0, ArraySize, false);
+          return new TRexSpan<T>(new T[ArraySize], 0, ArraySize, false, false);
         }
 
-        return _arrays[--_availCount];
+        var buffer = _arrays[--_availCount];
+
+        if (!buffer.IsReturned)
+        {
+          throw new ArgumentException($"Buffer is not returned to pool on re-rental: Offset = {buffer.Offset}, Count = {buffer.Count}, Capacity = {buffer.Capacity}");
+        }
+
+        buffer.IsReturned = false;
+
+        return buffer;
       }
     }
 
     public void Return(TRexSpan<T> buffer)
     {
+      if (buffer.Elements != _slab || buffer.Capacity != ArraySize)
+      {
+        throw new ArgumentException("Buffer span being returned to a pool that did not create it");
+      }
+
       lock (_arrays)
       {
         buffer.Count = 0;
+        buffer.IsReturned = true;
         _arrays[_availCount++] = buffer;
       }
     }

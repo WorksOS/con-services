@@ -217,7 +217,7 @@ namespace VSS.TRex.SubGridTrees.Server
         var originSource = (ISubGridCellPassesDataSegment) source;
 
         // create a copy and compress the latestPasses(and ensure the global latest cells is the mutable variety)
-        SubGridCellPassesDataSegment segment = new SubGridCellPassesDataSegment
+        var segment = new SubGridCellPassesDataSegment
         (ConvertLatestPassesToImmutable(originSource.LatestPasses, SegmentLatestPassesContext.Segment),
           subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper())
         {
@@ -256,7 +256,7 @@ namespace VSS.TRex.SubGridTrees.Server
       try
       {
         // Read in the sub grid segment from the mutable stream
-        SubGridCellPassesDataSegment segment = new SubGridCellPassesDataSegment
+        var segment = new SubGridCellPassesDataSegment
         (subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Segment(),
           subGridCellSegmentPassesDataWrapperFactory.NewMutableWrapper());
 
@@ -269,10 +269,11 @@ namespace VSS.TRex.SubGridTrees.Server
         // Convert to the immutable form
         segment.LatestPasses = ConvertLatestPassesToImmutable(segment.LatestPasses, SegmentLatestPassesContext.Segment);
 
-        var mutablePassesData = segment.PassesData;
-
-        segment.PassesData = subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
-        segment.PassesData.SetState(mutablePassesData.GetState());
+        using (var mutablePassesData = segment.PassesData)
+        {
+          segment.PassesData = subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
+          segment.PassesData.SetState(mutablePassesData.GetState());
+        }
 
         // Write out the segment to the immutable stream
         immutableStream = _recyclableMemoryStreamManager.GetStream(); 

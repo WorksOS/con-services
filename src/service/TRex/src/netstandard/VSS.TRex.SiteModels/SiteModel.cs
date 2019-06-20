@@ -1085,15 +1085,15 @@ return localVersionMap;
       }
     }
 
-    ~SiteModel()
-    {
-       Dispose(false);
-     }
+    //~SiteModel()
+    //{
+    //   Dispose(false);
+    // }
 
     public void Dispose()
     {
       Dispose(true);
-      GC.SuppressFinalize(this);
+    //  GC.SuppressFinalize(this);
     }
     #endregion
   }

@@ -38,7 +38,9 @@ namespace VSS.TRex.Server.MutableData
 {
   public class Program
   {
-    public const int ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL = 1 << 20; // 2^20 = ~1 million
+    public const int ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL = 1 << 22; // 2^21 = ~4 million elements in single element pool
+    public const int SMALLEST_SPAN_EXPONENTSIZE_FOR_CELL_PASS_POOL = 1; // 2 cell passes per cell
+    public const int LARGEST_SPAN_EXPONENTSIZE_FOR_CELL_PASS_POOL = 10; // 1024 cell passes per cell
 
     private static void DependencyInjection()
     {
@@ -48,12 +50,16 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton(new RecyclableMemoryStreamManager
         {
           // Allow up to 256Mb worth of freed small blocks used by the recyclable streams for later reuse
-          // NOte: The default value for this setting is zero which means every block allocated to a
+          // Note: The default value for this setting is zero which means every block allocated to a
           // recyclable stream is freed when the stream is disposed.
           MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
         }))
         .Add(x => x.AddSingleton<IMemoryBufferCaches>(new MemoryBufferCaches()))
-        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL)))
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(
+          new SlabAllocatedArrayPool<CellPass>
+            (ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL,
+            SMALLEST_SPAN_EXPONENTSIZE_FOR_CELL_PASS_POOL,
+            LARGEST_SPAN_EXPONENTSIZE_FOR_CELL_PASS_POOL)))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)

@@ -2,18 +2,19 @@
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.IO;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.IO
 {
-  public class SlabAllocatedArrayPoolTests
+  public class SlabAllocatedArrayPoolTests : IClassFixture<DILoggingFixture>
   {
     private const int DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE = 1024;
 
     [Fact]
     public void Creation_DefaultNumPools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
 
       pool.Should().NotBeNull();
     }
@@ -21,27 +22,41 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Creation_ConfigurableNumPools_Success()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 10);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
       pool.Should().NotBeNull();
 
-      var pool2 = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, SlabAllocatedArrayPool<CellPass>.DefaultNumExponentialPoolsToProvide);
+      var pool2 = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, SlabAllocatedArrayPool<CellPass>.DefaultLargestSizeExponentialPoolToProvide);
       pool2.Should().NotBeNull();
 
-      var pool3 = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, SlabAllocatedArrayPool<CellPass>.MaxNumExponentialPoolsToProvide);
+      var pool3 = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, SlabAllocatedArrayPool<CellPass>.LargestSizeExponentialPoolToProvide);
       pool3.Should().NotBeNull();
     }
 
     [Fact]
-    public void Creation_ConfigurableNumPools_Failure()
+    public void Creation_ConfigurableNumPools_Failure_OutOfRangeSmall()
     {
-      Action act = () => new SlabAllocatedArrayPool<CellPass>(1000, SlabAllocatedArrayPool<CellPass>.MaxNumExponentialPoolsToProvide + 1);
-      act.Should().Throw<ArgumentException>().WithMessage("Cannot create slab allocated array pool with more than *");
+      Action act = () => new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, SlabAllocatedArrayPool<CellPass>.LargestSizeExponentialPoolToProvide + 1);
+      act.Should().Throw<ArgumentException>().WithMessage("Min/Max exponential pool range must be in*");
+    }
+
+    [Fact]
+    public void Creation_ConfigurableNumPools_Failure_OutOfRangeLarge()
+    {
+      Action act = () => new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 0, SlabAllocatedArrayPool<CellPass>.LargestSizeExponentialPoolToProvide);
+      act.Should().Throw<ArgumentException>().WithMessage("Min/Max exponential pool range must be in*");
+    }
+
+    [Fact]
+    public void Creation_ConfigurableNumPools_Failure_SmallGreaterThanLarge()
+    {
+      Action act = () => new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 2, 1);
+      act.Should().Throw<ArgumentException>().WithMessage("Smallest exponential pool must be less than or equal to largest exponential pool to provide");
     }
 
     [Fact]
     public void Rent_AllPools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
 
       for (int i = 0; i < DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE; i++)
       {
@@ -61,10 +76,10 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Rent_LargerThanAvailablePools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
 
       var rental = pool.Rent(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE + 1);
-      rental.Capacity.Should().Be(2 * DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE); // Will make an array pool element of the size it knows how to (power of two)
+      rental.Capacity.Should().Be(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE + 1); 
       rental.Count.Should().Be(0);
       rental.Elements.Should().NotBeNull();
       rental.Offset.Should().Be(0);
@@ -75,7 +90,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Return_AllPools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
 
       for (int i = 0; i < DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE; i++)
       {
@@ -90,10 +105,10 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Return_LargerThanAvailablePools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
 
       var rental = pool.Rent(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE + 1);
-      rental.Capacity.Should().Be(2 * DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);  // Will make an array pool element of the size it knows how to (power of two)
+      rental.Capacity.Should().Be(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE + 1);
 
       pool.Return(rental);
     }

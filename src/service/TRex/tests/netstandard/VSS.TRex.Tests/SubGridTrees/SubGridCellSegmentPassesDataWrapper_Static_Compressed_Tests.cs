@@ -8,12 +8,13 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-    public class SubGridCellSegmentPassesDataWrapper_Static_Compressed_Tests
+    public class SubGridCellSegmentPassesDataWrapper_Static_Compressed_Tests : IClassFixture<DILoggingFixture>
     {
         private const int _InternalMachineID = 105;
 
@@ -55,7 +56,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Create each sub array and add a test cell pass to it
             SubGridUtilities.SubGridDimensionalIterator((x, y) =>
             {
-              cellPasses[x, y].Passes = new TRexSpan<CellPass>(new CellPass[1], 0, 1, false);
+              cellPasses[x, y].Passes = new TRexSpan<CellPass>(new CellPass[1], 0, 1, false, false);
               cellPasses[x, y].Passes.Add(TestCellPass());
             });
 

@@ -460,15 +460,15 @@ namespace VSS.TRex.SubGridTrees.Server
       }
     }
 
-    ~ServerSubGridTree()
-    {
-      Dispose(false);
-    }
+    //~ServerSubGridTree()
+    //{
+    //  Dispose(false);
+    //}
 
     public void Dispose()
     {
       Dispose(true);
-      GC.SuppressFinalize(this);
+    //  GC.SuppressFinalize(this);
     }
     #endregion
   }

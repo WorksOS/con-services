@@ -284,15 +284,13 @@ namespace VSS.TRex.SubGridTrees.Server
         {
           for (int y = 0; y < SubGridTreeConsts.SubGridTreeDimension; y++)
           {
-            int passCount = PassCount(x, y);
-
             var cellPasses = PassData[x, y].Passes;
             var elements = cellPasses.Elements;
 
             for (int i = cellPasses.Offset, limit = cellPasses.OffsetPlusCount; i < limit; i++)
               elements[i].InternalSiteModelMachineIndex = internalMachineIndex;
 
-            numModifiedPasses += passCount;
+            numModifiedPasses += cellPasses.Count;
           }
         }
       }
@@ -378,6 +376,12 @@ namespace VSS.TRex.SubGridTrees.Server
           }
         }
 
+        public void SetStatePassingOwnership(ref Cell_NonStatic[,] cellPasses)
+        {
+          PassData = cellPasses;
+          cellPasses = null;
+        }
+
         public bool HasPassData() => PassData != null;
 
         public bool IsImmutable() => false;
@@ -391,6 +395,14 @@ namespace VSS.TRex.SubGridTrees.Server
           }
 
           var newPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(cellPassCount);
+
+          #if CELLDEBUG
+          if (newPasses.Count != 0)
+          {
+             throw new Exception($"Rented cell pass array does not have a Count of 0, it is {newPasses.Count}");
+          }
+          #endif  
+
           newPasses.Copy(cellPasses, cellPassCount);
           PassData[X, Y].Passes = newPasses;
         }
@@ -428,15 +440,15 @@ namespace VSS.TRex.SubGridTrees.Server
       }
     }
 
-    ~SubGridCellSegmentPassesDataWrapper_NonStatic()
-    {
-      Dispose(false);
-    }
+//    ~SubGridCellSegmentPassesDataWrapper_NonStatic()
+//    {
+//      Dispose(false);
+//    }
 
     public void Dispose()
     {
       Dispose(true);
-      GC.SuppressFinalize(this);
+ //     GC.SuppressFinalize(this);
     }
     #endregion
   }  

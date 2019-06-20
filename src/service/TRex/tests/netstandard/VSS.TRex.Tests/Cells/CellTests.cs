@@ -23,30 +23,6 @@ namespace VSS.TRex.Tests.Cells
         }
 
         /// <summary>
-        /// Ensure the IsEmpty mechanism reports the cell empty of cell passes
-        /// </summary>
-        [Fact]
-        public void Test_Cell_EmptyCellPassesOnCreation()
-        {
-            Cell_NonStatic c = new Cell_NonStatic(0);
-
-            Assert.Equal(0, c.PassCount);
-            Assert.True(c.IsEmpty, "Cell does not report itself as being empty of cell passes");
-        }
-
-        /// <summary>
-        /// Ensure the IsEmpty mechanism reports the cell empty of cell passes
-        /// </summary>
-        [Fact]
-        public void Test_Cell_NonEmptyCellPassesOnCreation()
-        {
-          Cell_NonStatic c = new Cell_NonStatic(1);
-
-          Assert.Equal(0, c.PassCount);
-          Assert.True(c.IsEmpty, "Cell does not report itself as being empty of cell passes");
-        }
-
-        /// <summary>
         /// Ensure the pass count allocation mechanism creates the appropriate number of entries
         /// </summary>
         [Fact]
@@ -151,7 +127,7 @@ namespace VSS.TRex.Tests.Cells
         {
             // Create a cell with two cell passes with different times
             Cell_NonStatic c = new Cell_NonStatic();
-            c.Passes = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false);
+            c.Passes = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false, false);
 
             CellPass cp1 = CellPassTests.ATestCellPass();
             CellPass cp2 = CellPassTests.ATestCellPass2();

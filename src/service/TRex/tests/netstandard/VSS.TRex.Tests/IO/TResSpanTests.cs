@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Creation_Specific_NonPoolAllocated()
     {
-      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false);
+      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false, false);
 
       span.Count.Should().Be(0);
       span.Capacity.Should().Be(2);
@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Creation_Specific_PoolAllocated()
     {
-      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2);
+      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, true, false);
 
       span.Count.Should().Be(0);
       span.Capacity.Should().Be(2);
@@ -51,7 +51,7 @@ namespace VSS.TRex.Tests.IO
     public void Add_SimpleSpan_One()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false);
+      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false, false);
       var cp = new CellPass
       {
         Time = baseTime
@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests.IO
     public void Add_SimpleSpanTwo()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false);
+      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false, false);
       var cp1 = new CellPass
       {
         Time = baseTime
@@ -102,7 +102,7 @@ namespace VSS.TRex.Tests.IO
     public void Add_CentralSpanTwo(int poolSize, int spanOffset, int spanCapacity)
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[poolSize], spanOffset, spanCapacity, false);
+      var span = new TRexSpan<CellPass>(new CellPass[poolSize], spanOffset, spanCapacity, false, false);
       var cp1 = new CellPass
       {
         Time = baseTime
@@ -129,7 +129,7 @@ namespace VSS.TRex.Tests.IO
     public void Insert_AtBeginning()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false);
+      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false, false);
       var cp1 = new CellPass
       {
         Time = baseTime
@@ -156,7 +156,7 @@ namespace VSS.TRex.Tests.IO
     public void Insert_InMiddle()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false);
+      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false, false);
       var cp1 = new CellPass
       {
         Time = baseTime
@@ -183,7 +183,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void GetElement_Empty_Fail()
     {
-      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false);
+      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false, false);
       Action act = () => span.GetElement(0);
       act.Should().Throw<ArgumentException>("Index out of range");
     }
@@ -192,7 +192,7 @@ namespace VSS.TRex.Tests.IO
     public void GetElement_SingleElement_Success()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false);
+      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false, false);
 
       var cp = new CellPass
       {
@@ -208,7 +208,7 @@ namespace VSS.TRex.Tests.IO
     public void GetElement_SingleElement_RangeFailure()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false);
+      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false, false);
 
       var cp = new CellPass
       {
@@ -227,7 +227,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void SetElement_Empty_Fail()
     {
-      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false);
+      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false, false);
       Action act = () => span.SetElement(new CellPass(), 0);
       act.Should().Throw<ArgumentException>("Index out of range");
     }
@@ -237,7 +237,7 @@ namespace VSS.TRex.Tests.IO
     public void SetElement_SingleElement_Success()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false);
+      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false, false);
 
       var cp = new CellPass
       {
@@ -258,7 +258,7 @@ namespace VSS.TRex.Tests.IO
     public void SetElement_SingleElement_RangeFailure()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false);
+      var span = new TRexSpan<CellPass>(new CellPass[3], 0, 3, false, false);
 
       var cp = new CellPass
       {
@@ -278,7 +278,7 @@ namespace VSS.TRex.Tests.IO
     public void Copy_Simple()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false);
+      var span = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false, false);
       var cp1 = new CellPass
       {
         Time = baseTime
@@ -291,7 +291,7 @@ namespace VSS.TRex.Tests.IO
       span.Add(cp1);
       span.Add(cp2);
 
-      var span2 = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false);
+      var span2 = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false, false);
       span2.Copy(span, 2);
 
       span2.Count.Should().Be(2);
@@ -303,7 +303,7 @@ namespace VSS.TRex.Tests.IO
     public void Copy_Central()
     {
       var baseTime = DateTime.UtcNow;
-      var span = new TRexSpan<CellPass>(new CellPass[12], 5, 2, false);
+      var span = new TRexSpan<CellPass>(new CellPass[12], 5, 2, false, false);
       var cp1 = new CellPass
       {
         Time = baseTime
@@ -316,7 +316,7 @@ namespace VSS.TRex.Tests.IO
       span.Add(cp1);
       span.Add(cp2);
 
-      var span2 = new TRexSpan<CellPass>(new CellPass[8], 0, 8, false);
+      var span2 = new TRexSpan<CellPass>(new CellPass[8], 0, 8, false, false);
       span2.Copy(span, 2);
 
       span2.Count.Should().Be(2);

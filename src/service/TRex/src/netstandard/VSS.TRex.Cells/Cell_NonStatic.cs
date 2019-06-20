@@ -70,10 +70,20 @@ namespace VSS.TRex.Cells
             {
               // Get a new buffer and copy the content into it
               var newPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(capacity);
+
+              #if CELLDEBUG
+              if (newPasses.Count != 0)
+              {
+                throw new Exception($"Rented cell pass array does not have a Count of 0, it is {newPasses.Count}");
+              }
+              #endif
+
               newPasses.Copy(Passes, Passes.Count);
               if (Passes.NeedsToBeReturned())
               {
                 SlabAllocatedCellPassArrayPoolHelper.Caches.Return(Passes);
+                // No need to mark Passes as returned as it is immediately overwritten by newPasses below.
+                //Passes.MarkReturned();
               }
 
               Passes = newPasses;
@@ -179,12 +189,13 @@ namespace VSS.TRex.Cells
               Passes.Add(pass);
             }
 
-#if CELLDEBUG
+            #if CELLDEBUG
             for (int i = 0; i < PassCount - 1; i++)
             {
-                Debug.Assert(Passes[i].Time < Passes[i + 1].Time, "Passes not in time order during cell processing.");
+              if (Passes.GetElement(i).Time > Passes.GetElement(i + 1).Time)
+                throw new Exception($"Passes not in time order during cell processing. {Passes.GetElement(i).Time.Ticks} should be less than or equal to {Passes.GetElement(i + 1).Time.Ticks}");
             }
-#endif
+            #endif
         }
 
         /// <summary>
@@ -202,6 +213,12 @@ namespace VSS.TRex.Cells
                               out int addedCount,
                               out int modifiedCount)
         {
+            #if CELLDEBUG
+            // Check 'this' cell pass times are in order
+            CheckPassesAreInCorrectTimeOrder("Cell passes are not in time order before integration");
+            sourcePasses.CheckPassesAreInCorrectTimeOrder("Source cell passes are not in time order before integration");
+            #endif
+
             addedCount = 0;
             modifiedCount = 0;
 
@@ -223,6 +240,13 @@ namespace VSS.TRex.Cells
             // another aggregated sub grid from TAG file processing
             
             var IntegratedPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(IntegratedPassCount);
+
+            #if CELLDEBUG
+            if (IntegratedPasses.Count != 0)
+            {
+                throw new Exception("Rented span count is not zero");
+            }
+            #endif
 
             // Combine the two (sorted) lists of cell passes together to arrive at a single
             // integrated list of passes.
@@ -253,7 +277,7 @@ namespace VSS.TRex.Cells
                                 if (!Passes.GetElement(ThisIndex).Equals(sourcePasses.Passes.GetElement(SourceIndex)))
                                     modifiedCount++;
 
-                                IntegratedPasses.Add(Passes.GetElement(ThisIndex));
+                                IntegratedPasses.Add(sourcePasses.Passes.GetElement(SourceIndex));
                                 SourceIndex++;
                                 ThisIndex++;
                                 IntegratedPassCount--;
@@ -261,7 +285,7 @@ namespace VSS.TRex.Cells
                             }
                         case 1:
                             {
-                                IntegratedPasses.Add(Passes.GetElement(ThisIndex));
+                                IntegratedPasses.Add(sourcePasses.Passes.GetElement(SourceIndex));
                                 SourceIndex++;
                                 break;
                             }
@@ -274,19 +298,32 @@ namespace VSS.TRex.Cells
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             // Return the original cell pass span and replace it with the integrated one
             SlabAllocatedCellPassArrayPoolHelper.Caches.Return(Passes);
+
+            // No need to mark Passes as beign returned as it is immediately replace by IntegratedPasses below
+            // Passes.MarkReturned();
             Passes = IntegratedPasses;
 
             addedCount = IntegratedPassCount - OriginalPassCount;
+
+#if CELLDEBUG
+            CheckPassesAreInCorrectTimeOrder("Cell passes are not in time order after integration");
+#endif
         }
 
+
         /// <summary>
-        /// Creates a new Cell_StaticNon with a cell pass capacity greater than or equal to cellPassCapacity
+        /// Determines if all the passes in the cell are in the correct (increasing) time order
         /// </summary>
-        /// <param name="cellPassCapacity"></param>
-        public Cell_NonStatic(int cellPassCapacity)
+        /// <returns></returns>
+        public void CheckPassesAreInCorrectTimeOrder(string comment)
         {
-            Passes = new TRexSpan<CellPass>();
-            AllocatePasses(cellPassCapacity);
+          for (int i = 0; i < Passes.Count - 1; i++)
+          {
+            if (Passes.GetElement(i).Time >= Passes.GetElement(i + 1).Time)
+            {
+              throw new Exception($"{comment}: {Passes.GetElement(i).Time.Ticks} should be < {Passes.GetElement(i + 1).Time.Ticks}");
+            }
+          }
         }
     }
 }

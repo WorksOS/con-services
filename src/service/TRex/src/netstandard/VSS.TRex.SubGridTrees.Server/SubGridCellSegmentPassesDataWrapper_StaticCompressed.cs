@@ -652,12 +652,20 @@ namespace VSS.TRex.SubGridTrees.Server
                   if (passes.Count > 0)
                   {
                     Array.Copy(passes.Elements, passes.Offset, allCellPassesArray, cellPassIndex, passes.Count);
-                    cellPassIndex += passes.Count;
-
-                    var firstPassTime = passes.Elements[passes.Offset].Time;
+                    var firstPassTime = allCellPassesArray[cellPassIndex].Time;
 
                     if (firstPassTime < FirstRealCellPassTime)
                       FirstRealCellPassTime = firstPassTime;
+
+                    #if CELLDEBUG
+                    for (int i = cellPassIndex + 1; i < cellPassIndex + passes.Count; i++)
+                    {
+                      if (allCellPassesArray[i].Time < FirstRealCellPassTime)
+                        throw new Exception($"Cell passes out of order at index {i}: {FirstRealCellPassTime.Ticks} should be less than or equal to {allCellPassesArray[i].Time.Ticks}");
+                    }
+                    #endif
+
+                    cellPassIndex += passes.Count;
                   }
                 }
               }
@@ -857,6 +865,12 @@ namespace VSS.TRex.SubGridTrees.Server
             PerformEncodingStaticCompressedCache(cellPasses);
         }
 
+        public void SetStatePassingOwnership(ref Cell_NonStatic[,] cellPasses)
+        {
+          this.SetState(cellPasses);
+          cellPasses = null;
+        }
+
         public Cell_NonStatic[,] GetState()
         {
             throw new NotImplementedException("Does not support GetState()");
@@ -961,7 +975,7 @@ namespace VSS.TRex.SubGridTrees.Server
         throw new NotImplementedException("Does not support AllocatePassesExact()");
       }
 
-    #region IDisposable Support
+#region IDisposable Support
 
     private bool disposedValue; // To detect redundant calls
 
@@ -976,16 +990,16 @@ namespace VSS.TRex.SubGridTrees.Server
       }
     }
 
-    ~SubGridCellSegmentPassesDataWrapper_StaticCompressed()
-    {
-      Dispose(false);
-    }
+    //~SubGridCellSegmentPassesDataWrapper_StaticCompressed()
+    //{
+    //  Dispose(false);
+    //}
 
     public void Dispose()
     {
       Dispose(true);
-      GC.SuppressFinalize(this);
+      //GC.SuppressFinalize(this);
     }
-    #endregion
+#endregion
   }
 }

@@ -875,24 +875,24 @@ namespace VSS.TRex.SubGridTrees.Server
       if (!disposedValue)
       {
         // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
-        for (int i = 0, limit = Cells.PassesData.Count; i < limit; i++)
+        for (int i = 0, limit = Cells?.PassesData?.Count ?? 0; i < limit; i++)
         {
-         Cells.PassesData[i].PassesData?.Dispose();
+           Cells.PassesData[i].PassesData?.Dispose();
         }
 
         disposedValue = true;
       }
     }
 
-    ~ServerSubGridTreeLeaf()
-    {
-      Dispose(false);
-    }
+    //~ServerSubGridTreeLeaf()
+    //{
+    //  Dispose(false);
+    //}
 
     public void Dispose()
     {
       Dispose(true);
-      GC.SuppressFinalize(this);
+      //GC.SuppressFinalize(this);
     }
     #endregion
   }

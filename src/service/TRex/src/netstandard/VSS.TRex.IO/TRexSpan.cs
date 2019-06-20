@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 
 namespace VSS.TRex.IO
 {
@@ -10,6 +8,9 @@ namespace VSS.TRex.IO
   /// <typeparam name="T"></typeparam>
   public struct TRexSpan<T>
   {
+    // Debugging flag
+    public bool IsReturned;
+
     /// <summary>
     /// Is the span allocated in a slab allocated buffer?
     /// </summary>
@@ -60,13 +61,14 @@ namespace VSS.TRex.IO
     /// <param name="offset"></param>
     /// <param name="capacity"></param>
     /// <param name="poolAllocated"></param>
-    public TRexSpan(T[] elements, int offset, int capacity, bool poolAllocated = true)
+    public TRexSpan(T[] elements, int offset, int capacity, bool poolAllocated, bool isReturned)
     {
       _elements = elements;
       Offset = offset;
       Count = 0;
       Capacity = capacity;
       PoolAllocated = poolAllocated;
+      IsReturned = isReturned;
     }
 
     /// <summary>
@@ -165,7 +167,7 @@ namespace VSS.TRex.IO
     }
 
     /// <summary>
-    /// Copies a number of elements from the start of the source span to the start of the target span
+    /// Copies a number of elements from the start of the source array to the start of the target span
     /// </summary>
     /// <param name="source"></param>
     /// <param name="sourceCount"></param>
