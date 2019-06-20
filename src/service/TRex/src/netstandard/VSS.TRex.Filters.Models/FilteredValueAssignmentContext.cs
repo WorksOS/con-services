@@ -28,6 +28,8 @@ namespace VSS.TRex.Filters.Models
             }
         }
 
+        public int LowestPassIdx;
+
         public FilteredSinglePassInfo FilteredValue;
 
         public FilteredSinglePassInfo PreviousFilteredValue = new FilteredSinglePassInfo();
@@ -53,6 +55,7 @@ namespace VSS.TRex.Filters.Models
             FilteredValue.Clear();
             PreviousFilteredValue.Clear();
             CellProfile = null;
+            LowestPassIdx = Common.Consts.NullLowestPassIdx ;
 //          todo  LiftBuildSettings = Nil;
         }
     }
