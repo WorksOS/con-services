@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("GetProjectMachines.feature")]
-  public class GetProjectMachinesSteps : FeatureGetRequestBase
+  public class GetProjectMachinesSteps : FeatureGetRequestBase<JObject>
   {
     [Then(@"the following machines should be returned:")]
     public void ThenTheFollowingMachinesShouldBeReturned(Gherkin.Ast.DataTable dataTable)
