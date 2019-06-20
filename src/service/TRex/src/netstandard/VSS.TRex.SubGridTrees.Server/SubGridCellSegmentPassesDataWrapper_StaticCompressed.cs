@@ -675,7 +675,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 FirstRealCellPassTime = Consts.MIN_DATETIME_AS_UTC;
 
               // Initialise the MachineIDs array and the MachineIDSet that encodes it as a bit array
-              MachineIDSet = new BitArray(allCellPassesArray.MaxInternalSiteModelMachineIndex(segmentPassCount) + 1);
+              MachineIDSet = new BitArray(allCellPassesArray.MaxInternalSiteModelMachineIndex(0, segmentPassCount - 1) + 1);
               for (int i = 0; i < segmentPassCount; i++)
                 MachineIDSet[allCellPassesArray[i].InternalSiteModelMachineIndex] = true;
 
