@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,6 +20,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Scheduler.Abstractions;
@@ -34,12 +36,14 @@ using VSS.Productivity3D.WebApi.Models.Services;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
+using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 
 // ReSharper disable once CheckNamespace
 namespace VSS.Productivity3D.WebApi
 {
   /// <summary>
-  /// Partial implemtnation of startup configuration for service descriptor contracts.
+  /// Partial implementation of startup configuration for service descriptor contracts.
   /// </summary>
   public partial class Startup
   {
@@ -60,10 +64,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IErrorCodesProvider, TRexResult>();
 #endif
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
-      services.AddSingleton<IProjectListProxy, ProjectListProxy>();
-      //todoJeannie wait on Stephen to complete serviceDiscovery: services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
-      services.AddSingleton<IFileListProxy, FileListProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
@@ -71,17 +71,12 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
       services.AddScoped<ICompactionSettingsManager, CompactionSettingsManager>();
       services.AddScoped<IProductionDataRequestFactory, ProductionDataRequestFactory>();
-      services.AddScoped<IFilterServiceProxy, FilterServiceProxy>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
-      services.AddSingleton<IBoundaryProxy, BoundaryProxy>();
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
-      services.AddScoped<ISchedulerProxy, SchedulerProxy>();
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
-      services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
-      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
       services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>) provider.GetServices<IHostedService>()
@@ -92,6 +87,25 @@ namespace VSS.Productivity3D.WebApi
       // Action services
       services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();
 
+      services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
+      services.AddSingleton<IProjectProxy, ProjectProxy>();
+      services.AddSingleton<IFileImportProxy, FileImportProxy>();
+      services.AddScoped<IFilterServiceProxy, FilterServiceProxy>();
+      services.AddScoped<ISchedulerProxy, SchedulerProxy>();
+      services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
+      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
+
+      /* todoJeannie 
+      // service discovery
+      services.AddTransient<IProjectSettingsProxy, ProjectSettingsV4ServiceDiscoveryProxy>();
+      services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
+      services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
+      services.AddTransient<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
+      services.AddTransient<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
+      services.AddTransient<ITRexTagFileProxy, TRexTagFileV1ServiceDiscoveryProxy>();
+      services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1ServiceDiscoveryProxy>();
+      todoJeannie */
+      
       //Disable CAP for now #76666
       /*
       var serviceProvider = services.BuildServiceProvider();

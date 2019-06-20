@@ -1,23 +1,23 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.Proxies
+namespace VSS.TRex.Gateway.Common.Proxy
 {
   /// <summary>
   /// Proxy for Trex import files services.
   /// </summary>
+  [Obsolete("Use TRexImportedFileV1ServiceDiscoveryProxy instead")]
   public class TRexImportFileProxy : BaseProxy, ITRexImportFileProxy
   {
     // TRex has 2 endpoints, 1 for immutable and other for mutable access

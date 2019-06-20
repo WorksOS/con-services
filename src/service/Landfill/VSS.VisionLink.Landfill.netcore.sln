@@ -47,7 +47,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\..\..\.editorconfig = ..\..\..\.editorconfig
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Abstractions", "..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj", "{89F7FC25-80CE-40FE-9B8A-A2E7B61C9051}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{F662D3CB-D1E5-4A43-8AEF-D4649AEE9719}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Proxy", "..\Project\src\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj", "{A24D55F0-D4CD-48E9-917E-296C619EE0C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -135,10 +139,18 @@ Global
 		{E6627E2C-A7B4-4C60-858F-46AF7154B4D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6627E2C-A7B4-4C60-858F-46AF7154B4D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6627E2C-A7B4-4C60-858F-46AF7154B4D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89F7FC25-80CE-40FE-9B8A-A2E7B61C9051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89F7FC25-80CE-40FE-9B8A-A2E7B61C9051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89F7FC25-80CE-40FE-9B8A-A2E7B61C9051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89F7FC25-80CE-40FE-9B8A-A2E7B61C9051}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F662D3CB-D1E5-4A43-8AEF-D4649AEE9719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F662D3CB-D1E5-4A43-8AEF-D4649AEE9719}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F662D3CB-D1E5-4A43-8AEF-D4649AEE9719}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F662D3CB-D1E5-4A43-8AEF-D4649AEE9719}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A24D55F0-D4CD-48E9-917E-296C619EE0C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A24D55F0-D4CD-48E9-917E-296C619EE0C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A24D55F0-D4CD-48E9-917E-296C619EE0C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A24D55F0-D4CD-48E9-917E-296C619EE0C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

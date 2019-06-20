@@ -60,7 +60,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{16AE57B5-A9AE-4B44-A931-B5AD96DFE661}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filter", "Filter", "{17683F33-FE34-4AA4-8032-755FE6125ABE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filter Service", "Filter Service", "{17683F33-FE34-4AA4-8032-755FE6125ABE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{71A5374F-E997-476F-866D-53FBAC8EC278}"
 EndProject
@@ -97,7 +97,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\..\..\.editorconfig = ..\..\..\.editorconfig
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TRex", "TRex", "{49B7C1A1-7968-428C-B7A0-36BD8A280FA6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TRex Service", "TRex Service", "{49B7C1A1-7968-428C-B7A0-36BD8A280FA6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gateway.Abstractions", "..\TRex\src\interfaces\VSS.TRex.ConnectedSite.Gateway.Abstractions\VSS.TRex.ConnectedSite.Gateway.Abstractions.csproj", "{65CCC64F-2AF1-4054-8E09-E616D84AD137}"
 EndProject
@@ -110,6 +110,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\..\Common\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{EC6ED6F7-0D47-4E00-BC7E-033650926D9C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetMgmt.Abstractions", "..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj", "{BDC126E2-E572-481B-A762-EDC8A6E624EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Asset Resolver", "Asset Resolver", "{DC90C37A-E46A-46EC-82BF-A70FF2202A02}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Abstractions", "..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj", "{A5B84257-FA4A-47AF-B48A-9D3D20577DC5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Proxy", "..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj", "{DEEE1931-2E29-4B02-A687-611A59F754CC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{244AE8FD-6B04-45D0-BB42-DBFAFE9EC1B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -273,6 +281,18 @@ Global
 		{BDC126E2-E572-481B-A762-EDC8A6E624EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDC126E2-E572-481B-A762-EDC8A6E624EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDC126E2-E572-481B-A762-EDC8A6E624EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5B84257-FA4A-47AF-B48A-9D3D20577DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5B84257-FA4A-47AF-B48A-9D3D20577DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5B84257-FA4A-47AF-B48A-9D3D20577DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5B84257-FA4A-47AF-B48A-9D3D20577DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEEE1931-2E29-4B02-A687-611A59F754CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEEE1931-2E29-4B02-A687-611A59F754CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEEE1931-2E29-4B02-A687-611A59F754CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEEE1931-2E29-4B02-A687-611A59F754CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{244AE8FD-6B04-45D0-BB42-DBFAFE9EC1B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{244AE8FD-6B04-45D0-BB42-DBFAFE9EC1B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{244AE8FD-6B04-45D0-BB42-DBFAFE9EC1B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{244AE8FD-6B04-45D0-BB42-DBFAFE9EC1B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -327,6 +347,10 @@ Global
 		{656FC0C3-1296-4211-8D86-7956608B7530} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 		{EC6ED6F7-0D47-4E00-BC7E-033650926D9C} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 		{BDC126E2-E572-481B-A762-EDC8A6E624EE} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
+		{DC90C37A-E46A-46EC-82BF-A70FF2202A02} = {0B171363-3F4B-4614-B74A-AC6155E644FF}
+		{A5B84257-FA4A-47AF-B48A-9D3D20577DC5} = {49B7C1A1-7968-428C-B7A0-36BD8A280FA6}
+		{DEEE1931-2E29-4B02-A687-611A59F754CC} = {49B7C1A1-7968-428C-B7A0-36BD8A280FA6}
+		{244AE8FD-6B04-45D0-BB42-DBFAFE9EC1B8} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25C1559E-35F7-42CA-B265-A63D8D5E412C}

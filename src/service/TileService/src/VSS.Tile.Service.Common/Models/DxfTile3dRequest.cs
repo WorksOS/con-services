@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.Tile.Service.Common.Models
 {

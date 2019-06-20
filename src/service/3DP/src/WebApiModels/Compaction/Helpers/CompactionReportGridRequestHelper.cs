@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -15,17 +14,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   public class CompactionReportGridRequestHelper : DataRequestBase, ICompactionReportGridRequestHelper
   {
     /// <summary>
-    /// Parameterless constructor is required to support factory create function in <see cref="WebApi"/> project.
+    /// Parameter-less constructor is required to support factory create function in <see cref="WebApi"/> project.
     /// </summary>
     public CompactionReportGridRequestHelper()
     { }
 
     public CompactionReportGridRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
+      IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
     {
       Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
       ConfigurationStore = configurationStore;
-      FileListProxy = fileListProxy;
+      FileImportProxy = fileImportProxy;
       SettingsManager = settingsManager;
     }
 

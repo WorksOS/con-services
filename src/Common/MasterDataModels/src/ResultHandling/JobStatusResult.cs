@@ -1,11 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.Models.ResultHandling
 {
   /// <summary>
   /// Result of an export job status query
   /// </summary>
-  public class JobStatusResult
+  public class JobStatusResult : BaseDataResult, IMasterDataModel
   {
     /// <summary>
     /// The S3 key where the file is stored. 
@@ -33,5 +37,14 @@ namespace VSS.MasterData.Models.ResultHandling
     /// </summary>
     [JsonProperty(PropertyName = "failureDetails", Required = Required.Default)]
     public FailureDetails FailureDetails { get; set; }
+
+    /// <summary>
+    /// Just a placeholder as none of the proxy methods support caching
+    /// </summary>
+    /// <returns></returns>
+    public List<string> GetIdentifiers()
+    {
+      return string.IsNullOrEmpty(Key)  ? new List<string>() : new List<string>() { Key };
+    }
   }
 }

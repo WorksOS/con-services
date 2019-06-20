@@ -5,7 +5,7 @@ using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Interfaces
 {
-  public interface IProjectListProxy : ICacheProxy
+  public interface IProjectProxy : ICacheProxy
   {
     Task<List<ProjectData>> GetProjectsV4(string customerUid, IDictionary<string, string> customHeaders = null);
 

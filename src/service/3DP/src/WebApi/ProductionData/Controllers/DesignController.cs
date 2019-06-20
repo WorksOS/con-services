@@ -14,6 +14,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -52,8 +53,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// For getting list of imported files for a project
     /// </summary>
-    private readonly IFileListProxy fileListProxy;
-#endregion
+    private readonly IFileImportProxy fileImportProxy;
+    #endregion
 
     /// <summary>
     /// Constructor with injection
@@ -61,12 +62,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">LoggerFactory</param>
     /// <param name="configStore">Configuration store</param>
-    /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="fileImportProxy">File list proxy</param>
     public DesignController(
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
+      ILoggerFactory logger, IConfigurationStore configStore, IFileImportProxy fileImportProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -74,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       this.logger = logger;
       this.log = logger.CreateLogger<NotificationController>();
       this.configStore = configStore;
-      this.fileListProxy = fileListProxy;
+      this.fileImportProxy = fileImportProxy;
     }
 
     /// <summary>
@@ -97,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       request.Validate();
 #if RAPTOR
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders());
+      var fileList = await fileImportProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders());
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 

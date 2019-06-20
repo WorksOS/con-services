@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 #if RAPTOR
@@ -16,9 +15,9 @@ using VSS.Productivity3D.Common.Algorithms;
 #endif
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -36,8 +35,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   public class LineworkController : BaseController<LineworkController>
   {
     /// <inheritdoc />
-    public LineworkController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
-      base(configStore, fileListProxy, settingsManager)
+    public LineworkController(IConfigurationStore configStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager) :
+      base(configStore, fileImportProxy, settingsManager)
     { }
 
     /// <summary>

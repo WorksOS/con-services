@@ -6,7 +6,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.Proxies.Interfaces
+namespace VSS.TRex.Gateway.Common.Abstractions
 {
   public interface ITRexImportFileProxy
   {
@@ -14,6 +14,5 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<ContractExecutionResult> AddFile(DesignRequest designRequest, IDictionary<string, string> customHeaders = null);
     Task<ContractExecutionResult> UpdateFile(DesignRequest designRequest, IDictionary<string, string> customHeaders = null);
     Task<ContractExecutionResult> DeleteFile(DesignRequest designRequest, IDictionary<string, string> customHeaders = null);
-
   }
 }

@@ -6,6 +6,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Algorithms;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -16,8 +17,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   public class GeoJsonController : BaseController<GeoJsonController>
   {
     /// <inheritdoc />
-    public GeoJsonController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
-      base(configStore, fileListProxy, settingsManager)
+    public GeoJsonController(IConfigurationStore configStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager) :
+      base(configStore, fileImportProxy, settingsManager)
     { }
 
     /// <summary>

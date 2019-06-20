@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 #if RAPTOR
 using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
@@ -9,15 +8,13 @@ using VLPDDecls;
 #endif
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -41,11 +38,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public ExportRequestHelper()
     { }
 
-    public ExportRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
+    public ExportRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
     {
       Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
       ConfigurationStore = configurationStore;
-      FileListProxy = fileListProxy;
+      FileImportProxy = fileImportProxy;
       SettingsManager = settingsManager;
     }
 #if RAPTOR

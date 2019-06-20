@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
@@ -16,6 +15,7 @@ using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 
 namespace VSS.Productivity3D.Filter.Proxy
 {
+  [Obsolete("Use FilterV1ServiceDiscoveryProxy instead")]
   public class FilterServiceProxy : BaseProxy, IFilterServiceProxy
   {
     public FilterServiceProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(

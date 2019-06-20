@@ -2,14 +2,14 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Common.Validators
 {
   public class FilterFilenameUtil
   {
-    public static void GetFilterFileNames(ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileListProxy fileListProxy, FilterRequestFull filterRequestFull)
+    public static void GetFilterFileNames(ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileImportProxy fileImportProxy, FilterRequestFull filterRequestFull)
     {
       log.LogInformation($"{nameof(GetFilterFileNames)}: Resolving filenames for Filter JSON.");
 
@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
         return;
       }
 
-      var fileList = fileListProxy.GetFiles(filterRequestFull.ProjectUid, filterRequestFull.UserId, filterRequestFull.CustomHeaders).Result;
+      var fileList = fileImportProxy.GetFiles(filterRequestFull.ProjectUid, filterRequestFull.UserId, filterRequestFull.CustomHeaders).Result;
       if (fileList == null || fileList.Count == 0)
       {
         return;
