@@ -126,7 +126,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
-        boundingBoxService.GetAlignmentStationRange(projectId, alignmentDescriptor));
+        boundingBoxService.GetAlignmentStationRange(
+          new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId}, 
+          alignmentDescriptor,
+          CustomHeaders));
 
       return result;
     }

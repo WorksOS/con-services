@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Apache.Ignite.Core.Binary;
 
 namespace VSS.TRex.Rendering.Palettes.Interfaces
 {
@@ -13,5 +14,17 @@ namespace VSS.TRex.Rendering.Palettes.Interfaces
     /// <param name="value"></param>
     /// <returns></returns>
     Color ChooseColour(double value);
+
+    /// <summary>
+    /// Serialises content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    void ToBinary(IBinaryRawWriter writer);
+
+    /// <summary>
+    /// Serialises content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    void FromBinary(IBinaryRawReader reader);
     }
 }

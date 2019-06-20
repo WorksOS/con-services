@@ -9,7 +9,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -103,7 +103,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
     /// <returns>Execution result with a list of design boundaries.</returns>
     [HttpGet("boundaries")]
-    public ContractExecutionResult GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] Guid designUid, [FromQuery] string fileName, [FromQuery] double? tolerance)
+    public ContractExecutionResult GetDesignBoundaries(
+      [FromQuery] Guid projectUid, 
+      [FromQuery] Guid designUid, 
+      [FromQuery] string fileName, 
+      [FromQuery] double? tolerance)
     {
       Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid:{projectUid}, designUid:{designUid}, fileName:{fileName}, tolerance: {tolerance}");
 
@@ -117,6 +121,47 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         RequestExecutorContainer
           .Build<DesignBoundariesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(designBoundariesRequest) as DesignBoundaryResult);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="designUid"></param>
+    /// <param name="fileName"></param>
+    /// <param name="startStation"></param>
+    /// <param name="endStation"></param>
+    /// <param name="leftOffset"></param>
+    /// <param name="rightOffset"></param>
+    /// <returns></returns>
+    [HttpGet("filter/boundary")]
+    public ContractExecutionResult GetDesignFilterBoundaries(
+      [FromQuery] Guid projectUid, 
+      [FromQuery] Guid designUid, 
+      [FromQuery] string fileName, 
+      [FromQuery] double startStation,
+      [FromQuery] double endStation,
+      [FromQuery] double leftOffset,
+      [FromQuery] double rightOffset)
+    {
+      Log.LogInformation($"{nameof(GetDesignFilterBoundaries)}: projectUid:{projectUid}, designUid:{designUid}, fileName:{fileName}, " +
+                         $"startStation: {startStation}, endStation: {endStation}, leftOffset: {leftOffset}, rightOffset: {rightOffset}");
+
+      var designFilterBoundaryRequest = new TRexDesignFilterBoundaryRequest(
+        projectUid, 
+        designUid, 
+        fileName, 
+        startStation,
+        endStation,
+        leftOffset,
+        rightOffset);
+
+      designFilterBoundaryRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<DesignFilterBoundaryExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(designFilterBoundaryRequest) as DesignFilterBoundaryResult);
     }
   }
 }

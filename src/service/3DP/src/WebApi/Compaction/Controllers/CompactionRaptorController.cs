@@ -147,7 +147,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] FilterBoundaryType boundaryType,
       [FromServices] IBoundingBoxService boundingBoxService)
     {
-      Log.LogInformation("GetFilterPointsList: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetFilterPointsList)}: " + Request.QueryString);
 
       var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
       var filterTask = GetCompactionFilter(projectUid, filterUid);
@@ -155,7 +155,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var baseFilterTask = summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
       var topFilterTask = summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
 
-      PointsListResult result = new PointsListResult();
+      var result = new PointsListResult();
 
       await Task.WhenAll(projectTask, filterTask, baseFilterTask, topFilterTask);
 
@@ -177,13 +177,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid alignmentUid,
       [FromServices] IBoundingBoxService boundingBoxService)
     {
-      Log.LogInformation("GetAlignmentPoints: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetAlignmentPoints)}: " + Request.QueryString);
 
       var projectId = await GetLegacyProjectId(projectUid);
 
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
-      AlignmentPointsResult result = new AlignmentPointsResult();
-      var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId, alignmentDescriptor);
+      var result = new AlignmentPointsResult();
+      var alignmentPoints = boundingBoxService.GetAlignmentPoints(
+        new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId }, 
+        alignmentDescriptor,
+        0, 0, 0, 0,
+        CustomHeaders);
 
       if (alignmentPoints != null && alignmentPoints.Any())
       {
@@ -204,21 +208,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromServices] IBoundingBoxService boundingBoxService)
     {
-      Log.LogInformation("GetAlignmentPointsList: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetAlignmentPointsList)}: " + Request.QueryString);
 
       var projectId = await GetLegacyProjectId(projectUid);
 
-      PointsListResult result = new PointsListResult();
-      List<List<WGSPoint>> list = new List<List<WGSPoint>>();
+      var result = new PointsListResult();
+      var list = new List<List<WGSPoint>>();
       var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
       foreach (var alignmentDescriptor in alignmentDescriptors)
       {
-        var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId, alignmentDescriptor);
+        var alignmentPoints = boundingBoxService.GetAlignmentPoints(
+          new ProjectData {ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId}, 
+          alignmentDescriptor,
+          0, 0, 0, 0,
+          CustomHeaders);
 
         if (alignmentPoints != null && alignmentPoints.Any())
-        {
           list.Add(alignmentPoints.ToList());
-        }
       }
 
       result.PointsList = ConvertPoints(list);
@@ -235,7 +241,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private async Task<List<DesignDescriptor>> GetAlignmentDescriptors(Guid projectUid)
     {
       var alignmentFiles = await GetFilesOfType(projectUid, ImportedFileType.Alignment);
-      List<DesignDescriptor> alignmentDescriptors = new List<DesignDescriptor>();
+      var alignmentDescriptors = new List<DesignDescriptor>();
       if (alignmentFiles != null)
       {
         foreach (var alignmentFile in alignmentFiles)

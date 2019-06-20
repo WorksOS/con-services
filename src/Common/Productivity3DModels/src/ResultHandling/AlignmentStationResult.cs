@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling
 {
   public class AlignmentStationResult : ContractExecutionResult
   {

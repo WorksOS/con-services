@@ -10,6 +10,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
@@ -55,7 +56,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
       var designBoundaryRequest = new DesignBoundaryRequest();
-      var referenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, 0.0);
+      var referenceDesign = new DesignOffset(request.DesignUid, 0.0);
 
       var designBoundaryResponse = designBoundaryRequest.Execute(new DesignBoundaryArgument
       {

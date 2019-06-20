@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.Models.Models.Designs
     /// The unique identifier of the design surface to to get boundaries from.
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    public Guid? DesignUid { get; private set; }
+    public Guid DesignUid { get; private set; }
 
     /// <summary>
     /// The design file name.
@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.Models.Models.Designs
     [JsonProperty(Required = Required.Default)]
     public double Tolerance { get; private set; }
 
-    public TRexDesignBoundariesRequest(Guid projectUid, Guid? designUid, string fileName, double tolerance)
+    public TRexDesignBoundariesRequest(Guid projectUid, Guid designUid, string fileName, double tolerance)
     {
       ProjectUid = projectUid;
       DesignUid = designUid;
