@@ -136,7 +136,7 @@ namespace VSS.TRex.Compression
                 return;
 
             var bufferSize = Storage.Length * sizeof(ulong);
-            byte[] buffer = MemoryBufferCachesHelper.Caches.Rent(bufferSize);
+            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(bufferSize);
             try
             {
               Buffer.BlockCopy(Storage, 0, buffer, 0, bufferSize);
@@ -144,7 +144,7 @@ namespace VSS.TRex.Compression
             }
             finally
             {
-               MemoryBufferCachesHelper.Caches.Return(buffer);
+              GenericArrayPoolCacheHelper<byte>.Caches.Return(buffer);
             }
         }
 
@@ -163,7 +163,7 @@ namespace VSS.TRex.Compression
             Storage = NewStorage();
 
             var bufferSize = Storage.Length * sizeof(ulong);
-            byte[] buffer = MemoryBufferCachesHelper.Caches.Rent(bufferSize);
+            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(bufferSize);
             try
             {
               reader.Read(buffer, 0, bufferSize);
@@ -171,7 +171,7 @@ namespace VSS.TRex.Compression
             }
             finally
             {
-              MemoryBufferCachesHelper.Caches.Return(buffer);
+              GenericArrayPoolCacheHelper<byte>.Caches.Return(buffer);
             }
         }
 

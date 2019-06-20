@@ -990,15 +990,9 @@ namespace VSS.TRex.SubGridTrees.Server
       }
     }
 
-    //~SubGridCellSegmentPassesDataWrapper_StaticCompressed()
-    //{
-    //  Dispose(false);
-    //}
-
     public void Dispose()
     {
       Dispose(true);
-      //GC.SuppressFinalize(this);
     }
 #endregion
   }

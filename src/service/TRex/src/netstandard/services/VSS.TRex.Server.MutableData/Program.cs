@@ -53,9 +53,9 @@ namespace VSS.TRex.Server.MutableData
           // recyclable stream is freed when the stream is disposed.
           MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
         }))
-        .Add(x => x.AddSingleton<IMemoryBufferCaches>(new MemoryBufferCaches()))
-        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL)))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>()))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL)))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)

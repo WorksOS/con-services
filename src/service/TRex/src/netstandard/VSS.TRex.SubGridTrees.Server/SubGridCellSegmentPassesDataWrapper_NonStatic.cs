@@ -2,7 +2,6 @@
 using System.Collections;
 using System.IO;
 using VSS.TRex.Cells;
-using VSS.TRex.Cells.Helpers;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -10,6 +9,7 @@ using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
@@ -369,7 +369,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
               var passes = cellPasses[x, y].Passes;
 
-              PassData[x, y].Passes = SlabAllocatedCellPassArrayPoolHelper.Caches.Clone(passes);
+              PassData[x, y].Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Clone(passes);
 
               segmentPassCount += passes.Count;
             }
@@ -391,10 +391,10 @@ namespace VSS.TRex.SubGridTrees.Server
           var oldPasses = PassData[X, Y].Passes;
           if (oldPasses.NeedsToBeReturned())
           {
-            SlabAllocatedCellPassArrayPoolHelper.Caches.Return(oldPasses);
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(oldPasses);
           }
 
-          var newPasses = SlabAllocatedCellPassArrayPoolHelper.Caches.Rent(cellPassCount);
+          var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(cellPassCount);
 
           #if CELLDEBUG
           if (newPasses.Count != 0)
@@ -429,7 +429,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
               if (cellPasses.Passes.NeedsToBeReturned())
               {
-                SlabAllocatedCellPassArrayPoolHelper.Caches.Return(cellPasses.Passes);
+                SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(cellPasses.Passes);
                 cellPasses.Passes.MarkReturned();
               }
             }
@@ -440,15 +440,9 @@ namespace VSS.TRex.SubGridTrees.Server
       }
     }
 
-//    ~SubGridCellSegmentPassesDataWrapper_NonStatic()
-//    {
-//      Dispose(false);
-//    }
-
     public void Dispose()
     {
       Dispose(true);
- //     GC.SuppressFinalize(this);
     }
     #endregion
   }  

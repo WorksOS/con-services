@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Cells;
-using VSS.TRex.Cells.Helpers;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -14,7 +13,6 @@ using VSS.TRex.IO;
 using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Server;
-using VSS.TRex.SubGridTrees.Server.Helpers;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Tests.TestFixtures
@@ -27,7 +25,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<RecyclableMemoryStreamManager>(new RecyclableMemoryStreamManager()))
-        .Add(x => x.AddSingleton<IMemoryBufferCaches>(new MemoryBufferCaches()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>()))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
         .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(1024)))
 
@@ -111,9 +109,9 @@ namespace VSS.TRex.Tests.TestFixtures
     public void ClearHelpers()
     {
       RecyclableMemoryStreamManagerHelper.Clear();
-      MemoryBufferCachesHelper.Clear();
-      CellPassArrayPoolCacheHelper.Clear();
-      SlabAllocatedCellPassArrayPoolHelper.Clear();
+      GenericArrayPoolCacheHelper<byte>.Clear();
+      GenericArrayPoolCacheHelper<CellPass>.Clear();
+      SlabAllocatedArrayPoolHelper<CellPass>.Clear();
     }
 
     public DILoggingFixture()

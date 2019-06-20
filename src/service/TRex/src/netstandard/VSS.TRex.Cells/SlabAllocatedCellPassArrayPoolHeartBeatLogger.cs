@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using VSS.TRex.Cells.Helpers;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Cells
 {
@@ -9,7 +9,7 @@ namespace VSS.TRex.Cells
 
     public override string ToString()
     {
-      var stats = SlabAllocatedCellPassArrayPoolHelper.Caches?.Statistics();
+      var stats = SlabAllocatedArrayPoolHelper<CellPass>.Caches?.Statistics();
 
       if (stats != null)
       {

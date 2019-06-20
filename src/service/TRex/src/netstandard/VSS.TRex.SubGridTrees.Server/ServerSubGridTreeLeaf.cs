@@ -884,15 +884,9 @@ namespace VSS.TRex.SubGridTrees.Server
       }
     }
 
-    //~ServerSubGridTreeLeaf()
-    //{
-    //  Dispose(false);
-    //}
-
     public void Dispose()
     {
       Dispose(true);
-      //GC.SuppressFinalize(this);
     }
     #endregion
   }
