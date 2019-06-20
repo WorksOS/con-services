@@ -53,13 +53,13 @@ namespace VSS.TRex.IO
     {
       _pools = new T[NumExponentialPoolsToProvide][][];
 
-      // Establish 100 small rentable buffers for anything up to 1024 items
+      // Establish 100 small rent able buffers for anything up to 1024 items
       for (int i = 0; i < 10; i++)
       {
         _pools[i] = new T[SMALL_POOL_CACHE_SIZE][];
       }
 
-      // Establish 20 small rentable buffers for anything up to 256K items
+      // Establish 20 small rent able buffers for anything up to 256K items
 
       for (int i = 10; i < 19; i++)
       {
@@ -73,7 +73,7 @@ namespace VSS.TRex.IO
 
     /// <summary>
     /// Rents out a buffer from the pool. The buffer is greater than or equal to the size of the requested buffer.
-    /// Pooled buffers are created on demand - each pool is not initialised with a full set of buffers.
+    /// Pooled buffers are created on demand - each pool is not initialized with a full set of buffers.
     /// Note: The pool does not maintain a reference to the buffer. If tha renter fails to return the buffer pool
     /// it will be cleaned up by the garbage collector.
     /// </summary>
