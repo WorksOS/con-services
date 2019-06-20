@@ -18,7 +18,7 @@ namespace VSS.TRex.Cells
 
         foreach (var stat in stats)
         {
-          sb.AppendLine($"{stat.poolIndex}/{stat.arraySize}/{stat.capacity}/{stat.availableItems}/{stat.capacity - stat.availableItems}");
+          sb.AppendLine($"{stat.poolIndex}/{stat.arraySize}/{stat.capacity}/{stat.capacity - stat.rentedItems}/{stat.rentedItems}");
         }
 
         return sb.ToString();

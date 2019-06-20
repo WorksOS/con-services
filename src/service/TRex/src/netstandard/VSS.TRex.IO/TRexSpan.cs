@@ -8,18 +8,27 @@ namespace VSS.TRex.IO
   /// <typeparam name="T"></typeparam>
   public struct TRexSpan<T>
   {
+    /// <summary>
+    /// This identifies a span that does not exist in a pool allocated slab
+    /// </summary>
+    public const int NO_SLAB_INDEX = 255;
+
+#if CELLDEBUG
     // Debugging flag
     public bool IsReturned;
+#endif
 
     /// <summary>
-    /// Is the span allocated in a slab allocated buffer?
+    /// The index of the slab in the pool that currently contains this Span description.
+    /// Note: This slab may not be the one that contains the elements this span describes,
+    /// the Elements property is the canonical references for this relationship
     /// </summary>
-    public readonly bool PoolAllocated;
+    public byte SlabIndex;
 
     /// <summary>
-    /// The offset within Elements array that the first element in the span occurs
+    /// The offset within the Elements array of this slab in the pool that the first element in the span occurs in
     /// </summary>
-    public readonly int Offset;
+    public readonly ushort Offset;
 
     /// <summary>
     /// The number of defined elements present in the space Count is less than or equal to Length
@@ -58,17 +67,20 @@ namespace VSS.TRex.IO
     /// Constructs a new span ready to receive elements. All new spans a empty (ie: Count = 0)
     /// </summary>
     /// <param name="elements"></param>
+    /// <param name="slabIndex"></param>
     /// <param name="offset"></param>
     /// <param name="capacity"></param>
-    /// <param name="poolAllocated"></param>
-    public TRexSpan(T[] elements, int offset, int capacity, bool poolAllocated, bool isReturned)
+    public TRexSpan(T[] elements, byte slabIndex, ushort offset, int capacity, bool isReturned)
     {
       _elements = elements;
       Offset = offset;
+      SlabIndex = slabIndex;
       Count = 0;
       Capacity = capacity;
-      PoolAllocated = poolAllocated;
-      IsReturned = isReturned;
+
+#if CELLDEBUG
+       IsReturned = isReturned;
+#endif
     }
 
     /// <summary>
@@ -191,7 +203,7 @@ namespace VSS.TRex.IO
     /// Indicates if this span should be returned to the pool at a future point in time
     /// </summary>
     /// <returns></returns>
-    public bool NeedsToBeReturned() => PoolAllocated && _elements != null;
+    public bool NeedsToBeReturned() => (Capacity > 0) && SlabIndex != NO_SLAB_INDEX && _elements != null;
 
     public void MarkReturned()
     {

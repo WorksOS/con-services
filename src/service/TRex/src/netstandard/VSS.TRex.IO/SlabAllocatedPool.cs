@@ -3,21 +3,26 @@
 namespace VSS.TRex.IO
 {
   /// <summary>
-  /// Implements a pool of small arrays that are allocated together into a single allocated slab
+  /// Implements a pool of small arrays that are allocated together into a larger allocated slabs
   /// and represented by TRexSpan instances
   /// </summary>
   /// <typeparam name="T"></typeparam>
   public class SlabAllocatedPool<T>
   {
+    public const int MAXIMUM_PROVISIONED_SLAB_COUNT = 250;
+
     public readonly int PoolSize;
     public readonly int ArraySize;
-    public readonly int SpanCount;
 
-    private readonly T[] _slab;
-    private readonly TRexSpan<T>[] _arrays;
+    private SlabAllocatedPoolPage<T>[] _slabPages;
 
-    private int _availCount;
-    public int AvailCount => _availCount;
+    private int _rentalTideLevel;
+    public int RentalTideLevel => _rentalTideLevel;
+
+    private int _capacity;
+    public int Capacity => _capacity;
+
+    public readonly int SpanCountPerSlabPage;
 
     /// <summary>
     /// Creates a new pool of sub-arrays of arraySize size within an overall slab allocated array
@@ -40,32 +45,41 @@ namespace VSS.TRex.IO
 
       PoolSize = poolSize;
       ArraySize = arraySize;
+      SpanCountPerSlabPage = PoolSize / arraySize;
 
       // Create a single allocation to contain a slab of elements of size pool size
-      _slab = new T[PoolSize];
+      _slabPages = new SlabAllocatedPoolPage<T>[0];
 
-      SpanCount = PoolSize / ArraySize;
-      _availCount = SpanCount;
-
-      // Create an array of sub array spans that fit within the overall slab
-      _arrays = new TRexSpan<T>[_availCount];
-      for (int i = 0, limit = _arrays.Length; i < limit; i++)
-      {
-        _arrays[i] = new TRexSpan<T>(_slab, i * ArraySize, ArraySize, true, true);
-      }
+      _rentalTideLevel = -1;
     }
 
     public TRexSpan<T> Rent()
     {
-      lock (_arrays)
+      lock (this)
       {
-        if (_availCount == 0)
-        {
-          // The pool is empty. Synthesize a new span and return it. This span will be discarded when returned
-          return new TRexSpan<T>(new T[ArraySize], 0, ArraySize, false, false);
+        _rentalTideLevel++;
+        var slabIndex = _rentalTideLevel / SpanCountPerSlabPage;
+        var slabOffset = _rentalTideLevel % SpanCountPerSlabPage;
+
+        if (slabIndex >= _slabPages.Length)
+        { 
+          // Has the maximum number of slabs been provisioned?
+          if (_slabPages.Length >= MAXIMUM_PROVISIONED_SLAB_COUNT)
+          {
+            // The pool is empty. Synthesize a new span and return it. This span will be discarded when returned
+            return new TRexSpan<T>(new T[ArraySize], TRexSpan<T>.NO_SLAB_INDEX, 0, ArraySize, false);
+          }
+
+          // Need to provision a new slab. This is no optimal code from a performance perspective,
+          // but it will happen very rarely in level flight operations.
+          Array.Resize(ref _slabPages, _slabPages.Length + 1);
+          _slabPages[_slabPages.Length - 1] = new SlabAllocatedPoolPage<T>(PoolSize, ArraySize);
+
+          _capacity = _slabPages.Length * SpanCountPerSlabPage;
         }
 
-        var buffer = _arrays[--_availCount];
+        #if CELLDEBUG
+        var buffer = _slabPages[slabIndex].Arrays[slabOffset];
 
         if (!buffer.IsReturned)
         {
@@ -73,23 +87,45 @@ namespace VSS.TRex.IO
         }
 
         buffer.IsReturned = false;
+        #endif
 
-        return buffer;
+        return _slabPages[slabIndex].Arrays[slabOffset];
       }
     }
 
+    /// <summary>
+    /// Returns a given span buffer back to the allocation pool
+    /// </summary>
+    /// <param name="buffer"></param>
     public void Return(TRexSpan<T> buffer)
     {
-      if (buffer.Elements != _slab || buffer.Capacity != ArraySize)
+#if CELLDEBUG
+      if (buffer.Elements != _slabPages[buffer.SlabIndex] || buffer.Capacity != ArraySize)
       {
         throw new ArgumentException("Buffer span being returned to a pool that did not create it");
       }
+#endif
 
-      lock (_arrays)
+      lock (this)
       {
+        if (_rentalTideLevel < 0)
+        {
+          // There is no more capacity to accept returns
+          return;
+        }
+
         buffer.Count = 0;
+
+#if CELLDEBUG
         buffer.IsReturned = true;
-        _arrays[_availCount++] = buffer;
+#endif
+
+        // Adjust the buffer slab index to match the one it is being returned to.
+        // This means the slab containing the span metadata and the slab containing the 
+        // span elements may validly be different.
+        buffer.SlabIndex = (byte)(_rentalTideLevel / SpanCountPerSlabPage);
+        _slabPages[buffer.SlabIndex].Arrays[_rentalTideLevel % SpanCountPerSlabPage] = buffer;
+        _rentalTideLevel--;
       }
     }
   }

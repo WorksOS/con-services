@@ -30,6 +30,6 @@
     /// Provides a vector of statistics on the pools in the slab allocated pool array
     /// </summary>
     /// <returns></returns>
-    (int poolIndex, int arraySize, int capacity, int availableItems)[] Statistics();
+    (int poolIndex, int arraySize, int capacity, int rentedItems)[] Statistics();
   }
 }

@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.IO
       slab.PoolSize.Should().Be(1024);
       slab.ArraySize.Should().Be(16);
 
-      slab.AvailCount.Should().Be(1024 / 16);
+      slab.Capacity.Should().Be(0); // Capacity always zero to start
     }
 
     [Fact]
@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.IO
 
       var rental = slab.Rent();
       rental.Elements.Should().NotBeNull();
-      rental.PoolAllocated.Should().BeTrue();
+      rental.SlabIndex.Should().Be(0);
     }
 
     [Fact]
@@ -51,15 +51,15 @@ namespace VSS.TRex.Tests.IO
 
       var rental = slab.Rent();
       rental.Elements.Should().NotBeNull();
-      rental.PoolAllocated.Should().BeTrue();
+      rental.SlabIndex.Should().Be(0);
 
-      slab.AvailCount.Should().Be(0);
+      slab.RentalTideLevel.Should().Be(0);
 
       var rental2 = slab.Rent();
       rental2.Elements.Should().NotBeNull();
       rental2.Elements.Length.Should().Be(slab.ArraySize);
       rental2.Elements.Should().NotBeSameAs(rental.Elements);
-      rental2.PoolAllocated.Should().BeFalse();
+      rental2.SlabIndex.Should().Be(0);
     }
   }
 }

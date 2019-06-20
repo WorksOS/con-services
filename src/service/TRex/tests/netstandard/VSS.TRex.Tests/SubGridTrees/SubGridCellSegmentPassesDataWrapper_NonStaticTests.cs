@@ -196,7 +196,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Create each sub array and add a test cell pass to it
             SubGridUtilities.SubGridDimensionalIterator((x, y) =>
             {
-              cellPasses[x, y].Passes = new TRexSpan<CellPass>(new CellPass[1], 0, 1, false, false);
+              cellPasses[x, y].Passes = new TRexSpan<CellPass>(new CellPass[1], TRexSpan<CellPass>.NO_SLAB_INDEX, 0, 1, false);
               cellPasses[x, y].Passes.Add(TestCellPass());
             });
 
@@ -333,7 +333,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Create each sub array and add a test cell pass to it
             SubGridUtilities.SubGridDimensionalIterator((x, y) =>
             {
-              cellPasses[x, y].Passes = new TRexSpan<CellPass>(new CellPass[1], 0, 1, false, false);
+              cellPasses[x, y].Passes = new TRexSpan<CellPass>(new CellPass[1], TRexSpan<CellPass>.NO_SLAB_INDEX, 0, 1, false);
               cellPasses[x, y].Passes.Add(TestCellPass());
             });
 

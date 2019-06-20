@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.IO;
 using VSS.TRex.Tests.TestFixtures;
@@ -14,7 +13,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Creation_DefaultNumPools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
 
       pool.Should().NotBeNull();
     }
@@ -22,41 +21,14 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Creation_ConfigurableNumPools_Success()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
       pool.Should().NotBeNull();
-
-      var pool2 = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, SlabAllocatedArrayPool<CellPass>.DefaultLargestSizeExponentialPoolToProvide);
-      pool2.Should().NotBeNull();
-
-      var pool3 = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, SlabAllocatedArrayPool<CellPass>.LargestSizeExponentialPoolToProvide);
-      pool3.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void Creation_ConfigurableNumPools_Failure_OutOfRangeSmall()
-    {
-      Action act = () => new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, SlabAllocatedArrayPool<CellPass>.LargestSizeExponentialPoolToProvide + 1);
-      act.Should().Throw<ArgumentException>().WithMessage("Min/Max exponential pool range must be in*");
-    }
-
-    [Fact]
-    public void Creation_ConfigurableNumPools_Failure_OutOfRangeLarge()
-    {
-      Action act = () => new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 0, SlabAllocatedArrayPool<CellPass>.LargestSizeExponentialPoolToProvide);
-      act.Should().Throw<ArgumentException>().WithMessage("Min/Max exponential pool range must be in*");
-    }
-
-    [Fact]
-    public void Creation_ConfigurableNumPools_Failure_SmallGreaterThanLarge()
-    {
-      Action act = () => new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 2, 1);
-      act.Should().Throw<ArgumentException>().WithMessage("Smallest exponential pool must be less than or equal to largest exponential pool to provide");
     }
 
     [Fact]
     public void Rent_AllPools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
 
       for (int i = 0; i < DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE; i++)
       {
@@ -66,7 +38,7 @@ namespace VSS.TRex.Tests.IO
         rental.Elements.Should().NotBeNull();
         rental.Offset.Should().BeGreaterOrEqualTo(0);
         rental.OffsetPlusCount.Should().BeGreaterOrEqualTo(0);
-        rental.PoolAllocated.Should().Be(i > 0 && i <= DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
+        rental.SlabIndex.Should().Be((byte)(i == 0 ? TRexSpan<CellPass>.NO_SLAB_INDEX : 0));
 
         pool.Return(rental); // Release rental so as not to pollute expected pool allocated status
       }
@@ -76,7 +48,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Rent_LargerThanAvailablePools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
 
       var rental = pool.Rent(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE + 1);
       rental.Capacity.Should().Be(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE + 1); 
@@ -84,18 +56,18 @@ namespace VSS.TRex.Tests.IO
       rental.Elements.Should().NotBeNull();
       rental.Offset.Should().Be(0);
       rental.OffsetPlusCount.Should().BeGreaterOrEqualTo(0);
-      rental.PoolAllocated.Should().Be(false);
+      rental.SlabIndex.Should().Be(TRexSpan<CellPass>.NO_SLAB_INDEX);
     }
 
     [Fact]
     public void Return_AllPools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
 
       for (int i = 0; i < DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE; i++)
       {
         var rental = pool.Rent(i);
-        rental.PoolAllocated.Should().Be(i > 0 && i <= DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE); 
+        rental.SlabIndex.Should().Be((byte)(i == 0 ? TRexSpan<CellPass>.NO_SLAB_INDEX : 0)); 
 
         pool.Return(rental);
         rental.MarkReturned();
@@ -105,7 +77,7 @@ namespace VSS.TRex.Tests.IO
     [Fact]
     public void Return_LargerThanAvailablePools()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE, 1, 10);
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
 
       var rental = pool.Rent(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE + 1);
       rental.Capacity.Should().Be(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE + 1);

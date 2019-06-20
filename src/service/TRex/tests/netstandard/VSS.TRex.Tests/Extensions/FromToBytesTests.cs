@@ -2,11 +2,12 @@
 using System.Linq;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Extensions
 {
-        public class FromToBytesTests
+        public class FromToBytesTests : IClassFixture<DILoggingFixture>
     {
         private class TestFromToBytesClass : IBinaryReaderWriter
         {

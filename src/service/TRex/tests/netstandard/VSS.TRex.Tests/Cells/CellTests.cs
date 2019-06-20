@@ -127,7 +127,7 @@ namespace VSS.TRex.Tests.Cells
         {
             // Create a cell with two cell passes with different times
             Cell_NonStatic c = new Cell_NonStatic();
-            c.Passes = new TRexSpan<CellPass>(new CellPass[2], 0, 2, false, false);
+            c.Passes = new TRexSpan<CellPass>(new CellPass[2], TRexSpan<CellPass>.NO_SLAB_INDEX,0, 2, false);
 
             CellPass cp1 = CellPassTests.ATestCellPass();
             CellPass cp2 = CellPassTests.ATestCellPass2();

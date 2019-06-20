@@ -38,9 +38,7 @@ namespace VSS.TRex.Server.MutableData
 {
   public class Program
   {
-    public const int ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL = 1 << 22; // 2^21 = ~4 million elements in single element pool
-    public const int SMALLEST_SPAN_EXPONENTSIZE_FOR_CELL_PASS_POOL = 1; // 2 cell passes per cell
-    public const int LARGEST_SPAN_EXPONENTSIZE_FOR_CELL_PASS_POOL = 10; // 1024 cell passes per cell
+    public const int ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL = 65536; // 2^21 = ~4 million elements in single element pool
 
     private static void DependencyInjection()
     {
@@ -55,11 +53,7 @@ namespace VSS.TRex.Server.MutableData
           MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
         }))
         .Add(x => x.AddSingleton<IMemoryBufferCaches>(new MemoryBufferCaches()))
-        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(
-          new SlabAllocatedArrayPool<CellPass>
-            (ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL,
-            SMALLEST_SPAN_EXPONENTSIZE_FOR_CELL_PASS_POOL,
-            LARGEST_SPAN_EXPONENTSIZE_FOR_CELL_PASS_POOL)))
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL)))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)

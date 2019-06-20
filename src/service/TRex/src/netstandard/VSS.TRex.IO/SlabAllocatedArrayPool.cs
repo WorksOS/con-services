@@ -11,56 +11,38 @@ namespace VSS.TRex.IO
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SlabAllocatedArrayPool<T>>();
 
-    /// <summary>
-    /// The number of different power-of-2 sized buffer pools to rent buffers from
-    /// </summary>
-    public const int DefaultLargestSizeExponentialPoolToProvide = 20; // 1,000,000 elements
+    public const int MAX_ALLOCATION_POOL_SIZE = 65536;
 
-    public const int SmallestSizeExponentialPoolToProvide = 1; // 1 elements
-    public const int LargestSizeExponentialPoolToProvide = 23; // 8 million elements
-
-    private readonly int _smallestExponentialPoolToProvide;
-    private readonly int _largestExponentialPoolToProvide;
-    private readonly int _numAllocatedPools;
+    private readonly int _allocationPoolPageSize;
 
     /// <summary>
     /// A singleton empty buffer
     /// </summary>
-    private static readonly TRexSpan<T> ZeroBuffer = new TRexSpan<T>(new T[0], 0, 0, false, false);
+    private static readonly TRexSpan<T> ZeroBuffer = new TRexSpan<T>(new T[0], TRexSpan<T>.NO_SLAB_INDEX, 0, 0, false);
 
     /// <summary>
     /// The set of pools providing arrays of different sizes
     /// </summary>
     private readonly SlabAllocatedPool<T>[] _pools;
 
-    public SlabAllocatedArrayPool(int elementsPerPool, int smallestExponentialPoolToProvide, int largestExponentialPoolToProvide)
+    public SlabAllocatedArrayPool(int allocationPoolPageSize)
     {
-      if (smallestExponentialPoolToProvide < SmallestSizeExponentialPoolToProvide || smallestExponentialPoolToProvide > LargestSizeExponentialPoolToProvide)
+      _allocationPoolPageSize = allocationPoolPageSize;
+
+      if (allocationPoolPageSize < 1 || allocationPoolPageSize > MAX_ALLOCATION_POOL_SIZE)
       {
-        throw new ArgumentException($"Min/Max exponential pool range must be in {SmallestSizeExponentialPoolToProvide}..{LargestSizeExponentialPoolToProvide}");
+        throw new ArgumentException($"Allocation pool size must be in the range 1..{MAX_ALLOCATION_POOL_SIZE}");
       }
 
-      if (largestExponentialPoolToProvide < SmallestSizeExponentialPoolToProvide || largestExponentialPoolToProvide > LargestSizeExponentialPoolToProvide)
+      if (1 << (Utilities.Log2(allocationPoolPageSize) - 1) != allocationPoolPageSize)
       {
-        throw new ArgumentException($"Min/Max exponential pool range must be in {SmallestSizeExponentialPoolToProvide}..{LargestSizeExponentialPoolToProvide}");
+        throw new ArgumentException($"Allocation pool page size must be a power of 2");
       }
 
-      if (smallestExponentialPoolToProvide > largestExponentialPoolToProvide)
-      {
-        throw new ArgumentException($"Smallest exponential pool must be less than or equal to largest exponential pool to provide");
-      }
-
-      _smallestExponentialPoolToProvide = smallestExponentialPoolToProvide;
-      _largestExponentialPoolToProvide = largestExponentialPoolToProvide;
-
-      _pools = new SlabAllocatedPool<T>[_largestExponentialPoolToProvide + 1];
+      _pools = new SlabAllocatedPool<T>[Utilities.Log2(allocationPoolPageSize)];
       for (int i = 0, limit = _pools.Length; i < limit; i++)
       {
-        if (i >= _smallestExponentialPoolToProvide)
-        {
-          _numAllocatedPools++;
-          _pools[i] = new SlabAllocatedPool<T>(elementsPerPool, 1 << i);
-        }
+          _pools[i] = new SlabAllocatedPool<T>(allocationPoolPageSize, 1 << i);
       }
     }
 
@@ -85,7 +67,7 @@ namespace VSS.TRex.IO
       // Select the pool to be used
       // Calculate the simple whole log2 <= minSize. Choose the buffer that is equal to or greater than minSize.
 
-      var log2 = Math.Max(Utilities.Log2(minSize) - 1, _smallestExponentialPoolToProvide);
+      var log2 = Utilities.Log2(minSize) - 1;
       if (minSize > 1 << log2)
       {
         log2++;
@@ -94,31 +76,44 @@ namespace VSS.TRex.IO
       if (log2 >= _pools.Length)
       {
         // Requested buffer is too large. Note the request in the log and return a buffer of the requested size
-        Log.LogInformation($"Array pool serviced request for buffer of {minSize} elements, above the maximum of {1 << LargestSizeExponentialPoolToProvide}");
-        return new TRexSpan<T>(new T[minSize], 0, minSize, false, false);
+        Log.LogInformation($"Array pool serviced request for buffer of {minSize} elements, above the maximum of {_allocationPoolPageSize}");
+        return new TRexSpan<T>(new T[minSize], TRexSpan<T>.NO_SLAB_INDEX, 0, minSize, false);
       }
 
       return _pools[log2].Rent();
     }
 
+    /// <summary>
+    /// Returns a given buffer back to the allocation pool
+    /// </summary>
+    /// <param name="buffer"></param>
     public void Return(TRexSpan<T> buffer)
     {
-      if (!buffer.PoolAllocated)
+      if (buffer.Capacity == 0)
       {
-        // This span was created in response to no appropriate buffer to use. Discard it for the GC to clean up.
+        // This is either a default initialised span, or the zero element. In both cases just ignore it
         return;
       }
 
+#if CELLDEBUG
       if (buffer.IsReturned)
       {
         throw new ArgumentException($"Buffer being return is not on rental: Offset = {buffer.Offset}, Count = {buffer.Count}, Capacity = {buffer.Capacity}");
       }
+#endif
 
       // Find the appropriate pool and return an element from it
       var log2 = Utilities.Log2(buffer.Capacity) - 1;
 
       // Return the span to the pool if it is not the zero element
-      _pools[log2].Return(buffer);
+      try
+      {
+        _pools[log2].Return(buffer);
+      }
+      catch (Exception e)
+      {
+        Log.LogError($"Exception occured returning buffer: log2={log2}, Capacity = {buffer.Capacity}, Count={buffer.Count}, slab index = {buffer.SlabIndex}, Offset = {buffer.Offset} ");
+      }
     }
 
     /// <summary>
@@ -128,10 +123,12 @@ namespace VSS.TRex.IO
     /// <returns></returns>
     public TRexSpan<T> Clone(TRexSpan<T> oldBuffer)
     {
+#if CELLDEBUG
       if (oldBuffer.IsReturned)
       {
         throw new ArgumentException($"Buffer being cloned is not on rental: Offset = {oldBuffer.Offset}, Count = {oldBuffer.Count}, Capacity = {oldBuffer.Capacity}");
       }
+#endif
 
       // Get a new buffer
       var newBuffer = Rent(oldBuffer.Capacity);
@@ -148,17 +145,13 @@ namespace VSS.TRex.IO
     /// Returns detailed statistics on each of the slab allocated array pools
     /// </summary>
     /// <returns></returns>
-    public (int poolIndex, int arraySize, int capacity, int availableItems)[] Statistics()
+    public (int poolIndex, int arraySize, int capacity, int rentedItems)[] Statistics()
     {
-      var result = new (int poolIndex, int arraySize, int capacity, int availableItems)[_numAllocatedPools];
-      var count = 0;
+      var result = new (int poolIndex, int arraySize, int capacity, int availableItems)[_pools.Length];
 
       for (int i = 0, limit = _pools.Length; i < limit; i++)
       {
-        if (_pools[i] != null)
-        {
-          result[count++] = (i, _pools[i].ArraySize, _pools[i].SpanCount, _pools[i].AvailCount);
-        }
+         result[i] = (i, _pools[i].ArraySize, _pools[i].Capacity, _pools[i].RentalTideLevel);
       }
 
       return result;

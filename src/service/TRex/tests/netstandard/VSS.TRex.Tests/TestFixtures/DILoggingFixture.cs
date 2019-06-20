@@ -29,7 +29,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<RecyclableMemoryStreamManager>(new RecyclableMemoryStreamManager()))
         .Add(x => x.AddSingleton<IMemoryBufferCaches>(new MemoryBufferCaches()))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
-        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(1024, 1, 10)))
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(1024)))
 
         .Add(x => x.AddSingleton<Mock<IConfigurationStore>>(mock =>
         {
