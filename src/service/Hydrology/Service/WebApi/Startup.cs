@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Morph.Services.Core.Interfaces;
-using Newtonsoft.Json;
 using SkuTester.DataModel;
 using VSS.Common.ServiceDiscovery;
 using VSS.MasterData.Proxies;
@@ -76,16 +75,15 @@ namespace VSS.Hydrology.WebApi
       ConfigureApplicationServices(services);
 
 
-# if NET_4_7
+#if NET_4_7
       var configPathAndFilename = "..\\..\\TestData\\Sample\\TestCase.xml";
       var useCase = TestCase.Load(configPathAndFilename);
       if (useCase == null)
         throw new ArgumentException("Unable to load surface configuration");
       Log.LogInformation($"{nameof(ConfigureAdditionalServices)}: hydro surface configuration loaded: designFile {useCase.Surface} units: {(useCase.IsMetric ? "meters" : "us ft?")} points {(useCase.IsXYZ ? "xyz" : "nee")})");
 
-      //var landLevelingInstance = ServiceLocator.GetRequiredService<ILandLeveling>();
-      //var landLevelingInstance = ServiceProvider.GetRequiredService<ILandLeveling>();
-      //using (var landLevelingInstance = services.ge.Current.GetInstance<ILandLeveling>())
+      //var landLevelingInstance = ServiceLocator.Current.GetInstance<ILandLeveling>();
+      //using (var landLevelingInstance = ServiceLocator.Current.GetInstance<ILandLeveling>())
       //{
       //  var surfaceInfo = (ISurfaceInfo) null;
       //  if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(useCase.Surface), ".dxf") == 0)

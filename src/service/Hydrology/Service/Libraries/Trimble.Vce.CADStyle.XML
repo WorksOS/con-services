@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Trimble.Vce.CADStyle</name>
+    </assembly>
+    <members>
+        <member name="T:Trimble.Vce.CADStyle.AcadBlocks">
+            <summary>
+            Import autocad block definitions as symbols
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadBlocks.ReadFile(System.IO.FileInfo)">
+            <summary>
+            Read the autocad symbol file.
+            </summary>
+            <param name="fi">The file to read.</param>
+            <returns>The collection of symbols.</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadBlocks.ReadXline(Trimble.Vce.SurveyCAD.Symbol,Teigha.TD.OdDbXline,System.Double[],System.Double)">
+            <summary>
+            don't import
+            </summary>
+        </member>
+        <member name="T:Trimble.Vce.CADStyle.AcadLineTypes">
+            <summary>
+            import autocad file's line types
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadLineTypes.ReadFile(System.IO.FileInfo)">
+            <summary>
+            Read the autocad symbol file.
+            </summary>
+            <param name="fi">The file to read.</param>
+            <returns>The collection of symbols.</returns>
+        </member>
+        <member name="T:Trimble.Vce.CADStyle.AcadSymbolFile">
+            <summary>
+            Read autocad shape File.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadSymbolFile.#ctor">
+            <summary>
+            Initializes a new instance of a acShapeFile.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.CADStyle.AcadSymbolFile.ShapeFile">
+            <summary>
+            The name of the shape file.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadSymbolFile.LoadFile(System.String)">
+            <summary>
+            read symbols from another file
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadSymbolFile.ReadFile(System.IO.FileInfo)">
+            <summary>
+            Read the autocad symbol file.
+            </summary>
+            <param name="fi">The file to read.</param>
+            <returns>The collection of symbols.</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadSymbolFile.GetSymbol(System.String,System.String)">
+            <summary>
+            Find a symbol from a file.
+            </summary>
+            <param name="name">symbol name</param>
+            <param name="file">symbol file</param>
+            <returns>A symbol object if found. Return null if not found.</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadSymbolFile.GetSymbols(Trimble.Vce.Core.Components.SymbolCollection@)">
+            <summary>
+            get all symbols in the shapefile
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadSymbolFile.GetShape(Trimble.Vce.SurveyCAD.Symbol@,System.Int32)">
+            <summary>
+            get a single symbol from the shape file
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.AcadSymbolFile.GetShape(Trimble.Vce.SurveyCAD.Symbol@,System.String)">
+            <summary>
+            get a single symbol from the shape file
+            </summary>
+        </member>
+        <member name="T:Trimble.Vce.CADStyle.IFileReader">
+            <summary>
+            The base class of cad style reader.
+            </summary>
+        </member>
+        <member name="F:Trimble.Vce.CADStyle.IFileReader.m_IsPaperUnit">
+            <summary>
+            The unit type.
+            </summary>
+        </member>
+        <member name="F:Trimble.Vce.CADStyle.IFileReader.m_IsMetric">
+            <summary>
+            The unit.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.IFileReader.ReadFile(System.IO.FileInfo)">
+            <summary>
+            Read the cad style file.
+            </summary>
+            <param name="fi">The file to read.</param>
+            <returns>The collection of line styles.</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.IFileReader.Inch2Millimeter(System.Double)">
+            <summary>
+            Convert inch to millimeter.
+            </summary>
+            <param name="inch">The value to be converted.</param>
+            <returns>The millimeter of the <paramref name="inch"/></returns>
+        </member>
+        <member name="P:Trimble.Vce.CADStyle.IFileReader.IsPaperUnit">
+            <summary>
+            Get/Set the unit type.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.CADStyle.IFileReader.IsMetric">
+            <summary>
+            Get/Set the units.
+            </summary>
+        </member>
+        <member name="T:Trimble.Vce.CADStyle.ILineStyleReader">
+            <summary>
+            The base class of the linestyle reader.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.CADStyle.ILineStyleReader.SymbolList">
+            <summary>
+            Get/Set the symbols used in line styles.
+            </summary>
+        </member>
+        <member name="T:Trimble.Vce.CADStyle.LineStyleReader">
+            <summary>
+            Import line styles.
+            </summary>
+        </member>
+        <member name="P:Trimble.Vce.CADStyle.LineStyleReader.SymbolList">
+            <summary>
+            Get the symbols that imbedded in the linestyle.
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.LineStyleReader.ReadLineStyle(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Read symbol file.
+            </summary>
+            <param name="file">The line style file.</param>
+            <param name="IsMetric">True if the measurement is in metric.</param>
+            <param name="IsPaperUnit">True if the file is in paper unit.</param>
+            <returns>An array of SurveyCad.LineStyle objects.</returns>
+        </member>
+        <member name="T:Trimble.Vce.CADStyle.SymbolReader">
+            <summary>
+            Import/export symbols
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.SymbolReader.ReadSymbol(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Read symbol file.
+            </summary>
+            <param name="file">The symbol file.</param>
+            <param name="IsMetric">True if the measurement is in metric.</param>
+            <param name="IsPaperUnit">True if the file is in paper unit.</param>
+            <returns>An array of SurveyCad.Symbol objects.</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.SymbolReader.ImportSymbol(System.String,Trimble.Vce.Core.Components.Project,System.Boolean,System.Boolean)">
+            <summary>
+            Import the symbols into project from a file.
+            </summary>
+            <param name="file">The symbol file.</param>
+            <param name="project">The project the symbols are imported to.</param>
+            <param name="IsMetric">True if the measurement is in metric.</param>
+            <param name="IsPaperUnit">True if the file is in paper unit.</param>
+            <returns>The number of symbols imported.</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.SymbolReader.ImportSymbol(System.String,System.String[],Trimble.Vce.Core.Components.Project,System.Boolean,System.Boolean)">
+            <summary>
+            Import the specified symbols into project.
+            </summary>
+            <param name="file">The symbol file.</param>
+            <param name="symbols">Symbols to be imported.</param>
+            <param name="project">The project the symbols are imported to.</param>
+            <param name="IsMetric">True if the measurement is in metric.</param>
+            <param name="IsPaperUnit">True if the file is in paper unit.</param>
+            <returns>A collection of imported symbols.</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.SymbolReader.GetStandardAcadSymbol(System.Int32)">
+            <summary>
+            Get the common use acad symbols.
+            </summary>
+            <param name="id">The id of the symbol.</param>
+            <returns>Return null if there is no id matched.</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.SymbolReader.GetStandardAcadSymbol(System.String)">
+            <summary>
+            Get the common use acad symbols.
+            </summary>
+            <param name="name">The symbol name.</param>
+            <returns>Return null if there is no name matched</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.SymbolReader.LocalGetStandardAcadSymbol(System.Int32)">
+            <summary>
+            Get the common use acad symbols.
+            </summary>
+            <param name="id">The symbol name.</param>
+            <returns>Return null if there is no id matched</returns>
+        </member>
+        <member name="T:Trimble.Vce.CADStyle.TextStyleReader">
+            <summary>
+            Read text style from xml files
+            </summary>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.TextStyleReader.ReadTextStyle(System.String,Trimble.Vce.Core.Components.Project)">
+            <summary>
+            Read text style file.
+            </summary>
+            <param name="file">The text style file.</param>
+            <param name="project">The current project</param>
+            <returns>An array of TextStyle objects.</returns>
+        </member>
+        <member name="M:Trimble.Vce.CADStyle.TGODefinitionFile.ArcElement.ElementLength">
+            <summary>
+            just return the radius of the arc
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
