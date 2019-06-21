@@ -5,12 +5,12 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
@@ -49,10 +49,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var baseFilter = ConvertFilter(request.BaseFilter, siteModel);
+      var baseFilter = ConvertFilter(request.Filter, siteModel);
       var referenceDesign = new DesignOffset(request.ReferenceDesignUid ?? Guid.Empty, request.ReferenceDesignOffset ?? 0);
 
-      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      var arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = request.ProjectUid ?? Guid.Empty,
         ProfileTypeRequired = GridDataType.Height,
@@ -62,14 +62,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         ReferenceDesign = referenceDesign,
         StartPoint = new WGS84Point(request.StartX, request.StartY),
         EndPoint = new WGS84Point(request.EndX, request.EndY),
-        ReturnAllPassesAndLayers = true
+        ReturnAllPassesAndLayers = true,
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var svRequest = new ProfileRequest_ApplicationService_ProfileCell();
 
       // var Response = svRequest.Execute(arg);
-      ProfileRequestResponse<ProfileCell> response = svRequest.Execute(arg);
+      var response = svRequest.Execute(arg);
 
       if (response != null)
         return ConvertResult(response);

@@ -4,7 +4,8 @@ using System.Text;
 
 namespace VSS.TRex.Types
 {
-    public struct CCVRangePercentage
+  [Obsolete("use CMVRangePercentageRecord")]
+  public struct CCVRangePercentage
     {
       public double Min, Max;
     }

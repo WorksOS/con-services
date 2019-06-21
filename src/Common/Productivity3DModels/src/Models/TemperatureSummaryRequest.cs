@@ -17,11 +17,10 @@ namespace VSS.Productivity3D.Models.Models
     public FilterResult Filter { get; private set; }
 
     /// <summary>
-    /// The various summary and target values to use in preparation of the result
+    /// Only TemperatureSettings used.
     /// </summary>
-    [JsonProperty(PropertyName = "temperatureSettings", Required = Required.Always)]
-    [Required]
-    public TemperatureSettings TemperatureSettings { get; private set; }
+    [JsonProperty(Required = Required.Default)]
+    public OverridingTargets Overrides { get; private set; }
 
     /// <summary>
     /// Default private constructor
@@ -35,9 +34,9 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public TemperatureSummaryRequest(Guid? projectUid, FilterResult filter, TemperatureSettings temperatureSettings)
     {
-      this.ProjectUid = projectUid;
-      this.Filter = filter;
-      this.TemperatureSettings = temperatureSettings;
+      ProjectUid = projectUid;
+      Filter = filter;
+      Overrides = new OverridingTargets(temperatureSettings: temperatureSettings);
     }
 
     /// <summary>
@@ -48,8 +47,7 @@ namespace VSS.Productivity3D.Models.Models
       base.Validate();
 
       Filter?.Validate();
-
-      TemperatureSettings?.Validate();
+      Overrides?.Validate();
     }
   }
 }
