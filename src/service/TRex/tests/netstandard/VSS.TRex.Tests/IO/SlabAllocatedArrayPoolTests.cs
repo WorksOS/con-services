@@ -69,6 +69,14 @@ namespace VSS.TRex.Tests.IO
     }
 
     [Fact]
+    public void Rent_Rail_WithNegativeSize()
+    {
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
+      Action act = () => pool.Rent(-1);
+      act.Should().Throw<ArgumentException>().WithMessage("Negative buffer size not permitted*");
+    }
+
+    [Fact]
     public void Return_AllPools()
     {
       var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);

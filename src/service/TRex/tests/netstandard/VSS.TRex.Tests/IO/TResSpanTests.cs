@@ -359,28 +359,31 @@ namespace VSS.TRex.Tests.IO
     public  void Copy_Fail_SpanT_SourceCountOutOfBounds()
     {
       var span = new TRexSpan<CellPass>(new CellPass[10], TRexSpan<CellPass>.NO_SLAB_INDEX, 5, 2, false);
-      var cp = new CellPass();
-
       var span2 = new TRexSpan<CellPass>(new CellPass[10], TRexSpan<CellPass>.NO_SLAB_INDEX, 5, 1, false);
+      var span3 = new TRexSpan<CellPass>(new CellPass[1], TRexSpan<CellPass>.NO_SLAB_INDEX, 0, 1, false);
 
       Action act = () => span2.Copy(span, 3);
       act.Should().Throw<ArgumentException>().WithMessage("Source count may not be negative or greater than the count of elements in the source");
 
-      act = () => span2.Copy(span, 2);
-      act.Should().Throw<ArgumentException>($"Target has insufficient capacity (1) to contain required items from source (2)");
+      span.Add(new CellPass());
+      span.Add(new CellPass());
+
+      act = () => span3.Copy(span, 2);
+      act.Should().Throw<ArgumentException>().WithMessage("Target has insufficient capacity (1) to contain required items from source (2)");
     }
 
     [Fact]
     public void Copy_Fail_ArrayT_SourceCountOutOfBounds()
     {
       var span = new TRexSpan<CellPass>(new CellPass[10], TRexSpan<CellPass>.NO_SLAB_INDEX, 5, 2, false);
-      var cpArray = new CellPass[1];
 
-      Action act = () => span.Copy(cpArray, 3);
+      Action act = () => span.Copy(new CellPass[1], 3);
       act.Should().Throw<ArgumentException>().WithMessage("Source count may not be negative or greater than the count of elements in the source");
 
-      act = () => span.Copy(cpArray, 2);
-      act.Should().Throw<ArgumentException>($"Target has insufficient capacity (1) to contain required items from source (2)");
+      var span3 = new TRexSpan<CellPass>(new CellPass[10], TRexSpan<CellPass>.NO_SLAB_INDEX, 0, 1, false);
+
+      act = () => span3.Copy(new CellPass[2], 2);
+      act.Should().Throw<ArgumentException>().WithMessage("Target has insufficient capacity (1) to contain required items from source (2)");
     }
   }
 }

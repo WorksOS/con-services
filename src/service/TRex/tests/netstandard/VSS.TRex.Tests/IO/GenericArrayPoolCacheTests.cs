@@ -99,6 +99,15 @@ namespace VSS.TRex.Tests.IO
     }
 
     [Fact]
+    public void Return_Fail_BufferTooLarge()
+    {
+      var cache = new GenericArrayPoolCaches<byte>();
+
+      // This should not throw an exception but may record an item in the log
+      cache.Return(new byte[1 << 21]);
+    }
+
+    [Fact]
     public void Return_Fail_PoolCacheIsFull()
     {
       var cache = new GenericArrayPoolCaches<byte>();
