@@ -43,9 +43,9 @@ namespace MockProjectWebApi
         .UseStartup<Startup>()
         .ConfigureLogging((hostContext, loggingBuilder) =>
         {
-          loggingBuilder.AddProvider(p =>
-            new SerilogLoggerProvider(
-              SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log", p.GetService<IHttpContextAccessor>())));
+          loggingBuilder.AddProvider(
+            p => new SerilogLoggerProvider(
+              SerilogExtensions.Configure("VSS.3DProductivity.MockWebAPI.log", config, p.GetRequiredService<IHttpContextAccessor>())));
         })
         .UseUrls("http://0.0.0.0:5001")
         .Build();
