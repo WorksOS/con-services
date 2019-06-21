@@ -54,6 +54,7 @@ namespace VSS.TRex.Server.MutableData
           MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
         }))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<long>>(new GenericArrayPoolCaches<long>()))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
         .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL)))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
