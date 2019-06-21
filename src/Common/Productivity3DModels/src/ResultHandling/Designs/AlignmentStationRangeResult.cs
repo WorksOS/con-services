@@ -17,10 +17,10 @@ namespace VSS.Productivity3D.Models.ResultHandling.Designs
     [JsonProperty(PropertyName = "EndStation")]
     public double EndStation { get; private set; }
 
-    public static AlignmentStationRangeResult CreateAlignmentOffsetResult(double startStation, double endStation)
+    public AlignmentStationRangeResult(double startStation, double endStation)
     {
-      return new AlignmentStationRangeResult() {StartStation = startStation, EndStation = endStation };
+      StartStation = startStation;
+      EndStation = endStation;
     }
-
   }
 }

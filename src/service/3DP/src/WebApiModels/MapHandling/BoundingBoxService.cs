@@ -572,7 +572,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         out double startStation, out double endStation);
 
       if (success)
-        return AlignmentStationRangeResult.CreateAlignmentOffsetResult(startStation, endStation);
+        return new AlignmentStationRangeResult(startStation, endStation);
 #endif
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
