@@ -35,7 +35,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      MDPSummaryRequest request = item as MDPSummaryRequest;
+      var request = item as MDPSummaryRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<MDPSummaryRequest>();
@@ -44,16 +44,16 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      MDPStatisticsOperation operation = new MDPStatisticsOperation();
-
-      MDPSummaryResult mdpSummaryResult = operation.Execute(
+      var operation = new MDPStatisticsOperation();
+      var overrides = request.Overrides;
+      var mdpSummaryResult = operation.Execute(
         new MDPStatisticsArgument()
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          MDPPercentageRange = new MDPRangePercentageRecord(request.MinMDPPercent, request.MaxMDPPercent),
-          OverrideMachineMDP = request.OverrideTargetMDP,
-          OverridingMachineMDP = request.MdpTarget
+          MDPPercentageRange = new MDPRangePercentageRecord(overrides.MinMDPPercent, overrides.MaxMDPPercent),
+          OverrideMachineMDP = overrides.OverrideTargetMDP,
+          OverridingMachineMDP = overrides.MdpTarget
         }
       );
 

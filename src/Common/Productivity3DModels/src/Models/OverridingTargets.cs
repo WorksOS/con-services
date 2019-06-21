@@ -111,17 +111,17 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public OverridingTargets(
-      short cmvTarget,
-      bool overrideTargetCMV,
-      double maxCMVPercent,
-      double minCMVPercent,
-      short mdpTarget,
-      bool overrideTargetMDP,
-      double maxMDPPercent,
-      double minMDPPercent,
-      TargetPassCountRange overridingTargetPassCountRange,
-      TemperatureSettings temperatureSettings,
-      MachineSpeedTarget machineSpeedTarget)
+      short cmvTarget=0,
+      bool overrideTargetCMV=false,
+      double maxCMVPercent=0,
+      double minCMVPercent=0,
+      short mdpTarget=0,
+      bool overrideTargetMDP=false,
+      double maxMDPPercent=0,
+      double minMDPPercent=0,
+      TargetPassCountRange overridingTargetPassCountRange=null,
+      TemperatureSettings temperatureSettings=null,
+      MachineSpeedTarget machineSpeedTarget=null)
     {
       CmvTarget = cmvTarget;
       OverrideTargetCMV = overrideTargetCMV;
