@@ -36,7 +36,7 @@ namespace VSS.TRex.IO
 
       if (1 << (Utilities.Log2(allocationPoolPageSize) - 1) != allocationPoolPageSize)
       {
-        throw new ArgumentException($"Allocation pool page size must be a power of 2");
+        throw new ArgumentException("Allocation pool page size must be a power of 2");
       }
 
       _pools = new SlabAllocatedPool<T>[Utilities.Log2(allocationPoolPageSize)];
@@ -144,7 +144,7 @@ namespace VSS.TRex.IO
 
       for (int i = 0, limit = _pools.Length; i < limit; i++)
       {
-         result[i] = (i, _pools[i].ArraySize, _pools[i].Capacity, _pools[i].RentalTideLevel);
+         result[i] = (i, _pools[i].ArraySize, _pools[i].Capacity, _pools[i].RentalTideLevel + 1);
       }
 
       return result;

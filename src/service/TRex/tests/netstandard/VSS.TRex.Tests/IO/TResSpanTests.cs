@@ -94,6 +94,17 @@ namespace VSS.TRex.Tests.IO
       span.OffsetPlusCount.Should().Be(2);
     }
 
+    [Fact]
+    public void Add_Fail_ExceedsCapacity()
+    {
+      var span = new TRexSpan<CellPass>(new CellPass[1], TRexSpan<CellPass>.NO_SLAB_INDEX, 0, 1, false);
+      var cp = new CellPass();
+
+      span.Add(cp);
+      Action act = () => span.Add(cp);
+      act.Should().Throw<ArgumentException>()
+        .WithMessage($"No spare capacity to add new element, capacity = 1, element count = 1");
+    }
 
     [Theory]
     [InlineData(10, 0, 2)]
@@ -178,6 +189,26 @@ namespace VSS.TRex.Tests.IO
       span.GetElement(1).Should().BeEquivalentTo(cp2);
 
       span.OffsetPlusCount.Should().Be(3);
+    }
+
+    [Fact]
+    public void Insert_FailOutOfRange_Low()
+    {
+      var span = new TRexSpan<CellPass>(new CellPass[10], TRexSpan<CellPass>.NO_SLAB_INDEX, 5, 6, false);
+      var cp = new CellPass();
+
+      Action act = () => span.Insert(cp, 4);
+      act.Should().Throw<ArgumentException>().WithMessage("Index out of range");
+    }
+
+    [Fact]
+    public void Insert_FailOutOfRange_High()
+    {
+      var span = new TRexSpan<CellPass>(new CellPass[10], TRexSpan<CellPass>.NO_SLAB_INDEX, 5, 6, false);
+      var cp = new CellPass();
+
+      Action act = () => span.Insert(cp, 7);
+      act.Should().Throw<ArgumentException>().WithMessage("Index out of range");
     }
 
     [Fact]
@@ -322,6 +353,34 @@ namespace VSS.TRex.Tests.IO
       span2.Count.Should().Be(2);
       span2.GetElement(0).Should().BeEquivalentTo(cp1);
       span2.GetElement(1).Should().BeEquivalentTo(cp2);
+    }
+
+    [Fact]
+    public  void Copy_Fail_SpanT_SourceCountOutOfBounds()
+    {
+      var span = new TRexSpan<CellPass>(new CellPass[10], TRexSpan<CellPass>.NO_SLAB_INDEX, 5, 2, false);
+      var cp = new CellPass();
+
+      var span2 = new TRexSpan<CellPass>(new CellPass[10], TRexSpan<CellPass>.NO_SLAB_INDEX, 5, 1, false);
+
+      Action act = () => span2.Copy(span, 3);
+      act.Should().Throw<ArgumentException>().WithMessage("Source count may not be negative or greater than the count of elements in the source");
+
+      act = () => span2.Copy(span, 2);
+      act.Should().Throw<ArgumentException>($"Target has insufficient capacity (1) to contain required items from source (2)");
+    }
+
+    [Fact]
+    public void Copy_Fail_ArrayT_SourceCountOutOfBounds()
+    {
+      var span = new TRexSpan<CellPass>(new CellPass[10], TRexSpan<CellPass>.NO_SLAB_INDEX, 5, 2, false);
+      var cpArray = new CellPass[1];
+
+      Action act = () => span.Copy(cpArray, 3);
+      act.Should().Throw<ArgumentException>().WithMessage("Source count may not be negative or greater than the count of elements in the source");
+
+      act = () => span.Copy(cpArray, 2);
+      act.Should().Throw<ArgumentException>($"Target has insufficient capacity (1) to contain required items from source (2)");
     }
   }
 }

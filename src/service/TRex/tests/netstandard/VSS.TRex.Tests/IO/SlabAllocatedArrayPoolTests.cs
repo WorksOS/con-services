@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.IO;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -19,10 +21,17 @@ namespace VSS.TRex.Tests.IO
     }
 
     [Fact]
-    public void Creation_ConfigurableNumPools_Success()
+    public void Creation_Fail_WithInvalidPageSize_Range()
     {
-      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
-      pool.Should().NotBeNull();
+      Action act = () => new SlabAllocatedArrayPool<CellPass>(-1);
+      act.Should().Throw<ArgumentException>().WithMessage("Allocation pool size must be in the range*");
+    }
+
+    [Fact]
+    public void Creation_Fail_WithInvalidPageSize_PowerOfTwo()
+    {
+      Action act = () => new SlabAllocatedArrayPool<CellPass>(13);
+      act.Should().Throw<ArgumentException>().WithMessage("Allocation pool page size must be a power of 2");
     }
 
     [Fact]
@@ -83,6 +92,18 @@ namespace VSS.TRex.Tests.IO
       rental.Capacity.Should().Be(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE + 1);
 
       pool.Return(rental);
+    }
+
+    [Fact]
+    public void Statistics_DefaultEmptyPool()
+    {
+      var pool = new SlabAllocatedArrayPool<CellPass>(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE);
+      var stats = pool.Statistics();
+
+      stats.Should().NotBeNull();
+      stats.Length.Should().Be(VSS.TRex.IO.Utilities.Log2(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE));
+
+      stats.ForEach(x => x.rentedItems.Should().Be(0));
     }
   }
 }

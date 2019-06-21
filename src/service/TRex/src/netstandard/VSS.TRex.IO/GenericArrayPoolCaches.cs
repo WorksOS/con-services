@@ -27,6 +27,8 @@ namespace VSS.TRex.IO
     /// </summary>
     public const int LARGE_POOL_CACHE_SIZE = 10;
 
+    public const int MAX_BUFFER_SIZE_CACHED = 1 << 20; // ~1 million items
+
     private static readonly ILogger Log = Logging.Logger.CreateLogger<GenericArrayPoolCaches<T>>();
 
     /// <summary>
@@ -140,12 +142,20 @@ namespace VSS.TRex.IO
         return;
       }
 
+      if (log2 >= NumExponentialPoolsToProvide)
+      {
+        // Buffer is too big to place back into the cache and note it in log
+        Log.LogWarning($"Elements buffer pool returned buffer too big [{buffer.Length}] for an existing cache pool. Ignoring this returned buffer");
+        return;
+      }
+
       lock (_poolCounts)
       {
-        if (_poolCounts[log2] == _pools[log2].Length - 1)
+        if (_poolCounts[log2] >= _pools[log2].Length)
         {
           // The pool is full - cut this buffer loose for the GC to look after
           Log.LogWarning($"Elements buffer pool full for buffers of size {buffer.Length}. Ignoring this returned buffer");
+          return;
         }
         
         // Place the returned buffer into the pool for later reuse
