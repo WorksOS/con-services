@@ -142,7 +142,7 @@ namespace VSS.TRex.Tests
 
       // Take a copy of the mutable cells and cell passes for later reference
       var mutableLatest = mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
-      CellPass[,][] mutablePasses = mutableSegment.PassesData.GetState(out var cellPassCounts);
+      Cell_NonStatic[,] mutablePasses = mutableSegment.PassesData.GetState();
 
       MemoryStream mutableStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       using (var writer = new BinaryWriter(mutableStream, Encoding.UTF8, true))
@@ -221,11 +221,13 @@ namespace VSS.TRex.Tests
           // Force the height and time in the immutable record to be the same as the immutable record
           // as they have been independently checked above. Also set the machine ID to be the same as the mutable
           // machine ID as the immutable representation does not include it in the Ignite POC
-          cellPass.Time = mutablePasses[x, y][i].Time;
-          cellPass.Height = mutablePasses[x, y][i].Height;
-          cellPass.InternalSiteModelMachineIndex = mutablePasses[x, y][i].InternalSiteModelMachineIndex;
 
-          CellPass mutableCellPass = mutablePasses[x, y][i];
+          var mutablePass = mutablePasses[x, y].Passes.GetElement(i);
+          cellPass.Time = mutablePass.Time;
+          cellPass.Height = mutablePass.Height;
+          cellPass.InternalSiteModelMachineIndex = mutablePass.InternalSiteModelMachineIndex;
+
+          CellPass mutableCellPass = mutablePasses[x, y].Passes.GetElement(i);
           Assert.True(mutableCellPass.Equals(cellPass), $"Cell passes not equal at Cell[{x}, {y}], cell pass index {i}");
         }
       });

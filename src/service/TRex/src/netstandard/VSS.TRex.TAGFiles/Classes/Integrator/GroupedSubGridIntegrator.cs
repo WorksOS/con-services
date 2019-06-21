@@ -66,17 +66,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
       for (int i = 0; i < _subGridGroupCount; i++)
       {
-        var cellPasses = _subGridGroup[i].Cells.PassesData[0].PassesData.ExtractCellPasses(x, y, out int passCount);
+        var cell = _subGridGroup[i].Cells.PassesData[0].PassesData.ExtractCellPasses(x, y);
+        var passes = cell.Passes;
 
-        if (cellPasses == null)
+        for (int cpi = 0, limit = passes.Count; cpi < limit; cpi++)
         {
-          // There are no cell passes present in this cell in this sub grid
-          continue;
-        }
-
-        for (int cpi = 0; cpi < passCount; cpi++)
-        {
-          var cellPass = cellPasses[cpi];
+          var cellPass = passes.GetElement(cpi);
 
           if (_numTotalCellPasses == 0 || lastTime < cellPass.Time)
           {
@@ -111,10 +106,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
       if (_numTotalCellPasses > 0)
       {
-        var resultCellPasses = new CellPass[_numTotalCellPasses];
-        Array.Copy(_totalCellPasses, resultCellPasses, _numTotalCellPasses);
-
-        _resultSubGrid.Cells.PassesData[0].PassesData.ReplacePasses(x, y, resultCellPasses, _numTotalCellPasses);
+        _resultSubGrid.Cells.PassesData[0].PassesData.ReplacePasses(x, y, _totalCellPasses, _numTotalCellPasses);
         _resultSubGrid.Directory.GlobalLatestCells.PassDataExistenceMap[(byte) x, (byte) y] = true;
       }
     }

@@ -6,6 +6,7 @@ using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Compression;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Helpers;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server
@@ -140,107 +141,115 @@ namespace VSS.TRex.SubGridTrees.Server
             {
               for (int row = 0; row < SubGridTreeConsts.SubGridTreeDimension; row++)
               {
-                DateTime time = cellPasses[col, row].Time;
+                var time = cellPasses[col, row].Time;
                 FirstRealCellPassTime = time != CellPassConsts.NullTime && time < FirstRealCellPassTime ? time : FirstRealCellPassTime;
               }
             }
 
             // For ease of management convert all the cell passes into a single list for the following operations
-            var allCellPassesArray = new CellPass[SubGridTreeConsts.SubGridTreeCellsPerSubGrid];
-            int cellPassIndex = 0;
+            var allCellPassesArray = CellPassArrayPoolCacheHelper.Caches.Rent(SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
 
-            for (int col = 0; col < SubGridTreeConsts.SubGridTreeDimension; col++)
-            {
-              for (int row = 0; row < SubGridTreeConsts.SubGridTreeDimension; row++)
-              {
-                allCellPassesArray[cellPassIndex++] = cellPasses[col, row];
-              }
-            }
-
-            // Work out the value ranges of all the attributes and given the value range
-            // for each attribute, calculate the number of bits required to store the values.
-
-            // Note:
-            // Time - based on the long word, second accurate times overriding the TDateTime times
-            // Height - based on the long word, millimeter accurate elevations overriding the IEEE double elevations
-            // GPSMode - take the least significant 4 bits of the GPSModeStore
-
-            // Convert time and elevation value to offset values in the appropriate units
-            // from the lowest values of those attributes. Reuse the existing fields in the
-            // cell passes list to avoid having to allocate an extra memory block
-
-            long[] CalculateAttributeValueRange_Buffer = new long[allCellPassesArray.Length];
-
-            for (int i = 0; i < allCellPassesArray.Length; i++)
-              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].InternalSiteModelMachineIndex;
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullInternalSiteModelMachineIndex, true, ref EncodedFieldDescriptors.InternalMachineID);
-
-            for (int i = 0; i < allCellPassesArray.Length; i++)
-              CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedTime(allCellPassesArray[i].Time, FirstRealCellPassTime);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0x7fff_ffff_ffff_ffff, -1, true, ref EncodedFieldDescriptors.Time);
-       
-            for (int i = 0; i < allCellPassesArray.Length; i++)
-              CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedHeight(allCellPassesArray[i].Height);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
-       
-            for (int i = 0; i < allCellPassesArray.Length; i++)
-              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].CCV;
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
-       
-            for (int i = 0; i < allCellPassesArray.Length; i++)
-              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].RMV;
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullRMV, true, ref EncodedFieldDescriptors.RMV);
-       
-            for (int i = 0; i < allCellPassesArray.Length; i++)
-              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].MDP;
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullMDP, true, ref EncodedFieldDescriptors.MDP);
-       
-            for (int i = 0; i < allCellPassesArray.Length; i++)
-              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].MaterialTemperature;
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
-       
-            for (int i = 0; i < allCellPassesArray.Length; i++)
-              CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].CCA;
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xff, CellPassConsts.NullCCA, true, ref EncodedFieldDescriptors.CCA);
-
-            // Calculate the offset bit locations for the cell pass attributes
-            EncodedFieldDescriptors.CalculateTotalOffsetBits(out NumBitsPerCellPass);
-
-            // Create the bit field arrays to contain the segment call pass index & count plus passes.
-            // Copy the call passes themselves into BF
-            BitFieldArrayRecordsDescriptor[] recordDescriptors = 
-            {
-                new BitFieldArrayRecordsDescriptor
-                {
-                    NumRecords = SubGridTreeConsts.SubGridTreeCellsPerSubGrid,
-                    BitsPerRecord = NumBitsPerCellPass
-                }
-            };
-
-            BF_CellPasses.Initialise(recordDescriptors);
-            BF_CellPasses.StreamWriteStart();
             try
             {
-                for (int i=0, length = allCellPassesArray.Length; i < length; i++)
-                {
-                    CellPass pass = allCellPassesArray[i];
+              int cellPassIndex = 0;
 
-                    BF_CellPasses.StreamWrite(pass.InternalSiteModelMachineIndex, EncodedFieldDescriptors.InternalMachineID);
-                    BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedTime(pass.Time, FirstRealCellPassTime), EncodedFieldDescriptors.Time);
-                    BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedHeight(pass.Height), EncodedFieldDescriptors.Height);
-                    BF_CellPasses.StreamWrite(pass.CCV, EncodedFieldDescriptors.CCV);
-                    BF_CellPasses.StreamWrite(pass.RMV, EncodedFieldDescriptors.RMV);
-                    BF_CellPasses.StreamWrite(pass.MDP, EncodedFieldDescriptors.MDP);
-                    BF_CellPasses.StreamWrite(pass.MaterialTemperature, EncodedFieldDescriptors.MaterialTemperature);
-                    BF_CellPasses.StreamWrite(pass.CCA, EncodedFieldDescriptors.CCA);
+              for (int col = 0; col < SubGridTreeConsts.SubGridTreeDimension; col++)
+              {
+                for (int row = 0; row < SubGridTreeConsts.SubGridTreeDimension; row++)
+                {
+                  allCellPassesArray[cellPassIndex++] = cellPasses[col, row];
                 }
+              }
+
+              // Work out the value ranges of all the attributes and given the value range
+              // for each attribute, calculate the number of bits required to store the values.
+           
+              // Note:
+              // Time - based on the long word, second accurate times overriding the TDateTime times
+              // Height - based on the long word, millimeter accurate elevations overriding the IEEE double elevations
+              // GPSMode - take the least significant 4 bits of the GPSModeStore
+           
+              // Convert time and elevation value to offset values in the appropriate units
+              // from the lowest values of those attributes. Reuse the existing fields in the
+              // cell passes list to avoid having to allocate an extra memory block
+           
+              long[] CalculateAttributeValueRange_Buffer = new long[SubGridTreeConsts.SubGridTreeCellsPerSubGrid];
+           
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; i++)
+                CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].InternalSiteModelMachineIndex;
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullInternalSiteModelMachineIndex, true, ref EncodedFieldDescriptors.InternalMachineID);
+           
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; i++)
+                CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedTime(allCellPassesArray[i].Time, FirstRealCellPassTime);
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0x7fff_ffff_ffff_ffff, -1, true, ref EncodedFieldDescriptors.Time);
+           
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; i++)
+                CalculateAttributeValueRange_Buffer[i] = AttributeValueModifiers.ModifiedHeight(allCellPassesArray[i].Height);
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
+           
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; i++)
+                CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].CCV;
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
+           
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; i++)
+                CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].RMV;
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullRMV, true, ref EncodedFieldDescriptors.RMV);
+           
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; i++)
+                CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].MDP;
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullMDP, true, ref EncodedFieldDescriptors.MDP);
+           
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; i++)
+                CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].MaterialTemperature;
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xffff, CellPassConsts.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
+           
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; i++)
+                CalculateAttributeValueRange_Buffer[i] = allCellPassesArray[i].CCA;
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(CalculateAttributeValueRange_Buffer, 0xff, CellPassConsts.NullCCA, true, ref EncodedFieldDescriptors.CCA);
+           
+              // Calculate the offset bit locations for the cell pass attributes
+              EncodedFieldDescriptors.CalculateTotalOffsetBits(out NumBitsPerCellPass);
+           
+              // Create the bit field arrays to contain the segment call pass index & count plus passes.
+              // Copy the call passes themselves into BF
+              BitFieldArrayRecordsDescriptor[] recordDescriptors = 
+              {
+                  new BitFieldArrayRecordsDescriptor
+                  {
+                      NumRecords = SubGridTreeConsts.SubGridTreeCellsPerSubGrid,
+                      BitsPerRecord = NumBitsPerCellPass
+                  }
+              };
+           
+              BF_CellPasses.Initialise(recordDescriptors);
+              BF_CellPasses.StreamWriteStart();
+              try
+              {
+                  for (int i=0; i < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; i++)
+                  {
+                      var pass = allCellPassesArray[i];
+           
+                      BF_CellPasses.StreamWrite(pass.InternalSiteModelMachineIndex, EncodedFieldDescriptors.InternalMachineID);
+                      BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedTime(pass.Time, FirstRealCellPassTime), EncodedFieldDescriptors.Time);
+                      BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedHeight(pass.Height), EncodedFieldDescriptors.Height);
+                      BF_CellPasses.StreamWrite(pass.CCV, EncodedFieldDescriptors.CCV);
+                      BF_CellPasses.StreamWrite(pass.RMV, EncodedFieldDescriptors.RMV);
+                      BF_CellPasses.StreamWrite(pass.MDP, EncodedFieldDescriptors.MDP);
+                      BF_CellPasses.StreamWrite(pass.MaterialTemperature, EncodedFieldDescriptors.MaterialTemperature);
+                      BF_CellPasses.StreamWrite(pass.CCA, EncodedFieldDescriptors.CCA);
+                  }
+              }
+              finally
+              {
+                  BF_CellPasses.StreamWriteEnd();
+              }
             }
             finally
             {
-                BF_CellPasses.StreamWriteEnd();
+              CellPassArrayPoolCacheHelper.Caches.Return(allCellPassesArray);
             }
 
-            //Log.LogInformation($"Internal cache encoding for latest passes required {BF_CellPasses.NumBits / 8} bytes @ {NumBitsPerCellPass} bits per cell pass");
+           //Log.LogInformation($"Internal cache encoding for latest passes required {BF_CellPasses.NumBits / 8} bytes @ {NumBitsPerCellPass} bits per cell pass");
         }
 
         /// <summary>

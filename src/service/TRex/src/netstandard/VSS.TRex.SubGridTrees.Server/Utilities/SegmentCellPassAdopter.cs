@@ -18,16 +18,17 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     {
       Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
       {
-        var sourceSegmentPasses = sourceSegment.ExtractCellPasses(i, j, out int sourcePassCount);
-
-        if (sourcePassCount == 0)
+        var sourceSegmentPasses = sourceSegment.ExtractCellPasses(i, j);
+        var passes = sourceSegmentPasses.Passes;
+        if (passes.Count == 0)
           return;
 
         int countInCell = 0;
+        var elements = passes.Elements;
 
-        for (int PassIndex = 0; PassIndex < sourcePassCount; PassIndex++)
+        for (int PassIndex = passes.Offset, limit = passes.OffsetPlusCount; PassIndex < limit; PassIndex++)
         {
-          if (sourceSegmentPasses[PassIndex].Time < atAndAfterTime)
+          if (elements[PassIndex].Time < atAndAfterTime)
             countInCell++;
           else
             break; // No more passes in the cell will satisfy the condition
@@ -36,10 +37,10 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         // countInCell represents the number of cells that should remain in the source segment.
         // The remainder are to be moved to this segment
 
-        var adoptedPassCount = sourcePassCount - countInCell;
+        var adoptedPassCount = passes.Count - countInCell;
         if (adoptedPassCount > 0)
         {
-          segment.Integrate(i, j, sourceSegmentPasses, sourcePassCount, countInCell, sourcePassCount - 1, out int AddedCount, out _);
+          segment.Integrate(i, j, sourceSegmentPasses, countInCell, passes.Count - 1, out int AddedCount, out _);
           segment.SegmentPassCount += AddedCount;
 
           sourceSegment.SegmentPassCount -= adoptedPassCount;
