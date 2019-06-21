@@ -36,9 +36,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
                       .UseStartup<Startup>()
                       .ConfigureLogging((hostContext, loggingBuilder) =>
                       {
-                        loggingBuilder.AddProvider(p =>
-                          new SerilogLoggerProvider(
-                            SerilogExtensions.Configure(config, "VSS.TagFileAuth.WebAPI.log", p.GetService<IHttpContextAccessor>())));
+                        loggingBuilder.AddProvider(
+                          p => new SerilogLoggerProvider(
+                            SerilogExtensions.Configure("VSS.TagFileAuth.WebAPI.log", config, p.GetService<IHttpContextAccessor>())));
                       })
                       .Build();
       });

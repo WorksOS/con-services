@@ -4,19 +4,21 @@ using Microsoft.Extensions.Logging;
 
 namespace VSS.Serilog.Extensions
 {
-  public static class SerilogNetAspExtensions
+  public static class SerilogLoggingBuilderExtensions
   {
     /// <summary>
-    /// Custom AddProvider extension method that allows us more flexible dependency injection when
-    /// using a custom ILoggerProvider class.
-    ///
-    /// One of the more useful benefits is DI'ing serivces while passing other constructor parameters.
+    /// Adds a custom logging provider.
     /// </summary>
     public static ILoggingBuilder AddProvider<T>(
       this ILoggingBuilder builder,
       Func<IServiceProvider, T> factory) where T : class, ILoggerProvider
     {
+      if (builder == null) throw new ArgumentNullException(nameof(builder));
+
       builder.Services.AddSingleton<ILoggerProvider, T>(factory);
+
+      // Temporary fix to correct the Logging Builder not picking up the minimum logging level set in SerilogExtensions::Configure().
+      builder.SetMinimumLevel(LogLevel.Debug);
 
       return builder;
     }
