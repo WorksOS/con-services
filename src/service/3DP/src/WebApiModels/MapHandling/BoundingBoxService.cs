@@ -544,7 +544,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="alignDescriptor"></param>
     /// <param name="customHeaders"></param>
     /// <returns>The station range</returns>
-    public AlignmentStationResult GetAlignmentStationRange(ProjectData project, DesignDescriptor alignDescriptor, IDictionary<string, string> customHeaders)
+    public AlignmentStationRangeResult GetAlignmentStationRange(ProjectData project, DesignDescriptor alignDescriptor, IDictionary<string, string> customHeaders)
     {
       if (alignDescriptor == null)
       {
@@ -564,7 +564,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #endif
         var queryParams = $"?projectUid={project.ProjectUid}&designUid={alignDescriptor.FileUid}";
 
-        return tRexCompactionDataProxy.SendDataGetRequest<AlignmentStationResult>(project.ProjectUid, "/design/filter/boundary", customHeaders, queryParams).Result;
+        return tRexCompactionDataProxy.SendDataGetRequest<AlignmentStationRangeResult>(project.ProjectUid, "/design/alignment/stationrange", customHeaders, queryParams).Result;
 #if RAPTOR
       }
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
@@ -572,7 +572,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         out double startStation, out double endStation);
 
       if (success)
-        return AlignmentStationResult.CreateAlignmentOffsetResult(startStation, endStation);
+        return AlignmentStationRangeResult.CreateAlignmentOffsetResult(startStation, endStation);
 #endif
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(

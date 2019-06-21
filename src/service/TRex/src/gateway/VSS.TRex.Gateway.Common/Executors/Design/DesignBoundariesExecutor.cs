@@ -2,25 +2,23 @@
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.MapHandling;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 using FenceGeometry = VSS.Productivity3D.Models.Models.MapHandling.Geometry;
 
-namespace VSS.TRex.Gateway.Common.Executors
+namespace VSS.TRex.Gateway.Common.Executors.Design
 {
   /// <summary>
   /// Processes the request to get design boundaries from TRex's site model/project.
@@ -42,10 +40,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as TRexDesignBoundariesRequest;
+      var request = item as DesignBoundariesRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException<TRexDesignBoundariesRequest>();
+        ThrowRequestTypeCastException<DesignBoundariesRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 

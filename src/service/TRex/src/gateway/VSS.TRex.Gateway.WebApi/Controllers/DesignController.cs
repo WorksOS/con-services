@@ -8,13 +8,14 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Executors.Design;
+using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -23,7 +24,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   /// <summary>
   /// Controller to get designs for a project.
-  ///     Create/Update/Delete endpoints use the mutable endpoint (at present VSS.TRex.Mutable.Gateway.WebApi)
+  /// Create/Update/Delete endpoints use the mutable endpoint (at present VSS.TRex.Mutable.Gateway.WebApi)
   /// </summary>
   [Route("api/v1/design")]
   public class DesignController : BaseController
@@ -113,7 +114,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       const double BOUNDARY_POINTS_INTERVAL = 1.00;
 
-      var designBoundariesRequest = new TRexDesignBoundariesRequest(projectUid, designUid, fileName, tolerance ?? BOUNDARY_POINTS_INTERVAL);
+      var designBoundariesRequest = new DesignBoundariesRequest(projectUid, designUid, fileName, tolerance ?? BOUNDARY_POINTS_INTERVAL);
 
       designBoundariesRequest.Validate();
 
@@ -147,7 +148,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetDesignFilterBoundaries)}: projectUid:{projectUid}, designUid:{designUid}, fileName:{fileName}, " +
                          $"startStation: {startStation}, endStation: {endStation}, leftOffset: {leftOffset}, rightOffset: {rightOffset}");
 
-      var designFilterBoundaryRequest = new TRexDesignFilterBoundaryRequest(
+      var designFilterBoundaryRequest = new DesignFilterBoundaryRequest(
         projectUid, 
         designUid, 
         fileName, 
@@ -162,6 +163,21 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         RequestExecutorContainer
           .Build<DesignFilterBoundaryExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(designFilterBoundaryRequest) as DesignFilterBoundaryResult);
+    }
+
+    [HttpGet("alignment/stationrange")]
+    public ContractExecutionResult GetAlignmentStationRange([FromQuery] Guid projectUid, [FromQuery] Guid designUid)
+    {
+      Log.LogInformation($"{nameof(GetAlignmentStationRange)}: projectUid:{projectUid}, designUid:{designUid}");
+
+      var alignmentStationRangeRequest = new DesignDataRequest(projectUid, designUid);
+
+      alignmentStationRangeRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<AlignmentStationRangeExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(alignmentStationRangeRequest) as AlignmentStationRangeResult);
     }
   }
 }

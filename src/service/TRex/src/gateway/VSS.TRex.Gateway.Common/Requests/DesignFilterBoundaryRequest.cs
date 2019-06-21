@@ -4,27 +4,16 @@ using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Utilities;
 
-namespace VSS.Productivity3D.Models.Models.Designs
+namespace VSS.TRex.Gateway.Common.Requests
 {
   /// <summary>
   /// The representation of a design filter boundary request.
   /// </summary>
-  public class TRexDesignFilterBoundaryRequest : ProjectID
+  public class DesignFilterBoundaryRequest : DesignDataRequest
   {
-    /// <summary>
-    /// The unique identifier of the design surface to to get a boundary from.
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public Guid DesignUid { get; private set; }
-
-    /// <summary>
-    /// The design file name.
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public string FileName { get; private set; }
-
     /// <summary>
     /// The starting station position on a alignment being used as a spatial filter. The value is expressed in meters.
     /// </summary>
@@ -55,18 +44,15 @@ namespace VSS.Productivity3D.Models.Models.Designs
     [JsonProperty(Required = Required.Default)]
     public double RightOffset { get; private set; }
 
-    public TRexDesignFilterBoundaryRequest(
+    public DesignFilterBoundaryRequest(
       Guid projectUid, 
       Guid designUid, 
       string fileName, 
       double startStation,
       double endStation,
       double leftOffset,
-      double rightOffset)
+      double rightOffset) : base (projectUid, designUid, fileName)
     {
-      ProjectUid = projectUid;
-      DesignUid = designUid;
-      FileName = fileName;
       StartStation = startStation;
       EndStation = endStation;
       LeftOffset = leftOffset;
@@ -89,7 +75,6 @@ namespace VSS.Productivity3D.Models.Models.Designs
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "The left offset must be less than the right offset."));
-
     }
   }
 }

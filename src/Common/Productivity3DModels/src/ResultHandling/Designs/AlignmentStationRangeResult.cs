@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.Models.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling.Designs
 {
-  public class AlignmentStationResult : ContractExecutionResult
+  public class AlignmentStationRangeResult : ContractExecutionResult
   {
     /// <summary>
     /// The start station for the alignment file
@@ -17,9 +17,9 @@ namespace VSS.Productivity3D.Models.ResultHandling
     [JsonProperty(PropertyName = "EndStation")]
     public double EndStation { get; private set; }
 
-    public static AlignmentStationResult CreateAlignmentOffsetResult(double startStation, double endStation)
+    public static AlignmentStationRangeResult CreateAlignmentOffsetResult(double startStation, double endStation)
     {
-      return new AlignmentStationResult() {StartStation = startStation, EndStation = endStation };
+      return new AlignmentStationRangeResult() {StartStation = startStation, EndStation = endStation };
     }
 
   }
