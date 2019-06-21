@@ -37,6 +37,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 
+      var liftBuildSettings = request.LiftBuildSettings;
+
       var productionDataProfileDataRequest = new ProductionDataProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
         request.Filter,
@@ -48,7 +50,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y1 ?? request.WGS84Points.lat1,
         request.GridPoints?.y2 ?? request.WGS84Points.lat2,
-        new OverridingTargets()//TODO:
+        new OverridingTargets(liftBuildSettings.OverridingMachineCCV ?? 0,
+          liftBuildSettings.OverridingMachineCCV.HasValue,
+          liftBuildSettings.CCVRange.Max, liftBuildSettings.CCVRange.Min,
+          liftBuildSettings.OverridingMachineMDP ?? 0,
+          liftBuildSettings.OverridingMachineMDP.HasValue,
+          liftBuildSettings.MDPRange.Max,
+          liftBuildSettings.MDPRange.Min,
+          liftBuildSettings.OverridingTargetPassCountRange,
+          liftBuildSettings.OverridingTemperatureWarningLevels != null ?
+            new TemperatureSettings(liftBuildSettings.OverridingTemperatureWarningLevels.Max,
+              liftBuildSettings.OverridingTemperatureWarningLevels.Min, true) : null,
+          liftBuildSettings.MachineSpeedTarget)
       );
 
       var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders).Result;

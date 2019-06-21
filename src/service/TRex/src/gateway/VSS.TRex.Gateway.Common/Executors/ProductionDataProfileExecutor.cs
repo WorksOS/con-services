@@ -10,7 +10,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
@@ -25,7 +24,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   /// <summary>
   /// Processes the request to get production data profile.
   /// </summary>
-  public class ProductionDataProfileExecutor : BaseExecutor
+  public class ProductionDataProfileExecutor : ProfileBaseExecutor
   {
     public ProductionDataProfileExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)
@@ -42,7 +41,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ProductionDataProfileDataRequest request = item as ProductionDataProfileDataRequest;
+      var request = item as ProductionDataProfileDataRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<ProductionDataProfileDataRequest>();
@@ -63,6 +62,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         StartPoint = new WGS84Point(request.StartX, request.StartY),
         EndPoint = new WGS84Point(request.EndX, request.EndY),
         ReturnAllPassesAndLayers = true,
+        Overrides = GetOverrideParameters(request.Overrides)
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
