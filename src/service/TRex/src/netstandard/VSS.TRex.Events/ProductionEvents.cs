@@ -10,7 +10,7 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
-using VSS.TRex.DI;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Events
 {
@@ -26,8 +26,6 @@ namespace VSS.TRex.Events
     private byte VERSION_NUMBER = 1;
 
     private const int MinStreamLength = 16;
-
-    private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
 
     public bool EventsChanged { get; set; }
 
@@ -440,7 +438,7 @@ namespace VSS.TRex.Events
 
     public MemoryStream GetMutableStream()
     {
-      var mutablestream = _recyclableMemoryStreamManager.GetStream();
+      var mutablestream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
       var writer = new BinaryWriter(mutablestream);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -463,7 +461,7 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public MemoryStream GetImmutableStream()
     {
-      var immutableStream = _recyclableMemoryStreamManager.GetStream();
+      var immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
       var immutableWriter = new BinaryWriter(immutableStream, Encoding.UTF8, true);
 
       VersionSerializationHelper.EmitVersionByte(immutableWriter, VERSION_NUMBER);
