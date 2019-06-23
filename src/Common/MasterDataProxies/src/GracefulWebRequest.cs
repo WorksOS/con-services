@@ -20,25 +20,26 @@ namespace VSS.MasterData.Proxies
     private const int DefaultLogMaxChar = 1000;
     private readonly int _logMaxChar;
 
-    static readonly HttpClientHandler handler = new HttpClientHandler()
+    private static readonly HttpClientHandler _handler = new HttpClientHandler
     {
       AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
     };
 
     ///TODO since our apps is a mix of netcore 2.0, netcore 2.1 and net 4.7.1 this should be replaced with httpclient factory once all services are using the same target
-    private static readonly HttpClient httpClient = new HttpClient(handler) {Timeout = TimeSpan.FromMinutes(30)};
+    private static readonly HttpClient httpClient = new HttpClient(_handler) { Timeout = TimeSpan.FromMinutes(30) };
 
     //Any 200 code is ok.
     private static readonly List<HttpStatusCode> okCodes = new List<HttpStatusCode>
-    { HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted, HttpStatusCode.NonAuthoritativeInformation,
-      HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent};
+    {
+      HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted, HttpStatusCode.NonAuthoritativeInformation,
+      HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent
+    };
 
     public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore)
     {
       _log = logger.CreateLogger<GracefulWebRequest>();
       _logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
     }
-
 
     private Task<HttpResponseMessage> ExecuteRequestInternal(string endpoint, HttpMethod method,
       IDictionary<string, string> customHeaders, Stream requestStream = null, int? timeout = null)
@@ -107,7 +108,7 @@ namespace VSS.MasterData.Proxies
       {
         _log.LogWarning(
           $"Attempting a HTTP {method} with a Stream ({payloadStream.GetType().Name}) that doesn't not support seeking, disabling retries");
-        retries = 0; 
+        retries = 0;
       }
 
       var policyResult = await Policy
@@ -138,8 +139,8 @@ namespace VSS.MasterData.Proxies
       {
         if (!suppressExceptionLogging)
         {
-          _log.LogDebug(
-            $"ExecuteRequest() Stream: exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint} method: {method}");
+          _log.LogDebug(policyResult.FinalException,
+            $"{nameof(ExecuteRequestAsStreamContent)}() endpoint: {endpoint}, method: {method}");
         }
 
         throw policyResult.FinalException;
@@ -197,14 +198,14 @@ namespace VSS.MasterData.Proxies
           var contents = await result.Content.ReadAsStringAsync();
           if (!okCodes.Contains(result.StatusCode))
           {
-            _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
-           
+            _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents.Truncate(_logMaxChar)}");
+
             var serviceException = ParseServiceError(result.StatusCode, contents);
             throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
           }
 
           _log.LogDebug($"Request returned {contents.Truncate(_logMaxChar)} with status {result.StatusCode}");
-          if (typeof(T) == typeof(string)) return (T) Convert.ChangeType(contents, typeof(T));
+          if (typeof(T) == typeof(string)) return (T)Convert.ChangeType(contents, typeof(T));
           return JsonConvert.DeserializeObject<T>(contents);
         });
 
@@ -212,7 +213,7 @@ namespace VSS.MasterData.Proxies
       {
         if (!suppressExceptionLogging)
         {
-          _log.LogDebug($"ExecuteRequest_multi(). exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint}");
+          _log.LogDebug(policyResult.FinalException, $"ExecuteRequest_multi(). endpoint: {endpoint}");
         }
 
         throw policyResult.FinalException;
@@ -223,7 +224,7 @@ namespace VSS.MasterData.Proxies
         return policyResult.Result;
       }
 
-      return default(T);
+      return default;
     }
 
     /// <summary>
@@ -281,7 +282,9 @@ namespace VSS.MasterData.Proxies
       {
         if (!suppressExceptionLogging)
         {
-          _log.LogDebug($"ExecuteRequest_multi(). exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint} customHeaders: {customHeaders}");
+          _log.LogDebug(
+            policyResult.FinalException,
+            "ExecuteRequest_multi(). endpoint: {endpoint} customHeaders: {customHeaders}");
         }
 
         throw policyResult.FinalException;
@@ -295,7 +298,7 @@ namespace VSS.MasterData.Proxies
     /// <returns>Service Exception if in the correct format, else null</returns>
     private static ServiceException ParseServiceError(HttpStatusCode code, string contents)
     {
-      ServiceException serviceException = null;
+      ServiceException serviceException;
       // Attempt to parse the service exception result
       try
       {

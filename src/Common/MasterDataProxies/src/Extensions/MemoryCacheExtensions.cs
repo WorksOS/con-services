@@ -1,9 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.Log4NetExtensions;
 
 namespace VSS.MasterData.Proxies
@@ -32,8 +30,7 @@ namespace VSS.MasterData.Proxies
         cacheLife = "00:15:00";
       }
 
-      TimeSpan result;
-      if (!TimeSpan.TryParse(cacheLife, out result))
+      if (!TimeSpan.TryParse(cacheLife, out var result))
       {
         log.LogWarning($"Invalid timespan for environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
         result = new TimeSpan(0, 15, 0);
