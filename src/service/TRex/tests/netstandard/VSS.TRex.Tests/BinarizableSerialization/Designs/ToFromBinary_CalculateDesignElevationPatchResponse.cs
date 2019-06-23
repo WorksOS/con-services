@@ -1,14 +1,13 @@
 ﻿using FluentAssertions;
-using VSS.TRex.Common;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Designs
 {
-  public class ToFromBinary_CalculateDesignElevationPatchResponse
+  public class ToFromBinary_CalculateDesignElevationPatchResponse : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_ToFromBinary_CalculateDesignElevationPatchResponse_Simple()

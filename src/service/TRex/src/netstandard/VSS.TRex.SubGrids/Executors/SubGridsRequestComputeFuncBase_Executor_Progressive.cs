@@ -9,6 +9,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.SubGrids.Executors
@@ -26,8 +27,6 @@ namespace VSS.TRex.SubGrids.Executors
     private IMessaging rmtMsg;
     private string tRexNodeIDAsString = string.Empty;
 
-    private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
-
     /// <summary>
     /// Processes a sub grid result that consists of a client leaf sub grid for each of the filters in the request
     /// </summary>
@@ -37,7 +36,7 @@ namespace VSS.TRex.SubGrids.Executors
     protected override void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
     {
       // Package the resulting sub grids into the MemoryStream
-      using (var MS = _recyclableMemoryStreamManager.GetStream())
+      using (var MS = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
       {
         using (var writer = new BinaryWriter(MS, Encoding.UTF8, true))
         {

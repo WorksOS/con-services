@@ -29,6 +29,8 @@ namespace VSS.TRex.IO
 
     public readonly int SpanCountPerSlabPage;
 
+    private readonly object _slabPagesLock = new object();
+
     /// <summary>
     /// Creates a new pool of sub-arrays of arraySize size within an overall slab allocated array
     /// of poolSize size.
@@ -61,7 +63,7 @@ namespace VSS.TRex.IO
 
     public TRexSpan<T> Rent()
     {
-      lock (this)
+      lock (_slabPagesLock)
       {
         if (_rentalTideLevel >= _maxCapacity)
         {
@@ -113,7 +115,7 @@ namespace VSS.TRex.IO
       }
 #endif
 
-      lock (this)
+      lock (_slabPagesLock)
       {
         if (_rentalTideLevel < 0)
         {

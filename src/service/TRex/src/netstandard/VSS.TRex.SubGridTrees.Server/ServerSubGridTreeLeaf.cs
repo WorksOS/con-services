@@ -7,9 +7,9 @@ using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -27,8 +27,6 @@ namespace VSS.TRex.SubGridTrees.Server
     public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTreeLeaf>();
-
-        private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
 
         private long _version = 1;
 
@@ -687,7 +685,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public bool SaveDirectoryToFile(IStorageProxy storage,
                                         string FileName)
         {
-          using (var stream = _recyclableMemoryStreamManager.GetStream())
+          using (var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
           {
             SaveDirectoryToStream(stream);
 
