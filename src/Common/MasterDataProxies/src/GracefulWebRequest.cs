@@ -114,7 +114,7 @@ namespace VSS.MasterData.Proxies
       var policyResult = await Policy
         .Handle<Exception>(exception =>
         {
-          _log.LogWarning($"Polly failed to execute the request {endpoint} with exception {exception.Message.Truncate(_logMaxChar)}");
+          _log.LogWarning($"Polly failed to execute the request {endpoint} with exception {exception.Message}");
           return true;
         })
         .RetryAsync(retries)
