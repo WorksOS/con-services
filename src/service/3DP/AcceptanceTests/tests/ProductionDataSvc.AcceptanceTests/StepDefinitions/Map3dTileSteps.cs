@@ -1,8 +1,9 @@
-﻿using Xunit.Gherkin.Quick;
+﻿using Newtonsoft.Json.Linq;
+using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("Map3dTile.feature")]
-  public class Map3dTileSteps : FeatureGetRequestBase
+  public class Map3dTileSteps : FeatureGetRequestBase<JObject>
   { }
 }

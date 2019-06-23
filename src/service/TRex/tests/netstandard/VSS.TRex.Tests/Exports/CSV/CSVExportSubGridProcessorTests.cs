@@ -14,7 +14,6 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Types;
 using VSS.TRex.SubGrids.Interfaces;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SiteModels.Interfaces;

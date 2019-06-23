@@ -38,6 +38,8 @@ namespace VSS.TRex.Common
     /// </summary>
     public const float NullHeight = -3.4E38f;
 
+    public const int NullLowestPassIdx = -1;
+
     // Value representing a null machine speed encoded as an IEEE ushort
     public const ushort NullMachineSpeed = ushort.MaxValue;
 

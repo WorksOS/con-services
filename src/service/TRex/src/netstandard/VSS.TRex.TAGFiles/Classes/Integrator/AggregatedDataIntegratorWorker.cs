@@ -190,12 +190,32 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           groupedAggregatedCellPasses = Task.AggregatedCellPasses;
         }
 
+        #if CELLDEBUG
+        groupedAggregatedCellPasses?.ScanAllSubGrids(leaf =>
+        {
+          foreach (var segment in ((ServerSubGridTreeLeaf)leaf).Cells.PassesData.Items)
+          {
+            foreach (var cell in segment.PassesData.GetState())
+              cell.CheckPassesAreInCorrectTimeOrder("Cell passes not in correct order at point groupedAggregatedCellPasses is determined"); 
+          }
+
+          return true;
+        });
+        #endif
+
         Log.LogDebug("Aggregation Task Process --> Integrate machine events and other clean up cell pass trees");
 
         // Discard all the aggregated cell pass models for the tasks being processed as they have now been aggregated into
         // the model represented by groupedAggregatedCellPasses
 
-        ProcessedTasks.ForEach(x => x.AggregatedCellPasses = null);
+        ProcessedTasks.ForEach(x =>
+        {
+          if (x.AggregatedCellPasses != Task.AggregatedCellPasses)
+          {
+            x.AggregatedCellPasses.Dispose();
+            x.AggregatedCellPasses = null;
+          }
+        });
 
         // Iterate through the tasks to integrate the machine events and perform other clean up operations
         for (int I = 1; I < ProcessedTasks.Count; I++) // Zeroth item in the list is Task
@@ -206,7 +226,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           Task.IntermediaryTargetSiteModel.Include(processedTask.IntermediaryTargetSiteModel);
 
           // Integrate the machine events
-          eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, processedTask.IntermediaryTargetSiteModel, Task.IntermediaryTargetSiteModel);
+          eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, 
+            processedTask.IntermediaryTargetSiteModel, Task.IntermediaryTargetSiteModel);
 
           //Update current DateTime with the latest one
           if (processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp) == -1)
@@ -429,6 +450,13 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         }
         finally
         {
+          if (groupedAggregatedCellPasses != Task.AggregatedCellPasses)
+          {
+            groupedAggregatedCellPasses?.Dispose();
+            groupedAggregatedCellPasses = null;
+          }
+
+          Task.AggregatedCellPasses?.Dispose();
           Task.AggregatedCellPasses = null;
           WorkingModelUpdateMap = null;
         }
@@ -444,6 +472,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     public void CompleteTaskProcessing()
     {
       Log.LogInformation($"Aggregation Task Process --> Dropping cached content for site model {SiteModelID}");
+
       // Finally, drop the site model context being used to perform the aggregation/integration to free up the cached
       // sub grid and segment information used during this processing epoch.
       DIContext.Obtain<ISiteModels>().DropSiteModel(SiteModelID);

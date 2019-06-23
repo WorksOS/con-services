@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using ProtoBuf;
 using Xunit;
@@ -8,7 +9,7 @@ using Xunit.Gherkin.Quick;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("CompactionPatch.feature")]
-  public class CompactionPatchSteps: FeatureGetRequestBase
+  public class CompactionPatchSteps: FeatureGetRequestBase<JObject>
   {
     [Then(@"the deserialized result should match the ""(.*)"" result from the repository")]
     public void ThenTheDeserializedResultShouldMatchTheResultFromTheRepository(string resultName)

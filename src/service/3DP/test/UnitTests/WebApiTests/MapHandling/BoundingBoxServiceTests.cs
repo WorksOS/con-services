@@ -12,14 +12,13 @@ using Moq;
 using SVOICStatistics;
 using VLPDDecls;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
 {
@@ -66,7 +65,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , raptorClient.Object
 #endif
         , new Mock<IConfigurationStore>().Object
-        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
       );
       var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, null);
       Assert.AreEqual(polygonPoints.Min(p => p.Lat), bbox.minLat);
@@ -111,7 +110,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           , raptorClient.Object
 #endif
           , new Mock<IConfigurationStore>().Object
-          , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+          , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
         );
         var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, null);
         //bbox is a mixture of polgon and design boundary (see GeoJson)
@@ -151,7 +150,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           , raptorClient.Object
 #endif
           , new Mock<IConfigurationStore>().Object
-          , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+          , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
         );
         var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, null);
         //Values are from GeoJson below
@@ -188,7 +187,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           , raptorClient.Object
 #endif
           , new Mock<IConfigurationStore>().Object
-          , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+          , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
         );
         var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.BaseMap }, null, null, design);
         //Values are from GeoJson below
@@ -238,7 +237,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           , raptorClient.Object
 #endif
           , new Mock<IConfigurationStore>().Object
-          , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+          , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
         );
         var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, design);
         Assert.AreEqual(polygonPoints.Min(p => p.Lat), bbox.minLat);
@@ -281,7 +280,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , raptorClient.Object
 #endif
         , new Mock<IConfigurationStore>().Object
-        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
       );
       var bbox = service.GetBoundingBox(project, filterResult, new[] { TileOverlayType.BaseMap }, null, null, null);
       Assert.AreEqual(-115.3.LonDegreesToRadians(), bbox.minLng);
@@ -328,7 +327,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , raptorClient.Object
 #endif
         , new Mock<IConfigurationStore>().Object
-        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
       );
       var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.BaseMap }, baseFilterResult, topFilterResult, null);
 
@@ -383,7 +382,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , raptorClient.Object
 #endif
         , new Mock<IConfigurationStore>().Object
-        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
       );
       var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.ProductionData }, null, null, null);
       Assert.AreEqual(prodDataMinLat, bbox.minLat);
@@ -432,7 +431,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , raptorClient.Object
 #endif
         , new Mock<IConfigurationStore>().Object
-        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
       );
       var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.ProductionData }, null, null, null);
       Assert.AreEqual(projMinLatRadians, bbox.minLat);
@@ -458,7 +457,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , raptorClient.Object
 #endif
         , new Mock<IConfigurationStore>().Object
-        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
       );
       var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.ProjectBoundary }, null, null, null);
       Assert.AreEqual(projMinLatRadians, bbox.minLat);
@@ -484,7 +483,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         , raptorClient.Object
 #endif
         , new Mock<IConfigurationStore>().Object
-        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileListProxy>().Object
+        , new Mock<ITRexCompactionDataProxy>().Object, new Mock<IFileImportProxy>().Object
       );
       var bbox = service.GetBoundingBox(project, null, new[] { TileOverlayType.ProductionData, TileOverlayType.ProjectBoundary }, null, null, null);
       Assert.AreEqual(projMinLatRadians, bbox.minLat);

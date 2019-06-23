@@ -1,8 +1,9 @@
-﻿using Xunit.Gherkin.Quick;
+﻿using Newtonsoft.Json.Linq;
+using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("CompactionLiftIds.feature")]
-  public class CompactionLiftIdsSteps : FeatureGetRequestBase
+  public class CompactionLiftIdsSteps : FeatureGetRequestBase<JObject>
   { }
 }

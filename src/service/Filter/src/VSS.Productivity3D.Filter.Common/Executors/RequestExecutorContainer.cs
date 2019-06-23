@@ -37,12 +37,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// Proxy used to validate Customer/project relationship
     /// </summary>
-    protected IProjectListProxy projectListProxy;
+    protected IProjectProxy projectProxy;
 
     /// <summary>
     /// Gets the proxy used to retrieve files, e.g. design or alignment.
     /// </summary>
-    protected IFileListProxy FileListProxy;
+    protected IFileImportProxy fileImportProxy;
 
     /// <summary>
     /// Implementation of the proxy interface for <see cref="IRaptorProxy"/>.
@@ -156,21 +156,21 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected RequestExecutorContainer(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileListProxy fileListProxy, RepositoryBase repository,
+      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy, RepositoryBase repository,
       IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy) : this()
     {
       this.configStore = configStore;
       if (logger != null)
         log = logger.CreateLogger<RequestExecutorContainer>();
       this.serviceExceptionHandler = serviceExceptionHandler;
-      this.projectListProxy = projectListProxy;
+      this.projectProxy = projectProxy;
       this.raptorProxy = raptorProxy;
       this.assetResolverProxy = assetResolverProxy;
       Repository = repository;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
       this.auxRepository = auxRepository;
-      FileListProxy = fileListProxy;
+      this.fileImportProxy = fileImportProxy;
       GeofenceProxy = geofenceProxy;
       UnifiedProductivityProxy = unifiedProductivityProxy;
     }
@@ -192,8 +192,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       Build<TExecutor>(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       RepositoryBase repository, RepositoryBase auxRepository,
-      IProjectListProxy projectListProxy = null, IRaptorProxy raptorProxy = null, IAssetResolverProxy assetResolverProxy = null,
-      IKafka producer = null, string kafkaTopicName = null, IFileListProxy fileListProxy = null, IGeofenceProxy geofenceProxy = null,
+      IProjectProxy projectProxy = null, IRaptorProxy raptorProxy = null, IAssetResolverProxy assetResolverProxy = null,
+      IKafka producer = null, string kafkaTopicName = null, IFileImportProxy fileImportProxy = null, IGeofenceProxy geofenceProxy = null,
       IUnifiedProductivityProxy unifiedProductivityProxy = null)
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -202,10 +202,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         configStore = configStore,
         log = logger.CreateLogger<TExecutor>(),
         serviceExceptionHandler = serviceExceptionHandler,
-        projectListProxy = projectListProxy,
+        projectProxy = projectProxy,
         raptorProxy = raptorProxy,
         assetResolverProxy = assetResolverProxy,
-        FileListProxy = fileListProxy,
+        fileImportProxy = fileImportProxy,
         Repository = repository,
         producer = producer,
         kafkaTopicName = kafkaTopicName,

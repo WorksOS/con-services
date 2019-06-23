@@ -133,12 +133,44 @@ namespace VSS.TRex.SubGrids
     private void ProcessCellPasses()
     {
       bool haveHalfPass = false;
+      _haveFilteredPass = false;
+      bool takePass;
       int passRangeCount = 0;
       bool firstFilteredCellPass = true;
+      int passes = 0;
+      // get total passes if passcount range filter in use
+      if (_filter.AttributeFilter.HasPassCountRangeFilter)
+      {
+        while (_cellPassIterator.MayHaveMoreFilterableCellPasses() && _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
+          passes ++;
+        _cellPassIterator.Initialise(); // reset
+      };
 
       while (_cellPassIterator.MayHaveMoreFilterableCellPasses() &&
              _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
       {
+
+        // Determine if we can use this pass
+        if (_filter.AttributeFilter.HasPassCountRangeFilter)
+        {
+          if (_currentPass.FilteredPass.HalfPass)
+          {
+            if (!haveHalfPass)
+              ++passRangeCount; // increase count for first half pass
+            haveHalfPass = !haveHalfPass;
+          }
+          else
+            ++passRangeCount; // increase count for first full pass
+
+         if (_cellPassIterator.SegmentIterator.IterationDirection == IterationDirection.Forwards)
+            takePass = (Range.InRange(passRangeCount, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax));
+          else
+            takePass = (Range.InRange(passes - passRangeCount+1, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax));
+
+          if (!takePass)
+            continue;
+        }
+
         FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
 
         if (_filter.AttributeFilter.FilterPass(ref _currentPass, _filterAnnex))
@@ -175,7 +207,10 @@ namespace VSS.TRex.SubGrids
                 {
                   // Still an excavator machine, check if this pass is lower than the lowest.
                   if (_nextCurrentPass.Height < _lowestPass.Height)
-                    _lowestPass = _nextCurrentPass;
+                  {
+                    if (_filter.AttributeFilter.FilterPass(ref _nextCurrentPass, _filterAnnex))
+                      _lowestPass = _nextCurrentPass;
+                  }
                 }
                 else
                 {
@@ -187,28 +222,10 @@ namespace VSS.TRex.SubGrids
 
               _currentPass.FilteredPass = _lowestPass;
               FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
-              _haveFilteredPass = true;
               _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
             }
           }
-          // <--###US79098###
 
-          if (_filter.AttributeFilter.HasPassCountRangeFilter)
-          {
-            if (_currentPass.FilteredPass.HalfPass)
-            {
-              if (!haveHalfPass)
-                ++passRangeCount; // increase count for first half pass
-              haveHalfPass = !haveHalfPass;
-            }
-            else
-            {
-              ++passRangeCount; // increase count for first full pass
-            }
-
-            if (!Range.InRange(passRangeCount, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax))
-              continue;
-          }
 
           if (_filter.AttributeFilter.HasElevationTypeFilter)
             _assignmentContext.FilteredValue.PassCount = 1;
@@ -225,6 +242,30 @@ namespace VSS.TRex.SubGrids
             if (!_haveFilteredPass || _currentPass.FilteredPass.Height > _tempPass.FilteredPass.Height)
               _tempPass = _currentPass;
             _haveFilteredPass = true;
+          }
+          else if (_gridDataType == GridDataType.Temperature || _gridDataType == GridDataType.TemperatureDetail)
+          {
+            var _materialTemperature = _currentPass.FilteredPass.MaterialTemperature;
+            if (_materialTemperature != CellPassConsts.NullMaterialTemperatureValue)
+            {
+              if (_filter.AttributeFilter.HasTemperatureRangeFilter)
+              {
+                if (Range.InRange(_materialTemperature, _filter.AttributeFilter.MaterialTemperatureMin, _filter.AttributeFilter.MaterialTemperatureMax))
+                {
+                  _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+                  _haveFilteredPass = true;
+                  _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+                  break;
+                }
+              }
+              else
+              {
+                _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+                _haveFilteredPass = true;
+                _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+                break;
+              }
+            }
           }
           else
           {

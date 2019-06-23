@@ -10,29 +10,29 @@ using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-  public abstract class FeatureGetRequestBase : Xunit.Gherkin.Quick.Feature
+  public abstract class FeatureGetRequestBase<TResponse> : Xunit.Gherkin.Quick.Feature where TResponse : JContainer
   {
-    protected Getter<JObject> GetResponseHandler;
+    protected Getter<TResponse> GetResponseHandler;
     protected string Url;
 
     [Given(@"only the service route ""(.*)""")]
     public void GivenOnlyTheServiceRoute(string url)
     {
       Url = RestClient.Productivity3DServiceBaseUrl + url;
-      GetResponseHandler = new Getter<JObject>(url);
+      GetResponseHandler = new Getter<TResponse>(url);
     }
 
     [Given(@"the service route ""(.*)"" and result repo ""(.*)""")]
     public void GivenTheServiceRouteAndResultRepo(string url, string resultFileName)
     {
       Url = RestClient.Productivity3DServiceBaseUrl + url;
-      GetResponseHandler = new Getter<JObject>(url, resultFileName);
+      GetResponseHandler = new Getter<TResponse>(url, resultFileName);
     }
 
     [And(@"the result file ""(.*)""")]
     public void GivenTheResultFile(string resultFileName)
     {
-      GetResponseHandler = new Getter<JObject>(Url, resultFileName);
+      GetResponseHandler = new Getter<TResponse>(Url, resultFileName);
     }
 
     /// <summary>
@@ -92,23 +92,23 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       var expectedJObject = JsonConvert.DeserializeObject<JObject>(json.Content);
 
-      ObjectComparer.RoundAllDoubleProperties(GetResponseHandler.CurrentResponse, roundingPrecision: 8);
+      ObjectComparer.RoundAllDoubleProperties(GetResponseHandler.CurrentResponse as JObject, roundingPrecision: 8);
       ObjectComparer.RoundAllDoubleProperties(expectedJObject, roundingPrecision: 8);
 
       ObjectComparer.AssertAreEqual(actualResultObj: GetResponseHandler.CurrentResponse, expectedResultObj: expectedJObject, ignoreCase: true);
     }
 
     [Then(@"the response should exactly match ""(.*)"" from the repository")]
-    public void ThenTheResultShouldExactlyMatchFromTheRepository(string resultName)
+    public void ThenTheResponseShouldExactlyMatchFromTheRepository(string resultName)
     {
       var actualJObject = JObject.FromObject(GetResponseHandler.CurrentResponse);
-      var expectedJObject = JsonConvert.DeserializeObject<JObject>(GetResponseHandler.ResponseRepo[resultName].ToString());
+      var expectedJObject = JsonConvert.DeserializeObject<TResponse>(GetResponseHandler.ResponseRepo[resultName].ToString());
 
       ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject);
     }
 
     [Then(@"the response should match to (.*) decimal places ""(.*)"" from the repository")]
-    public void ThenTheResultShouldMatchToDecimalPlacesFromTheRepository(int precision, string resultName)
+    public void ThenTheResponseShouldMatchToDecimalPlacesFromTheRepository(int precision, string resultName)
     {
       var actualJObject = JObject.FromObject(GetResponseHandler.CurrentResponse);
       var expectedJObject = JsonConvert.DeserializeObject<JObject>(GetResponseHandler.ResponseRepo[resultName].ToString());
@@ -119,10 +119,19 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject, resultName: resultName);
     }
 
+    [Then(@"the array response should match ""(.*)"" from the repository")]
+    public void ThenTheArrayResponseShouldMatchFromTheRepository(string resultName)
+    {
+      var actualJObject = JArray.FromObject(GetResponseHandler.CurrentResponse);
+      var expectedJObject = JsonConvert.DeserializeObject<JArray>(GetResponseHandler.ResponseRepo[resultName].ToString());
+
+      ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject, resultName: resultName);
+    }
+
     [Then(@"the response should match ""(.*)"" from the repository")]
     public void ThenTheResultShouldMatchFromTheRepository(string resultName)
     {
-      ThenTheResultShouldMatchToDecimalPlacesFromTheRepository(8, resultName);
+      ThenTheResponseShouldMatchToDecimalPlacesFromTheRepository(8, resultName);
     }
 
     [Then(@"the response should contain code (.*)")]

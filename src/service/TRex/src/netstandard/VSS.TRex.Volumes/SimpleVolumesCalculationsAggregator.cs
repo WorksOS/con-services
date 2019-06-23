@@ -104,8 +104,6 @@ namespace VSS.TRex.Volumes
         // be cut
         public double FillTolerance { get; set; } = VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE;
 
-        //  TICVolumesCalculationsAggregateStateArray = Array of TICVolumesCalculationsAggregateState;
-
         public SimpleVolumesCalculationsAggregator()
         {
             // NOTE: This aggregator state is now single threaded in the context of processing sub grid

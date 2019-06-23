@@ -15,6 +15,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -39,8 +40,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     public CompactionProfileController(
       IConfigurationStore configStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory) :
-      base(configStore, fileListProxy, settingsManager)
+      IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory) :
+      base(configStore, fileImportProxy, settingsManager)
     {
       this.requestFactory = requestFactory;
     }

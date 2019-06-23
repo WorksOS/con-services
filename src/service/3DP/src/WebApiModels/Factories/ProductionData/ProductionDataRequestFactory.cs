@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
@@ -19,7 +18,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
   {
     private readonly ILogger log;
     private readonly IConfigurationStore configStore;
-    private readonly IFileListProxy fileListProxy;
+    private readonly IFileImportProxy fileImportProxy;
     private readonly ICompactionSettingsManager settingsManager;
     private Guid projectUid;
     private long projectId;
@@ -37,11 +36,11 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
     /// <param name="fileListProxy">MasterDataProxies IFileListProxy service</param>
     /// <param name="settingsManager">ICompactionSettingsManager service implementation</param>
     public ProductionDataRequestFactory(ILoggerFactory logger, IConfigurationStore configStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
+      IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
     {
       log = logger.CreateLogger<ProductionDataRequestFactory>();
       this.configStore = configStore;
-      this.fileListProxy = fileListProxy;
+      this.fileImportProxy = fileImportProxy;
       this.settingsManager = settingsManager;
     }
 
@@ -55,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, fileListProxy, settingsManager, projectUid, projectId, projectSettings, projectSettingsColors, headers, filter, designDescriptor);
+      obj.Initialize(log, configStore, fileImportProxy, settingsManager, projectUid, projectId, projectSettings, projectSettingsColors, headers, filter, designDescriptor);
 
       return obj;
     }

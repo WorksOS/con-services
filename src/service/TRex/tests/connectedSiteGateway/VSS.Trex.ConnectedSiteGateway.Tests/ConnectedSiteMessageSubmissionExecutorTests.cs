@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;

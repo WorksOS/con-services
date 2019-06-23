@@ -825,14 +825,30 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Excludes cell passes from the cell pass stack that did not pass the filter criteria.
     /// </summary>
-    private void RemoveNonFilteredPasses()
+    private void RemoveNonFilteredPasses(ref FilteredValueAssignmentContext AssignmentContext)
     {
       int Count = 0;
       int HalfPassCount = 0;
       int PrevIdx = 0;
+      DateTime tme = DateTime.MinValue;
+      bool isMinElev;
+      int lowPassIdx = Consts.NullLowestPassIdx;
+      float lowestHeight = Consts.NullHeight; 
+      float hgt;
+      short prevMachine = -1;
+      int LowPassIdx;
+
 
       for (int LayerIndex = 0; LayerIndex < Cell.Layers.Count(); LayerIndex++)
       {
+
+        // Recalulate totals for layer here
+        CurrentLayer = Cell.Layers[LayerIndex];
+        CurrentLayer.MinimumPassHeight = Consts.NullHeight;
+        CurrentLayer.MaximumPassHeight = Consts.NullHeight;
+        CurrentLayer.FirstPassHeight = Consts.NullHeight;
+        CurrentLayer.LastPassHeight = Consts.NullHeight;
+
         int PassStartIdx = Cell.Layers[LayerIndex].StartCellPassIdx;
         int CCVIdx = Cell.Layers[LayerIndex].CCV_CellPassIdx;
         if (PassStartIdx > PrevIdx)  // Alter the CCV_CellPassIdx if starting index was set higher due to invalid passes
@@ -855,7 +871,54 @@ namespace VSS.TRex.Profiling
         {
           if (Cell.FilteredPassFlags[PassIndex])
           {
-            // every good pass gets re-added here using the count index
+           // every good pass gets re-added here using the count index
+            hgt = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Height;
+            if (CurrentLayer.MinimumPassHeight == Consts.NullHeight || hgt < CurrentLayer.MinimumPassHeight) 
+                 CurrentLayer.MinimumPassHeight = hgt;
+            if (CurrentLayer.MaximumPassHeight == Consts.NullHeight || hgt > CurrentLayer.MaximumPassHeight) 
+                 CurrentLayer.MaximumPassHeight = hgt;
+            if (CurrentLayer.FirstPassHeight == Consts.NullHeight)
+                 CurrentLayer.FirstPassHeight = hgt;
+
+            //  ###US79098### as we move up through time make sure we keep note of lowest pass in the right mapping mode
+            var internalMachineIndex = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.InternalSiteModelMachineIndex;
+            var mappingMode = SiteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Time,
+                                                                                                                                  out _, ElevationMappingMode.LatestElevation);
+            var isMinElevMode = (mappingMode == ElevationMappingMode.MinimumElevation);
+            if (CurrentLayer.FirstPassHeight != Consts.NullHeight)
+            {
+              if (isMinElevMode)
+              {
+                if (CurrentLayer.LastPassHeight == Consts.NullHeight)
+                  CurrentLayer.LastPassHeight = hgt;
+                if (prevMachine == Cell.Passes.FilteredPassData[PassIndex].FilteredPass.InternalSiteModelMachineIndex)
+                {
+                  if (Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Height < lowestHeight)
+                  {
+                    lowestHeight = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Height;
+                    tme = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Time;
+                    LowPassIdx = Count;
+                    CurrentLayer.LastPassHeight = hgt;
+                  }
+                }
+                else
+                { // new machine so take value
+                  lowestHeight = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Height;
+                  tme = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Time;
+                  LowPassIdx = Count;
+                }
+              }
+              else // reset as rules broken
+              {
+                lowestHeight = Consts.NullHeight;
+                LowPassIdx = -1;
+                CurrentLayer.LastPassHeight = hgt;
+              };
+
+            };
+
+            prevMachine = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.InternalSiteModelMachineIndex;
+
             // count makes sure we always start at index 0 for for first layer
             if (Count != PassIndex)
             {
@@ -885,6 +948,16 @@ namespace VSS.TRex.Profiling
               Cell.Layers[LayerIndex].CCV_CellPassIdx--; // adjust CCV_CellPassIdx accordingly
           }
         }
+
+        if (lowestHeight != Consts.NullHeight)  // This mean the lastpass was in lowest elevation mapping mode and needs to be set again
+          {
+            Cell.Layers[LayerIndex].LastPassHeight = lowestHeight;
+            Cell.Layers[LayerIndex].LastLayerPassTime = tme;
+            if (AssignmentContext != null ) 
+                AssignmentContext.LowestPassIdx = lowPassIdx;
+          }
+        else if (AssignmentContext != null)
+          AssignmentContext.LowestPassIdx = Consts.NullLowestPassIdx;
 
         // for first layer we may need to reset indexes. It use to assume start index was always 0 for first layer but that has changed since
         // Bug31595
@@ -933,6 +1006,9 @@ namespace VSS.TRex.Profiling
 
       bool Result = false;
       NumCellPassesRemainingToFetch = 1000;
+
+      if (AssignmentContext != null)
+        AssignmentContext.LowestPassIdx = Consts.NullLowestPassIdx; // if LowestPassIdx ends up > -1 then lowestpass is used
 
       FilteredValuePopulationControl.CalculateFlags(ProfileTypeRequired,
         // todo ... LiftBuildSettings,
@@ -1204,8 +1280,18 @@ namespace VSS.TRex.Profiling
                   (!FilterAppliedToCellPasses || Cell.FilteredPassFlags[FilteredPassIndex]))
               {
                 LayerContainsAFilteredPass = true;
-                if (!ClientGrid.AssignableFilteredValueIsNull(ref Cell.Passes.FilteredPassData[FilteredPassIndex]))
-                  Result = true;
+                if (PassFilter != null && PassFilter.HasPassCountRangeFilter) // Filter only wants passes that match a range
+                {
+                  // Passindex is zero based
+                  if (Range.InRange(FilteredPassIndex + 1, PassFilter.PassCountRangeMin, PassFilter.PassCountRangeMax))
+                    if (!ClientGrid.AssignableFilteredValueIsNull(ref Cell.Passes.FilteredPassData[FilteredPassIndex]))
+                      Result = true;
+                }
+                else
+                {
+                  if (!ClientGrid.AssignableFilteredValueIsNull(ref Cell.Passes.FilteredPassData[FilteredPassIndex]))
+                    Result = true;
+                }
               }
 
               if (Result)
@@ -1325,7 +1411,7 @@ namespace VSS.TRex.Profiling
 
       // Remove all the non-filtered passes from the passes that were used to perform
       // the layer analysis and make sure indexing is correct in layers
-      RemoveNonFilteredPasses();
+      RemoveNonFilteredPasses(ref AssignmentContext);
 
       // If the caller is really just interested in the pass count of the topmost (most
       // recent) layer in the processed lifts, then count the number of cell passes in

@@ -20,6 +20,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {

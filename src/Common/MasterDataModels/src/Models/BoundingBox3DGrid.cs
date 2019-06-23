@@ -1,12 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.MasterData.Models.Models
 {
   /// <summary>
   /// A 3D spatial extents structure
   /// </summary>
-  public class BoundingBox3DGrid
+  public class BoundingBox3DGrid: IMasterDataModel
   {
     /// <summary>
     /// Maximum X value, in the cartesian grid coordinate system, expressed in meters
@@ -53,8 +55,7 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// Prevents a default instance of the <see cref="BoundingBox3DGrid"/> class from being created.
     /// </summary>
-    private BoundingBox3DGrid()
-    { }
+    public BoundingBox3DGrid() { }
 
     /// <summary>
     /// Overload constructor with parameters.
@@ -77,5 +78,6 @@ namespace VSS.MasterData.Models.Models
     {
       return $"minX:{MinX}, minY:{MinY}, minZ:{MinZ}, maxX:{MaxX}, maxY:{MaxY}, maxZ:{MaxZ}";
     }
+    public List<string> GetIdentifiers() => new List<string>();
   }
 }

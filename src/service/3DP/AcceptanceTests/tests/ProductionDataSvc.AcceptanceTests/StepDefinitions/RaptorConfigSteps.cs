@@ -1,11 +1,12 @@
 ﻿using System.Xml;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("RaptorConfig.feature")]
-  public class RaptorConfigSteps : FeatureGetRequestBase
+  public class RaptorConfigSteps : FeatureGetRequestBase<JObject>
   {
     [And(@"the config should contain correct tags")]
     public void ThenTheConfigShouldContainCorrectTags()

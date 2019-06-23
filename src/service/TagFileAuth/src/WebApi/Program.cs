@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Serilog;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog.Extensions.Logging;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
@@ -32,8 +34,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
                         opts.ThreadCount = 32;
                       })
                       .UseStartup<Startup>()
-                      .ConfigureLogging(x => SerilogExtensions.Configure(config, "VSS.TagFileAuth.WebAPI.log"))
-                      .UseSerilog()
+                      .ConfigureLogging((hostContext, loggingBuilder) =>
+                      {
+                        loggingBuilder.AddProvider(
+                          p => new SerilogLoggerProvider(
+                            SerilogExtensions.Configure("VSS.TagFileAuth.WebAPI.log", config, p.GetService<IHttpContextAccessor>())));
+                      })
                       .Build();
       });
 

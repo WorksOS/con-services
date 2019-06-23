@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("GetLifts.feature")]
-  public class GetLiftsSteps : FeatureGetRequestBase
+  public class GetLiftsSteps : FeatureGetRequestBase<JObject>
   {
     [Then(@"the following lift details should be returned")]
     public void ThenTheFollowingLiftDetailsShouldBeReturned(Gherkin.Ast.DataTable dataTable)

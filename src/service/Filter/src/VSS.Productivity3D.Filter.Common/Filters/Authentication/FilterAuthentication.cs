@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
   /// </summary>
   public class FilterAuthentication : TIDAuthentication
   {
-    private readonly IProjectListProxy ProjectListProxy;
+    private readonly IProjectProxy ProjectProxy;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FilterAuthentication"/> class.
@@ -27,9 +27,9 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy) : base(next, customerProxy, store, logger, serviceExceptionHandler)
+      IProjectProxy projectProxy) : base(next, customerProxy, store, logger, serviceExceptionHandler)
     { 
-      ProjectListProxy = projectListProxy;
+      ProjectProxy = projectProxy;
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
     public override TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName,
       string userEmail, bool isApplicationContext, IDictionary<string, string> contextHeaders, string tpaasApplicationName = "")
     {
-      return new FilterPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, ProjectListProxy, contextHeaders);
+      return new FilterPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, ProjectProxy, contextHeaders);
     }
 
   }

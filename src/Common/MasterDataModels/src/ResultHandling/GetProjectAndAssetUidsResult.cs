@@ -1,8 +1,10 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using System.Collections.Generic;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Models.ResultHandling
 {
-  public class GetProjectAndAssetUidsResult : ContractExecutionResult
+  public class GetProjectAndAssetUidsResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// The Uid of the project. empty if none.
@@ -31,5 +33,7 @@ namespace VSS.MasterData.Models.ResultHandling
         Message = messageDetail
       };
     }
+
+    public List<string> GetIdentifiers() => string.IsNullOrEmpty(ProjectUid) ? new List<string>() : new List<string>(){ ProjectUid };
   }
 }

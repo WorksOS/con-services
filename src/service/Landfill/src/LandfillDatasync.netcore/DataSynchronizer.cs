@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Project.Proxy;
 using VSS.WebApi.Common;
 
 namespace LandfillDatasync.netcore
@@ -61,7 +62,7 @@ namespace LandfillDatasync.netcore
             new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
                 new GenericConfiguration(new NullLoggerFactory()),
                 new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-                new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+                new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                     new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).GetProjectStatisticsAsync(userId, project).Result
               .startTime.Date;
           if (startDate < DateTime.Today.AddDays(noOfDaysVols))
@@ -110,7 +111,7 @@ namespace LandfillDatasync.netcore
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
               new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-              new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+              new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                   new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers)
                     .GetVolumeInBackground(userId, project.Key, geofence, dateEntry).Wait();
         }
@@ -159,7 +160,7 @@ namespace LandfillDatasync.netcore
           var offsetMinutes = new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
               new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-              new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+              new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                 new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).ConvertFromTimeZoneToMinutesOffset(project.timeZoneName);
           Log.InfoFormat("UpdateCCA: Processing projectID {0} name {1} timezone {2} with minutes offset {3}", project.id, project.name, project.timeZoneName, offsetMinutes);
           var projDate = utcDate.Date.AddMinutes(offsetMinutes);
@@ -172,7 +173,7 @@ namespace LandfillDatasync.netcore
               new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
                   new GenericConfiguration(new NullLoggerFactory()),
                   new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-                  new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+                  new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                       new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers)
                 .GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
             Log.DebugFormat("UpdateCCA: ProcessCCA projectId {0} with {1} machines for date {2}", project.id,machinesToProcess.Count,utcDate.Date);
@@ -216,7 +217,7 @@ namespace LandfillDatasync.netcore
             new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
               new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-              new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+              new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                 new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).GetCCAInBackground(
               userId, project, geofenceUid, geofence, date, machineIds[machine], machine, lift.layerId).Wait();
           }
@@ -226,7 +227,7 @@ namespace LandfillDatasync.netcore
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
             new GenericConfiguration(new NullLoggerFactory()),
             new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-            new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+            new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
               new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).GetCCAInBackground(
             userId, project, geofenceUid, geofence, date, machineIds[machine], machine, null).Wait();
         }

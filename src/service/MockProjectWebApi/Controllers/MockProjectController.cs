@@ -6,7 +6,6 @@ using MockProjectWebApi.Services;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 
@@ -26,10 +25,12 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [HttpGet("api/v4/mockproject")]
+    [Route("api/v4/mockproject")]
+    [Route("api/v4")]
+    [HttpGet]
     public ProjectDataResult GetMockProjects()
     {
-      Console.WriteLine("GetMockProjects");
+      Console.WriteLine($"{nameof(GetMockProjects)}");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
       return new ProjectDataResult { ProjectDescriptors = projectService.ProjectList };
@@ -40,11 +41,13 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [HttpGet("api/v4/mockproject/{projectUid}")]
-    [HttpGet("api/v4/mock/project/{projectUid}")]
+    [Route("api/v4/mockproject/{projectUid}")]
+    [Route("api/v4/{projectUid}")]
+    [Route("api/v4/project/{projectUid}")]
+    [HttpGet]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {
-      Console.WriteLine("GetMockProject");
+      Console.WriteLine($"{nameof(GetMockProject)}: projectUid={projectUid}");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
       return new ProjectDataSingleResult() { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUid == projectUid.ToString()) };
@@ -55,10 +58,12 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The mocked settings</returns>
-    [HttpGet("api/v4/mock/projectsettings/{projectUid}")]
+    [Route("api/v4/mock/projectsettings/{projectUid}")]
+    [Route("api/v4/projectsettings/{projectUid}")]
+    [HttpGet]
     public ProjectSettingsDataResult GetMockProjectSettingsTargets(string projectUid)
     {
-      Console.WriteLine($"GetMockProjectSettingsTargets: projectUid={projectUid}");
+      Console.WriteLine($"{nameof(GetMockProjectSettingsTargets)}: projectUid={projectUid}");
 
       JObject settings = null;
 
@@ -75,10 +80,12 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The mocked settings</returns>
-    [HttpGet("api/v4/mock/projectcolors/{projectUid}")]
+    [Route("api/v4/mock/projectcolors/{projectUid}")]
+    [Route("api/v4/projectcolors/{projectUid}")]
+    [HttpGet]
     public ProjectSettingsDataResult GetMockProjectSettingsColors(string projectUid)
     {
-      Console.WriteLine($"GetMockProjectSettingsColors: projectUid={projectUid}");
+      Console.WriteLine($"{nameof(GetMockProjectSettingsColors)}: projectUid={projectUid}");
 
       JObject settings = null;
 

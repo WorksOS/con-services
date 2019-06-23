@@ -201,7 +201,11 @@ namespace VSS.TRex.SubGridTrees.Client
         return;
       }
 
-      FilteredPassData LastPass = cellProfileFromContext.Passes.FilteredPassData[cellProfileFromContext.Passes.PassCount - 1];
+      FilteredPassData LastPass;
+      if (context.LowestPassIdx != Consts.NullLowestPassIdx)
+        LastPass = cellProfileFromContext.Passes.FilteredPassData[context.LowestPassIdx]; // take the pass from lowest pass due to mapping mode 
+      else
+        LastPass = cellProfileFromContext.Passes.FilteredPassData[cellProfileFromContext.Passes.PassCount - 1];
 
       Cells[cellX, cellY].CellXOffset = context.ProbePositions[cellX, cellY].XOffset;
       Cells[cellX, cellY].CellYOffset = context.ProbePositions[cellX, cellY].YOffset;

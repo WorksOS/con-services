@@ -68,6 +68,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Push.UnitTests", "test\UnitTests\VSS.Productivity3D.Push.UnitTests\VSS.Productivity3D.Push.UnitTests.csproj", "{49794B9B-FDAC-4BA7-BDC0-8DDD077F202E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{785FF0CA-D084-4477-BB39-BC1DAF13BA6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -166,6 +168,10 @@ Global
 		{49794B9B-FDAC-4BA7-BDC0-8DDD077F202E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49794B9B-FDAC-4BA7-BDC0-8DDD077F202E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49794B9B-FDAC-4BA7-BDC0-8DDD077F202E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{785FF0CA-D084-4477-BB39-BC1DAF13BA6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{785FF0CA-D084-4477-BB39-BC1DAF13BA6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{785FF0CA-D084-4477-BB39-BC1DAF13BA6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{785FF0CA-D084-4477-BB39-BC1DAF13BA6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,6 +200,7 @@ Global
 		{6F518E30-B771-4CAB-A503-EA43EA4A1EA4} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
 		{BEC12534-EC2F-4436-B05C-FDE9679CFC80} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
 		{49794B9B-FDAC-4BA7-BDC0-8DDD077F202E} = {997D953A-DA04-47FD-B958-9B7B4F1C6295}
+		{785FF0CA-D084-4477-BB39-BC1DAF13BA6D} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BFE4CFD0-6FE9-49B2-9465-9D9778699F4A}
