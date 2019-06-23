@@ -41,6 +41,8 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
       if (reader.ReadBoolean())
       {
+        Boundary = new List<Fence>();
+
         var fencesCount = reader.ReadInt();
 
         for (var i = 0; i < fencesCount; i++)

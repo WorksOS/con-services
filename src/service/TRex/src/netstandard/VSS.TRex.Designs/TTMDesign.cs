@@ -1001,7 +1001,10 @@ namespace VSS.TRex.Designs
     /// <returns></returns>
     public override List<Fence> GetBoundary()
     {
-      return null;
+      if (!LoadBoundaryFile(FileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION, false))
+        return null;
+
+      return boundary;
     }
   }
 }
