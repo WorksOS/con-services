@@ -64,9 +64,9 @@ namespace VSS.Productivity3D.WebApi
         .UseStartup<Startup>()
         .ConfigureLogging((hostContext, loggingBuilder) =>
         {
-          loggingBuilder.AddProvider(p =>
-            new SerilogLoggerProvider(
-              SerilogExtensions.Configure(config, "VSS.Productivity3D.WebAPI.log", p.GetRequiredService<IHttpContextAccessor>())));
+          loggingBuilder.AddProvider(
+            p => new SerilogLoggerProvider(
+              SerilogExtensions.Configure("VSS.Productivity3D.WebAPI.log", config, p.GetRequiredService<IHttpContextAccessor>())));
         })
         .Build();
       });

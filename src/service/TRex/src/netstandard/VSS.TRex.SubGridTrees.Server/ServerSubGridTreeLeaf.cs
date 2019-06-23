@@ -257,7 +257,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="ValueFromLatestCellPass"></param>
         /// <param name="CellPasses"></param>
         /// <param name="LatestData"></param>
-        private void GetAppropriateLatestValueFor(CellPass [] CellPasses,
+        private void GetAppropriateLatestValueFor(Cell_NonStatic CellPasses,
                                                   ref CellPass LatestData,
                                                   int LastPassIndex,
                                                   GridDataType TypeToCheck,
@@ -268,36 +268,38 @@ namespace VSS.TRex.SubGridTrees.Server
 
             for (int I = (int)LastPassIndex; I >= 0; I--)
             {
+                var pass = CellPasses.Passes.GetElement(I);
+
                 switch (TypeToCheck)
                 {
                     case GridDataType.CCV:
-                        if (CellPasses[I].CCV != CellPassConsts.NullCCV)
+                        if (pass.CCV != CellPassConsts.NullCCV)
                         {
-                            LatestData.CCV = CellPasses[I].CCV;
+                            LatestData.CCV = pass.CCV;
                             ValueFromLatestCellPass = I == LastPassIndex;
                         }
                         break;
 
                     case GridDataType.RMV:
-                        if (CellPasses[I].RMV != CellPassConsts.NullRMV)
+                        if (pass.RMV != CellPassConsts.NullRMV)
                         {
-                            LatestData.RMV = CellPasses[I].RMV;
+                            LatestData.RMV = pass.RMV;
                             ValueFromLatestCellPass = I == LastPassIndex;
                         }
                         break;
 
                     case GridDataType.Frequency:
-                        if (CellPasses[I].Frequency != CellPassConsts.NullFrequency)
+                        if (pass.Frequency != CellPassConsts.NullFrequency)
                         {
-                            LatestData.Frequency = CellPasses[I].Frequency;
+                            LatestData.Frequency = pass.Frequency;
                             ValueFromLatestCellPass = I == LastPassIndex;
                         }
                         break;
 
                     case GridDataType.Amplitude:
-                        if (CellPasses[I].Amplitude != CellPassConsts.NullAmplitude)
+                        if (pass.Amplitude != CellPassConsts.NullAmplitude)
                         {
-                            LatestData.Amplitude = CellPasses[I].Amplitude;
+                            LatestData.Amplitude = pass.Amplitude;
                             ValueFromLatestCellPass = I == LastPassIndex;
                         }
                         break;
@@ -305,37 +307,37 @@ namespace VSS.TRex.SubGridTrees.Server
                     case GridDataType.GPSMode:
                         {
                             // Also grab flags for half pass and rear axle
-                            LatestData.HalfPass = CellPasses[I].HalfPass;
-                            LatestData.PassType = CellPasses[I].PassType;
+                            LatestData.HalfPass = pass.HalfPass;
+                            LatestData.PassType = pass.PassType;
 
-                            if (CellPasses[I].gpsMode != CellPassConsts.NullGPSMode)
+                            if (pass.gpsMode != CellPassConsts.NullGPSMode)
                             {
-                                LatestData.gpsMode = CellPasses[I].gpsMode;
+                                LatestData.gpsMode = pass.gpsMode;
                                 ValueFromLatestCellPass = I == LastPassIndex;
                             }
                         }
                         break;
 
                     case GridDataType.Temperature:
-                        if (CellPasses[I].MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue)
+                        if (pass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue)
                         {
-                            LatestData.MaterialTemperature = CellPasses[I].MaterialTemperature;
+                            LatestData.MaterialTemperature = pass.MaterialTemperature;
                             ValueFromLatestCellPass = I == LastPassIndex;
                         }
                         break;
 
                     case GridDataType.MDP:
-                        if (CellPasses[I].MDP != CellPassConsts.NullMDP)
+                        if (pass.MDP != CellPassConsts.NullMDP)
                         {
-                            LatestData.MDP = CellPasses[I].MDP;
+                            LatestData.MDP = pass.MDP;
                             ValueFromLatestCellPass = I == LastPassIndex;
                         }
                         break;
 
                     case GridDataType.CCA:
-                        if (CellPasses[I].CCA != CellPassConsts.NullCCA)
+                        if (pass.CCA != CellPassConsts.NullCCA)
                         {
-                            LatestData.CCA = CellPasses[I].CCA;
+                            LatestData.CCA = pass.CCA;
                             ValueFromLatestCellPass = I == LastPassIndex;
                         }
                         break;
@@ -343,8 +345,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        private void CalculateLatestPassDataForPassStack(CellPass[] CellPasses,
-                                                         int passCount,
+        private void CalculateLatestPassDataForPassStack(Cell_NonStatic CellPasses,
                                                          ref CellPass LatestData,
                                                          out bool CCVFromLatestCellPass,
                                                          out bool RMVFromLatestCellPass,
@@ -355,11 +356,11 @@ namespace VSS.TRex.SubGridTrees.Server
                                                          out bool MDPFromLatestCellPass,
                                                          out bool CCAFromLatestCellPass)
         {
-            int LastPassIndex = passCount - 1;
+            int LastPassIndex = CellPasses.PassCount - 1;
 
             if (LastPassIndex >= 0)
             {
-              var lastCellPass = CellPasses[LastPassIndex];
+              var lastCellPass = CellPasses.Passes.GetElement(LastPassIndex);
 
               LatestData.Time = lastCellPass.Time;
               LatestData.InternalSiteModelMachineIndex = lastCellPass.InternalSiteModelMachineIndex;
@@ -450,7 +451,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 // Update the latest data from any previous segment with the information contained in this segment
                 if (segment_passesData.PassCount(I, J) > 0)
                 {
-                    CalculateLatestPassDataForPassStack(segment_passesData.ExtractCellPasses(I, J, out int passCount), passCount,
+                    CalculateLatestPassDataForPassStack(segment_passesData.ExtractCellPasses(I, J),
                         ref ((SubGridCellLatestPassDataWrapper_NonStatic)segment_latestPasses).PassData[I, J],
                         out bool CCVFromLatestCellPass,
                         out bool RMVFromLatestCellPass,
@@ -838,7 +839,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
                             EndIndex++;
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J, out int sourcePassCount), sourcePassCount, StartIndex, EndIndex, out int AddedCount, out int ModifiedCount);
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out int AddedCount, out int ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
                             Segment.Dirty = true;
@@ -866,6 +867,28 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <returns></returns>
     public static string FileNameFromOriginPosition(SubGridCellAddress Origin) => $"{Origin.X:D10}-{Origin.Y:D10}";
 
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
+        for (int i = 0, limit = Cells?.PassesData?.Count ?? 0; i < limit; i++)
+        {
+           Cells.PassesData[i].PassesData?.Dispose();
+        }
+
+        disposedValue = true;
+      }
     }
+
+    public void Dispose()
+    {
+      Dispose(true);
+    }
+    #endregion
+  }
 }
 

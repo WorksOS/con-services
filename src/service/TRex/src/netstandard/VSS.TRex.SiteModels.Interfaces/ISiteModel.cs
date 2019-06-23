@@ -16,7 +16,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {
-  public interface ISiteModel
+  public interface ISiteModel : IDisposable
   {
     /// <summary>
     /// Governs which TRex storage representation (mutable or immutable) the Grid member within the site model instance will supply

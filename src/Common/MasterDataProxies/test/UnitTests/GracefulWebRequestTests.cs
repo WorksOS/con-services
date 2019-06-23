@@ -88,7 +88,7 @@ namespace VSS.MasterData.Proxies.UnitTests
 
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
-      
+
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
@@ -100,7 +100,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       const int minPort = 50000;
       const int maxPort = 51000;
       const int maxRetries = 10;
-      
+
       var ipProperties = IPGlobalProperties.GetIPGlobalProperties();
       var ipEndPoints = ipProperties.GetActiveTcpListeners();
 
@@ -108,7 +108,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       while (retry++ < maxRetries)
       {
         var port = _random.Next(minPort, maxPort);
-        if (ipEndPoints.Any(endPoint => endPoint.Port == port)) 
+        if (ipEndPoints.Any(endPoint => endPoint.Port == port))
           continue;
 
         return port;
@@ -131,7 +131,8 @@ namespace VSS.MasterData.Proxies.UnitTests
       httpServer.Use(new TcpListenerAdapter(new TcpListener(IPAddress.Loopback, port)));
 
       // Request handling : 
-      httpServer.Use((context, next) => {
+      httpServer.Use((context, next) =>
+      {
         Assert.IsTrue(validateRequestFunc(context));
         return next();
       });
@@ -168,7 +169,7 @@ namespace VSS.MasterData.Proxies.UnitTests
 
       bool ValidatePostedData(IHttpContext c)
       {
-        
+
         var requestStream = new MemoryStream(c.Request.Post.Raw);
         requestPassed = validateBodyFunc(requestStream);
         // Validate the content type passed, this should not be modified
@@ -181,7 +182,7 @@ namespace VSS.MasterData.Proxies.UnitTests
         return requestPassed;
       }
 
-      using (var httpServer = CreateServer(port, ValidatePostedData))
+      using (CreateServer(port, ValidatePostedData))
       {
         var headers = new Dictionary<string, string>
         {
@@ -209,7 +210,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       var md5 = CalculateMD5(memoryStream);
       Console.WriteLine($"File MD5: {md5}");
       Assert.IsTrue(string.Compare(md5, correctMd5, StringComparison.InvariantCultureIgnoreCase) == 0, "Invalid test data file");
-      
+
       var requestPassed = false;
       var validatePostedData = new Func<MemoryStream, bool>((stream) =>
       {
@@ -218,7 +219,7 @@ namespace VSS.MasterData.Proxies.UnitTests
                           $"Got length : {stream.Length}, expected length: {memoryStream.Length}");
 
         requestPassed = string.Compare(requestMd5, correctMd5, StringComparison.InvariantCultureIgnoreCase) == 0;
-        
+
         return requestPassed;
       });
 
@@ -273,7 +274,7 @@ namespace VSS.MasterData.Proxies.UnitTests
 
         return true;
       });
-      
+
       Assert.IsTrue(ExecutePostRequest(jsonTestMemoryStream, ContentTypeConstants.ApplicationJson, validateData));
 
       Assert.IsNotNull(resultModel);
