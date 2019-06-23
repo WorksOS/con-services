@@ -53,11 +53,7 @@ namespace VSS.Hydrology.WebApi
 
       services.AddResponseCompression();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      
       services.AddTransient<IWebRequest, GracefulWebRequest>();
-#if NET_4_7
-      //services.AddTransient<ILandLeveling, Morph.Services.Engine.TBC.Engine>();
-#endif
       services.AddServiceDiscovery();
 
       /*services.AddOpenTracing(builder =>
@@ -71,11 +67,17 @@ namespace VSS.Hydrology.WebApi
       services.AddJaeger(SERVICE_TITLE);
 
       services.AddOpenTracing();*/
-
+      
       ConfigureApplicationServices(services);
 
-
 #if NET_4_7
+      services.AddPrismServiceResolution();
+      services.AddPrismService<ILandLeveling>();
+
+      var landLeveling = services.BuildServiceProvider().GetService<ILandLeveling>();
+      if(landLeveling == null)
+        throw new Exception($"Failed to get {nameof(ILandLeveling)}");
+
       var configPathAndFilename = "..\\..\\TestData\\Sample\\TestCase.xml";
       var useCase = TestCase.Load(configPathAndFilename);
       if (useCase == null)

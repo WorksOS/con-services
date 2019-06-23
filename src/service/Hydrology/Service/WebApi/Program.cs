@@ -63,6 +63,7 @@ namespace VSS.Hydrology.WebApi
         .UseStartup<Startup>()
         .ConfigureLogging((hostContext, loggingBuilder) =>
         {
+          loggingBuilder.SetMinimumLevel(LogLevel.Trace);
           loggingBuilder.AddProvider(p =>
             new SerilogProvider(
               SerilogExtensions.Configure(config, "VSS.Hydrology.WebAPI.log"), p.GetService<IHttpContextAccessor>()));
