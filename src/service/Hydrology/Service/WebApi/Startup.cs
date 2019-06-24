@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,10 +19,10 @@ namespace VSS.Hydrology.WebApi
   public partial class Startup : BaseStartup
   {
     /// <inheritdoc />
-    public override string ServiceName => "3dpm Service API";
+    public override string ServiceName => "Hydrology Service API";
 
     /// <inheritdoc />
-    public override string ServiceDescription => "API for 3D compaction and volume data";
+    public override string ServiceDescription => "API for analyzing potential ponding";
 
     /// <inheritdoc />
     public override string ServiceVersion => "v1";
@@ -55,28 +56,20 @@ namespace VSS.Hydrology.WebApi
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
       services.AddServiceDiscovery();
-
-      /*services.AddOpenTracing(builder =>
-      {
-        builder.ConfigureAspNetCore(options =>
-        {
-          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-        });
-      });
-
-      services.AddJaeger(SERVICE_TITLE);
-
-      services.AddOpenTracing();*/
       
       ConfigureApplicationServices(services);
 
 #if NET_4_7
-      services.AddPrismServiceResolution();
-      services.AddPrismService<ILandLeveling>();
-
-      var landLeveling = services.BuildServiceProvider().GetService<ILandLeveling>();
-      if(landLeveling == null)
-        throw new Exception($"Failed to get {nameof(ILandLeveling)}");
+      try
+      {
+        services.AddPrismServiceResolution();
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, "Prism DI failed");
+        throw e;
+      }
+     services.AddPrismService<ILandLeveling>();
 
       var configPathAndFilename = "..\\..\\TestData\\Sample\\TestCase.xml";
       var useCase = TestCase.Load(configPathAndFilename);
@@ -84,22 +77,38 @@ namespace VSS.Hydrology.WebApi
         throw new ArgumentException("Unable to load surface configuration");
       Log.LogInformation($"{nameof(ConfigureAdditionalServices)}: hydro surface configuration loaded: designFile {useCase.Surface} units: {(useCase.IsMetric ? "meters" : "us ft?")} points {(useCase.IsXYZ ? "xyz" : "nee")})");
 
-      //var landLevelingInstance = ServiceLocator.Current.GetInstance<ILandLeveling>();
-      //using (var landLevelingInstance = ServiceLocator.Current.GetInstance<ILandLeveling>())
-      //{
-      //  var surfaceInfo = (ISurfaceInfo) null;
-      //  if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(useCase.Surface), ".dxf") == 0)
-      //    surfaceInfo = landLevelingInstance.ImportSurface(useCase.Surface, (Action<float>) null);
-      //  else
-      //    throw new ArgumentException("Only DXF surface file type supported at present");
+      //var landLeveling = services.BuildServiceProvider().GetService<ILandLeveling>();
+      //if (landLeveling == null)
+      //  throw new Exception($"Failed to get {nameof(ILandLeveling)}");
+      //if (this.mSurface != null)
+      //  throw new InvalidOperationException(Morph.Service.Resources.Properties.Resources.ErrorEngineAlreadyHasSurface);
+      if (!File.Exists(useCase.Surface))
+        throw new FileNotFoundException(useCase.Surface);
 
-      //  if (surfaceInfo == null)
-      //    throw new ArgumentException($"Unable to create Surface from: {useCase.Surface}");
-      //}
+
+      try
+      {
+        using (var landLevelingInstance = services.BuildServiceProvider().GetService<ILandLeveling>())
+        {
+          var surfaceInfo = (ISurfaceInfo) null;
+          if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(useCase.Surface), ".dxf") == 0)
+            surfaceInfo = landLevelingInstance.ImportSurface(useCase.Surface, (Action<float>) null);
+          else
+            throw new ArgumentException("Only DXF surface file type supported at present");
+
+          if (surfaceInfo == null)
+            throw new ArgumentException($"Unable to create Surface from: {useCase.Surface}");
+        }
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, "Surface import failed");
+        throw e;
+      }
 
 #endif
 
-    }
+}
 
     /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)

@@ -41,6 +41,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="logs\**" />
+    <Content Remove="logs\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <None Remove="logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />
@@ -95,17 +102,239 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="Accord">
+      <HintPath>..\Libraries\Accord.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.MachineLearning">
+      <HintPath>..\Libraries\Accord.MachineLearning.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math">
+      <HintPath>..\Libraries\Accord.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Statistics">
+      <HintPath>..\Libraries\Accord.Statistics.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge">
+      <HintPath>..\Libraries\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math">
+      <HintPath>..\Libraries\AForge.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Core.Contracts">
+      <HintPath>..\Libraries\Core.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Core.Services">
+      <HintPath>..\Libraries\Core.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="Fake.CoordinateSystem">
+      <HintPath>..\Libraries\Fake.CoordinateSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Fake.CTCT">
+      <HintPath>..\Libraries\Fake.CTCT.dll</HintPath>
+    </Reference>
+    <Reference Include="Fake.Teigha">
+      <HintPath>..\Libraries\Fake.Teigha.dll</HintPath>
+    </Reference>
+    <Reference Include="Gibraltar.Agent">
+      <HintPath>..\Libraries\Gibraltar.Agent.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Drawing">
+      <HintPath>..\Libraries\Microsoft.Expression.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Interactions">
+      <HintPath>..\Libraries\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common">
+      <HintPath>..\Libraries\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging">
+      <HintPath>..\Libraries\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Validation">
+      <HintPath>..\Libraries\Microsoft.Practices.EnterpriseLibrary.Validation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism">
+      <HintPath>..\Libraries\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.Interactivity">
+      <HintPath>..\Libraries\Microsoft.Practices.Prism.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.MefExtensions">
+      <HintPath>..\Libraries\Microsoft.Practices.Prism.MefExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\Libraries\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Contracts">
+      <HintPath>..\Libraries\Morph.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Contracts.XmlSerializers">
+      <HintPath>..\Libraries\Morph.Contracts.XmlSerializers.dll</HintPath>
     </Reference>
     <Reference Include="Morph.Core">
       <HintPath>..\Libraries\Morph.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Morph.Module.Services">
+      <HintPath>..\Libraries\Morph.Module.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Resources">
+      <HintPath>..\Libraries\Morph.Resources.dll</HintPath>
+    </Reference>
     <Reference Include="Morph.Service.Core">
       <HintPath>..\Libraries\Morph.Service.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Morph.Service.Core.XmlSerializers">
+      <HintPath>..\Libraries\Morph.Service.Core.XmlSerializers.dll</HintPath>
+    </Reference>
     <Reference Include="Morph.Service.Engine">
       <HintPath>..\Libraries\Morph.Service.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Service.Resources">
+      <HintPath>..\Libraries\Morph.Service.Resources.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Utility">
+      <HintPath>..\Libraries\Morph.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Libraries\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\Libraries\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="SlimDX">
+      <HintPath>..\Libraries\SlimDX.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Interactivity">
+      <HintPath>..\Libraries\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="TD_SwigCoreMgd">
+      <HintPath>..\Libraries\TD_SwigCoreMgd.dll</HintPath>
+    </Reference>
+    <Reference Include="TD_SwigDbMgd">
+      <HintPath>..\Libraries\TD_SwigDbMgd.dll</HintPath>
+    </Reference>
+    <Reference Include="TG_SwigDbMgd">
+      <HintPath>..\Libraries\TG_SwigDbMgd.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.DiskIO">
+      <HintPath>..\Libraries\Trimble.DiskIO.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Antenna">
+      <HintPath>..\Libraries\Trimble.Geodetic.Antenna.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Math">
+      <HintPath>..\Libraries\Trimble.Geodetic.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Optical">
+      <HintPath>..\Libraries\Trimble.Geodetic.Optical.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Receiver">
+      <HintPath>..\Libraries\Trimble.Geodetic.Receiver.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Reductions">
+      <HintPath>..\Libraries\Trimble.Geodetic.Reductions.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Properties">
+      <HintPath>..\Libraries\Trimble.Properties.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Alignment">
+      <HintPath>..\Libraries\Trimble.Vce.Alignment.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.CADStyle">
+      <HintPath>..\Libraries\Trimble.Vce.CADStyle.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Collections">
+      <HintPath>..\Libraries\Trimble.Vce.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Coordinates">
+      <HintPath>..\Libraries\Trimble.Vce.Coordinates.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Core">
+      <HintPath>..\Libraries\Trimble.Vce.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data">
+      <HintPath>..\Libraries\Trimble.Vce.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.COGO">
+      <HintPath>..\Libraries\Trimble.Vce.Data.COGO.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.Construction">
+      <HintPath>..\Libraries\Trimble.Vce.Data.Construction.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.DWG">
+      <HintPath>..\Libraries\Trimble.Vce.Data.DWG.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.GNSSData">
+      <HintPath>..\Libraries\Trimble.Vce.Data.GNSSData.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.Import">
+      <HintPath>..\Libraries\Trimble.Vce.Data.Import.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.MassHaul">
+      <HintPath>..\Libraries\Trimble.Vce.Data.MassHaul.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.RawData">
+      <HintPath>..\Libraries\Trimble.Vce.Data.RawData.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.Results">
+      <HintPath>..\Libraries\Trimble.Vce.Data.Results.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.Scanning">
+      <HintPath>..\Libraries\Trimble.Vce.Data.Scanning.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.SCS">
+      <HintPath>..\Libraries\Trimble.Vce.Data.SCS.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.SCS.Utilities">
+      <HintPath>..\Libraries\Trimble.Vce.Data.SCS.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.Skp">
+      <HintPath>..\Libraries\Trimble.Vce.Data.Skp.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.FeatureDefinitions">
+      <HintPath>..\Libraries\Trimble.Vce.FeatureDefinitions.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Features">
+      <HintPath>..\Libraries\Trimble.Vce.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.ForeignCad">
+      <HintPath>..\Libraries\Trimble.Vce.ForeignCad.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Gem">
+      <HintPath>..\Libraries\Trimble.Vce.Gem.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Geometry">
+      <HintPath>..\Libraries\Trimble.Vce.Geometry.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Interfaces">
+      <HintPath>..\Libraries\Trimble.Vce.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Persistence">
+      <HintPath>..\Libraries\Trimble.Vce.Persistence.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Reports">
+      <HintPath>..\Libraries\Trimble.Vce.Reports.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.SurveyCAD">
+      <HintPath>..\Libraries\Trimble.Vce.SurveyCAD.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.SyncServiceIntegration">
+      <HintPath>..\Libraries\Trimble.Vce.SyncServiceIntegration.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.TTMetrics">
+      <HintPath>..\Libraries\Trimble.Vce.TTMetrics.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Units">
+      <HintPath>..\Libraries\Trimble.Vce.Units.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vis.Model">
+      <HintPath>..\Libraries\Trimble.Vis.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.WinCE">
+      <HintPath>..\Libraries\Trimble.WinCE.dll</HintPath>
     </Reference>
   </ItemGroup>
 
