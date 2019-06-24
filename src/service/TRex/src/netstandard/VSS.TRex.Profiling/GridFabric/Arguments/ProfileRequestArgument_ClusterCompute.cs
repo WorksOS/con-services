@@ -22,7 +22,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
     public XYZ[] NEECoords { get; set; } = new XYZ[0];
 
-    public OverrideParameters Overrides { get; set; }
+    public OverrideParameters Overrides { get; set; } = new OverrideParameters();
 
     public bool ReturnAllPassesAndLayers { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Records;
 
 namespace VSS.TRex.Profiling.Models
@@ -7,21 +8,21 @@ namespace VSS.TRex.Profiling.Models
   /// <summary>
   /// The set of global overriding values when overriding machine targets.
   /// </summary>
-  public class OverrideParameters
+  public class OverrideParameters : IBinarizable, IFromToBinary
   {
     private const byte VERSION_NUMBER = 1;
 
-    public bool OverrideMachineCCV { get; set; }
-    public short OverridingMachineCCV { get; set; }
-    public CMVRangePercentageRecord CMVRange { get; set; }
-    public bool OverrideMachineMDP { get; set; }
-    public short OverridingMachineMDP { get; set; }
-    public MDPRangePercentageRecord MDPRange { get; set; }
-    public PassCountRangeRecord OverridingTargetPassCountRange { get; set; }
-    public bool OverrideTargetPassCount { get; set; }
-    public TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels { get; set; }
-    public bool OverrideTemperatureWarningLevels { get; set; }
-    public MachineSpeedExtendedRecord TargetMachineSpeed { get; set; }
+    public bool OverrideMachineCCV;
+    public short OverridingMachineCCV;
+    public CMVRangePercentageRecord CMVRange;
+    public bool OverrideMachineMDP;
+    public short OverridingMachineMDP;
+    public MDPRangePercentageRecord MDPRange;
+    public PassCountRangeRecord OverridingTargetPassCountRange;
+    public bool OverrideTargetPassCount;
+    public TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels;
+    public bool OverrideTemperatureWarningLevels;
+    public MachineSpeedExtendedRecord TargetMachineSpeed;
     
     public OverrideParameters()
     {
@@ -67,22 +68,31 @@ namespace VSS.TRex.Profiling.Models
     public void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       OverrideMachineCCV = reader.ReadBoolean();
       OverridingMachineCCV = reader.ReadShort();
-      CMVRange = new CMVRangePercentageRecord();
       CMVRange.FromBinary(reader);
       OverrideMachineMDP = reader.ReadBoolean();
       OverridingMachineMDP = reader.ReadShort();
-      MDPRange = new MDPRangePercentageRecord();
       MDPRange.FromBinary(reader);
       OverrideTargetPassCount = reader.ReadBoolean();
-      OverridingTargetPassCountRange = new PassCountRangeRecord();
       OverridingTargetPassCountRange.FromBinary(reader);
       OverrideTemperatureWarningLevels = reader.ReadBoolean();
-      OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord();
       OverridingTemperatureWarningLevels.FromBinary(reader);
-      TargetMachineSpeed = new MachineSpeedExtendedRecord();
       TargetMachineSpeed.FromBinary(reader);
     }
+
+    //TODO: refactor the BaseRequestArgument to have a base base class with just the below methods to avoid this duplication
+
+    /// <summary>
+    /// Implements the Ignite IBinarizable.WriteBinary interface Ignite will call to serialize this object.
+    /// </summary>
+    /// <param name="writer"></param>
+    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
+
+    /// <summary>
+    /// Implements the Ignite IBinarizable.ReadBinary interface Ignite will call to serialize this object.
+    /// </summary>
+    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
   }
 }

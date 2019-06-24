@@ -9,12 +9,12 @@ namespace VSS.TRex.Common.Records
     /// <summary>
     /// Minimum Pass Count range value.
     /// </summary>
-    public ushort Min { get; set; }
+    public ushort Min;
 
     /// <summary>
     /// Maximum Pass Count range value.
     /// </summary>
-    public ushort Max { get; set; }
+    public ushort Max;
 
     /// <summary>
     /// Constructor with arguments.

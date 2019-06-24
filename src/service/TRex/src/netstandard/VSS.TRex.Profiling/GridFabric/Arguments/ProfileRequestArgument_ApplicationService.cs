@@ -20,7 +20,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public WGS84Point StartPoint { get; set; } = new WGS84Point();
     public WGS84Point EndPoint { get; set; } = new WGS84Point();
     public bool PositionsAreGrid { get; set; }
-    public OverrideParameters Overrides { get; set; }
+    public OverrideParameters Overrides { get; set; } = new OverrideParameters();
     public bool ReturnAllPassesAndLayers { get; set; }
 
     /// <summary>

@@ -7,12 +7,12 @@ namespace VSS.TRex.Common.Records
     /// <summary>
     /// Elevation offset in millimeters.
     /// </summary>
-    public uint ElevationOffset { get; set; }
+    public uint ElevationOffset;
 
     /// <summary>
     /// Time offset in seconds.
     /// </summary>
-    public uint TimeOffset { get; set; }
+    public uint TimeOffset;
 
     /// <summary>
     /// Constructor with arguments.
