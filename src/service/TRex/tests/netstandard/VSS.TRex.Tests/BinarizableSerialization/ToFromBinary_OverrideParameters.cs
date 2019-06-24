@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.Common.Records;
-using VSS.TRex.Profiling.Models;
+using VSS.TRex.Profiling;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
 using Xunit;
 

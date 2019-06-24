@@ -27,7 +27,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   /// <summary>
   /// Processes the request to get Summary Volumes profile.
   /// </summary>
-  public class SummaryVolumesProfileExecutor : ProfileBaseExecutor
+  public class SummaryVolumesProfileExecutor : BaseExecutor
   {
     public SummaryVolumesProfileExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)

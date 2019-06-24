@@ -2,28 +2,55 @@
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Records;
+using VSS.TRex.Profiling.Interfaces;
 
-namespace VSS.TRex.Profiling.Models
+namespace VSS.TRex.Profiling
 {
   /// <summary>
   /// The set of global overriding values when overriding machine targets.
   /// </summary>
-  public class OverrideParameters : IBinarizable, IFromToBinary
+  public class OverrideParameters : IOverrideParameters, IBinarizable, IFromToBinary
   {
     private const byte VERSION_NUMBER = 1;
 
-    public bool OverrideMachineCCV;
-    public short OverridingMachineCCV;
-    public CMVRangePercentageRecord CMVRange;
-    public bool OverrideMachineMDP;
-    public short OverridingMachineMDP;
-    public MDPRangePercentageRecord MDPRange;
-    public PassCountRangeRecord OverridingTargetPassCountRange;
-    public bool OverrideTargetPassCount;
-    public TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels;
-    public bool OverrideTemperatureWarningLevels;
-    public MachineSpeedExtendedRecord TargetMachineSpeed;
-    
+    //The private fields are necessary for serialization to work with the structs
+    public bool OverrideMachineCCV { get; set; }
+    public short OverridingMachineCCV { get; set; }
+    private CMVRangePercentageRecord _CMVRange;
+    public CMVRangePercentageRecord CMVRange
+    {
+      get => _CMVRange;
+      set => _CMVRange = value; 
+    }
+    public bool OverrideMachineMDP { get; set; }
+    public short OverridingMachineMDP { get; set; }
+    private MDPRangePercentageRecord _MDPRange;
+    public MDPRangePercentageRecord MDPRange
+    {
+      get => _MDPRange;
+      set => _MDPRange = value; 
+    }
+    private PassCountRangeRecord _OverridingTargetPassCountRange;
+    public PassCountRangeRecord OverridingTargetPassCountRange
+    {
+      get => _OverridingTargetPassCountRange;
+      set => _OverridingTargetPassCountRange = value;
+    }
+    public bool OverrideTargetPassCount { get; set; }
+    private TemperatureWarningLevelsRecord _OverridingTemperatureWarningLevels;
+    public TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels
+    {
+      get => _OverridingTemperatureWarningLevels;
+      set => OverridingTemperatureWarningLevels = value;
+    }
+    public bool OverrideTemperatureWarningLevels { get; set; }
+    private MachineSpeedExtendedRecord _TargetMachineSpeed;
+    public MachineSpeedExtendedRecord TargetMachineSpeed
+    {
+      get => _TargetMachineSpeed;
+      set => _TargetMachineSpeed = value;
+    }
+
     public OverrideParameters()
     {
       //Set defaults
