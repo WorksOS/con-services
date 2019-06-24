@@ -55,6 +55,7 @@ namespace VSS.TRex.Server.MutableData
         }))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>()))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<long>>(new GenericArrayPoolCaches<long>()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<ulong>>(new GenericArrayPoolCaches<ulong>()))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
         .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL)))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
@@ -160,6 +161,9 @@ namespace VSS.TRex.Server.MutableData
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelsHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new TAGFileProcessingHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SlabAllocatedCellPassArrayPoolHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolHeartBeatLogger<byte>());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolHeartBeatLogger<long>());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolHeartBeatLogger<ulong>());
     }
 
     static async Task<int> Main(string[] args)
