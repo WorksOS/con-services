@@ -21,14 +21,14 @@ namespace VSS.TRex.IO
     /// <summary>
     /// The index of the slab in the pool that currently contains this Span description.
     /// Note: This slab may not be the one that contains the elements this span describes,
-    /// the Elements property is the canonical references for this relationship
+    /// the Elements property is the canonical reference for this relationship
     /// </summary>
     public byte SlabIndex;
 
     /// <summary>
     /// The offset within the Elements array of this slab in the pool that the first element in the span occurs in
     /// </summary>
-    public readonly ushort Offset;
+    public readonly int Offset;
 
     /// <summary>
     /// The number of defined elements present in the space Count is less than or equal to Length

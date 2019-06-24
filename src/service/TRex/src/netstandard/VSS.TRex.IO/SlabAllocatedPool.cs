@@ -12,7 +12,7 @@ namespace VSS.TRex.IO
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SlabAllocatedPool<T>>();
 
-    public const int MAXIMUM_PROVISIONED_SLAB_COUNT = 250;
+    public const int MAXIMUM_PROVISIONED_SLAB_COUNT = 1000;
 
     public readonly int PoolSize;
     public readonly int ArraySize;
