@@ -141,6 +141,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool BitSet(int CellX, int CellY) => (Bits[CellY] & (SubGridBitMapHighBitMask >> CellX)) != 0;
 
         /// <summary>
@@ -149,6 +150,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool BitSet(uint CellX, uint CellY) => (Bits[CellY] & (SubGridBitMapHighBitMask >> (int)CellX)) != 0;
 
       /// <summary>
