@@ -52,8 +52,6 @@ namespace VSS.Productivity3D.AssetMgmt3D
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
 
-      services.AddServiceDiscovery();
-
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>

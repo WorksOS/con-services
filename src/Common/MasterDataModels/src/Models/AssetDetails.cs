@@ -7,6 +7,7 @@ namespace VSS.MasterData.Models.Models
 {
   public class AssetDetails : IMasterDataModel
   {
+    public string AssetId { get; set; }
     public string AssetUid { get; set; }
     public string AssetSerialNumber { get; set; }
     public string MakeCode { get; set; }

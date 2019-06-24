@@ -171,11 +171,14 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       // These values are in radians, where the AssetDetails values are in degrees
       result.Latitude = machineStatus.lastKnownLatitude?.LatRadiansToDegrees();
       result.Longitude = machineStatus.lastKnownLongitude?.LonRadiansToDegrees();
-
-      result.AssetId = machineStatus.AssetId;
       result.Design = machineStatus.lastKnownDesignName;
       result.LiftNumber = machineStatus.lastKnownLayerId;
       result.MachineName = machineStatus.MachineName;
+
+      // If we have a Asset ID (which matches Asset ID in Fleet management) from UF, use that, otherwise machine name
+      result.AssetIdentifier = !string.IsNullOrEmpty(details?.AssetId)
+        ? details.AssetId 
+        : machineStatus.MachineName;
 
       // Extract data from Asset Details
       if (details != null)
