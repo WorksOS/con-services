@@ -68,7 +68,7 @@ namespace VSS.TRex.IO
         if (_rentalTideLevel >= _maxCapacity)
         {
           // The pool is empty. Synthesize a new span and return it. This span will be discarded when returned
-          Log.LogInformation($"Array pool for spans of size {ArraySize} has reached max capacity - returning non pool allocated span");
+          Log.LogInformation($"Array pool for spans of size {ArraySize} has reached max capacity of {_maxCapacity} - returning non pool allocated span");
 
           return new TRexSpan<T>(new T[ArraySize], TRexSpan<T>.NO_SLAB_INDEX, 0, ArraySize, false);
         }
