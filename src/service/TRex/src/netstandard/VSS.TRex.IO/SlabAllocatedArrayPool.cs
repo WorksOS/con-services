@@ -25,7 +25,7 @@ namespace VSS.TRex.IO
     /// </summary>
     private readonly SlabAllocatedPool<T>[] _pools;
 
-    public SlabAllocatedArrayPool(int allocationPoolPageSize)
+    public SlabAllocatedArrayPool(int allocationPoolPageSize = MAX_ALLOCATION_POOL_SIZE)
     {
       _allocationPoolPageSize = allocationPoolPageSize;
 
