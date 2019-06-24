@@ -20,7 +20,7 @@ namespace VSS.TRex.TAGFiles.Classes
         cIndexX--;
 
       int cIndexY = y.Length - 1;
-      while (cIndexY > 0 && x[cIndexY] != '-')
+      while (cIndexY > 0 && y[cIndexY] != '-')
         cIndexY--;
 
       return string.Compare(x, cIndexX, y, cIndexY, x.Length - cIndexX);
