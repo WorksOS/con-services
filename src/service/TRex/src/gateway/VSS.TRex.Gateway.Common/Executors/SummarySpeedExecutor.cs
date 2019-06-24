@@ -39,7 +39,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      SpeedSummaryRequest request = item as SpeedSummaryRequest;
+      var request = item as SpeedSummaryRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<SpeedSummaryRequest>();
@@ -49,11 +49,12 @@ namespace VSS.TRex.Gateway.Common.Executors
       var filter = ConvertFilter(request.Filter, siteModel);
 
       var machineSpeedTargetRange = new MachineSpeedExtendedRecord();
-      if (request.MachineSpeedTarget != null)
-        machineSpeedTargetRange.SetMinMax(request.MachineSpeedTarget.MinTargetMachineSpeed, request.MachineSpeedTarget.MaxTargetMachineSpeed);
+      var machineSpeedTarget = request.Overrides?.MachineSpeedTarget;
+      if (machineSpeedTarget != null)
+        machineSpeedTargetRange.SetMinMax(machineSpeedTarget.MinTargetMachineSpeed, machineSpeedTarget.MaxTargetMachineSpeed);
 
-      SpeedStatisticsOperation operation = new SpeedStatisticsOperation();
-      SpeedSummaryResult speedSummaryResult = operation.Execute(
+      var operation = new SpeedStatisticsOperation();
+      var speedSummaryResult = operation.Execute(
         new SpeedStatisticsArgument()
         {
           ProjectID = siteModel.ID,

@@ -8,12 +8,12 @@ namespace VSS.TRex.Common.Records
     /// <summary>
     /// Minimum MDP percentage range value.
     /// </summary>
-    public double Min { get; set; }
+    public double Min;
 
     /// <summary>
     /// Maximum MDP percentage range value.
     /// </summary>
-    public double Max { get; set; }
+    public double Max;
 
     /// <summary>
     /// Constractor with arguments.

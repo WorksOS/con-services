@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Net;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.Models.Profiling
 {
@@ -9,13 +12,8 @@ namespace VSS.Productivity3D.Models.Models.Profiling
   public class BaseProfileDataRequest : ProjectID
   {
     /// <summary>
-    /// The base or earliest filter to be used for filter-filter and filter-design volumes.
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public FilterResult BaseFilter { get; private set; }
-
-    /// <summary>
-    /// The unique identifier of the design surface to be used in either filter to design or design to filter
+    /// The unique identifier of the design surface to be used for cut-fill for production data profiles
+    /// or filter to design or design to filter for volumes profiles
     /// </summary>
     [JsonProperty(Required = Required.Default)]
     public Guid? ReferenceDesignUid { get; private set; }
@@ -29,32 +27,38 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// <summary>
     ///  Start grid position x or start lon
     /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public double StartX;
+    [JsonProperty(Required = Required.Always)]
+    public double StartX { get; private set; }
 
     /// <summary>
     ///  Start grid position y or start lat
     /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public double StartY;
+    [JsonProperty(Required = Required.Always)]
+    public double StartY { get; private set; }
 
     /// <summary>
     ///  End grid position y or end lat
     /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public double EndX;
+    [JsonProperty(Required = Required.Always)]
+    public double EndX { get; private set; }
 
     /// <summary>
     ///  End grid position y or end lat
     /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public double EndY;
+    [JsonProperty(Required = Required.Always)]
+    public double EndY { get; private set; }
 
     /// <summary>
     ///  Are positions grid or latlon
     /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public bool PositionsAreGrid;
+    [JsonProperty(Required = Required.Always)]
+    public bool PositionsAreGrid { get; private set; }
+
+    /// <summary>
+    ///  Are positions grid or latlon
+    /// </summary>
+    [JsonProperty(Required = Required.Always)]
+    public OverridingTargets Overrides { get; private set; }
 
     /// <summary>
     /// Default public constructor.
@@ -62,32 +66,21 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     public BaseProfileDataRequest()
     { }
 
-
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="baseFilter"></param>
-    /// <param name="referenceDesignUid"></param>
-    /// <param name="referenceDesignOffset"></param>
-    /// <param name="positionsAreGrid"></param>
-    /// <param name="startX"></param>
-    /// <param name="startY"></param>
-    /// <param name="endX"></param>
-    /// <param name="endY"></param>
     public BaseProfileDataRequest(
       Guid projectUid,
-      FilterResult baseFilter,
       Guid? referenceDesignUid,
       double? referenceDesignOffset,
       bool positionsAreGrid,
       double startX,
       double startY,
       double endX,
-      double endY)
+      double endY,
+      OverridingTargets overrides)
     {
       ProjectUid = projectUid;
-      BaseFilter = baseFilter;
       ReferenceDesignUid = referenceDesignUid;
       ReferenceDesignOffset = referenceDesignOffset;
       PositionsAreGrid = positionsAreGrid;
@@ -95,6 +88,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       StartY = startY;
       EndX = endX;
       EndY = endY;
+      Overrides = overrides;
     }
 
     /// <summary>
@@ -102,7 +96,8 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// </summary>
     public override void Validate()
     {
-      BaseFilter?.Validate();
+      base.Validate();
+      Overrides?.Validate();
     }
   }
 }

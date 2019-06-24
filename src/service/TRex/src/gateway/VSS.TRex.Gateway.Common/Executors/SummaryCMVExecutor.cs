@@ -35,7 +35,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      CMVSummaryRequest request = item as CMVSummaryRequest;
+      var request = item as CMVSummaryRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<CMVSummaryRequest>();
@@ -44,16 +44,16 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      CMVStatisticsOperation operation = new CMVStatisticsOperation();
-
-      CMVStatisticsResult cmvSummaryResult = operation.Execute(
+      var operation = new CMVStatisticsOperation();
+      var overrides = request.Overrides;
+      var cmvSummaryResult = operation.Execute(
         new CMVStatisticsArgument()
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          CMVPercentageRange = new CMVRangePercentageRecord(request.MinCMVPercent, request.MaxCMVPercent),
-          OverrideMachineCMV = request.OverrideTargetCMV,
-          OverridingMachineCMV = request.CmvTarget
+          CMVPercentageRange = new CMVRangePercentageRecord(overrides.MinCMVPercent, overrides.MaxCMVPercent),
+          OverrideMachineCMV = overrides.OverrideTargetCMV,
+          OverridingMachineCMV = overrides.CmvTarget
         }
       );
 
