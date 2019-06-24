@@ -39,8 +39,6 @@ namespace VSS.TRex.Server.MutableData
 {
   public class Program
   {
-    public const int ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL = 65536; // 2^21 = ~4 million elements in single element pool
-
     private static void DependencyInjection()
     {
       DIBuilder
@@ -57,7 +55,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<long>>(new GenericArrayPoolCaches<long>()))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<ulong>>(new GenericArrayPoolCaches<ulong>()))
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
-        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(ELEMENTS_PER_SLAB_ALLOCATED_CELL_PASS_POOL)))
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>()))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
