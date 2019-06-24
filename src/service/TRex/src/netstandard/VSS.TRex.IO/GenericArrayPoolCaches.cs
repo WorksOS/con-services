@@ -124,7 +124,6 @@ namespace VSS.TRex.IO
         }
       }
 
-
       // No rent able elements, so create an appropriate sized buffer for the rental
       //  Log.LogInformation($"Memory buffer pool serviced request for buffer of {minSize} bytes, but the appropriate pool has ");
       return new T[1 << log2];

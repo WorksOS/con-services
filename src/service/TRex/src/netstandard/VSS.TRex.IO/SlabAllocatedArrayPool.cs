@@ -11,7 +11,7 @@ namespace VSS.TRex.IO
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SlabAllocatedArrayPool<T>>();
 
-    public const int MAX_ALLOCATION_POOL_SIZE = 65536;
+    public const int MAX_ALLOCATION_POOL_SIZE = 2 * 65536;
 
     private readonly int _allocationPoolPageSize;
 

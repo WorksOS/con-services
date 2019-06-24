@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.IO
 {
@@ -87,9 +88,9 @@ namespace VSS.TRex.IO
           _capacity = _slabPages.Length * SpanCountPerSlabPage;
         }
 
-        #if CELLDEBUG
         var buffer = _slabPages[slabIndex].Arrays[slabOffset];
 
+        #if CELLDEBUG
         if (!buffer.IsReturned)
         {
           throw new ArgumentException($"Buffer is not returned to pool on re-rental: Offset = {buffer.Offset}, Count = {buffer.Count}, Capacity = {buffer.Capacity}");
@@ -98,7 +99,12 @@ namespace VSS.TRex.IO
         buffer.IsReturned = false;
         #endif
 
-        return _slabPages[slabIndex].Arrays[slabOffset];
+        if (buffer.Count != 0)
+        {
+          throw new TRexException("Rented buffer count is not zero");
+        }
+
+        return buffer;
       }
     }
 
@@ -108,13 +114,6 @@ namespace VSS.TRex.IO
     /// <param name="buffer"></param>
     public void Return(TRexSpan<T> buffer)
     {
-#if CELLDEBUG
-      if (buffer.Elements != _slabPages[buffer.SlabIndex] || buffer.Capacity != ArraySize)
-      {
-        throw new ArgumentException("Buffer span being returned to a pool that did not create it");
-      }
-#endif
-
       lock (_slabPagesLock)
       {
         if (_rentalTideLevel < 0)
@@ -132,7 +131,7 @@ namespace VSS.TRex.IO
         // Adjust the buffer slab index to match the one it is being returned to.
         // This means the slab containing the span metadata and the slab containing the 
         // span elements may validly be different.
-        buffer.SlabIndex = (byte)(_rentalTideLevel / SpanCountPerSlabPage);
+        buffer.SlabIndex = _rentalTideLevel / SpanCountPerSlabPage;
         _slabPages[buffer.SlabIndex].Arrays[_rentalTideLevel % SpanCountPerSlabPage] = buffer;
         _rentalTideLevel--;
       }

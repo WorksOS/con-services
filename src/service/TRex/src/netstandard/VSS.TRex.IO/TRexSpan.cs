@@ -23,7 +23,7 @@ namespace VSS.TRex.IO
     /// Note: This slab may not be the one that contains the elements this span describes,
     /// the Elements property is the canonical reference for this relationship
     /// </summary>
-    public byte SlabIndex;
+    public int SlabIndex;
 
     /// <summary>
     /// The offset within the Elements array of this slab in the pool that the first element in the span occurs in
@@ -70,7 +70,7 @@ namespace VSS.TRex.IO
     /// <param name="slabIndex"></param>
     /// <param name="offset"></param>
     /// <param name="capacity"></param>
-    public TRexSpan(T[] elements, byte slabIndex, ushort offset, int capacity, bool isReturned)
+    public TRexSpan(T[] elements, int slabIndex, int offset, int capacity, bool isReturned)
     {
       _elements = elements;
       Offset = offset;
