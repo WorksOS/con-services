@@ -6,6 +6,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
@@ -16,8 +17,6 @@ namespace VSS.TRex.SubGridTrees.Server
   public class SubGridCellPassesDataSegment : ISubGridCellPassesDataSegment
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegment>();
-
-    private static readonly IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<IO.RecyclableMemoryStreamManager>();
 
     /// <summary>
     /// Tracks whether there are unsaved changes in this segment
@@ -235,7 +234,7 @@ namespace VSS.TRex.SubGridTrees.Server
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses})");
       }
 
-      using (var stream = _recyclableMemoryStreamManager.GetStream())
+      using (var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
       {
         using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
         {

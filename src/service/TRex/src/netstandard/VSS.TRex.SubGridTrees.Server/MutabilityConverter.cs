@@ -7,6 +7,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -29,8 +30,6 @@ namespace VSS.TRex.SubGridTrees.Server
     private readonly ISubGridCellSegmentPassesDataWrapperFactory subGridCellSegmentPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>();
 
     private static readonly IProductionEventsFactory _ProductionEventsFactory = DIContext.Obtain<IProductionEventsFactory>();
-
-    private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
 
     /// <summary>
     /// Converts the structure of the global latest cells structure into an immutable form
@@ -151,7 +150,7 @@ namespace VSS.TRex.SubGridTrees.Server
           }
         };
 
-        immutableStream = _recyclableMemoryStreamManager.GetStream();
+        immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
         leaf.SaveDirectoryToStream(immutableStream);
 
         return true;
@@ -190,7 +189,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         leaf.Directory.GlobalLatestCells = ConvertLatestPassesToImmutable(leaf.Directory.GlobalLatestCells, SegmentLatestPassesContext.Global);
 
-        immutableStream = _recyclableMemoryStreamManager.GetStream();
+        immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
         leaf.SaveDirectoryToStream(immutableStream);
 
         return true;
@@ -228,7 +227,7 @@ namespace VSS.TRex.SubGridTrees.Server
         segment.PassesData.SetState(originSource.PassesData.GetState());
 
         // Write out the segment to the immutable stream
-        immutableStream = _recyclableMemoryStreamManager.GetStream();
+        immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
         using (var writer = new BinaryWriter(immutableStream, Encoding.UTF8, true))
         {
           segment.Write(writer);
@@ -276,7 +275,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         // Write out the segment to the immutable stream
-        immutableStream = _recyclableMemoryStreamManager.GetStream(); 
+        immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream(); 
         using (var writer = new BinaryWriter(immutableStream, Encoding.UTF8, true))
         {
           segment.Write(writer);

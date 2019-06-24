@@ -60,6 +60,13 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       DIBuilder.New(services)
+          .Add(x => x.AddSingleton(new VSS.TRex.IO.RecyclableMemoryStreamManager
+          {
+            // Allow up to 256Mb worth of freed small blocks used by the recyclable streams for later reuse
+            // NOte: The default value for this setting is zero which means every block allocated to a
+            // recyclable stream is freed when the stream is disposed.
+            MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
+          }))
          .Add(TRexGridFactory.AddGridFactoriesToDI)
          .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
 

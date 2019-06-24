@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostProductionDataProfile)}: {Request.QueryString}");
 
       productionDataProfileRequest.Validate();
-      ValidateFilterMachines(nameof(PostProductionDataProfile), productionDataProfileRequest.ProjectUid, productionDataProfileRequest.BaseFilter);
+      ValidateFilterMachines(nameof(PostProductionDataProfile), productionDataProfileRequest.ProjectUid, productionDataProfileRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
