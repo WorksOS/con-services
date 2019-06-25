@@ -1,8 +1,10 @@
 ﻿using System;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling.GridFabric.Arguments;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -38,7 +40,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
         PositionsAreGrid = true,
         StartPoint = new WGS84Point(MIN_X, MIN_Y, MIN_Z),
         EndPoint = new WGS84Point(MAX_X, MAX_Y, MAX_Z),
-        ReturnAllPassesAndLayers = false
+        ReturnAllPassesAndLayers = false,
+        Overrides = new OverrideParameters { OverrideTemperatureWarningLevels = true, OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(123, 456)}
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom ProfileRequestArgument_ApplicationService not same after round trip serialisation");

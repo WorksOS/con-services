@@ -2,7 +2,8 @@
 
 namespace VSS.TRex.Types
 {
-    public struct TargetPassCountRange
+  [Obsolete("use PassCountRangeRecord")]
+  public struct TargetPassCountRange
     {
       public ushort Min;
       public ushort Max;

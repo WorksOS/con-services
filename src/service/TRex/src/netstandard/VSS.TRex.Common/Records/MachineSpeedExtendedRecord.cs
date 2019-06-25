@@ -8,16 +8,16 @@ namespace VSS.TRex.Common.Records
 	/// Contains minimum and maximum machine speed values.
 	/// </summary>
 	public struct MachineSpeedExtendedRecord
-	{
-		/// <summary>
-		/// Minimum machine speed value.
-		/// </summary> 
-		public ushort Min { get; set; }
+  {
+    /// <summary>
+    /// Minimum machine speed value.
+    /// </summary> 
+    public ushort Min;
 
-	  /// <summary>
-	  /// Maximum machine speed value.
-	  /// </summary>
-	  public ushort Max { get; set; }
+    /// <summary>
+    /// Maximum machine speed value.
+    /// </summary>
+    public ushort Max;
 
 	  /// <summary>
 	  /// Return an indicative size for memory consumption of this class to be used in cache tracking

@@ -19,13 +19,15 @@ namespace VSS.Serilog.Extensions.Enrichers
 
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
     {
+      const string REQUEST_ID_KEY = "RequestID";
+
       if (_httpContextAccessor?.HttpContext?.Items != null)
       {
-        if (_httpContextAccessor.HttpContext.Items.ContainsKey("RequestID"))
+        if (_httpContextAccessor.HttpContext.Items.ContainsKey(REQUEST_ID_KEY))
         {
-          var requestId = " req:" + _httpContextAccessor.HttpContext.Items["RequestID"];
+          var requestId = " req:" + _httpContextAccessor.HttpContext.Items[REQUEST_ID_KEY];
 
-          var logEventProperty = propertyFactory.CreateProperty("RequestID", requestId);
+          var logEventProperty = propertyFactory.CreateProperty(REQUEST_ID_KEY, requestId);
           logEvent.AddPropertyIfAbsent(logEventProperty);
         }
       }

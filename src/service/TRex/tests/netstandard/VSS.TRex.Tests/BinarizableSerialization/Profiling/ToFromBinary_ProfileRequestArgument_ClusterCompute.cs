@@ -1,8 +1,10 @@
 ﻿using System;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling.GridFabric.Arguments;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -33,7 +35,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
         ProfileTypeRequired = GridDataType.Height,
         NEECoords = coords,
         ReturnAllPassesAndLayers = false,
-        
+        Overrides = new OverrideParameters { CMVRange = new CMVRangePercentageRecord(35.7, 104.9), OverrideMachineCCV = true, OverridingMachineCCV = 142 }
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom ProfileRequestArgument_ClusterCompute not same after round trip serialisation");

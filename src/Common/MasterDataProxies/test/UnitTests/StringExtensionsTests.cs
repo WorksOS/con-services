@@ -22,19 +22,11 @@ namespace VSS.MasterData.Proxies.UnitTests
     }
 
     [TestMethod]
-    public void CanTruncateStringWithoutEllipsis()
-    {
-      string str = "some string";
-      var truncStr = str.Truncate(8, false);
-      Assert.AreEqual("some str", truncStr);
-    }
-
-    [TestMethod]
     public void CanTruncateStringWithEllipsis()
     {
       string str = "some string";
       var truncStr = str.Truncate(8);
-      Assert.AreEqual("some ...", truncStr);
+      Assert.AreEqual("some str...", truncStr);
     }
 
     [TestMethod]

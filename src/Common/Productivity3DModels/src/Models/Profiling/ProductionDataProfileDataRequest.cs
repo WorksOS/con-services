@@ -9,6 +9,11 @@ namespace VSS.Productivity3D.Models.Models.Profiling
   public class ProductionDataProfileDataRequest : BaseProfileDataRequest
   {
     /// <summary>
+    /// The filter to be used.
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public FilterResult Filter { get; private set; }
+    /// <summary>
     /// The flag indicates whether to return all passes and layers.
     /// </summary>
     [JsonProperty(Required = Required.Default)]
@@ -22,7 +27,8 @@ namespace VSS.Productivity3D.Models.Models.Profiling
 
     public ProductionDataProfileDataRequest(
       Guid projectUid,
-      FilterResult baseFilter,
+      FilterResult filter,
+      bool returnAllPassesAndLayers,
       Guid? referenceDesignUid,
       double? referenceDesignOffset,
       bool positionsAreGrid,
@@ -30,9 +36,23 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       double startY,
       double endX,
       double endY,
-      bool returnAllPassesAndLayers) : base (projectUid, baseFilter, referenceDesignUid, referenceDesignOffset, positionsAreGrid, startX, startY, endX, endY)
+      OverridingTargets overrides)  
+
+      : base (projectUid, referenceDesignUid, referenceDesignOffset, positionsAreGrid, 
+              startX, startY, endX, endY, overrides)
     {
+      Filter = filter;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
+    }
+
+    /// <summary>
+    /// Validates all properties.
+    /// </summary>
+    public override void Validate()
+    {
+      base.Validate();
+
+      Filter?.Validate();
     }
   }
 }
