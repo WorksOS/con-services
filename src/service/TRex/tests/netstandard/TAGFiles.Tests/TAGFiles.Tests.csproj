@@ -1071,6 +1071,9 @@
     <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0247J009YU--TNZ 323F GS520--190115002735.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\TAGFiles\JapaneseDesignTagfileTest.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\TAGFiles\TestTAGFile-TAG-Header-Read.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
