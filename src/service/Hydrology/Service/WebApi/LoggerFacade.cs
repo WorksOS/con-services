@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Prism.Logging;
+using Microsoft.Practices.Prism.Logging;
 
 namespace VSS.Hydrology.WebApi
 {
