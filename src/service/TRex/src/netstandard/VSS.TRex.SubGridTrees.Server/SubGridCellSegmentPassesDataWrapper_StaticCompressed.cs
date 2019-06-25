@@ -222,6 +222,19 @@ namespace VSS.TRex.SubGridTrees.Server
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
+        /// <summary>
+        /// Reduces the number of passes in the cell to newCount by preserving the first
+        /// 'newCount' cell passes in the cell and retiring the remainder.
+        /// If newCount is larger than the actual count an ArgumentException is thrown
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="newCount"></param>
+        public void TrimPassCount(int X, int Y, int newCount)
+        {
+          throw new InvalidOperationException("Immutable cell pass segment.");
+        }
+
         public Cell_NonStatic ExtractCellPasses(int X, int Y)
         {
             throw new InvalidOperationException("Non-static cell descriptions not supported by compressed static segments");

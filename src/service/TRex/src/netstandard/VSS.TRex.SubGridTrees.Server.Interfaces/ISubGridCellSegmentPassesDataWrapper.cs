@@ -21,6 +21,16 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         int PassCount(int X, int Y);
 
         /// <summary>
+        /// Reduces the number of passes in the cell to newCount by preserving the first
+        /// 'newCount' cell passes in the cell and retiring the remainder.
+        /// If newCount is larger than the actual count an ArgumentException is thrown
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="newCount"></param>
+        void TrimPassCount(int X, int Y, int newCount);
+
+        /// <summary>
         /// Allocates a number of passes for a cell in this segment. Only valid for mutable representations exposing this interface.
         /// </summary>
         /// <param name="X"></param>

@@ -29,6 +29,28 @@ namespace VSS.TRex.SubGridTrees.Server
         public int PassCount(int X, int Y) => PassData[X, Y].PassCount;
 
         /// <summary>
+        /// Reduces the number of passes in the cell to newCount by preserving the first
+        /// 'newCount' cell passes in the cell and retiring the remainder.
+        /// If newCount is larger than the actual count an ArgumentException is thrown
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="newCount"></param>
+        public void TrimPassCount(int X, int Y, int newCount)
+        {
+          if (newCount < 0 || newCount > PassData[X, Y].PassCount)
+          {
+            throw new ArgumentException($"newCount parameter ({newCount}) is less than zero or greater than than the number of passes in the cell ({PassData[X, Y].PassCount})");
+          }
+
+          PassData[X, Y].Passes.Count = newCount;
+
+#if CELLDEBUG
+          PassData[X, Y].CheckPassesAreInCorrectTimeOrder("TrimPassCount");
+#endif
+    }
+
+        /// <summary>
         /// Ensures there are sufficient passes in the local cell pass array for this cell. Note: THe actual
         /// number of cell passes validly present in the cell may be less that the length of the cell pass array.
         /// Integrators must use the PassCount property to determine exactly how many passes are present.
