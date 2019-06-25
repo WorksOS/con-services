@@ -64,18 +64,17 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     if (!assetsDict.TryGetValue(key.AssetUID, out List<ITAGFileBufferQueueKey> keyList))
                     {
-                        assetsDict.Add(key.AssetUID, new List<ITAGFileBufferQueueKey> { key });
+                        keyList = new List<ITAGFileBufferQueueKey>();
+                        assetsDict.Add(key.AssetUID, keyList);
                     }
-                    else
-                    {
-                        keyList.Add(key);
 
-                        // Check if this bucket is full
-                        if (keyList.Count >= kMaxNumberOfTAGFilesPerBucket)
-                        {
-                            fullBuckets.Add(keyList.ToArray());
-                            assetsDict.Remove(key.AssetUID);
-                        }
+                    keyList.Add(key);
+
+                    // Check if this bucket is full
+                    if (keyList.Count >= kMaxNumberOfTAGFilesPerBucket)
+                    {
+                        fullBuckets.Add(keyList.ToArray());
+                        assetsDict.Remove(key.AssetUID);
                     }
                 }
                 else
