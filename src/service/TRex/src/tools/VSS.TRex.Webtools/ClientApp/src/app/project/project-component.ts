@@ -209,7 +209,7 @@ constructor(
 
     this.getAllProjectMetadata();
 
-    this.switchToMutable();
+    this.switchToImmutable();
   }
 
   public selectProject(): void {

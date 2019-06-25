@@ -41,7 +41,7 @@ namespace VSS.TRex.Profiling
     public TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels
     {
       get => _OverridingTemperatureWarningLevels;
-      set => OverridingTemperatureWarningLevels = value;
+      set => _OverridingTemperatureWarningLevels = value;
     }
     public bool OverrideTemperatureWarningLevels { get; set; }
     private MachineSpeedExtendedRecord _TargetMachineSpeed;
