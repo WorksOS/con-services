@@ -41,7 +41,6 @@ namespace VSS.TRex.Tests.IO
 
       var rental = slab.Rent();
       rental.Elements.Should().NotBeNull();
-      rental.SlabIndex.Should().Be(0);
     }
 
     [Fact]
@@ -51,7 +50,6 @@ namespace VSS.TRex.Tests.IO
 
       var rental = slab.Rent();
       rental.Elements.Should().NotBeNull();
-      rental.SlabIndex.Should().Be(0);
 
       slab.RentalTideLevel.Should().Be(0);
 
@@ -59,7 +57,6 @@ namespace VSS.TRex.Tests.IO
       rental2.Elements.Should().NotBeNull();
       rental2.Elements.Length.Should().Be(slab.ArraySize);
       rental2.Elements.Should().NotBeSameAs(rental.Elements);
-      rental2.SlabIndex.Should().Be(0);
     }
   }
 }

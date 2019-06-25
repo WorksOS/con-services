@@ -84,7 +84,6 @@ namespace VSS.TRex.IO
           // but it will happen very rarely in level flight operations.
           Array.Resize(ref _slabPages, _slabPages.Length + 1);
           _slabPages[_slabPages.Length - 1] = new SlabAllocatedPoolPage<T>(PoolSize, ArraySize);
-
           _capacity = _slabPages.Length * SpanCountPerSlabPage;
         }
 
@@ -95,7 +94,6 @@ namespace VSS.TRex.IO
         {
           throw new ArgumentException($"Buffer is not returned to pool on re-rental: Offset = {buffer.Offset}, Count = {buffer.Count}, Capacity = {buffer.Capacity}");
         }
-
         buffer.IsReturned = false;
         #endif
 
@@ -128,11 +126,8 @@ namespace VSS.TRex.IO
         buffer.IsReturned = true;
 #endif
 
-        // Adjust the buffer slab index to match the one it is being returned to.
-        // This means the slab containing the span metadata and the slab containing the 
-        // span elements may validly be different.
-        buffer.SlabIndex = _rentalTideLevel / SpanCountPerSlabPage;
-        _slabPages[buffer.SlabIndex].Arrays[_rentalTideLevel % SpanCountPerSlabPage] = buffer;
+        // Note, buffer slab index in the span may not match the one it is being returned to, which is OK...
+        _slabPages[_rentalTideLevel / SpanCountPerSlabPage].Arrays[_rentalTideLevel % SpanCountPerSlabPage] = buffer;
         _rentalTideLevel--;
       }
     }

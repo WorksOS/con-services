@@ -17,7 +17,6 @@ namespace VSS.TRex.Tests.IO
       span.Capacity.Should().Be(0);
       span.Offset.Should().Be(0);
       span.Elements.Should().BeNull();
-      span.SlabIndex.Should().Be(0);
       span.OffsetPlusCount.Should().Be(0);
     }
 
@@ -30,7 +29,6 @@ namespace VSS.TRex.Tests.IO
       span.Capacity.Should().Be(2);
       span.Offset.Should().Be(0);
       span.Elements.Should().NotBeNull();
-      span.SlabIndex.Should().Be(TRexSpan<CellPass>.NO_SLAB_INDEX);
       span.OffsetPlusCount.Should().Be(0);
     }
 
@@ -43,7 +41,6 @@ namespace VSS.TRex.Tests.IO
       span.Capacity.Should().Be(2);
       span.Offset.Should().Be(0);
       span.Elements.Should().NotBeNull();
-      span.SlabIndex.Should().Be(0);
       span.OffsetPlusCount.Should().Be(0);
     }
 
