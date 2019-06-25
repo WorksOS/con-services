@@ -68,14 +68,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         assetsDict.Add(key.AssetUID, keyList);
                     }
 
-                    keyList.Add(key);
-
                     // Check if this bucket is full
                     if (keyList.Count >= kMaxNumberOfTAGFilesPerBucket)
                     {
-                        fullBuckets.Add(keyList.ToArray());
-                        assetsDict.Remove(key.AssetUID);
+                      fullBuckets.Add(keyList.ToArray());
+                      keyList.Clear();
                     }
+
+                    keyList.Add(key);
                 }
                 else
                 {
