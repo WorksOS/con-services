@@ -290,10 +290,37 @@ namespace VSS.TRex.SubGridTrees.Server
       bool Result = CoveredTimeRangeStart >= SegmentInfo.StartTime && CoveredTimeRangeEnd <= SegmentInfo.EndTime;
 
       if (!Result)
+      {
         Log.LogCritical(
           $"Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
-
+       // throw new TRexException("Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
+      }
+      
       return Result;
     }
+
+    #region IDisposable Support
+    private bool disposedValue = false; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          LatestPasses?.Dispose();
+          PassesData?.Dispose();
+        }
+
+        disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+    }
+    #endregion
   }
 }

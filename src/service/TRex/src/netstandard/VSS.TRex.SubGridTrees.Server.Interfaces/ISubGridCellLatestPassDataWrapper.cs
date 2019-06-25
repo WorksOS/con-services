@@ -5,7 +5,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
-  public interface ISubGridCellLatestPassDataWrapper
+  public interface ISubGridCellLatestPassDataWrapper : IDisposable
   {
     SubGridTreeBitmapSubGridBits PassDataExistenceMap { get; }
 
@@ -34,18 +34,18 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void Read(BinaryReader reader);
     void Write(BinaryWriter writer);
 
-    short ReadInternalMachineIndex(int Col, int Row);
+    short ReadInternalMachineIndex(int x, int y);
 
-    DateTime ReadTime(int Col, int Row);
-    float ReadHeight(int Col, int Row);
-    short ReadCCV(int Col, int Row);
-    short ReadRMV(int Col, int Row);
-    ushort ReadFrequency(int Col, int Row);
-    ushort ReadAmplitude(int Col, int Row);
-    byte ReadCCA(int Col, int Row);
-    GPSMode ReadGPSMode(int Col, int Row);
-    short ReadMDP(int Col, int Row);
-    ushort ReadTemperature(int Col, int Row);
+    DateTime ReadTime(int x, int y);
+    float ReadHeight(int x, int y);
+    short ReadCCV(int x, int y);
+    short ReadRMV(int x, int y);
+    ushort ReadFrequency(int x, int y);
+    ushort ReadAmplitude(int x, int y);
+    byte ReadCCA(int x, int y);
+    GPSMode ReadGPSMode(int x, int y);
+    short ReadMDP(int x, int y);
+    ushort ReadTemperature(int x, int y);
 
     bool IsImmutable();
 

@@ -42,8 +42,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="pass"></param>
-        /// <param name="position"></param>
-        void AddPass(int X, int Y, CellPass pass, int position = -1);
+        void AddPass(int X, int Y, CellPass pass);
 
         /// <summary>
         /// Replaces a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
