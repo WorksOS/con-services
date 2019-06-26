@@ -277,7 +277,7 @@ namespace VSS.TRex.Cells
 #endif
         }
 
-
+#if CELLDEBUG
         /// <summary>
         /// Determines if all the passes in the cell are in the correct (increasing) time order
         /// </summary>
@@ -298,5 +298,6 @@ namespace VSS.TRex.Cells
             }
           }
         }
+#endif
     }
 }
