@@ -89,13 +89,13 @@ namespace VSS.TRex.IO
 
         var buffer = _slabPages[slabIndex].Arrays[slabOffset];
 
-        #if CELLDEBUG
+#if CELLDEBUG
         if (!buffer.IsReturned)
         {
           throw new ArgumentException($"Buffer is not returned to pool on re-rental: Offset = {buffer.Offset}, Count = {buffer.Count}, Capacity = {buffer.Capacity}");
         }
         buffer.IsReturned = false;
-        #endif
+#endif
 
         if (buffer.Count != 0)
         {

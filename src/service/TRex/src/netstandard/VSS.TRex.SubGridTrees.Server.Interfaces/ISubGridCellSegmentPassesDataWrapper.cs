@@ -39,14 +39,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void AllocatePasses(int X, int Y, int passCount);
 
         /// <summary>
-        /// Allocates a number of passes for a cell in this segment. Only valid for mutable representations exposing this interface.
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="passCount"></param>
-        void AllocatePassesExact(int X, int Y, int passCount);
-
-        /// <summary>
         /// Adds a cell pass at an optional position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
         /// </summary>
         /// <param name="X"></param>

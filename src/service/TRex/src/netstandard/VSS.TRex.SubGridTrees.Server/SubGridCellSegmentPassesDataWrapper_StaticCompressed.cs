@@ -671,13 +671,13 @@ namespace VSS.TRex.SubGridTrees.Server
                     if (firstPassTime < FirstRealCellPassTime)
                       FirstRealCellPassTime = firstPassTime;
 
-                    #if CELLDEBUG
+#if CELLDEBUG
                     for (int i = cellPassIndex; i < cellPassIndex + passes.Count; i++)
                     {
                       if (allCellPassesArray[i].Time < FirstRealCellPassTime)
                         throw new Exception($"Cell passes out of order at index {i}: {FirstRealCellPassTime.Ticks} should be less than or equal to {allCellPassesArray[i].Time.Ticks}");
                     }
-                    #endif
+#endif
 
                     cellPassIndex += passes.Count;
                   }
@@ -987,11 +987,6 @@ namespace VSS.TRex.SubGridTrees.Server
       public void ReplacePasses(int X, int Y, CellPass[] cellPasses, int passCount)
       {
         throw new NotImplementedException("Does not support ReplacePasses()");
-      }
-
-      public void AllocatePassesExact(int X, int Y, int passCount)
-      {
-        throw new NotImplementedException("Does not support AllocatePassesExact()");
       }
 
 #region IDisposable Support

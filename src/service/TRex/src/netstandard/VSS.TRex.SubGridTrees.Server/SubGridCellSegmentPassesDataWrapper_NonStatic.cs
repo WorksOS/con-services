@@ -62,16 +62,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Y"></param>
         /// <param name="passCount"></param>
         public void AllocatePasses(int X, int Y, int passCount) => PassData[X, Y].AllocatePasses(passCount);
-
-        /// <summary>
-        /// Ensures there are sufficient passes in the local cell pass array for this cell. The exact number of
-        /// cell passes will be created as asked for.
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="passCount"></param>
-        public void AllocatePassesExact(int X, int Y, int passCount) => PassData[X, Y].AllocatePassesExact(passCount);
-
+      
         public void AddPass(int X, int Y, CellPass pass)
         {
             if (pass.Time == Consts.MIN_DATETIME_AS_UTC || pass.Time.Kind != DateTimeKind.Utc)
@@ -90,9 +81,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
             PassData[X, Y].Passes.SetElement(pass, position);
 
-            #if CELLDEBUG
+#if CELLDEBUG
             PassData[X, Y].CheckPassesAreInCorrectTimeOrder("ReplacePass");
-            #endif
+#endif
         }
 
         /// <summary>
@@ -148,7 +139,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
                   if (passCount > 0)
                   {
-                    AllocatePassesExact(i, j, passCount);
+                    AllocatePasses(i, j, passCount);
 
                     var passes = PassData[i, j].Passes;
                     for (int cpi = passes.Offset, limit = passes.OffsetPlusCount; cpi < limit; cpi++)

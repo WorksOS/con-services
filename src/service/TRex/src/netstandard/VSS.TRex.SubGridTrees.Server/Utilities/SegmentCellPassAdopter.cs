@@ -45,9 +45,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
           segment.SegmentPassCount += AddedCount;
 
           sourceSegment.SegmentPassCount -= adoptedPassCount;
-
-          // Set the new number of passes using AllocatePasses(). This will reduce the tracked pass count without incurring the
-          // overhead of resizing the array. Use AllocatePassesExact() if this behaviour is required.
           sourceSegment.TrimPassCount(i, j, countInCell);
         }
       });

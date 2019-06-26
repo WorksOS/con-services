@@ -22,6 +22,8 @@ namespace VSS.TRex.Cells
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger("Cell_NonStatic");
 
+        public const int PASS_COUNT_INCREMENT_STEP_SIZE = 4;
+
         /// <summary>
         /// Passes represents all the passes a compactor has made over this cell in the
         /// compaction information grid. The passes are arranged in time order: The first
@@ -55,21 +57,9 @@ namespace VSS.TRex.Cells
         /// <param name="capacity"></param>
         public void AllocatePasses(int capacity)
         {
-          const int CELL_PASS_ARRAY_INCREMENT_SIZE = 2;
-
           if (Passes.Elements == null)
           {
-            Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity >= CELL_PASS_ARRAY_INCREMENT_SIZE
-              ? capacity
-              : CELL_PASS_ARRAY_INCREMENT_SIZE);
-
-#if CELLDEBUG
-            CheckPassesAreInCorrectTimeOrder("AllocatePasses");
-            if (Passes.Count != 0)
-            {
-              throw new Exception($"Rented cell pass array does not have a Count of 0, it is {Passes.Count}");
-            }
-#endif
+            Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
           }
           else
           {
@@ -94,41 +84,8 @@ namespace VSS.TRex.Cells
               Passes = newPasses;
             }
           }
-
-#if CELLDEBUG
-          CheckPassesAreInCorrectTimeOrder("AllocatePasses");
-#endif
         }
-
-        /// <summary>
-        /// Allocate or resize an array of passes to a new size which will exactly equal the size asked for
-        /// </summary>
-        /// <param name="capacity"></param>
-        public void AllocatePassesExact(int capacity)
-        {
-         // AllocatePasses(capacity);
-
-          if (Passes.Count >= capacity)
-          {
-            // Current allocated capacity is correct
-            return;
-          }
-
-          var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
-
-          newPasses.Copy(Passes, Passes.Count);
-          if (Passes.NeedsToBeReturned())
-          {
-            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(Passes);
-          }
-
-          Passes = newPasses;
-
-#if CELLDEBUG
-          CheckPassesAreInCorrectTimeOrder("AllocatePasses");
-#endif
-        }
-
+      
         /// <summary>
         /// LocateTime attempts to locate an entry in the passes list that has
         /// the same time stamp as the Time parameter
@@ -179,11 +136,10 @@ namespace VSS.TRex.Cells
         /// <param name="pass"></param>
         public void AddPass(CellPass pass)
         {
-            #if CELLDEBUG
+#if CELLDEBUG
             CheckPassesAreInCorrectTimeOrder("AddPass(CellPass pass) - before");
-
             pass._additionStamp = Interlocked.Increment(ref CellPass._lastAdditionStamp);
-            #endif
+#endif
 
             // Locate the position in the list of time ordered passes to insert the new pass
             if (LocateTime(pass.Time, out int position))
@@ -191,7 +147,10 @@ namespace VSS.TRex.Cells
               throw new TRexException("Pass with same time being added to cell");
             }
 
-            AllocatePasses(PassCount + 1);
+            if (Passes.Capacity == Passes.Count)
+            {
+              AllocatePasses(Passes.Capacity + PASS_COUNT_INCREMENT_STEP_SIZE);
+            }
 
             if (position < PassCount)
             {
