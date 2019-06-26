@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Scheduler.WebApi\VSS.Productivity3D.Scheduler.WebApi.csproj" />
   </ItemGroup>
 

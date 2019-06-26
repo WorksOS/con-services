@@ -9,6 +9,7 @@ namespace VSS.DataOcean.Client
     public const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
     public const string GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX = "_AlignmentCenterline$";
     public const string DXF_FILE_EXTENSION = ".dxf";
+    public const string GEOTIFF_FILE_EXTENSION = ".tiff";
 
     public string FileName { get; private set; }
     public string FilePath { get; private set; }
@@ -22,9 +23,10 @@ namespace VSS.DataOcean.Client
       FileName = fileName;
       FilePath = path;
       FullFileName = $"{path}{Path.DirectorySeparatorChar}{fileName}";
-      if (Path.GetExtension(fileName).ToLower() != DXF_FILE_EXTENSION)
+      var extension = Path.GetExtension(fileName).ToLower();
+      if (extension != DXF_FILE_EXTENSION && extension != GEOTIFF_FILE_EXTENSION)
       {
-        throw new ArgumentException($"Only DXF files are supported. {fileName} is not a DXF file.");
+        throw new ArgumentException($"Only DXF and GeoTIFF files are supported. {fileName} is not a DXF or GeoTIFF file.");
       }
     }
 
@@ -66,7 +68,9 @@ namespace VSS.DataOcean.Client
     /// <returns>The full name of the tile metadata file</returns>
     public string TileMetadataFileName()
     {
-      return $"{BaseTilePath()}/tiles.json";
+      var extension = Path.GetExtension(FileName).ToLower();
+      var name = extension == DXF_FILE_EXTENSION ? "tiles" : "xyz";
+      return $"{BaseTilePath()}/{name}.json";
     }
 
 
@@ -151,11 +155,11 @@ namespace VSS.DataOcean.Client
         return $"{Path.GetFileNameWithoutExtension(fileName)}{GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX}{DXF_FILE_EXTENSION}";
       }
 
-      if (fileType == ImportedFileType.Linework)
+      if (fileType == ImportedFileType.Linework || fileType == ImportedFileType.GeoTiff)
       {
         return fileName;
       }
-      throw new ArgumentException($"{fileName} is not a DXF or alignment file.");
+      throw new ArgumentException($"{fileName} is not a DXF, GeoTIFF or alignment file.");
     }
 
     /// <summary>

@@ -49,5 +49,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
   </ItemGroup>
 </Project>
