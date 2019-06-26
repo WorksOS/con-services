@@ -23,7 +23,7 @@
 
       for (int i = 0; i < spanCount; i++)
       {
-        Arrays[i] = new TRexSpan<T>(SlabPage, 0, (ushort)(i * arraySize), arraySize, true);
+        Arrays[i] = new TRexSpan<T>(SlabPage, 0, i * arraySize, arraySize, true);
       }
     }
   }
