@@ -125,6 +125,8 @@ namespace VSS.TRex.SubGrids
 
             if (Filter.SpatialFilter.IsDesignMask)
               SurfaceDesignMaskDesign = SiteModel.Designs.Locate(Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
+
+            Filter.AttributeFilter.SiteModel = SiteModel;
         }
 
         /// <summary>
