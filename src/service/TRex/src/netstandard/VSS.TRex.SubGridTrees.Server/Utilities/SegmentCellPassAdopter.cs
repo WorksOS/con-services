@@ -20,6 +20,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
       {
         var sourceSegmentPasses = sourceSegment.ExtractCellPasses(i, j);
         var passes = sourceSegmentPasses.Passes;
+
         if (passes.Count == 0)
           return;
 

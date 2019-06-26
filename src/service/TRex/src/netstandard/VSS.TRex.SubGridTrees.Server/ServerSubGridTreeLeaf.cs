@@ -785,7 +785,9 @@ namespace VSS.TRex.SubGridTrees.Server
             //Log.LogInformation($"Integrating sub grid {Moniker()}, intermediary?:{IntegratingIntoIntermediaryGrid}");
 
             if (Source == null)
+            {
               throw new TRexSubGridTreeException("Source sub grid not defined in ServerSubGridTreeLeaf.Integrate");
+            }
 
             if (Source.Cells.PassesData.Count == 0)
             {
@@ -840,7 +842,8 @@ namespace VSS.TRex.SubGridTrees.Server
                         while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
                             EndIndex++;
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out int AddedCount, out int ModifiedCount);
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, 
+                          out int AddedCount, out int ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
                             Segment.Dirty = true;

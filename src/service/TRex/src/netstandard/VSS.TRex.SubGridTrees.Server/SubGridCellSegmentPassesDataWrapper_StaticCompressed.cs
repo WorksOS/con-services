@@ -672,7 +672,7 @@ namespace VSS.TRex.SubGridTrees.Server
                       FirstRealCellPassTime = firstPassTime;
 
                     #if CELLDEBUG
-                    for (int i = cellPassIndex + 1; i < cellPassIndex + passes.Count; i++)
+                    for (int i = cellPassIndex; i < cellPassIndex + passes.Count; i++)
                     {
                       if (allCellPassesArray[i].Time < FirstRealCellPassTime)
                         throw new Exception($"Cell passes out of order at index {i}: {FirstRealCellPassTime.Ticks} should be less than or equal to {allCellPassesArray[i].Time.Ticks}");
@@ -888,12 +888,6 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             // Convert the supplied cell passes into the appropriate bit field arrays
             PerformEncodingStaticCompressedCache(cellPasses);
-        }
-
-        public void SetStatePassingOwnership(ref Cell_NonStatic[,] cellPasses)
-        {
-          this.SetState(cellPasses);
-          cellPasses = null;
         }
 
         public Cell_NonStatic[,] GetState()

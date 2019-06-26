@@ -169,14 +169,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void SetState(Cell_NonStatic[,] cellPasses);
 
         /// <summary>
-        /// Allows a caller to supply the raw cell pass information to the segment which may convert it to 
-        /// it's internal representation. This call assumes ownership of the passed cellPasses and will set the
-        /// ref parameter containing the cellPass to null to enforce it.
-        /// </summary>
-        /// <param name="cellPasses"></param>
-        void SetStatePassingOwnership(ref Cell_NonStatic[,] cellPasses);
-
-        /// <summary>
         /// Allows a caller to query the set of all cell passes in the wrapper as a sub grid array 
         /// of cell pass stacks. Warning: Not all derivatives may implement this behaviour with those that
         /// do no throwing NotImplemented exceptions.
