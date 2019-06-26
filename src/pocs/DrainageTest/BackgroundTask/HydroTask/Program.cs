@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media.Imaging;
+using Morph.Services.Core.Tools;
 using Trimble.Geodetic.Math.Adjustment;
 using Trimble.Vce.Data.Skp;
 
@@ -88,10 +90,11 @@ namespace HydroTask
             {
               if (visualizationTool is PondMap)
               {
+                // GenerateAndSaveTexture writes the png file to targetPath
                 var texture = visualizationTool.GenerateAndSaveTexture(surfaceInfo, targetPath, "original");
-                var originalLayerName = "originalSurface " + visualizationTool.GetType();
-                skuModel.AddSurfaceWithHorizontalTexture(surfaceInfo.Points, surfaceInfo.Triangles, originalLayerName,
-                  texture, 0.75, originalLayerName, null);
+                //var originalLayerName = "originalSurface " + visualizationTool.GetType();
+                //skuModel.AddSurfaceWithHorizontalTexture(surfaceInfo.Points, surfaceInfo.Triangles, originalLayerName,
+                //  texture, 0.75, originalLayerName, null);
               }
             }
           }
@@ -99,7 +102,7 @@ namespace HydroTask
           logger.LogInfo(nameof(Execute), $"targetPath: {targetPath}");
         }
 
-        /* todo could exclude sketchup stuff
+        /* todo could exclude sketchup stuff 
        var Levels = 10;
        BitmapSource pondMap = surfaceInfo.GeneratePondMap(useCase.Resolution, Levels, (IEnumerable<IEnumerable<Point>>) null,
              (IEnumerable<IEnumerable<Point>>) null);
@@ -107,7 +110,7 @@ namespace HydroTask
                        string.Format("{0}-{1}-pondmap.png", (object)Path.GetFileNameWithoutExtension(targetPath), "original"));
        SaveBitmap(pondMap, filename);
        logger.LogInfo(nameof(Execute), $"targetPath: {targetPath}");
-       */
+        */
 
       }
     }

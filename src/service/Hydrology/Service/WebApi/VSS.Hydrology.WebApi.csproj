@@ -110,77 +110,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Accord">
-      <HintPath>..\HydroLibraries\Accord.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.MachineLearning">
-      <HintPath>..\HydroLibraries\Accord.MachineLearning.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.Math">
-      <HintPath>..\HydroLibraries\Accord.Math.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.Statistics">
-      <HintPath>..\HydroLibraries\Accord.Statistics.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge">
-      <HintPath>..\HydroLibraries\AForge.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Math">
-      <HintPath>..\HydroLibraries\AForge.Math.dll</HintPath>
-    </Reference>
-    <Reference Include="Core.Contracts">
-      <HintPath>..\HydroLibraries\Core.Contracts.dll</HintPath>
-    </Reference>
-    <Reference Include="Core.Services">
-      <HintPath>..\HydroLibraries\Core.Services.dll</HintPath>
-    </Reference>
-    <Reference Include="Fake.CoordinateSystem">
-      <HintPath>..\HydroLibraries\Fake.CoordinateSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="Fake.CTCT">
-      <HintPath>..\HydroLibraries\Fake.CTCT.dll</HintPath>
-    </Reference>
-    <Reference Include="Fake.Teigha">
-      <HintPath>..\HydroLibraries\Fake.Teigha.dll</HintPath>
-    </Reference>
-    <Reference Include="Gibraltar.Agent">
-      <HintPath>..\HydroLibraries\Gibraltar.Agent.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Drawing">
-      <HintPath>..\HydroLibraries\Microsoft.Expression.Drawing.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Interactions">
-      <HintPath>..\HydroLibraries\Microsoft.Expression.Interactions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common">
-      <HintPath>..\HydroLibraries\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging">
-      <HintPath>..\HydroLibraries\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Validation">
-      <HintPath>..\HydroLibraries\Microsoft.Practices.EnterpriseLibrary.Validation.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism">
       <HintPath>..\HydroLibraries\Microsoft.Practices.Prism.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.Prism.Interactivity">
-      <HintPath>..\HydroLibraries\Microsoft.Practices.Prism.Interactivity.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Practices.Prism.MefExtensions">
       <HintPath>..\HydroLibraries\Microsoft.Practices.Prism.MefExtensions.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\HydroLibraries\Microsoft.Practices.ServiceLocation.dll</HintPath>
-    </Reference>
     <Reference Include="Morph.Contracts">
       <HintPath>..\HydroLibraries\Morph.Contracts.dll</HintPath>
-    </Reference>
-    <Reference Include="Morph.Contracts.XmlSerializers">
-      <HintPath>..\HydroLibraries\Morph.Contracts.XmlSerializers.dll</HintPath>
     </Reference>
     <Reference Include="Morph.Core">
       <HintPath>..\HydroLibraries\Morph.Core.dll</HintPath>
@@ -188,134 +128,24 @@
     <Reference Include="Morph.Module.Services">
       <HintPath>..\HydroLibraries\Morph.Module.Services.dll</HintPath>
     </Reference>
-    <Reference Include="Morph.Resources">
-      <HintPath>..\HydroLibraries\Morph.Resources.dll</HintPath>
-    </Reference>
     <Reference Include="Morph.Service.Core">
       <HintPath>..\HydroLibraries\Morph.Service.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Morph.Service.Core.XmlSerializers">
-      <HintPath>..\HydroLibraries\Morph.Service.Core.XmlSerializers.dll</HintPath>
     </Reference>
     <Reference Include="Morph.Service.Engine">
       <HintPath>..\HydroLibraries\Morph.Service.Engine.dll</HintPath>
     </Reference>
-    <Reference Include="Morph.Service.Resources">
-      <HintPath>..\HydroLibraries\Morph.Service.Resources.dll</HintPath>
-    </Reference>
-    <Reference Include="Morph.Utility">
-      <HintPath>..\HydroLibraries\Morph.Utility.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\HydroLibraries\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\HydroLibraries\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Interactivity">
-      <HintPath>..\HydroLibraries\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
-    <Reference Include="TD_SwigCoreMgd">
-      <HintPath>..\HydroLibraries\TD_SwigCoreMgd.dll</HintPath>
-    </Reference>
-    <Reference Include="TD_SwigDbMgd">
-      <HintPath>..\HydroLibraries\TD_SwigDbMgd.dll</HintPath>
-    </Reference>
-    <Reference Include="TG_SwigDbMgd">
-      <HintPath>..\HydroLibraries\TG_SwigDbMgd.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.DiskIO">
-      <HintPath>..\HydroLibraries\Trimble.DiskIO.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Geodetic.Antenna">
-      <HintPath>..\HydroLibraries\Trimble.Geodetic.Antenna.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Geodetic.Math">
-      <HintPath>..\HydroLibraries\Trimble.Geodetic.Math.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Geodetic.Optical">
-      <HintPath>..\HydroLibraries\Trimble.Geodetic.Optical.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Geodetic.Receiver">
-      <HintPath>..\HydroLibraries\Trimble.Geodetic.Receiver.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Geodetic.Reductions">
-      <HintPath>..\HydroLibraries\Trimble.Geodetic.Reductions.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Properties">
-      <HintPath>..\HydroLibraries\Trimble.Properties.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Alignment">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Alignment.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.CADStyle">
-      <HintPath>..\HydroLibraries\Trimble.Vce.CADStyle.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Collections">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Coordinates">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Coordinates.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Core">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Data">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Data.COGO">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Data.COGO.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Data.Construction">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Data.Construction.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Data.DWG">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Data.DWG.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Data.Import">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Data.Import.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Data.MassHaul">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Data.MassHaul.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Data.RawData">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Data.RawData.dll</HintPath>
-    </Reference>
+
+    <!-- only needed if using sketup for pondmap generation -->
     <Reference Include="Trimble.Vce.Data.Skp">
       <HintPath>..\HydroLibraries\Trimble.Vce.Data.Skp.dll</HintPath>
     </Reference>
-    <Reference Include="Trimble.Vce.ForeignCad">
-      <HintPath>..\HydroLibraries\Trimble.Vce.ForeignCad.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Geometry">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Geometry.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Interfaces">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Reports">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Reports.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.SurveyCAD">
-      <HintPath>..\HydroLibraries\Trimble.Vce.SurveyCAD.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.TTMetrics">
-      <HintPath>..\HydroLibraries\Trimble.Vce.TTMetrics.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.Vce.Units">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Units.dll</HintPath>
-    </Reference>
-    <Reference Include="Trimble.WinCE">
-      <HintPath>..\HydroLibraries\Trimble.WinCE.dll</HintPath>
+
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="RecomputeDimBlock_4.00_11.tx">
+      <HintPath>..\HydroLibraries\RecomputeDimBlock_4.00_11.tx</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <None Include="$(SolutionDir)HydroLibraries\**\*.*" Link="%(RecursiveDir)\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
-
-    <!--  <None Include="$(SolutionDir)Libraries\**\*.*" Link="%(RecursiveDir)\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" /> -->
   </ItemGroup>
   
   <ItemGroup>
