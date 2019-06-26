@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows;
-using System.Windows.Media.Imaging;
-using Morph.Services.Core.Tools;
 using Trimble.Geodetic.Math.Adjustment;
 using Trimble.Vce.Data.Skp;
 
@@ -19,7 +17,8 @@ namespace HydroTask
     static void Main(string[] args)
     {
       if (args == null || args.Length < 1)
-        throw new ArgumentException("Missing command line argument");
+        // throw new ArgumentException("Missing command line argument");
+        args = new string[] {"..\\..\\TestData\\Sample\\TestCase.xml"};
 
       // ..\..\TestData\Sample\TestCase.xml
       var configFilePath = Path.GetFullPath(ParseCommandLineArguments(args)["input"]);

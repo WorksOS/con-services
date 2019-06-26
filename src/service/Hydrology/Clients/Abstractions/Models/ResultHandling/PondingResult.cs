@@ -3,12 +3,12 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Hydrology.WebApi.Abstractions.Models.ResultHandling
 {
-  public class DrainageResult : ContractExecutionResult
+  public class PondingResult : ContractExecutionResult
   {
     [JsonProperty(PropertyName = "PondingFile", Required = Required.Default)]
     public string PondingFile { get; private set; }
 
-    public DrainageResult(string pondingFile)
+    public PondingResult(string pondingFile)
     {
       PondingFile = pondingFile;
     }

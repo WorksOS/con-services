@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,7 +14,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.Serilog.Extensions;
-using ILoggerFactory = log4net.Repository.Hierarchy.ILoggerFactory;
+using VSS.WebApi.Common;
 
 namespace VSS.Hydrology.WebApi.Controllers
 {
@@ -29,7 +30,7 @@ namespace VSS.Hydrology.WebApi.Controllers
     /// <summary>
     /// Gets the service exception handler.
     /// </summary>
-    private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
+    protected IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
 
     /// <summary>
     /// Gets the application logging interface.
@@ -45,6 +46,19 @@ namespace VSS.Hydrology.WebApi.Controllers
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     protected IConfigurationStore ConfigStore;
+
+    /// <summary>
+    /// Gets the customer uid from the current context
+    /// </summary>
+    protected string customerUid => GetCustomerUid();
+
+    /// <summary>
+    /// Gets the user id from the current context
+    /// </summary>
+    /// <value>
+    /// The user uid or applicationID as a string.
+    /// </value>
+    protected string userId => GetUserId();
 
     /// <summary>
     /// Gets the custom headers for the request.
@@ -125,6 +139,31 @@ namespace VSS.Hydrology.WebApi.Controllers
         Log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
       }
       return result;
+    }
+
+    protected string GetCustomerUid()
+    {
+      if (User is TIDCustomPrincipal principal)
+      {
+        return principal.CustomerUid;
+      }
+
+      throw new ArgumentException("Incorrect customer in request context principal.");
+    }
+
+    /// <summary>
+    /// Gets the User uid/applicationID from the context.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
+    private string GetUserId()
+    {
+      if (User is TIDCustomPrincipal principal && (principal.Identity is GenericIdentity identity))
+      {
+        return identity.Name;
+      }
+
+      throw new ArgumentException("Incorrect UserId in request context principal.");
     }
   }
 }

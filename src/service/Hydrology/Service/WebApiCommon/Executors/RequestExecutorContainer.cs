@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Hydrology.WebApi.Common.Executors
@@ -20,13 +21,13 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
     private const int ERROR_STATUS_OK = 0;
 
-    protected ILogger log;
-
-    protected IConfigurationStore configStore;
-
-    protected IDictionary<string, string> customHeaders;
-
-    protected string customerUid;
+    protected ILogger Log;
+    protected IConfigurationStore ConfigStore;
+    protected IServiceExceptionHandler ServiceExceptionHandler;
+    protected string CustomerUid;
+    protected string UserId;
+    protected string UserEmailAddress;
+    protected IDictionary<string, string> CustomHeaders;
 
 
     /// <summary>
@@ -46,7 +47,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     }
 
     /// <summary>
-    /// Generates the dynamic errorlist for instanciated executor.
+    /// Generates the dynamic error list for instantiated executor.
     /// </summary>
     /// <returns>List of errors with corresponding descriptions.</returns>
     public List<Tuple<int, string>> GenerateErrorlist()
@@ -111,13 +112,18 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger,
-      IConfigurationStore configStore, IDictionary<string, string> customHeaders, string customerUid)
+    public void Initialise(ILogger logger, IConfigurationStore configStore,
+      IServiceExceptionHandler serviceExceptionHandler,
+      string customerUid, string userId = null, string userEmailAddress = null,
+      IDictionary<string, string> headers = null)
     {
-      log = logger;
-      this.configStore = configStore;
-      this.customHeaders = customHeaders;
-      this.customerUid = customerUid;
+      Log = logger;
+      ConfigStore = configStore;
+      ServiceExceptionHandler = serviceExceptionHandler;
+      CustomerUid = customerUid;
+      UserId = userId;
+      UserEmailAddress = userEmailAddress;
+      CustomHeaders = headers;
     }
 
     //protected T CastRequestObjectTo<T>(object item) where T : ProjectID

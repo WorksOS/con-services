@@ -85,7 +85,7 @@ namespace VSS.Hydrology.WebApi
       if (!File.Exists(useCase.Surface))
         throw new FileNotFoundException(useCase.Surface);
 
-
+      var tryThis = services.BuildServiceProvider().GetService<ILandLeveling>();
       try
       {
         using (var landLevelingInstance = services.BuildServiceProvider().GetService<ILandLeveling>())

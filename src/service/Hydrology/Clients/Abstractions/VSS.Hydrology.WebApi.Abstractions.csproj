@@ -40,6 +40,9 @@
     <Reference Include="log4net">
       <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Morph.Service.Core">
+      <HintPath>..\..\Service\HydroLibraries\Morph.Service.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
