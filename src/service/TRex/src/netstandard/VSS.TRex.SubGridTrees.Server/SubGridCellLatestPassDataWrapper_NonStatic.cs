@@ -75,13 +75,10 @@ namespace VSS.TRex.SubGridTrees.Server
         {
           base.Read(reader);
      
-          var readCell = CellPass.CLEARED_CELL_PASS;
-
           // Read in the latest call passes themselves
           for (int i = PassData.Offset, limit = PassData.Offset + SubGridTreeConsts.CellsPerSubGrid; i < limit; i++)
           {
-            readCell.Read(reader);
-            PassData.Elements[i] = readCell;
+            PassData.Elements[i].Read(reader);
           }
         }
 

@@ -141,6 +141,7 @@ namespace VSS.TRex.SubGridTrees.Server
                   {
                     AllocatePasses(i, j, passCount);
 
+                    PassData[i, j].Passes.Count = passCount;
                     var passes = PassData[i, j].Passes;
                     for (int cpi = passes.Offset, limit = passes.OffsetPlusCount; cpi < limit; cpi++)
                     {
