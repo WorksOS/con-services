@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
-  public interface ISubGridDirectory
+  public interface ISubGridDirectory : IDisposable
   {
     bool IsMutable { get; set; }
 

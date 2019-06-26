@@ -18,5 +18,11 @@
     /// </summary>
     /// <param name="buffer"></param>
     void Return(T[] buffer);
+
+    /// <summary>
+    /// Supplies statistics on the usage of the cached array pools
+    /// </summary>
+    /// <returns></returns>
+    (int poolIndex, int poolCapacity, int rentalCount)[] Statistics();
   }
 }

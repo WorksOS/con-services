@@ -122,7 +122,9 @@ namespace VSS.TRex.SubGridTrees.Server
       }
 
       if (subGridSegmentPassCountLimit == 0)
+      {
         subGridSegmentPassCountLimit = _subGridSegmentPassCountLimit;
+      }
 
       // Count up the number of cell passes in total in the segment
       CleavingSegment.PassesData.CalculateTotalPasses(out int TotalPassCount, out int _, out int _);

@@ -8,13 +8,13 @@
   /// <typeparam name="T"></typeparam>
   public class SlabAllocatedPoolPage<T>
   {
-    private readonly T[] _slabPage;
+    public readonly T[] SlabPage;
     public readonly TRexSpan<T>[] Arrays;
 
     public SlabAllocatedPoolPage(int poolSize, int arraySize)
     {
       // Create a single allocation to contain a slab of elements of size pool size
-      _slabPage = new T[poolSize];
+      SlabPage = new T[poolSize];
 
       int spanCount = poolSize / arraySize;
 
@@ -23,7 +23,7 @@
 
       for (int i = 0; i < spanCount; i++)
       {
-        Arrays[i] = new TRexSpan<T>(_slabPage, 0, (ushort)(i * arraySize), arraySize,  true);
+        Arrays[i] = new TRexSpan<T>(SlabPage, 0, i * arraySize, arraySize, true);
       }
     }
   }

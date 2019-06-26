@@ -11,7 +11,7 @@ namespace VSS.TRex.IO
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SlabAllocatedArrayPool<T>>();
 
-    public const int MAX_ALLOCATION_POOL_SIZE = 65536;
+    public const int MAX_ALLOCATION_POOL_SIZE = 2 * 65536;
 
     private readonly int _allocationPoolPageSize;
 
@@ -110,7 +110,7 @@ namespace VSS.TRex.IO
     }
 
     /// <summary>
-    /// Clones the content 'oldBuffer' by creating a new TRexSPan and copying the elements from oldBuffer into it
+    /// Clones the content 'oldBuffer' by creating a new TRexSpan and copying the elements from oldBuffer into it
     /// </summary>
     /// <param name="oldBuffer"></param>
     /// <returns></returns>
@@ -124,7 +124,7 @@ namespace VSS.TRex.IO
 #endif
 
       // Get a new buffer
-      var newBuffer = Rent(oldBuffer.Capacity);
+      var newBuffer = Rent(oldBuffer.Count);
       newBuffer.Count = oldBuffer.Count;
 
       // Copy elements from the old buffer to the new buffer

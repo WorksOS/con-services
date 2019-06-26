@@ -64,9 +64,9 @@ namespace VSS.TRex.Tests.Cells
         {
           Cell_NonStatic c = new Cell_NonStatic();
 
-          c.AddPass(CellPassTests.ATestCellPass(), -1);
+          c.AddPass(CellPassTests.ATestCellPass());
 
-          Action act = () => c.AddPass(CellPassTests.ATestCellPass(), -1);
+          Action act = () => c.AddPass(CellPassTests.ATestCellPass());
           act.Should().Throw<TRexException>();
         }
 

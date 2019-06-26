@@ -78,25 +78,6 @@ namespace VSS.TRex.Tests.SubGridTrees
         }
 
         [Fact()]
-        public void SubGridCellSegmentPassesDataWrapper_NonStatic_AllocatePassesExact_Test()
-        {
-          using (var item = new SubGridCellSegmentPassesDataWrapper_NonStatic())
-          {
-            item.AllocatePassesExact(1, 1, 10);
-
-            Assert.Equal(0, item.PassCount(1, 1));
-
-            item.AddPass(1, 1, new CellPass() {Time = DateTime.UtcNow});
-            item.AddPass(1, 1, new CellPass() {Time = DateTime.UtcNow});
-
-            Assert.Equal(2, item.PassCount(1, 1));
-
-            item.AllocatePassesExact(1, 1, 1);
-            Assert.Equal(1, item.PassCount(1, 1));
-          }
-        }
-
-        [Fact()]
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_AddPass_Test()
         {
           using (var item = new SubGridCellSegmentPassesDataWrapper_NonStatic())

@@ -9,6 +9,8 @@ namespace VSS.TRex.IO
   /// </summary>
   public class GenericArrayPoolCaches<T> : IGenericArrayPoolCaches<T>
   {
+    private object _lock = new Object();
+
     /// <summary>
     /// For arrays with sizes up to and including 1024 elements, this is the number of slots to
     /// provide for each size bucket (1, 2, 4, 16, 32, 64, 126, 256, 512 & 1024)
@@ -109,7 +111,7 @@ namespace VSS.TRex.IO
         return new T[minSize];
       }
 
-      lock (_poolCounts)
+      lock (_lock)
       {
         if (_poolCounts[log2] > 0)
         {
@@ -120,11 +122,11 @@ namespace VSS.TRex.IO
 
           return buffer;
         }
-
-        // No rent able elements, so create an appropriate sized buffer for the rental
-        //  Log.LogInformation($"Memory buffer pool serviced request for buffer of {minSize} bytes, but the appropriate pool has ");
-        return new T[1 << log2];
       }
+
+      // No rent able elements, so create an appropriate sized buffer for the rental
+      //  Log.LogInformation($"Memory buffer pool serviced request for buffer of {minSize} bytes, but the appropriate pool has ");
+      return new T[1 << log2];
     }
     
     /// <summary>
@@ -149,7 +151,7 @@ namespace VSS.TRex.IO
         return;
       }
 
-      lock (_poolCounts)
+      lock (_lock)
       {
         if (_poolCounts[log2] >= _pools[log2].Length)
         {
@@ -161,6 +163,27 @@ namespace VSS.TRex.IO
         // Place the returned buffer into the pool for later reuse
         _pools[log2][_poolCounts[log2]++] = buffer;
       }
+    }
+
+    /// <summary>
+    /// Supplies statistics on the usage of the cached array pools
+    /// </summary>
+    /// <returns></returns>
+    public (int poolIndex, int poolCapacity, int rentalCount)[] Statistics()
+    {
+      (int poolindex, int poolCapacity, int rentalCount)[] result = null;
+
+      lock (_poolCounts)
+      {
+        result = new (int poolindex, int poolCapacity, int rentalCount)[_pools.Length];
+
+        for (int i = 0, limit = _pools.Length; i < limit; i++)
+        {
+          result[i] = (i, _pools[i].Length, _poolCounts[i]);
+        }
+      }
+
+      return result;
     }
   }
 }

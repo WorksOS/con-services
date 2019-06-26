@@ -5,7 +5,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
-  public interface ISubGridCellPassesDataSegment
+  public interface ISubGridCellPassesDataSegment : IDisposable
   {
     IServerLeafSubGrid Owner { get; }
 

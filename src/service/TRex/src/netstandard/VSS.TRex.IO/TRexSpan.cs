@@ -11,7 +11,7 @@ namespace VSS.TRex.IO
     /// <summary>
     /// This identifies a span that does not exist in a pool allocated slab
     /// </summary>
-    public const int NO_SLAB_INDEX = 255;
+    public const int NO_SLAB_INDEX = int.MaxValue;
 
 #if CELLDEBUG
     // Debugging flag
@@ -21,14 +21,14 @@ namespace VSS.TRex.IO
     /// <summary>
     /// The index of the slab in the pool that currently contains this Span description.
     /// Note: This slab may not be the one that contains the elements this span describes,
-    /// the Elements property is the canonical references for this relationship
+    /// the Elements property is the canonical reference for this relationship
     /// </summary>
-    public byte SlabIndex;
+    private readonly int SlabIndex;
 
     /// <summary>
     /// The offset within the Elements array of this slab in the pool that the first element in the span occurs in
     /// </summary>
-    public readonly ushort Offset;
+    public readonly int Offset;
 
     /// <summary>
     /// The number of defined elements present in the space Count is less than or equal to Length
@@ -70,7 +70,7 @@ namespace VSS.TRex.IO
     /// <param name="slabIndex"></param>
     /// <param name="offset"></param>
     /// <param name="capacity"></param>
-    public TRexSpan(T[] elements, byte slabIndex, ushort offset, int capacity, bool isReturned)
+    public TRexSpan(T[] elements, int slabIndex, int offset, int capacity, bool isReturned)
     {
       _elements = elements;
       Offset = offset;
@@ -175,7 +175,7 @@ namespace VSS.TRex.IO
       }
 
       Array.Copy(source.Elements, source.Offset, _elements, Offset, sourceCount);
-      Count = Math.Max(Count, sourceCount);
+      Count = source.Count;
     }
 
     /// <summary>
@@ -203,7 +203,7 @@ namespace VSS.TRex.IO
     /// Indicates if this span should be returned to the pool at a future point in time
     /// </summary>
     /// <returns></returns>
-    public bool NeedsToBeReturned() => (Capacity > 0) && SlabIndex != NO_SLAB_INDEX && _elements != null;
+    public bool NeedsToBeReturned() => Capacity > 0 && SlabIndex != NO_SLAB_INDEX && _elements != null;
 
     public void MarkReturned()
     {
