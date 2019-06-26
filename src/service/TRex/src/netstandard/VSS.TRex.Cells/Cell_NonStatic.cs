@@ -20,7 +20,7 @@ namespace VSS.TRex.Cells
     /// </summary>
     public struct Cell_NonStatic
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger("Cell_NonStatic");
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(Cell_NonStatic));
 
         public const int PASS_COUNT_INCREMENT_STEP_SIZE = 4;
 

@@ -44,18 +44,8 @@ namespace VSS.TRex.Server.MutableData
       DIBuilder
         .New()
         .AddLogging()
-        .Add(x => x.AddSingleton(new RecyclableMemoryStreamManager
-        {
-          // Allow up to 256Mb worth of freed small blocks used by the recyclable streams for later reuse
-          // Note: The default value for this setting is zero which means every block allocated to a
-          // recyclable stream is freed when the stream is disposed.
-          MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
-        }))
-        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>()))
-        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<long>>(new GenericArrayPoolCaches<long>()))
-        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<ulong>>(new GenericArrayPoolCaches<ulong>()))
-        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
-        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>()))
+        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
+        .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
@@ -160,8 +150,11 @@ namespace VSS.TRex.Server.MutableData
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new TAGFileProcessingHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SlabAllocatedCellPassArrayPoolHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolHeartBeatLogger<byte>());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolHeartBeatLogger<int>());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolHeartBeatLogger<long>());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolHeartBeatLogger<ulong>());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericTwoDArrayCacheHeartBeatLogger<int>());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericTwoDArrayCacheHeartBeatLogger<CellPass>());
     }
 
     static async Task<int> Main(string[] args)
