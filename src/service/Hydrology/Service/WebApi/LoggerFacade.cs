@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Prism.Logging;
+using Microsoft.Practices.Prism.Logging;
 
 namespace VSS.Hydrology.WebApi
 {
@@ -14,7 +14,7 @@ namespace VSS.Hydrology.WebApi
 
     public void Log(string message, Category category, Priority priority)
     {
-      switch(category)
+      switch (category)
       {
         case Category.Debug:
           _logger.LogDebug(message);
@@ -28,7 +28,7 @@ namespace VSS.Hydrology.WebApi
         case Category.Info:
           _logger.LogInformation(message);
           break;
-      } 
+      }
     }
   }
 }

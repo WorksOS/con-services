@@ -27,6 +27,7 @@ namespace VSS.Hydrology.WebApi.Controllers
     public async Task<PondingResult> GetPondingImage(PondingRequest pondingRequest)
     {
       // todo find a way to copy hydro sublibraries AND .tx files
+      // these must be manually copied before starting testing
       Log.LogDebug($"{nameof(GetPondingImage)}: request {JsonConvert.SerializeObject(pondingRequest)}");
       pondingRequest.Validate();
 

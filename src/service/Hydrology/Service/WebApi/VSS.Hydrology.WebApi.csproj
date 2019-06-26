@@ -308,6 +308,7 @@
     <Reference Include="Trimble.WinCE">
       <HintPath>..\HydroLibraries\Trimble.WinCE.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
 
 
