@@ -309,7 +309,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Proxy", "..\TagFileAuth\src\Proxy\VSS.Productivity3D.TagFileAuth.Proxy.csproj", "{62B19080-1A48-4B48-92FF-DE003FD5B1CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArrayPoolBenchmark", "src\netstandard\SandBox\ArrayPoolBenchmark\ArrayPoolBenchmark.csproj", "{A60A9586-2065-4A4F-80E7-961CDB684A76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArrayPoolBenchmark", "src\netstandard\SandBox\ArrayPoolBenchmark\ArrayPoolBenchmark.csproj", "{A60A9586-2065-4A4F-80E7-961CDB684A76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
