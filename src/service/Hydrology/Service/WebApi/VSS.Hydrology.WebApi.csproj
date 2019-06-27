@@ -119,6 +119,9 @@
     <Reference Include="Microsoft.Practices.Prism.MefExtensions">
       <HintPath>..\HydroLibraries\Microsoft.Practices.Prism.MefExtensions.dll</HintPath>
     </Reference>
+    <Reference Include="Morph.Service.Core">
+      <HintPath>..\HydroLibraries\Morph.Service.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Morph.Contracts">
       <HintPath>..\HydroLibraries\Morph.Contracts.dll</HintPath>
     </Reference>
@@ -134,17 +137,8 @@
     <Reference Include="Morph.Service.Engine">
       <HintPath>..\HydroLibraries\Morph.Service.Engine.dll</HintPath>
     </Reference>
-
-    <!-- only needed if using sketup for pondmap generation -->
-    <Reference Include="Trimble.Vce.Data.Skp">
-      <HintPath>..\HydroLibraries\Trimble.Vce.Data.Skp.dll</HintPath>
-    </Reference>
-
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="RecomputeDimBlock_4.00_11.tx">
-      <HintPath>..\HydroLibraries\RecomputeDimBlock_4.00_11.tx</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   

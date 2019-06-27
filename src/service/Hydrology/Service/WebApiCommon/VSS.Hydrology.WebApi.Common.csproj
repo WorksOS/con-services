@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Polly" Version="6.0.1" />
   </ItemGroup>
 
@@ -45,9 +45,35 @@
     <Reference Include="log4net">
       <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Morph.Contracts">
+      <HintPath>..\HydroLibraries\Morph.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Core">
+      <HintPath>..\HydroLibraries\Morph.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Morph.Module.Services">
+      <HintPath>..\HydroLibraries\Morph.Module.Services.dll</HintPath>
+    </Reference>
     <Reference Include="Morph.Service.Core">
       <HintPath>..\HydroLibraries\Morph.Service.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Morph.Service.Engine">
+      <HintPath>..\HydroLibraries\Morph.Service.Engine.dll</HintPath>
+    </Reference>
+
+    <!-- only needed if using sketup for pondmap generation 
+    <Reference Include="Trimble.Vce.Data.Skp">
+      <HintPath>..\HydroLibraries\Trimble.Vce.Data.Skp.dll</HintPath>
+    </Reference>
+    -->
+
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="RecomputeDimBlock_4.00_11.tx">
+      <HintPath>..\HydroLibraries\RecomputeDimBlock_4.00_11.tx</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

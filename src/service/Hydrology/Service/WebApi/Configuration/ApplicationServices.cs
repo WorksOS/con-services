@@ -6,6 +6,8 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Hydrology.WebApi.Configuration;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 
 // ReSharper disable once CheckNamespace
 namespace VSS.Hydrology.WebApi
@@ -26,6 +28,8 @@ namespace VSS.Hydrology.WebApi
       services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>(); // todoJeannie need the survey export
     }
   }
 }

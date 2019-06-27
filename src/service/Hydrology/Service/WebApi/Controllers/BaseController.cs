@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Morph.Services.Core.Interfaces;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -23,29 +24,30 @@ namespace VSS.Hydrology.WebApi.Controllers
   /// </summary>
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
-    private ILogger<T> logger;
-    private ILoggerFactory loggerFactory;
-    private IServiceExceptionHandler serviceExceptionHandler;
-
     /// <summary>
     /// Gets the service exception handler.
     /// </summary>
-    protected IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
+    private IServiceExceptionHandler _serviceExceptionHandler;
+    protected IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ?? (_serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
 
     /// <summary>
     /// Gets the application logging interface.
     /// </summary>
-    protected ILogger<T> Log => logger ?? (logger = HttpContext.RequestServices.GetService<ILogger<T>>());
+    private ILogger<T> _logger;
+    protected ILogger<T> Log => _logger ?? (_logger = HttpContext.RequestServices.GetService<ILogger<T>>());
 
     /// <summary>
     /// Gets the type used to configure the logging system and create instances of ILogger from the registered ILoggerProviders.
     /// </summary>
-    protected ILoggerFactory LoggerFactory => loggerFactory ?? (loggerFactory = HttpContext.RequestServices.GetService<ILoggerFactory>());
+    private ILoggerFactory _loggerFactory;
+    protected ILoggerFactory LoggerFactory => _loggerFactory ?? (_loggerFactory = HttpContext.RequestServices.GetService<ILoggerFactory>());
 
-    /// <summary>
-    /// Where to get environment variables, connection string etc. from
-    /// </summary>
-    protected IConfigurationStore ConfigStore;
+
+    private IConfigurationStore _configStore;
+    protected IConfigurationStore ConfigStore => _configStore ?? (_configStore = HttpContext.RequestServices.GetService<IConfigurationStore>());
+
+    private ILandLeveling _landLeveling;
+    protected ILandLeveling LandLeveling => _landLeveling ?? (_landLeveling = HttpContext.RequestServices.GetService<ILandLeveling>());
 
     /// <summary>
     /// Gets the customer uid from the current context
@@ -78,10 +80,7 @@ namespace VSS.Hydrology.WebApi.Controllers
     /// <summary>
     /// 
     /// </summary>
-    protected BaseController(IConfigurationStore configStore)
-    {
-      ConfigStore = configStore;
-    }
+    protected BaseController() { }
 
     /// <summary>
     /// With the service exception try execute.
@@ -141,7 +140,8 @@ namespace VSS.Hydrology.WebApi.Controllers
       return result;
     }
 
-    protected string GetCustomerUid()
+    /// <summary> </summary>
+    private string GetCustomerUid()
     {
       if (User is TIDCustomPrincipal principal)
       {
@@ -154,8 +154,6 @@ namespace VSS.Hydrology.WebApi.Controllers
     /// <summary>
     /// Gets the User uid/applicationID from the context.
     /// </summary>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
     private string GetUserId()
     {
       if (User is TIDCustomPrincipal principal && (principal.Identity is GenericIdentity identity))

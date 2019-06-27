@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Morph.Services.Core.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.Hydrology.WebApi.Common.Executors
 {
@@ -15,7 +17,8 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     /// <returns></returns>
     public static TExecutor Build<TExecutor>(
       ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
-      string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null
+      string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
+      ILandLeveling landLeveling = null
       )
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -28,7 +31,9 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       var executor = new TExecutor();
 
       executor.Initialise(
-        log, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, headers
+        log, configStore, serviceExceptionHandler, 
+        customerUid, userId, userEmailAddress, headers,
+        landLeveling
         );
 
       return executor;

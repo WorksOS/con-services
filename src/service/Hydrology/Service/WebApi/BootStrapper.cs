@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-#if NET_4_7
+﻿#if NET_4_7
 using Microsoft.Practices.Prism.Logging;
 using Microsoft.Practices.Prism.MefExtensions;
 using Microsoft.Practices.Prism.Modularity;
@@ -8,14 +7,10 @@ using Morph.Core.Utility;
 using Morph.Module.Services;
 using Morph.Services.Engine.Modules;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Linq;
 using System.Windows;
-using Microsoft.Extensions.Logging;
-using Microsoft.Practices.ServiceLocation;
-using Morph.Services.Core.Interfaces;
 
 namespace VSS.Hydrology.WebApi
 {
@@ -31,18 +26,12 @@ namespace VSS.Hydrology.WebApi
     protected override void ConfigureAggregateCatalog()
     {
       base.ConfigureAggregateCatalog();
-      this.AggregateCatalog.Catalogs.Add((ComposablePartCatalog)new AssemblyCatalog(typeof(Program).Assembly));
-      this.AggregateCatalog.Catalogs.Add((ComposablePartCatalog)new AssemblyCatalog(typeof(InterfaceTypes).Assembly));
-      this.AggregateCatalog.Catalogs.Add((ComposablePartCatalog)new AssemblyCatalog(typeof(UnitConverter).Assembly));
-      this.AggregateCatalog.Catalogs.Add((ComposablePartCatalog)new AssemblyCatalog(typeof(ServicesModule).Assembly));
-      this.AggregateCatalog.Catalogs.Add((ComposablePartCatalog)new AssemblyCatalog(typeof(EngineService).Assembly));
+      AggregateCatalog.Catalogs.Add((ComposablePartCatalog) new AssemblyCatalog(typeof(Program).Assembly));
+      AggregateCatalog.Catalogs.Add((ComposablePartCatalog) new AssemblyCatalog(typeof(InterfaceTypes).Assembly));
+      AggregateCatalog.Catalogs.Add((ComposablePartCatalog) new AssemblyCatalog(typeof(UnitConverter).Assembly));
+      AggregateCatalog.Catalogs.Add((ComposablePartCatalog) new AssemblyCatalog(typeof(ServicesModule).Assembly));
+      AggregateCatalog.Catalogs.Add((ComposablePartCatalog) new AssemblyCatalog(typeof(EngineService).Assembly));
     }
-
-    //    protected override ILoggerFacade CreateLogger()
-    //    {
-    //      var logger = _serviceProvider.GetService<ILoggerFactory>().CreateLogger<MefBootstrapper>();
-    //      return new LoggerFacade(logger);
-    //    }
 
     protected override DependencyObject CreateShell()
     {
@@ -51,41 +40,38 @@ namespace VSS.Hydrology.WebApi
 
     public void Init()
     {
-      this.Logger = this.CreateLogger();
-      if (this.Logger == null)
+      Logger = CreateLogger();
+      if (Logger == null)
         throw new InvalidOperationException("Resources.NullLoggerFacadeException");
-      this.Logger.Log("Resources.LoggerWasCreatedSuccessfully", Category.Debug, Priority.Low);
-      this.Logger.Log("Resources.CreatingModuleCatalog", Category.Debug, Priority.Low);
-      this.ModuleCatalog = this.CreateModuleCatalog();
-      if (this.ModuleCatalog == null)
+      Logger.Log("Resources.LoggerWasCreatedSuccessfully", Category.Debug, Priority.Low);
+      Logger.Log("Resources.CreatingModuleCatalog", Category.Debug, Priority.Low);
+      ModuleCatalog = CreateModuleCatalog();
+      if (ModuleCatalog == null)
         throw new InvalidOperationException("Resources.NullModuleCatalogException");
-      this.Logger.Log("Resources.ConfiguringModuleCatalog", Category.Debug, Priority.Low);
-      this.ConfigureModuleCatalog();
-      this.Logger.Log("Resources.CreatingCatalogForMEF", Category.Debug, Priority.Low);
-      this.AggregateCatalog = this.CreateAggregateCatalog();
-      this.Logger.Log("Resources.ConfiguringCatalogForMEF", Category.Debug, Priority.Low);
-      this.ConfigureAggregateCatalog();
-      this.RegisterDefaultTypesIfMissing();
-      this.Logger.Log("Resources.CreatingMefContainer", Category.Debug, Priority.Low);
-      this.Container = this.CreateContainer();
-      if (this.Container == null)
+      Logger.Log("Resources.ConfiguringModuleCatalog", Category.Debug, Priority.Low);
+      ConfigureModuleCatalog();
+      Logger.Log("Resources.CreatingCatalogForMEF", Category.Debug, Priority.Low);
+      AggregateCatalog = this.CreateAggregateCatalog();
+      Logger.Log("Resources.ConfiguringCatalogForMEF", Category.Debug, Priority.Low);
+      ConfigureAggregateCatalog();
+      RegisterDefaultTypesIfMissing();
+      Logger.Log("Resources.CreatingMefContainer", Category.Debug, Priority.Low);
+      Container = CreateContainer();
+      if (Container == null)
         throw new InvalidOperationException("Resources.NullCompositionContainerException");
-      this.Logger.Log("Resources.ConfiguringMefContainer", Category.Debug, Priority.Low);
-      this.ConfigureContainer();
-      //  this.Container.ComposeExportedValue<ILogger>(this.Logger as ILogger);
-      this.Logger.Log("Resources.ConfiguringServiceLocatorSingleton", Category.Debug, Priority.Low);
-      this.ConfigureServiceLocator();
-      var exports = this.Container.GetExports(typeof(IModuleManager), (Type)null, (string)null);
+      Logger.Log("Resources.ConfiguringMefContainer", Category.Debug, Priority.Low);
+      ConfigureContainer();
+      Logger.Log("Resources.ConfiguringServiceLocatorSingleton", Category.Debug, Priority.Low);
+      ConfigureServiceLocator();
+      var exports = Container.GetExports(typeof(IModuleManager), (Type) null, (string) null);
 
-      if (exports != null && exports.Count<Lazy<object, object>>() > 0)
+      if (exports.Any())
       {
-        this.Logger.Log("Resources.InitializingModules", Category.Debug, Priority.Low);
-        this.InitializeModules();
+        Logger.Log("Resources.InitializingModules", Category.Debug, Priority.Low);
+        InitializeModules();
       }
 
-      this.Logger.Log("Resources.BootstrapperSequenceCompleted", Category.Debug, Priority.Low);
-      //      base.Run();
-      //      this.ConfigureServiceLocator();
+      Logger.Log("Resources.BootstrapperSequenceCompleted", Category.Debug, Priority.Low);
     }
   }
 }

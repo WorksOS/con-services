@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using Morph.Services.Core.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.Hydrology.WebApi.Common.Executors
 {
@@ -28,6 +29,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     protected string UserId;
     protected string UserEmailAddress;
     protected IDictionary<string, string> CustomHeaders;
+    protected ILandLeveling LandLeveling;
 
 
     /// <summary>
@@ -115,7 +117,8 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     public void Initialise(ILogger logger, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler,
       string customerUid, string userId = null, string userEmailAddress = null,
-      IDictionary<string, string> headers = null)
+      IDictionary<string, string> headers = null,
+      ILandLeveling landLeveling = null)
     {
       Log = logger;
       ConfigStore = configStore;
@@ -124,28 +127,29 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       UserId = userId;
       UserEmailAddress = userEmailAddress;
       CustomHeaders = headers;
+      LandLeveling = landLeveling;
     }
 
-    //protected T CastRequestObjectTo<T>(object item) where T : ProjectID
-    //{
-    //  var request = item as T;
+    protected T CastRequestObjectTo<T>(object item) where T : class
+    {
+      var request = item as T;
 
-    //  if (request == null)
-    //  {
-    //    ThrowRequestTypeCastException<T>();
-    //  }
+      if (request == null)
+      {
+        ThrowRequestTypeCastException<T>();
+      }
 
-    //  return request;
-    //}
-    //protected void ThrowRequestTypeCastException<T>(string errorMessage = null)
-    //{
-    //  if (errorMessage == null)
-    //    errorMessage = $"{typeof(T).Name} cast failed.";
+      return request;
+    }
+    protected void ThrowRequestTypeCastException<T>(string errorMessage = null)
+    {
+      if (errorMessage == null)
+        errorMessage = $"{typeof(T).Name} cast failed.";
 
-    //  throw new ServiceException(
-    //    HttpStatusCode.InternalServerError,
-    //    new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, errorMessage));
-    //}
+      throw new ServiceException(
+        HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, errorMessage));
+    }
 
     protected ServiceException CreateServiceException<T>(int errorStatus = ERROR_STATUS_OK)
     {
