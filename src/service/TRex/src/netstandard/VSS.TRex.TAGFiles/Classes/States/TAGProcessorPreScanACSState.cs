@@ -6,6 +6,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     /// <summary>
     /// Handles scanning a TAG value stream and extracting the blade/track/wheel/read positions into a set
     /// of groups to permit recalculation of coordinates between coordinate systems
+    /// TODO: TAGProcessorStateBase implements IDisposable which the usage context for this class should take into account
     /// </summary>
     public class TAGProcessorPreScanACSState : TAGProcessorStateBase
     {

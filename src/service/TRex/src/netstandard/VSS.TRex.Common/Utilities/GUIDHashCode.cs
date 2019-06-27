@@ -49,7 +49,7 @@ namespace VSS.TRex.Common.Utilities
     {
       byte[] bytes = g.ToByteArray();
 
-      var b = new[]
+      var b = new[] // TODO: Declare this as stackalloc'ed when we move to .Net Core
       {
         bytes[6],
         bytes[7],
