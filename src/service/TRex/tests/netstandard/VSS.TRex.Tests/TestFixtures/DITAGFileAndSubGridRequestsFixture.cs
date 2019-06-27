@@ -177,12 +177,12 @@ namespace VSS.TRex.Tests.TestFixtures
       foreach (var pass in _passes)
         leaf.AddPass(subGridX, subGridY, pass);
 
-      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(subGridX, subGridY, out int passCount);
+      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(subGridX, subGridY);
       if (expectedPassCount > -1)
-        ((int)passCount).Should().Be(expectedPassCount);
+        ((int)cellPasses.PassCount).Should().Be(expectedPassCount);
 
       // Assign global latest cell pass to the appropriate pass
-      leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Last();
+      leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Passes.Last();
 
       // Ensure the pass data existence map records the existence of a non null value in the cell
       leaf.Directory.GlobalLatestCells.PassDataExistenceMap[subGridX, subGridY] = true;
@@ -236,12 +236,12 @@ namespace VSS.TRex.Tests.TestFixtures
         foreach (var pass in passesList[i])
           leaf.AddPass(subGridX, subGridY, pass);
 
-        var cellPasses = leaf.Cells.PassesData[i].PassesData.ExtractCellPasses(subGridX, subGridY, out int passCount);
+        var cellPasses = leaf.Cells.PassesData[i].PassesData.ExtractCellPasses(subGridX, subGridY);
         if (expectedPassCount > -1)
-          ((int)passCount).Should().Be(expectedPassCount);
+          ((int)cellPasses.PassCount).Should().Be(expectedPassCount);
 
         // Assign global latest cell pass to the appropriate pass
-        leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Last();
+        leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Passes.Last();
 
         // Ensure the pass data existence map records the existence of a non null value in the cell
         leaf.Directory.GlobalLatestCells.PassDataExistenceMap[subGridX, subGridY] = true;

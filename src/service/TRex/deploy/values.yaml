@@ -59,7 +59,6 @@ mutableData:
       memory: 1.6Gi
   storageSize: 10Gi
   environment:
-    tfaProjectV2ApiUrl: "http://tagfileauth.dev.eks.vspengg.com/api/v2/project"
     enableTfa: false
     enableTagFileArchiving: false
     enableTagFileArchivingMetadata: false

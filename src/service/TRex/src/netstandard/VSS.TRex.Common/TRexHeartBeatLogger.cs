@@ -38,20 +38,22 @@ namespace VSS.TRex.Common
       {
         while (contextRunner.ThreadState == ThreadState.Running && !Stopped)
         {
-          try
+          lock (loggingContexts)
           {
-            lock (loggingContexts)
+            foreach (var context in loggingContexts)
             {
-              foreach (var context in loggingContexts)
+              try
+              {
                 Log.LogInformation($"Heartbeat: {context}");
+              }
+              catch (Exception e)
+              {
+                Log.LogError(e, $"Exception in {nameof(TRexHeartBeatLogger)}");
+              }
             }
+          }
 
-            Thread.Sleep(IntervalInMilliseconds);
-          }
-          catch (Exception e)
-          {
-            Log.LogError(e, $"Exception in {nameof(TRexHeartBeatLogger)}");
-          }
+          Thread.Sleep(IntervalInMilliseconds);
         }
       });
 

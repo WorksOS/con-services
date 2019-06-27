@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Internal;
@@ -8,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -37,6 +34,8 @@ using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Proxy;
 using VSS.TCCFileAccess;
+using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI
@@ -74,17 +73,18 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<ICustomerRepository, CustomerRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
-      services.AddTransient<ISchedulerProxy, SchedulerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddTransient<IDataOceanClient, DataOceanClient>();
       services.AddTransient<IPegasusClient, PegasusClient>();
       services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
-      services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
-      services.AddTransient<ITRexImportFileProxy, TRexImportFileProxy>();
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
+
+      services.AddScoped<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
+      services.AddTransient<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
+      services.AddTransient<ITRexImportFileProxy, TRexImportFileV1ServiceDiscoveryProxy>();
 
       services.AddOpenTracing(builder =>
       {

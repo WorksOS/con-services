@@ -1,9 +1,10 @@
 ﻿using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class Test_SubGridCellLatestPassDataWrapper
+        public class Test_SubGridCellLatestPassDataWrapper : IClassFixture<DILoggingFixture>
     {
         [Fact()]
         public void Test_SubGridCellLatestPassDataWrapper_NonStatic_Creation()

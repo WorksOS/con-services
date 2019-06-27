@@ -16,10 +16,11 @@ namespace VSS.Productivity3D.Models.Models
     public FilterResult Filter { get; private set; }
 
     /// <summary>
-    /// The global override value for target pass count range. Optional.
+    /// Only TargetPassCountRange used.
     /// </summary>
-    [JsonProperty(PropertyName = "overridingTargetPassCountRange", Required = Required.Default)]
-    public TargetPassCountRange OverridingTargetPassCountRange { get; private set; }
+    [JsonProperty(Required = Required.Default)]
+    public OverridingTargets Overrides { get; private set; }
+
 
     /// <summary>
     /// Default private constructor.
@@ -39,7 +40,7 @@ namespace VSS.Productivity3D.Models.Models
     {
       ProjectUid = projectUid;
       Filter = filter;
-      OverridingTargetPassCountRange = overridingTargetPassCountRange;
+      Overrides = new OverridingTargets(overridingTargetPassCountRange: overridingTargetPassCountRange);
     }
 
     /// <summary>
@@ -50,8 +51,7 @@ namespace VSS.Productivity3D.Models.Models
       base.Validate();
 
       Filter?.Validate();
-
-      OverridingTargetPassCountRange?.Validate();
+      Overrides?.Validate();
     }
   }
 }

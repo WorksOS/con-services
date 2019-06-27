@@ -40,9 +40,9 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Initializes a new instance of the <see cref="FilterController"/> class.
     /// </summary>
     public FilterController(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IRepository<IFilterEvent> filterRepo,
+      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IRepository<IFilterEvent> filterRepo,
       IKafka producer, IRepository<IGeofenceEvent> geofenceRepo)
-      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy, producer, "IFilterEvent")
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, producer, "IFilterEvent")
     {
       Log = logger.CreateLogger<FilterController>();
       this.filterRepo = filterRepo as FilterRepository;
@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler, true);
 
       var executor =
-        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, null, ProjectListProxy, RaptorProxy, AssetResolverProxy);
+        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, null, ProjectProxy, RaptorProxy, AssetResolverProxy);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorSingleResult;
 
       Log.LogInformation($"{nameof(GetProjectFilter)} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
@@ -110,14 +110,14 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpPut("api/v1/filter/{ProjectUid}")]
     public async Task<FilterDescriptorSingleResult> PutFilter(
       [FromServices] IGeofenceProxy geofenceProxy,
-      [FromServices] IFileListProxy fileListProxy,
+      [FromServices] IFileImportProxy fileImportProxy,
       [FromServices] INotificationHubClient notificationHubClient,
       string projectUid,
       [FromBody] FilterRequest request)
     {
       Log.LogInformation($"{nameof(PutFilter)}: CustomerUID={CustomerUid} FilterRequest: {JsonConvert.SerializeObject(request)}");
 
-      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, fileListProxy, geofenceProxy);
+      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, fileImportProxy, geofenceProxy);
       var upsertFilterResult = await UpsertFilter(filterExecutor, await GetProject(projectUid), request);
 
       if (upsertFilterResult.FilterDescriptor.FilterType == FilterType.Persistent)
@@ -149,7 +149,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     
       var projectTask = GetProject(projectUid);
       var newFilters = new List<FilterDescriptor>();
-      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, null, geofenceProxy);
+      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, null, geofenceProxy);
 
       var project = await projectTask;
 
@@ -184,7 +184,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       requestFull.Validate(ServiceExceptionHandler, true);
 
-      var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, null, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName);
+      var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, null, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName);
       var result = await executor.ProcessAsync(requestFull);
 
       Log.LogInformation($"{nameof(DeleteFilter)} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");

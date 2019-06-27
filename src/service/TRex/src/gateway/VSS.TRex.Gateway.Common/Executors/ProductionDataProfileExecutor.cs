@@ -5,7 +5,6 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
@@ -25,7 +24,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   /// <summary>
   /// Processes the request to get production data profile.
   /// </summary>
-  public class ProductionDataProfileExecutor : BaseExecutor
+  public class ProductionDataProfileExecutor : ProfileBaseExecutor
   {
     public ProductionDataProfileExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)
@@ -42,17 +41,17 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ProductionDataProfileDataRequest request = item as ProductionDataProfileDataRequest;
+      var request = item as ProductionDataProfileDataRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<ProductionDataProfileDataRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var baseFilter = ConvertFilter(request.BaseFilter, siteModel);
+      var baseFilter = ConvertFilter(request.Filter, siteModel);
       var referenceDesign = new DesignOffset(request.ReferenceDesignUid ?? Guid.Empty, request.ReferenceDesignOffset ?? 0);
 
-      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      var arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = request.ProjectUid ?? Guid.Empty,
         ProfileTypeRequired = GridDataType.Height,
@@ -62,14 +61,15 @@ namespace VSS.TRex.Gateway.Common.Executors
         ReferenceDesign = referenceDesign,
         StartPoint = new WGS84Point(request.StartX, request.StartY),
         EndPoint = new WGS84Point(request.EndX, request.EndY),
-        ReturnAllPassesAndLayers = true
+        ReturnAllPassesAndLayers = true,
+        Overrides = GetOverrideParameters(request.Overrides)
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var svRequest = new ProfileRequest_ApplicationService_ProfileCell();
 
       // var Response = svRequest.Execute(arg);
-      ProfileRequestResponse<ProfileCell> response = svRequest.Execute(arg);
+      var response = svRequest.Execute(arg);
 
       if (response != null)
         return ConvertResult(response);

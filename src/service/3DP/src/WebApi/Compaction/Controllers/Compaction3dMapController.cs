@@ -15,7 +15,6 @@ using VSS.Common.Abstractions.Http;
 using VLPDDecls;
 #endif
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -41,6 +40,7 @@ using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Designs.TTM.Optimised.Exceptions;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public Compaction3DMapController(ILoggerFactory loggerFactory,
       IServiceExceptionHandler serviceExceptionHandler,
       IConfigurationStore configStore,
-      IFileListProxy fileListProxy,
+      IFileImportProxy fileImportProxy,
       IProjectSettingsProxy projectSettingsProxy,
       IFilterServiceProxy filterServiceProxy,
       ICompactionSettingsManager settingsManager,
@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       IASNodeClient raptorClient,
 #endif
       IBoundingBoxHelper boundingBoxHelper,
-      ITRexCompactionDataProxy trexCompactionDataProxy) : base(configStore, fileListProxy, settingsManager)
+      ITRexCompactionDataProxy trexCompactionDataProxy) : base(configStore, fileImportProxy, settingsManager)
     {
       this.tileService = tileService;
       this.boundingBoxHelper = boundingBoxHelper;

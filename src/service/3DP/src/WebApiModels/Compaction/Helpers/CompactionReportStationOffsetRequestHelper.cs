@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -26,11 +24,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     { }
 
     public CompactionReportStationOffsetRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
+      IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
     {
       Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
       ConfigurationStore = configurationStore;
-      FileListProxy = fileListProxy;
+      FileImportProxy = fileImportProxy;
       SettingsManager = settingsManager;
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
 using Xunit.Gherkin.Quick;
@@ -6,7 +7,7 @@ using Xunit.Gherkin.Quick;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("AlignmentLinework.feature")]
-  public class AlignmentLineworkSteps : FeatureGetRequestBase
+  public class AlignmentLineworkSteps : FeatureGetRequestBase<JObject>
   {
     /// <summary>
     /// This method unzips the dxf file. 

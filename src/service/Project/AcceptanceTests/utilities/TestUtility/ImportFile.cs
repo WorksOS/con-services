@@ -157,7 +157,7 @@ namespace TestUtility
     /// <summary>
     /// Upload a single file to the web api 
     /// </summary>
-    /// <returns>Repsonse from web api as string</returns>
+    /// <returns>Response from web api as string</returns>
     private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
     {
       //For reference surfaces no file to upload

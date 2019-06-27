@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
   /// </summary>
   public class RaptorPrincipal : TIDCustomPrincipal
   {
-    private readonly IProjectListProxy projectProxy;
+    private readonly IProjectProxy projectProxy;
     private readonly IDictionary<string, string> authNContext;
     private static readonly ConcurrentDictionary<Guid, long> legacyProjectIdsCache;
     private static readonly ConcurrentDictionary<long, Guid> ProjectUidsCache;
@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 
     //We need to delegate Project retrieval downstream as project may not accessible to a user once it has been created
     public RaptorPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userEmail, bool isApplication, string tpaasApplicationName,
-      IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders)
+      IProjectProxy projectProxy, IDictionary<string, string> contextHeaders)
       : base(identity, customerUid, customerName, userEmail, isApplication, tpaasApplicationName)
     {
       this.projectProxy = projectProxy;

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,12 +1,13 @@
 ﻿using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("ExportReportMachinePasses.feature")]
-  public class ExportReportMachinePassesSteps : FeatureGetRequestBase
+  public class ExportReportMachinePassesSteps : FeatureGetRequestBase<JObject>
   {
     /// <summary>
     /// This method unzips the csv file. It then sorts it before comparing the actual with expected.

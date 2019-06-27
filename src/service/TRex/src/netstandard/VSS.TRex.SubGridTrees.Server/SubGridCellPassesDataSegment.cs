@@ -6,6 +6,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
@@ -16,8 +17,6 @@ namespace VSS.TRex.SubGridTrees.Server
   public class SubGridCellPassesDataSegment : ISubGridCellPassesDataSegment
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegment>();
-
-    private static readonly IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<IO.RecyclableMemoryStreamManager>();
 
     /// <summary>
     /// Tracks whether there are unsaved changes in this segment
@@ -235,7 +234,7 @@ namespace VSS.TRex.SubGridTrees.Server
           Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses})");
       }
 
-      using (var stream = _recyclableMemoryStreamManager.GetStream())
+      using (var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
       {
         using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
         {
@@ -291,10 +290,37 @@ namespace VSS.TRex.SubGridTrees.Server
       bool Result = CoveredTimeRangeStart >= SegmentInfo.StartTime && CoveredTimeRangeEnd <= SegmentInfo.EndTime;
 
       if (!Result)
+      {
         Log.LogCritical(
           $"Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
-
+       // throw new TRexException("Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
+      }
+      
       return Result;
     }
+
+    #region IDisposable Support
+    private bool disposedValue = false; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          LatestPasses?.Dispose();
+          PassesData?.Dispose();
+        }
+
+        disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+    }
+    #endregion
   }
 }

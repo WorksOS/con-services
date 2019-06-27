@@ -29,6 +29,10 @@ namespace VSS.TRex.Cells
   /// </summary>
   public struct CellPass
   {
+#if CELLDEBUG
+    public static long _lastAdditionStamp;
+    public long _additionStamp;
+#endif
     /// <summary>
     /// A prebuilt cell pass cleared per the CellPass.Clear() method
     /// </summary>

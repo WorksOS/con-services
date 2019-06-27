@@ -9,8 +9,8 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -28,7 +28,6 @@ using VSS.TRex.Reports.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
-using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
@@ -37,6 +36,7 @@ using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Servers.Client;
+using VSS.TRex.IO;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Server.Reports
@@ -71,7 +71,19 @@ namespace VSS.TRex.Server.Reports
     {
       DIBuilder.New()
         .AddLogging()
+        .Add(x => x.AddSingleton(new VSS.TRex.IO.RecyclableMemoryStreamManager
+        {
+          // Allow up to 256Mb worth of freed small blocks used by the recyclable streams for later reuse
+          // NOte: The default value for this setting is zero which means every block allocated to a
+          // recyclable stream is freed when the stream is disposed.
+          MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
+        }))
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<long>>(new GenericArrayPoolCaches<long>()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<ulong>>(new GenericArrayPoolCaches<ulong>()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>()))
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))

@@ -16,6 +16,7 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
 using System.IO;
+using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {

@@ -27,9 +27,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected FilterExecutorBase(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileListProxy fileListProxy,
+      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy)
-      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy, fileListProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
     { }
 
     /// <summary>

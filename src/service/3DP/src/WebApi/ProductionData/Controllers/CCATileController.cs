@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -24,6 +23,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {

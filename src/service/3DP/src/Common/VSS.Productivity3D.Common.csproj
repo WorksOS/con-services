@@ -57,6 +57,7 @@
     <ProjectReference Include="..\..\..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj" />
   </ItemGroup>
 
   <ItemGroup>

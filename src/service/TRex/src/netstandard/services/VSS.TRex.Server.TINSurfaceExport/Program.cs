@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -17,6 +16,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.IO;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -25,7 +25,6 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
-using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -63,6 +62,16 @@ namespace VSS.TRex.Server.TINSurfaceExport
       DIBuilder.New()
       .AddLogging()
       .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+      .Add(x => x.AddSingleton(new VSS.TRex.IO.RecyclableMemoryStreamManager
+      {
+        // Allow up to 256Mb worth of freed small blocks used by the recyclable streams for later reuse
+        // NOte: The default value for this setting is zero which means every block allocated to a
+        // recyclable stream is freed when the stream is disposed.
+        MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
+      }))
+      .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>()))
+      .Add(x => x.AddSingleton<IGenericArrayPoolCaches<long>>(new GenericArrayPoolCaches<long>()))
+      .Add(x => x.AddSingleton<IGenericArrayPoolCaches<ulong>>(new GenericArrayPoolCaches<ulong>()))
       .Add(TRexGridFactory.AddGridFactoriesToDI)
       .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
       .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))

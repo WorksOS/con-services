@@ -8,13 +8,13 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -25,9 +25,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileListProxy fileListProxy,
+      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, assetResolverProxy, fileListProxy, repository, producer, kafkaTopicName, null, null, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
     { }
 
     /// <summary>

@@ -71,6 +71,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\..\TRex\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj", "{1922A9AB-ACAD-49C1-9CD6-10685C08DED2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,6 +183,10 @@ Global
 		{1922A9AB-ACAD-49C1-9CD6-10685C08DED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1922A9AB-ACAD-49C1-9CD6-10685C08DED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1922A9AB-ACAD-49C1-9CD6-10685C08DED2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -214,6 +220,7 @@ Global
 		{CBFB5210-57BF-47AD-B1B3-B6F3B24F0FB9} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{B9A5233A-C9FE-408B-8155-B186389010C8} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{1922A9AB-ACAD-49C1-9CD6-10685C08DED2} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
+		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C6AEAF3B-79E5-4717-B4BC-BDB9DB46CC53}

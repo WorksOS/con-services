@@ -59,7 +59,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(string.Empty, configStore, log);
+      new MemoryCacheEntryOptions().GetCacheOptions(string.Empty, configStore, log);
       var cache = serviceProvider.GetService<IMemoryCache>();
 
       var cacheKey = $"test-CacheDoesNotReturnInvalidEntries-{Guid.NewGuid()}";
@@ -94,7 +94,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(string.Empty, configStore, log);
+      new MemoryCacheEntryOptions().GetCacheOptions(string.Empty, configStore, log);
       var cache = serviceProvider.GetService<IMemoryCache>();
 
       var cacheKey = $"test-CacheDoesCacheValidEntries-{Guid.NewGuid()}";

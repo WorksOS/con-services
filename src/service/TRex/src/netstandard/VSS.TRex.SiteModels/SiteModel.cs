@@ -1070,5 +1070,25 @@ return localVersionMap;
         AlignmentCount = Alignments?.Count ?? 0,
       };
     }
+
+    #region IDisposable Support
+    private bool disposedValue = false; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
+        Grid?.Dispose();
+
+        disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      Dispose(true);
+    }
+    #endregion
   }
 }

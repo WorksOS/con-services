@@ -3,16 +3,18 @@ using System.Collections;
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.IO;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-    public class SubGridCellSegmentPassesDataWrapper_Static_Compressed_Tests
+    public class SubGridCellSegmentPassesDataWrapper_Static_Compressed_Tests : IClassFixture<DILoggingFixture>
     {
         private const int _InternalMachineID = 105;
 
@@ -49,21 +51,19 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_NoMachineIDSet_Test()
         {
-            CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
-            var cellPassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+            var cellPasses = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             // Create each sub array and add a test cell pass to it
             SubGridUtilities.SubGridDimensionalIterator((x, y) =>
             {
-              cellPasses[x, y] = new[] {TestCellPass()};
-              cellPassCounts[x, y] = 1;
+              cellPasses[x, y].Passes = new TRexSpan<CellPass>(new CellPass[1], TRexSpan<CellPass>.NO_SLAB_INDEX, 0, 1, false);
+              cellPasses[x, y].Passes.Add(TestCellPass());
             });
-
 
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_StaticCompressed();
 
             // Feed the cell passes to the segment and ask it to serialise itself which will create the machine ID set
-            item.SetState(cellPasses, cellPassCounts);
+            item.SetState(cellPasses);
             using (BinaryWriter writer = new BinaryWriter(new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION)))
             {
                 item.Write(writer);

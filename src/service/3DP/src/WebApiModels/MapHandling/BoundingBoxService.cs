@@ -11,10 +11,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
@@ -27,6 +25,8 @@ using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -42,13 +42,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #endif
     private readonly IConfigurationStore configStore;
     private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
-    private readonly IFileListProxy fileListProxy;
+    private readonly IFileImportProxy fileImportProxy;
 
     /// <summary>
     /// helper methods for getting project statistics from Raptor/TRex
     /// </summary>
     private ProjectStatisticsHelper _projectStatisticsHelper = null;
-    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileListProxy, tRexCompactionDataProxy
+    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy
 #if RAPTOR
          , raptorClient
 #endif
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #endif
         IConfigurationStore configStore,
         ITRexCompactionDataProxy tRexCompactionDataProxy,
-        IFileListProxy fileListProxy
+        IFileImportProxy fileImportProxy
       )
     {
       log = logger.CreateLogger<BoundingBoxService>();
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #endif
       this.configStore = configStore;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
-      this.fileListProxy = fileListProxy;
+      this.fileImportProxy = fileImportProxy;
     }
 
     /// <summary>

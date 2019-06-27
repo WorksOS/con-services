@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
-  public interface IServerSubGridTree : ISubGridTree
+  public interface IServerSubGridTree : ISubGridTree, IDisposable
   {
     bool IsMutable { get; }
 

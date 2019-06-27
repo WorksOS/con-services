@@ -11,11 +11,12 @@ namespace VSS.TRex.Common.Records
     /// <summary>
     /// Minimum temperature warning levels value.
     /// </summary>
-    public ushort Min { get; set; }
-		/// <summary>
-		/// Maximum temperature warning levels value.
-		/// </summary>
-		public ushort Max { get; set; }
+    public ushort Min;
+
+    /// <summary>
+    /// Maximum temperature warning levels value.
+    /// </summary>
+    public ushort Max;
 
     /// <summary>
     /// Return an indicative size for memory consumption of this class to be used in cache tracking

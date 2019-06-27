@@ -1,12 +1,13 @@
 ﻿using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("ExportReportToVETA.feature")]
-  public class ExportReportToVETASteps : FeatureGetRequestBase
+  public class ExportReportToVETASteps : FeatureGetRequestBase<JObject>
   {
     /// <summary>
     /// This method unzips the csv file. It then sorts it before comparing the actual with expected.

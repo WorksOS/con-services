@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -19,6 +18,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -36,8 +36,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionCellController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
-      : base(configStore, fileListProxy, settingsManager)
+    public CompactionCellController(IConfigurationStore configStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
+      : base(configStore, fileImportProxy, settingsManager)
     { }
 
     /// <summary>
@@ -130,20 +130,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return Ok(v2PatchRequestResponse);
     }
 
-    
     /// <summary>
     /// Retrieve passes for a single cell and process them according to the provided filter and layer analysis parameters
     /// The version 2 endpoint supports FilterUID values being passed, as opposed to raw filters or filter ID values
     /// Other than that, the request and response is the same.
     /// </summary>
-    [Route("api/v2/productiondata/cells/passes")]
-    [HttpGet]
-    public async Task<List<CellPassesV2Result.FilteredPassData>> CellPassesV2(Guid projectUid,
+    [HttpGet("api/v2/productiondata/cells/passes")]
+    public async Task<List<CellPassesV2Result.FilteredPassData>> CellPassesV2(
+      [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] double lat,
       [FromQuery] double lon)
     {
-
       Log.LogInformation("GetProductionDataCellsDatum: " + Request.QueryString);
 
       var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
@@ -151,16 +149,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       await Task.WhenAll(projectId, filter);
 
-      var request = new CellPassesRequest()
+      var request = new CellPassesRequest
       {
         ProjectId = await projectId,
         ProjectUid = projectUid,
         filter = await filter,
-        liftBuildSettings = new LiftBuildSettings()
+        liftBuildSettings = new LiftBuildSettings
         {
           LiftDetectionType = LiftDetectionType.None
         },
-        probePositionLL = new WGSPoint(lat.LatDegreesToRadians(), lon.LonDegreesToRadians()),
+        probePositionLL = new WGSPoint(lat.LatDegreesToRadians(), lon.LonDegreesToRadians())
       };
 
       request.Validate();
@@ -175,18 +173,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (result?.Layers.Length > 1)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Multiple Layers Found"));
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Multiple layers found"));
       }
-      else if (result?.Layers.Length == 0)
+
+      if (result?.Layers.Length == 0)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No Layers Found"));
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No layers found"));
       }
-      else
+
+      if (result?.Layers[0].PassData == null)
       {
-        // With our lift settings set to None, we should have exactly 1 layer
-        return result?.Layers[0].PassData.ToList();
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No cell passes found"));
       }
-      
+
+      // With our lift settings set to None, we should have exactly 1 layer
+      return result?.Layers[0].PassData.ToList();
+
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));

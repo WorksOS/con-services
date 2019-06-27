@@ -50,8 +50,8 @@ data:
   VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta
   TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
 #SERVICE DISCOVERY REFERENCES
-  assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
-  assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
+  assetdetails_public_v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
+  assetsummary_public_v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
   unifiedproductivity_public_v1: https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2
@@ -69,7 +69,7 @@ data:
   ENVIRONMENT: PROD
   NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
 #AWS configuration  
-  AWS_BUCKET_NAME: vss-exports-stg
+  AWS_BUCKET_NAME: vss-prod-3dexports
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-prod
   AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
 #Raptor configuration

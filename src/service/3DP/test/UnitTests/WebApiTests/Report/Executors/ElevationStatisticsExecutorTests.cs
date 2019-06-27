@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 #if RAPTOR
@@ -14,13 +13,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Executors
 {

@@ -3,7 +3,6 @@ using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -17,7 +16,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
   /// </summary>
   public class RaptorAuthentication : TIDAuthentication
   {
-    private readonly IProjectListProxy projectListProxy;
+    private readonly IProjectProxy projectProxy;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RaptorAuthentication"/> class.
@@ -27,9 +26,9 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy) : base(next, customerProxy, store, logger, serviceExceptionHandler)
+      IProjectProxy projectProxy) : base(next, customerProxy, store, logger, serviceExceptionHandler)
     {
-      this.projectListProxy = projectListProxy;
+      this.projectProxy = projectProxy;
     }
 
     /// <summary>
@@ -67,7 +66,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     {
       //Delegate customer->project association resolution to the principal object for now as it has execution context and can invalidate cache if required
       // note that userUid may actually be the ApplicationId if isApplicationContext
-      return new RaptorPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, tpaasApplicationName, projectListProxy, contextHeaders);
+      return new RaptorPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, tpaasApplicationName, projectProxy, contextHeaders);
     }
 
   }
