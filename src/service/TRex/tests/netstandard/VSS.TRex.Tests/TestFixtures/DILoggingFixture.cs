@@ -113,6 +113,7 @@ namespace VSS.TRex.Tests.TestFixtures
       GenericArrayPoolCacheHelper<int>.Clear();
       GenericArrayPoolCacheHelper<ulong>.Clear();
       GenericArrayPoolCacheHelper<long>.Clear();
+      GenericArrayPoolCacheHelper<char>.Clear();
       GenericArrayPoolCacheHelper<CellPass>.Clear();
       SlabAllocatedArrayPoolHelper<CellPass>.Clear();
     }

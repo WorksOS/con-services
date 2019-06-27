@@ -28,8 +28,6 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
     private int tAGFileCount = 0;
 
-    public Guid[] ExtraProjectGuids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
-
     public Guid AssetOverride = Guid.Empty;
 
 
@@ -38,7 +36,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       submitTAGFileRequest = submitTAGFileRequest ?? new SubmitTAGFileRequest();
       SubmitTAGFileRequestArgument arg;
 
-      using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+      using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
       {
         byte[] bytes = new byte[fs.Length];
         fs.Read(bytes, 0, bytes.Length);
