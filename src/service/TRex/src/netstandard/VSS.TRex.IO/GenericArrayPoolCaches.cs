@@ -9,13 +9,13 @@ namespace VSS.TRex.IO
   /// </summary>
   public class GenericArrayPoolCaches<T> : IGenericArrayPoolCaches<T>
   {
-    private object _lock = new Object();
+    private readonly object _lock = new object();
 
     /// <summary>
     /// For arrays with sizes up to and including 1024 elements, this is the number of slots to
     /// provide for each size bucket (1, 2, 4, 16, 32, 64, 126, 256, 512 & 1024)
     /// </summary>
-    public const int SMALL_POOL_CACHE_SIZE = 100;
+    public const int SMALL_POOL_CACHE_SIZE = 200;
 
     /// <summary>
     /// For arrays with sizes above 1024 items, and less than 512k elements, this is the number of slots to
@@ -156,7 +156,7 @@ namespace VSS.TRex.IO
         if (_poolCounts[log2] >= _pools[log2].Length)
         {
           // The pool is full - cut this buffer loose for the GC to look after
-          Log.LogWarning($"Elements buffer pool full for buffers of size {buffer.Length}. Ignoring this returned buffer");
+          Log.LogWarning($"Elements buffer pool full (size={_pools[log2].Length}) for {typeof(T).Name}[] buffers of size {buffer.Length}. Ignoring this returned buffer");
           return;
         }
         
@@ -185,5 +185,8 @@ namespace VSS.TRex.IO
 
       return result;
     }
+
+    private static string _typeName = typeof(T).Name;
+    public string TypeName() => _typeName;
   }
 }

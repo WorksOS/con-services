@@ -532,7 +532,7 @@ namespace VSS.TRex.SubGridTrees.Server
             if (segmentPassCount > 10100)
               Log.LogWarning($"Converting segment with {segmentPassCount} cell passes into compressed form - suspicious?");
 
-            int[] ColFirstCellPassIndexes = GenericArrayPoolCacheHelper<int>.Caches.Rent(SubGridTreeConsts.SubGridTreeDimension);
+            int[] ColFirstCellPassIndexes = GenericArrayPoolCacheHelper<int>.Caches().Rent(SubGridTreeConsts.SubGridTreeDimension);
             int[,] PerCellColRelativeFirstCellPassIndexes = GenericTwoDArrayCacheHelper<int>.Caches.Rent();
             try
             {
@@ -719,7 +719,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 // Height - based on the long word, millimeter accurate elevations overriding the IEEE double elevations
 
                 long[] CalculateAttributeValueRange_Buffer =
-                  GenericArrayPoolCacheHelper<long>.Caches.Rent(segmentPassCount);
+                  GenericArrayPoolCacheHelper<long>.Caches().Rent(segmentPassCount);
                 try
                 {
                   for (int i = 0; i < segmentPassCount; i++)
@@ -804,7 +804,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
                 finally
                 {
-                  GenericArrayPoolCacheHelper<long>.Caches.Return(CalculateAttributeValueRange_Buffer);
+                  GenericArrayPoolCacheHelper<long>.Caches().Return(CalculateAttributeValueRange_Buffer);
                 }
 
                 // Calculate the offset bit locations for the cell pass attributes
@@ -877,7 +877,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             finally
             {
-              GenericArrayPoolCacheHelper<int>.Caches.Return(ColFirstCellPassIndexes);
+              GenericArrayPoolCacheHelper<int>.Caches().Return(ColFirstCellPassIndexes);
               GenericTwoDArrayCacheHelper<int>.Caches.Return(PerCellColRelativeFirstCellPassIndexes);
             }
 

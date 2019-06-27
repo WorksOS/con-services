@@ -29,8 +29,8 @@ namespace ArrayPoolBenchmark
           .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>())).Build()
           .Complete();
 
-        _genericArrayPoolIntf = GenericArrayPoolCacheHelper<byte>.Caches;
-        _genericArrayPoolObj = GenericArrayPoolCacheHelper<byte>.Caches as GenericArrayPoolCaches<byte>;
+        _genericArrayPoolIntf = GenericArrayPoolCacheHelper<byte>.Caches();
+        _genericArrayPoolObj = GenericArrayPoolCacheHelper<byte>.Caches() as GenericArrayPoolCaches<byte>;
       }
       
       [Benchmark]
@@ -49,9 +49,9 @@ namespace ArrayPoolBenchmark
       {
         for (int i = 0; i < 20; i++)
         {
-          byte[] b = GenericArrayPoolCacheHelper<byte>.Caches.Rent(1 << i + 1);
+          byte[] b = GenericArrayPoolCacheHelper<byte>.Caches().Rent(1 << i + 1);
 
-          GenericArrayPoolCacheHelper<byte>.Caches.Return(b);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(b);
         }
       }
 
@@ -84,11 +84,11 @@ namespace ArrayPoolBenchmark
       {
         for (int i = 0; i < 20; i++)
         {
-          byte[] b1 = GenericArrayPoolCacheHelper<byte>.Caches.Rent(1 << i + 1);
-          byte[] b2 = GenericArrayPoolCacheHelper<byte>.Caches.Rent(1 << i + 1);
+          byte[] b1 = GenericArrayPoolCacheHelper<byte>.Caches().Rent(1 << i + 1);
+          byte[] b2 = GenericArrayPoolCacheHelper<byte>.Caches().Rent(1 << i + 1);
 
-          GenericArrayPoolCacheHelper<byte>.Caches.Return(b1);
-          GenericArrayPoolCacheHelper<byte>.Caches.Return(b2);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(b1);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(b2);
         }
       }
 

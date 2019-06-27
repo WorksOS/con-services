@@ -77,7 +77,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <summary>
     /// The byte buffer for reading bytes representing an ANSI string before construction of the string itself
     /// </summary>
-    private byte[] _readANSIString_ByteBuffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(100);
+    private byte[] _readANSIString_ByteBuffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(100);
 
     /// <summary>
     /// Read an ANSI string from the stream. The result is returned as a byte array as
@@ -118,7 +118,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <summary>
     /// Buffer to be used by ReadDoublePrecisionIEEEValue()
     /// </summary>
-    private readonly byte[] ReadDoublePrecisionIEEEValue_Buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(8);
+    private readonly byte[] ReadDoublePrecisionIEEEValue_Buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(8);
 
     /// <summary>
     /// Read an IEEE double number from the stream
@@ -133,7 +133,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <summary>
     /// Buffer to be used by ReadSinglePrecisionIEEEValue()
     /// </summary>
-    private readonly byte[] ReadSinglePrecisionIEEEValue_Buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(4);
+    private readonly byte[] ReadSinglePrecisionIEEEValue_Buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(4);
 
     /// <summary>
     /// Read an IEEE single number from the stream
@@ -185,7 +185,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       return BitConverter.ToChar(ReadUnicodeChar_ByteBuffer, 0);
     }
 
-    private char[] _readUnicodeString_Buffer = GenericArrayPoolCacheHelper<char>.Caches.Rent(100);
+    private char[] _readUnicodeString_Buffer = GenericArrayPoolCacheHelper<char>.Caches().Rent(100);
 
     /// <summary>
     /// Read a Unicode string from the stream
@@ -293,10 +293,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       {
         if (disposing)
         {
-          GenericArrayPoolCacheHelper<byte>.Caches.Return(ReadDoublePrecisionIEEEValue_Buffer);
-          GenericArrayPoolCacheHelper<byte>.Caches.Return(ReadSinglePrecisionIEEEValue_Buffer);
-          GenericArrayPoolCacheHelper<char>.Caches.Return(_readUnicodeString_Buffer);
-          GenericArrayPoolCacheHelper<byte>.Caches.Return(_readANSIString_ByteBuffer);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(ReadDoublePrecisionIEEEValue_Buffer);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(ReadSinglePrecisionIEEEValue_Buffer);
+          GenericArrayPoolCacheHelper<char>.Caches().Return(_readUnicodeString_Buffer);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(_readANSIString_ByteBuffer);
         }
 
         disposedValue = true;

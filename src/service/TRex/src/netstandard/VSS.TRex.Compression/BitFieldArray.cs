@@ -94,11 +94,11 @@ namespace VSS.TRex.Compression
         {
           if (Storage != null)
           {
-            GenericArrayPoolCacheHelper<ulong>.Caches.Return(Storage);
+            GenericArrayPoolCacheHelper<ulong>.Caches().Return(Storage);
           }
 
           var numElements = NumStorageElements();
-          var buffer = GenericArrayPoolCacheHelper<ulong>.Caches.Rent(numElements);
+          var buffer = GenericArrayPoolCacheHelper<ulong>.Caches().Rent(numElements);
 
           // CLear the buffer
           for (int i = 0; i < numElements; i++)
@@ -163,7 +163,7 @@ namespace VSS.TRex.Compression
                 return;
 
             var bufferSize = NumStorageElements() * sizeof(ulong);
-            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(bufferSize);
+            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
             try
             {
               Buffer.BlockCopy(Storage, 0, buffer, 0, bufferSize);
@@ -171,7 +171,7 @@ namespace VSS.TRex.Compression
             }
             finally
             {
-              GenericArrayPoolCacheHelper<byte>.Caches.Return(buffer);
+              GenericArrayPoolCacheHelper<byte>.Caches().Return(buffer);
             }
         }
 
@@ -189,7 +189,7 @@ namespace VSS.TRex.Compression
             AllocateBuffer();
 
             var bufferSize = NumStorageElements() * sizeof(ulong);
-            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(bufferSize);
+            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
             try
             {
               reader.Read(buffer, 0, bufferSize);
@@ -197,7 +197,7 @@ namespace VSS.TRex.Compression
             }
             finally
             {
-              GenericArrayPoolCacheHelper<byte>.Caches.Return(buffer);
+              GenericArrayPoolCacheHelper<byte>.Caches().Return(buffer);
             }
         }
 
@@ -625,7 +625,7 @@ namespace VSS.TRex.Compression
       {
         if (Storage != null)
         {
-          GenericArrayPoolCacheHelper<ulong>.Caches.Return(Storage);
+          GenericArrayPoolCacheHelper<ulong>.Caches().Return(Storage);
           Storage = null;
         }
         _disposed = true;
