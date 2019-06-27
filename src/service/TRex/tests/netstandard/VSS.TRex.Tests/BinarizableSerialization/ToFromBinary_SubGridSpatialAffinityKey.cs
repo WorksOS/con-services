@@ -25,6 +25,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       SimpleBinarizableInstanceTester.TestStruct(new SubGridSpatialAffinityKey
         {
+          Version = 123,
           ProjectUID = Guid.NewGuid(),
           SubGridX = 12345,
           SubGridY = 56789
@@ -37,6 +38,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       SimpleBinarizableInstanceTester.TestStruct(new SubGridSpatialAffinityKey
         {
+          Version = 123,
           ProjectUID = Guid.NewGuid(),
           SubGridX = 12345,
           SubGridY = 56789,
