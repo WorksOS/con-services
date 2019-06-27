@@ -28,6 +28,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         {
           new SubGridSpatialAffinityKey
           {
+            Version = 123,
             ProjectUID = projectGuid,
             SubGridX = 12345,
             SubGridY = 67890,
@@ -46,7 +47,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
                   result.member.SegmentKeys[0].SegmentEndDateTicks == 456 &&
                   result.member.SegmentKeys[0].ProjectUID.Equals(projectGuid) &&
                   result.member.SegmentKeys[0].SubGridX == 12345 &&
-                  result.member.SegmentKeys[0].SubGridY == 67890,
+                  result.member.SegmentKeys[0].SubGridY == 67890 &&
+                  result.member.SegmentKeys[0].Version == 123,
         "Post IEquality<T> comparer based comparison failure");
     }
   }
