@@ -2,6 +2,7 @@
 using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters.Models;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -154,10 +155,16 @@ namespace VSS.TRex.SubGridTrees.Client
 
       const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(ushort);
 
-      var buffer = new byte[BUFFER_SIZE];
-
-      Buffer.BlockCopy(Cells, 0, buffer, 0, BUFFER_SIZE);
-      writer.Write(buffer, 0, BUFFER_SIZE);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(BUFFER_SIZE);
+      try
+      {
+        Buffer.BlockCopy(Cells, 0, buffer, 0, BUFFER_SIZE);
+        writer.Write(buffer, 0, BUFFER_SIZE);
+      }
+      finally
+      {
+        GenericArrayPoolCacheHelper<byte>.Caches.Return(buffer);
+      }
     }
 
     /// <summary>
@@ -172,10 +179,16 @@ namespace VSS.TRex.SubGridTrees.Client
 
       const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(ushort);
 
-      var buffer = new byte[BUFFER_SIZE];
-
-      reader.Read(buffer, 0, BUFFER_SIZE);
-      Buffer.BlockCopy(buffer, 0, Cells, 0, BUFFER_SIZE);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(BUFFER_SIZE);
+      try
+      {
+        reader.Read(buffer, 0, BUFFER_SIZE);
+        Buffer.BlockCopy(buffer, 0, Cells, 0, BUFFER_SIZE);
+      }
+      finally
+      {
+        GenericArrayPoolCacheHelper<byte>.Caches.Return(buffer);
+      }
     }
 
     /// <summary>
