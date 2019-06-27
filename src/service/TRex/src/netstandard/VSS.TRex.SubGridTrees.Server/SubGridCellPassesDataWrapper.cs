@@ -167,7 +167,7 @@ namespace VSS.TRex.SubGridTrees.Server
       DateTime TestTimeRangeEnd = CoveredTimeRangeEnd;
       int PassesInFirstTimeRange;
       DateTime TestTime;
-
+        
       int desiredCallPassCount = TotalPassCount / NumRequiredClovenSegments;
       do
       {
