@@ -169,7 +169,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
-        IServerSubGridTree groupedAggregatedCellPasses = null;
+        IServerSubGridTree groupedAggregatedCellPasses;
         if (ProcessedTasks.Count > 1)
         {
           var subGridTreeIntegrator = new GroupedSubGridTreeIntegrator

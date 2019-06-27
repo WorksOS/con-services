@@ -13,6 +13,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     private const byte BITS_PER_NYBBLE = 4;
     private const byte BITS_PER_TWO_NYBBLES = 8;
     private const byte NYBBLES_PER_UNICODE_CHAR = 4;
+    private const byte NYBBLES_PER_BYTE = 2;
 
     // The stream provided in the constructor to read the TAG information from
     private readonly Stream stream;
@@ -179,7 +180,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <returns></returns>
     private char ReadUnicodeChar()
     {
-      ReadUnicodeChar_ByteBuffer[0] = (byte)ReadUnSignedIntegerValue(NYBBLES_PER_UNICODE_CHAR);
+      ReadUnicodeChar_ByteBuffer[1] = (byte)ReadUnSignedIntegerValue(NYBBLES_PER_BYTE);
+      ReadUnicodeChar_ByteBuffer[0] = (byte)ReadUnSignedIntegerValue(NYBBLES_PER_BYTE);
       return BitConverter.ToChar(ReadUnicodeChar_ByteBuffer, 0);
     }
 

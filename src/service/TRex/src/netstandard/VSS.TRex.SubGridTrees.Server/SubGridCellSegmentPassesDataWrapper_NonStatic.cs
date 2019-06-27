@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Common.Utilities;
+using VSS.TRex.Compression;
 using VSS.TRex.DI;
 using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
-    public class SubGridCellSegmentPassesDataWrapper_NonStatic : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper, IDisposable
+    public class SubGridCellSegmentPassesDataWrapper_NonStatic : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellSegmentPassesDataWrapper_NonStatic>();
+
         /// <summary>
         /// A hook that may be used to gain notification of the add, replace and remove cell pass mutations in the cell pass stack
         /// </summary>
@@ -29,6 +32,28 @@ namespace VSS.TRex.SubGridTrees.Server
         public int PassCount(int X, int Y) => PassData[X, Y].PassCount;
 
         /// <summary>
+        /// Reduces the number of passes in the cell to newCount by preserving the first
+        /// 'newCount' cell passes in the cell and retiring the remainder.
+        /// If newCount is larger than the actual count an ArgumentException is thrown
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="newCount"></param>
+        public void TrimPassCount(int X, int Y, int newCount)
+        {
+          if (newCount < 0 || newCount > PassData[X, Y].PassCount)
+          {
+            throw new ArgumentException($"newCount parameter ({newCount}) is less than zero or greater than than the number of passes in the cell ({PassData[X, Y].PassCount})");
+          }
+
+          PassData[X, Y].Passes.Count = newCount;
+
+#if CELLDEBUG
+          PassData[X, Y].CheckPassesAreInCorrectTimeOrder("TrimPassCount");
+#endif
+        }
+
+        /// <summary>
         /// Ensures there are sufficient passes in the local cell pass array for this cell. Note: THe actual
         /// number of cell passes validly present in the cell may be less that the length of the cell pass array.
         /// Integrators must use the PassCount property to determine exactly how many passes are present.
@@ -37,24 +62,15 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Y"></param>
         /// <param name="passCount"></param>
         public void AllocatePasses(int X, int Y, int passCount) => PassData[X, Y].AllocatePasses(passCount);
-
-        /// <summary>
-        /// Ensures there are sufficient passes in the local cell pass array for this cell. The exact number of
-        /// cell passes will be created as asked for.
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="passCount"></param>
-        public void AllocatePassesExact(int X, int Y, int passCount) => PassData[X, Y].AllocatePassesExact(passCount);
-
-        public void AddPass(int X, int Y, CellPass pass, int position = -1)
+      
+        public void AddPass(int X, int Y, CellPass pass)
         {
             if (pass.Time == Consts.MIN_DATETIME_AS_UTC || pass.Time.Kind != DateTimeKind.Utc)
               throw new ArgumentException("Cell passes added to cell pass stacks must have a non-null, UTC, cell pass time", nameof(pass.Time)); 
 
-            _mutationHook?.AddPass(X, Y, PassData[X, Y], pass, position);
+            _mutationHook?.AddPass(X, Y, PassData[X, Y], pass);
 
-            PassData[X, Y].AddPass(pass, position);
+            PassData[X, Y].AddPass(pass);
 
             segmentPassCount++;
         }
@@ -64,6 +80,10 @@ namespace VSS.TRex.SubGridTrees.Server
             _mutationHook?.ReplacePass(X, Y, PassData[X, Y], position, pass);
 
             PassData[X, Y].Passes.SetElement(pass, position);
+
+#if CELLDEBUG
+            PassData[X, Y].CheckPassesAreInCorrectTimeOrder("ReplacePass");
+#endif
         }
 
         /// <summary>
@@ -94,47 +114,46 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void Read(BinaryReader reader)
         {
-            int TotalPasses = reader.ReadInt32();
-            int MaxPassCount = reader.ReadInt32();
+            segmentPassCount = reader.ReadInt32();
 
-            int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
-
-            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches.Rent(SubGridTreeConsts.CellsPerSubGrid);
+            try
             {
-              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              var fieldDescriptor = new EncodedBitFieldDescriptor();
+              fieldDescriptor.Read(reader);
+
+              using (var bfa = new BitFieldArray())
               {
-                int passCount;
+                bfa.Read(reader);
+                int bitLocation = 0;
+                bfa.ReadBitFieldVector(ref bitLocation, fieldDescriptor, SubGridTreeConsts.CellsPerSubGrid, passCountBuffer);
+              }
 
-                switch (PassCounts_Size)
+              var counter = 0;
+
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+              {
+                for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
                 {
-                  case PassCountSize.ONE_BYTE:
-                    passCount = reader.ReadByte();
-                    break;
-                  case PassCountSize.TWO_BYTES:
-                    passCount = reader.ReadInt16();
-                    break;
-                  case PassCountSize.FOUR_BYTES:
-                    passCount = reader.ReadInt32();
-                    break;
-                  default:
-                    throw new InvalidDataException($"Unknown PassCounts_Size {PassCounts_Size}");
-                }
+                  int passCount = (int)passCountBuffer[counter++];
 
-                if (passCount > 0)
-                {
-                  AllocatePassesExact(i, j, passCount);
-
-                  var readerPass = new CellPass();
-
-                  for (int cellPassIndex = 0; cellPassIndex < passCount; cellPassIndex++)
+                  if (passCount > 0)
                   {
-                    readerPass.Read(reader);
-                    PassData[i, j].Passes.Add(readerPass);
-                  }
+                    AllocatePasses(i, j, passCount);
 
-                  segmentPassCount += passCount;
+                    PassData[i, j].Passes.Count = passCount;
+                    var passes = PassData[i, j].Passes;
+                    for (int cpi = passes.Offset, limit = passes.OffsetPlusCount; cpi < limit; cpi++)
+                    {
+                      passes.Elements[cpi].Read(reader);
+                    }
+                  }
                 }
               }
+            }
+            finally
+            {
+              GenericArrayPoolCacheHelper<long>.Caches.Return(passCountBuffer);
             }
         }
 
@@ -187,7 +206,7 @@ namespace VSS.TRex.SubGridTrees.Server
               var passes = PassData[i, j].Passes;
               var elements = passes.Elements;
 
-              for (int PassIndex = passes.Offset, limit = passes.Offset + passes.Count; PassIndex < limit; PassIndex++)
+              for (int PassIndex = passes.Offset, limit = passes.OffsetPlusCount; PassIndex < limit; PassIndex++)
               {
                 var theTime = elements[PassIndex].Time; 
 
@@ -302,46 +321,62 @@ namespace VSS.TRex.SubGridTrees.Server
 
       public void Write(BinaryWriter writer)
         {
-            CalculateTotalPasses(out int TotalPasses, out _, out int MaxPassCount);
-
-            writer.Write(TotalPasses);
-            writer.Write(MaxPassCount);
-
-            int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
-
-            // Read all the cells from the stream
-            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            int totalPasses = 0;
+            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches.Rent(SubGridTreeConsts.CellsPerSubGrid);
+            try
             {
-              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              // Write all the cell to the stream
+              // Assemble the pass counts, compress them and write them out as a single element
+              var counter = 0;
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
               {
-                var passCount = PassData[i, j].PassCount;
-
-                switch (PassCounts_Size)
+                for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
                 {
-                  case PassCountSize.ONE_BYTE:
-                    writer.Write((byte)passCount);
-                    break;
-                  case PassCountSize.TWO_BYTES:
-                    writer.Write((short)passCount);
-                    break;
-                  case PassCountSize.FOUR_BYTES:
-                    writer.Write(passCount);
-                    break;
-                  default:
-                    throw new InvalidDataException($"Unknown PassCounts_Size: {PassCounts_Size}");
+                  var cellPassCount = PassData[i, j].PassCount;
+                  passCountBuffer[counter++] = cellPassCount;
+                  totalPasses += cellPassCount;
                 }
+              }
 
-                // write all the cell passes to the stream, avoiding those cells that do not have any passes
-                if (passCount > 0)
+              writer.Write(totalPasses);
+
+              var fieldDescriptor = new EncodedBitFieldDescriptor();
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(passCountBuffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid, 0xfff_ffff_ffff_ffff, 0, true, ref fieldDescriptor);
+              fieldDescriptor.Write(writer);
+
+              using (var bfa = new BitFieldArray())
+              {
+                int bitLocation = 0;
+                
+                bfa.Initialise(fieldDescriptor.RequiredBits, SubGridTreeConsts.CellsPerSubGrid);
+                bfa.WriteBitFieldVector(ref bitLocation, fieldDescriptor, SubGridTreeConsts.CellsPerSubGrid, passCountBuffer);
+                bfa.Write(writer);
+              }
+
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+              {
+                for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
                 {
                   var cellPasses = PassData[i, j].Passes;
+                  int passCount = cellPasses.Count;
 
-                  for (int cpi = 0; cpi < passCount; cpi++)
+                  // write all the cell passes to the stream, avoiding those cells that do not have any passes
+                  if (passCount > 0)
                   {
-                    cellPasses.GetElement(cpi).Write(writer);
+#if CELLDEBUG
+                    PassData[i, j].CheckPassesAreInCorrectTimeOrder("Writing cell passes");
+#endif
+                    for (int cpi = cellPasses.Offset, limit = cellPasses.OffsetPlusCount; cpi < limit; cpi++)
+                    {
+                      cellPasses.Elements[cpi].Write(writer);
+                    }
                   }
                 }
               }
+            }
+            finally
+            {
+              GenericArrayPoolCacheHelper<long>.Caches.Return(passCountBuffer);
             }
         }
 
@@ -370,16 +405,12 @@ namespace VSS.TRex.SubGridTrees.Server
               var passes = cellPasses[x, y].Passes;
 
               PassData[x, y].Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Clone(passes);
-
+#if CELLDEBUG
+              PassData[x, y].CheckPassesAreInCorrectTimeOrder("SetState");
+#endif
               segmentPassCount += passes.Count;
             }
           }
-        }
-
-        public void SetStatePassingOwnership(ref Cell_NonStatic[,] cellPasses)
-        {
-          PassData = cellPasses;
-          cellPasses = null;
         }
 
         public bool HasPassData() => PassData != null;
@@ -396,18 +427,17 @@ namespace VSS.TRex.SubGridTrees.Server
 
           var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(cellPassCount);
 
-          #if CELLDEBUG
-          if (newPasses.Count != 0)
-          {
-             throw new Exception($"Rented cell pass array does not have a Count of 0, it is {newPasses.Count}");
-          }
-          #endif  
-
           newPasses.Copy(cellPasses, cellPassCount);
-          PassData[X, Y].Passes = newPasses;
-        }
+          newPasses.Count = cellPassCount;
 
-        public Cell_NonStatic[,] GetState() => PassData;
+          PassData[X, Y].Passes = newPasses;
+
+#if CELLDEBUG
+          PassData[X, Y].CheckPassesAreInCorrectTimeOrder("ReplacePasses");
+#endif
+    }
+
+    public Cell_NonStatic[,] GetState() => PassData;
 
     #region IDisposable Support
     private bool disposedValue; // To detect redundant calls

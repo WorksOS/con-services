@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -11,6 +11,7 @@
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
+    <DefineConstants>TRACE;CELLDEBUG</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -1069,6 +1070,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0247J009YU--TNZ 323F GS520--190115002735.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\JapaneseDesignTagfileTest.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\TAGFiles\TestTAGFile-TAG-Header-Read.tag">

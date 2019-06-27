@@ -20,15 +20,16 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
       {
         var sourceSegmentPasses = sourceSegment.ExtractCellPasses(i, j);
         var passes = sourceSegmentPasses.Passes;
+
         if (passes.Count == 0)
           return;
 
         int countInCell = 0;
         var elements = passes.Elements;
 
-        for (int PassIndex = passes.Offset, limit = passes.OffsetPlusCount; PassIndex < limit; PassIndex++)
+        for (int cpi = passes.Offset, limit = passes.OffsetPlusCount; cpi < limit; cpi++)
         {
-          if (elements[PassIndex].Time < atAndAfterTime)
+          if (elements[cpi].Time < atAndAfterTime)
             countInCell++;
           else
             break; // No more passes in the cell will satisfy the condition
@@ -44,10 +45,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
           segment.SegmentPassCount += AddedCount;
 
           sourceSegment.SegmentPassCount -= adoptedPassCount;
-
-          // Set the new number of passes using AllocatePasses(). This will reduce the tracked pass count without incurring the
-          // overhead of resizing the array. Use AllocatePassesExact() if this behaviour is required.
-          sourceSegment.AllocatePasses(i, j, countInCell);
+          sourceSegment.TrimPassCount(i, j, countInCell);
         }
       });
     }

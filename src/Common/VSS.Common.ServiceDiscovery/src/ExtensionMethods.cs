@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.ServiceDiscovery;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Kubernetes.Factories;
@@ -11,6 +12,10 @@ namespace VSS.Common.ServiceDiscovery
   {
     public static IServiceCollection AddServiceDiscovery(this IServiceCollection services, bool useKubernetes = true)
     {
+      // Already added
+      if (services.Any(s => s.ServiceType == typeof(IServiceResolution)))
+        return services;
+
       if (useKubernetes)
       {
         services.AddSingleton<IKubernetesClientFactory, KubernetesClientFactory>();

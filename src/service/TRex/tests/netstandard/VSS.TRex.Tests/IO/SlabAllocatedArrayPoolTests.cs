@@ -47,7 +47,6 @@ namespace VSS.TRex.Tests.IO
         rental.Elements.Should().NotBeNull();
         rental.Offset.Should().BeGreaterOrEqualTo(0);
         rental.OffsetPlusCount.Should().BeGreaterOrEqualTo(0);
-        rental.SlabIndex.Should().Be((byte)(i == 0 ? TRexSpan<CellPass>.NO_SLAB_INDEX : 0));
 
         pool.Return(rental); // Release rental so as not to pollute expected pool allocated status
       }
@@ -65,7 +64,6 @@ namespace VSS.TRex.Tests.IO
       rental.Elements.Should().NotBeNull();
       rental.Offset.Should().Be(0);
       rental.OffsetPlusCount.Should().BeGreaterOrEqualTo(0);
-      rental.SlabIndex.Should().Be(TRexSpan<CellPass>.NO_SLAB_INDEX);
     }
 
     [Fact]
@@ -84,7 +82,6 @@ namespace VSS.TRex.Tests.IO
       for (int i = 0; i < DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE; i++)
       {
         var rental = pool.Rent(i);
-        rental.SlabIndex.Should().Be((byte)(i == 0 ? TRexSpan<CellPass>.NO_SLAB_INDEX : 0)); 
 
         pool.Return(rental);
         rental.MarkReturned();
