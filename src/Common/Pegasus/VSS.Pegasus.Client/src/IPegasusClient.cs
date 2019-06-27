@@ -11,5 +11,9 @@ namespace VSS.Pegasus.Client
       IDictionary<string, string> customHeaders);
 
     Task<bool> DeleteDxfTiles(string dxfFileName, IDictionary<string, string> customHeaders);
+
+    Task<TileMetadata> GenerateGeoTiffTiles(string geoTiffFileName, IDictionary<string, string> customHeaders);
+
+    Task<bool> DeleteGeoTiffTiles(string geoTiffFileName, IDictionary<string, string> customHeaders);
   }
 }

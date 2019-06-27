@@ -114,7 +114,7 @@ namespace VSS.Pegasus.Client.UnitTests
       {
         Id = Guid.NewGuid(),
         ProcedureId = new Guid("b8431158-1917-4d18-9f2e-e26b255900b7"),
-        Parameters = new PegasusExecutionParameters
+        Parameters = new DxfPegasusExecutionParameters
         {
           DcFileId = expectedDcFileResult.Id,
           DxfFileId = expectedDxfFileResult.Id,
@@ -179,7 +179,7 @@ namespace VSS.Pegasus.Client.UnitTests
       {
         Id = Guid.NewGuid(),
         ProcedureId = new Guid("b8431158-1917-4d18-9f2e-e26b255900b7"),
-        Parameters = new PegasusExecutionParameters
+        Parameters = new DxfPegasusExecutionParameters
         {
           DcFileId = expectedDcFileResult.Id,
           DxfFileId = expectedDxfFileResult.Id,
@@ -322,7 +322,7 @@ namespace VSS.Pegasus.Client.UnitTests
       {
         Id = Guid.NewGuid(),
         ProcedureId = new Guid("b8431158-1917-4d18-9f2e-e26b255900b7"),
-        Parameters = new PegasusExecutionParameters
+        Parameters = new DxfPegasusExecutionParameters
         {
           DcFileId = expectedDcFileResult.Id,
           DxfFileId = expectedDxfFileResult.Id,
