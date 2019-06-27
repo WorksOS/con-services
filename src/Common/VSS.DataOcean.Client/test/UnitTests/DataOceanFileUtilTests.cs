@@ -8,7 +8,9 @@ namespace VSS.DataOcean.Client.UnitTests
   {
     [Theory]
     [InlineData("dxf")]
+    [InlineData("DXF")]
     [InlineData("tiff")]
+    [InlineData("TIFF")]
     public void CanCreateValidDataOceanFileUtil(string extension)
     {
       var fileName = $"/dev/folder-one/folder-two/dummy.{extension}";
@@ -24,7 +26,10 @@ namespace VSS.DataOcean.Client.UnitTests
 
     [Theory]
     [InlineData("dxf")]
+    [InlineData("DXF")]
     [InlineData("tiff")]
+    [InlineData("TIFF")]
+
     public void CanGetTileMetadataFileName(string extension)
     {
       var sep = Path.DirectorySeparatorChar;
@@ -33,7 +38,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var file = new DataOceanFileUtil(fullFileName);
       var metadataName = file.TilesMetadataFileName;
 
-      var expectedName = extension == "dxf" ? "tiles" : "xyz";
+      var expectedName = "dxf".Equals(extension, StringComparison.OrdinalIgnoreCase) ? "tiles" : "xyz";
       var expectedMetadata =
         $"{pathAndName}{DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX}/tiles/{expectedName}.json";
       Assert.Equal(expectedMetadata, metadataName);

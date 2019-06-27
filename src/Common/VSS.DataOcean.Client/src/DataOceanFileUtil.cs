@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -23,8 +24,9 @@ namespace VSS.DataOcean.Client
       FileName = fileName;
       FilePath = path;
       FullFileName = $"{path}{Path.DirectorySeparatorChar}{fileName}";
-      var extension = Path.GetExtension(fileName).ToLower();
-      if (extension != DXF_FILE_EXTENSION && extension != GEOTIFF_FILE_EXTENSION)
+      var extension = Path.GetExtension(fileName);
+      if (!DXF_FILE_EXTENSION.Equals(extension, StringComparison.OrdinalIgnoreCase) && 
+          !GEOTIFF_FILE_EXTENSION.Equals(extension, StringComparison.OrdinalIgnoreCase))
       {
         throw new ArgumentException($"Only DXF and GeoTIFF files are supported. {fileName} is not a DXF or GeoTIFF file.");
       }
@@ -68,8 +70,7 @@ namespace VSS.DataOcean.Client
     /// <returns>The full name of the tile metadata file</returns>
     public string TileMetadataFileName()
     {
-      var extension = Path.GetExtension(FileName).ToLower();
-      var name = extension == DXF_FILE_EXTENSION ? "tiles" : "xyz";
+      var name = DXF_FILE_EXTENSION.Equals(Path.GetExtension(FileName), StringComparison.OrdinalIgnoreCase) ? "tiles" : "xyz";
       return $"{BaseTilePath()}/{name}.json";
     }
 
