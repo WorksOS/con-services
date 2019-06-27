@@ -2,6 +2,7 @@
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs.GridFabric.Requests
 {
@@ -15,13 +16,15 @@ namespace VSS.TRex.Designs.GridFabric.Requests
       return Compute.Apply(func, arg);
     }
 
-    public static DesignBoundaryResponse Execute(DesignOffset referenceDesign, double tolerance)
+    public static DesignBoundaryResponse Execute(ISiteModel siteModel, DesignOffset referenceDesign)
     {
       var request = new DesignBoundaryRequest();
 
       return request.Execute(new DesignBoundaryArgument
       {
-        ReferenceDesign = referenceDesign
+        ProjectID = siteModel.ID,
+        ReferenceDesign = referenceDesign,
+        CellSize = siteModel.CellSize
       });
     }
 

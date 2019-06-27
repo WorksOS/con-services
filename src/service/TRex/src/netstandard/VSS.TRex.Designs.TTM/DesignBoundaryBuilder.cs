@@ -29,6 +29,7 @@ namespace VSS.TRex.Designs.TTM
       const int DEFAULT_SIZE = 4;
       const int TRIANGLE_EDGE_FIRST = 1;
       const int TRIANGLE_EDGE_LAST = 3;
+      const double SQUARE_POWER = 2.0;
 
       var ttmData = new TrimbleTINModel();
 
@@ -96,11 +97,13 @@ namespace VSS.TRex.Designs.TTM
       {
         while ((currentCollisionListIndex > -1) && (currentEntity == null))
         {
-          if ((hashTable[currentCollisionListIndex] == null) || (hashTable[currentCollisionListIndex].Count == 0))
+          var currentCollisionList = hashTable[currentCollisionListIndex];
+
+          if ((currentCollisionList == null) || (currentCollisionList.Count == 0))
             currentCollisionListIndex--;
           else
           {
-            currentEntity = hashTable[currentCollisionListIndex][hashTable[currentCollisionListIndex].Count - 1];
+            currentEntity = currentCollisionList[currentCollisionList.Count - 1];
 
             // If we have visited this entity before, then the GuidanceID field will be MaxInt
             if (currentEntity.Stamped) // We need to discard this item and grab the next one
@@ -111,7 +114,7 @@ namespace VSS.TRex.Designs.TTM
               currentEntity.Stamped = true;
             }
 
-            hashTable[currentCollisionListIndex].RemoveAt(hashTable[currentCollisionListIndex].Count - 1);
+            currentCollisionList.RemoveAt(currentCollisionList.Count - 1);
           }
         }
 
@@ -144,8 +147,8 @@ namespace VSS.TRex.Designs.TTM
             var lastPoint = fence.Points[fence.Points.Count - 1];
 
             // Add the appropriate end from the new current entity to the vertex list for the polyline
-            if ((Math.Sqrt(currentEntity.Vertex1.X - lastPoint.X) + Math.Sqrt(currentEntity.Vertex1.Y - lastPoint.Y)) <
-                (Math.Sqrt(currentEntity.Vertex2.X - lastPoint.X) + Math.Sqrt(currentEntity.Vertex2.Y - lastPoint.Y)))
+            if ((Math.Pow(currentEntity.Vertex1.X - lastPoint.X, SQUARE_POWER) + Math.Pow(currentEntity.Vertex1.X - lastPoint.X, SQUARE_POWER)) <
+                (Math.Pow(currentEntity.Vertex2.X - lastPoint.X, SQUARE_POWER) + Math.Pow(currentEntity.Vertex2.Y - lastPoint.Y, SQUARE_POWER)))
               fence.Points.Add(new FencePoint(currentEntity.Vertex2.X, currentEntity.Vertex2.Y));
             else
               fence.Points.Add(new FencePoint(currentEntity.Vertex1.X, currentEntity.Vertex1.Y));
@@ -156,7 +159,7 @@ namespace VSS.TRex.Designs.TTM
             fence = null;
           }
         }
-      } while (currentCollisionListIndex < 0);
+      } while (currentCollisionListIndex >= 0);
 
 
       #region Local functions
@@ -180,11 +183,7 @@ namespace VSS.TRex.Designs.TTM
       void AddToHash(double x, double y, DesignTriangleEdge edge)
       {
         var hashIndex = Hash(x, y);
-
-        List<DesignTriangleEdge> collisionList = null;
-
-        if (hashTable[hashIndex] != null)
-          collisionList = hashTable[hashIndex];
+        var collisionList = hashTable[hashIndex];
 
         if (collisionList == null)
         {

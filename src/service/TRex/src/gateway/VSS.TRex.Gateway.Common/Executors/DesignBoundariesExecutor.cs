@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -12,7 +11,6 @@ using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
-using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
@@ -54,15 +52,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      var designBoundaryRequest = new DesignBoundaryRequest();
       var referenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, 0.0);
-
-      var designBoundaryResponse = designBoundaryRequest.Execute(new DesignBoundaryArgument
-      {
-        ProjectID = siteModel.ID,
-        ReferenceDesign = referenceDesign,
-        CellSize = siteModel.CellSize
-      });
+      var designBoundaryResponse = DesignBoundaryRequest.Execute(siteModel, referenceDesign);
 
       if (designBoundaryResponse != null && 
           designBoundaryResponse.RequestResult == DesignProfilerRequestResult.OK && 
@@ -116,7 +107,7 @@ namespace VSS.TRex.Gateway.Common.Executors
             log.LogInformation($"{nameof(ConvertResult)}: Reducing fence verts. Tolerance: {toler}");
             fence.Compress(toler);
             toler = toler * 2;
-          } while (fence.Points.Count < VERTICES_LIMIT);
+          } while (fence.Points.Count >= VERTICES_LIMIT);
         }
 
         var arrayCount = fence.Points.Count;
@@ -130,14 +121,14 @@ namespace VSS.TRex.Gateway.Common.Executors
           log.LogInformation($"{nameof(ConvertResult)}: Winding Clockwise.");
           // Reverse ordering...
           for (var i = fence.Points.Count - 1; i >= 0; i--)
-            neeCoords[arrayCount - i - 1] = new XYZ(fence.Points[i].X, fence.Points[i].Y);
+            neeCoords[arrayCount - i - 1] = new XYZ(fence.Points[i].X, fence.Points[i].Y, 0.0);
         }
         else
         {
           log.LogInformation($"{nameof(ConvertResult)}: Winding AntiClockwise.");
 
           for (var i = 0; i < fence.Points.Count; i++)
-            neeCoords[i] = new XYZ(fence.Points[i].X, fence.Points[i].Y);
+            neeCoords[i] = new XYZ(fence.Points[i].X, fence.Points[i].Y, 0.0);
         }
 
         var coordConversionResult = ConvertCoordinates.NEEToLLH(csib, neeCoords);
@@ -167,11 +158,11 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     private void AddPoint(double x, double y, List<double[]> fencePoints)
     {
-      const int DECIMALS = -6;
+      const int DECIMALS = 6;
 
-      var point = new [] 
-      { Math.Round(MathUtilities.RadiansToDegrees(x), DECIMALS),
-        Math.Round(MathUtilities.RadiansToDegrees(y), DECIMALS)
+      var point = new[]
+      { Math.Round(x, DECIMALS),
+        Math.Round(y, DECIMALS)
       };
 
       fencePoints.Add(point);

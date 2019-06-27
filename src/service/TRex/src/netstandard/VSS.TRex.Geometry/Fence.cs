@@ -479,7 +479,7 @@ namespace VSS.TRex.Geometry
       const double TOLERANCE_MIN = 0.0;
       const int POLYGON_POINTS_MIN = 3;
 
-      if (tolerance < TOLERANCE_MIN || Points.Count < POLYGON_POINTS_MIN)
+      if (!((tolerance > TOLERANCE_MIN) && (Points.Count >= POLYGON_POINTS_MIN)))
         return;
 
       var first = true;
@@ -489,7 +489,7 @@ namespace VSS.TRex.Geometry
 
       var toleranceSquared = Math.Sqrt(tolerance);
 
-      for (var i = 1; i < Points.Count - 2; i++)
+      for (var i = 1; i <= Points.Count - 2; i++)
         includePoints[i] = false;
 
       CompressLine(0, Points.Count - 1);

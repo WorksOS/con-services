@@ -107,7 +107,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid:{projectUid}, designUid:{designUid}, fileName:{fileName}, tolerance: {tolerance}");
 
-      const double BOUNDARY_POINTS_INTERVAL = 1.00;
+      const double BOUNDARY_POINTS_INTERVAL = 0.0;
 
       var designBoundariesRequest = new TRexDesignBoundariesRequest(projectUid, designUid, fileName, tolerance ?? BOUNDARY_POINTS_INTERVAL);
 

@@ -822,6 +822,9 @@ namespace VSS.TRex.Designs
     {
       Log.LogInformation($"Loading boundary file {fileName}");
 
+      if (boundary != null)
+        return true;
+
       bool result = LoadBoundary(fileName);
 
       if (!result)
@@ -883,6 +886,9 @@ namespace VSS.TRex.Designs
     {
       try
       {
+        if (File.Exists(fileName))
+          return true;
+
         // Write the boundary out to a file
         using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
         {
@@ -1001,7 +1007,10 @@ namespace VSS.TRex.Designs
     /// <returns></returns>
     public override List<Fence> GetBoundary()
     {
-      return null;
+      if (!LoadBoundaryFile(FileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION, false))
+        return null;
+
+      return boundary;
     }
   }
 }
