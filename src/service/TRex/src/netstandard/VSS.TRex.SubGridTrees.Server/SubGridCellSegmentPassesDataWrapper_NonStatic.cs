@@ -116,7 +116,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             segmentPassCount = reader.ReadInt32();
 
-            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches.Rent(SubGridTreeConsts.CellsPerSubGrid);
+            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches().Rent(SubGridTreeConsts.CellsPerSubGrid);
             try
             {
               var fieldDescriptor = new EncodedBitFieldDescriptor();
@@ -153,7 +153,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             finally
             {
-              GenericArrayPoolCacheHelper<long>.Caches.Return(passCountBuffer);
+              GenericArrayPoolCacheHelper<long>.Caches().Return(passCountBuffer);
             }
         }
 
@@ -322,7 +322,7 @@ namespace VSS.TRex.SubGridTrees.Server
       public void Write(BinaryWriter writer)
         {
             int totalPasses = 0;
-            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches.Rent(SubGridTreeConsts.CellsPerSubGrid);
+            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches().Rent(SubGridTreeConsts.CellsPerSubGrid);
             try
             {
               // Write all the cell to the stream
@@ -376,7 +376,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             finally
             {
-              GenericArrayPoolCacheHelper<long>.Caches.Return(passCountBuffer);
+              GenericArrayPoolCacheHelper<long>.Caches().Return(passCountBuffer);
             }
         }
 

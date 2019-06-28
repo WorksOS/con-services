@@ -40,15 +40,10 @@ namespace VSS.TRex.IO
     /// </summary>
     public readonly int Capacity;
 
-    private T[] _elements;
-
     /// <summary>
     /// The reference to the slab allocated array that this span's elements are contained
     /// </summary>
-    public T[] Elements
-    {
-      get => _elements;
-    }
+    public T[] Elements;
 
     /* Note: TR deliberately does not provide an indexer as it can contain structs which causes issues with
   return of copies of the struct. GetElement/SetElement semantics are provided to make this clear.
@@ -72,7 +67,7 @@ namespace VSS.TRex.IO
     /// <param name="capacity"></param>
     public TRexSpan(T[] elements, int slabIndex, int offset, int capacity, bool isReturned)
     {
-      _elements = elements;
+      Elements = elements;
       Offset = offset;
       SlabIndex = slabIndex;
       Count = 0;
@@ -95,8 +90,8 @@ namespace VSS.TRex.IO
         throw new ArgumentException("Index out of range");
       }
 
-      Array.Copy(_elements, Offset + index, _elements, Offset + index + 1, Count - index);
-      _elements[Offset + index] = element;
+      Array.Copy(Elements, Offset + index, Elements, Offset + index + 1, Count - index);
+      Elements[Offset + index] = element;
       Count++;
     }
 
@@ -112,7 +107,7 @@ namespace VSS.TRex.IO
         throw new ArgumentException("Index out of range");
       }
 
-      _elements[Offset + index] = element;
+      Elements[Offset + index] = element;
     }
 
     /// <summary>
@@ -127,7 +122,7 @@ namespace VSS.TRex.IO
         throw new ArgumentException("Index out of range");
       }
 
-      return _elements[Offset + index];
+      return Elements[Offset + index];
     }
 
     /// <summary>
@@ -141,7 +136,7 @@ namespace VSS.TRex.IO
         throw new ArgumentException($"No spare capacity to add new element, capacity = {Capacity}, element count = {Count}");
       }
 
-      _elements[Offset + Count] = element;
+      Elements[Offset + Count] = element;
       Count++;
     }
 
@@ -149,13 +144,13 @@ namespace VSS.TRex.IO
     /// Returns the first element in the slab
     /// </summary>
     /// <returns></returns>
-    public T First() => _elements[Offset];
+    public T First() => Elements[Offset];
 
     /// <summary>
     /// Returns the last element in the slab
     /// </summary>
     /// <returns></returns>
-    public T Last() => _elements[Offset + Count - 1];
+    public T Last() => Elements[Offset + Count - 1];
 
     /// <summary>
     /// Copies a number of elements from the start of the source span to the start of the target span
@@ -174,7 +169,7 @@ namespace VSS.TRex.IO
         throw new ArgumentException($"Target has insufficient capacity ({Capacity}) to contain required items from source ({sourceCount})");
       }
 
-      Array.Copy(source.Elements, source.Offset, _elements, Offset, sourceCount);
+      Array.Copy(source.Elements, source.Offset, Elements, Offset, sourceCount);
       Count = source.Count;
     }
 
@@ -195,7 +190,7 @@ namespace VSS.TRex.IO
         throw new ArgumentException($"Target has insufficient capacity ({Capacity}) to contain required items from source ({sourceCount})");
       }
 
-      Array.Copy(source, 0, _elements, Offset, sourceCount);
+      Array.Copy(source, 0, Elements, Offset, sourceCount);
       Count = Math.Max(Count, sourceCount);
     }
 
@@ -203,11 +198,11 @@ namespace VSS.TRex.IO
     /// Indicates if this span should be returned to the pool at a future point in time
     /// </summary>
     /// <returns></returns>
-    public bool NeedsToBeReturned() => Capacity > 0 && SlabIndex != NO_SLAB_INDEX && _elements != null;
+    public bool NeedsToBeReturned() => Capacity > 0 && SlabIndex != NO_SLAB_INDEX && Elements != null;
 
     public void MarkReturned()
     {
-      _elements = null;
+      Elements = null;
     }
   }
 }

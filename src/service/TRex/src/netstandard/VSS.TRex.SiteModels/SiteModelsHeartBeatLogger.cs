@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -9,8 +11,15 @@ namespace VSS.TRex.SiteModels
   /// <summary>
   /// Provides heartbeat logging on the aggregate state of site models present in memory
   /// </summary>
-  public class SiteModelsHeartBeatLogger
+  public class SiteModelsHeartBeatLogger : IHeartBeatLogger
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelsHeartBeatLogger>();
+
+    public void HeartBeat()
+    {
+      Log.LogInformation("Heartbeat: " + ToString());
+    }
+
     public override string ToString()
     {
       var sw = Stopwatch.StartNew();

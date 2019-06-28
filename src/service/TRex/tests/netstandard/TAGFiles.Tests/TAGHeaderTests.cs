@@ -23,8 +23,8 @@ namespace TAGFiles.Tests
         [Fact]
         public void Test_TAGHeader_Read()
         {
-            TAGReader reader = new TAGReader(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile-TAG-Header-Read.tag"), FileMode.Open));
-
+          using (var reader = new TAGReader(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile-TAG-Header-Read.tag"), FileMode.Open)))
+          {
             Assert.NotNull(reader);
 
             TAGHeader header = new TAGHeader();
@@ -37,8 +37,10 @@ namespace TAGFiles.Tests
             Assert.Equal(4U, header.DictionaryMinorVer);
             Assert.Equal(1U, header.MajorVer);
             Assert.Equal(0U, header.MinorVer);
-            Assert.True(header.FieldAndTypeTableOffset > 0 && header.FieldAndTypeTableOffset < reader.StreamSizeInNybbles / 2,
-                          "Field and type table offset read from header is invalid");           
+            Assert.True(
+              header.FieldAndTypeTableOffset > 0 && header.FieldAndTypeTableOffset < reader.StreamSizeInNybbles / 2,
+              "Field and type table offset read from header is invalid");
+          }
         }
     }
 }

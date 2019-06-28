@@ -1,12 +1,14 @@
-﻿namespace VSS.TRex.Common
+﻿using VSS.TRex.Common.Interfaces.Interfaces;
+
+namespace VSS.TRex.Common
 {
   public interface ITRexHeartBeatLogger
   {
     int IntervalInMilliseconds { get; }
 
-    void AddContext(object context);
+    void AddContext(IHeartBeatLogger context);
 
-    void RemoveContext(object context);
+    void RemoveContext(IHeartBeatLogger context);
 
     void Stop();
   }
