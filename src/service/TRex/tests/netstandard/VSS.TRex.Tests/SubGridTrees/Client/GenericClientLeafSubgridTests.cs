@@ -7,12 +7,13 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class GenericClientLeafSubgridTests
+  public class GenericClientLeafSubgridTests : IClassFixture<DILoggingFixture>
   {
     static int GetGridDataTypeCount() => Enum.GetValues(typeof(GridDataType)).Length;
 

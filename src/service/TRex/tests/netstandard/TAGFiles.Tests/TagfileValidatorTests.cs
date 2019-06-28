@@ -10,6 +10,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -38,9 +39,6 @@ namespace TAGFiles.Tests
 
       var tfaServiceEnabled = config.GetValueBool("ENABLE_TFA_SERVICE");
       Assert.True(tfaServiceEnabled);
-
-      var tfaServiceUrl = config.GetValueString("TFA_PROJECTV2_API_URL");
-      Assert.Equal("http://localhost:5001/api/v2/project", tfaServiceUrl);
 
       var minTagFileLength = config.GetValueInt("MIN_TAGFILE_LENGTH");
       Assert.Equal(100, minTagFileLength);
@@ -254,12 +252,10 @@ namespace TAGFiles.Tests
       //Moq doesn't support extension methods in IConfiguration/Root.
       var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
       var moqMinTagFileLength = 100;
-      string moqTfaServiceUrl = "http://localhost:5001/api/v2/project";
       moqConfiguration.Setup(x => x.GetValueBool("ENABLE_TFA_SERVICE", It.IsAny<bool>())).Returns(enableTfaService);
       moqConfiguration.Setup(x => x.GetValueBool("ENABLE_TFA_SERVICE")).Returns(enableTfaService);
       moqConfiguration.Setup(x => x.GetValueInt("MIN_TAGFILE_LENGTH", It.IsAny<int>())).Returns(moqMinTagFileLength);
       moqConfiguration.Setup(x => x.GetValueInt("MIN_TAGFILE_LENGTH")).Returns(moqMinTagFileLength);
-      moqConfiguration.Setup(x => x.GetValueString("TFA_PROJECTV2_API_URL")).Returns(moqTfaServiceUrl);
 
       var moqTfaProxy = new Mock<ITagFileAuthProjectProxy>();
       if (enableTfaService && getProjectAndAssetUidsRequest != null)
@@ -267,9 +263,9 @@ namespace TAGFiles.Tests
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<IConfigurationStore>(moqConfiguration.Object))
+        .Add(x => x.AddSingleton(moqConfiguration.Object))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy>(moqTfaProxy.Object))
+        .Add(x => x.AddSingleton(moqTfaProxy.Object))
         .Complete();
     }
   }

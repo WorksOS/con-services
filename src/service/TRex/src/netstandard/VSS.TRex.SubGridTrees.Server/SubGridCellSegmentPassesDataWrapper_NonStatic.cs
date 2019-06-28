@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Common.Utilities;
+using VSS.TRex.Compression;
 using VSS.TRex.DI;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridCellSegmentPassesDataWrapper_NonStatic : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellSegmentPassesDataWrapper_NonStatic>();
+
         /// <summary>
         /// A hook that may be used to gain notification of the add, replace and remove cell pass mutations in the cell pass stack
         /// </summary>
@@ -28,6 +32,28 @@ namespace VSS.TRex.SubGridTrees.Server
         public int PassCount(int X, int Y) => PassData[X, Y].PassCount;
 
         /// <summary>
+        /// Reduces the number of passes in the cell to newCount by preserving the first
+        /// 'newCount' cell passes in the cell and retiring the remainder.
+        /// If newCount is larger than the actual count an ArgumentException is thrown
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="newCount"></param>
+        public void TrimPassCount(int X, int Y, int newCount)
+        {
+          if (newCount < 0 || newCount > PassData[X, Y].PassCount)
+          {
+            throw new ArgumentException($"newCount parameter ({newCount}) is less than zero or greater than than the number of passes in the cell ({PassData[X, Y].PassCount})");
+          }
+
+          PassData[X, Y].Passes.Count = newCount;
+
+#if CELLDEBUG
+          PassData[X, Y].CheckPassesAreInCorrectTimeOrder("TrimPassCount");
+#endif
+        }
+
+        /// <summary>
         /// Ensures there are sufficient passes in the local cell pass array for this cell. Note: THe actual
         /// number of cell passes validly present in the cell may be less that the length of the cell pass array.
         /// Integrators must use the PassCount property to determine exactly how many passes are present.
@@ -36,24 +62,15 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Y"></param>
         /// <param name="passCount"></param>
         public void AllocatePasses(int X, int Y, int passCount) => PassData[X, Y].AllocatePasses(passCount);
-
-        /// <summary>
-        /// Ensures there are sufficient passes in the local cell pass array for this cell. The exact number of
-        /// cell passes will be created as asked for.
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="passCount"></param>
-        public void AllocatePassesExact(int X, int Y, int passCount) => PassData[X, Y].AllocatePassesExact(passCount);
-
-        public void AddPass(int X, int Y, CellPass pass, int position = -1)
+      
+        public void AddPass(int X, int Y, CellPass pass)
         {
-            if (pass.Time == Common.Consts.MIN_DATETIME_AS_UTC || pass.Time.Kind != DateTimeKind.Utc)
+            if (pass.Time == Consts.MIN_DATETIME_AS_UTC || pass.Time.Kind != DateTimeKind.Utc)
               throw new ArgumentException("Cell passes added to cell pass stacks must have a non-null, UTC, cell pass time", nameof(pass.Time)); 
 
-            _mutationHook?.AddPass(X, Y, PassData[X, Y], pass, position);
+            _mutationHook?.AddPass(X, Y, PassData[X, Y], pass);
 
-            PassData[X, Y].AddPass(pass, position);
+            PassData[X, Y].AddPass(pass);
 
             segmentPassCount++;
         }
@@ -62,7 +79,11 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             _mutationHook?.ReplacePass(X, Y, PassData[X, Y], position, pass);
 
-            PassData[X, Y].ReplacePass(position, pass);
+            PassData[X, Y].Passes.SetElement(pass, position);
+
+#if CELLDEBUG
+            PassData[X, Y].CheckPassesAreInCorrectTimeOrder("ReplacePass");
+#endif
         }
 
         /// <summary>
@@ -77,7 +98,7 @@ namespace VSS.TRex.SubGridTrees.Server
            //throw new NotImplementedException("Removal of cell passes is not yet supported");
         }
 
-        public CellPass ExtractCellPass(int X, int Y, int passNumber) => PassData[X, Y].Passes[passNumber];
+        public CellPass ExtractCellPass(int X, int Y, int passNumber) => PassData[X, Y].Passes.GetElement(passNumber);
 
         /// <summary>
         /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
@@ -93,69 +114,48 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void Read(BinaryReader reader)
         {
-            int TotalPasses = reader.ReadInt32();
-            int MaxPassCount = reader.ReadInt32();
+            segmentPassCount = reader.ReadInt32();
 
-            int[,] PassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
-
-            int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
-
-            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches.Rent(SubGridTreeConsts.CellsPerSubGrid);
+            try
             {
-              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              var fieldDescriptor = new EncodedBitFieldDescriptor();
+              fieldDescriptor.Read(reader);
+
+              using (var bfa = new BitFieldArray())
               {
-                switch (PassCounts_Size)
+                bfa.Read(reader);
+                int bitLocation = 0;
+                bfa.ReadBitFieldVector(ref bitLocation, fieldDescriptor, SubGridTreeConsts.CellsPerSubGrid, passCountBuffer);
+              }
+
+              var counter = 0;
+
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+              {
+                for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
                 {
-                  case PassCountSize.ONE_BYTE:
-                    PassCounts[i, j] = reader.ReadByte();
-                    break;
-                  case PassCountSize.TWO_BYTES:
-                    PassCounts[i, j] = reader.ReadInt16();
-                    break;
-                  case PassCountSize.FOUR_BYTES:
-                    PassCounts[i, j] = reader.ReadInt32();
-                    break;
-                  default:
-                    throw new InvalidDataException($"Unknown PassCounts_Size {PassCounts_Size}");
+                  int passCount = (int)passCountBuffer[counter++];
+
+                  if (passCount > 0)
+                  {
+                    AllocatePasses(i, j, passCount);
+
+                    PassData[i, j].Passes.Count = passCount;
+                    var passes = PassData[i, j].Passes;
+                    for (int cpi = passes.Offset, limit = passes.OffsetPlusCount; cpi < limit; cpi++)
+                    {
+                      passes.Elements[cpi].Read(reader);
+                    }
+                  }
                 }
               }
             }
-
-            // Read all the cells from the stream
-            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            finally
             {
-              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
-              {
-                int PassCount_ = PassCounts[i, j];
-
-                if (PassCount_ > 0)
-                {
-                  AllocatePassesExact(i, j, PassCount_);
-                  Read(i, j, reader, PassCount_);
-
-                  segmentPassCount += PassCount_;
-                }
-              }
+              GenericArrayPoolCacheHelper<long>.Caches.Return(passCountBuffer);
             }
         }
-
-        private void Read(int X, int Y, BinaryReader reader, int passCount)
-        {
-            var cellPasses = PassData[X, Y].Passes;
-            for (int cellPassIndex = 0; cellPassIndex < passCount; cellPassIndex++)
-            {
-                cellPasses[cellPassIndex].Read(reader);
-            }
-
-            PassData[X, Y].PassCount = passCount;
-        }
-
-        /*
-        private void Read(uint X, uint Y, uint passNumber, BinaryReader reader)
-        {
-            PassData[X, Y].Passes[passNumber].Read(reader);
-        }
-        */
 
         /// <summary>
         /// Calculate the total number of passes from all the cells present in this sub grid segment
@@ -203,16 +203,12 @@ namespace VSS.TRex.SubGridTrees.Server
           {
             for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
             {
-              var cell = PassData[i, j];
+              var passes = PassData[i, j].Passes;
+              var elements = passes.Elements;
 
-              if (cell.PassCount == 0)
-                continue;
-
-              var passes = cell.Passes;
-
-              for (int PassIndex = 0, limit = cell.PassCount; PassIndex < limit; PassIndex++)
+              for (int PassIndex = passes.Offset, limit = passes.OffsetPlusCount; PassIndex < limit; PassIndex++)
               {
-                var theTime = passes[PassIndex].Time; 
+                var theTime = elements[PassIndex].Time; 
 
                 if (theTime > endTime)
                   endTime = theTime;
@@ -290,7 +286,8 @@ namespace VSS.TRex.SubGridTrees.Server
       /// <param name="internalMachineID"></param>
       public void SetInternalMachineID(int X, int Y, int passNumber, short internalMachineID)
       {
-        PassData[X, Y].Passes[passNumber].InternalSiteModelMachineIndex = internalMachineID;
+        var cellPasses = PassData[X, Y].Passes;
+        cellPasses.Elements[cellPasses.Offset + passNumber].InternalSiteModelMachineIndex = internalMachineID;
       }
 
       /// <summary>
@@ -306,16 +303,17 @@ namespace VSS.TRex.SubGridTrees.Server
         {
           for (int y = 0; y < SubGridTreeConsts.SubGridTreeDimension; y++)
           {
-            int passCount = PassCount(x, y);
+            var cellPasses = PassData[x, y].Passes;
+            var elements = cellPasses.Elements;
 
-            for (int i = 0; i < passCount; i++)
-              PassData[x, y].Passes[i].InternalSiteModelMachineIndex = internalMachineIndex;
+            for (int i = cellPasses.Offset, limit = cellPasses.OffsetPlusCount; i < limit; i++)
+              elements[i].InternalSiteModelMachineIndex = internalMachineIndex;
 
-            numModifiedPasses += passCount;
+            numModifiedPasses += cellPasses.Count;
           }
         }
       }
-
+     
       public void GetSegmentElevationRange(out double MinElev, out double MaxElev)
       {
         throw new TRexException("Elevation range determination for segments limited to STATIC_CELL_PASSES");
@@ -323,118 +321,96 @@ namespace VSS.TRex.SubGridTrees.Server
 
       public void Write(BinaryWriter writer)
         {
-            CalculateTotalPasses(out int TotalPasses, out _, out int MaxPassCount);
-
-            writer.Write(TotalPasses);
-            writer.Write(MaxPassCount);
-
-            int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
-
-            // Read all the cells from the stream
-            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            int totalPasses = 0;
+            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches.Rent(SubGridTreeConsts.CellsPerSubGrid);
+            try
             {
-              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+              // Write all the cell to the stream
+              // Assemble the pass counts, compress them and write them out as a single element
+              var counter = 0;
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
               {
-                switch (PassCounts_Size)
+                for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
                 {
-                  case PassCountSize.ONE_BYTE:
-                    writer.Write((byte) PassCount(i, j));
-                    break;
-                  case PassCountSize.TWO_BYTES:
-                    writer.Write((short) PassCount(i, j));
-                    break;
-                  case PassCountSize.FOUR_BYTES:
-                    writer.Write(PassCount(i, j));
-                    break;
-                  default:
-                    throw new InvalidDataException($"Unknown PassCounts_Size: {PassCounts_Size}");
+                  var cellPassCount = PassData[i, j].PassCount;
+                  passCountBuffer[counter++] = cellPassCount;
+                  totalPasses += cellPassCount;
+                }
+              }
+
+              writer.Write(totalPasses);
+
+              var fieldDescriptor = new EncodedBitFieldDescriptor();
+              AttributeValueRangeCalculator.CalculateAttributeValueRange(passCountBuffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid, 0xfff_ffff_ffff_ffff, 0, true, ref fieldDescriptor);
+              fieldDescriptor.Write(writer);
+
+              using (var bfa = new BitFieldArray())
+              {
+                int bitLocation = 0;
+                
+                bfa.Initialise(fieldDescriptor.RequiredBits, SubGridTreeConsts.CellsPerSubGrid);
+                bfa.WriteBitFieldVector(ref bitLocation, fieldDescriptor, SubGridTreeConsts.CellsPerSubGrid, passCountBuffer);
+                bfa.Write(writer);
+              }
+
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+              {
+                for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+                {
+                  var cellPasses = PassData[i, j].Passes;
+                  int passCount = cellPasses.Count;
+
+                  // write all the cell passes to the stream, avoiding those cells that do not have any passes
+                  if (passCount > 0)
+                  {
+#if CELLDEBUG
+                    PassData[i, j].CheckPassesAreInCorrectTimeOrder("Writing cell passes");
+#endif
+                    for (int cpi = cellPasses.Offset, limit = cellPasses.OffsetPlusCount; cpi < limit; cpi++)
+                    {
+                      cellPasses.Elements[cpi].Write(writer);
+                    }
+                  }
                 }
               }
             }
-
-            // write all the cell passes to the stream, avoiding those cells that do not have any passes
-            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            finally
             {
-              for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
-              {
-                var passCount = PassData[i, j].PassCount;
-                if (passCount > 0)
-                {
-                  Write(i, j, writer, passCount);
-                }
-              }
+              GenericArrayPoolCacheHelper<long>.Caches.Return(passCountBuffer);
             }
         }
 
-        private void Write(int X, int Y, BinaryWriter writer, int passCount)
-        {
-            var cellPasses = PassData[X, Y].Passes;
+        public float PassHeight(int X, int Y, int passNumber) => PassData[X, Y].Passes.GetElement(passNumber).Height;
 
-            for (int cpi = 0; cpi < passCount; cpi++)
+        public DateTime PassTime(int X, int Y, int passNumber) => PassData[X, Y].Passes.GetElement(passNumber).Time;
+
+        public void Integrate(int X, int Y, Cell_NonStatic sourcePasses, int StartIndex, int EndIndex, out int AddedCount, out int ModifiedCount)
+        {
+            PassData[X, Y].Integrate(sourcePasses, StartIndex, EndIndex, out AddedCount, out ModifiedCount);
+        }
+
+        public Cell_NonStatic ExtractCellPasses(int X, int Y) => PassData[X, Y];
+
+        public CellPass Pass(int X, int Y, int passIndex) => PassData[X, Y].Passes.GetElement(passIndex);
+
+        public void SetState(Cell_NonStatic[,] cellPasses)
+        {
+          segmentPassCount = 0;
+          PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+
+          for (int x = 0; x < SubGridTreeConsts.SubGridTreeDimension; x++)
+          {
+            for (int y = 0; y < SubGridTreeConsts.SubGridTreeDimension; y++)
             {
-                cellPasses[cpi].Write(writer);
+              var passes = cellPasses[x, y].Passes;
+
+              PassData[x, y].Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Clone(passes);
+#if CELLDEBUG
+              PassData[x, y].CheckPassesAreInCorrectTimeOrder("SetState");
+#endif
+              segmentPassCount += passes.Count;
             }
-        }
-
-        public float PassHeight(int X, int Y, int passNumber) => PassData[X, Y].Passes[passNumber].Height;
-
-        public DateTime PassTime(int X, int Y, int passNumber) => PassData[X, Y].Passes[passNumber].Time;
-
-        public void Integrate(int X, int Y, CellPass[] sourcePasses, int sourcePassCount, int StartIndex, int EndIndex, out int AddedCount, out int ModifiedCount)
-        {
-            PassData[X, Y].Integrate(sourcePasses, sourcePassCount, StartIndex, EndIndex, out AddedCount, out ModifiedCount);
-        }
-
-        public CellPass[] ExtractCellPasses(int X, int Y, out int passCount)
-        {
-            var cell = PassData[X, Y];
-
-            passCount = cell.PassCount;
-            return cell.Passes;
-        }
-
-        public CellPass Pass(int X, int Y, int passIndex) => PassData[X, Y].Passes[passIndex];
-
-        public void SetState(CellPass[,][] cellPasses, int[,] cellPassCounts)
-        {
-            segmentPassCount = 0;
-            PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
-
-            for (int x = 0; x < SubGridTreeConsts.SubGridTreeDimension; x++)
-            {
-              for (int y = 0; y < SubGridTreeConsts.SubGridTreeDimension; y++)
-              {
-                PassData[x, y].Passes = cellPasses[x, y];
-
-                var passCount = cellPassCounts[x, y];
-
-                PassData[x, y].PassCount = passCount;
-                segmentPassCount += passCount;
-              }
-            }
-        }
-
-        /// <summary>
-        /// Retrieves the current cell pass state for each cell in the segment. This state is defined by the set of cell pass
-        /// arrays and the set of cell pass array lengths fot the cells.
-        /// </summary>
-        /// <param name="cellPassCounts"></param>
-        /// <returns></returns>
-        public CellPass[,][] GetState(out int[,] cellPassCounts)
-        {
-            var result = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
-            cellPassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
-
-            for (int x = 0; x < SubGridTreeConsts.SubGridTreeDimension; x++)
-            {
-              for (int y = 0; y < SubGridTreeConsts.SubGridTreeDimension; y++)
-              {
-                result[x, y] = PassData[x, y].Passes;
-                cellPassCounts[x, y] = PassData[x, y].PassCount;
-              }
-            }
-
-            return result;
+          }
         }
 
         public bool HasPassData() => PassData != null;
@@ -443,10 +419,61 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void ReplacePasses(int X, int Y, CellPass[] cellPasses, int cellPassCount)
         {
-          segmentPassCount += cellPassCount - PassData[X, Y].PassCount;
+          var oldPasses = PassData[X, Y].Passes;
+          if (oldPasses.NeedsToBeReturned())
+          {
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(oldPasses);
+          }
 
-          PassData[X, Y].Passes = cellPasses;
-          PassData[X, Y].PassCount = cellPassCount;
+          var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(cellPassCount);
+
+          newPasses.Copy(cellPasses, cellPassCount);
+          newPasses.Count = cellPassCount;
+
+          PassData[X, Y].Passes = newPasses;
+
+#if CELLDEBUG
+          PassData[X, Y].CheckPassesAreInCorrectTimeOrder("ReplacePasses");
+#endif
+    }
+
+    public Cell_NonStatic[,] GetState() => PassData;
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
+
+        if (PassData != null)
+        {
+          // Return all the rented TRexSpans in the current segment
+          for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+          {
+            for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+            {
+              var cellPasses = PassData[i, j];
+
+              if (cellPasses.Passes.NeedsToBeReturned())
+              {
+                SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(cellPasses.Passes);
+                cellPasses.Passes.MarkReturned();
+              }
+            }
+          }
         }
-    } 
+
+        disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      Dispose(true);
+    }
+    #endregion
+  }  
 }

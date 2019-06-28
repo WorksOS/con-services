@@ -84,6 +84,8 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     /// <summary>
     /// Coverts an Productivity 3D (not to be confused with 3dp API) API Service Enum to a service name,
     /// to minimize the chance of errors when typing service names
+    ///
+    /// TRex uses its own resolver in BaseTRexServiceDiscoveryProxy
     /// </summary>
     /// <returns>The service name string for the API Service Enum Value</returns>
     public string GetServiceName(ApiService service)
@@ -104,6 +106,9 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
           return Constants.ServiceNameConstants.PUSH_SERVICE;
         case ApiService.Tile:
           return Constants.ServiceNameConstants.TILE_SERVICE;
+        case ApiService.TagFileAuth:
+          return Constants.ServiceNameConstants.TAGFIELAUTH_SERVICE;
+
         default:
           // There are unit tests to ensure this does not happen 
           throw new ArgumentOutOfRangeException(nameof(service), service, null);
@@ -141,6 +146,12 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
       IDictionary<string, string> queryParameters = null)
     {
       var serviceName = GetServiceName(service);
+      return ResolveRemoteServiceEndpoint(serviceName, apiType, version, route, queryParameters);
+    }
+
+    public Task<string> ResolveLocalServiceEndpoint(string serviceName, ApiType apiType, ApiVersion version, string route = null,
+      IDictionary<string, string> queryParameters = null)
+    {
       return ResolveRemoteServiceEndpoint(serviceName, apiType, version, route, queryParameters);
     }
 

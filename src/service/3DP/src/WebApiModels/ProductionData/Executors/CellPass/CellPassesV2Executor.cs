@@ -1,8 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Models.Models;
 #if RAPTOR
 using SVOICFiltersDecls;
 using SVOICGridCell;
@@ -26,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-     private CellPassesV2Result.ProfileLayer ConvertCellLayerItem(TICProfileLayer layer, CellPassesV2Result.FilteredPassData[] layerPasses)
+    private static CellPassesV2Result.ProfileLayer ConvertCellLayerItem(TICProfileLayer layer, CellPassesV2Result.FilteredPassData[] layerPasses)
     {
       return new CellPassesV2Result.ProfileLayer
       {
@@ -65,10 +63,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-
-    private CellPassesV2Result.ProfileLayer[] ConvertCellLayers(TICProfileLayers layers, CellPassesV2Result.FilteredPassData[] allPasses)
+    private static CellPassesV2Result.ProfileLayer[] ConvertCellLayers(TICProfileLayers layers, CellPassesV2Result.FilteredPassData[] allPasses)
     {
       CellPassesV2Result.ProfileLayer[] result;
+
       if (layers.Count() == 0)
       {
         result = new CellPassesV2Result.ProfileLayer[1];
@@ -88,7 +86,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       return result;
     }
 
-    private CellPassesV2Result.CellEventsValue ConvertCellPassEvents(TICCellEventsValue events)
+    private static CellPassesV2Result.CellEventsValue ConvertCellPassEvents(TICCellEventsValue events)
     {
       return new CellPassesV2Result.CellEventsValue
       {
@@ -111,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private CellPassesV2Result.CellPassValue ConvertCellPass(TICCellPassValue pass)
+    private static CellPassesV2Result.CellPassValue ConvertCellPass(TICCellPassValue pass)
     {
       return new CellPassesV2Result.CellPassValue
       {
@@ -130,7 +128,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private CellPassesV2Result.CellTargetsValue ConvertCellPassTargets(TICCellTargetsValue targets)
+    private static CellPassesV2Result.CellTargetsValue ConvertCellPassTargets(TICCellTargetsValue targets)
     {
       return new CellPassesV2Result.CellTargetsValue
       {
@@ -143,7 +141,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private CellPassesV2Result.FilteredPassData ConvertFilteredPassDataItem(TICFilteredPassData pass)
+    private static CellPassesV2Result.FilteredPassData ConvertFilteredPassDataItem(TICFilteredPassData pass)
     {
       return new CellPassesV2Result.FilteredPassData
       {
@@ -153,7 +151,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private CellPassesV2Result.FilteredPassData[] ConvertFilteredPassData(TICFilteredMultiplePassInfo passes)
+    private static CellPassesV2Result.FilteredPassData[] ConvertFilteredPassData(TICFilteredMultiplePassInfo passes)
     {
       return passes.FilteredPassData != null
         ? Array.ConvertAll(passes.FilteredPassData, ConvertFilteredPassDataItem)

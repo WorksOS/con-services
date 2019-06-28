@@ -51,7 +51,7 @@ RUN dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.
 
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
-RUN cp -r /root/.nuget/packages/apache.ignite/2.7.0/libs/ /trex/libs/
+RUN cp -r /root/.nuget/packages/apache.ignite/2.7.5/libs/ /trex/libs/
 COPY ./$SERVICE_PATH/build/ignite-kubernetes-2.7.0.jar /trex/libs/
 
 # This is a vss specific build of ignite with java implementation of affinity functions

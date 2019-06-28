@@ -27,6 +27,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       Tolerance = tolerance;
     }
     
-    public const double BOUNDARY_POINTS_INTERVAL = 1.00;
+    public const double BOUNDARY_POINTS_INTERVAL = 0.0;
   }
 }

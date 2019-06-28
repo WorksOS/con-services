@@ -5,7 +5,7 @@ using VSS.TRex.Cells;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
-    public interface ISubGridCellSegmentPassesDataWrapper
+    public interface ISubGridCellSegmentPassesDataWrapper : IDisposable
     {
         /// <summary>
         /// The total number of cell passes present in this segment
@@ -21,6 +21,16 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         int PassCount(int X, int Y);
 
         /// <summary>
+        /// Reduces the number of passes in the cell to newCount by preserving the first
+        /// 'newCount' cell passes in the cell and retiring the remainder.
+        /// If newCount is larger than the actual count an ArgumentException is thrown
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="newCount"></param>
+        void TrimPassCount(int X, int Y, int newCount);
+
+        /// <summary>
         /// Allocates a number of passes for a cell in this segment. Only valid for mutable representations exposing this interface.
         /// </summary>
         /// <param name="X"></param>
@@ -29,21 +39,12 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void AllocatePasses(int X, int Y, int passCount);
 
         /// <summary>
-        /// Allocates a number of passes for a cell in this segment. Only valid for mutable representations exposing this interface.
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="passCount"></param>
-        void AllocatePassesExact(int X, int Y, int passCount);
-
-        /// <summary>
         /// Adds a cell pass at an optional position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="pass"></param>
-        /// <param name="position"></param>
-        void AddPass(int X, int Y, CellPass pass, int position = -1);
+        void AddPass(int X, int Y, CellPass pass);
 
         /// <summary>
         /// Replaces a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
@@ -112,12 +113,11 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="sourcePasses"></param>
-        /// <param name="sourcePassCount"></param>
         /// <param name="StartIndex"></param>
         /// <param name="EndIndex"></param>
         /// <param name="AddedCount"></param>
         /// <param name="ModifiedCount"></param>
-        void Integrate(int X, int Y, CellPass[] sourcePasses, int sourcePassCount, int StartIndex, int EndIndex, out int AddedCount, out int ModifiedCount);
+        void Integrate(int X, int Y, Cell_NonStatic sourcePasses, int StartIndex, int EndIndex, out int AddedCount, out int ModifiedCount);
 
         /// <summary>
         /// Returns a full cell pass with all attributes from the cell passes within this segment for the cell identified by X and Y
@@ -142,9 +142,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
-        /// <param name="passCount"></param>
         /// <returns></returns>
-        CellPass[] ExtractCellPasses(int X, int Y, out int passCount);
+        Cell_NonStatic ExtractCellPasses(int X, int Y);
 
         /// <summary>
         /// Replaces the collection of passes at location (x, y) with the provided set of cell passes
@@ -159,8 +158,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// it's internal representation
         /// </summary>
         /// <param name="cellPasses"></param>
-        /// <param name="cellPassCounts"></param>
-        void SetState(CellPass[,][] cellPasses, int[,] cellPassCounts);
+        void SetState(Cell_NonStatic[,] cellPasses);
 
         /// <summary>
         /// Allows a caller to query the set of all cell passes in the wrapper as a sub grid array 
@@ -168,7 +166,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// do no throwing NotImplemented exceptions.
         /// </summary>
         /// <returns></returns>
-        CellPass[,][] GetState(out int[,] cellPassCounts);
+        Cell_NonStatic[,] GetState();
 
         /// <summary>
         /// Indicates if this segment is immutable

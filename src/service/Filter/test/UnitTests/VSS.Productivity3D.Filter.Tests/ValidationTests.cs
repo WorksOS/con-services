@@ -204,15 +204,15 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
-      var projectListProxy = new Mock<IProjectListProxy>();
+      var projectProxy = new Mock<IProjectProxy>();
       var projectData = new ProjectData {ProjectUid = projectUid, CustomerUid = custUid};
 
       var customHeaders = new Dictionary<string, string>();
-      projectListProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), projectUid, customHeaders))
+      projectProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), projectUid, customHeaders))
         .ReturnsAsync(projectData);
 
       FilterPrincipal principal = new FilterPrincipal(new System.Security.Claims.ClaimsIdentity(),
-        custUid, string.Empty, string.Empty, false, projectListProxy.Object, customHeaders);
+        custUid, string.Empty, string.Empty, false, projectProxy.Object, customHeaders);
 
       var actual = await principal.GetProject(projectUid);
       Assert.AreEqual(projectData, actual);
@@ -223,13 +223,13 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
-      var projectListProxy = new Mock<IProjectListProxy>();
+      var projectProxy = new Mock<IProjectProxy>();
       var customHeaders = new Dictionary<string, string>();
-      projectListProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), It.IsAny<string>(), customHeaders))
+      projectProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), It.IsAny<string>(), customHeaders))
         .ReturnsAsync((ProjectData) null);
 
       FilterPrincipal principal = new FilterPrincipal(new System.Security.Claims.ClaimsIdentity(),
-        custUid, string.Empty, string.Empty, false, projectListProxy.Object, customHeaders);
+        custUid, string.Empty, string.Empty, false, projectProxy.Object, customHeaders);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => principal.GetProject(projectUid));
 
@@ -244,17 +244,17 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
-      var projectListProxy = new Mock<IProjectListProxy>();
+      var projectProxy = new Mock<IProjectProxy>();
       var projectData = new ProjectData {ProjectUid = projectUid, CustomerUid = custUid};
       var projects = new List<ProjectData> {projectData};
 
       var customHeaders = new Dictionary<string, string>();
-      projectListProxy.SetupSequence(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders))
+      projectProxy.SetupSequence(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders))
         .ReturnsAsync(new List<ProjectData>())
         .ReturnsAsync(projects);
 
       FilterPrincipal principal = new FilterPrincipal(new System.Security.Claims.ClaimsIdentity(),
-        custUid, string.Empty, string.Empty, false, projectListProxy.Object, customHeaders);
+        custUid, string.Empty, string.Empty, false, projectProxy.Object, customHeaders);
 
       var actual = await principal.GetProject(projectUid);
       Assert.AreEqual(projectData, actual);

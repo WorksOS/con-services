@@ -6,7 +6,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
   /// <summary>
   /// Implements a mutation hook for cell pass changes during TAG file processing using action delegates to provided
-  /// dynamic control of the hook behaviours.
+  /// dynamic control of the hook behaviors.
   /// </summary>
   public class Cell_NonStatic_MutationHook : ICell_NonStatic_MutationHook
   {

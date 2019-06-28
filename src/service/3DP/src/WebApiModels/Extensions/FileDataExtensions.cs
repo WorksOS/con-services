@@ -1,4 +1,5 @@
 ﻿using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Extensions

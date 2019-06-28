@@ -13,14 +13,10 @@ namespace VSS.Productivity3D.Models.Models
     public FilterResult Filter { get; private set; }
 
     /// <summary>
-    /// Sets the machine speed target for Speed Summary requests. During this request Raptor does analysis of all cell passes (filtered out) and searches for the
-    /// passes with speed above or below target values. If there is at least one cell pass satisfying the condition - this cell is considered bad.
+    /// Only MachineSpeedTarget used.
     /// </summary>
-    /// <value>
-    /// The machine speed target.
-    /// </value>
-    [JsonProperty(PropertyName = "machineSpeedTarget", Required = Required.Default)]
-    public MachineSpeedTarget MachineSpeedTarget { get; private set; }
+    [JsonProperty(Required = Required.Default)]
+    public OverridingTargets Overrides { get; private set; }
 
     /// <summary>
     /// Default private constructor.
@@ -40,7 +36,7 @@ namespace VSS.Productivity3D.Models.Models
     {
       ProjectUid = projectUid;
       Filter = filter;
-      MachineSpeedTarget = machineSpeedTarget;
+      Overrides = new OverridingTargets(machineSpeedTarget: machineSpeedTarget);
     }
 
     /// <summary>
@@ -51,8 +47,7 @@ namespace VSS.Productivity3D.Models.Models
       base.Validate();
 
       Filter?.Validate();
-
-      MachineSpeedTarget?.Validate();
+      Overrides?.Validate();
     }
   }
 }

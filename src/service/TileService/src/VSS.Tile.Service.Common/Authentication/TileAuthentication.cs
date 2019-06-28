@@ -16,7 +16,7 @@ namespace VSS.Tile.Service.Common.Authentication
   /// </summary>
   public class TileAuthentication : TIDAuthentication
   {
-    private readonly IProjectListProxy projectListProxy;
+    private readonly IProjectProxy projectProxy;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TileAuthentication"/> class.
@@ -26,9 +26,9 @@ namespace VSS.Tile.Service.Common.Authentication
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy) : base(next, customerProxy, store, logger, serviceExceptionHandler)
+      IProjectProxy projectProxy) : base(next, customerProxy, store, logger, serviceExceptionHandler)
     {
-      this.projectListProxy = projectListProxy;
+      this.projectProxy = projectProxy;
     }
 
     protected override List<string> IgnoredPaths => new List<string> { "/swagger/", "/testtile/" };
@@ -41,7 +41,7 @@ namespace VSS.Tile.Service.Common.Authentication
     {
       //Delegate customer->project association resolution to the principal object for now as it has execution context and can invalidate cache if required
       // note that userUid may actually be the ApplicationId if isApplicationContext
-      return new TilePrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, projectListProxy, contextHeaders, tpaasApplicationName);
+      return new TilePrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, projectProxy, contextHeaders, tpaasApplicationName);
     }
 
   }

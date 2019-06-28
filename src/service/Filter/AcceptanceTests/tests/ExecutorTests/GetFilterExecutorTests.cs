@@ -223,11 +223,10 @@ namespace ExecutorTests
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
-      var projectListMock = new Mock<IProjectListProxy>();
-      projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
-
-      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new InMemoryDataCache(this.Logger, new MemoryCache(new MemoryCacheOptions())));
-      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
+      var projectProxy = new Mock<IProjectProxy>();
+      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      
+      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
@@ -271,11 +270,10 @@ namespace ExecutorTests
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
-      var projectListMock = new Mock<IProjectListProxy>();
-      projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
-
-      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new InMemoryDataCache(this.Logger, new MemoryCache(new MemoryCacheOptions())));
-      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
+      var projectProxy = new Mock<IProjectProxy>();
+      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      
+      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
@@ -336,11 +334,9 @@ namespace ExecutorTests
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> {projectData});
 
-      var projectListMock = new Mock<IProjectListProxy>();
-      projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
-
-      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new InMemoryDataCache(this.Logger, new MemoryCache(new MemoryCacheOptions())));
-      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
+      var projectProxy = new Mock<IProjectProxy>();
+      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);

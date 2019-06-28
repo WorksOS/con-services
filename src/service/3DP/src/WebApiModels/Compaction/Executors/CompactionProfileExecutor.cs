@@ -160,18 +160,31 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 
+      var liftBuildSettings = request.LiftBuildSettings;
+
       var productionDataProfileDataRequest = new ProductionDataProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
-        request.BaseFilter,
-        request.VolumeDesignDescriptor?.FileUid,
-        request.VolumeDesignDescriptor?.Offset,
+        request.Filter,
+        request.ReturnAllPassesAndLayers,
+        request.CutFillDesignDescriptor?.FileUid,
+        request.CutFillDesignDescriptor?.Offset,
         request.GridPoints != null,
         request.GridPoints?.x1 ?? (request.WGS84Points?.lon1 ?? 0.0),
         request.GridPoints?.y1 ?? (request.WGS84Points?.lat1 ?? 0.0),
         request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
         request.GridPoints?.y2 ?? (request.WGS84Points?.lat2 ?? 0.0),
-        request.ReturnAllPassesAndLayers
-      );
+        new OverridingTargets(liftBuildSettings.OverridingMachineCCV ?? 0,
+          liftBuildSettings.OverridingMachineCCV.HasValue,
+          liftBuildSettings.CCVRange.Max, liftBuildSettings.CCVRange.Min,
+          liftBuildSettings.OverridingMachineMDP ?? 0,
+          liftBuildSettings.OverridingMachineMDP.HasValue,
+          liftBuildSettings.MDPRange.Max,
+          liftBuildSettings.MDPRange.Min,
+          liftBuildSettings.OverridingTargetPassCountRange,
+          liftBuildSettings.OverridingTemperatureWarningLevels != null ?
+            new TemperatureSettings(liftBuildSettings.OverridingTemperatureWarningLevels.Max,
+              liftBuildSettings.OverridingTemperatureWarningLevels.Min, true) : null,
+          liftBuildSettings.MachineSpeedTarget));
 
       var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders).Result;
 
@@ -517,6 +530,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var volumeCalcType = request.VolumeCalcType ?? VolumeCalcType.None;
 
+      var liftBuildSettings = request.LiftBuildSettings;
       var summaryVolumesProfileDataRequest = new SummaryVolumesProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
         request.BaseFilter,
@@ -528,7 +542,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.GridPoints?.x1 ?? request.WGS84Points.lon1,
         request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y1 ?? request.WGS84Points.lat1,
-        request.GridPoints?.y2 ?? request.WGS84Points.lat2
+        request.GridPoints?.y2 ?? request.WGS84Points.lat2,
+        new OverridingTargets(liftBuildSettings.OverridingMachineCCV ?? 0,
+          liftBuildSettings.OverridingMachineCCV.HasValue,
+          liftBuildSettings.CCVRange.Max, liftBuildSettings.CCVRange.Min,
+          liftBuildSettings.OverridingMachineMDP ?? 0,
+          liftBuildSettings.OverridingMachineMDP.HasValue,
+          liftBuildSettings.MDPRange.Max,
+          liftBuildSettings.MDPRange.Min,
+          liftBuildSettings.OverridingTargetPassCountRange,
+          liftBuildSettings.OverridingTemperatureWarningLevels != null ? 
+            new TemperatureSettings(liftBuildSettings.OverridingTemperatureWarningLevels.Max, 
+              liftBuildSettings.OverridingTemperatureWarningLevels.Min, true) : null,
+          liftBuildSettings.MachineSpeedTarget)
       );
 
       var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest>(summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders).Result;

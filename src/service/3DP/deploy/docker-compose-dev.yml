@@ -75,6 +75,7 @@ services:
       - SNAKEPIT_HOST=snakepit.dev.eks.vspengg.com
       - TCCBASEURL=https://www.myconnectedsite.com
       - TCCFILESPACEID=u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
+      - TCC_TAGFILE_FILESPACEID=ue5e7c33f-29c9-448c-b2d6-f6c9f4439c47
       - TCCFILESPACENAME=vldatastore-dev
       - TCCORG=vldev
       - TCCPWD=vldev_key

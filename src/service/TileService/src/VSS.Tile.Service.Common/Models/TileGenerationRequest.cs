@@ -5,6 +5,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Tile.Service.Common.Services;
 
 namespace VSS.Tile.Service.Common.Models

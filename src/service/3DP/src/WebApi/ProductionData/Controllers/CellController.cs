@@ -16,12 +16,14 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -48,9 +50,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ILoggerFactory logger, 
       IConfigurationStore configStore, 
       ITRexCompactionDataProxy trexCompactionDataProxy, 
-      IFileListProxy fileListProxy,
+      IFileImportProxy fileImportProxy,
       ICompactionSettingsManager settingsManager) 
-      : base(configStore, fileListProxy, settingsManager)
+      : base(configStore, fileImportProxy, settingsManager)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;

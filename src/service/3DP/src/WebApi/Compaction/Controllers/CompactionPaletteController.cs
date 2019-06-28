@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
@@ -31,8 +30,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionPaletteController(IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
-      base(configStore, fileListProxy, settingsManager)
+    public CompactionPaletteController(IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager) :
+      base(configStore, fileImportProxy, settingsManager)
     {
       this.elevProxy = elevProxy;
     }

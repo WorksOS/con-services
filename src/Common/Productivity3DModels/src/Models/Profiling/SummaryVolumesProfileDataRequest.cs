@@ -11,6 +11,11 @@ namespace VSS.Productivity3D.Models.Models.Profiling
   public class SummaryVolumesProfileDataRequest : BaseProfileDataRequest
   {
     /// <summary>
+    /// The base or earliest filter to be used for filter-filter and filter-design volumes.
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public FilterResult BaseFilter { get; private set; }
+    /// <summary>
     /// The top or latest filter to be used for filter-filter and design-filter volumes
     /// </summary>
     [JsonProperty(Required = Required.Default)]
@@ -32,17 +37,6 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="baseFilter"></param>
-    /// <param name="topFilter"></param>
-    /// <param name="referenceDesignUid"></param>
-    /// <param name="referenceDesignOffset"></param>
-    /// <param name="volumeCalcType"></param>
-    /// <param name="positionsAreGrid"></param>
-    /// <param name="startX"></param>
-    /// <param name="startY"></param>
-    /// <param name="endX"></param>
-    /// <param name="endY"></param>
     public SummaryVolumesProfileDataRequest(
       Guid projectUid, 
       FilterResult baseFilter, 
@@ -54,9 +48,13 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       double  startX,
       double startY,
       double endX,
-      double endY
-      ) : base (projectUid, baseFilter, referenceDesignUid, referenceDesignOffset, positionsAreGrid, startX, startY, endX, endY)
+      double endY,
+      OverridingTargets overrides) 
+
+      : base (projectUid, referenceDesignUid, referenceDesignOffset, positionsAreGrid, 
+              startX, startY, endX, endY, overrides)
     {
+      BaseFilter = baseFilter;
       TopFilter = topFilter;
       VolumeCalcType = volumeCalcType;
     }
@@ -69,6 +67,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       base.Validate();
 
       BaseFilter?.Validate();
+      TopFilter?.Validate();
     }
   }
 }

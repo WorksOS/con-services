@@ -3,11 +3,14 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.IO;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -21,7 +24,13 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .New()
         .AddLogging()
-        .Add(x => x.AddSingleton<VSS.TRex.IO.RecyclableMemoryStreamManager>(new VSS.TRex.IO.RecyclableMemoryStreamManager()))
+        .Add(x => x.AddSingleton<RecyclableMemoryStreamManager>(new RecyclableMemoryStreamManager()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<long>>(new GenericArrayPoolCaches<long>()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<ulong>>(new GenericArrayPoolCaches<ulong>()))
+        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(1024)))
+
         .Add(x => x.AddSingleton<Mock<IConfigurationStore>>(mock =>
         {
           var config = new Mock<IConfigurationStore>();
@@ -98,14 +107,25 @@ namespace VSS.TRex.Tests.TestFixtures
       configuration.GetValueInt("MAX_EXPORT_ROWS").Should().Be(rowCount);
       configuration.GetValueInt("MAX_EXPORT_ROWS", 1).Should().Be(rowCount);
     }
-    
+
+    public void ClearHelpers()
+    {
+      RecyclableMemoryStreamManagerHelper.Clear();
+      GenericArrayPoolCacheHelper<byte>.Clear();
+      GenericArrayPoolCacheHelper<long>.Clear();
+      GenericArrayPoolCacheHelper<CellPass>.Clear();
+      SlabAllocatedArrayPoolHelper<CellPass>.Clear();
+    }
+
     public DILoggingFixture()
     {
+      ClearHelpers();
       SetupFixture();
     }
 
     public void Dispose()
     {
+      ClearHelpers();
       DIBuilder.Eject();
     }
   }

@@ -87,10 +87,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var jo = JObject.FromObject(returnedResult.GeoJSON);
         geoJsonList.Add(jo);
       }
-
-      throw new ServiceException(HttpStatusCode.InternalServerError,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"Failed to get design boundary for file: {fileName}"));
+      else
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            $"Failed to get design boundary for file: {fileName}"));
+      }
     }
 
 #if RAPTOR

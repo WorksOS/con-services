@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Cells;
+﻿using System;
+using VSS.TRex.Cells;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Types;
 
@@ -47,6 +48,7 @@ namespace VSS.TRex.Profiling.Models
 
     // Setup target speeds here for SpeedSummary request
 
+    [Obsolete("use MachineSpeedExtendedRecord")]
     public static ushort TargetMaxMachineSpeed = 0;
     public static ushort TargetMinMachineSpeed = 0;
 

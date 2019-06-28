@@ -10,7 +10,6 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -22,6 +21,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -49,10 +49,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionExportController(
-      IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
+      IConfigurationStore configStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
       ITransferProxy transferProxy) :
-      base(configStore, fileListProxy, settingsManager)
+      base(configStore, fileImportProxy, settingsManager)
     {
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;

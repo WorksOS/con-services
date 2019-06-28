@@ -75,7 +75,12 @@ namespace VSS.TRex.Tests
       // Load the mutable stream of information
       mutableLeaf.Directory.CreateDefaultSegment();
 
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => { (mutableLeaf.Directory.GlobalLatestCells as SubGridCellLatestPassDataWrapper_NonStatic).PassData[x, y].Height = 1234.5678F; });
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        var cellPass = (mutableLeaf.Directory.GlobalLatestCells as SubGridCellLatestPassDataWrapper_NonStatic)[x, y];
+        cellPass.Height = 1234.5678F;
+        (mutableLeaf.Directory.GlobalLatestCells as SubGridCellLatestPassDataWrapper_NonStatic)[x, y] = cellPass;
+      });
 
       // Take a copy of the mutable cells for later reference
       SubGridCellLatestPassDataWrapper_NonStatic mutableCells = (mutableLeaf.Directory.GlobalLatestCells as SubGridCellLatestPassDataWrapper_NonStatic);
@@ -98,7 +103,7 @@ namespace VSS.TRex.Tests
       // Check height of the cells match to tolerance given the compressed lossiness.
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        double mutableValue = mutableCells.PassData[x, y].Height;
+        double mutableValue = mutableCells[x, y].Height;
         double immutableValue = immutableCells.ReadHeight(x, y);
 
         double diff = immutableValue - mutableValue;
@@ -123,12 +128,14 @@ namespace VSS.TRex.Tests
       // Load the mutable stream of information
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        (mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic).PassData[x, y].Height = 1234.5678F;
+        var cellPass = (mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic)[x, y];
+        cellPass.Height = 1234.5678F;
+        (mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic)[x, y] = cellPass;
 
         // Add 5 passes to each cell
         for (int i = 0; i < 5; i++)
         {
-          var cellPass = TestCellPass();
+          cellPass = TestCellPass();
 
           // Adjust the height/time so there is a range of values
           cellPass.Time = cellPass.Time.AddMinutes(i);
@@ -142,7 +149,7 @@ namespace VSS.TRex.Tests
 
       // Take a copy of the mutable cells and cell passes for later reference
       var mutableLatest = mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
-      CellPass[,][] mutablePasses = mutableSegment.PassesData.GetState(out var cellPassCounts);
+      Cell_NonStatic[,] mutablePasses = mutableSegment.PassesData.GetState();
 
       MemoryStream mutableStream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
       using (var writer = new BinaryWriter(mutableStream, Encoding.UTF8, true))
@@ -172,7 +179,7 @@ namespace VSS.TRex.Tests
         // Check height of the latest cells match to tolerance given the compressed lossiness.
         SubGridUtilities.SubGridDimensionalIterator((x, y) =>
         {
-          double mutableValue = mutableLatest.PassData[x, y].Height;
+          double mutableValue = mutableLatest[x, y].Height;
           double immutableValue = immutableLatest.ReadHeight(x, y);
 
           double diff = immutableValue - mutableValue;
@@ -221,11 +228,13 @@ namespace VSS.TRex.Tests
           // Force the height and time in the immutable record to be the same as the immutable record
           // as they have been independently checked above. Also set the machine ID to be the same as the mutable
           // machine ID as the immutable representation does not include it in the Ignite POC
-          cellPass.Time = mutablePasses[x, y][i].Time;
-          cellPass.Height = mutablePasses[x, y][i].Height;
-          cellPass.InternalSiteModelMachineIndex = mutablePasses[x, y][i].InternalSiteModelMachineIndex;
 
-          CellPass mutableCellPass = mutablePasses[x, y][i];
+          var mutablePass = mutablePasses[x, y].Passes.GetElement(i);
+          cellPass.Time = mutablePass.Time;
+          cellPass.Height = mutablePass.Height;
+          cellPass.InternalSiteModelMachineIndex = mutablePass.InternalSiteModelMachineIndex;
+
+          CellPass mutableCellPass = mutablePasses[x, y].Passes.GetElement(i);
           Assert.True(mutableCellPass.Equals(cellPass), $"Cell passes not equal at Cell[{x}, {y}], cell pass index {i}");
         }
       });

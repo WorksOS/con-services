@@ -3,98 +3,105 @@ using FluentAssertions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.Compression;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Compression
 {
-        public class BitFieldArrayTests
+    public class BitFieldArrayTests : IClassFixture<DILoggingFixture>
     {
         [Fact]
         public void Test_BitFieldArray_Creation()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
+          using (var bfa = new BitFieldArray())
+          {
             Assert.Equal(0, bfa.NumBits);
             Assert.Equal(0, bfa.MemorySize());
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_Initialise1()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
+          using (var bfa = new BitFieldArray())
+          {
             // Initialise with just a count of bits and records
             bfa.Initialise(10, 100);
             Assert.Equal(1000, bfa.NumBits);
             Assert.Equal(125, bfa.MemorySize()); // 125 bytes to store 1000 bits
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_Initialise2()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
+          using (var bfa = new BitFieldArray())
+          {
             // Initialise with more than one field in a record
 
             BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
             {
-                new BitFieldArrayRecordsDescriptor { BitsPerRecord = 10, NumRecords = 100 },
-                new BitFieldArrayRecordsDescriptor { BitsPerRecord = 25, NumRecords = 500 }
+              new BitFieldArrayRecordsDescriptor {BitsPerRecord = 10, NumRecords = 100},
+              new BitFieldArrayRecordsDescriptor {BitsPerRecord = 25, NumRecords = 500}
             };
 
             bfa.Initialise(fieldsArray);
 
             Assert.Equal(13500, bfa.NumBits);
             Assert.Equal(1688, bfa.MemorySize()); // 1688 bytes to store 13500 bits
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_Initialise_FailWithTooLargeForUintError()
         {
-            BitFieldArray bfa = new BitFieldArray();
-        
+          using (var bfa = new BitFieldArray())
+          {
             BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
             {
-               new BitFieldArrayRecordsDescriptor { BitsPerRecord = 100, NumRecords = 1_000_000_000 },
+              new BitFieldArrayRecordsDescriptor {BitsPerRecord = 100, NumRecords = 1_000_000_000},
             };
 
             Action act = () => bfa.Initialise(fieldsArray);
             act.Should().Throw<TRexPersistencyException>().WithMessage("Attempt to create bit field array with*");
+          }
         }
     
         [Fact]
         public void Test_BitFieldArray_Initialise_FailWithTooLargeToStore()
         {
-          BitFieldArray bfa = new BitFieldArray();
-    
-          BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
+          using (var bfa = new BitFieldArray())
           {
-            new BitFieldArrayRecordsDescriptor { BitsPerRecord = 8, NumRecords = 260_000_000 },
-          };
-    
-          Action act = () => bfa.Initialise(fieldsArray);
-          act.Should().Throw<TRexPersistencyException>().WithMessage("*AllocateBuffer limited to*in size*");
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
+            {
+              new BitFieldArrayRecordsDescriptor {BitsPerRecord = 8, NumRecords = 260_000_000},
+            };
+
+            Action act = () => bfa.Initialise(fieldsArray);
+            act.Should().Throw<TRexPersistencyException>().WithMessage("*AllocateBuffer limited to*in size*");
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_SingleRecordSingleBitField_WithDescriptor()
         {
-            BitFieldArray bfa = new BitFieldArray();
-        
+          using (var bfa = new BitFieldArray())
+          {
             BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
             {
-              new BitFieldArrayRecordsDescriptor { BitsPerRecord = 1, NumRecords = 1 },
+              new BitFieldArrayRecordsDescriptor {BitsPerRecord = 1, NumRecords = 1},
             };
-        
+
             bfa.Initialise(fieldsArray);
-        
+
             Assert.Equal(1, bfa.NumBits);
             Assert.Equal(1, bfa.NumStorageElements());
             Assert.Equal(1, bfa.MemorySize());
-        
-            EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
-        
+
+            var descriptor = new EncodedBitFieldDescriptor();
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] {0, 1}, 0, 2, 0xffffffff, 0, false,
+              ref descriptor);
+
             // Write a '1' to the bfa
             bfa.StreamWriteStart();
             try
@@ -105,14 +112,15 @@ namespace VSS.TRex.Tests.Compression
             {
               bfa.StreamWriteEnd();
             }
-        
+
             // Read the value back again
-        
+
             int bitAddress = 0;
             long readValue = bfa.ReadBitField(ref bitAddress, descriptor);
-        
+
             Assert.Equal(1, readValue);
             Assert.Equal(1, bitAddress);
+          }
         }
 
         private const bool NULLABLE = true;
@@ -146,44 +154,46 @@ namespace VSS.TRex.Tests.Compression
           (int bitsPerRecord, int numRecords, int minValue, int maxValue, int mask, long valueToWrite, 
            int numStorageElements, int memorySize, int nativeNullValue, bool fieldIsNullable, int expectedNumValues)
          {
-             BitFieldArray bfa = new BitFieldArray();
+           using (var bfa = new BitFieldArray())
+           {
+             BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
+             {
+               new BitFieldArrayRecordsDescriptor {BitsPerRecord = bitsPerRecord, NumRecords = numRecords},
+             };
 
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
-            {
-                new BitFieldArrayRecordsDescriptor { BitsPerRecord = bitsPerRecord, NumRecords = numRecords },
-            };
-            
-            bfa.Initialise(fieldsArray);
+             bfa.Initialise(fieldsArray);
 
-            bitsPerRecord.Should().Be(bfa.NumBits);
-            numStorageElements.Should().Be(bfa.NumStorageElements());
-            Assert.Equal((int)memorySize, bfa.MemorySize());
+             bitsPerRecord.Should().Be(bfa.NumBits);
+             numStorageElements.Should().Be(bfa.NumStorageElements());
+             Assert.Equal((int) memorySize, bfa.MemorySize());
 
-            EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long [] { minValue, maxValue }, mask, nativeNullValue, fieldIsNullable, ref descriptor);
+             var descriptor = new EncodedBitFieldDescriptor();
+             AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] {minValue, maxValue}, 0, 2, mask,
+               nativeNullValue, fieldIsNullable, ref descriptor);
 
-            descriptor.RequiredBits.Should().Be((byte)bitsPerRecord);
-            descriptor.NumValues.Should().Be(expectedNumValues);
+             descriptor.RequiredBits.Should().Be((byte) bitsPerRecord);
+             descriptor.NumValues.Should().Be(expectedNumValues);
 
-            // Write a value to the bfa
-            bfa.StreamWriteStart();
-            try
-            {
-                bfa.StreamWrite(valueToWrite, descriptor); 
-            }
-            finally
-            {
-                bfa.StreamWriteEnd();
-            }
+             // Write a value to the bfa
+             bfa.StreamWriteStart();
+             try
+             {
+               bfa.StreamWrite(valueToWrite, descriptor);
+             }
+             finally
+             {
+               bfa.StreamWriteEnd();
+             }
 
-            // Read the value back again
+             // Read the value back again
 
-            int bitAddress = 0;
-            long readValue = bfa.ReadBitField(ref bitAddress, descriptor);
+             int bitAddress = 0;
+             long readValue = bfa.ReadBitField(ref bitAddress, descriptor);
 
-            valueToWrite.Should().Be(readValue);
-            bitsPerRecord.Should().Be(bitAddress);
-        }
+             valueToWrite.Should().Be(readValue);
+             bitsPerRecord.Should().Be(bitAddress);
+           }
+         }
 
         [Theory]
         // Zero bits expected, writing a value of 0 using 0 storage elements, 0 bytes of memory
@@ -200,47 +210,48 @@ namespace VSS.TRex.Tests.Compression
         public void Test_BitFieldArray_SingleRecordSingleVariableSizeField_WithoutDescriptor
         (int bitsPerRecord, int numRecords, long valueToWrite, int numStorageElements, int memorySize)
         {
-          BitFieldArray bfa = new BitFieldArray();
-      
-          BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
+          using (var bfa = new BitFieldArray())
           {
-              new BitFieldArrayRecordsDescriptor { BitsPerRecord = bitsPerRecord, NumRecords = numRecords },
-          };
-      
-          bfa.Initialise(fieldsArray);
-      
-          bitsPerRecord.Should().Be(bfa.NumBits);
-          numStorageElements.Should().Be(bfa.NumStorageElements());
-          Assert.Equal((int)memorySize, bfa.MemorySize());
-      
-          // Write a value to the bfa
-          bfa.StreamWriteStart();
-          try
-          {
-            bfa.StreamWrite(valueToWrite, (int)bitsPerRecord);
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
+            {
+              new BitFieldArrayRecordsDescriptor {BitsPerRecord = bitsPerRecord, NumRecords = numRecords},
+            };
+
+            bfa.Initialise(fieldsArray);
+
+            bitsPerRecord.Should().Be(bfa.NumBits);
+            numStorageElements.Should().Be(bfa.NumStorageElements());
+            Assert.Equal((int) memorySize, bfa.MemorySize());
+
+            // Write a value to the bfa
+            bfa.StreamWriteStart();
+            try
+            {
+              bfa.StreamWrite(valueToWrite, (int) bitsPerRecord);
+            }
+            finally
+            {
+              bfa.StreamWriteEnd();
+            }
+
+            // Read the value back again
+
+            int bitAddress = 0;
+            long readValue = bfa.ReadBitField(ref bitAddress, (int) bitsPerRecord);
+
+            valueToWrite.Should().Be(readValue);
+            bitsPerRecord.Should().Be(bitAddress);
           }
-          finally
-          {
-            bfa.StreamWriteEnd();
-          }
-      
-          // Read the value back again
-      
-          int bitAddress = 0;
-          long readValue = bfa.ReadBitField(ref bitAddress, (int)bitsPerRecord);
-      
-          valueToWrite.Should().Be(readValue);
-          bitsPerRecord.Should().Be(bitAddress);
         }
       
         [Fact]
         public void Test_BitFieldArray_ManyRecordsSingleBitField_WithDescriptor()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
+          using (var bfa = new BitFieldArray())
+          {
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
             {
-                new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 1, NumRecords = 1000 },
+              new BitFieldArrayRecordsDescriptor() {BitsPerRecord = 1, NumRecords = 1000},
             };
 
             bfa.Initialise(fieldsArray);
@@ -249,21 +260,22 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal(16, bfa.NumStorageElements());
             Assert.Equal(125, bfa.MemorySize());
 
-            EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long [] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
+            var descriptor = new EncodedBitFieldDescriptor();
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] {0, 1}, 0, 2, 0xffffffff, 0, false,
+              ref descriptor);
 
             // Write a '1' to the bfa
             bfa.StreamWriteStart();
             try
             {
-                for (int i = 0; i < 1000; i++)
-                {
-                    bfa.StreamWrite(1, descriptor);
-                }
+              for (int i = 0; i < 1000; i++)
+              {
+                bfa.StreamWrite(1, descriptor);
+              }
             }
             finally
             {
-                bfa.StreamWriteEnd();
+              bfa.StreamWriteEnd();
             }
 
             // Read the value back again
@@ -271,21 +283,22 @@ namespace VSS.TRex.Tests.Compression
             int bitAddress = 0;
             for (int i = 0; i < 1000; i++)
             {
-                long readValue = bfa.ReadBitField(ref bitAddress, descriptor);
+              long readValue = bfa.ReadBitField(ref bitAddress, descriptor);
 
-                Assert.Equal(1, readValue);
-                Assert.Equal(bitAddress, i + 1);
+              Assert.Equal(1, readValue);
+              Assert.Equal(bitAddress, i + 1);
             }
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_SingleRecordMultiBitField_WithDescriptor()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
+          using (var bfa = new BitFieldArray())
+          {
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
             {
-                new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 11, NumRecords = 1 },
+              new BitFieldArrayRecordsDescriptor() {BitsPerRecord = 11, NumRecords = 1},
             };
 
             bfa.Initialise(fieldsArray);
@@ -294,18 +307,19 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal(1, bfa.NumStorageElements());
             Assert.Equal(2, bfa.MemorySize());
 
-            EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long [] { 0, 2047 }, 0xffffffff, 0, false, ref descriptor);
+            var descriptor = new EncodedBitFieldDescriptor();
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] {0, 2047}, 0, 2, 0xffffffff, 0, false,
+              ref descriptor);
 
             // Write a '1234' to the bfa
             bfa.StreamWriteStart();
             try
             {
-                bfa.StreamWrite(1234, descriptor);
+              bfa.StreamWrite(1234, descriptor);
             }
             finally
             {
-                bfa.StreamWriteEnd();
+              bfa.StreamWriteEnd();
             }
 
             // Read the value back again
@@ -315,16 +329,17 @@ namespace VSS.TRex.Tests.Compression
 
             Assert.Equal(1234, readValue);
             Assert.Equal(11, bitAddress);
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_MultiRecordMultiBitField_WithDescriptor()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
+          using (var bfa = new BitFieldArray())
+          {
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
             {
-                new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 11, NumRecords = 1000 },
+              new BitFieldArrayRecordsDescriptor() {BitsPerRecord = 11, NumRecords = 1000},
             };
 
             bfa.Initialise(fieldsArray);
@@ -333,21 +348,21 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal(172, bfa.NumStorageElements());
             Assert.Equal(1375, bfa.MemorySize());
 
-            EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 2047 }, 0xffffffff, 0, false, ref descriptor);
+            var descriptor = new EncodedBitFieldDescriptor();
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] {0, 2047}, 0, 2, 0xffffffff, 0, false,
+              ref descriptor);
 
             // Write a '1234' to the bfa
             bfa.StreamWriteStart();
             try
             {
-                for (int i = 0; i < 1000; i++)
-                    bfa.StreamWrite(1234, descriptor);
+              for (int i = 0; i < 1000; i++)
+                bfa.StreamWrite(1234, descriptor);
             }
             finally
             {
-                bfa.StreamWriteEnd();
+              bfa.StreamWriteEnd();
             }
-
 
             // Read the value back again
 
@@ -355,21 +370,22 @@ namespace VSS.TRex.Tests.Compression
 
             for (int i = 0; i < 1000; i++)
             {
-                long readValue = bfa.ReadBitField(ref bitAddress, descriptor);
+              long readValue = bfa.ReadBitField(ref bitAddress, descriptor);
 
-                Assert.Equal(1234, readValue);
-                Assert.Equal(bitAddress, (i+1) * 11);
+              Assert.Equal(1234, readValue);
+              Assert.Equal(bitAddress, (i + 1) * 11);
             }
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_SingleRecordSingleBitField_WithoutDescriptor()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
+          using (var bfa = new BitFieldArray())
+          {
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
             {
-                new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 1, NumRecords = 1 },
+              new BitFieldArrayRecordsDescriptor() {BitsPerRecord = 1, NumRecords = 1},
             };
 
             bfa.Initialise(fieldsArray);
@@ -382,11 +398,11 @@ namespace VSS.TRex.Tests.Compression
             bfa.StreamWriteStart();
             try
             {
-                bfa.StreamWrite(1, 1);
+              bfa.StreamWrite(1, 1);
             }
             finally
             {
-                bfa.StreamWriteEnd();
+              bfa.StreamWriteEnd();
             }
 
             // Read the value back again
@@ -396,16 +412,17 @@ namespace VSS.TRex.Tests.Compression
 
             Assert.Equal(1, readValue);
             Assert.Equal(1, bitAddress);
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_ManyRecordsSingleBitField_WithoutDescriptor()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
+          using (var bfa = new BitFieldArray())
+          {
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
             {
-                new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 1, NumRecords = 1000 },
+              new BitFieldArrayRecordsDescriptor() {BitsPerRecord = 1, NumRecords = 1000},
             };
 
             bfa.Initialise(fieldsArray);
@@ -418,14 +435,14 @@ namespace VSS.TRex.Tests.Compression
             bfa.StreamWriteStart();
             try
             {
-                for (int i = 0; i < 1000; i++)
-                {
-                    bfa.StreamWrite(1, 1);
-                }
+              for (int i = 0; i < 1000; i++)
+              {
+                bfa.StreamWrite(1, 1);
+              }
             }
             finally
             {
-                bfa.StreamWriteEnd();
+              bfa.StreamWriteEnd();
             }
 
             // Read the value back again
@@ -433,21 +450,22 @@ namespace VSS.TRex.Tests.Compression
             int bitAddress = 0;
             for (int i = 0; i < 1000; i++)
             {
-                long readValue = bfa.ReadBitField(ref bitAddress, 1);
+              long readValue = bfa.ReadBitField(ref bitAddress, 1);
 
-                Assert.Equal(1, readValue);
-                Assert.Equal(bitAddress, i + 1);
+              Assert.Equal(1, readValue);
+              Assert.Equal(bitAddress, i + 1);
             }
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_SingleRecordMultiBitField_WithoutDescriptor()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
+          using (var bfa = new BitFieldArray())
+          {
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
             {
-                new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 11, NumRecords = 1 },
+              new BitFieldArrayRecordsDescriptor() {BitsPerRecord = 11, NumRecords = 1},
             };
 
             bfa.Initialise(fieldsArray);
@@ -460,11 +478,11 @@ namespace VSS.TRex.Tests.Compression
             bfa.StreamWriteStart();
             try
             {
-                bfa.StreamWrite(1234, 11);
+              bfa.StreamWrite(1234, 11);
             }
             finally
             {
-                bfa.StreamWriteEnd();
+              bfa.StreamWriteEnd();
             }
 
             // Read the value back again
@@ -474,16 +492,17 @@ namespace VSS.TRex.Tests.Compression
 
             Assert.Equal(1234, readValue);
             Assert.Equal(11, bitAddress);
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_MultiRecordMultiBitField_WithoutDescriptor()
         {
-            BitFieldArray bfa = new BitFieldArray();
-
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
+          using (var bfa = new BitFieldArray())
+          {
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
             {
-                new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 11, NumRecords = 1000 },
+              new BitFieldArrayRecordsDescriptor() {BitsPerRecord = 11, NumRecords = 1000},
             };
 
             bfa.Initialise(fieldsArray);
@@ -496,14 +515,14 @@ namespace VSS.TRex.Tests.Compression
             bfa.StreamWriteStart();
             try
             {
-                for (int i = 0; i < 1000; i++)
-                {
-                    bfa.StreamWrite(1234, 11);
-                }
+              for (int i = 0; i < 1000; i++)
+              {
+                bfa.StreamWrite(1234, 11);
+              }
             }
             finally
             {
-                bfa.StreamWriteEnd();
+              bfa.StreamWriteEnd();
             }
 
 
@@ -513,87 +532,103 @@ namespace VSS.TRex.Tests.Compression
 
             for (int i = 0; i < 1000; i++)
             {
-                long readValue = bfa.ReadBitField(ref bitAddress, 11);
+              long readValue = bfa.ReadBitField(ref bitAddress, 11);
 
-                Assert.Equal(1234, readValue);
-                Assert.Equal(bitAddress, (i + 1) * 11);
+              Assert.Equal(1234, readValue);
+              Assert.Equal(bitAddress, (i + 1) * 11);
             }
+          }
         }
 
         [Fact]
         public void Test_BitFieldArray_StreamWriteEnd_FailWithImproperStreamEndPosition()
         {
-          BitFieldArray bfa = new BitFieldArray();
-          bfa.Initialise(1, 1);
+          using (var bfa = new BitFieldArray())
+          {
+            bfa.Initialise(1, 1);
 
-          // Write a '1' to the bfa
-          bfa.StreamWriteStart();
-          bfa.StreamWrite(1, 1);
-          bfa.StreamWriteStart(); // Set bit pos back to 0
+            // Write a '1' to the bfa
+            bfa.StreamWriteStart();
+            bfa.StreamWrite(1, 1);
+            bfa.StreamWriteStart(); // Set bit pos back to 0
 
-          Action act = () => bfa.StreamWriteEnd(); // throw exception
-          act.Should().Throw<TRexException>().WithMessage("*Stream bit position is not after last bit in storage*");
+            Action act = () => bfa.StreamWriteEnd(); // throw exception
+            act.Should().Throw<TRexException>().WithMessage("*Stream bit position is not after last bit in storage*");
+          }
         }
 
         [Fact]
         public void WriteBitFieldVector_Success()
         {
           long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-          int valueBits = 4;
 
-          BitFieldArray bfa = new BitFieldArray();
-          bfa.Initialise(valueBits, values.Length);
+          var descriptor = new EncodedBitFieldDescriptor();
+          descriptor.RequiredBits = 4;
 
-          int bitLocation = 0;
-          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+          using (var bfa = new BitFieldArray())
+          {
+            bfa.Initialise(descriptor.RequiredBits, values.Length);
 
-          bitLocation.Should().Be(values.Length * valueBits);
+            int bitLocation = 0;
+            bfa.WriteBitFieldVector(ref bitLocation, descriptor, values.Length, values);
+
+            bitLocation.Should().Be(values.Length * descriptor.RequiredBits);
+          }
         }
 
         [Fact]
         public void WriteBitFieldVector_Success_PartialWrite()
         {
           long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-          int valueBits = 4;
+          var descriptor = new EncodedBitFieldDescriptor();
+          descriptor.RequiredBits = 4;
           int partialWriteSize = 5;
 
-          BitFieldArray bfa = new BitFieldArray();
-          bfa.Initialise(valueBits, values.Length);
+          using (var bfa = new BitFieldArray())
+          {
+            bfa.Initialise(descriptor.RequiredBits, values.Length);
 
-          int bitLocation = 0;
-          bfa.WriteBitFieldVector(ref bitLocation, valueBits, partialWriteSize, values);
+            int bitLocation = 0;
+            bfa.WriteBitFieldVector(ref bitLocation, descriptor, partialWriteSize, values);
 
-          bitLocation.Should().Be(valueBits * partialWriteSize);
+            bitLocation.Should().Be(descriptor.RequiredBits * partialWriteSize);
+          }
         }
 
         [Fact]
         public void WriteBitFieldVector_FailWithValuesArraySize()
         {
-          long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-          int valueBits = 4;
+          long[] values = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+          var descriptor = new EncodedBitFieldDescriptor();
+          descriptor.RequiredBits = 4;
 
-          BitFieldArray bfa = new BitFieldArray();
-          bfa.Initialise(valueBits, values.Length);
+          using (var bfa = new BitFieldArray())
+          {
+            bfa.Initialise(descriptor.RequiredBits, values.Length);
 
-          int bitLocation = 0;
+            int bitLocation = 0;
 
-          Action act = () => bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length + 1, values);
-          act.Should().Throw<ArgumentException>().WithMessage("Supplied values array is null or not large enough*");
+            Action act = () => bfa.WriteBitFieldVector(ref bitLocation, descriptor, values.Length + 1, values);
+            act.Should().Throw<ArgumentException>().WithMessage("Supplied values array is null or not large enough*");
+          }
         }
 
         [Fact]
         public void WriteBitFieldVector_FailWithStorageSize()
         {
           long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-          int valueBits = 4;
+          var descriptor = new EncodedBitFieldDescriptor();
+          descriptor.RequiredBits = 4;
 
-          BitFieldArray bfa = new BitFieldArray();
-          bfa.Initialise(valueBits, values.Length - 1);
+          using (var bfa = new BitFieldArray())
+          {
+            bfa.Initialise(descriptor.RequiredBits, values.Length - 1);
 
-          int bitLocation = 0;
+            int bitLocation = 0;
 
-          Action act = () => bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
-          act.Should().Throw<ArgumentException>().WithMessage("Insufficient storage present to satisfy*");
+            Action act = () => bfa.WriteBitFieldVector(ref bitLocation, descriptor, values.Length, values);
+            act.Should().Throw<ArgumentException>().WithMessage("Insufficient storage present to satisfy*");
+          }
         }
 
         [Theory]
@@ -603,77 +638,91 @@ namespace VSS.TRex.Tests.Compression
         [InlineData(32)]
         [InlineData(48)]
         [InlineData(63)]
-        public void ReadBitFieldVector_Success(int valueBits)
+        public void ReadBitFieldVector_Success(byte valueBits)
         {
           long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-          BitFieldArray bfa = new BitFieldArray();
-          bfa.Initialise(valueBits, values.Length);
+          var descriptor = new EncodedBitFieldDescriptor();
+          descriptor.RequiredBits = valueBits;
 
-          int bitLocation = 0;
-          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+          using (var bfa = new BitFieldArray())
+          {
+            bfa.Initialise(valueBits, values.Length);
 
-          // Read the vector back
-          bitLocation = 0;
-          long[] outValues = new long[values.Length];
-          bfa.ReadBitFieldVector(ref bitLocation, valueBits, outValues.Length, outValues);
-          bitLocation.Should().Be(outValues.Length * valueBits);
+            int bitLocation = 0;
+            bfa.WriteBitFieldVector(ref bitLocation, descriptor, values.Length, values);
 
-          outValues.Should().BeEquivalentTo(values);
+            // Read the vector back
+            bitLocation = 0;
+            long[] outValues = new long[values.Length];
+            bfa.ReadBitFieldVector(ref bitLocation, descriptor, outValues.Length, outValues);
+            bitLocation.Should().Be(outValues.Length * valueBits);
+
+            outValues.Should().BeEquivalentTo(values);
+          }
         }
 
         [Fact]
         public void ReadBitFieldVector_SuccessPartial()
         {
           long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-          int valueBits = 4;
+          var descriptor = new EncodedBitFieldDescriptor();
+          descriptor.RequiredBits = 4;
 
-          BitFieldArray bfa = new BitFieldArray();
-          bfa.Initialise(valueBits, values.Length);
+          using (var bfa = new BitFieldArray())
+          {
+            bfa.Initialise(descriptor.RequiredBits, values.Length);
 
-          int bitLocation = 0;
-          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+            int bitLocation = 0;
+            bfa.WriteBitFieldVector(ref bitLocation, descriptor, values.Length, values);
 
-          // Read the vector back
-          bitLocation = 0;
-          long[] outValues = new long[5];
-          bfa.ReadBitFieldVector(ref bitLocation, valueBits, outValues.Length, outValues);
-          bitLocation.Should().Be(outValues.Length * valueBits);
+            // Read the vector back
+            bitLocation = 0;
+            long[] outValues = new long[5];
+            bfa.ReadBitFieldVector(ref bitLocation, descriptor, outValues.Length, outValues);
+            bitLocation.Should().Be(outValues.Length * descriptor.RequiredBits);
 
-          outValues.ForEach((l, i) => l.Should().Be(values[i]));
+            outValues.ForEach((l, i) => l.Should().Be(values[i]));
+          }
         }
 
         [Fact]
         public void ReadBitFieldVector_FailWithValuesArraySize()
         {
           long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-          int valueBits = 4;
+          var descriptor = new EncodedBitFieldDescriptor();
+          descriptor.RequiredBits = 4;
 
-          BitFieldArray bfa = new BitFieldArray();
-          bfa.Initialise(valueBits, values.Length);
+          using (var bfa = new BitFieldArray())
+          {
+            bfa.Initialise(descriptor.RequiredBits, values.Length);
 
-          int bitLocation = 0;
+            int bitLocation = 0;
 
-          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length, values);
+            bfa.WriteBitFieldVector(ref bitLocation, descriptor, values.Length, values);
 
-          Action act = () => bfa.ReadBitFieldVector(ref bitLocation, valueBits, values.Length + 1, values);
-          act.Should().Throw<ArgumentException>().WithMessage("Supplied values array is null or not large enough*");
+            Action act = () => bfa.ReadBitFieldVector(ref bitLocation, descriptor, values.Length + 1, values);
+            act.Should().Throw<ArgumentException>().WithMessage("Supplied values array is null or not large enough*");
+          }
         }
 
         [Fact]
         public void ReadBitFieldVector_FailWithStorageSize()
         {
           long[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-          int valueBits = 4;
+          var descriptor = new EncodedBitFieldDescriptor();
+          descriptor.RequiredBits = 4;
 
-          BitFieldArray bfa = new BitFieldArray();
-          bfa.Initialise(valueBits, values.Length - 1);
+          using (var bfa = new BitFieldArray())
+          {
+            bfa.Initialise(descriptor.RequiredBits, values.Length - 1);
 
-          int bitLocation = 0;
-          bfa.WriteBitFieldVector(ref bitLocation, valueBits, values.Length - 1, values);
+            int bitLocation = 0;
+            bfa.WriteBitFieldVector(ref bitLocation, descriptor, values.Length - 1, values);
 
-          Action act = () => bfa.ReadBitFieldVector(ref bitLocation, valueBits, values.Length, values);
-          act.Should().Throw<ArgumentException>().WithMessage("Insufficient values present to satisfy a*");
+            Action act = () => bfa.ReadBitFieldVector(ref bitLocation, descriptor, values.Length, values);
+            act.Should().Throw<ArgumentException>().WithMessage("Insufficient values present to satisfy a*");
+          }
         }
   }
 }

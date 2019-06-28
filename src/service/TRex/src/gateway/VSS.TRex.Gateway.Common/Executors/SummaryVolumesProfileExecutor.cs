@@ -5,7 +5,6 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
@@ -28,7 +27,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   /// <summary>
   /// Processes the request to get Summary Volumes profile.
   /// </summary>
-  public class SummaryVolumesProfileExecutor : BaseExecutor
+  public class SummaryVolumesProfileExecutor : ProfileBaseExecutor
   {
     public SummaryVolumesProfileExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)
@@ -45,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      SummaryVolumesProfileDataRequest request = item as SummaryVolumesProfileDataRequest;
+      var request = item as SummaryVolumesProfileDataRequest;
       if (request == null)
         ThrowRequestTypeCastException<SummaryVolumesProfileDataRequest>();
 
@@ -55,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var referenceDesign = new DesignOffset(request.ReferenceDesignUid ?? Guid.Empty, request.ReferenceDesignOffset ?? 0);
 
 
-      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      var arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = request.ProjectUid ?? Guid.Empty,
         ProfileTypeRequired = GridDataType.Height,
@@ -66,14 +65,15 @@ namespace VSS.TRex.Gateway.Common.Executors
         StartPoint = new WGS84Point(lon: request.StartX, lat: request.StartY),
         EndPoint = new WGS84Point(lon: request.EndX, lat: request.EndY),
         ReturnAllPassesAndLayers = false,
-        VolumeType = ConvertVolumesType(request.VolumeCalcType)
+        VolumeType = ConvertVolumesType(request.VolumeCalcType),
+        Overrides = GetOverrideParameters(request.Overrides)
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var svRequest = new ProfileRequest_ApplicationService_SummaryVolumeProfileCell();
 
-     // var Response = svRequest.Execute(arg);
-      ProfileRequestResponse<SummaryVolumeProfileCell> response = svRequest.Execute(arg);
+      // var Response = svRequest.Execute(arg);
+      var response = svRequest.Execute(arg);
 
       if (response != null)
         return ConvertResult(response);

@@ -16,11 +16,11 @@ namespace VSS.TRex.TAGFiles.Classes
     public int Compare(string x, string y)
     {
       int cIndexX = x.Length - 1;
-      while (cIndexX > 0 && x[cIndexX--] != '-')
+      while (cIndexX > 0 && x[cIndexX] != '-')
         cIndexX--;
 
       int cIndexY = y.Length - 1;
-      while (cIndexY > 0 && x[cIndexY] != '-')
+      while (cIndexY > 0 && y[cIndexY] != '-')
         cIndexY--;
 
       return string.Compare(x, cIndexX, y, cIndexY, x.Length - cIndexX);

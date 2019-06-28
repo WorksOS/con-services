@@ -78,6 +78,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     [Route("api/v1/mock/loaddump")]
+    [Route("api/v1")]
     [HttpGet]
     public LoadDumpResult GetMockLoadDumpLocations([FromQuery] Guid projectUid)
     {

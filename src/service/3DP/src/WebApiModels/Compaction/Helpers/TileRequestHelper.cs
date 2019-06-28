@@ -9,6 +9,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -27,11 +28,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     { }
 
     public TileRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
+      IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
     {
       Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
       ConfigurationStore = configurationStore;
-      FileListProxy = fileListProxy;
+      FileImportProxy = fileImportProxy;
       SettingsManager = settingsManager;
     }
 

@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      TemperatureSummaryRequest request = item as TemperatureSummaryRequest;
+      var request = item as TemperatureSummaryRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<TemperatureSummaryRequest>();
@@ -47,16 +47,17 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
-      TemperatureStatisticsResult temperatureSummaryResult = operation.Execute(
+      var operation = new TemperatureStatisticsOperation();
+      var temperatureSettings = request.Overrides?.TemperatureSettings;
+      var temperatureSummaryResult = operation.Execute(
         new TemperatureStatisticsArgument()
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          OverrideTemperatureWarningLevels = request.TemperatureSettings != null && request.TemperatureSettings.OverrideTemperatureRange,
+          OverrideTemperatureWarningLevels = temperatureSettings != null && temperatureSettings.OverrideTemperatureRange,
           OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(
-            request.TemperatureSettings != null ? Convert.ToUInt16(request.TemperatureSettings.MinTemperature * TEMPERATURE_CONVERSION_FACTOR) : MIN_TEMPERATURE,
-            request.TemperatureSettings != null ? Convert.ToUInt16(request.TemperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE)
+            temperatureSettings != null ? Convert.ToUInt16(temperatureSettings.MinTemperature * TEMPERATURE_CONVERSION_FACTOR) : MIN_TEMPERATURE,
+            temperatureSettings != null ? Convert.ToUInt16(temperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE)
         }
       );
 

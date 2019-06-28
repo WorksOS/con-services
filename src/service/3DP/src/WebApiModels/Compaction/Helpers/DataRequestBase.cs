@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -15,7 +14,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   {
     protected ILogger Log;
     protected IConfigurationStore ConfigurationStore;
-    protected IFileListProxy FileListProxy;
+    protected IFileImportProxy FileImportProxy;
     protected ICompactionSettingsManager SettingsManager;
 
     protected Guid? ProjectUid;
@@ -26,13 +25,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     protected FilterResult Filter;
     protected DesignDescriptor DesignDescriptor;
 
-    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, Guid? projectUid, long projectId, CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, IDictionary<string, string> headers, FilterResult filter, DesignDescriptor designDescriptor)
+    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager, Guid? projectUid, long projectId, CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, IDictionary<string, string> headers, FilterResult filter, DesignDescriptor designDescriptor)
     {
       filter?.Validate(); // Should be moved to FilterResult.CreateFilterObsolete().
 
       Log = log;
       ConfigurationStore = configurationStore;
-      FileListProxy = fileListProxy;
+      FileImportProxy = fileImportProxy;
       SettingsManager = settingsManager;
 
       ProjectUid = projectUid;

@@ -16,12 +16,12 @@ namespace VSS.Tile.Service.Common.Authentication
   /// </summary>
   public class TilePrincipal : TIDCustomPrincipal
   {
-    private readonly IProjectListProxy projectProxy;
+    private readonly IProjectProxy projectProxy;
     private readonly IDictionary<string, string> authNContext;
 
     //We need to delegate Project retrieval downstream as project may not accessible to a user once it has been created
     public TilePrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userEmail, bool isApplication,
-      IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders, string tpaasApplicationName = "") 
+      IProjectProxy projectProxy, IDictionary<string, string> contextHeaders, string tpaasApplicationName = "") 
       : base(identity, customerUid, customerName, userEmail, isApplication, tpaasApplicationName)
     {
       this.projectProxy = projectProxy;

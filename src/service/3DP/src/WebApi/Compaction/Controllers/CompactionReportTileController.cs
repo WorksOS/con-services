@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -28,9 +29,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionReportTileController(IConfigurationStore configStore, IFileListProxy fileListProxy, 
+    public CompactionReportTileController(IConfigurationStore configStore, IFileImportProxy fileImportProxy, 
       ICompactionSettingsManager settingsManager, ILoggerFactory logger)
-      : base(configStore, fileListProxy, settingsManager)
+      : base(configStore, fileImportProxy, settingsManager)
     {
       this.logger = logger;
     }

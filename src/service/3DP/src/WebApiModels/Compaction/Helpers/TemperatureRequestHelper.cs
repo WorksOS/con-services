@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -16,11 +15,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     { }
 
     public TemperatureRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
+      IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
     {
       Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
       ConfigurationStore = configurationStore;
-      FileListProxy = fileListProxy;
+      FileImportProxy = fileImportProxy;
       SettingsManager = settingsManager;
     }
 

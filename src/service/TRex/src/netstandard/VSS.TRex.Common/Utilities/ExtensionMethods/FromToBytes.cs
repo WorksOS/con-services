@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.TRex.DI;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Common.Utilities.ExtensionMethods
 {
@@ -11,8 +11,6 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
   /// </summary>
   public static class FromToBytes
   {
-    private static readonly VSS.TRex.IO.RecyclableMemoryStreamManager _recyclableMemoryStreamManager = DIContext.Obtain<VSS.TRex.IO.RecyclableMemoryStreamManager>();
-
     /*  An example that requires static extension methods to work...
             public static T FromBytes<T>(this T item, byte[] bytes) where T : class, IBinaryReaderWriter, new()
             {
@@ -67,7 +65,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <returns></returns>
     public static byte[] ToBytes(Action<BinaryWriter> serializer)
     {
-      using (var ms = _recyclableMemoryStreamManager.GetStream())
+      using (var ms = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
       {
         using (var writer = new BinaryWriter(ms))
         {
@@ -84,7 +82,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <returns></returns>
     public static MemoryStream ToStream(Action<BinaryWriter> serializer)
     {
-      var ms = _recyclableMemoryStreamManager.GetStream();
+      var ms = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
       {
         using (var writer = new BinaryWriter(ms, Encoding.UTF8, true))
         {
