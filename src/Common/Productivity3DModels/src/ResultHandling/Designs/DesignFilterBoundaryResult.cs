@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
@@ -7,7 +8,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Designs
   /// <summary>
   /// Design filter boundary as list of points.
   /// </summary>
-  public class DesignFilterBoundaryResult : ContractExecutionResult
+  public class DesignFilterBoundaryResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// Design filter boundary as list of points.
@@ -22,5 +23,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Designs
     {
       Fence = fence;
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 }

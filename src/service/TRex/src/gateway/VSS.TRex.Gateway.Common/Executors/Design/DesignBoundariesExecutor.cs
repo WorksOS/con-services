@@ -52,7 +52,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      var referenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, 0.0);
+      var referenceDesign = new DesignOffset(request.DesignUid, 0.0);
       var designBoundaryResponse = DesignBoundaryRequest.Execute(siteModel, referenceDesign);
 
       if (designBoundaryResponse != null && 

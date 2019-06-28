@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.ResultHandling.Designs
 {
-  public class AlignmentStationRangeResult : ContractExecutionResult
+  public class AlignmentStationRangeResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// The start station for the alignment file
@@ -22,5 +24,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Designs
       StartStation = startStation;
       EndStation = endStation;
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 }
