@@ -38,7 +38,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Failed to compute design boundary. Site Model ID: {arg.ProjectID} design ID: {arg.ReferenceDesign.DesignID} error: {e.Message}");
+        Log.LogError(e, $"Failed to compute design boundary. Site Model ID: {arg.ProjectID} design ID: {arg.ReferenceDesign.DesignID}");
         return null;
       }
     }
