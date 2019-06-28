@@ -1,11 +1,16 @@
-﻿#if NET_4_7 
+﻿#if NET_4_7
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.Hydrology.WebApi.Abstractions.Models;
 using VSS.Hydrology.WebApi.Abstractions.Models.ResultHandling;
 using VSS.Hydrology.WebApi.Common.Executors;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.Hydrology.WebApi.Controllers
 {
@@ -15,10 +20,16 @@ namespace VSS.Hydrology.WebApi.Controllers
   public class PondingController : BaseController<PondingController>
   {
     /// <summary>
+    /// Gets the service exception handler.
+    /// </summary>
+    private IRaptorProxy _raptorProxy;
+    protected IRaptorProxy RaptorProxy => _raptorProxy ?? (_raptorProxy = HttpContext.RequestServices.GetService<IRaptorProxy>());
+
+    /// <summary>
     /// Generates a ponding pdf from a design file (TIN) using hydro libraries
     /// </summary>
     [HttpPost("api/v1")]
-    public async Task<PondingResult> GetPondingImage([FromBody] PondingRequest pondingRequest)
+    public async Task<FileResult> GetPondingImage([FromBody] PondingRequest pondingRequest)
     {
       Log.LogDebug($"{nameof(GetPondingImage)}: request {JsonConvert.SerializeObject(pondingRequest)}");
       pondingRequest.Validate();
@@ -28,11 +39,14 @@ namespace VSS.Hydrology.WebApi.Controllers
           .Build<PondingExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             //customerUid, userId, // todoJeannie
             null, null,
-            null, CustomHeaders, LandLeveling)
+            null, CustomHeaders, LandLeveling, RaptorProxy)
           .ProcessAsync(pondingRequest)) as PondingResult
       );
 
-      return result;
+      var fileStream = new FileStream(result.FullFileName, FileMode.Open);
+
+      Log.LogInformation($"{nameof(GetPondingImage)} completed: ExportData size={fileStream.Length}");
+      return new FileStreamResult(fileStream, ContentTypeConstants.ApplicationZip);
     }
   }
 }

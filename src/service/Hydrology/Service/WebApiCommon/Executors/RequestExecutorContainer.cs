@@ -7,6 +7,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.Hydrology.WebApi.Common.Executors
@@ -21,7 +22,6 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
     private const int ERROR_STATUS_OK = 0;
-
     protected ILogger Log;
     protected IConfigurationStore ConfigStore;
     protected IServiceExceptionHandler ServiceExceptionHandler;
@@ -30,6 +30,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     protected string UserEmailAddress;
     protected IDictionary<string, string> CustomHeaders;
     protected ILandLeveling LandLeveling;
+    protected IRaptorProxy RaptorProxy;
 
 
     /// <summary>
@@ -118,7 +119,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       IServiceExceptionHandler serviceExceptionHandler,
       string customerUid, string userId = null, string userEmailAddress = null,
       IDictionary<string, string> headers = null,
-      ILandLeveling landLeveling = null)
+      ILandLeveling landLeveling = null, IRaptorProxy raptorProxy = null)
     {
       Log = logger;
       ConfigStore = configStore;
@@ -128,6 +129,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       UserEmailAddress = userEmailAddress;
       CustomHeaders = headers;
       LandLeveling = landLeveling;
+      RaptorProxy = raptorProxy;
     }
 
     protected T CastRequestObjectTo<T>(object item) where T : class

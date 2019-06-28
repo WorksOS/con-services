@@ -15,8 +15,11 @@
 
   <ItemGroup>
     <Compile Remove="Coord\ResultHandling\**" />
+    <Compile Remove="DXF\**" />
     <EmbeddedResource Remove="Coord\ResultHandling\**" />
+    <EmbeddedResource Remove="DXF\**" />
     <None Remove="Coord\ResultHandling\**" />
+    <None Remove="DXF\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,7 +41,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\Clients\Abstractions\VSS.Hydrology.WebApi.Abstractions.csproj" />
+    <ProjectReference Include="..\TTM\VSS.Hydrology.WebApi.TTM.csproj" />
   </ItemGroup>
 
   <ItemGroup>

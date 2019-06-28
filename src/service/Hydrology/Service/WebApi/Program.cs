@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog.Extensions.Logging;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
 
@@ -63,10 +64,9 @@ namespace VSS.Hydrology.WebApi
         .UseStartup<Startup>()
         .ConfigureLogging((hostContext, loggingBuilder) =>
         {
-          loggingBuilder.SetMinimumLevel(LogLevel.Trace);
-          loggingBuilder.AddProvider(p =>
-            new SerilogProvider(
-              SerilogExtensions.Configure(config, "VSS.Hydrology.WebAPI.log"), p.GetService<IHttpContextAccessor>()));
+          loggingBuilder.AddProvider(
+            p => new SerilogLoggerProvider(
+              SerilogExtensions.Configure("VSS.Hydrology.WebAPI.log", config, p.GetRequiredService<IHttpContextAccessor>())));
         })
         .Build();
       });

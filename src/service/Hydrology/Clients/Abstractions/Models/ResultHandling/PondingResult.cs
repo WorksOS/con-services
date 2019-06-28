@@ -5,12 +5,12 @@ namespace VSS.Hydrology.WebApi.Abstractions.Models.ResultHandling
 {
   public class PondingResult : ContractExecutionResult
   {
-    [JsonProperty(PropertyName = "PondingFile", Required = Required.Default)]
-    public string PondingFile { get; private set; }
+    [JsonProperty(PropertyName = "fullFileName")]
+    public string FullFileName { get; private set; }
 
-    public PondingResult(string pondingFile)
+    public PondingResult(string fullFileName)
     {
-      PondingFile = pondingFile;
+      FullFileName = fullFileName;
     }
   }
 }

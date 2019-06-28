@@ -29,7 +29,7 @@ namespace VSS.Hydrology.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>(); // todoJeannie need the survey export
+      services.AddTransient<IRaptorProxy, RaptorProxy>();
     }
   }
 }

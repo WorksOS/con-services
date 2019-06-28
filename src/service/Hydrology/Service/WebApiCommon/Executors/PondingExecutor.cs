@@ -1,15 +1,18 @@
 ﻿#if NET_4_7 
 using System;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Morph.Services.Core.Interfaces;
 using Morph.Services.Core.Tools;
-using Newtonsoft.Json;
-using SkuTester.DataModel;
+using VSS.Common.Exceptions;
 using VSS.Hydrology.WebApi.Abstractions.Models;
 using VSS.Hydrology.WebApi.Abstractions.Models.ResultHandling;
+using VSS.Hydrology.WebApi.Common.Utilities;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 
@@ -33,32 +36,69 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     {
       var request = CastRequestObjectTo<PondingRequest>(item);
 
-      // todoJeannie
-      // 1) get boundary from Filter (designBoundary OR Geofence OR projectBoundary)
-      // 2) get latestSurface from TRex using that boundary
-      // 3) convert ttm to dxf mesh
-      // 0) get weather for (how long?) for (this location?)
+      // todo get weather for (how long?) for (this location?)
+      // todo handle filter (design or geofence or boundary etc)
 
-      // temporarily use this sample originalGround mesh
-      var originalGroundPathAndFilename = "..\\..\\TestData\\Sample\\triangle.dxf";
-      
-      if (!File.Exists(originalGroundPathAndFilename))
-        throw new FileNotFoundException($"{nameof(ProcessAsyncEx)} Original ground file not found {originalGroundPathAndFilename}");
+      //
+      // get latestSurface from TRex - currently using entire project
 
-       Log.LogInformation(
-        $"{nameof(ProcessAsyncEx)} surface configuration loaded: designFile {originalGroundPathAndFilename} units: {(request.IsMetric ? "meters" : "us ft?")})");
+      // <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
+      // "RAPTOR_3DPM_API_URL": "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0",
+      // "RAPTOR_3DPM_API_URL": "http://localhost:5001/api/v2", note there is not mockRaptorController  [Route("api/v2/export/surface")] 
+      var ttmFileName = Path.GetFileName(request.FileName) + ".ttm";
+      var route =
+        $"/export/surface?projectUid={request.ProjectUid}&fileName={ttmFileName}&filterUid={request.FilterUid}";
+      var fileResult =
+        await RaptorProxy.ExecuteGenericV2Request<FileResult>(route, HttpMethod.Get, null, CustomHeaders) as
+          FileStreamResult;
+      if (fileResult == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
+            $"No latest Ground returned from 3dp"));
+      }
 
+      var localProjectPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
+      var ttmLocalPathAndFileName = Path.Combine(new[] {localProjectPath, ttmFileName});
+      using (var fileStream = File.Create(ttmLocalPathAndFileName))
+      {
+        fileResult.FileStream.CopyTo(fileStream);
+      }
+
+      if (!File.Exists(ttmLocalPathAndFileName))
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
+            $"Latest ground file was not saved to disk"));
+      }
+
+
+      //
+      // convert ttm to dxf mesh
+
+      // temporarily use this sample triangle mesh
+      var dxfLocalPathAndFileName = "..\\..\\TestData\\Sample\\triangle.dxf"; // todoJeannie
+      //var dxfLocalPathAndFileName = Path.ChangeExtension(ttmLocalPathAndFileName, "dxf");
+      ConvertTTMToDXF(ttmLocalPathAndFileName, dxfLocalPathAndFileName);
+
+
+      // 
+      // generate ponding image from dxf mesh
+
+      var pngLocalPathAndFileName = Path.ChangeExtension(dxfLocalPathAndFileName, "png");
       try
       {
         ISurfaceInfo surfaceInfo;
 
-        if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(originalGroundPathAndFilename), ".dxf") == 0)
-          surfaceInfo = LandLeveling.ImportSurface(originalGroundPathAndFilename, null);
+        if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetExtension(dxfLocalPathAndFileName), ".dxf") == 0)
+          surfaceInfo = LandLeveling.ImportSurface(dxfLocalPathAndFileName, null);
         else
-          throw new ArgumentException($"{nameof(ProcessAsyncEx)} Only DXF original ground file type supported at present");
+          throw new ArgumentException(
+            $"{nameof(ProcessAsyncEx)} Only DXF original ground file type supported at present");
 
         if (surfaceInfo == null)
-          throw new ArgumentException($"{nameof(ProcessAsyncEx)} Unable to create Surface from: {originalGroundPathAndFilename}");
+          throw new ArgumentException(
+            $"{nameof(ProcessAsyncEx)} Unable to create Surface from: {dxfLocalPathAndFileName}");
 
         Log.LogInformation(
           $"{nameof(ProcessAsyncEx)} SurfaceInfo: MinElevation {surfaceInfo.MinElevation} MaxElevation {surfaceInfo.MaxElevation} " +
@@ -66,37 +106,35 @@ namespace VSS.Hydrology.WebApi.Common.Executors
           $"TriangleCount: {surfaceInfo.Triangles.Count} " +
           $"FirstTriangle: {(surfaceInfo.Triangles.Count > 0 ? $"{surfaceInfo.Points[surfaceInfo.Triangles[0]]} - {surfaceInfo.Points[surfaceInfo.Triangles[1]]} - {surfaceInfo.Points[surfaceInfo.Triangles[2]]}" : "no triangles")}");
 
-        GenerateWithoutSketchup(surfaceInfo, originalGroundPathAndFilename, request.Resolution);
+        GeneratePondingImageFile(surfaceInfo, dxfLocalPathAndFileName, pngLocalPathAndFileName, request.Resolution);
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"{nameof(ProcessAsyncEx)}Surface import failed");
+        Log.LogError(e, $"{nameof(ProcessAsyncEx)} Surface import failed");
         throw e;
       }
-      
-      return new PondingResult(String.Empty);
+
+      return new PondingResult(pngLocalPathAndFileName);
     }
 
-    private bool GenerateWithoutSketchup(ISurfaceInfo surfaceInfo, string originalGroundPathAndFilename,
-      double resolution, int levelCount = 10 )
+    private bool GeneratePondingImageFile(ISurfaceInfo surfaceInfo, string dxfLocalPathAndFileName,
+      string pngLocalPathAndFileName,
+      double resolution, int levelCount = 10)
     {
-      Log.LogInformation($"{nameof(GenerateWithoutSketchup)} Generating without sketchup");
-
-      string targetPondingFilenameAndPath = Path.Combine(Path.GetDirectoryName(originalGroundPathAndFilename),
-        string.Format($"{Path.GetFileNameWithoutExtension(originalGroundPathAndFilename)}-{"originalGround"}-pondmap.png"));
+      Log.LogInformation($"{nameof(GeneratePondingImageFile)} Generating without sketchup");
 
       var pondMap = surfaceInfo.GeneratePondMap(resolution, levelCount, null, null);
       if (pondMap == null)
         throw new ArgumentException(
-          $"{nameof(GenerateWithoutSketchup)} Unable to create pond map: resolution: {resolution} levelCount: {levelCount}");
+          $"{nameof(GeneratePondingImageFile)} Unable to create pond map: resolution: {resolution} levelCount: {levelCount}");
 
-      SaveBitmap(pondMap, targetPondingFilenameAndPath);
+      SaveBitmap(pondMap, pngLocalPathAndFileName);
 
-      if (!File.Exists(targetPondingFilenameAndPath))
+      if (!File.Exists(pngLocalPathAndFileName))
         throw new FileNotFoundException(
-          $"{nameof(GenerateWithoutSketchup)} Ponding map not found {targetPondingFilenameAndPath}");
+          $"{nameof(GeneratePondingImageFile)} Ponding map not found {pngLocalPathAndFileName}");
 
-      Log.LogInformation($"{nameof(GenerateWithoutSketchup)} targetPondingFile: {targetPondingFilenameAndPath}");
+      Log.LogInformation($"{nameof(GeneratePondingImageFile)} targetPondingFile: {pngLocalPathAndFileName}");
       return true;
     }
 
@@ -108,37 +146,22 @@ namespace VSS.Hydrology.WebApi.Common.Executors
         pngBitmapEncoder.Save(stream);
     }
 
-    /*
-    private bool GenerateWithSketchup(ISurfaceInfo surfaceInfo, TestCase useCase, string sourcePathAndFilename, int levelCount = 10, double resolution = 5)
+    // convert ttm to dxf mesh
+    private void ConvertTTMToDXF(string ttmLocalPathAndFileName, string dxfLocalPathAndFileName)
     {
-      Log.LogInformation($"{nameof(GenerateWithSketchup)} Generating with sketchup");
-      var targetSketchupFilenameAndPath =
-        Path.ChangeExtension(
-          Path.Combine(Path.GetDirectoryName(Path.GetFullPath(sourcePathAndFilename)),
-            Path.GetFileNameWithoutExtension(sourcePathAndFilename)), "skp");
+      var isConvertedToDXF = true;
 
-      using (var skuModel = new SkuModel(useCase.IsMetric))
-      {
-        skuModel.Name = Path.GetFileNameWithoutExtension(targetSketchupFilenameAndPath);
-        var pondMapVizTool = new PondMap { Levels = levelCount, Resolution = resolution };
-        // this writes the png file
-        pondMapVizTool.GenerateAndSaveTexture(surfaceInfo, targetSketchupFilenameAndPath, "original");
-      }
+      //todoJeannie write from Stream
+      var  converter = new TTMtoDXFConverter(Log);
+      converter.WriteDXFFromTTMStream(ttmLocalPathAndFileName, dxfLocalPathAndFileName);
 
-      var targetPondingFilenameAndPath =
-        Path.ChangeExtension(
-          Path.Combine(Path.GetDirectoryName(Path.GetFullPath(targetSketchupFilenameAndPath)),
-                       $"{Path.GetFileNameWithoutExtension(targetSketchupFilenameAndPath)}-original-pondmap"
-                       ),
-    "png");
+      // todoJeannie
+      //if (!File.Exists(dxfLocalPathAndFileName))
+      //  throw new FileNotFoundException($"{nameof(ConvertTTMToDXF)} Latest ground DXF file not found {dxfLocalPathAndFileName}");
 
-      if (!File.Exists(targetPondingFilenameAndPath))
-        throw new FileNotFoundException($"{nameof(GenerateWithSketchup)} Ponding map not found {targetPondingFilenameAndPath}");
-
-      Log.LogInformation($"{nameof(GenerateWithSketchup)} targetPondingFile: {targetPondingFilenameAndPath}");
-      return true;
+      return;
     }
-    */
+
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -148,3 +171,36 @@ namespace VSS.Hydrology.WebApi.Common.Executors
   }
 }
 #endif
+
+
+/*
+private bool GenerateWithSketchup(ISurfaceInfo surfaceInfo, TestCase useCase, string sourcePathAndFilename, int levelCount = 10, double resolution = 5)
+{
+  Log.LogInformation($"{nameof(GenerateWithSketchup)} Generating with sketchup");
+  var targetSketchupFilenameAndPath =
+    Path.ChangeExtension(
+      Path.Combine(Path.GetDirectoryName(Path.GetFullPath(sourcePathAndFilename)),
+        Path.GetFileNameWithoutExtension(sourcePathAndFilename)), "skp");
+
+  using (var skuModel = new SkuModel(useCase.IsMetric))
+  {
+    skuModel.Name = Path.GetFileNameWithoutExtension(targetSketchupFilenameAndPath);
+    var pondMapVizTool = new PondMap { Levels = levelCount, Resolution = resolution };
+    // this writes the png file
+    pondMapVizTool.GenerateAndSaveTexture(surfaceInfo, targetSketchupFilenameAndPath, "original");
+  }
+
+  var targetPondingFilenameAndPath =
+    Path.ChangeExtension(
+      Path.Combine(Path.GetDirectoryName(Path.GetFullPath(targetSketchupFilenameAndPath)),
+                   $"{Path.GetFileNameWithoutExtension(targetSketchupFilenameAndPath)}-original-pondmap"
+                   ),
+"png");
+
+  if (!File.Exists(targetPondingFilenameAndPath))
+    throw new FileNotFoundException($"{nameof(GenerateWithSketchup)} Ponding map not found {targetPondingFilenameAndPath}");
+
+  Log.LogInformation($"{nameof(GenerateWithSketchup)} targetPondingFile: {targetPondingFilenameAndPath}");
+  return true;
+}
+*/
