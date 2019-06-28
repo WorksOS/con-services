@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
       var returnedResult = trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, "/design/boundaries", customHeaders, queryParams).Result;
 
-      if (returnedResult != null && returnedResult.GeoJSON != null)
+      if (returnedResult?.GeoJSON != null)
       {
         var jo = JObject.FromObject(returnedResult.GeoJSON);
         geoJsonList.Add(jo);
