@@ -6,7 +6,7 @@
     <AssemblyTitle></AssemblyTitle>
     <Authors>Merino</Authors>
     <VersionPrefix>1.6.4</VersionPrefix>
-    <TargetFrameworks>net451;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>VSS.Interfaces.netcore</AssemblyName>
     <PackageId>VSS.Interfaces.netcore</PackageId>
     <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
