@@ -1,11 +1,20 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Cells
 {
-  public class SlabAllocatedCellPassArrayPoolHeartBeatLogger
+  public class SlabAllocatedCellPassArrayPoolHeartBeatLogger : IHeartBeatLogger
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SlabAllocatedCellPassArrayPoolHeartBeatLogger>();
+
     private readonly StringBuilder sb = new StringBuilder();
+
+    public void HeartBeat()
+    {
+      Log.LogInformation("Heartbeat: " + ToString());
+    }
 
     public override string ToString()
     {

@@ -17,8 +17,10 @@ namespace VSS.TRex.TAGFiles.Classes.States
   /// state information read from tag files representing as-built and compaction
   /// recorded information.
   /// </summary>
-  public class TAGProcessorStateBase
+  public class TAGProcessorStateBase : IDisposable
   {
+    private const int DEFAULT_ACCUMULATOR_LIST_SIZE = 10;
+
     private bool _HaveSeenFirstDataTime; 
     private DateTime _DataTimePrevious = Consts.MIN_DATETIME_AS_UTC;
 
@@ -79,49 +81,49 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     protected void InitialiseAttributeAccumulators()
     {
-      _ICMachineSpeedValues.Add(Consts.MIN_DATETIME_AS_UTC, Consts.NullDouble);
-      _ICCCVValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCV);
-      _ICRMVValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullRMV);
-      _ICFrequencys.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullFrequency);
-      _ICAmplitudes.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullAmplitude);
-      _GPSModes.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullGPSMode);
+      ICMachineSpeedValues.Add(Consts.MIN_DATETIME_AS_UTC, Consts.NullDouble);
+      ICCCVValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCV);
+      ICRMVValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullRMV);
+      ICFrequencys.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullFrequency);
+      ICAmplitudes.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullAmplitude);
+      GPSModes.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullGPSMode);
 
       // We will assume that the absence of an OnGround flag in the tag file shall
       // default to true wrt to the processing of the file.
-      _OnGrounds.Add(Consts.MIN_DATETIME_AS_UTC, OnGroundState.YesLegacy);
+      OnGrounds.Add(Consts.MIN_DATETIME_AS_UTC, OnGroundState.YesLegacy);
 
-      _AgeOfCorrections.Add(Consts.MIN_DATETIME_AS_UTC, 0);
+      AgeOfCorrections.Add(Consts.MIN_DATETIME_AS_UTC, 0);
 
-      _VolkelMeasureRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasRange);
-      _VolkelMeasureUtilRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasUtilRange);
-      _ICMDPValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullMDP);
-      _ICTemperatureValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullMaterialTemperatureValue);
-      _ICCCAValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
-      _ICCCALeftFrontValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
-      _ICCCARightFrontValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
-      _ICCCALeftRearValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
-      _ICCCALeftRearValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      VolkelMeasureRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasRange);
+      VolkelMeasureUtilRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasUtilRange);
+      ICMDPValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullMDP);
+      ICTemperatureValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullMaterialTemperatureValue);
+      ICCCAValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCALeftFrontValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCARightFrontValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCALeftRearValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCALeftRearValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
     }
 
     protected virtual void DiscardAllButLatestAttributeAccumulatorValues()
     {
-      _ICMachineSpeedValues.DiscardAllButLatest();
-      _ICCCVValues.DiscardAllButLatest();
-      _ICRMVValues.DiscardAllButLatest();
-      _ICFrequencys.DiscardAllButLatest();
-      _ICAmplitudes.DiscardAllButLatest();
-      _GPSModes.DiscardAllButLatest();
-      _OnGrounds.DiscardAllButLatest();
-      _AgeOfCorrections.DiscardAllButLatest();
-      _VolkelMeasureRanges.DiscardAllButLatest();
-      _VolkelMeasureUtilRanges.DiscardAllButLatest();
-      _ICMDPValues.DiscardAllButLatest();
-      _ICCCAValues.DiscardAllButLatest();
-      _ICCCALeftFrontValues.DiscardAllButLatest();
-      _ICCCARightFrontValues.DiscardAllButLatest();
-      _ICCCALeftRearValues.DiscardAllButLatest();
-      _ICCCARightRearValues.DiscardAllButLatest();
-      _ICTemperatureValues.DiscardAllButLatest();
+      ICMachineSpeedValues.DiscardAllButLatest();
+      ICCCVValues.DiscardAllButLatest();
+      ICRMVValues.DiscardAllButLatest();
+      ICFrequencys.DiscardAllButLatest();
+      ICAmplitudes.DiscardAllButLatest();
+      GPSModes.DiscardAllButLatest();
+      OnGrounds.DiscardAllButLatest();
+      AgeOfCorrections.DiscardAllButLatest();
+      VolkelMeasureRanges.DiscardAllButLatest();
+      VolkelMeasureUtilRanges.DiscardAllButLatest();
+      ICMDPValues.DiscardAllButLatest();
+      ICCCAValues.DiscardAllButLatest();
+      ICCCALeftFrontValues.DiscardAllButLatest();
+      ICCCARightFrontValues.DiscardAllButLatest();
+      ICCCALeftRearValues.DiscardAllButLatest();
+      ICCCARightRearValues.DiscardAllButLatest();
+      ICTemperatureValues.DiscardAllButLatest();
     }
 
     protected virtual void SetDataTime(DateTime value)
@@ -338,15 +340,11 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public XYZ DataRearLeft = XYZ.Null;
     public XYZ DataRearRight = XYZ.Null;
 
-    private AccumulatedAttributes<GPSMode> _GPSModes  = new AccumulatedAttributes<GPSMode>();
-    public AccumulatedAttributes<GPSMode> GPSModes { get => _GPSModes; }
+    public AccumulatedAttributes<GPSMode> GPSModes  = new AccumulatedAttributes<GPSMode>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
-    private AccumulatedAttributes<OnGroundState> _OnGrounds = new AccumulatedAttributes<OnGroundState>();
-    public AccumulatedAttributes<OnGroundState> OnGrounds { get => _OnGrounds; }
+    public AccumulatedAttributes<OnGroundState> OnGrounds = new AccumulatedAttributes<OnGroundState>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
-    private AccumulatedAttributes<byte> _AgeOfCorrections = new AccumulatedAttributes<byte>();
-
-    public AccumulatedAttributes<byte> AgeOfCorrections { get => _AgeOfCorrections; }
+    public AccumulatedAttributes<byte> AgeOfCorrections = new AccumulatedAttributes<byte>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
     //  ValidPosition is only used in terms of the most recent epoch and do not need to have the history of these
     // values maintained in a TAccumulatedAttributeList
@@ -369,11 +367,8 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public string HardwareID = string.Empty;
     public uint Sequence;
 
-    private AccumulatedAttributes<short> _ICCCVValues = new AccumulatedAttributes<short>();
-    public AccumulatedAttributes<short> ICCCVValues { get => _ICCCVValues; }
-
-    private AccumulatedAttributes<double> _ICMachineSpeedValues = new AccumulatedAttributes<double>();
-    public AccumulatedAttributes<double> ICMachineSpeedValues { get => _ICMachineSpeedValues; }
+    public AccumulatedAttributes<short> ICCCVValues = new AccumulatedAttributes<short>(DEFAULT_ACCUMULATOR_LIST_SIZE);
+    public AccumulatedAttributes<double> ICMachineSpeedValues = new AccumulatedAttributes<double>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
     protected short _ICCCVTargetValue = CellPassConsts.NullCCV;
     public short ICCCVTargetValue { get { return _ICCCVTargetValue; } set { SetICCCVTargetValue(value); } }
@@ -384,17 +379,13 @@ namespace VSS.TRex.TAGFiles.Classes.States
     protected ushort _ICLayerIDValue = CellPassConsts.NullLayerID;
     public ushort ICLayerIDValue { get { return _ICLayerIDValue; } set { SetICLayerIDValue(value); } }
 
-    protected AccumulatedAttributes<short> _ICRMVValues = new AccumulatedAttributes<short>();
-    public AccumulatedAttributes<short> ICRMVValues { get => _ICRMVValues; }
+    public AccumulatedAttributes<short> ICRMVValues = new AccumulatedAttributes<short>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
     protected short _RMVJumpThreshold = CellPassConsts.NullRMV;
     public short ICRMVJumpthreshold { get { return _RMVJumpThreshold; } set { SetRMVJumpThresholdValue(value); } }
 
-    private AccumulatedAttributes<ushort> _ICFrequencys = new AccumulatedAttributes<ushort>();
-    public AccumulatedAttributes<ushort> ICFrequencys { get => _ICFrequencys; } 
-
-    private AccumulatedAttributes<ushort> _ICAmplitudes = new AccumulatedAttributes<ushort>();
-    public AccumulatedAttributes<ushort> ICAmplitudes { get => _ICAmplitudes; }
+    public AccumulatedAttributes<ushort> ICFrequencys = new AccumulatedAttributes<ushort>(DEFAULT_ACCUMULATOR_LIST_SIZE);
+    public AccumulatedAttributes<ushort> ICAmplitudes = new AccumulatedAttributes<ushort>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
     protected MachineGear _ICGear = CellPassConsts.NullMachineGear;
     public MachineGear ICGear { get { return _ICGear; } set { SetICGear(value); } }
@@ -408,32 +399,21 @@ namespace VSS.TRex.TAGFiles.Classes.States
     protected CompactionSensorType _ICSensorType = CompactionSensorType.NoSensor;
     public CompactionSensorType ICSensorType { get { return _ICSensorType; } set { SetICSensorType(value); } }
 
-    private AccumulatedAttributes<short> _ICMDPValues = new AccumulatedAttributes<short>();
-    public AccumulatedAttributes<short> ICMDPValues { get => _ICMDPValues; }
+    public AccumulatedAttributes<short> ICMDPValues = new AccumulatedAttributes<short>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
     protected short _ICMDPTargetValue = CellPassConsts.NullMDP;
     public short ICMDPTargetValue { get { return _ICMDPTargetValue; } set { SetICMDPTargetValue(value); } }
 
-    protected AccumulatedAttributes<byte> _ICCCAValues = new AccumulatedAttributes<byte>();
-    public AccumulatedAttributes<byte> ICCCAValues { get => _ICCCAValues; }
-
-    protected AccumulatedAttributes<byte> _ICCCALeftFrontValues = new AccumulatedAttributes<byte>();
-    public AccumulatedAttributes<byte> ICCCALeftFrontValues { get => _ICCCALeftFrontValues; }
-
-    protected AccumulatedAttributes<byte> _ICCCARightFrontValues = new AccumulatedAttributes<byte>();
-    public AccumulatedAttributes<byte> ICCCARightFrontValues { get => _ICCCARightFrontValues; }
-
-    protected AccumulatedAttributes<byte> _ICCCALeftRearValues = new AccumulatedAttributes<byte>();
-    public AccumulatedAttributes<byte> ICCCALeftRearValues { get => _ICCCALeftRearValues; }
-
-    protected AccumulatedAttributes<byte> _ICCCARightRearValues = new AccumulatedAttributes<byte>();
-    public AccumulatedAttributes<byte> ICCCARightRearValues { get => _ICCCARightRearValues; }
+    public AccumulatedAttributes<byte> ICCCAValues = new AccumulatedAttributes<byte>(DEFAULT_ACCUMULATOR_LIST_SIZE);
+    public AccumulatedAttributes<byte> ICCCALeftFrontValues = new AccumulatedAttributes<byte>(DEFAULT_ACCUMULATOR_LIST_SIZE);
+    public AccumulatedAttributes<byte> ICCCARightFrontValues = new AccumulatedAttributes<byte>(DEFAULT_ACCUMULATOR_LIST_SIZE);
+    public AccumulatedAttributes<byte> ICCCALeftRearValues = new AccumulatedAttributes<byte>(DEFAULT_ACCUMULATOR_LIST_SIZE);
+    public AccumulatedAttributes<byte> ICCCARightRearValues = new AccumulatedAttributes<byte>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
     protected byte _ICCCATargetValue = CellPassConsts.NullCCA;
     public byte ICCCATargetValue { get { return _ICCCATargetValue; } set { SetICCCATargetValue(value); } }
 
-    protected AccumulatedAttributes<ushort> _ICTemperatureValues = new AccumulatedAttributes<ushort>();
-    public AccumulatedAttributes<ushort> ICTemperatureValues { get => _ICTemperatureValues; }
+    public AccumulatedAttributes<ushort> ICTemperatureValues = new AccumulatedAttributes<ushort>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
     protected ushort _ICTempWarningLevelMinValue = CellPassConsts.NullMaterialTemperatureValue;
     public ushort ICTempWarningLevelMinValue { get { return _ICTempWarningLevelMinValue; } set { SetICTempWarningLevelMinValue(value); } }
@@ -441,11 +421,8 @@ namespace VSS.TRex.TAGFiles.Classes.States
     protected ushort _ICTempWarningLevelMaxValue = CellPassConsts.NullMaterialTemperatureValue;
     public ushort ICTempWarningLevelMaxValue { get { return _ICTempWarningLevelMaxValue; } set { SetICTempWarningLevelMaxValue(value); } }
 
-    protected AccumulatedAttributes<byte> _VolkelMeasureRanges = new AccumulatedAttributes<byte>();
-    public AccumulatedAttributes<byte> VolkelMeasureRanges { get => _VolkelMeasureRanges; }
-
-    protected AccumulatedAttributes<int> _VolkelMeasureUtilRanges = new AccumulatedAttributes<int>();
-    public AccumulatedAttributes<int> VolkelMeasureUtilRanges { get => _VolkelMeasureUtilRanges; }
+    public AccumulatedAttributes<byte> VolkelMeasureRanges = new AccumulatedAttributes<byte>(DEFAULT_ACCUMULATOR_LIST_SIZE);
+    public AccumulatedAttributes<int> VolkelMeasureUtilRanges = new AccumulatedAttributes<int>(DEFAULT_ACCUMULATOR_LIST_SIZE);
 
     // FApplicationVersion is the version of the application reported in the TAG file returned by the machine.
     protected string _ApplicationVersion = string.Empty;
@@ -577,7 +554,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     //////////////////////// Public procedures
 
-    public virtual void SetGPSMode(GPSMode value) => _GPSModes.Add(_DataTime, value);
+    public virtual void SetGPSMode(GPSMode value) => GPSModes.Add(_DataTime, value);
 
     public virtual void SetOnGround(OnGroundState value)
     {
@@ -588,14 +565,14 @@ namespace VSS.TRex.TAGFiles.Classes.States
       OnGrounds.Add(DataTime, value);
     }
 
-    public virtual void SetICCCVValue(short value) => _ICCCVValues.Add(_DataTime, value);
-    public virtual void SetICMachineSpeedValue(double value) => _ICMachineSpeedValues.Add(_DataTime, value);
-    public virtual void SetICFrequency(ushort value) => _ICFrequencys.Add(_DataTime, value);
-    public virtual void SetICAmplitude(ushort value) => _ICAmplitudes.Add(_DataTime, value);
-    public virtual void SetICRMVValue(short value) => _ICRMVValues.Add(_DataTime, value);
-    public virtual void SetAgeOfCorrection(byte value) => _AgeOfCorrections.Add(_DataTime, value);
-    public virtual void SetVolkelMeasRange(byte value) => _VolkelMeasureRanges.Add(_DataTime, value);
-    public virtual void SetVolkelMeasUtilRange(int value) => _VolkelMeasureUtilRanges.Add(_DataTime, value);
+    public virtual void SetICCCVValue(short value) => ICCCVValues.Add(_DataTime, value);
+    public virtual void SetICMachineSpeedValue(double value) => ICMachineSpeedValues.Add(_DataTime, value);
+    public virtual void SetICFrequency(ushort value) => ICFrequencys.Add(_DataTime, value);
+    public virtual void SetICAmplitude(ushort value) => ICAmplitudes.Add(_DataTime, value);
+    public virtual void SetICRMVValue(short value) => ICRMVValues.Add(_DataTime, value);
+    public virtual void SetAgeOfCorrection(byte value) => AgeOfCorrections.Add(_DataTime, value);
+    public virtual void SetVolkelMeasRange(byte value) => VolkelMeasureRanges.Add(_DataTime, value);
+    public virtual void SetVolkelMeasUtilRange(int value) => VolkelMeasureUtilRanges.Add(_DataTime, value);
     public virtual void SetElevationMappingModeState(ElevationMappingMode value) => ElevationMappingMode = value;
     public virtual void SetInAvoidZoneState(byte value) => InAvoidZone = value;
     public virtual void SetPositioningTechState(PositioningTech value) => PositioningTech = value;
@@ -604,15 +581,15 @@ namespace VSS.TRex.TAGFiles.Classes.States
       GPSAccuracy = AccValue;
       GPSAccuracyErrorLimit = LimValue;
     }
-    public virtual void SetICMDPValue(short value) => _ICMDPValues.Add(_DataTime, value);
-    public virtual void SetICCCAValue(byte value) => _ICCCAValues.Add(_DataTime, value);
-    public virtual void SetICCCARightFrontValue(byte value) => _ICCCARightFrontValues.Add(_DataTime, value);
-    public virtual void SetICCCALeftFrontValue(byte value) => _ICCCALeftFrontValues.Add(_DataTime, value);
-    public virtual void SetICCCARightRearValue(byte value) => _ICCCARightRearValues.Add(_DataTime, value);
-    public virtual void SetICCCALeftRearValue(byte value) => _ICCCALeftRearValues.Add(_DataTime, value);
+    public virtual void SetICMDPValue(short value) => ICMDPValues.Add(_DataTime, value);
+    public virtual void SetICCCAValue(byte value) => ICCCAValues.Add(_DataTime, value);
+    public virtual void SetICCCARightFrontValue(byte value) => ICCCARightFrontValues.Add(_DataTime, value);
+    public virtual void SetICCCALeftFrontValue(byte value) => ICCCALeftFrontValues.Add(_DataTime, value);
+    public virtual void SetICCCARightRearValue(byte value) => ICCCARightRearValues.Add(_DataTime, value);
+    public virtual void SetICCCALeftRearValue(byte value) => ICCCALeftRearValues.Add(_DataTime, value);
 
 
-    public virtual void SetICTemperatureValue(ushort value) => _ICTemperatureValues.Add(_DataTime, value);
+    public virtual void SetICTemperatureValue(ushort value) => ICTemperatureValues.Add(_DataTime, value);
 
     /// <summary>
     /// TAG Processor state base constructor. 
@@ -645,7 +622,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
       _LeftRearPoint = DataRearLeft;
       _RightRearPoint = DataRearRight;
 
-      GPSMode gPSMode = _GPSModes.GetValueAtDateTime(_DataTime, CellPassConsts.NullGPSMode);
+      GPSMode gPSMode = GPSModes.GetValueAtDateTime(_DataTime, CellPassConsts.NullGPSMode);
 
       // Check to see if the current blade epoch position is 'accurate' (essentially, not 'Autonomous' if GPS; we assume UTS is accurate enough regardless)
       // and if so save it for future use
@@ -702,7 +679,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     /// <returns></returns>
     public double GetLatestMachineSpeed()
     {
-      double result = (double)_ICMachineSpeedValues.GetLatest();
+      double result = ICMachineSpeedValues.GetLatest();
       if (result == Consts.NullDouble)
       {
         result = _CalculatedMachineSpeed;
@@ -710,6 +687,46 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
       return result;
     }
+
+    #region IDisposable Support
+    private bool disposedValue = false; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          ICMachineSpeedValues.Dispose();
+          ICCCVValues.Dispose();
+          ICRMVValues.Dispose();
+          ICFrequencys.Dispose();
+          ICAmplitudes.Dispose();
+          GPSModes.Dispose();
+          OnGrounds.Dispose();
+          AgeOfCorrections.Dispose();
+          VolkelMeasureRanges.Dispose();
+          VolkelMeasureUtilRanges.Dispose();
+          ICMDPValues.Dispose();
+          ICCCAValues.Dispose();
+          ICCCALeftFrontValues.Dispose();
+          ICCCARightFrontValues.Dispose();
+          ICCCALeftRearValues.Dispose();
+          ICCCARightRearValues.Dispose();
+          ICTemperatureValues.Dispose();
+        }
+
+        disposedValue = true;
+      }
+    }
+
+    // This code added to correctly implement the disposable pattern.
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+    }
+    #endregion
   }
 }
 

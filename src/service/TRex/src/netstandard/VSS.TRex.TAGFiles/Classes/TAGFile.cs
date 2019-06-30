@@ -268,11 +268,13 @@ namespace VSS.TRex.TAGFiles.Classes
         /// <returns></returns>
         public TAGReadResult Read(string fileName, TAGValueSinkBase sink)
         {
-            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+          using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+          {
+            using (var reader = new TAGReader(fs))
             {
-                TAGReader reader = new TAGReader(fs);
-                return Read(reader, sink);
+              return Read(reader, sink);
             }
+          }
         }
     }
 }

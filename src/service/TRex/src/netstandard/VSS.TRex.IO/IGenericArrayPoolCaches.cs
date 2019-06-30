@@ -1,6 +1,19 @@
 ﻿namespace VSS.TRex.IO
 {
-  public interface IGenericArrayPoolCaches<T>
+  public interface IGenericArrayPoolCaches
+  {
+    /// <summary>
+    /// Supplies statistics on the usage of the cached array pools
+    /// </summary>
+    /// <returns></returns>
+    (int poolIndex, int poolCapacity, int rentalCount)[] Statistics();
+
+    string ToString();
+
+    string TypeName();
+  }
+
+  public interface IGenericArrayPoolCaches<T> : IGenericArrayPoolCaches
   {
     /// <summary>
     /// Rents out a buffer from the pool. The buffer is greater than or equal to the size of the requested buffer.
@@ -18,11 +31,5 @@
     /// </summary>
     /// <param name="buffer"></param>
     void Return(T[] buffer);
-
-    /// <summary>
-    /// Supplies statistics on the usage of the cached array pools
-    /// </summary>
-    /// <returns></returns>
-    (int poolIndex, int poolCapacity, int rentalCount)[] Statistics();
   }
 }
