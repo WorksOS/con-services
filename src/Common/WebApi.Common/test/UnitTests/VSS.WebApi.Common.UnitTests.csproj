@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
-    <ProjectReference Include="..\..\..\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\src\VSS.WebApi.Common.csproj" />
   </ItemGroup>

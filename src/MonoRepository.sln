@@ -342,7 +342,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VSS.TRex.Gateway.Common.Pro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Proxy", "service\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj", "{005D89C8-14EF-4C63-87D3-2DA9465EC987}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "Common\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj", "{7D0A8C3F-FA4E-4FC6-9944-E34C8FB3B9D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{7D0A8C3F-FA4E-4FC6-9944-E34C8FB3B9D1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Common.Interfaces", "service\TRex\src\netstandard\VSS.TRex.Common.Interfaces\VSS.TRex.Common.Interfaces.csproj", "{FA7D9206-4263-4776-BB8F-2A99BA42BB17}"
 EndProject

@@ -38,7 +38,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
-    <ProjectReference Include="..\..\..\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\src\VSS.TCCFileAccess.csproj" />
   </ItemGroup>
 

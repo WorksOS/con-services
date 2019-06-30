@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess", "..\..\..\Common\TCCFileAccess\src\VSS.TCCFileAccess.csproj", "{55B1FE0F-13FA-4715-B030-B708F17FEF31}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\..\Common\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj", "{1FA36E4F-032C-4215-8FD2-E292B3CDBD8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{1FA36E4F-032C-4215-8FD2-E292B3CDBD8A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{A2D99843-5CC9-4D4D-9B2D-6A612C0260FE}"
 EndProject

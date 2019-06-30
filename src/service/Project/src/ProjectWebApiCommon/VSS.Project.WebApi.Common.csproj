@@ -28,7 +28,7 @@
     <ProjectReference Include="..\..\..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
     <ProjectReference Include="..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
     <ProjectReference Include="..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
     <ProjectReference Include="..\..\..\..\Common\TCCFileAccess\src\VSS.TCCFileAccess.csproj" />

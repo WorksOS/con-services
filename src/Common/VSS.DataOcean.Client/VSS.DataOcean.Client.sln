@@ -42,7 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\..\..\.editorconfig = ..\..\..\.editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj", "{2AD7D374-CF81-4EF5-AEE2-E14FA09BE588}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{2AD7D374-CF81-4EF5-AEE2-E14FA09BE588}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gateway.Abstractions", "..\..\service\TRex\src\interfaces\VSS.TRex.ConnectedSite.Gateway.Abstractions\VSS.TRex.ConnectedSite.Gateway.Abstractions.csproj", "{F409CD29-7A49-4FAF-AD30-9A6A1649AF5E}"
 EndProject

@@ -48,7 +48,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gateway.Abstractions", "..\..\..\service\TRex\src\interfaces\VSS.TRex.ConnectedSite.Gateway.Abstractions\VSS.TRex.ConnectedSite.Gateway.Abstractions.csproj", "{92DFDC07-20A4-427E-BCCB-84C370F36D54}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj", "{C36E3E61-0AA5-49F5-A504-5B249A463423}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{C36E3E61-0AA5-49F5-A504-5B249A463423}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\..\..\service\TRex\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj", "{D06E847B-9E63-4152-A2B2-C68CF5BBFFBD}"
 EndProject
