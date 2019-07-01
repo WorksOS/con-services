@@ -73,7 +73,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// <param name="customHeaders"></param>
     /// <param name="queryParameters"></param>
     /// <returns></returns>
-    public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route, IDictionary<string, string> customHeaders = null, string queryParameters = null)
+    public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route, IDictionary<string, string> customHeaders = null, IDictionary<string, string> queryParameters = null)
       where TResponse : class, IMasterDataModel
     {
       log.LogDebug($"{nameof(TResponse)}: Sending the get data request for site model ID: {siteModelId}");
@@ -136,7 +136,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// <param name="route"></param>
     /// <param name="queryParameters"></param>
     /// <returns></returns>
-    private async Task<T> SendRequestGet<T>(IDictionary<string, string> customHeaders, string route, string queryParameters = null)
+    private async Task<T> SendRequestGet<T>(IDictionary<string, string> customHeaders, string route, IDictionary<string, string> queryParameters = null)
     {
       var response = await SendRequest<T>(TREX_GATEWAY_IMMUTABLE_BASE_URL, string.Empty, customHeaders, route, HttpMethod.Get, queryParameters);
 

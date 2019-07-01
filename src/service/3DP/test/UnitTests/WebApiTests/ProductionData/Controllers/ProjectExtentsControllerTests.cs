@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), 
           It.IsAny<string>(), 
           It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<string>()))
+          It.IsAny<IDictionary<string, string>>()))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

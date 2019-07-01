@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -389,7 +390,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
     private string ProcessWithTRex(string projectUid, DesignDescriptor designDescriptor, IDictionary<string, string> customHeaders)
     {
-      var queryParams = $"?projectUid={projectUid}&designUid={designDescriptor.FileUid}&fileName={designDescriptor.File.FileName}&tolerance={DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL}";
+      var queryParams = new Dictionary<string, string>()
+      {
+        { "projectUid", projectUid },
+        { "designUid", designDescriptor?.FileUid.ToString() },
+        { "fileName", designDescriptor?.File?.FileName },
+        { "tolerance", DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL.ToString(CultureInfo.CurrentCulture) }
+      };
 
       var returnedResult = tRexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(projectUid, "/design/boundaries", customHeaders, queryParams).Result;
 

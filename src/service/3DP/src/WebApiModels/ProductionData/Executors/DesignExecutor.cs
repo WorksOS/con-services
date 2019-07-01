@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
@@ -80,7 +82,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     private void ProcessWithTRex(DesignBoundariesRequest request, string designUid, string fileName, ref List<JObject> geoJsonList)
     {
       var siteModelId = request.ProjectUid.ToString();
-      var queryParams = $"?projectUid={siteModelId}&designUid={designUid}&fileName={fileName}&tolerance={request.Tolerance}";
+
+      var queryParams = new Dictionary<string, string>()
+      {
+        { "projectUid", siteModelId },
+        { "designUid", designUid },
+        { "fileName", fileName },
+        { "tolerance", request.Tolerance.ToString(CultureInfo.CurrentCulture) }
+      };
 
       var returnedResult = trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, "/design/boundaries", customHeaders, queryParams).Result;
 

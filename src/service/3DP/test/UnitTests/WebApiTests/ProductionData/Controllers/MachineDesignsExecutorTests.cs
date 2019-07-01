@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
           It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<string>()))
+          It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(expectedResult);
 
       var assets = new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, assetId)};
@@ -117,7 +117,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
           It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<string>()))
+          It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(expectedResult);
 
       var assets = new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, assetId)};
@@ -197,7 +197,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
           It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<string>()))
+          It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(expectedResult);
 
       var assets = new List<KeyValuePair<Guid, long>>()
