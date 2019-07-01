@@ -81,11 +81,12 @@ namespace VSS.Tile.Service.Common.Helpers
     {
       switch (fileType)
       {
-        case ImportedFileType.Linework: return string.Empty;
-        case ImportedFileType.Alignment: return GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX;
-        case ImportedFileType.DesignSurface: return GENERATED_SURFACE_FILE_SUFFIX;
+        case ImportedFileType.Alignment:
+          return GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX;
+        case ImportedFileType.DesignSurface:
+          return GENERATED_SURFACE_FILE_SUFFIX;
+        default: return string.Empty;
       }
-      return string.Empty;
     }
 
     /// <summary>
