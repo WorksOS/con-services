@@ -149,8 +149,7 @@ namespace VSS.TRex.Server.MutableData
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new TAGFileProcessingHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SlabAllocatedCellPassArrayPoolHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolRegisterHeartBeatLogger());
-      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericTwoDArrayCacheHeartBeatLogger<int>());
-      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericTwoDArrayCacheHeartBeatLogger<CellPass>());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericTwoDArrayCacheRegisterHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)
