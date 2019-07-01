@@ -11,7 +11,7 @@ namespace VSS.TRex.Storage.Models
         /// <summary>
         /// Default size of pages in the persistent storage, 16 Kb at the current time
         /// </summary>
-        public const int DEFAULT_DATA_REGION_PAGE_SIZE = 16 * 1024;
+        public const int DEFAULT_DATA_REGION_PAGE_SIZE = 4 * 1024;
 
         /// <summary>
         /// Default size of pages in the persistent storage

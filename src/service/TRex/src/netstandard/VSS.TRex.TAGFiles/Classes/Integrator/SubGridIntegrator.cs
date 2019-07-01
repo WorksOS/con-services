@@ -201,6 +201,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 }
                 */
                 IntegrateSubGrid(SourceSubGrid, integrationMode, subGridChangeNotifier, SegmentIterator);
+
+                // Release the resources used by SourceSubGrid as this is the last point it is needed
+                SourceSubGrid.DeAllocateLeafFullPassStacks();
+                SourceSubGrid.DeAllocateLeafLatestPassGrid();
             }
 
             return true;
