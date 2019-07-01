@@ -24,11 +24,11 @@ namespace VSS.TRex.Cells
           {
             sb.Clear();
             sb.Append(cache.TypeName());
-            sb.AppendLine("-ArrayPool: Index/Capacity/MaxRented/Rented/Available: ");
+            sb.Append("-ArrayPool: Index/Capacity/MaxRented/Rented/Available: ");
 
             foreach (var stat in stats)
             {
-              sb.AppendLine($"{stat.PoolIndex}/{stat.PoolCapacity}/{stat.HighWaterRents}/{stat.CurrentRents}/{stat.AvailCount}");
+              sb.Append($"{stat.PoolIndex}/{stat.PoolCapacity}/{stat.HighWaterRents}/{stat.CurrentRents}/{stat.AvailCount}");
             }
 
             Log.LogInformation("Heartbeat: " + sb);

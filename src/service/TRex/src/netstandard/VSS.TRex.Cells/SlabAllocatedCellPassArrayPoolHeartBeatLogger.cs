@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.IO.Helpers;
 
@@ -23,11 +24,11 @@ namespace VSS.TRex.Cells
       if (stats != null)
       {
         sb.Clear();
-        sb.AppendLine("SlabAllocatedCellPassArrayPool: Index/ArraySize/Capacity/Available/Rented: ");
+        sb.Append("SlabAllocatedCellPassArrayPool: Index/ArraySize/Capacity/Available/Rented: ");
 
         foreach (var stat in stats)
         {
-          sb.AppendLine($"{stat.poolIndex}/{stat.arraySize}/{stat.capacity}/{stat.capacity - stat.rentedItems}/{stat.rentedItems}");
+          sb.Append($"{stat.poolIndex}/{stat.arraySize}/{stat.capacity}/{stat.capacity - stat.rentedItems}/{stat.rentedItems}");
         }
 
         return sb.ToString();
