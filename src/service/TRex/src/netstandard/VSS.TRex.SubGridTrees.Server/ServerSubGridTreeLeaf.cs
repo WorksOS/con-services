@@ -673,7 +673,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
           using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
           {
-            SubGridStreamHeader Header = new SubGridStreamHeader
+            var Header = new SubGridStreamHeader
             {
               Identifier = SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker,
               Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridDirectoryFile,

@@ -160,7 +160,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool Read(BinaryReader reader,
       bool loadLatestData, bool loadAllPasses)
     {
-      SubGridStreamHeader Header = new SubGridStreamHeader(reader);
+      var Header = new SubGridStreamHeader(reader);
 
       StartTime = Header.StartTime;
       EndTime = Header.EndTime;
