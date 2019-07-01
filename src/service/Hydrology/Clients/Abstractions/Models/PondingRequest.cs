@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Net;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Hydrology.WebApi.Abstractions.Models
 {
@@ -15,7 +18,7 @@ namespace VSS.Hydrology.WebApi.Abstractions.Models
     [JsonProperty(PropertyName = "FilterUID", Required = Required.Default)]
     public Guid? FilterUid { get; set; }
 
-    /// <summary>The resolution of resultant map in IsMetric i.e. 5 meters/pixel.</summary>
+    /// <summary>The resolution of resultant map i.e. cell size in real world coords meters/pixel?.</summary>
     [JsonProperty(PropertyName = "Resolution", Required = Required.Default)]
     public double Resolution { get; set; }
 
@@ -42,7 +45,8 @@ namespace VSS.Hydrology.WebApi.Abstractions.Models
       IsMetric = true;
     }
 
-    public PondingRequest(Guid projectUid, Guid? filterUid, double resolution, bool isMetric, string fileName = DEFAULT_PONDING_FILENAME)
+    public PondingRequest(Guid projectUid, Guid? filterUid, double resolution, bool isMetric,
+      string fileName = DEFAULT_PONDING_FILENAME)
     {
       Initialize();
       ProjectUid = projectUid;
@@ -56,12 +60,14 @@ namespace VSS.Hydrology.WebApi.Abstractions.Models
     {
       if (ProjectUid == Guid.Empty)
       {
-        throw new ArgumentException($"{nameof(Validate)} Invalid ProjectUid.");
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(2001));
       }
 
-      if (FilterUid != null || FilterUid != Guid.Empty)
+      if (FilterUid != null && FilterUid != Guid.Empty)
       {
-        throw new ArgumentException($"{nameof(Validate)} Filter not supported at yet.");
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(2002));
       }
 
       //if (FilterUid != null && FilterUid == Guid.Empty)
@@ -69,14 +75,16 @@ namespace VSS.Hydrology.WebApi.Abstractions.Models
       //  throw new ArgumentException($"{nameof(Validate)} Empty FilterUid.");
       //}
 
-      if (Resolution <= 0 || Resolution > 1000000) // todoJeannie what should max be?
+      if (Resolution <= 0.005 || Resolution > 1000000) // todoJeannie what should these be?
       {
-        throw new ArgumentException($"{nameof(Validate)} Resolution must be > 0 and < 1,000,000.");
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(2003));
       }
 
       if (string.IsNullOrEmpty(FileName))
       {
-        throw new ArgumentException($"{nameof(Validate)} Must have a resultant file name.");
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(2004));
       }
     }
   }

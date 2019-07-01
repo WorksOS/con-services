@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.Hydrology.WebApi.TTM;
 
-namespace VSS.Hydrology.WebApi.Common.TTM
+namespace VSS.Hydrology.WebApi.TTM
 {
   public class TriVertices : List<TriVertex>
   {
@@ -23,7 +22,7 @@ namespace VSS.Hydrology.WebApi.Common.TTM
     {
       double HashValue = HashOrdinate == HashOrdinate.hoX ? X : Y;
 
-      int result = (int) Math.Round((HashValue - MinHashOrdinate) / (MaxHashOrdinate - MinHashOrdinate) * HashArray.Count());
+      int result = (int)Math.Round((HashValue - MinHashOrdinate) / (MaxHashOrdinate - MinHashOrdinate) * HashArray.Count());
 
       return Range.EnsureRange(result, 0, HashArray.Length - 1);
     }
@@ -121,7 +120,7 @@ namespace VSS.Hydrology.WebApi.Common.TTM
 
       return Result;
     }
-  
+
     /// <summary>
     /// Initialise the internal hash map for storing vertices across the given geospatial range
     /// </summary>

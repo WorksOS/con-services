@@ -13,6 +13,7 @@ using VSS.Common.Exceptions;
 using VSS.Hydrology.WebApi.Abstractions.Models;
 using VSS.Hydrology.WebApi.Abstractions.Models.ResultHandling;
 using VSS.Hydrology.WebApi.Common.Utilities;
+using VSS.Hydrology.WebApi.DXF;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 
@@ -45,46 +46,44 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       // <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
       // "RAPTOR_3DPM_API_URL": "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0",
       // "RAPTOR_3DPM_API_URL": "http://localhost:5001/api/v2", note there is not mockRaptorController  [Route("api/v2/export/surface")] 
-      var ttmFileName = Path.GetFileName(request.FileName) + ".ttm";
-      var route =
-        $"/export/surface?projectUid={request.ProjectUid}&fileName={ttmFileName}&filterUid={request.FilterUid}";
-      var fileResult =
-        await RaptorProxy.ExecuteGenericV2Request<FileResult>(route, HttpMethod.Get, null, CustomHeaders) as
-          FileStreamResult;
-      if (fileResult == null)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
-            $"No latest Ground returned from 3dp"));
-      }
-
-      var localProjectPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
-      var ttmLocalPathAndFileName = Path.Combine(new[] {localProjectPath, ttmFileName});
-      using (var fileStream = File.Create(ttmLocalPathAndFileName))
-      {
-        fileResult.FileStream.CopyTo(fileStream);
-      }
-
-      if (!File.Exists(ttmLocalPathAndFileName))
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
-            $"Latest ground file was not saved to disk"));
-      }
-
+      var targetPondingFileNameNoExtn = Path.GetFileNameWithoutExtension(request.FileName);
+      //var route =
+      //  $"/export/surface?projectUid={request.ProjectUid}&fileName={ttmFileName}&filterUid={request.FilterUid}";
+      //var fileResult =
+      //  await RaptorProxy.ExecuteGenericV2Request<FileResult>(route, HttpMethod.Get, null, CustomHeaders) as
+      //    FileStreamResult;
+      //if (fileResult == null)
+      //{
+      //  throw new ServiceException(HttpStatusCode.InternalServerError,
+      //    new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
+      //      $"No latest Ground returned from 3dp"));
+      //}
 
       //
       // convert ttm to dxf mesh
 
-      // temporarily use this sample triangle mesh
-      var dxfLocalPathAndFileName = "..\\..\\TestData\\Sample\\triangle.dxf"; // todoJeannie
-      //var dxfLocalPathAndFileName = Path.ChangeExtension(ttmLocalPathAndFileName, "dxf");
+      var localTempProjectPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
+
+      //var dxfLocalPathAndFileName = Path.Combine(new[] { localTempProjectPath, (targetPondingFileNameNoExtn + ".dxf") });
+      //ConvertTTMToDXF(fileResult.FileStream as MemoryStream, dxfLocalPathAndFileName);
+
+      // todoJeannie temporarily use this sample mesh
+      // var ttmLocalPathAndFileName = "..\\..\\test\\UnitTests\\TestData\\DesignSurfaceGoodContent.ttm"; // hydro throws exception with 2 triangles.
+      var ttmLocalPathAndFileName = "..\\..\\test\\UnitTests\\TestData\\AlphaDimensions2012_milling_surface5.ttm";
+      Log.LogDebug($"{Environment.CurrentDirectory}");
+      var tt = Environment.CurrentDirectory;
+      if (!File.Exists(ttmLocalPathAndFileName))
+        throw new InvalidOperationException("todoJeannie unable to find temp ttm");
+
+      var dxfLocalPathAndFileName = Path.Combine(new[] { localTempProjectPath, (targetPondingFileNameNoExtn + ".dxf") });
       ConvertTTMToDXF(ttmLocalPathAndFileName, dxfLocalPathAndFileName);
 
 
       // 
       // generate ponding image from dxf mesh
 
+      // todoJeannie temporarily use this sample mesh
+      // dxfLocalPathAndFileName = "..\\..\\test\\UnitTests\\TestData\\Sample\\Triangle.dxf";
       var pngLocalPathAndFileName = Path.ChangeExtension(dxfLocalPathAndFileName, "png");
       try
       {
@@ -147,19 +146,23 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     }
 
     // convert ttm to dxf mesh
-    private void ConvertTTMToDXF(string ttmLocalPathAndFileName, string dxfLocalPathAndFileName)
+    private int ConvertTTMToDXF(string ttmLocalPathAndFileName, string dxfLocalPathAndFileName)
     {
-      var isConvertedToDXF = true;
+      var triangleCount = 0;
 
-      //todoJeannie write from Stream
-      var  converter = new TTMtoDXFConverter(Log);
-      converter.WriteDXFFromTTMStream(ttmLocalPathAndFileName, dxfLocalPathAndFileName);
+      using (var ms = new MemoryStream(File.ReadAllBytes(ttmLocalPathAndFileName)))
+      {
+        triangleCount = ConvertTTMToDXF(ms, dxfLocalPathAndFileName);
+      }
+      return triangleCount;
+    }
 
-      // todoJeannie
-      //if (!File.Exists(dxfLocalPathAndFileName))
-      //  throw new FileNotFoundException($"{nameof(ConvertTTMToDXF)} Latest ground DXF file not found {dxfLocalPathAndFileName}");
-
-      return;
+    private int ConvertTTMToDXF(MemoryStream ms, string dxfLocalPathAndFileName)
+    {
+      var converter = new TTMtoDXFConverter(base.Log);
+      converter.WriteDXFFromTTMStream(ms, dxfLocalPathAndFileName);
+      
+      return converter.DXFTriangleCount();
     }
 
 

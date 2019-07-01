@@ -10,6 +10,7 @@
     public const double NullReal = 1E308;
     public const double NullDouble = NullReal;
     public const int NoNeighbour = -1;
+    public const int MaxStartPoints = 50;
 
     public const double DefaultCoordinateResolution = 0.000000001; // 0.000001 mm
     public const double DefaultElevationResolution = 0.000000001; // 0.000001 mm

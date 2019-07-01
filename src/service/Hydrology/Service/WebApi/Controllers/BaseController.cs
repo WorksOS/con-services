@@ -24,6 +24,8 @@ namespace VSS.Hydrology.WebApi.Controllers
   /// </summary>
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
+    protected readonly int customErrorMessageOffset = 4000; // todoJeannie how to set?
+
     /// <summary>
     /// Gets the service exception handler.
     /// </summary>

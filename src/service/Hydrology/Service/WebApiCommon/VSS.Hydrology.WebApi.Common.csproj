@@ -14,15 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Coord\ResultHandling\**" />
-    <Compile Remove="DXF\**" />
-    <EmbeddedResource Remove="Coord\ResultHandling\**" />
-    <EmbeddedResource Remove="DXF\**" />
-    <None Remove="Coord\ResultHandling\**" />
-    <None Remove="DXF\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Polly" Version="6.0.1" />
@@ -44,6 +35,10 @@
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\Clients\Abstractions\VSS.Hydrology.WebApi.Abstractions.csproj" />
     <ProjectReference Include="..\TTM\VSS.Hydrology.WebApi.TTM.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
+    <ProjectReference Include="..\DXF\VSS.Hydrology.WebApi.DXF.csproj" />
   </ItemGroup>
 
   <ItemGroup>

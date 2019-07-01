@@ -7,8 +7,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
+using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
 using VSS.Hydrology.WebApi.Middleware;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
@@ -59,10 +63,8 @@ namespace VSS.Hydrology.WebApi
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      /*
-       *       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-       *       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
-       */
+      services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddScoped<IErrorCodesProvider, HydroErrorCodesProvider>();
       services.AddServiceDiscovery();
 
       ConfigureApplicationServices(services);

@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
-using VSS.Hydrology.WebApi.Common.TTM;
 
 namespace VSS.Hydrology.WebApi.TTM
 {
@@ -33,14 +34,14 @@ namespace VSS.Hydrology.WebApi.TTM
       return (short)(Math.Abs(MaxValue) <= Consts.MaxSmallIntValue ? sizeof(short) : sizeof(int));
     }
 
-    //protected override void CreateLists(out TriVertices vertices, out Triangles triangles)
-    //{
-    //  // Note : Do NOT call inherited here, doing so will cause a memory leak as the
-    //  //        Vertices and Triangles lists create in the inherited method are then lost
-    //  //        by being overwritten here.  
-    //  vertices = new TTMVertices();
-    //  triangles = new TTMTriangles();
-    //}
+    protected override void CreateLists(out TriVertices vertices, out Triangles triangles)
+    {
+      // Note : Do NOT call inherited here, doing so will cause a memory leak as the
+      //        Vertices and Triangles lists create in the inherited method are then lost
+      //        by being overwritten here.  
+      vertices = new TTMVertices();
+      triangles = new TTMTriangles();
+    }
 
     public TrimbleTINModel()
     {
@@ -86,46 +87,42 @@ namespace VSS.Hydrology.WebApi.TTM
           var identifier = Encoding.ASCII.GetString(Header.FileSignature);
           if (identifier != Consts.TTMFileIdentifier)
           {
-            throw new ArgumentException("File is not a Trimble TIN Model.");
+            throw new InvalidOperationException("File is not a Trimble TIN Model."); // TTMFileReadException("File is not a Trimble TIN Model.");
           }
 
           // Check file version
           if (Header.FileMajorVersion != Consts.TTMMajorVersion
               || Header.FileMinorVersion != Consts.TTMMinorVersion)
           {
-            throw new ArgumentException($"TTM.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
+            throw new InvalidOperationException(
+              $"TTM.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: {Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}"); // TTMFileReadException($"TTM.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
           }
 
           Clear();
 
-          ModelName = ASCIIEncoding.ASCII.GetString(Header.DTMModelInternalName).TrimEnd(new[] { '\0' });
+          ModelName = ASCIIEncoding.ASCII.GetString(Header.DTMModelInternalName).TrimEnd(new[] {'\0'});
 
           LoadErrMsg = "Error reading vertices";
           reader.BaseStream.Position = Header.StartOffsetOfVertices;
-          (Vertices as TTMVertices).Read(reader, Header);
+          ((TTMVertices) Vertices).Read(reader, Header);
 
           LoadErrMsg = "Error reading triangles";
           reader.BaseStream.Position = Header.StartOffsetOfTriangles;
-          (Triangles as TTMTriangles).Read(reader, Header, Vertices);
+          ((TTMTriangles) Triangles).Read(reader, Header, Vertices);
 
           LoadErrMsg = "Error reading edges";
           reader.BaseStream.Position = Header.StartOffsetOfEdgeList;
-          Edges.Read(reader, Header, Triangles as TTMTriangles);
+          Edges.Read(reader, Header, (TTMTriangles) Triangles);
 
           LoadErrMsg = "Error reading start points";
           reader.BaseStream.Position = Header.StartOffsetOfStartPoints;
           StartPoints.Read(reader, Header, Triangles);
         }
-        catch (Exception)
+        catch (Exception e)
         {
           Clear();
-          throw; // pass it on
+          throw new InvalidOperationException($"Exception at TTM loading phase {LoadErrMsg}, exception: {e}");
         }
-        //catch (Exception e)
-        //{
-        //  Clear();
-        //  throw new InvalidOperationException($"Exception at TTM loading phase {LoadErrMsg}", e);
-        //}
       }
       finally
       {
@@ -133,71 +130,71 @@ namespace VSS.Hydrology.WebApi.TTM
       }
     }
 
-    //private void PadToBoundary(BinaryWriter writer)
-    //{
-    //  const int BlockSize = 8;
+    private void PadToBoundary(BinaryWriter writer)
+    {
+      const int BlockSize = 8;
 
-    //  byte[] Zero = new byte[BlockSize]; // Will be initialised to zero...
+      byte[] Zero = new byte[BlockSize]; // Will be initialised to zero...
 
-    //  writer.Write(Zero, 0, (int)(BlockSize - ((writer.BaseStream.Position - 1) % BlockSize) - 1));
-    //}
+      writer.Write(Zero, 0, (int)(BlockSize - ((writer.BaseStream.Position - 1) % BlockSize) - 1));
+    }
 
-    //public void Write(BinaryWriter writer)
-    //{
-    //  // Write a blank header now, and go back later and fix it up
-    //  long HeaderPos = writer.BaseStream.Position;
+    public void Write(BinaryWriter writer)
+    {
+      // Write a blank header now, and go back later and fix it up
+      long HeaderPos = writer.BaseStream.Position;
 
-    //  Header.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName);
-    //  if (Header.DTMModelInternalName.Length != HeaderConsts.kDTMInternalModelNameSize)
-    //  {
-    //    Array.Resize(ref Header.DTMModelInternalName, HeaderConsts.kDTMInternalModelNameSize);
-    //  }
+      Header.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName);
+      if (Header.DTMModelInternalName.Length != HeaderConsts.kDTMInternalModelNameSize)
+      {
+        Array.Resize(ref Header.DTMModelInternalName, HeaderConsts.kDTMInternalModelNameSize);
+      }
 
-    //  Header.Write(writer);
+      Header.Write(writer);
 
-    //  PadToBoundary(writer);
+      PadToBoundary(writer);
 
-    //  Header.FileMajorVersion = Consts.TTMMajorVersion;
-    //  Header.FileMinorVersion = Consts.TTMMinorVersion;
+      Header.FileMajorVersion = Consts.TTMMajorVersion;
+      Header.FileMinorVersion = Consts.TTMMinorVersion;
 
-    //  Header.CoordinateUnits = 1; // Metres
-    //  Header.VertexValueUnits = 1; // Metres
-    //  Header.InterpolationMethod = 1; // Linear
+      Header.CoordinateUnits = 1; // Metres
+      Header.VertexValueUnits = 1; // Metres
+      Header.InterpolationMethod = 1; // Linear
 
-    //  SetUpSizes();
+      SetUpSizes();
 
-    //  Header.StartOffsetOfVertices = (int)writer.BaseStream.Position;
-    //  Header.NumberOfVertices = Vertices.Count;
-    //  Header.VertexRecordSize = (short)(2 * Header.VertexCoordinateSize + Header.VertexValueSize);
-    //  (Vertices as TTMVertices).Write(writer, Header);
-    //  PadToBoundary(writer);
+      Header.StartOffsetOfVertices = (int)writer.BaseStream.Position;
+      Header.NumberOfVertices = Vertices.Count;
+      Header.VertexRecordSize = (short)(2 * Header.VertexCoordinateSize + Header.VertexValueSize);
+      (Vertices as TTMVertices).Write(writer, Header);
+      PadToBoundary(writer);
 
-    //  Header.StartOffsetOfTriangles = (int)writer.BaseStream.Position;
-    //  Header.NumberOfTriangles = Triangles.Count;
-    //  Header.TriangleRecordSize = (short)(3 * Header.VertexNumberSize + 3 * Header.TriangleNumberSize);
-    //  Vertices.NumberVertices();
-    //  (Triangles as TTMTriangles).Write(writer, Header);
-    //  PadToBoundary(writer);
+      Header.StartOffsetOfTriangles = (int)writer.BaseStream.Position;
+      Header.NumberOfTriangles = Triangles.Count;
+      Header.TriangleRecordSize = (short)(3 * Header.VertexNumberSize + 3 * Header.TriangleNumberSize);
+      Vertices.NumberVertices();
+      (Triangles as TTMTriangles).Write(writer, Header);
+      PadToBoundary(writer);
 
-    //  Header.StartOffsetOfEdgeList = (int)writer.BaseStream.Position;
-    //  Header.NumberOfEdgeRecords = Edges.Count();
-    //  Header.EdgeRecordSize = Header.TriangleNumberSize;
-    //  Edges.Write(writer, Header);
-    //  PadToBoundary(writer);
+      Header.StartOffsetOfEdgeList = (int)writer.BaseStream.Position;
+      Header.NumberOfEdgeRecords = Edges.Count();
+      Header.EdgeRecordSize = Header.TriangleNumberSize;
+      Edges.Write(writer, Header);
+      PadToBoundary(writer);
 
-    //  Header.StartOffsetOfStartPoints = (int)(writer.BaseStream.Position);
-    //  Header.NumberOfStartPoints = StartPoints.Count();
-    //  Header.StartPointRecordSize = (short)(2 * Header.VertexCoordinateSize + Header.TriangleNumberSize);
-    //  StartPoints.Write(writer, Header);
+      Header.StartOffsetOfStartPoints = (int)(writer.BaseStream.Position);
+      Header.NumberOfStartPoints = StartPoints.Count();
+      Header.StartPointRecordSize = (short)(2 * Header.VertexCoordinateSize + Header.TriangleNumberSize);
+      StartPoints.Write(writer, Header);
 
-    //  // Fix up header
-    //  long EndPos = writer.BaseStream.Position;
-    //  writer.BaseStream.Position = HeaderPos;
+      // Fix up header
+      long EndPos = writer.BaseStream.Position;
+      writer.BaseStream.Position = HeaderPos;
 
-    //  Header.Write(writer);
+      Header.Write(writer);
 
-    //  writer.BaseStream.Position = EndPos;
-    //}
+      writer.BaseStream.Position = EndPos;
+    }
 
     public void LoadFromStream(Stream stream)
     {
@@ -220,81 +217,81 @@ namespace VSS.Hydrology.WebApi.TTM
       }
     }
 
-    //public void SaveToStream(double CoordinateResolution,
-    //  double ElevationResolution,
-    //  bool BuildEdgeListEtAl,
-    //  Stream stream)
-    //{
-    //  if (BuildEdgeListEtAl && Triangles.Count > 0)
-    //  {
-    //    BuildTriangleLinks();
-    //    BuildEdgeList();
-    //    BuildStartPointList();
-    //  }
+    public void SaveToStream(double CoordinateResolution,
+      double ElevationResolution,
+      bool BuildEdgeListEtAl,
+      Stream stream)
+    {
+      if (BuildEdgeListEtAl && Triangles.Count > 0)
+      {
+        BuildTriangleLinks();
+        BuildEdgeList();
+        BuildStartPointList();
+      }
 
-    //  this.CoordinateResolution = CoordinateResolution;
-    //  this.ElevationResolution = ElevationResolution;
+      this.CoordinateResolution = CoordinateResolution;
+      this.ElevationResolution = ElevationResolution;
 
-    //  using (BinaryWriter writer = new BinaryWriter(stream))
-    //  {
-    //    Write(writer);
-    //  }
-    //}
+      using (BinaryWriter writer = new BinaryWriter(stream))
+      {
+        Write(writer);
+      }
+    }
 
-    //public void SaveToFile(string FileName,
-    //  double CoordinateResolution = Consts.DefaultCoordinateResolution,
-    //  double ElevationResolution = Consts.DefaultElevationResolution,
-    //  bool BuildEdgeListEtAl = true)
-    //{
-    //  using (FileStream fs = new FileStream(FileName, FileMode.CreateNew, FileAccess.Write))
-    //  {
-    //    SaveToStream(CoordinateResolution, ElevationResolution, BuildEdgeListEtAl, fs);
-    //  }
-    //}
+    public void SaveToFile(string FileName,
+      double CoordinateResolution = Consts.DefaultCoordinateResolution,
+      double ElevationResolution = Consts.DefaultElevationResolution,
+      bool BuildEdgeListEtAl = true)
+    {
+      using (FileStream fs = new FileStream(FileName, FileMode.CreateNew, FileAccess.Write))
+      {
+        SaveToStream(CoordinateResolution, ElevationResolution, BuildEdgeListEtAl, fs);
+      }
+    }
 
-    //public void SaveToFile(string FileName,
-    //  bool BuildEdgeListEtAl)
-    //{
-    //  SaveToFile(FileName,
-    //    Consts.DefaultCoordinateResolution,
-    //    Consts.DefaultElevationResolution,
-    //    BuildEdgeListEtAl);
-    //}
+    public void SaveToFile(string FileName,
+      bool BuildEdgeListEtAl)
+    {
+      SaveToFile(FileName,
+        Consts.DefaultCoordinateResolution,
+        Consts.DefaultElevationResolution,
+        BuildEdgeListEtAl);
+    }
 
-    //public void BuildEdgeList()
-    //{
-    //  Edges.Clear();
-    //  for (int TriNumber = 0; TriNumber < Triangles.Count; TriNumber++)
-    //  {
-    //    if (Triangles[TriNumber].IsEdgeTriangle())
-    //    {
-    //      Edges.AddTriangle(Triangles[TriNumber] as TTMTriangle);
-    //    }
-    //  }
-    //}
+    public void BuildEdgeList()
+    {
+      Edges.Clear();
+      for (int TriNumber = 0; TriNumber < Triangles.Count; TriNumber++)
+      {
+        if (Triangles[TriNumber].IsEdgeTriangle())
+        {
+          Edges.AddTriangle(Triangles[TriNumber] as TTMTriangle);
+        }
+      }
+    }
 
-    //public void BuildStartPointList()
-    //{
-    //  StartPoints.Clear();
+    public void BuildStartPointList()
+    {
+      StartPoints.Clear();
 
-    //  if (Triangles.Count == 0)
-    //    return;
+      if (Triangles.Count == 0)
+        return;
 
-    //  // How many start points do we want?
-    //  int NumStartPoints = Math.Min(Math.Max((int)Math.Round(Math.Sqrt(Triangles.Count) / 2), 1), Consts.MaxStartPoints);
+      // How many start points do we want?
+      int NumStartPoints = Math.Min(Math.Max((int)Math.Round(Math.Sqrt(Triangles.Count) / 2), 1), Consts.MaxStartPoints);
 
-    //  // Use the centre points of this number of triangles evenly spaced throughout the job
-    //  int TriNumOffset = (Triangles.Count / NumStartPoints) / 2;
-    //  for (int StPtNum = 0; StPtNum < NumStartPoints; StPtNum++)
-    //  {
-    //    int TriangleNum = (StPtNum * Triangles.Count) / NumStartPoints + TriNumOffset;
+      // Use the centre points of this number of triangles evenly spaced throughout the job
+      int TriNumOffset = (Triangles.Count / NumStartPoints) / 2;
+      for (int StPtNum = 0; StPtNum < NumStartPoints; StPtNum++)
+      {
+        int TriangleNum = (StPtNum * Triangles.Count) / NumStartPoints + TriNumOffset;
 
-    //    Debug.Assert(TriangleNum >= 0);
+        Debug.Assert(TriangleNum >= 0);
 
-    //    XYZ Centroid = Triangles[TriangleNum].Centroid();
-    //    StartPoints.Add(new TTMStartPoint(Centroid.X, Centroid.Y, Triangles[TriangleNum]));
-    //  }
-    //}
+        XYZ Centroid = Triangles[TriangleNum].Centroid();
+        StartPoints.Add(new TTMStartPoint(Centroid.X, Centroid.Y, Triangles[TriangleNum]));
+      }
+    }
 
 
     public override void Clear()
