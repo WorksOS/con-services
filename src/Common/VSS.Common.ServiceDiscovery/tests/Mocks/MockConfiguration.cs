@@ -99,6 +99,19 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Mocks
       return defaultValue;
     }
 
+    public Guid GetValueGuid(string v)
+    {
+      return (Guid) Values[v];
+    }
+
+    public Guid GetValueGuid(string v, Guid defaultValue)
+    {
+      if (Values.ContainsKey(v))
+        return (Guid)Values[v];
+
+      return defaultValue;
+    }
+
     public string GetConnectionString(string connectionType, string databaseNameKey)
     {
       return Values[connectionType + databaseNameKey] as string;
