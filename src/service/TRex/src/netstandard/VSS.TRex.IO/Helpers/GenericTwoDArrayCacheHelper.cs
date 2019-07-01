@@ -9,7 +9,7 @@ namespace VSS.TRex.IO.Helpers
       {
         if (_caches == null)
         {
-          _caches = DIContext.Obtain<IGenericTwoDArrayCache<T>>() ?? new GenericTwoDArrayCache<T>(32, 32, 1000);
+          _caches = DIContext.Obtain<IGenericTwoDArrayCache<T>>() ?? new GenericTwoDArrayCache<T>(32, 32, 15000);
           GenericTwoDArrayCacheRegister.Add(_caches);
         }
 
