@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         ProjectUid = Guid.NewGuid(),
         ImportedFileUid = Guid.NewGuid(),
         DataOceanRootFolder = "some folder",
-        DxfFileName = "a dxf file",
+        FileName = "a dxf file",
         DcFileName = "a dc file",
         DxfUnitsType = DxfUnitsType.Meters
       };
@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       var mockNotification = new Mock<INotificationHubClient>();
 
-      mockNotification.Setup(n => n.Notify(It.IsAny<ProjectFileDxfTilesGeneratedNotification>()))
+      mockNotification.Setup(n => n.Notify(It.IsAny<ProjectFileRasterTilesGeneratedNotification>()))
                       .Returns(Task.FromResult(default(object)));
 
       var mockTPaaSAuth = new Mock<ITPaaSApplicationAuthentication>();
