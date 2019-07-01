@@ -32,13 +32,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Services
     /// <summary>
     /// Handles the notification for DXF tiles having been generated
     /// </summary>
-    [Notification(NotificationUidType.File, ProjectFileDxfTilesGeneratedNotification.PROJECT_FILE_DXF_TILES_GENERATED_KEY)]
+    [Notification(NotificationUidType.File, ProjectFileRasterTilesGeneratedNotification.PROJECT_FILE_RASTER_TILES_GENERATED_KEY)]
     public async Task UpdateZoomLevelsInDatabase(object parameters)
     {
-      DxfTileNotificationParameters result;
+      RasterTileNotificationParameters result;
       try
       {
-          result = JObject.FromObject(parameters).ToObject<DxfTileNotificationParameters>();
+          result = JObject.FromObject(parameters).ToObject<RasterTileNotificationParameters>();
       }
       catch (Exception e)
       {
@@ -51,7 +51,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Services
         return;
       }
 
-      log.LogInformation($"Received {ProjectFileDxfTilesGeneratedNotification.PROJECT_FILE_DXF_TILES_GENERATED_KEY} notification: {JsonConvert.SerializeObject(result)}");
+      log.LogInformation($"Received {ProjectFileRasterTilesGeneratedNotification.PROJECT_FILE_RASTER_TILES_GENERATED_KEY} notification: {JsonConvert.SerializeObject(result)}");
 
       var existing = await projectRepo.GetImportedFile(result.FileUid.ToString());
       //Check file is still there, user may have deleted it in the meanwhile
