@@ -1,4 +1,8 @@
-﻿using System.Threading;
+﻿//***********************************************
+//*** Please ignore this file for PR purposes ***
+//***********************************************
+
+using System.Threading;
 
 namespace VSS.TRex.IO
 {
