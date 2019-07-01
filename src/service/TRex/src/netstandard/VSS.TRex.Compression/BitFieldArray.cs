@@ -93,8 +93,7 @@ namespace VSS.TRex.Compression
         {
           if (Storage != null)
           {
-            GenericArrayPoolCacheHelper<ulong>.Caches().Return(Storage);
-            Storage = null;
+            GenericArrayPoolCacheHelper<ulong>.Caches().Return(ref Storage);
           }
 
           var numElements = NumStorageElements();
@@ -171,7 +170,7 @@ namespace VSS.TRex.Compression
             }
             finally
             {
-              GenericArrayPoolCacheHelper<byte>.Caches().Return(buffer);
+              GenericArrayPoolCacheHelper<byte>.Caches().Return(ref buffer);
             }
         }
 
@@ -197,7 +196,7 @@ namespace VSS.TRex.Compression
             }
             finally
             {
-              GenericArrayPoolCacheHelper<byte>.Caches().Return(buffer);
+              GenericArrayPoolCacheHelper<byte>.Caches().Return(ref buffer);
             }
         }
 
@@ -625,8 +624,7 @@ namespace VSS.TRex.Compression
       {
         if (Storage != null)
         {
-          GenericArrayPoolCacheHelper<ulong>.Caches().Return(Storage);
-          Storage = null;
+          GenericArrayPoolCacheHelper<ulong>.Caches().Return(ref Storage);
         }
         _disposed = true;
       }

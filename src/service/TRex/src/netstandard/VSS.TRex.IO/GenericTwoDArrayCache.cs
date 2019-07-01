@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.IO
 {
-  public class TwoDArrayCache<T> : ITwoDArrayCache<T>
+  public class GenericTwoDArrayCache<T> : IGenericTwoDArrayCache<T>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<TwoDArrayCache<T>>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<GenericTwoDArrayCache<T>>();
 
     private readonly int _dimX;
     private readonly int _dimY;
@@ -14,7 +15,7 @@ namespace VSS.TRex.IO
     private readonly int _maxCacheSize;
     private readonly int _maxCacheSizeMinus1;
 
-    public TwoDArrayCache(int dimX, int dimY, int maxCacheSize)
+    public GenericTwoDArrayCache(int dimX, int dimY, int maxCacheSize)
     {
       _dimX = dimX;
       _dimY = dimY;
@@ -40,13 +41,24 @@ namespace VSS.TRex.IO
       return new T[_dimX, _dimY];
     }
 
-    public void Return(T[,] value)
+    public T[,] RentEx(Action<T[,]> validator)
     {
+      var rental = Rent();
+      validator?.Invoke(rental);
+
+      return rental;
+    }
+
+    public void Return(ref T[,] value)
+    {
+      var valueToReturn = value;
+      value = null;
+
       lock (_cache)
       {
         if (_cacheCount < _maxCacheSizeMinus1)
         {
-          _cache[_cacheCount++] = value;
+          _cache[_cacheCount++] = valueToReturn;
           return;
         }
       }
@@ -58,6 +70,21 @@ namespace VSS.TRex.IO
     public (int currentSize, int maxSize) Statistics()
     {
       return (_cacheCount, _maxCacheSize);
+    }
+
+    private readonly string _typeName = typeof(T).Name;
+
+    public string TypeName() => _typeName;
+
+    public void Clear()
+    {
+      lock (_cache)
+      {
+        for (int i = 0; i < _cacheCount; i++)
+          _cache[i] = null;
+
+        _cacheCount = 0;
+      }
     }
   }
 }
