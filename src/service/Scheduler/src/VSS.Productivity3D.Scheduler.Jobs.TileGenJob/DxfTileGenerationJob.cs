@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
   /// <summary>
   /// Job to generate DXF tiles using Pegasus.
   /// </summary>
-  public class DxfTileGenerationJob : BaseTileGenerationJob<DxfTileGenerationRequest>
+  public class DxfTileGenerationJob : TileGenerationJob<DxfTileGenerationRequest>
   {
     public static Guid VSSJOB_UID = Guid.Parse("5f3eed28-58e8-451e-8459-5f5a39d5c3b6");
     public override Guid VSSJobUid => VSSJOB_UID;
@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
       
     }
 
-    protected override Task<TileMetadata> GenerateTiles(BaseTileGenerationRequest request)
+    protected override Task<TileMetadata> GenerateTiles(TileGenerationRequest request)
     {
       var dxfRequest = request as DxfTileGenerationRequest;
       if (dxfRequest == null)

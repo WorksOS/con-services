@@ -20,7 +20,7 @@ using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
 {
-  public abstract class BaseTileGenerationJob<T> : IJob where T : BaseTileGenerationRequest
+  public abstract class TileGenerationJob<T> : IJob where T : TileGenerationRequest
   {
     public virtual Guid VSSJobUid { get; }
 
@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
     protected readonly ILogger log;
     private readonly IConfigurationStore configStore;
 
-    public BaseTileGenerationJob(IConfigurationStore configurationStore, IPegasusClient pegasusClient, ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient, ILoggerFactory logger)
+    public TileGenerationJob(IConfigurationStore configurationStore, IPegasusClient pegasusClient, ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient, ILoggerFactory logger)
     {
       configStore = configurationStore;
       this.pegasusClient = pegasusClient;
@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
 
     public Task TearDown(object o) => Task.FromResult(true);
 
-    protected abstract Task<TileMetadata> GenerateTiles(BaseTileGenerationRequest request);
+    protected abstract Task<TileMetadata> GenerateTiles(TileGenerationRequest request);
    
 
     protected Dictionary<string, string> CustomHeaders() =>

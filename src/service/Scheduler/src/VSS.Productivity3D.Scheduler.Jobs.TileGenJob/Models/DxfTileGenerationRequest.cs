@@ -9,7 +9,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models
   /// Parameters for a DXF tile generation request using Pegasus.
   /// Files must be located in the path {DataOceanRootFolder}/{CustomerUid}/{ProjectUid} in DataOcean.
   /// </summary>
-  public class DxfTileGenerationRequest : BaseTileGenerationRequest
+  public class DxfTileGenerationRequest : TileGenerationRequest
   {
     public string DcFileName { get; set; }
     public DxfUnitsType DxfUnitsType { get; set; }

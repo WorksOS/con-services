@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
   /// <summary>
   /// Job to generate GeoTIFF tiles using Pegasus.
   /// </summary>
-  public class GeoTiffTileGenerationJob : BaseTileGenerationJob<BaseTileGenerationRequest>
+  public class GeoTiffTileGenerationJob : TileGenerationJob<TileGenerationRequest>
   {
     public static Guid VSSJOB_UID = Guid.Parse("2d9f4eb2-1991-49c7-a1b0-87e75c770cc1");
     public override Guid VSSJobUid => VSSJOB_UID;
@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
      
     }
 
-    protected override Task<TileMetadata> GenerateTiles(BaseTileGenerationRequest request)
+    protected override Task<TileMetadata> GenerateTiles(TileGenerationRequest request)
     {
       var geoTiffFileName = $"{request.DataOceanPath}{Path.DirectorySeparatorChar}{request.FileName}";
 
