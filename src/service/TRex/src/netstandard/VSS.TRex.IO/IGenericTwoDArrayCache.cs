@@ -4,7 +4,7 @@ namespace VSS.TRex.IO
 {
   public interface IGenericTwoDArrayCache
   {
-    (int currentSize, int maxSize) Statistics();
+    (int currentSize, int maxSize, int currentWaterMark, int highWaterMark) Statistics();
 
     string TypeName();
 

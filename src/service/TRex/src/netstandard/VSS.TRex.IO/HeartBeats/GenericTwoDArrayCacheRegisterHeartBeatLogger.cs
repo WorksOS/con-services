@@ -24,8 +24,8 @@ namespace VSS.TRex.Cells
           {
             sb.Clear();
             sb.Append(cache.TypeName());
-            sb.AppendLine("-2DArrayCache: Size/Max: ");
-            sb.AppendLine($"{stats.Value.currentSize}/{stats.Value.maxSize}");
+            sb.AppendLine("-2DArrayCache: Size/Max/WaterMark/HighWaterMark: ");
+            sb.AppendLine($"{stats.Value.currentSize}/{stats.Value.maxSize}/{stats.Value.currentWaterMark}/{stats.Value.highWaterMark}");
 
             Log.LogInformation(sb.ToString());
           }

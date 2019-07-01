@@ -15,6 +15,9 @@ namespace VSS.TRex.IO
     private readonly int _maxCacheSize;
     private readonly int _maxCacheSizeMinus1;
 
+    private int _currentWaterMark;
+    private int _highWaterMark;
+
     public GenericTwoDArrayCache(int dimX, int dimY, int maxCacheSize)
     {
       _dimX = dimX;
@@ -30,6 +33,12 @@ namespace VSS.TRex.IO
     {
       lock (_cache)
       {
+        _currentWaterMark++;
+        if (_currentWaterMark > _highWaterMark)
+        {
+          _highWaterMark = _currentWaterMark;
+        }
+
         if (_cacheCount > 0)
         {
           return _cache[--_cacheCount];
@@ -56,6 +65,7 @@ namespace VSS.TRex.IO
 
       lock (_cache)
       {
+        _currentWaterMark--;
         if (_cacheCount <= _maxCacheSizeMinus1)
         {
           _cache[_cacheCount++] = valueToReturn;
@@ -67,9 +77,12 @@ namespace VSS.TRex.IO
       Log.LogInformation($"Returned item for 2D cache [of {typeof(T).Name}] dropped as cache is full with {_cacheCount} items [max = {_maxCacheSize}].");
     }
 
-    public (int currentSize, int maxSize) Statistics()
+    public (int currentSize, int maxSize, int currentWaterMark, int highWaterMark) Statistics()
     {
-      return (_cacheCount, _maxCacheSize);
+      lock (_cache)
+      {
+        return (_cacheCount, _maxCacheSize, _currentWaterMark, _highWaterMark);
+      }
     }
 
     private readonly string _typeName = typeof(T).Name;
