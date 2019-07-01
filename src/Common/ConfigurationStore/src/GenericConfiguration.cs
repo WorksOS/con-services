@@ -322,6 +322,16 @@ namespace VSS.ConfigurationStore
       return GetValue(key, defaultValue);
     }
 
+    public Guid GetValueGuid(string key)
+    {
+      return GetValue(key, Guid.Empty);
+    }
+
+    public Guid GetValueGuid(string key, Guid defaultValue)
+    {
+      return GetValue(key, defaultValue);
+    }
+
     public IConfigurationSection GetSection(string key)
     {
       return configuration.GetSection(key);
