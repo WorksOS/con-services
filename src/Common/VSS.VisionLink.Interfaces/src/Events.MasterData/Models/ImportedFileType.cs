@@ -9,6 +9,7 @@
         MobileLinework = 4,
         SiteBoundary = 5,
         ReferenceSurface = 6,
-        MassHaulPlan = 7
-    }
+        MassHaulPlan = 7,
+        GeoTiff = 8
+  }
 }
