@@ -36,7 +36,7 @@ namespace VSS.TRex.IO
         }
       }
 
-      Log.LogInformation($"Created new rental item for 2D cache [of {typeof(T).Name}].");
+      // Log.LogInformation($"Created new rental item for 2D cache [of {typeof(T).Name}].");
 
       return new T[_dimX, _dimY];
     }
@@ -56,7 +56,7 @@ namespace VSS.TRex.IO
 
       lock (_cache)
       {
-        if (_cacheCount < _maxCacheSizeMinus1)
+        if (_cacheCount <= _maxCacheSizeMinus1)
         {
           _cache[_cacheCount++] = valueToReturn;
           return;
