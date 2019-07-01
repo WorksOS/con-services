@@ -2,9 +2,8 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Interfaces.Interfaces;
-using VSS.TRex.IO;
 
-namespace VSS.TRex.Cells
+namespace VSS.TRex.IO.Heartbeats
 {
   public class GenericArrayPoolRegisterHeartBeatLogger : IHeartBeatLogger
   {
