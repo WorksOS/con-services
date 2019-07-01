@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using VSS.TRex.Common;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.Exports.Patches
@@ -19,7 +20,7 @@ namespace VSS.TRex.Exports.Patches
 
     public byte[] ConstructResultData()
     {
-      using (var ms = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
+      using (var ms = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
       {
         using (var bw = new BinaryWriter(ms, Encoding.UTF8, true))
         {

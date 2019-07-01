@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Google.Protobuf;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.IO.Helpers;
 
@@ -95,12 +94,13 @@ namespace VSS.TRex.Compression
           if (Storage != null)
           {
             GenericArrayPoolCacheHelper<ulong>.Caches().Return(Storage);
+            Storage = null;
           }
 
           var numElements = NumStorageElements();
           var buffer = GenericArrayPoolCacheHelper<ulong>.Caches().Rent(numElements);
 
-          // CLear the buffer
+          // Clear the buffer TODO: Move this logic to write side only
           for (int i = 0; i < numElements; i++)
             buffer[i] = 0;
 

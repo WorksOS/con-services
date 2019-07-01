@@ -47,15 +47,18 @@ namespace VSS.TRex.IO
     /// The collection of pools individual buffers are rented out from
     /// </summary>
     private readonly T[][][] _pools;
-    
+
+    private readonly int _pools_Length;
+
     /// <summary>
     /// Counters for each of the power-of-two buffer pools
     /// </summary>
-    private readonly int[] _poolCounts = new int[NumExponentialPoolsToProvide];
+    private readonly GenericArrayPoolStatistics[] _poolCounts = new GenericArrayPoolStatistics[NumExponentialPoolsToProvide];
 
     public GenericArrayPoolCaches()
     {
       _pools = new T[NumExponentialPoolsToProvide][][];
+      _pools_Length = _pools.Length;
 
       // Establish 100 small rent able buffers for anything up to 1024 items
       for (int i = 0; i < 10; i++)
@@ -73,6 +76,16 @@ namespace VSS.TRex.IO
       // Establish 10 512K and 1M item buffers
       _pools[19] = new T[LARGE_POOL_CACHE_SIZE][];
       _pools[20] = new T[LARGE_POOL_CACHE_SIZE][];
+
+      for (int i = 0; i < _pools_Length; i++)
+      {
+        _poolCounts[i] = new GenericArrayPoolStatistics
+        {
+          PoolIndex = i,
+          PoolCapacity = _pools[i].Length,
+          AvailCount = 0 // Pools don't start pre-populated with objects
+        };
+      }
     }
 
     /// <summary>
@@ -104,7 +117,7 @@ namespace VSS.TRex.IO
         log2++;
       }
 
-      if (log2 >= _pools.Length)
+      if (log2 >= _pools_Length)
       {
         // Requested buffer is too large. Note the request in the log and return a buffer of the requested size
         Log.LogInformation($"Elements buffer pool serviced request for buffer of {minSize} bytes, above the maximum of {1 << NumExponentialPoolsToProvide}");
@@ -113,20 +126,25 @@ namespace VSS.TRex.IO
 
       lock (_lock)
       {
-        if (_poolCounts[log2] > 0)
+        int newCurrentRent = ++_poolCounts[log2].CurrentRents;
+
+        if (newCurrentRent > _poolCounts[log2].HighWaterRents)
+          _poolCounts[log2].HighWaterRents = newCurrentRent;
+
+        if (_poolCounts[log2].AvailCount > 0)
         {
           var pool = _pools[log2];
-          var buffer = pool[--_poolCounts[log2]];
+          var buffer = pool[--_poolCounts[log2].AvailCount];
 
-          pool[_poolCounts[log2]] = null;
+          pool[_poolCounts[log2].AvailCount] = null;
 
           return buffer;
         }
-      }
 
-      // No rent able elements, so create an appropriate sized buffer for the rental
-      //  Log.LogInformation($"Memory buffer pool serviced request for buffer of {minSize} bytes, but the appropriate pool has ");
-      return new T[1 << log2];
+        // No rent able elements, so create an appropriate sized buffer for the rental
+        //  Log.LogInformation($"Memory buffer pool serviced request for buffer of {minSize} bytes, but the appropriate pool has ");
+        return new T[1 << log2];
+      }
     }
     
     /// <summary>
@@ -136,32 +154,36 @@ namespace VSS.TRex.IO
     /// <param name="buffer"></param>
     public void Return(T[] buffer)
     {
+      int buffer_Length = buffer.Length;
+
       // Find the appropriate pool and ensure it is the correct size. If not, just ignore it
-      var log2 = Utilities.Log2(buffer.Length) - 1;
-      if (buffer.Length != 1 << log2)
+      var log2 = Utilities.Log2(buffer_Length) - 1;
+      if (buffer_Length != 1 << log2)
       {
-        Log.LogWarning($"Elements buffer pool returned buffer not power-of-two in size: {buffer.Length}. Ignoring this returned buffer");
+        Log.LogWarning($"Elements buffer pool returned buffer not power-of-two in size: {buffer_Length}. Ignoring this returned buffer");
         return;
       }
 
       if (log2 >= NumExponentialPoolsToProvide)
       {
         // Buffer is too big to place back into the cache and note it in log
-        Log.LogWarning($"Elements buffer pool returned buffer too big [{buffer.Length}] for an existing cache pool. Ignoring this returned buffer");
+        Log.LogWarning($"Elements buffer pool returned buffer too big [{buffer_Length}] for an existing cache pool. Ignoring this returned buffer");
         return;
       }
 
       lock (_lock)
       {
-        if (_poolCounts[log2] >= _pools[log2].Length)
+        --_poolCounts[log2].CurrentRents;
+
+        if (_poolCounts[log2].AvailCount >= _poolCounts[log2].PoolCapacity)
         {
           // The pool is full - cut this buffer loose for the GC to look after
-          Log.LogWarning($"Elements buffer pool full (size={_pools[log2].Length}) for {typeof(T).Name}[] buffers of size {buffer.Length}. Ignoring this returned buffer");
+          Log.LogWarning($"Elements buffer pool full (size={_poolCounts[log2].PoolCapacity}) for {typeof(T).Name}[] buffers of size {buffer_Length}. Ignoring this returned buffer");
           return;
         }
         
         // Place the returned buffer into the pool for later reuse
-        _pools[log2][_poolCounts[log2]++] = buffer;
+        _pools[log2][_poolCounts[log2].AvailCount++] = buffer;
       }
     }
 
@@ -169,21 +191,15 @@ namespace VSS.TRex.IO
     /// Supplies statistics on the usage of the cached array pools
     /// </summary>
     /// <returns></returns>
-    public (int poolIndex, int poolCapacity, int rentalCount)[] Statistics()
+    public GenericArrayPoolStatistics[] Statistics()
     {
-      (int poolindex, int poolCapacity, int rentalCount)[] result = null;
-
       lock (_poolCounts)
       {
-        result = new (int poolindex, int poolCapacity, int rentalCount)[_pools.Length];
+        var result = new GenericArrayPoolStatistics[_poolCounts.Length];
+        Array.Copy(_poolCounts, result, _poolCounts.Length);
 
-        for (int i = 0, limit = _pools.Length; i < limit; i++)
-        {
-          result[i] = (i, _pools[i].Length, _poolCounts[i]);
-        }
+        return result;
       }
-
-      return result;
     }
 
     private static string _typeName = typeof(T).Name;

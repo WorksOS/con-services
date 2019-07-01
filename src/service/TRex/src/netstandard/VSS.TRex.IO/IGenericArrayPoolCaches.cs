@@ -6,7 +6,7 @@
     /// Supplies statistics on the usage of the cached array pools
     /// </summary>
     /// <returns></returns>
-    (int poolIndex, int poolCapacity, int rentalCount)[] Statistics();
+    GenericArrayPoolStatistics[] Statistics();
 
     string ToString();
 
@@ -17,7 +17,7 @@
   {
     /// <summary>
     /// Rents out a buffer from the pool. The buffer is greater than or equal to the size of the requested buffer.
-    /// Pooled buffers are created on demand - each pool is not initialised with a full set of buffers.
+    /// Pooled buffers are created on demand - each pool is not initialized with a full set of buffers.
     /// Note: The pool does not maintain a reference to the buffer. If tha renter fails to return the buffer pool
     /// it will be cleaned up by the garbage collector.
     /// </summary>

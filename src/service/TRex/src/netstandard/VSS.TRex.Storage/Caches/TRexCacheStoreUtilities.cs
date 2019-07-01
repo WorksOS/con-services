@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using VSS.TRex.Common;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Storage.Caches
 {
@@ -57,8 +57,8 @@ namespace VSS.TRex.Storage.Caches
                 string fileName = Path.Combine(path, key);
                 try
                 {
-                    MS = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
-                    using (FileStream fs = new FileStream(fileName, FileMode.Open))
+                    MS = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+                    using (var fs = new FileStream(fileName, FileMode.Open))
                     {
                         fs.CopyTo(MS);
                     }
@@ -81,7 +81,7 @@ namespace VSS.TRex.Storage.Caches
         }
 
         /// <summary>
-        /// Writes a cache item identitied by the cache key to the persisted store
+        /// Writes a cache item identified by the cache key to the persisted store
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>

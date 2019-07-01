@@ -139,19 +139,21 @@ namespace VSS.TRex.SubGridTrees.Server
         var originSource = (IServerLeafSubGrid) source;
 
         // create a copy and compress the latestPasses(and ensure the global latest cells is the mutable variety)
-        IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Immutable)
-        {
-          LeafStartTime = originSource.LeafStartTime,
-          LeafEndTime = originSource.LeafEndTime,
-          Directory =
+        using (var leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Immutable)
           {
-            SegmentDirectory = originSource.Directory.SegmentDirectory,
-            GlobalLatestCells = ConvertLatestPassesToImmutable(originSource.Directory.GlobalLatestCells, SegmentLatestPassesContext.Global)
-          }
-        };
-
-        immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
-        leaf.SaveDirectoryToStream(immutableStream);
+            LeafStartTime = originSource.LeafStartTime,
+            LeafEndTime = originSource.LeafEndTime,
+            Directory =
+            {
+              SegmentDirectory = originSource.Directory.SegmentDirectory,
+              GlobalLatestCells = ConvertLatestPassesToImmutable(originSource.Directory.GlobalLatestCells,
+                SegmentLatestPassesContext.Global)
+            }
+          })
+        {
+          immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+          leaf.SaveDirectoryToStream(immutableStream);
+        }
 
         return true;
       }
@@ -216,21 +218,21 @@ namespace VSS.TRex.SubGridTrees.Server
         var originSource = (ISubGridCellPassesDataSegment) source;
 
         // create a copy and compress the latestPasses(and ensure the global latest cells is the mutable variety)
-        var segment = new SubGridCellPassesDataSegment
-        (ConvertLatestPassesToImmutable(originSource.LatestPasses, SegmentLatestPassesContext.Segment),
+        using (var segment = new SubGridCellPassesDataSegment(ConvertLatestPassesToImmutable(originSource.LatestPasses, SegmentLatestPassesContext.Segment),
           subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper())
         {
           StartTime = originSource.SegmentInfo.StartTime,
           EndTime = originSource.SegmentInfo.EndTime
-        };
-
-        segment.PassesData.SetState(originSource.PassesData.GetState());
-
-        // Write out the segment to the immutable stream
-        immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
-        using (var writer = new BinaryWriter(immutableStream, Encoding.UTF8, true))
+        })
         {
-          segment.Write(writer);
+          segment.PassesData.SetState(originSource.PassesData.GetState());
+
+          // Write out the segment to the immutable stream
+          immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+          using (var writer = new BinaryWriter(immutableStream, Encoding.UTF8, true))
+          {
+            segment.Write(writer);
+          }
         }
 
         return true;
@@ -255,30 +257,31 @@ namespace VSS.TRex.SubGridTrees.Server
       try
       {
         // Read in the sub grid segment from the mutable stream
-        var segment = new SubGridCellPassesDataSegment
-        (subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Segment(),
-          subGridCellSegmentPassesDataWrapperFactory.NewMutableWrapper());
-
-        mutableStream.Position = 0;
-        using (var reader = new BinaryReader(mutableStream, Encoding.UTF8, true))
+        using (var segment = new SubGridCellPassesDataSegment(subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Segment(),
+                      subGridCellSegmentPassesDataWrapperFactory.NewMutableWrapper()))
         {
-          segment.Read(reader, true, true);
-        }
+          mutableStream.Position = 0;
+          using (var reader = new BinaryReader(mutableStream, Encoding.UTF8, true))
+          {
+            segment.Read(reader, true, true);
+          }
 
-        // Convert to the immutable form
-        segment.LatestPasses = ConvertLatestPassesToImmutable(segment.LatestPasses, SegmentLatestPassesContext.Segment);
+          // Convert to the immutable form
+          segment.LatestPasses =
+            ConvertLatestPassesToImmutable(segment.LatestPasses, SegmentLatestPassesContext.Segment);
 
-        using (var mutablePassesData = segment.PassesData)
-        {
-          segment.PassesData = subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
-          segment.PassesData.SetState(mutablePassesData.GetState());
-        }
+          using (var mutablePassesData = segment.PassesData)
+          {
+            segment.PassesData = subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
+            segment.PassesData.SetState(mutablePassesData.GetState());
+          }
 
-        // Write out the segment to the immutable stream
-        immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream(); 
-        using (var writer = new BinaryWriter(immutableStream, Encoding.UTF8, true))
-        {
-          segment.Write(writer);
+          // Write out the segment to the immutable stream
+          immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+          using (var writer = new BinaryWriter(immutableStream, Encoding.UTF8, true))
+          {
+            segment.Write(writer);
+          }
         }
 
         return true;
