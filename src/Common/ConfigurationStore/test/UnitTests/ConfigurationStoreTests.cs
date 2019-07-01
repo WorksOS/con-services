@@ -137,7 +137,7 @@ namespace VSS.ConfigurationStore.UnitTests
     [TestMethod]
     public void CanGetDefaultGuid()
     {
-      var defaultValue = new Guid();
+      var defaultValue = Guid.NewGuid();
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var value = configuration.GetValueGuid("UNKNOWN_KEY", defaultValue);
       Assert.AreEqual(defaultValue, value);

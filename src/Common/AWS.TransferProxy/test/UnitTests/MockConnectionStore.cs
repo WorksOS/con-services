@@ -79,7 +79,7 @@ namespace VSS.AWS.TransferProxy.UnitTests
 
     public Guid GetValueGuid(string v)
     {
-      return new Guid();
+      throw new NotImplementedException();
     }
 
     public Guid GetValueGuid(string v, Guid defaultValue)
