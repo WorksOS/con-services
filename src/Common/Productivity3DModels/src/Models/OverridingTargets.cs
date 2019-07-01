@@ -54,13 +54,13 @@ namespace VSS.Productivity3D.Models.Models
     /// The target MDP value expressed in 10ths of units
     /// </summary>
     [Range(MIN_MDP, MAX_MDP)]
-    [JsonProperty(PropertyName = "mdpTarget", Required = Required.Default)]
+    [JsonProperty(Required = Required.Default)]
     public short MdpTarget { get; private set; }
 
     /// <summary>
     /// Override the target MDP recorded from the machine with the value of mdpTarget
     /// </summary>
-    [JsonProperty(PropertyName = "overrideTargetMDP", Required = Required.Always)]
+    [JsonProperty(Required = Required.Default)]
     [Required]
     public bool OverrideTargetMDP { get; private set; }
 
@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// The various summary and target values to use in preparation of the result
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
+    [JsonProperty(Required = Required.Default)]
     public TemperatureSettings TemperatureSettings { get; private set; }
 
     /// <summary>

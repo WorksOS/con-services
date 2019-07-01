@@ -42,6 +42,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\src\Common\VSS.Productivity3D.Common.csproj" />
     <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
     <ProjectReference Include="..\..\..\src\WebApi\VSS.Productivity3D.WebApi.csproj" />

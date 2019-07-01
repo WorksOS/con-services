@@ -73,6 +73,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\..\TRe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{77597190-DA14-4866-8B52-F0333930D066}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -187,6 +189,10 @@ Global
 		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77597190-DA14-4866-8B52-F0333930D066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77597190-DA14-4866-8B52-F0333930D066}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77597190-DA14-4866-8B52-F0333930D066}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77597190-DA14-4866-8B52-F0333930D066}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -221,6 +227,7 @@ Global
 		{B9A5233A-C9FE-408B-8155-B186389010C8} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{1922A9AB-ACAD-49C1-9CD6-10685C08DED2} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
+		{77597190-DA14-4866-8B52-F0333930D066} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C6AEAF3B-79E5-4717-B4BC-BDB9DB46CC53}
