@@ -248,7 +248,7 @@ namespace VSS.Pegasus.Client
       {
         Log.LogInformation($"{nameof(GenerateTiles)} failed: {fileName}");
         throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to generate DXF tiles for {fileName}"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to generate tiles for {fileName}"));
       }
 
       if (success)

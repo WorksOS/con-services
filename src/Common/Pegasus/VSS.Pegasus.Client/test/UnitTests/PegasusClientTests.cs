@@ -171,7 +171,7 @@ namespace VSS.Pegasus.Client.UnitTests
       var  ex = await Assert.ThrowsAsync<ServiceException>(() => CanGenerateDxfTiles(ExecutionStatus.FAILED));
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
-      Assert.Equal($"Failed to generate DXF tiles for {dxfFullName}", ex.GetResult.Message);
+      Assert.Equal($"Failed to generate tiles for {dxfFullName}", ex.GetResult.Message);
     }
 
     [Fact]
@@ -212,12 +212,12 @@ namespace VSS.Pegasus.Client.UnitTests
       var expectedFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = geoTiffFileName, ParentId = expectedTopFolderResult.Id };
 
       var dataOceanMock = new Mock<IDataOceanClient>();
-      dataOceanMock.Setup(d => d.GetFileId(geoTiffFullName, null)).ReturnsAsync(expectedFileResult.Id);
+      dataOceanMock.Setup(d => d.GetFileId(geoTiffFullName, null)).ReturnsAsync((Guid?)null);
 
       var gracefulMock = new Mock<IWebRequest>();
 
       await ProcessWithFailure(gracefulMock, dataOceanMock,
-        $"Failed to find GeoTIFF file {dxfFullName}. Has it been uploaded successfully?", false);
+        $"Failed to find GeoTIFF file {geoTiffFullName}. Has it been uploaded successfully?", false);
     }
 
     [Fact]
@@ -230,7 +230,7 @@ namespace VSS.Pegasus.Client.UnitTests
       var subFolderPath = new DataOceanFileUtil(geoTiffFullName).GeneratedTilesFolder;
 
       var dataOceanMock = new Mock<IDataOceanClient>();
-      dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedFileResult.Id);
+      dataOceanMock.Setup(d => d.GetFileId(geoTiffFullName, null)).ReturnsAsync(expectedFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
       dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
@@ -296,7 +296,7 @@ namespace VSS.Pegasus.Client.UnitTests
     [Fact]
     public void CanGenerateGeoTiffTilesSuccess()
     {
-      var result = CanGenerateDxfTiles(ExecutionStatus.SUCCEEDED).Result;
+      var result = CanGenerateGeoTiffTiles(ExecutionStatus.SUCCEEDED).Result;
       Assert.NotNull(result);
       Assert.NotNull(result.Extents);
       Assert.NotNull(result.Extents.CoordSystem);
@@ -317,7 +317,7 @@ namespace VSS.Pegasus.Client.UnitTests
       var ex = await Assert.ThrowsAsync<ServiceException>(() => CanGenerateGeoTiffTiles(ExecutionStatus.FAILED));
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
-      Assert.Equal($"Failed to generate GeoTIFF tiles for {geoTiffFullName}", ex.GetResult.Message);
+      Assert.Equal($"Failed to generate tiles for {geoTiffFullName}", ex.GetResult.Message);
     }
 
     [Fact]

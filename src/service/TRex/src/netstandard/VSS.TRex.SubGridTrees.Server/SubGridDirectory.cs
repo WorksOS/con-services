@@ -67,7 +67,11 @@ namespace VSS.TRex.SubGridTrees.Server
             GlobalLatestCells?.Clear();
 
             // Unhook all loaded segments from the segment directory
-            SegmentDirectory.ForEach(x => { x.Segment = null; });
+            SegmentDirectory.ForEach(x =>
+            {
+              x.Segment.Dispose();
+              x.Segment = null;
+            });
         }
 
         public void Write(BinaryWriter writer)
@@ -111,7 +115,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
     #region IDisposable Support
-    private bool disposedValue = false; // To detect redundant calls
+    private bool disposedValue; // To detect redundant calls
 
     protected virtual void Dispose(bool disposing)
     {

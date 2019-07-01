@@ -5,12 +5,8 @@
     <Title>Interface definitions for various aspects in VisionLink.</Title>
     <AssemblyTitle></AssemblyTitle>
     <Authors>Merino</Authors>
-    <VersionPrefix>1.6.4</VersionPrefix>
-    <TargetFrameworks>net451;netstandard1.6</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.Interfaces.netcore</AssemblyName>
-    <PackageId>VSS.Interfaces.netcore</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

@@ -215,7 +215,11 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void DeAllocateLeafFullPassStacks() => _cells = null;
+        public void DeAllocateLeafFullPassStacks()
+        {
+          _cells?.PassesData?.Items.ForEach(x => x.Dispose());
+          _cells = null;
+        }
 
         public bool HasLatestData() => _directory.GlobalLatestCells != null;
 
@@ -234,6 +238,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             if (_directory != null)
             {
+                _directory.GlobalLatestCells?.Dispose();
                 _directory.GlobalLatestCells = null;
             }
         }
