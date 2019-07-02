@@ -32,7 +32,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public SubGridCellLatestPassDataWrapper_NonStatic()
         {
-          PassData = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(SubGridTreeConsts.CellsPerSubGrid);
+          PassData = SlabAllocatedArrayPoolHelper<CellPass>.Caches().Rent(SubGridTreeConsts.CellsPerSubGrid);
 
           if (PassData.Capacity != SubGridTreeConsts.CellsPerSubGrid)
           {
@@ -190,7 +190,7 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         if (disposing)
         {
-            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref PassData);
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches().Return(ref PassData);
         }
 
         disposedValue = true;

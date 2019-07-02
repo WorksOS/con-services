@@ -58,7 +58,7 @@ namespace VSS.TRex.Cells
         {
           if (!Passes.IsRented)
           {
-            Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
+            Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches().Rent(capacity);
 
 #if CELLDEBUG
             if (!Passes.IsRented)
@@ -85,10 +85,10 @@ namespace VSS.TRex.Cells
           if (capacity > Passes.Capacity)
           {
             // Get a new buffer and copy the content into it
-            var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
+            var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches().Rent(capacity);
 
             newPasses.Copy(Passes, Passes.Count);
-            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref Passes);
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches().Return(ref Passes);
 
             Passes = newPasses;
 
@@ -230,7 +230,7 @@ namespace VSS.TRex.Cells
             // will be cleaned up when the sub grid next exits the cache, or is integrated with
             // another aggregated sub grid from TAG file processing
             
-            var IntegratedPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(IntegratedPassCount);
+            var IntegratedPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches().Rent(IntegratedPassCount);
           
             // Combine the two (sorted) lists of cell passes together to arrive at a single
             // integrated list of passes.
@@ -283,7 +283,7 @@ namespace VSS.TRex.Cells
 
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             // Return the original cell pass span and replace it with the integrated one
-            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref Passes);
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches().Return(ref Passes);
 
             // No need to mark Passes as being returned as it is immediately replace by IntegratedPasses below
             // Passes.MarkReturned();

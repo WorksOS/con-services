@@ -428,7 +428,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
               var passes = cellPasses[x, y].Passes;
 
-              PassData[x, y].Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Clone(passes);
+              PassData[x, y].Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches().Clone(passes);
 #if CELLDEBUG
               PassData[x, y].CheckPassesAreInCorrectTimeOrder("SetState");
 #endif
@@ -443,9 +443,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void ReplacePasses(int X, int Y, CellPass[] cellPasses, int cellPassCount)
         {
-          SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref PassData[X, Y].Passes);
+          SlabAllocatedArrayPoolHelper<CellPass>.Caches().Return(ref PassData[X, Y].Passes);
 
-          var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(cellPassCount);
+          var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches().Rent(cellPassCount);
 
           newPasses.Copy(cellPasses, cellPassCount);
           newPasses.Count = cellPassCount;
@@ -471,7 +471,7 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
         {
-          SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref PassData[i, j].Passes);
+          SlabAllocatedArrayPoolHelper<CellPass>.Caches().Return(ref PassData[i, j].Passes);
         }
       }
 
