@@ -110,7 +110,7 @@ namespace VSS.TRex.Tests.TestFixtures
       RecyclableMemoryStreamManagerHelper.Clear();
       GenericArrayPoolCachesRegister.ClearAll();
       GenericTwoDArrayCacheRegister.ClearAll();
-      SlabAllocatedArrayPoolRegister.ClearAll();
+      GenericSlabAllocatedArrayPoolRegister.ClearAll();
     }
 
     public DILoggingFixture()

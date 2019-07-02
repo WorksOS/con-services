@@ -15,7 +15,7 @@ namespace VSS.TRex.IO.Heartbeats
     {
       try
       {
-        foreach (var cache in SlabAllocatedArrayPoolRegister.ArrayPoolCaches)
+        foreach (var cache in GenericSlabAllocatedArrayPoolRegister.ArrayPoolCaches)
         {
           var stats = cache.Statistics();
 
