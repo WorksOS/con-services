@@ -160,7 +160,7 @@ namespace VSS.TRex.Webtools.Controllers
       return new JsonResult(Response.ProfileCells.Select(x => new { station = x.Station, z = x.CellLastElev, value = x.CellLastElev })); 
     }
 
-
+    /*
     private double ProfileValue(int mode, ProfileCell cell)
     {
       switch ((DisplayMode) mode)
@@ -190,8 +190,7 @@ namespace VSS.TRex.Webtools.Controllers
           break;
       }
     }
-
-
+  */
     private double ProfileElevation(int mode, ProfileCell cell)
     {
       //TODO: see 3dpm service for this (CompactionProfileExecutor)
