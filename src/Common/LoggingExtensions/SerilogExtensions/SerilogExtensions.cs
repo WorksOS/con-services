@@ -17,7 +17,7 @@ namespace VSS.Serilog.Extensions
     /// <param name="config">Optional configuration overrides.</param>
     /// <param name="httpContextAccessor">Used for the <see cref="HttpContextEnricher"/> to log the interservice RequestID.</param>
     /// <returns></returns>
-    public static Logger Configure(string logFilename, IConfigurationRoot config, IHttpContextAccessor httpContextAccessor = null)
+    public static Logger Configure(string logFilename, IConfigurationRoot config = null, IHttpContextAccessor httpContextAccessor = null)
     {
       const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message} {EscapedException}{NewLine}";
 

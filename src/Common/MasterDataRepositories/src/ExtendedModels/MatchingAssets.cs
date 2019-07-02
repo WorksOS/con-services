@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VSS.MasterData.Repositories.ExtendedModels
+﻿namespace VSS.MasterData.Repositories.ExtendedModels
 {
   public class MatchingAssets
   {
