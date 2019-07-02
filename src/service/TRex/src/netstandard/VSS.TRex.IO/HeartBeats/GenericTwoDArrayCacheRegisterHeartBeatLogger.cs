@@ -17,17 +17,14 @@ namespace VSS.TRex.IO.Heartbeats
       {
         foreach (var cache in GenericTwoDArrayCacheRegister.ArrayPoolCaches)
         {
-          var stats = cache?.Statistics();
+          var stats = cache.Statistics();
 
-          if (stats.HasValue)
-          {
-            sb.Clear();
-            sb.Append(cache.TypeName());
-            sb.Append("-2DArrayCache: Size/Max/WaterMark/HighWaterMark: ");
-            sb.Append($"{stats.Value.currentSize}/{stats.Value.maxSize}/{stats.Value.currentWaterMark}/{stats.Value.highWaterMark}");
+          sb.Clear();
+          sb.Append(cache.TypeName());
+          sb.Append("-2DArrayCache: Size/Max/NumCreated/WaterMark/HighWaterMark: ");
+          sb.Append($"{stats.CurrentSize}/{stats.MaxSize}/{stats.NumCreated}/{stats.CurrentWaterMark}/{stats.HighWaterMark}");
 
-            Log.LogInformation(sb.ToString());
-          }
+          Log.LogInformation(sb.ToString());
         }
       }
       catch (Exception e)

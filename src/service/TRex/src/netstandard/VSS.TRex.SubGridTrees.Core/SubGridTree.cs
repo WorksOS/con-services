@@ -524,11 +524,15 @@ namespace VSS.TRex.SubGridTrees
 
             while (subGrid.Level < level)
             {
-                var testSubGrid = ((INodeSubGrid)subGrid).GetSubGridContainingCell(cellX, cellY);
-                if (testSubGrid != null)
-                    subGrid = testSubGrid;
-                else
-                    return subGrid;
+              var testSubGrid = ((INodeSubGrid) subGrid).GetSubGridContainingCell(cellX, cellY);
+              if (testSubGrid != null)
+              {
+                subGrid = testSubGrid;
+              }
+              else
+              {
+                return subGrid;
+              }
             }
 
             return subGrid;

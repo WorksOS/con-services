@@ -5,9 +5,9 @@ using VSS.TRex.Common.Interfaces.Interfaces;
 
 namespace VSS.TRex.IO.Heartbeats
 {
-  public class GenericArrayPoolRegisterHeartBeatLogger : IHeartBeatLogger
+  public class GenericSlabAllocatedPoolRegisterHeartBeatLogger : IHeartBeatLogger
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<GenericArrayPoolRegisterHeartBeatLogger>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<GenericSlabAllocatedPoolRegisterHeartBeatLogger>();
 
     private readonly StringBuilder sb = new StringBuilder();
 
@@ -15,7 +15,7 @@ namespace VSS.TRex.IO.Heartbeats
     {
       try
       {
-        foreach (var cache in GenericArrayPoolCachesRegister.ArrayPoolCaches)
+        foreach (var cache in GenericSlabAllocatedArrayPoolRegister.ArrayPoolCaches)
         {
           var stats = cache.Statistics();
 
@@ -23,11 +23,11 @@ namespace VSS.TRex.IO.Heartbeats
           {
             sb.Clear();
             sb.Append(cache.TypeName());
-            sb.Append("-ArrayPool: Index/Capacity/MaxRented/Rented/Available: ");
+            sb.Append("-SlabAllocatedArrayPool: Index/ArraySize/Capacity/Available/Rented: ");
 
             foreach (var stat in stats)
             {
-              sb.Append($"{stat.PoolIndex}/{stat.PoolCapacity}/{stat.HighWaterRents}/{stat.CurrentRents}/{stat.AvailCount} | ");
+              sb.Append($"{stat.PoolIndex}/{stat.ArraySize}/{stat.Capacity}/{stat.Capacity - stat.RentedItems}/{stat.RentedItems} | ");
             }
 
             Log.LogInformation("Heartbeat: " + sb);

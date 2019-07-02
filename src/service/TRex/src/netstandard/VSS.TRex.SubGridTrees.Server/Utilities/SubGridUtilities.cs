@@ -56,8 +56,10 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             try
             {
                 if (forSubGridTree == null)
+                {
                   throw new TRexSubGridProcessingException($"Sub grid tree null in {nameof(LocateSubGridContaining)}");
-
+                }
+              
                 // Note: Sub grid tree specific interlocks are no longer used. The tree now internally
                 // manages fine grained locks across structurally mutating activities such as node/leaf
                 // sub grid addition and reading content from the persistent store.
