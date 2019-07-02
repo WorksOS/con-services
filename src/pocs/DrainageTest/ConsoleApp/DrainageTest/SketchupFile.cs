@@ -31,7 +31,7 @@ namespace DrainageTest
 
     protected internal string CreateModel(string commandLineArgument)
     {
-      if (_useCase == null || _surfaceInfo == null || _design == null
+      if (_useCase == null || _surfaceInfo == null // || _design == null
           || string.IsNullOrEmpty(commandLineArgument)
           || string.IsNullOrEmpty(Path.GetFullPath(commandLineArgument))
           || string.IsNullOrEmpty(Path.GetDirectoryName(Path.GetFullPath(commandLineArgument)))
@@ -61,7 +61,8 @@ namespace DrainageTest
 
         AddOriginalLayers(skuFile, skuModel);
 
-        AddProposedLayers(skuFile, skuModel);
+        if (_design != null)
+          AddProposedLayers(skuFile, skuModel);
 
         skuModel.ZoomToExtents();
         skuModel.Save(skuFile, ModelVersion.SU2015);

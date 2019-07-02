@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using Morph.Services.Core.DataModel;
 using Trimble.Geodetic.Math.Adjustment;
 
 namespace DrainageTest
@@ -43,6 +44,9 @@ namespace DrainageTest
         //                                    throws exception "error in the application"????
         //                                   ..\..\TestData\2018_3dFace\TestCase.xml
         // Grant_DroneSurveyWithPonds
+        // ..\..\TestData\AlphaDimensions2012_milling_surface5\AlphaDimensions2012_milling_surface5.xml
+        // ..\..\TestData\LargeSitesRoad_TrimbleRoad_1_0\LargeSitesRoad_TrimbleRoad_1_0.xml
+        args[0] = "..\\..\\TestData\\LargeSitesRoad_TrimbleRoad_Change\\LargeSitesRoad_TrimbleRoad_Change.xml";
         var stringBuilder = new StringBuilder();
         foreach (string str in args)
           stringBuilder.AppendFormat("{0} ", (object) str);
@@ -83,9 +87,10 @@ namespace DrainageTest
         if (surfaceInfo == null)
           throw new ArgumentException($"Unable to create Surface from: {useCase.Surface}");
 
-        var design = surface.ComputeSurfaces(landLevelingInstance);
-        if (design == null)
-          throw new ArgumentException($"Unable to create design from Surface: {useCase.Surface}");
+        Design design = null;
+        //design = surface.ComputeSurfaces(landLevelingInstance);
+        //if (design == null)
+        //  throw new ArgumentException($"Unable to create design from Surface: {useCase.Surface}");
 
         var sketchupFile = new SketchupFile(useCase, surfaceInfo, design);
 
