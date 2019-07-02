@@ -26,7 +26,6 @@ namespace VSS.TRex.Tests.TestFixtures
         .AddLogging()
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
-//        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(1024)))
 
         .Add(x => x.AddSingleton<Mock<IConfigurationStore>>(mock =>
         {

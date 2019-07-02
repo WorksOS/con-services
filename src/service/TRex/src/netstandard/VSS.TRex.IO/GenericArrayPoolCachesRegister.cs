@@ -9,12 +9,18 @@ namespace VSS.TRex.IO
     
     public static void Add(IGenericArrayPoolCaches arrayPoolCache)
     {
-      _arrayPoolCaches.Add(arrayPoolCache);
+      lock (_arrayPoolCaches)
+      {
+        _arrayPoolCaches.Add(arrayPoolCache);
+      }
     }
 
     public static void ClearAll()
     {
-      _arrayPoolCaches.ForEach(x => x.Clear());
+      lock (_arrayPoolCaches)
+      {
+        _arrayPoolCaches.ForEach(x => x.Clear());
+      }
     }
   }
 }
