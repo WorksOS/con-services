@@ -27,7 +27,7 @@ namespace VSS.TRex.IO.Heartbeats
 
             foreach (var stat in stats)
             {
-              sb.Append($"{stat.PoolIndex}/{stat.ArraySize}/{stat.Capacity}/{stat.Capacity - stat.RentedItems}/{stat.RentedItems}");
+              sb.Append($"{stat.PoolIndex}/{stat.ArraySize}/{stat.Capacity}/{stat.Capacity - stat.RentedItems}/{stat.RentedItems} | ");
             }
 
             Log.LogInformation("Heartbeat: " + sb);
