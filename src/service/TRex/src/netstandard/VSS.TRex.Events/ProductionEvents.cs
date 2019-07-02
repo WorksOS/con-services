@@ -438,21 +438,22 @@ namespace VSS.TRex.Events
 
     public MemoryStream GetMutableStream()
     {
-      var mutablestream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
-      var writer = new BinaryWriter(mutablestream);
-
-      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
-
-      writer.Write((int)EventListType);
-      writer.Write(Events.Count);
-      foreach (var e in Events)
+      var mutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+      using (var writer = new BinaryWriter(mutableStream, Encoding.Default, true))
       {
-        writer.Write(e.Date.ToBinary());
-        writer.Write(e.Flags);
-        SerialiseStateOut(writer, e.State);
+        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
+        writer.Write((int) EventListType);
+        writer.Write(Events.Count);
+        foreach (var e in Events)
+        {
+          writer.Write(e.Date.ToBinary());
+          writer.Write(e.Flags);
+          SerialiseStateOut(writer, e.State);
+        }
       }
 
-      return mutablestream;
+      return mutableStream;
     }
 
     /// <summary>
@@ -462,33 +463,35 @@ namespace VSS.TRex.Events
     public MemoryStream GetImmutableStream()
     {
       var immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
-      var immutableWriter = new BinaryWriter(immutableStream, Encoding.UTF8, true);
 
-      VersionSerializationHelper.EmitVersionByte(immutableWriter, VERSION_NUMBER);
-
-      immutableWriter.Write((int)EventListType);
-
-      T lastState = Events[0].State;
-      var filteredEventCount = 0;
-      var countPosition = immutableWriter.BaseStream.Position;
-      immutableWriter.Write(filteredEventCount);
-      for (int i = 0; i < Events.Count; i++)
+      using (var immutableWriter = new BinaryWriter(immutableStream, Encoding.UTF8, true))
       {
-        if (i == 0 || (i > 0 && !_eventStateComparator(Events[i].State, lastState)))
+        VersionSerializationHelper.EmitVersionByte(immutableWriter, VERSION_NUMBER);
+
+        immutableWriter.Write((int) EventListType);
+
+        T lastState = Events[0].State;
+        var filteredEventCount = 0;
+        var countPosition = immutableWriter.BaseStream.Position;
+        immutableWriter.Write(filteredEventCount);
+        for (int i = 0; i < Events.Count; i++)
         {
-          immutableWriter.Write(Events[i].Date.ToBinary());
-          immutableWriter.Write(Events[i].Flags);
-          SerialiseStateOut(immutableWriter, Events[i].State);
-          filteredEventCount++;
+          if (i == 0 || (i > 0 && !_eventStateComparator(Events[i].State, lastState)))
+          {
+            immutableWriter.Write(Events[i].Date.ToBinary());
+            immutableWriter.Write(Events[i].Flags);
+            SerialiseStateOut(immutableWriter, Events[i].State);
+            filteredEventCount++;
+          }
+
+          lastState = Events[i].State;
         }
 
-        lastState = Events[i].State;
+        var eosPosition = immutableWriter.BaseStream.Position;
+        immutableWriter.BaseStream.Position = countPosition;
+        immutableWriter.Write(filteredEventCount);
+        immutableWriter.BaseStream.Position = eosPosition;
       }
-
-      var eosPosition = immutableWriter.BaseStream.Position;
-      immutableWriter.BaseStream.Position = countPosition;
-      immutableWriter.Write(filteredEventCount);
-      immutableWriter.BaseStream.Position = eosPosition;
 
       return immutableStream;
     }

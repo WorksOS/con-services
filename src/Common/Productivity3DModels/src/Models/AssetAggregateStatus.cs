@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.Models.Models
 
     public Guid? AssetUid { get; set; } 
 
-    public long AssetId { get; set; }
+    
 
     public DateTime? LocationLastUpdatedUtc { get; set; }
 
@@ -29,6 +29,11 @@ namespace VSS.Productivity3D.Models.Models
     public int AssetIcon { get; set; }
     public int? LiftNumber { get; set; }
     public string DeviceName { get; set; }
+
+    /// <summary>
+    /// Not to be confused with AssetId Primary Key
+    /// </summary>
+    public string AssetIdentifier { get; set; }
 
     public AssetSummary UtilizationSummary { get; set; }
     public string MachineName { get; set; }

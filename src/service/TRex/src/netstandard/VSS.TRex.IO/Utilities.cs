@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.IO
+﻿using System.Runtime.CompilerServices;
+
+namespace VSS.TRex.IO
 {
   public static class Utilities
   {
@@ -7,6 +9,7 @@
     /// </summary>
     /// <param name="n"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Log2(int n)
     {
       int bits = 0;

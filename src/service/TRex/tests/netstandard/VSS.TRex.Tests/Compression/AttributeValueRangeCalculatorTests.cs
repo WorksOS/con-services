@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.Compression
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
 
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(values, 0xffffffff, 0x7fffffff, true, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(values, 0, values.Length, 0xffffffff, 0x7fffffff, true, ref descriptor);
 
             Assert.Equal(descriptor.MinValue, value);
             Assert.Equal(descriptor.MaxValue, value);
@@ -29,7 +29,7 @@ namespace VSS.TRex.Tests.Compression
         {
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
 
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 1 }, 0, 2, 0xffffffff, 0, false, ref descriptor);
 
             Assert.Equal(0, descriptor.MinValue);
             Assert.Equal(1, descriptor.MaxValue);
@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.Compression
         {
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
 
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 1 }, 0xffffffff, 5, true, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 1 }, 0, 2, 0xffffffff, 5, true, ref descriptor);
 
             Assert.Equal(0, descriptor.MinValue);
             Assert.Equal(1, descriptor.MaxValue);
@@ -49,7 +49,7 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal(5, descriptor.NativeNullValue);
             Assert.Equal(1, descriptor.RequiredBits);
 
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 1, 5 }, 0xffffffff, 5, true, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 1, 5 }, 0, 3, 0xffffffff, 5, true, ref descriptor);
 
             Assert.Equal(0, descriptor.MinValue);
             Assert.Equal(2, descriptor.MaxValue);
@@ -63,7 +63,7 @@ namespace VSS.TRex.Tests.Compression
         {
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
         
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 0 }, 0xffffffff, 0, false, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 0 }, 0, 2, 0xffffffff, 0, false, ref descriptor);
         
             Assert.Equal(0, descriptor.MinValue);
             Assert.Equal(0, descriptor.MaxValue);
@@ -75,7 +75,7 @@ namespace VSS.TRex.Tests.Compression
         {
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
           
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 0 }, 0xffffffff, 0, true, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 0 }, 0, 2, 0xffffffff, 0, true, ref descriptor);
           
             Assert.Equal(0, descriptor.MinValue);
             Assert.Equal(0, descriptor.MaxValue);

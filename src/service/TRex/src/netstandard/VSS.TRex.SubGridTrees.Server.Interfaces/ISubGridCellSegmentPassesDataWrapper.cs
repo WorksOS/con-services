@@ -21,6 +21,16 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         int PassCount(int X, int Y);
 
         /// <summary>
+        /// Reduces the number of passes in the cell to newCount by preserving the first
+        /// 'newCount' cell passes in the cell and retiring the remainder.
+        /// If newCount is larger than the actual count an ArgumentException is thrown
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="newCount"></param>
+        void TrimPassCount(int X, int Y, int newCount);
+
+        /// <summary>
         /// Allocates a number of passes for a cell in this segment. Only valid for mutable representations exposing this interface.
         /// </summary>
         /// <param name="X"></param>
@@ -29,21 +39,12 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void AllocatePasses(int X, int Y, int passCount);
 
         /// <summary>
-        /// Allocates a number of passes for a cell in this segment. Only valid for mutable representations exposing this interface.
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="passCount"></param>
-        void AllocatePassesExact(int X, int Y, int passCount);
-
-        /// <summary>
         /// Adds a cell pass at an optional position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="pass"></param>
-        /// <param name="position"></param>
-        void AddPass(int X, int Y, CellPass pass, int position = -1);
+        void AddPass(int X, int Y, CellPass pass);
 
         /// <summary>
         /// Replaces a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
@@ -158,14 +159,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// </summary>
         /// <param name="cellPasses"></param>
         void SetState(Cell_NonStatic[,] cellPasses);
-
-        /// <summary>
-        /// Allows a caller to supply the raw cell pass information to the segment which may convert it to 
-        /// it's internal representation. This call assumes ownership of the passed cellPasses and will set the
-        /// ref parameter containing the cellPass to null to enforce it.
-        /// </summary>
-        /// <param name="cellPasses"></param>
-        void SetStatePassingOwnership(ref Cell_NonStatic[,] cellPasses);
 
         /// <summary>
         /// Allows a caller to query the set of all cell passes in the wrapper as a sub grid array 

@@ -51,5 +51,28 @@ namespace TAGFiles.Tests
       preScan.DesignName.Should().Be("CAT DAY 22");
       preScan.ApplicationVersion.Should().Be("12.61-75222");
     }
+
+    [Fact()]
+    public void Test_TAGFilePreScan_Execute_JapaneseDesign()
+    {
+      TAGFilePreScan preScan = new TAGFilePreScan();
+
+      Assert.True(preScan.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "JapaneseDesignTagfileTest.tag"), FileMode.Open, FileAccess.Read)),
+        "Pre-scan execute returned false");
+
+      preScan.ProcessedEpochCount.Should().Be(1222);
+      preScan.ReadResult.Should().Be(TAGReadResult.NoError);
+      preScan.SeedLatitude.Should().Be(0.65955923731934751);
+      preScan.SeedLongitude.Should().Be(2.45317108556434);
+      preScan.SeedHeight.Should().Be(159.53982475668218);
+      preScan.SeedTimeUTC.Should().Be(System.DateTime.Parse("2019-06-17T01:43:14.8640000", System.Globalization.NumberFormatInfo.InvariantInfo));
+      preScan.RadioType.Should().Be("torch");
+      preScan.RadioSerial.Should().Be("5750F00368");
+      preScan.MachineType.Should().Be(25);
+      preScan.MachineID.Should().Be("320E03243");
+      preScan.HardwareID.Should().Be("3337J201SW");
+      preScan.DesignName.Should().Be("所沢地区　NO.210-NO.255");
+      preScan.ApplicationVersion.Should().Be("13.11-RC1");
+    }
   }
 }

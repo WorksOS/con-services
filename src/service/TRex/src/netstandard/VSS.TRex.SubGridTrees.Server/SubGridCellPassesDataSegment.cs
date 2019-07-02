@@ -87,11 +87,13 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public void DeAllocateFullPassStacks()
     {
+      PassesData?.Dispose();
       PassesData = null;
     }
 
     public void DeAllocateLatestPassGrid()
     {
+      LatestPasses?.Dispose();
       LatestPasses = null;
     }
 
@@ -158,7 +160,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool Read(BinaryReader reader,
       bool loadLatestData, bool loadAllPasses)
     {
-      SubGridStreamHeader Header = new SubGridStreamHeader(reader);
+      var Header = new SubGridStreamHeader(reader);
 
       StartTime = Header.StartTime;
       EndTime = Header.EndTime;
@@ -290,10 +292,39 @@ namespace VSS.TRex.SubGridTrees.Server
       bool Result = CoveredTimeRangeStart >= SegmentInfo.StartTime && CoveredTimeRangeEnd <= SegmentInfo.EndTime;
 
       if (!Result)
-        Log.LogCritical(
-          $"Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
-
+      {
+        Log.LogCritical($"Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
+        //throw new TRexException("Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
+      }
+      
       return Result;
     }
+
+    #region IDisposable Support
+    private bool disposedValue = false; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          LatestPasses?.Dispose();
+          LatestPasses = null;
+
+          PassesData?.Dispose();
+          PassesData = null;
+        }
+
+        disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+    }
+    #endregion
   }
 }

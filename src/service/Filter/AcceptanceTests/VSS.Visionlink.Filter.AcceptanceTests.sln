@@ -83,6 +83,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{8439ED55-CED4-4160-AB12-3D50E5A2A2B9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{4B604EFD-01D0-4B43-B0B7-4EE0E3B2018C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,6 +207,10 @@ Global
 		{8439ED55-CED4-4160-AB12-3D50E5A2A2B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8439ED55-CED4-4160-AB12-3D50E5A2A2B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8439ED55-CED4-4160-AB12-3D50E5A2A2B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B604EFD-01D0-4B43-B0B7-4EE0E3B2018C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B604EFD-01D0-4B43-B0B7-4EE0E3B2018C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B604EFD-01D0-4B43-B0B7-4EE0E3B2018C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B604EFD-01D0-4B43-B0B7-4EE0E3B2018C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -240,6 +246,7 @@ Global
 		{07A989CD-20D2-4320-B175-AD126867E7E5} = {F8C30A34-BCD5-479A-89BC-6385695B77A5}
 		{E741008E-7A48-4F93-A69F-8E3328EF2F7B} = {F8C30A34-BCD5-479A-89BC-6385695B77A5}
 		{8439ED55-CED4-4160-AB12-3D50E5A2A2B9} = {F8C30A34-BCD5-479A-89BC-6385695B77A5}
+		{4B604EFD-01D0-4B43-B0B7-4EE0E3B2018C} = {F8C30A34-BCD5-479A-89BC-6385695B77A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0FA01801-9906-482F-8016-493112DB9267}

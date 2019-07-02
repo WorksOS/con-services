@@ -9,11 +9,13 @@ namespace VSS.TRex.IO
   /// </summary>
   public class GenericArrayPoolCaches<T> : IGenericArrayPoolCaches<T>
   {
+    private readonly object _lock = new object();
+
     /// <summary>
     /// For arrays with sizes up to and including 1024 elements, this is the number of slots to
     /// provide for each size bucket (1, 2, 4, 16, 32, 64, 126, 256, 512 & 1024)
     /// </summary>
-    public const int SMALL_POOL_CACHE_SIZE = 100;
+    public const int SMALL_POOL_CACHE_SIZE = 200;
 
     /// <summary>
     /// For arrays with sizes above 1024 items, and less than 512k elements, this is the number of slots to
@@ -45,15 +47,18 @@ namespace VSS.TRex.IO
     /// The collection of pools individual buffers are rented out from
     /// </summary>
     private readonly T[][][] _pools;
-    
+
+    private readonly int _pools_Length;
+
     /// <summary>
     /// Counters for each of the power-of-two buffer pools
     /// </summary>
-    private readonly int[] _poolCounts = new int[NumExponentialPoolsToProvide];
+    private readonly GenericArrayPoolStatistics[] _poolCounts = new GenericArrayPoolStatistics[NumExponentialPoolsToProvide];
 
     public GenericArrayPoolCaches()
     {
       _pools = new T[NumExponentialPoolsToProvide][][];
+      _pools_Length = _pools.Length;
 
       // Establish 100 small rent able buffers for anything up to 1024 items
       for (int i = 0; i < 10; i++)
@@ -71,6 +76,16 @@ namespace VSS.TRex.IO
       // Establish 10 512K and 1M item buffers
       _pools[19] = new T[LARGE_POOL_CACHE_SIZE][];
       _pools[20] = new T[LARGE_POOL_CACHE_SIZE][];
+
+      for (int i = 0; i < _pools_Length; i++)
+      {
+        _poolCounts[i] = new GenericArrayPoolStatistics
+        {
+          PoolIndex = i,
+          PoolCapacity = _pools[i].Length,
+          AvailCount = 0 // Pools don't start pre-populated with objects
+        };
+      }
     }
 
     /// <summary>
@@ -102,21 +117,26 @@ namespace VSS.TRex.IO
         log2++;
       }
 
-      if (log2 >= _pools.Length)
+      if (log2 >= _pools_Length)
       {
         // Requested buffer is too large. Note the request in the log and return a buffer of the requested size
-        Log.LogInformation($"Elements buffer pool serviced request for buffer of {minSize} bytes, above the maximum of {1 << NumExponentialPoolsToProvide}");
+        Log.LogInformation($"Elements buffer pool serviced request for buffer of {minSize} bytes, above the maximum of {1 << (NumExponentialPoolsToProvide - 1)}");
         return new T[minSize];
       }
 
-      lock (_poolCounts)
+      lock (_lock)
       {
-        if (_poolCounts[log2] > 0)
+        int newCurrentRent = ++_poolCounts[log2].CurrentRents;
+
+        if (newCurrentRent > _poolCounts[log2].HighWaterRents)
+          _poolCounts[log2].HighWaterRents = newCurrentRent;
+
+        if (_poolCounts[log2].AvailCount > 0)
         {
           var pool = _pools[log2];
-          var buffer = pool[--_poolCounts[log2]];
+          var buffer = pool[--_poolCounts[log2].AvailCount];
 
-          pool[_poolCounts[log2]] = null;
+          pool[_poolCounts[log2].AvailCount] = null;
 
           return buffer;
         }
@@ -132,34 +152,85 @@ namespace VSS.TRex.IO
     /// Note: If the size of the returned buffer is not a power of two it will be logged but otherwise ignored.
     /// </summary>
     /// <param name="buffer"></param>
-    public void Return(T[] buffer)
+    public void Return(ref T[] buffer)
     {
+      int buffer_Length = buffer.Length;
+
       // Find the appropriate pool and ensure it is the correct size. If not, just ignore it
-      var log2 = Utilities.Log2(buffer.Length) - 1;
-      if (buffer.Length != 1 << log2)
+      var log2 = Utilities.Log2(buffer_Length) - 1;
+      if (buffer_Length != 1 << log2)
       {
-        Log.LogWarning($"Elements buffer pool returned buffer not power-of-two in size: {buffer.Length}. Ignoring this returned buffer");
+        // Don't complain bout return of the zero'th element
+        if (buffer_Length > 0)
+        {
+          Log.LogWarning($"Elements buffer pool returned buffer not power-of-two in size: {buffer_Length}. Ignoring this returned buffer");
+        }
+
+        buffer = null;
         return;
       }
 
       if (log2 >= NumExponentialPoolsToProvide)
       {
         // Buffer is too big to place back into the cache and note it in log
-        Log.LogWarning($"Elements buffer pool returned buffer too big [{buffer.Length}] for an existing cache pool. Ignoring this returned buffer");
+        Log.LogWarning($"Elements buffer pool returned buffer too big [{buffer_Length}] for an existing cache pool. Ignoring this returned buffer");
+        buffer = null;
         return;
       }
 
-      lock (_poolCounts)
+      lock (_lock)
       {
-        if (_poolCounts[log2] >= _pools[log2].Length)
+        --_poolCounts[log2].CurrentRents;
+
+        if (_poolCounts[log2].AvailCount >= _poolCounts[log2].PoolCapacity)
         {
           // The pool is full - cut this buffer loose for the GC to look after
-          Log.LogWarning($"Elements buffer pool full for buffers of size {buffer.Length}. Ignoring this returned buffer");
-          return;
+          Log.LogWarning($"Elements buffer pool full (size={_poolCounts[log2].PoolCapacity}) for {typeof(T).Name}[] buffers of size {buffer_Length}. Ignoring this returned buffer");
         }
-        
-        // Place the returned buffer into the pool for later reuse
-        _pools[log2][_poolCounts[log2]++] = buffer;
+        else
+        {
+          // Place the returned buffer into the pool for later reuse
+          _pools[log2][_poolCounts[log2].AvailCount++] = buffer;
+        }
+
+        buffer = null;
+      }
+    }
+
+    /// <summary>
+    /// Supplies statistics on the usage of the cached array pools
+    /// </summary>
+    /// <returns></returns>
+    public GenericArrayPoolStatistics[] Statistics()
+    {
+      lock (_poolCounts)
+      {
+        var result = new GenericArrayPoolStatistics[_poolCounts.Length];
+        Array.Copy(_poolCounts, result, _poolCounts.Length);
+
+        return result;
+      }
+    }
+
+    private static string _typeName = typeof(T).Name;
+    public string TypeName() => _typeName;
+
+    /// <summary>
+    /// Clears any content in the array pool and reset all availability counters to zero
+    /// </summary>
+    public void Clear()
+    {
+      lock (_pools)
+      {
+        for (int i = 0; i < _pools_Length; i++)
+        {
+          for (int j = 0; j < _poolCounts[i].PoolCapacity; j++)
+          {
+            _pools[i][j] = null;
+          }
+
+          _poolCounts[i].AvailCount = 0;
+        }
       }
     }
   }

@@ -2,17 +2,18 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.TAGFiles.Classes.Processors
 {
   /// <summary>
   /// Implements TAG file reading semantics for TAG file data represented to it via a stream
   /// </summary>
-  public class TAGReader
+  public class TAGReader : IDisposable
   {
     private const byte BITS_PER_NYBBLE = 4;
     private const byte BITS_PER_TWO_NYBBLES = 8;
-    private const byte NYBBLES_PER_UNICODE_CHAR = 4;
+    private const byte NYBBLES_PER_BYTE = 2;
 
     // The stream provided in the constructor to read the TAG information from
     private readonly Stream stream;
@@ -76,7 +77,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <summary>
     /// The byte buffer for reading bytes representing an ANSI string before construction of the string itself
     /// </summary>
-    private byte[] _readANSIString_ByteBuffer = new byte[100];
+    private byte[] _readANSIString_ByteBuffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(100);
 
     /// <summary>
     /// Read an ANSI string from the stream. The result is returned as a byte array as
@@ -117,7 +118,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <summary>
     /// Buffer to be used by ReadDoublePrecisionIEEEValue()
     /// </summary>
-    private readonly byte[] ReadDoublePrecisionIEEEValue_Buffer = new byte[8];
+    private byte[] ReadDoublePrecisionIEEEValue_Buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(8);
 
     /// <summary>
     /// Read an IEEE double number from the stream
@@ -132,7 +133,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <summary>
     /// Buffer to be used by ReadSinglePrecisionIEEEValue()
     /// </summary>
-    private readonly byte[] ReadSinglelePrecisionIEEEValue_Buffer = new byte[4];
+    private byte[] ReadSinglePrecisionIEEEValue_Buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(4);
 
     /// <summary>
     /// Read an IEEE single number from the stream
@@ -140,8 +141,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <returns></returns>
     public float ReadSinglePrecisionIEEEValue()
     {
-      ReadBufferEx(8, ReadSinglelePrecisionIEEEValue_Buffer);
-      return BitConverter.ToSingle(ReadSinglelePrecisionIEEEValue_Buffer, 0);
+      ReadBufferEx(8, ReadSinglePrecisionIEEEValue_Buffer);
+      return BitConverter.ToSingle(ReadSinglePrecisionIEEEValue_Buffer, 0);
     }
 
     /// <summary>
@@ -179,11 +180,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <returns></returns>
     private char ReadUnicodeChar()
     {
-      ReadUnicodeChar_ByteBuffer[0] = (byte)ReadUnSignedIntegerValue(NYBBLES_PER_UNICODE_CHAR);
+      ReadUnicodeChar_ByteBuffer[1] = (byte)ReadUnSignedIntegerValue(NYBBLES_PER_BYTE);
+      ReadUnicodeChar_ByteBuffer[0] = (byte)ReadUnSignedIntegerValue(NYBBLES_PER_BYTE);
       return BitConverter.ToChar(ReadUnicodeChar_ByteBuffer, 0);
     }
 
-    private char[] _readUnicodeString_Buffer = new char[100];
+    private char[] _readUnicodeString_Buffer = GenericArrayPoolCacheHelper<char>.Caches().Rent(100);
 
     /// <summary>
     /// Read a Unicode string from the stream
@@ -281,5 +283,32 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       if (value % 2 == 1)
         ReadNybble();
     }
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(ref ReadDoublePrecisionIEEEValue_Buffer);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(ref ReadSinglePrecisionIEEEValue_Buffer);
+          GenericArrayPoolCacheHelper<char>.Caches().Return(ref _readUnicodeString_Buffer);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(ref _readANSIString_ByteBuffer);
+        }
+
+        disposedValue = true;
+      }
+    }
+
+    // This code added to correctly implement the disposable pattern.
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+    }
+    #endregion
   }
 }

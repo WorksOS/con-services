@@ -1,0 +1,21 @@
+﻿using System.Collections.Generic;
+using Apache.Ignite.Core.Lifecycle;
+
+namespace VSS.TRex.IO
+{
+  public static class GenericArrayPoolCachesRegister
+  {
+    private static List<IGenericArrayPoolCaches> _arrayPoolCaches = new List<IGenericArrayPoolCaches>();
+    public static List<IGenericArrayPoolCaches> ArrayPoolCaches => _arrayPoolCaches;
+    
+    public static void Add(IGenericArrayPoolCaches arrayPoolCache)
+    {
+      _arrayPoolCaches.Add(arrayPoolCache);
+    }
+
+    public static void ClearAll()
+    {
+      _arrayPoolCaches.ForEach(x => x.Clear());
+    }
+  }
+}

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.645
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29006.145
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard", "netstandard", "{60739A56-DAB5-4BDD-B54E-1ACA0FF82092}"
 EndProject
@@ -296,7 +296,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", ".
 		{7ED58E75-7A99-4412-8C1A-A93250222422} = {7ED58E75-7A99-4412-8C1A-A93250222422}
 	EndProjectSection
 EndProject
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.IO", "src\netstandard\VSS.TRex.IO\VSS.TRex.IO.csproj", "{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Proxy", "src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj", "{FF4E1B55-8047-40F7-AAC0-087294667828}"
@@ -309,6 +308,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Abstractions", "..\TagFileAuth\src\Abstractions\VSS.Productivity3D.TagFileAuth.Abstractions.csproj", "{68B43728-D376-4AB6-8982-452F208B48A6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Proxy", "..\TagFileAuth\src\Proxy\VSS.Productivity3D.TagFileAuth.Proxy.csproj", "{62B19080-1A48-4B48-92FF-DE003FD5B1CC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArrayPoolBenchmark", "src\netstandard\SandBox\ArrayPoolBenchmark\ArrayPoolBenchmark.csproj", "{A60A9586-2065-4A4F-80E7-961CDB684A76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1294,6 +1295,14 @@ Global
 		{62B19080-1A48-4B48-92FF-DE003FD5B1CC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62B19080-1A48-4B48-92FF-DE003FD5B1CC}.Release|x64.ActiveCfg = Release|Any CPU
 		{62B19080-1A48-4B48-92FF-DE003FD5B1CC}.Release|x64.Build.0 = Release|Any CPU
+		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Debug|x64.Build.0 = Debug|Any CPU
+		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Release|x64.ActiveCfg = Release|Any CPU
+		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1425,6 +1434,7 @@ Global
 		{CC3B7973-6248-4456-AE1B-ABB2BDA0DABF} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{68B43728-D376-4AB6-8982-452F208B48A6} = {5ABC6984-0C9C-4A5C-80B4-5B559AF79F2D}
 		{62B19080-1A48-4B48-92FF-DE003FD5B1CC} = {5ABC6984-0C9C-4A5C-80B4-5B559AF79F2D}
+		{A60A9586-2065-4A4F-80E7-961CDB684A76} = {9AAEFDCA-DA56-4830-8FF4-8840AF43C825}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}

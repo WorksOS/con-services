@@ -4,6 +4,7 @@
     {
         // CalculateAttributeValueRange scans a single attribute across all records in a block of values
         public static void CalculateAttributeValueRange(long[] Values,
+                                                        int startIndex, int count, 
                                                         long Mask,
                                                         long ANativeNullValue, bool ANullable,
                                                         ref EncodedBitFieldDescriptor FieldDescriptor)
@@ -16,9 +17,9 @@
             FieldDescriptor.MaxValue = ANativeNullValue;
             FieldDescriptor.Nullable = ANullable;
 
-            foreach (var t in Values)
+            for (int i = startIndex, limit = startIndex + count; i < limit; i++)
             {
-                long TestValue = t;
+                long TestValue = Values[i];
 
                 // Ensure negative values are preserved
                 TestValue = TestValue < 0 ? -(-TestValue & Mask) : TestValue & Mask;

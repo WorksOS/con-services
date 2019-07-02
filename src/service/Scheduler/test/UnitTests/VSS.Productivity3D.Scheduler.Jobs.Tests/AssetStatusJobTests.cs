@@ -221,7 +221,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       var expectedResult = new AssetAggregateStatus()
       {
-        AssetId =  123,
+        AssetIdentifier =  "Test Machine1",
         LiftNumber = 6433,
         CustomerUid = subscription.CustomerUid,
         ProjectUid = subscription.ProjectUid,
@@ -322,6 +322,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       var assetDetails = new AssetDetails()
       {
+        AssetId = "55743 - test",
         AssetUid = "47C03885-4845-4637-90B5-4CCE5D8DA040",
         LastReportedLocationLatitude = 123.45d,
         LastReportedLocationLongitude = 43.1d,
@@ -342,7 +343,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         Latitude = assetDetails.LastReportedLocationLatitude,
         Longitude = assetDetails.LastReportedLocationLongitude,
         LiftNumber = 15215,
-        AssetId = 55743,
+        AssetIdentifier = "55743 - test", // will take this from the 2d data, as a higher priority that the 3d machine name
         MachineName = "Test Machine from 3d"
       };
 

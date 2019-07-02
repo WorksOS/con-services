@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
 
 namespace VSS.TRex.Common
@@ -15,11 +16,11 @@ namespace VSS.TRex.Common
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<TRexHeartBeatLogger>();
 
-    private readonly List<object> loggingContexts;
+    private readonly List<IHeartBeatLogger> loggingContexts;
 
     private readonly Thread contextRunner;
 
-    private bool Stopped { get; set; } = false;
+    private bool Stopped { get; set; } 
 
     public int IntervalInMilliseconds { get; }
 
@@ -31,7 +32,7 @@ namespace VSS.TRex.Common
       if (intervalMS < 100)
         throw new ArgumentException("Heart beat logger interval cannot be < 100 milliseconds");
 
-      loggingContexts = new List<object>();
+      loggingContexts = new List<IHeartBeatLogger>();
       IntervalInMilliseconds = intervalMS;
 
       contextRunner = new Thread(() =>
@@ -44,7 +45,7 @@ namespace VSS.TRex.Common
             {
               try
               {
-                Log.LogInformation($"Heartbeat: {context}");
+                context.HeartBeat();
               }
               catch (Exception e)
               {
@@ -67,7 +68,7 @@ namespace VSS.TRex.Common
     {
     }
 
-    public void AddContext(object context)
+    public void AddContext(IHeartBeatLogger context)
     {
       lock (loggingContexts)
       {
@@ -75,7 +76,7 @@ namespace VSS.TRex.Common
       }
     }
 
-    public void RemoveContext(object context)
+    public void RemoveContext(IHeartBeatLogger context)
     {
       lock (loggingContexts)
       {

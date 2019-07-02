@@ -163,26 +163,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return new ContractExecutionResult((int)TRexTagFileResultCode.TrexTagFileReaderError, tagFilePresScan.ReadResult.ToString());
       }
 
-      /*
-      Old process of pre-scanning...
-      // Now open tagfile and validate contents
-      ISiteModel siteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel();
-      var machine = new Machine();
-      var siteModelGridAggregator = new ServerSubGridTree(siteModel.ID);
-      var machineTargetValueChangesAggregator = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-      TAGProcessor processor = new TAGProcessor(siteModel, machine, siteModelGridAggregator, machineTargetValueChangesAggregator);
-      TAGValueSink sink = new TAGVisionLinkPrerequisitesValueSink(processor);
-      TAGReader reader = new TAGReader(new MemoryStream(tagDetail.tagFileContent));
-      TAGFile tagFile = new TAGFile();
-
-      TAGReadResult readResult = tagFile.Read(reader, sink);
-      if (readResult != TAGReadResult.NoError)
-      {
-        return new ContractExecutionResult((int)TRexTagFileResultCode.TrexTagFileReaderError, readResult.ToString());
-      }
-       */
-
-      // Tagfile contents are OK so proceed
+      // TAG file contents are OK so proceed
       if (!tfaServiceEnabled) // allows us to bypass a TFA service
       {
         if (WarnOnTFAServiceDisabled)

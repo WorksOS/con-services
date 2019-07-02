@@ -22,7 +22,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
 {
-  public class SurfaceExportProxy : DITAGFileAndSubGridRequestsWithIgniteFixture, IDisposable
+  public class SurfaceExportProxy : DITAGFileAndSubGridRequestsWithIgniteFixture
   {
     public SurfaceExportProxy()
     {

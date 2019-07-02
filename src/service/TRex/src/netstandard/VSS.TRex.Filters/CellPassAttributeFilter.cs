@@ -679,7 +679,7 @@ namespace VSS.TRex.Filters
       if (!AnyFilterSelections)
       {
         // There are no constrictive filter criteria - all cell passes pass the filter
-        return false;
+        return true;
       }
 
       if (HasTimeFilter)

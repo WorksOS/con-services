@@ -11,7 +11,7 @@ namespace VSS.TRex.IO
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SlabAllocatedArrayPool<T>>();
 
-    public const int MAX_ALLOCATION_POOL_SIZE = 65536;
+    public const int MAX_ALLOCATION_POOL_SIZE = 2 * 65536;
 
     private readonly int _allocationPoolPageSize;
 
@@ -87,11 +87,16 @@ namespace VSS.TRex.IO
     /// Returns a given buffer back to the allocation pool
     /// </summary>
     /// <param name="buffer"></param>
-    public void Return(TRexSpan<T> buffer)
+    public void Return(ref TRexSpan<T> buffer)
     {
+      if (!buffer.NeedsToBeReturned())
+      {
+        return;
+      }
+
       if (buffer.Capacity == 0)
       {
-        // This is either a default initialised span, or the zero element. In both cases just ignore it
+        // This is either a default initialized span, or the zero element. In both cases just ignore it
         return;
       }
 
@@ -106,11 +111,11 @@ namespace VSS.TRex.IO
       var log2 = Utilities.Log2(buffer.Capacity) - 1;
 
       // Return the span to the pool if it is not the zero element
-      _pools[log2].Return(buffer);
+      _pools[log2].Return(ref buffer);
     }
 
     /// <summary>
-    /// Clones the content 'oldBuffer' by creating a new TRexSPan and copying the elements from oldBuffer into it
+    /// Clones the content 'oldBuffer' by creating a new TRexSpan and copying the elements from oldBuffer into it
     /// </summary>
     /// <param name="oldBuffer"></param>
     /// <returns></returns>
@@ -124,7 +129,7 @@ namespace VSS.TRex.IO
 #endif
 
       // Get a new buffer
-      var newBuffer = Rent(oldBuffer.Capacity);
+      var newBuffer = Rent(oldBuffer.Count);
       newBuffer.Count = oldBuffer.Count;
 
       // Copy elements from the old buffer to the new buffer

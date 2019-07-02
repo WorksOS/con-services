@@ -326,23 +326,23 @@ namespace VSS.MasterData.Repositories
           (await QueryWithAsyncPolicy<MatchingAssets>
             //3d to 2d
             (@"Select
-                a.AssetUID AssetUID2D
-                ,a2.AssetUID AssetUID3D
+                a2.AssetUID AssetUID2D
+                ,a.AssetUID AssetUID3D
                 ,a.Name
-                ,a.SerialNumber SerialNumber2D
-                ,a.MakeCode MakeCode2D
+                ,a2.SerialNumber SerialNumber2D
+                ,a2.MakeCode MakeCode2D
                 ,a.Model
                 ,c.Name CustomerName
-                ,a2.SerialNumber SerialNumber3D
-                ,a2.MakeCode MakeCode3D
+                ,a.SerialNumber SerialNumber3D
+                ,a.MakeCode MakeCode3D
                 from
 	                Asset a
                     inner join AssetSubscription asu on asu.fk_AssetUID=a.AssetUID and asu.fk_AssetUID = @asset
 	                  inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 13 and sp.EndDate  >= Utc_Timestamp()
-                    inner join Customer c on c.CustomerUID = sp.fk_CustomerUID and fk_CustomertypeID=1
+                    inner join Customer c on c.CustomerUID = sp.fk_CustomerUID
                     left join Asset a2 on a2.SerialNumber = left(a.SerialNumber,locate('-',concat(replace(a.SerialNumber,' ','-'),'-'))-1)
                 where
-	                a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID "
+	                a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID"
               , new {asset = asset.AssetUID3D})).FirstOrDefault();
       }
 
@@ -365,10 +365,10 @@ namespace VSS.MasterData.Repositories
 	            Asset a
                 inner join AssetSubscription asu on asu.fk_AssetUID=a.AssetUID and asu.fk_AssetUID=@asset
 	              inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 1
-                inner join Customer c on c.CustomerUID = sp.fk_CustomerUID and fk_CustomertypeID=1
+                inner join Customer c on c.CustomerUID = sp.fk_CustomerUID
                 left join Asset a2 on a.SerialNumber = left(a2.SerialNumber,locate('-',concat(replace(a2.SerialNumber,' ','-'),'-'))-1)
             where
-	            a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID "
+	            a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID"
               , new {asset = asset.AssetUID2D})).FirstOrDefault();
       }
 

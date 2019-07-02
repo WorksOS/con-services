@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.IO;
@@ -18,13 +19,17 @@ namespace VSS.TRex.Cells
     /// </summary>
     public struct Cell_NonStatic
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(Cell_NonStatic));
+
+        public const int PASS_COUNT_INCREMENT_STEP_SIZE = 4;
+
         /// <summary>
         /// Passes represents all the passes a compactor has made over this cell in the
         /// compaction information grid. The passes are arranged in time order: The first
         /// entry representing the oldest value, the last cell representing the most
         /// current reading.
         /// </summary>
-     
+
         public TRexSpan<CellPass> Passes;
 
         /// <summary>
@@ -37,7 +42,7 @@ namespace VSS.TRex.Cells
         /// Determines if the cell is empty of all cell passes
         /// </summary>
         /// <returns></returns>
-        public bool IsEmpty => PassCount == 0;
+        public bool IsEmpty => Passes.Count == 0;
 
         /// <summary>
         /// Determines the height (Elevation from NEE) of the 'top most', or latest recorded in time, cell pass. If there are no passes a null height is returned.
@@ -51,77 +56,50 @@ namespace VSS.TRex.Cells
         /// <param name="capacity"></param>
         public void AllocatePasses(int capacity)
         {
-          const int CELL_PASS_ARRAY_INCREMENT_SIZE = 2;
+          if (!Passes.IsRented)
+          {
+            Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
 
-          if (Passes.Elements == null)
-          {
-            Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity >= CELL_PASS_ARRAY_INCREMENT_SIZE ? capacity : CELL_PASS_ARRAY_INCREMENT_SIZE);
-          }
-          else
-          {
-            if (Passes.Count >= capacity)
+#if CELLDEBUG
+            if (!Passes.IsRented)
             {
-              // Current allocated capacity is sufficient.
-              Passes.Count = capacity;
-              return;
+              throw new Exception("Is not rented!");
             }
-
-            if (capacity > Passes.Capacity)
-            {
-              // Get a new buffer and copy the content into it
-              var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
-
-              #if CELLDEBUG
-              if (newPasses.Count != 0)
-              {
-                throw new Exception($"Rented cell pass array does not have a Count of 0, it is {newPasses.Count}");
-              }
-              #endif
-
-              newPasses.Copy(Passes, Passes.Count);
-              if (Passes.NeedsToBeReturned())
-              {
-                SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(Passes);
-                // No need to mark Passes as returned as it is immediately overwritten by newPasses below.
-                //Passes.MarkReturned();
-              }
-
-              Passes = newPasses;
-            }
-          }
-        }
-
-        /// <summary>
-        /// Allocate or resize an array of passes to a new size which will exactly equal the size asked for
-        /// </summary>
-        /// <param name="capacity"></param>
-        public void AllocatePassesExact(int capacity)
-        {
-          AllocatePasses(capacity);
-
-          /*
-          if (PassCount == capacity)
-          {
-            // Current allocated capacity is correct
+#endif
             return;
           }
 
-          if (PassCount > capacity)
-            PassCount = capacity;
+          if (Passes.Count >= capacity)
+          {
+#if CELLDEBUG
+            if (!Passes.IsRented)
+            {
+              throw new Exception("Is not rented!");
+            }
+#endif
+            // Current allocated capacity is sufficient.
+            Passes.Count = capacity;
+            return;
+          }
 
-          if (capacity == 0)
+          if (capacity > Passes.Capacity)
           {
-            Passes = null;
+            // Get a new buffer and copy the content into it
+            var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
+
+            newPasses.Copy(Passes, Passes.Count);
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref Passes);
+
+            Passes = newPasses;
+
+#if CELLDEBUG
+            if (!Passes.IsRented)
+            {
+              throw new Exception("Is not rented!");
+            }
+#endif
           }
-          else
-          {
-            if (Passes == null)
-              Passes = new CellPass[capacity];
-            else
-              Elements.Resize(ref Passes, capacity);
-          }
-          */
-        }
+        }  
 
         /// <summary>
         /// LocateTime attempts to locate an entry in the passes list that has
@@ -171,31 +149,42 @@ namespace VSS.TRex.Cells
         /// for a machine crossing this cell and adds it to the passes list
         /// </summary>
         /// <param name="pass"></param>
-        /// <param name="position"></param>
-        public void AddPass(CellPass pass, int position = -1)
+        public void AddPass(CellPass pass)
         {
-            // Locate the position in the list of time ordered passes to insert the new pass
-            if (position == -1 && LocateTime(pass.Time, out position))
-                throw new TRexException("Pass with same time being added to cell");
+#if CELLDEBUG
+            CheckPassesAreInCorrectTimeOrder("AddPass(CellPass pass) - before");
+            pass._additionStamp = Interlocked.Increment(ref CellPass._lastAdditionStamp);
+#endif
 
-            AllocatePasses(PassCount + 1);
+            // Locate the position in the list of time ordered passes to insert the new pass
+            if (LocateTime(pass.Time, out int position))
+            {
+              throw new TRexException("Pass with same time being added to cell");
+            }
+
+            if (!Passes.IsRented)
+            {
+              AllocatePasses(PASS_COUNT_INCREMENT_STEP_SIZE);
+            }
+            else if (Passes.Capacity == Passes.Count)
+            {
+              AllocatePasses(Passes.Capacity + PASS_COUNT_INCREMENT_STEP_SIZE);
+            }
 
             if (position < PassCount)
             {
               Passes.Insert(pass, position);
+#if CELLDEBUG
+              CheckPassesAreInCorrectTimeOrder("AddPass(CellPass pass) - after insert");
+#endif
             }
             else // Add the new pass to the passes list.
             {
               Passes.Add(pass);
+#if CELLDEBUG
+              CheckPassesAreInCorrectTimeOrder("AddPass(CellPass pass) - after add");
+#endif
             }
-
-            #if CELLDEBUG
-            for (int i = 0; i < PassCount - 1; i++)
-            {
-              if (Passes.GetElement(i).Time > Passes.GetElement(i + 1).Time)
-                throw new Exception($"Passes not in time order during cell processing. {Passes.GetElement(i).Time.Ticks} should be less than or equal to {Passes.GetElement(i + 1).Time.Ticks}");
-            }
-            #endif
         }
 
         /// <summary>
@@ -213,17 +202,19 @@ namespace VSS.TRex.Cells
                               out int addedCount,
                               out int modifiedCount)
         {
-            #if CELLDEBUG
+#if CELLDEBUG
             // Check 'this' cell pass times are in order
             CheckPassesAreInCorrectTimeOrder("Cell passes are not in time order before integration");
             sourcePasses.CheckPassesAreInCorrectTimeOrder("Source cell passes are not in time order before integration");
-            #endif
+#endif
 
             addedCount = 0;
             modifiedCount = 0;
 
             if (sourcePasses.Passes.Count == 0)
-                return;
+            {
+              return;
+            }
 
             int ThisIndex = 0;
             int SourceIndex = startIndex;
@@ -240,14 +231,7 @@ namespace VSS.TRex.Cells
             // another aggregated sub grid from TAG file processing
             
             var IntegratedPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(IntegratedPassCount);
-
-            #if CELLDEBUG
-            if (IntegratedPasses.Count != 0)
-            {
-                throw new Exception("Rented span count is not zero");
-            }
-            #endif
-
+          
             // Combine the two (sorted) lists of cell passes together to arrive at a single
             // integrated list of passes.
             do
@@ -295,9 +279,11 @@ namespace VSS.TRex.Cells
                 IntegratedIndex++;
             } while (IntegratedIndex <= IntegratedPassCount - 1);
 
+            IntegratedPasses.Count = IntegratedPassCount;
+
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             // Return the original cell pass span and replace it with the integrated one
-            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(Passes);
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref Passes);
 
             // No need to mark Passes as being returned as it is immediately replace by IntegratedPasses below
             // Passes.MarkReturned();
@@ -310,20 +296,27 @@ namespace VSS.TRex.Cells
 #endif
         }
 
-
+#if CELLDEBUG
         /// <summary>
         /// Determines if all the passes in the cell are in the correct (increasing) time order
         /// </summary>
         /// <returns></returns>
         public void CheckPassesAreInCorrectTimeOrder(string comment)
         {
-          for (int i = 0; i < Passes.Count - 1; i++)
+          for (int i = Passes.Offset, limit = Passes.OffsetPlusCount - 1; i < limit; i++)
           {
-            if (Passes.GetElement(i).Time >= Passes.GetElement(i + 1).Time)
+            if (Passes.Elements[i].Time >= Passes.Elements[i + 1].Time)
             {
-              throw new Exception($"{comment}: {Passes.GetElement(i).Time.Ticks} should be < {Passes.GetElement(i + 1).Time.Ticks}");
+               Log.LogInformation($"CheckPassesAreInCorrectTimeOrder failure [{comment}]: {Passes.Count} passes: {Passes.Offset}->{Passes.OffsetPlusCount - 1}");
+               for (int j = Passes.Offset, limit2 = Passes.OffsetPlusCount; j < limit2; j++)
+               {
+                 Log.LogInformation($"Pass index {j}: Stamp {Passes.Elements[j]._additionStamp} Time: {Passes.Elements[j].Time}");
+               }
+
+               throw new Exception($"{comment}: {Passes.Elements[i].Time.Ticks} should be < {Passes.Elements[i].Time.Ticks}");
             }
           }
         }
+#endif
     }
 }

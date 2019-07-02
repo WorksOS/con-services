@@ -21,7 +21,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// Converts a TAG file from the vector based measurements of the machine's operation into the cell pass
     /// and events based description used in a TRex data model
     /// </summary>
-    public class TAGFileConverter
+    public class TAGFileConverter : IDisposable
     {
         private static readonly ILogger Log = Logger.CreateLogger<TAGFileConverter>();
 
@@ -138,20 +138,24 @@ namespace VSS.TRex.TAGFiles.Executors
 
             try
             {
+                Processor?.Dispose();
+
                 Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
                 var Sink = new TAGValueSink(Processor);
-                var Reader = new TAGReader(TAGData);
-                var TagFile = new TAGFile();
+                using (var Reader = new TAGReader(TAGData))
+                {
+                  var TagFile = new TAGFile();
 
-                ReadResult = TagFile.Read(Reader, Sink);
+                  ReadResult = TagFile.Read(Reader, Sink);
 
-                // Notify the processor that all reading operations have completed for the file
-                Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
+                  // Notify the processor that all reading operations have completed for the file
+                  Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
 
-                SetPublishedState(Processor);
+                  SetPublishedState(Processor);
 
-                if (ReadResult != TAGReadResult.NoError)
+                  if (ReadResult != TAGReadResult.NoError)
                     return false;
+                }
             }
             catch (Exception e) // make sure any exception is trapped to return correct response to caller
             {
@@ -161,5 +165,28 @@ namespace VSS.TRex.TAGFiles.Executors
 
             return true;
         }
+
+    #region IDisposable Support
+    private bool disposedValue = false; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          Processor?.Dispose();
+        }
+
+        disposedValue = true;
+      }
     }
+
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+    }
+    #endregion
+  }
 }

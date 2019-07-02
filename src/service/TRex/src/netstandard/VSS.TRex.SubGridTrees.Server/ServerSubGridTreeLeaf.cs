@@ -161,7 +161,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             else
             {
-                Segment.PassesData.AddPass(cellX, cellY, Pass, PassIndex);
+                Segment.PassesData.AddPass(cellX, cellY, Pass);
                 CellPassAdded(Pass);
             }
 
@@ -215,7 +215,11 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void DeAllocateLeafFullPassStacks() => _cells = null;
+        public void DeAllocateLeafFullPassStacks()
+        {
+          _cells?.PassesData?.Items.ForEach(x => x.Dispose());
+          _cells = null;
+        }
 
         public bool HasLatestData() => _directory.GlobalLatestCells != null;
 
@@ -234,6 +238,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             if (_directory != null)
             {
+                _directory.GlobalLatestCells?.Dispose();
                 _directory.GlobalLatestCells = null;
             }
         }
@@ -449,8 +454,10 @@ namespace VSS.TRex.SubGridTrees.Server
                 // Update the latest data from any previous segment with the information contained in this segment
                 if (segment_passesData.PassCount(I, J) > 0)
                 {
-                    CalculateLatestPassDataForPassStack(segment_passesData.ExtractCellPasses(I, J),
-                        ref ((SubGridCellLatestPassDataWrapper_NonStatic)segment_latestPasses).PassData[I, J],
+                     var latestPass = ((SubGridCellLatestPassDataWrapper_NonStatic) segment_latestPasses)[I, J];
+
+                     CalculateLatestPassDataForPassStack(segment_passesData.ExtractCellPasses(I, J),
+                        ref latestPass,
                         out bool CCVFromLatestCellPass,
                         out bool RMVFromLatestCellPass,
                         out bool FrequencyFromLatestCellPass,
@@ -460,16 +467,18 @@ namespace VSS.TRex.SubGridTrees.Server
                         out bool MDPFromLatestCellPass,
                         out bool CCAFromLatestCellPass);
 
-                    segment_latestPasses_CCVValuesAreFromLastPass.SetBitValue(I, J, CCVFromLatestCellPass);
-                    segment_latestPasses_RMVValuesAreFromLastPass.SetBitValue(I, J, RMVFromLatestCellPass);
-                    segment_latestPasses_FrequencyValuesAreFromLastPass.SetBitValue(I, J, FrequencyFromLatestCellPass);
-                    segment_latestPasses_AmplitudeValuesAreFromLastPass.SetBitValue(I, J, AmplitudeFromLatestCellPass);
-                    segment_latestPasses_GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, GPSModeFromLatestCellPass);
-                    segment_latestPasses_TemperatureValuesAreFromLastPass.SetBitValue(I, J, TemperatureFromLatestCellPass);
-                    segment_latestPasses_MDPValuesAreFromLastPass.SetBitValue(I, J, MDPFromLatestCellPass);
-                    segment_latestPasses_CCAValuesAreFromLastPass.SetBitValue(I, J, CCAFromLatestCellPass);
+                     ((SubGridCellLatestPassDataWrapper_NonStatic) segment_latestPasses)[I, J] = latestPass;
 
-                    UpdatedCell = true;
+                     segment_latestPasses_CCVValuesAreFromLastPass.SetBitValue(I, J, CCVFromLatestCellPass);
+                     segment_latestPasses_RMVValuesAreFromLastPass.SetBitValue(I, J, RMVFromLatestCellPass);
+                     segment_latestPasses_FrequencyValuesAreFromLastPass.SetBitValue(I, J, FrequencyFromLatestCellPass);
+                     segment_latestPasses_AmplitudeValuesAreFromLastPass.SetBitValue(I, J, AmplitudeFromLatestCellPass);
+                     segment_latestPasses_GPSModeValuesAreFromLatestCellPass.SetBitValue(I, J, GPSModeFromLatestCellPass);
+                     segment_latestPasses_TemperatureValuesAreFromLastPass.SetBitValue(I, J, TemperatureFromLatestCellPass);
+                     segment_latestPasses_MDPValuesAreFromLastPass.SetBitValue(I, J, MDPFromLatestCellPass);
+                     segment_latestPasses_CCAValuesAreFromLastPass.SetBitValue(I, J, CCAFromLatestCellPass);
+              
+                     UpdatedCell = true;
                 }
                 else
                 {
@@ -514,8 +523,7 @@ namespace VSS.TRex.SubGridTrees.Server
               var __GlobalLatestCells = (SubGridCellLatestPassDataWrapper_NonStatic) _GlobalLatestCells;
               var __LatestPasses = (SubGridCellLatestPassDataWrapper_NonStatic) _LatestPasses;
 
-              Segment.LatestPasses.PassDataExistenceMap.ForEachSetBit((x, y) =>
-                __GlobalLatestCells.PassData[x, y] = __LatestPasses.PassData[x, y]);
+              Segment.LatestPasses.PassDataExistenceMap.ForEachSetBit((x, y) => __GlobalLatestCells[x, y] = __LatestPasses[x, y]);
             }
         }
 
@@ -663,23 +671,24 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool SaveDirectoryToStream(Stream stream)
         {
-            BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true);
-
-            SubGridStreamHeader Header = new SubGridStreamHeader
+          using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
+          {
+            var Header = new SubGridStreamHeader
             {
-                Identifier = SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker,
-                Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridDirectoryFile,
-                StartTime = _leafStartTime,
-                EndTime = _leafEndTime,
-                LastUpdateTimeUTC = DateTime.UtcNow
+              Identifier = SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker,
+              Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridDirectoryFile,
+              StartTime = _leafStartTime,
+              EndTime = _leafEndTime,
+              LastUpdateTimeUTC = DateTime.UtcNow
             };
 
             // Write the header/version to the stream
             Header.Write(writer);
 
             _directory.Write(writer);
+          }
 
-            return true;
+          return true;
         }
 
         public bool SaveDirectoryToFile(IStorageProxy storage,
@@ -708,7 +717,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
       public bool LoadDirectoryFromStream(Stream stream)
         {
-            var reader = new BinaryReader(stream, Encoding.UTF8, true);
+          using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
+          {
             var Header = new SubGridStreamHeader(reader);
 
             // long LatestCellPassDataSize;
@@ -716,12 +726,14 @@ namespace VSS.TRex.SubGridTrees.Server
 
             if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker))
             {
-                Log.LogError($"Sub grid directory file header mismatch (expected [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
-                return false;
+              Log.LogError(
+                $"Sub grid directory file header mismatch (expected [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
+              return false;
             }
 
             if (!Header.IsSubGridDirectoryFile)
-              throw new TRexSubGridIOException("Sub grid directory file does not identify itself as such in extended header flags");
+              throw new TRexSubGridIOException(
+                "Sub grid directory file does not identify itself as such in extended header flags");
 
             //  FLastUpdateTimeUTC := Header.LastUpdateTimeUTC;
             _leafStartTime = Header.StartTime;
@@ -739,11 +751,13 @@ namespace VSS.TRex.SubGridTrees.Server
             _directory.AllocateGlobalLatestCells();
 
             if (Header.Version == 1)
-              _directory.Read(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
+              _directory.Read(reader); //, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
             else
-              Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
+              Log.LogError(
+                $"Sub grid directory file version or header mismatch (expected [Version: {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
+          }
 
-            return true;
+          return true;
         }
 
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
@@ -782,7 +796,9 @@ namespace VSS.TRex.SubGridTrees.Server
             //Log.LogInformation($"Integrating sub grid {Moniker()}, intermediary?:{IntegratingIntoIntermediaryGrid}");
 
             if (Source == null)
+            {
               throw new TRexSubGridTreeException("Source sub grid not defined in ServerSubGridTreeLeaf.Integrate");
+            }
 
             if (Source.Cells.PassesData.Count == 0)
             {
@@ -837,7 +853,8 @@ namespace VSS.TRex.SubGridTrees.Server
                         while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
                             EndIndex++;
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out int AddedCount, out int ModifiedCount);
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, 
+                          out int AddedCount, out int ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
                             Segment.Dirty = true;
@@ -875,8 +892,10 @@ namespace VSS.TRex.SubGridTrees.Server
         // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
         for (int i = 0, limit = Cells?.PassesData?.Count ?? 0; i < limit; i++)
         {
-           Cells.PassesData[i].PassesData?.Dispose();
+           Cells.PassesData[i]?.Dispose();
         }
+        Directory?.Dispose();
+        Directory = null;
 
         disposedValue = true;
       }

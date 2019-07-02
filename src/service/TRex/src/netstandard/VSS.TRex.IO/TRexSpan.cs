@@ -11,7 +11,12 @@ namespace VSS.TRex.IO
     /// <summary>
     /// This identifies a span that does not exist in a pool allocated slab
     /// </summary>
-    public const int NO_SLAB_INDEX = 255;
+    public const int NO_SLAB_INDEX = int.MaxValue;
+
+    /// <summary>
+    /// The span is currently out on rent
+    /// </summary>
+    public bool IsRented;
 
 #if CELLDEBUG
     // Debugging flag
@@ -21,14 +26,14 @@ namespace VSS.TRex.IO
     /// <summary>
     /// The index of the slab in the pool that currently contains this Span description.
     /// Note: This slab may not be the one that contains the elements this span describes,
-    /// the Elements property is the canonical references for this relationship
+    /// the Elements property is the canonical reference for this relationship
     /// </summary>
-    public byte SlabIndex;
+    private readonly int SlabIndex;
 
     /// <summary>
     /// The offset within the Elements array of this slab in the pool that the first element in the span occurs in
     /// </summary>
-    public readonly ushort Offset;
+    public readonly int Offset;
 
     /// <summary>
     /// The number of defined elements present in the space Count is less than or equal to Length
@@ -40,15 +45,10 @@ namespace VSS.TRex.IO
     /// </summary>
     public readonly int Capacity;
 
-    private T[] _elements;
-
     /// <summary>
     /// The reference to the slab allocated array that this span's elements are contained
     /// </summary>
-    public T[] Elements
-    {
-      get => _elements;
-    }
+    public T[] Elements;
 
     /* Note: TR deliberately does not provide an indexer as it can contain structs which causes issues with
   return of copies of the struct. GetElement/SetElement semantics are provided to make this clear.
@@ -70,13 +70,14 @@ namespace VSS.TRex.IO
     /// <param name="slabIndex"></param>
     /// <param name="offset"></param>
     /// <param name="capacity"></param>
-    public TRexSpan(T[] elements, byte slabIndex, ushort offset, int capacity, bool isReturned)
+    public TRexSpan(T[] elements, int slabIndex, int offset, int capacity, bool isReturned)
     {
-      _elements = elements;
+      Elements = elements;
       Offset = offset;
       SlabIndex = slabIndex;
       Count = 0;
       Capacity = capacity;
+      IsRented = false;
 
 #if CELLDEBUG
        IsReturned = isReturned;
@@ -90,13 +91,20 @@ namespace VSS.TRex.IO
     /// <param name="index"></param>
     public void Insert(T element, int index)
     {
+#if CELLDEBUG
+      if (!IsRented && SlabIndex != NO_SLAB_INDEX)
+      {
+        throw new Exception("Not rented!!!!");
+      }
+#endif
+
       if (index < 0 || index >= Count)
       {
         throw new ArgumentException("Index out of range");
       }
 
-      Array.Copy(_elements, Offset + index, _elements, Offset + index + 1, Count - index);
-      _elements[Offset + index] = element;
+      Array.Copy(Elements, Offset + index, Elements, Offset + index + 1, Count - index);
+      Elements[Offset + index] = element;
       Count++;
     }
 
@@ -107,12 +115,19 @@ namespace VSS.TRex.IO
     /// <param name="index"></param>
     public void SetElement(T element, int index)
     {
+#if CELLDEBUG
+      if (!IsRented && SlabIndex != NO_SLAB_INDEX)
+      {
+        throw new Exception("Not rented!!!!");
+      }
+#endif
+
       if (index < 0 || index >= Count)
       {
         throw new ArgumentException("Index out of range");
       }
 
-      _elements[Offset + index] = element;
+      Elements[Offset + index] = element;
     }
 
     /// <summary>
@@ -122,12 +137,19 @@ namespace VSS.TRex.IO
     /// <returns></returns>
     public T GetElement(int index)
     {
+#if CELLDEBUG
+      if (!IsRented && SlabIndex != NO_SLAB_INDEX)
+      {
+        throw new Exception("Not rented!!!!");
+      }
+#endif
+
       if (index < 0 || index >= Count)
       {
         throw new ArgumentException("Index out of range");
       }
 
-      return _elements[Offset + index];
+      return Elements[Offset + index];
     }
 
     /// <summary>
@@ -136,12 +158,19 @@ namespace VSS.TRex.IO
     /// <param name="element"></param>
     public void Add(T element)
     {
+#if CELLDEBUG
+      if (!IsRented && SlabIndex != NO_SLAB_INDEX)
+      {
+        throw new Exception("Not rented!!!!");
+      }
+#endif
+
       if (Count >= Capacity)
       {
         throw new ArgumentException($"No spare capacity to add new element, capacity = {Capacity}, element count = {Count}");
       }
 
-      _elements[Offset + Count] = element;
+      Elements[Offset + Count] = element;
       Count++;
     }
 
@@ -149,13 +178,13 @@ namespace VSS.TRex.IO
     /// Returns the first element in the slab
     /// </summary>
     /// <returns></returns>
-    public T First() => _elements[Offset];
+    public T First() => Elements[Offset];
 
     /// <summary>
     /// Returns the last element in the slab
     /// </summary>
     /// <returns></returns>
-    public T Last() => _elements[Offset + Count - 1];
+    public T Last() => Elements[Offset + Count - 1];
 
     /// <summary>
     /// Copies a number of elements from the start of the source span to the start of the target span
@@ -164,6 +193,13 @@ namespace VSS.TRex.IO
     /// <param name="sourceCount"></param>
     public void Copy(TRexSpan<T> source, int sourceCount)
     {
+#if CELLDEBUG
+      if (!IsRented && SlabIndex != NO_SLAB_INDEX)
+      {
+        throw new Exception("Not rented!!!!");
+      }
+#endif
+
       if (sourceCount < 0 || sourceCount > source.Count)
       {
         throw new ArgumentException("Source count may not be negative or greater than the count of elements in the source");
@@ -174,8 +210,8 @@ namespace VSS.TRex.IO
         throw new ArgumentException($"Target has insufficient capacity ({Capacity}) to contain required items from source ({sourceCount})");
       }
 
-      Array.Copy(source.Elements, source.Offset, _elements, Offset, sourceCount);
-      Count = Math.Max(Count, sourceCount);
+      Array.Copy(source.Elements, source.Offset, Elements, Offset, sourceCount);
+      Count = source.Count;
     }
 
     /// <summary>
@@ -185,6 +221,13 @@ namespace VSS.TRex.IO
     /// <param name="sourceCount"></param>
     public void Copy(T[] source, int sourceCount)
     {
+#if CELLDEBUG
+      if (!IsRented && SlabIndex != NO_SLAB_INDEX)
+      {
+        throw new Exception("Not rented!!!!");
+      }
+#endif
+
       if (sourceCount < 0 || sourceCount > source.Length)
       {
         throw new ArgumentException("Source count may not be negative or greater than the count of elements in the source");
@@ -195,7 +238,7 @@ namespace VSS.TRex.IO
         throw new ArgumentException($"Target has insufficient capacity ({Capacity}) to contain required items from source ({sourceCount})");
       }
 
-      Array.Copy(source, 0, _elements, Offset, sourceCount);
+      Array.Copy(source, 0, Elements, Offset, sourceCount);
       Count = Math.Max(Count, sourceCount);
     }
 
@@ -203,11 +246,6 @@ namespace VSS.TRex.IO
     /// Indicates if this span should be returned to the pool at a future point in time
     /// </summary>
     /// <returns></returns>
-    public bool NeedsToBeReturned() => (Capacity > 0) && SlabIndex != NO_SLAB_INDEX && _elements != null;
-
-    public void MarkReturned()
-    {
-      _elements = null;
-    }
+    public bool NeedsToBeReturned() => SlabIndex != NO_SLAB_INDEX && IsRented;
   }
 }

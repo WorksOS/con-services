@@ -38,7 +38,10 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var converter = new TAGFileConverter();
 
-      converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read));
+      using (var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read))
+      {
+        converter.Execute(fs);
+      }
 
       return converter;
     }
@@ -48,7 +51,11 @@ namespace VSS.TRex.Tests.TestFixtures
       var converter = new TAGFileConverter();
 
       var fn = Path.Combine("TestData", "TAGFiles", subFolder, fileName);
-      converter.Execute(new FileStream(fn, FileMode.Open, FileAccess.Read));
+
+      using (var fs = new FileStream(fn, FileMode.Open, FileAccess.Read))
+      {
+        converter.Execute(fs);
+      }
 
       return converter;
     }
@@ -57,7 +64,10 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var converter = new TAGFileConverter();
 
-      converter.Execute(new FileStream(fileName, FileMode.Open, FileAccess.Read));
+      using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+      {
+        converter.Execute(fs);
+      }
 
       return converter;
     }
