@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.IO
@@ -17,6 +18,7 @@ namespace VSS.TRex.IO
 
     private int _currentWaterMark;
     private int _highWaterMark;
+    private int _numCreated;
 
     public GenericTwoDArrayCache(int dimX, int dimY, int maxCacheSize)
     {
@@ -46,6 +48,8 @@ namespace VSS.TRex.IO
       }
 
       // Log.LogInformation($"Created new rental item for 2D cache [of {typeof(T).Name}].");
+
+      Interlocked.Increment(ref _numCreated);
 
       return new T[_dimX, _dimY];
     }
@@ -77,11 +81,18 @@ namespace VSS.TRex.IO
       Log.LogInformation($"Returned item for 2D cache [of {typeof(T).Name}] dropped as cache is full with {_cacheCount} items [max = {_maxCacheSize}].");
     }
 
-    public (int currentSize, int maxSize, int currentWaterMark, int highWaterMark) Statistics()
+    public TwoDArrayCacheStatistics Statistics()
     {
       lock (_cache)
       {
-        return (_cacheCount, _maxCacheSize, _currentWaterMark, _highWaterMark);
+        return new TwoDArrayCacheStatistics
+        {
+          NumCreated = _numCreated,
+          CurrentSize = _cacheCount,
+          CurrentWaterMark = _currentWaterMark,
+          HighWaterMark = _highWaterMark,
+          MaxSize = _maxCacheSize
+        };
       }
     }
 
