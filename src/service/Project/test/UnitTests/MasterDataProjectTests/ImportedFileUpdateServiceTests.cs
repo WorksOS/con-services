@@ -55,7 +55,7 @@ namespace VSS.MasterData.ProjectTests
       var notificationHub = ServiceProvider.GetService<INotificationHubClient>() as NotificationHubClient;
       Assert.IsNotNull(notificationHub);
 
-      var dxfTileNotificationParameters = new DxfTileNotificationParameters
+      var rasterTileNotificationParameters = new RasterTileNotificationParameters
       {
         FileUid = Guid.Parse("ED279023-6A51-45B7-B4D0-2A5BF1ECA60C")
       };
@@ -70,14 +70,14 @@ namespace VSS.MasterData.ProjectTests
       Assert.IsNotNull(service); 
 
       // Generate an event, that will trigger a call to project repo for the file
-      var tasks = notificationHub.ProcessNotificationAsTasks(new ProjectFileDxfTilesGeneratedNotification(dxfTileNotificationParameters));
+      var tasks = notificationHub.ProcessNotificationAsTasks(new ProjectFileRasterTilesGeneratedNotification(rasterTileNotificationParameters));
 
       // Ensure the tasks complete
       Task.WaitAll(tasks.ToArray());
 
       projectMock.Verify(m =>
         m.GetImportedFile(
-          It.Is<string>(s => Guid.Parse(s) == dxfTileNotificationParameters.FileUid)), Times.Once);
+          It.Is<string>(s => Guid.Parse(s) == rasterTileNotificationParameters.FileUid)), Times.Once);
 
     }
   }

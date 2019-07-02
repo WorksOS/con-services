@@ -41,15 +41,15 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     }
 
     [TestMethod]
-    public void CanSetupJob() => CreateJobWithMocks().Setup(null);
+    public void CanSetupDxfJob() => CreateDxfJobWithMocks().Setup(null);
 
     [TestMethod]
-    public void CanTearDownJob() => CreateJobWithMocks().TearDown(null);
+    public void CanTearDownDxfJob() => CreateDxfJobWithMocks().TearDown(null);
 
     [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
-    public async Task CanRunJobSuccess(bool enableDxfTileGeneration)
+    public async Task CanRunDxfJobSuccess(bool enableDxfTileGeneration)
     {
       var request = new DxfTileGenerationRequest
       {
@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         ProjectUid = Guid.NewGuid(),
         ImportedFileUid = Guid.NewGuid(),
         DataOceanRootFolder = "some folder",
-        DxfFileName = "a dxf file",
+        FileName = "a dxf file",
         DcFileName = "a dc file",
         DxfUnitsType = DxfUnitsType.Meters
       };
@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       var mockNotification = new Mock<INotificationHubClient>();
 
-      mockNotification.Setup(n => n.Notify(It.IsAny<ProjectFileDxfTilesGeneratedNotification>()))
+      mockNotification.Setup(n => n.Notify(It.IsAny<ProjectFileRasterTilesGeneratedNotification>()))
                       .Returns(Task.FromResult(default(object)));
 
       var mockTPaaSAuth = new Mock<ITPaaSApplicationAuthentication>();
@@ -102,17 +102,17 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     }
 
     [TestMethod]
-    public async Task CanRunJobFailureMissingRequest() => await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateJobWithMocks().Run(null));
+    public async Task CanRunDxfJobFailureMissingRequest() => await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateDxfJobWithMocks().Run(null));
 
     [TestMethod]
-    public async Task CanRunJobFailureWrongRequest()
+    public async Task CanRunDxfJobFailureWrongRequest()
     {
       var obj = JObject.Parse(JsonConvert.SerializeObject(new JobRequest())); //any model which is not DxfTileGenerationRequest
 
-      await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateJobWithMocks().Run(obj));
+      await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateDxfJobWithMocks().Run(obj));
     }
 
-    private DxfTileGenerationJob CreateJobWithMocks()
+    private DxfTileGenerationJob CreateDxfJobWithMocks()
     {
       var configStore = new Mock<IConfigurationStore>();
       var mockPegasus = new Mock<IPegasusClient>();
