@@ -9,12 +9,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// <summary>
   /// Helper for creating raster tile generation job requests
   /// </summary>
-  public class TileGenerationRequestHelper
+  public static class TileGenerationRequestHelper
   {
     /// <summary>
     /// Creates a job request for generating raster tiles
     /// </summary>
-    public static JobRequest CreateRequest(ImportedFileType importedFileType, string customerUid, Guid projectUid,
+    public static JobRequest CreateRequest(ImportedFileType importedFileType, string customerUid, string projectUid,
       string importedFileUid, string dataOceanRootFolder, string fileName, string dcFileName = null, DxfUnitsType dxfUnitsType = DxfUnitsType.Meters)
     {
       TileGenerationRequest runParams;
@@ -39,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
 
       runParams.CustomerUid = Guid.Parse(customerUid);
-      runParams.ProjectUid = projectUid;
+      runParams.ProjectUid = Guid.Parse(projectUid);
       runParams.ImportedFileUid = Guid.Parse(importedFileUid);
       runParams.DataOceanRootFolder = dataOceanRootFolder;
       runParams.FileName = fileName;

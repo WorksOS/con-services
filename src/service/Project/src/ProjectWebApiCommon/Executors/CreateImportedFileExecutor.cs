@@ -100,9 +100,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           //Generate raster tiles
           var jobRequest = TileGenerationRequestHelper.CreateRequest(
-            createimportedfile.ImportedFileType, customerUid, createimportedfile.ProjectUid,
-            existing.ImportedFileUid, createimportedfile.DataOceanRootFolder, dxfFileName,
-            project.CoordinateSystemFileName, createimportedfile.DxfUnitsType);
+            createimportedfile.ImportedFileType, 
+            customerUid, 
+            createimportedfile.ProjectUid.ToString(),
+            existing.ImportedFileUid, 
+            createimportedfile.DataOceanRootFolder, 
+            dxfFileName,
+            project.CoordinateSystemFileName, 
+            createimportedfile.DxfUnitsType);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
       }

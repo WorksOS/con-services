@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
 {
   public abstract class TileGenerationJob<T> : IJob where T : TileGenerationRequest
   {
-    public virtual Guid VSSJobUid { get; }
+    public abstract Guid VSSJobUid { get; }
 
     protected readonly IPegasusClient pegasusClient;
     private readonly ITPaaSApplicationAuthentication authentication;

@@ -82,9 +82,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           Task.WhenAll(existingImportedFileTask, projectTask).Wait();
 
           var jobRequest = TileGenerationRequestHelper.CreateRequest(
-            updateImportedFile.ImportedFileType, customerUid, updateImportedFile.ProjectUid,
-            existingImportedFile.ImportedFileUid, updateImportedFile.DataOceanRootFolder, dxfFileName,
-            projectTask.Result.CoordinateSystemFileName, updateImportedFile.DxfUnitsTypeId);
+            updateImportedFile.ImportedFileType, 
+            customerUid, 
+            updateImportedFile.ProjectUid.ToString(),
+            existingImportedFile.ImportedFileUid, 
+            updateImportedFile.DataOceanRootFolder, dxfFileName,
+            projectTask.Result.CoordinateSystemFileName, 
+            updateImportedFile.DxfUnitsTypeId);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
       }
