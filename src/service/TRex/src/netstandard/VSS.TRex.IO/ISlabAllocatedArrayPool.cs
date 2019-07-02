@@ -17,7 +17,7 @@
     /// Note: If the size of the returned buffer is not a power of two it will be logged but otherwise ignored.
     /// </summary>
     /// <param name="buffer"></param>
-    void Return(TRexSpan<T> buffer);
+    void Return(ref TRexSpan<T> buffer);
 
     /// <summary>
     /// Clone the contents in 'oldBuffer' and return a new TRexSPan containing the cloned content

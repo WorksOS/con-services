@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
@@ -43,7 +42,7 @@ namespace VSS.TRex.Cells
         /// Determines if the cell is empty of all cell passes
         /// </summary>
         /// <returns></returns>
-        public bool IsEmpty => PassCount == 0;
+        public bool IsEmpty => Passes.Count == 0;
 
         /// <summary>
         /// Determines the height (Elevation from NEE) of the 'top most', or latest recorded in time, cell pass. If there are no passes a null height is returned.
@@ -57,35 +56,51 @@ namespace VSS.TRex.Cells
         /// <param name="capacity"></param>
         public void AllocatePasses(int capacity)
         {
-          if (Passes.Elements == null)
+          if (!Passes.IsRented)
           {
             Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
+
+#if CELLDEBUG
+            if (!Passes.IsRented)
+            {
+              throw new Exception("Is not rented!");
+            }
+#endif
+            return;
           }
-          else
+
+          if (Passes.Count >= capacity)
           {
-            if (Passes.Count >= capacity)
+#if CELLDEBUG
+            if (!Passes.IsRented)
             {
-              // Current allocated capacity is sufficient.
-              Passes.Count = capacity;
-              return;
+              throw new Exception("Is not rented!");
             }
-
-            if (capacity > Passes.Capacity)
-            {
-              // Get a new buffer and copy the content into it
-              var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
-
-              newPasses.Copy(Passes, Passes.Count);
-              if (Passes.NeedsToBeReturned())
-              {
-                SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(Passes);
-              }
-
-              Passes = newPasses;
-            }
+#endif
+            // Current allocated capacity is sufficient.
+            Passes.Count = capacity;
+            return;
           }
-        }
-      
+
+          if (capacity > Passes.Capacity)
+          {
+            // Get a new buffer and copy the content into it
+            var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(capacity);
+
+            newPasses.Copy(Passes, Passes.Count);
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref Passes);
+
+            Passes = newPasses;
+
+#if CELLDEBUG
+            if (!Passes.IsRented)
+            {
+              throw new Exception("Is not rented!");
+            }
+#endif
+          }
+        }  
+
         /// <summary>
         /// LocateTime attempts to locate an entry in the passes list that has
         /// the same time stamp as the Time parameter
@@ -147,7 +162,11 @@ namespace VSS.TRex.Cells
               throw new TRexException("Pass with same time being added to cell");
             }
 
-            if (Passes.Capacity == Passes.Count)
+            if (!Passes.IsRented)
+            {
+              AllocatePasses(PASS_COUNT_INCREMENT_STEP_SIZE);
+            }
+            else if (Passes.Capacity == Passes.Count)
             {
               AllocatePasses(Passes.Capacity + PASS_COUNT_INCREMENT_STEP_SIZE);
             }
@@ -183,11 +202,11 @@ namespace VSS.TRex.Cells
                               out int addedCount,
                               out int modifiedCount)
         {
-            #if CELLDEBUG
+#if CELLDEBUG
             // Check 'this' cell pass times are in order
             CheckPassesAreInCorrectTimeOrder("Cell passes are not in time order before integration");
             sourcePasses.CheckPassesAreInCorrectTimeOrder("Source cell passes are not in time order before integration");
-            #endif
+#endif
 
             addedCount = 0;
             modifiedCount = 0;
@@ -264,7 +283,7 @@ namespace VSS.TRex.Cells
 
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             // Return the original cell pass span and replace it with the integrated one
-            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(Passes);
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref Passes);
 
             // No need to mark Passes as being returned as it is immediately replace by IntegratedPasses below
             // Passes.MarkReturned();

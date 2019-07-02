@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Apache.Ignite.Core.Lifecycle;
 
 namespace VSS.TRex.IO
 {
@@ -12,9 +13,9 @@ namespace VSS.TRex.IO
       _arrayPoolCaches.Add(arrayPoolCache);
     }
 
-    public static void Remove(IGenericArrayPoolCaches arrayPoolCache)
+    public static void ClearAll()
     {
-      _arrayPoolCaches.Remove(arrayPoolCache);
+      _arrayPoolCaches.ForEach(x => x.Clear());
     }
   }
 }

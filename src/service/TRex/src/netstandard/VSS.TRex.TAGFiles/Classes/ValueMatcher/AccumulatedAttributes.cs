@@ -58,7 +58,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
             var newList = GenericArrayPoolCacheHelper<AccumulatedAttribute<T>>.Caches().Rent(list.Length + DEFAULT_ACCUMULATOR_LIST_SIZE_INCREMENT);
             Array.Copy(list, 0, newList, 0, list.Length);
 
-            GenericArrayPoolCacheHelper<AccumulatedAttribute<T>>.Caches().Return(list);
+            GenericArrayPoolCacheHelper<AccumulatedAttribute<T>>.Caches().Return(ref list);
             list = newList;
           }
 
@@ -129,8 +129,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
     {
       if (list != null)
       {
-        GenericArrayPoolCacheHelper<AccumulatedAttribute<T>>.Caches().Return(list);
-        list = null;
+        GenericArrayPoolCacheHelper<AccumulatedAttribute<T>>.Caches().Return(ref list);
       }
     }
   }

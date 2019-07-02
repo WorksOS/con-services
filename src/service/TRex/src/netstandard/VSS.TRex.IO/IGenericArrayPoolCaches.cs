@@ -11,6 +11,11 @@
     string ToString();
 
     string TypeName();
+
+    /// <summary>
+    /// Resets counts of all exponential buckets to zero, clearing the cache content as a result.
+    /// </summary>
+    void Clear();
   }
 
   public interface IGenericArrayPoolCaches<T> : IGenericArrayPoolCaches
@@ -30,6 +35,6 @@
     /// Note: If the size of the returned buffer is not a power of two it will be logged but otherwise ignored.
     /// </summary>
     /// <param name="buffer"></param>
-    void Return(T[] buffer);
+    void Return(ref T[] buffer);
   }
 }

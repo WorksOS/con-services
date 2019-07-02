@@ -42,9 +42,7 @@ namespace VSS.TRex.SubGridTrees.Server
         return latestPasses; // It is already immutable
       }
 
-      var oldItem = latestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
-
-      if (oldItem == null)
+      if (!(latestPasses is SubGridCellLatestPassDataWrapper_NonStatic oldItem))
       {
         Log.LogDebug("LastPasses is not a SubGridCellLatestPassDataWrapper_NonStatic instance");
         return null;
@@ -177,22 +175,23 @@ namespace VSS.TRex.SubGridTrees.Server
       try
       {
         // create a leaf to contain the mutable directory (and ensure the global latest cells is the mutable variety)
-        IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Immutable)
-        {
-          Directory =
+        using (var leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Immutable)
           {
-            GlobalLatestCells = subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Global()
+            Directory = {GlobalLatestCells = subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Global()}
+          })
+        {
+          // Load the mutable stream of information
+          mutableStream.Position = 0;
+          leaf.LoadDirectoryFromStream(mutableStream);
+
+          using (var directory = leaf.Directory.GlobalLatestCells)
+          {
+            leaf.Directory.GlobalLatestCells = ConvertLatestPassesToImmutable(directory, SegmentLatestPassesContext.Global);
           }
-        };
 
-        // Load the mutable stream of information
-        mutableStream.Position = 0;
-        leaf.LoadDirectoryFromStream(mutableStream);
-
-        leaf.Directory.GlobalLatestCells = ConvertLatestPassesToImmutable(leaf.Directory.GlobalLatestCells, SegmentLatestPassesContext.Global);
-
-        immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
-        leaf.SaveDirectoryToStream(immutableStream);
+          immutableStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+          leaf.SaveDirectoryToStream(immutableStream);
+        }
 
         return true;
       }
@@ -267,13 +266,15 @@ namespace VSS.TRex.SubGridTrees.Server
           }
 
           // Convert to the immutable form
-          segment.LatestPasses =
-            ConvertLatestPassesToImmutable(segment.LatestPasses, SegmentLatestPassesContext.Segment);
+          using (var mutableLatestPasses = segment.LatestPasses)
+          {
+            segment.LatestPasses = ConvertLatestPassesToImmutable(mutableLatestPasses, SegmentLatestPassesContext.Segment);
+          }
 
-          using (var mutablePassesData = segment.PassesData)
+          using (var mutablePasses = segment.PassesData)
           {
             segment.PassesData = subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
-            segment.PassesData.SetState(mutablePassesData.GetState());
+            segment.PassesData.SetState(mutablePasses.GetState());
           }
 
           // Write out the segment to the immutable stream

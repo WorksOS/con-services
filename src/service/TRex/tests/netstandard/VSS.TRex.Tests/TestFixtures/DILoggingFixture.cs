@@ -109,12 +109,8 @@ namespace VSS.TRex.Tests.TestFixtures
     public void ClearHelpers()
     {
       RecyclableMemoryStreamManagerHelper.Clear();
-      GenericArrayPoolCacheHelper<byte>.Clear();
-      GenericArrayPoolCacheHelper<int>.Clear();
-      GenericArrayPoolCacheHelper<ulong>.Clear();
-      GenericArrayPoolCacheHelper<long>.Clear();
-      GenericArrayPoolCacheHelper<char>.Clear();
-      GenericArrayPoolCacheHelper<CellPass>.Clear();
+      GenericArrayPoolCachesRegister.ClearAll();
+      GenericTwoDArrayCacheRegister.ClearAll();
       SlabAllocatedArrayPoolHelper<CellPass>.Clear();
     }
 

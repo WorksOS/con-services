@@ -16,7 +16,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// The array of 32x32 cells containing a cell pass representing the latest known values for a variety of cell attributes
         /// This is represented internally by a slab allocated array of cell passes. 
         /// </summary>
-        public readonly TRexSpan<CellPass> PassData;
+        public TRexSpan<CellPass> PassData;
 
         /// <summary>
         /// Implement the last pass indexer from the interface.
@@ -190,8 +190,7 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         if (disposing)
         {
-          SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(PassData);
-          PassData.MarkReturned();
+            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(ref PassData);
         }
 
         disposedValue = true;

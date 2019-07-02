@@ -216,7 +216,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             finally
             {
-              GenericArrayPoolCacheHelper<long>.Caches().Return(CalculateAttributeValueRange_Buffer);
+              GenericArrayPoolCacheHelper<long>.Caches().Return(ref CalculateAttributeValueRange_Buffer);
             }
 
             // Calculate the offset bit locations for the cell pass attributes

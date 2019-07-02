@@ -87,11 +87,13 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public void DeAllocateFullPassStacks()
     {
+      PassesData?.Dispose();
       PassesData = null;
     }
 
     public void DeAllocateLatestPassGrid()
     {
+      LatestPasses?.Dispose();
       LatestPasses = null;
     }
 
@@ -158,7 +160,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool Read(BinaryReader reader,
       bool loadLatestData, bool loadAllPasses)
     {
-      SubGridStreamHeader Header = new SubGridStreamHeader(reader);
+      var Header = new SubGridStreamHeader(reader);
 
       StartTime = Header.StartTime;
       EndTime = Header.EndTime;
@@ -291,9 +293,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (!Result)
       {
-        Log.LogCritical(
-          $"Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
-       // throw new TRexException("Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
+        Log.LogCritical($"Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
+        //throw new TRexException("Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
       }
       
       return Result;
@@ -309,7 +310,10 @@ namespace VSS.TRex.SubGridTrees.Server
         if (disposing)
         {
           LatestPasses?.Dispose();
+          LatestPasses = null;
+
           PassesData?.Dispose();
+          PassesData = null;
         }
 
         disposedValue = true;

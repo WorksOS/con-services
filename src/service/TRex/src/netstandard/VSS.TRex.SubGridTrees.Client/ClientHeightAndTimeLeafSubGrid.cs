@@ -105,7 +105,7 @@ namespace VSS.TRex.SubGridTrees.Client
       }
       finally
       {
-        GenericArrayPoolCacheHelper<byte>.Caches().Return(buffer);
+        GenericArrayPoolCacheHelper<byte>.Caches().Return(ref buffer);
       }
     }
 
@@ -127,7 +127,7 @@ namespace VSS.TRex.SubGridTrees.Client
       }
       finally
       {
-        GenericArrayPoolCacheHelper<byte>.Caches().Return(buffer);
+        GenericArrayPoolCacheHelper<byte>.Caches().Return(ref buffer);
       }
     }
 
