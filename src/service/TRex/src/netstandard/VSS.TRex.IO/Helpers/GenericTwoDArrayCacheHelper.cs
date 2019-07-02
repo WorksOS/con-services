@@ -4,9 +4,26 @@ namespace VSS.TRex.IO.Helpers
 {
     public static class GenericTwoDArrayCacheHelper<T>
     {
-      private static ITwoDArrayCache<T> _caches;
-      public static ITwoDArrayCache<T> Caches => _caches ?? (_caches = DIContext.Obtain<ITwoDArrayCache<T>>() ?? new TwoDArrayCache<T>(32, 32, 10));
+      public const int DEFAULT_TWOD_ARRAY_CACHE_SIZE = 15000;
+      public const int DEFAULT_TWOD_DIMENSION_SIZE = 32;
 
-      public static void Clear() => _caches = null;
+      private static IGenericTwoDArrayCache<T> _caches;
+      public static IGenericTwoDArrayCache<T> Caches()
+      {
+        if (_caches == null)
+        {
+          _caches = DIContext.Obtain<IGenericTwoDArrayCache<T>>() 
+                    ?? new GenericTwoDArrayCache<T>(DEFAULT_TWOD_DIMENSION_SIZE, DEFAULT_TWOD_DIMENSION_SIZE, DEFAULT_TWOD_ARRAY_CACHE_SIZE);
+
+          GenericTwoDArrayCacheRegister.Add(_caches);
+        }
+
+        return _caches;
+      }
+
+      public static void Clear()
+      {
+        _caches = null;
+      }
     }
 }

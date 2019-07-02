@@ -671,23 +671,24 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool SaveDirectoryToStream(Stream stream)
         {
-            BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true);
-
-            SubGridStreamHeader Header = new SubGridStreamHeader
+          using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
+          {
+            var Header = new SubGridStreamHeader
             {
-                Identifier = SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker,
-                Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridDirectoryFile,
-                StartTime = _leafStartTime,
-                EndTime = _leafEndTime,
-                LastUpdateTimeUTC = DateTime.UtcNow
+              Identifier = SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker,
+              Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridDirectoryFile,
+              StartTime = _leafStartTime,
+              EndTime = _leafEndTime,
+              LastUpdateTimeUTC = DateTime.UtcNow
             };
 
             // Write the header/version to the stream
             Header.Write(writer);
 
             _directory.Write(writer);
+          }
 
-            return true;
+          return true;
         }
 
         public bool SaveDirectoryToFile(IStorageProxy storage,
@@ -716,7 +717,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
       public bool LoadDirectoryFromStream(Stream stream)
         {
-            var reader = new BinaryReader(stream, Encoding.UTF8, true);
+          using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
+          {
             var Header = new SubGridStreamHeader(reader);
 
             // long LatestCellPassDataSize;
@@ -724,12 +726,14 @@ namespace VSS.TRex.SubGridTrees.Server
 
             if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker))
             {
-                Log.LogError($"Sub grid directory file header mismatch (expected [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
-                return false;
+              Log.LogError(
+                $"Sub grid directory file header mismatch (expected [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
+              return false;
             }
 
             if (!Header.IsSubGridDirectoryFile)
-              throw new TRexSubGridIOException("Sub grid directory file does not identify itself as such in extended header flags");
+              throw new TRexSubGridIOException(
+                "Sub grid directory file does not identify itself as such in extended header flags");
 
             //  FLastUpdateTimeUTC := Header.LastUpdateTimeUTC;
             _leafStartTime = Header.StartTime;
@@ -747,11 +751,13 @@ namespace VSS.TRex.SubGridTrees.Server
             _directory.AllocateGlobalLatestCells();
 
             if (Header.Version == 1)
-              _directory.Read(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
+              _directory.Read(reader); //, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
             else
-              Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
+              Log.LogError(
+                $"Sub grid directory file version or header mismatch (expected [Version: {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
+          }
 
-            return true;
+          return true;
         }
 
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
@@ -889,6 +895,7 @@ namespace VSS.TRex.SubGridTrees.Server
            Cells.PassesData[i]?.Dispose();
         }
         Directory?.Dispose();
+        Directory = null;
 
         disposedValue = true;
       }

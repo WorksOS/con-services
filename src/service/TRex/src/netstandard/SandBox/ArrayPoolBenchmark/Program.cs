@@ -51,7 +51,7 @@ namespace ArrayPoolBenchmark
         {
           byte[] b = GenericArrayPoolCacheHelper<byte>.Caches().Rent(1 << i + 1);
 
-          GenericArrayPoolCacheHelper<byte>.Caches().Return(b);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(ref b);
         }
       }
 
@@ -62,7 +62,7 @@ namespace ArrayPoolBenchmark
         {
           byte[] b = _genericArrayPoolObj.Rent(1 << i + 1);
 
-          _genericArrayPoolObj.Return(b);
+          _genericArrayPoolObj.Return(ref b);
         }
       }
 
@@ -87,8 +87,8 @@ namespace ArrayPoolBenchmark
           byte[] b1 = GenericArrayPoolCacheHelper<byte>.Caches().Rent(1 << i + 1);
           byte[] b2 = GenericArrayPoolCacheHelper<byte>.Caches().Rent(1 << i + 1);
 
-          GenericArrayPoolCacheHelper<byte>.Caches().Return(b1);
-          GenericArrayPoolCacheHelper<byte>.Caches().Return(b2);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(ref b1);
+          GenericArrayPoolCacheHelper<byte>.Caches().Return(ref b2);
         }
       }
 
@@ -100,8 +100,8 @@ namespace ArrayPoolBenchmark
           byte[] b1 = _genericArrayPoolObj.Rent(1 << i + 1);
           byte[] b2 = _genericArrayPoolObj.Rent(1 << i + 1);
 
-          _genericArrayPoolObj.Return(b1);
-          _genericArrayPoolObj.Return(b2);
+          _genericArrayPoolObj.Return(ref b1);
+          _genericArrayPoolObj.Return(ref b2);
         }
       }
 

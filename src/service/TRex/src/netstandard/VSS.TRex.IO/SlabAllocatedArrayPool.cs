@@ -87,11 +87,16 @@ namespace VSS.TRex.IO
     /// Returns a given buffer back to the allocation pool
     /// </summary>
     /// <param name="buffer"></param>
-    public void Return(TRexSpan<T> buffer)
+    public void Return(ref TRexSpan<T> buffer)
     {
+      if (!buffer.NeedsToBeReturned())
+      {
+        return;
+      }
+
       if (buffer.Capacity == 0)
       {
-        // This is either a default initialised span, or the zero element. In both cases just ignore it
+        // This is either a default initialized span, or the zero element. In both cases just ignore it
         return;
       }
 
@@ -106,7 +111,7 @@ namespace VSS.TRex.IO
       var log2 = Utilities.Log2(buffer.Capacity) - 1;
 
       // Return the span to the pool if it is not the zero element
-      _pools[log2].Return(buffer);
+      _pools[log2].Return(ref buffer);
     }
 
     /// <summary>

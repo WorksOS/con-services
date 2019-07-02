@@ -10,9 +10,7 @@ namespace VSS.TRex.Cells
     {
       DIBuilder.Continue(services)
         .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
-        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>()))
-        .Add(x => x.AddSingleton<ITwoDArrayCache<CellPass>>(new TwoDArrayCache<CellPass>(32, 32, 10)))
-        .Add(x => x.AddSingleton<ITwoDArrayCache<Cell_NonStatic>>(new TwoDArrayCache<Cell_NonStatic>(32, 32, 10)));
+        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>()));
     }
 
     public static void AddPoolCachesToDI(IServiceCollection services)

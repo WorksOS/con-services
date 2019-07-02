@@ -21,6 +21,7 @@ using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Servers.Compute;
+using VSS.TRex.IO.Heartbeats;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
@@ -149,8 +150,7 @@ namespace VSS.TRex.Server.MutableData
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new TAGFileProcessingHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SlabAllocatedCellPassArrayPoolHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolRegisterHeartBeatLogger());
-      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericTwoDArrayCacheHeartBeatLogger<int>());
-      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericTwoDArrayCacheHeartBeatLogger<CellPass>());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericTwoDArrayCacheRegisterHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)

@@ -533,7 +533,7 @@ namespace VSS.TRex.SubGridTrees.Server
               Log.LogWarning($"Converting segment with {segmentPassCount} cell passes into compressed form - suspicious?");
 
             int[] ColFirstCellPassIndexes = GenericArrayPoolCacheHelper<int>.Caches().Rent(SubGridTreeConsts.SubGridTreeDimension);
-            int[,] PerCellColRelativeFirstCellPassIndexes = GenericTwoDArrayCacheHelper<int>.Caches.Rent();
+            int[,] PerCellColRelativeFirstCellPassIndexes = GenericTwoDArrayCacheHelper<int>.Caches().Rent();
             try
             {
               // Construct the first cell pass index map for the segment
@@ -694,8 +694,7 @@ namespace VSS.TRex.SubGridTrees.Server
                   FirstRealCellPassTime = Consts.MIN_DATETIME_AS_UTC;
 
                 // Initialise the MachineIDs array and the MachineIDSet that encodes it as a bit array
-                MachineIDSet =
-                  new BitArray(allCellPassesArray.MaxInternalSiteModelMachineIndex(0, segmentPassCount - 1) + 1);
+                MachineIDSet = new BitArray(allCellPassesArray.MaxInternalSiteModelMachineIndex(0, segmentPassCount - 1) + 1);
                 for (int i = 0; i < segmentPassCount; i++)
                   MachineIDSet[allCellPassesArray[i].InternalSiteModelMachineIndex] = true;
 
@@ -804,7 +803,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
                 finally
                 {
-                  GenericArrayPoolCacheHelper<long>.Caches().Return(CalculateAttributeValueRange_Buffer);
+                  GenericArrayPoolCacheHelper<long>.Caches().Return(ref CalculateAttributeValueRange_Buffer);
                 }
 
                 // Calculate the offset bit locations for the cell pass attributes
@@ -872,13 +871,13 @@ namespace VSS.TRex.SubGridTrees.Server
               }
               finally
               {
-                CellPassArrayPoolCacheHelper.Caches.Return(allCellPassesArray);
+                CellPassArrayPoolCacheHelper.Caches.Return(ref allCellPassesArray);
               }
             }
             finally
             {
-              GenericArrayPoolCacheHelper<int>.Caches().Return(ColFirstCellPassIndexes);
-              GenericTwoDArrayCacheHelper<int>.Caches.Return(PerCellColRelativeFirstCellPassIndexes);
+              GenericArrayPoolCacheHelper<int>.Caches().Return(ref ColFirstCellPassIndexes);
+              GenericTwoDArrayCacheHelper<int>.Caches().Return(ref PerCellColRelativeFirstCellPassIndexes);
             }
 
             //Log.LogInformation($"Internal cache encoding for cell passes required {BF_CellPasses.NumBits / 8} bytes @ {NumBitsPerCellPass} bits per cell pass & {BF_PassCounts.NumBits / 8} bytes for pass counts");
@@ -997,7 +996,7 @@ namespace VSS.TRex.SubGridTrees.Server
         throw new NotImplementedException("Does not support ReplacePasses()");
       }
 
-#region IDisposable Support
+      #region IDisposable Support
 
     private bool disposedValue; // To detect redundant calls
 
@@ -1018,6 +1017,6 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       Dispose(true);
     }
-#endregion
+    #endregion
   }
 }

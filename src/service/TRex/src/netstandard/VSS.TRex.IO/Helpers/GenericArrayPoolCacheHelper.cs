@@ -19,8 +19,6 @@ namespace VSS.TRex.IO.Helpers
 
     public static void Clear()
     {
-      GenericArrayPoolCachesRegister.Remove(_caches);
-
       _caches = null;
     }
   }
