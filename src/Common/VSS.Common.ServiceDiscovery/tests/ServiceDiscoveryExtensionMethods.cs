@@ -1,59 +1,46 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Common.Abstractions.Configuration;
+﻿using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.ServiceDiscovery.Resolvers;
-using VSS.Common.ServiceDiscovery.UnitTests.Mocks;
-using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
+using Xunit;
 
 namespace VSS.Common.ServiceDiscovery.UnitTests
 {
-  [TestClass]
-  public class ServiceDiscoveryExtensionMethods
+  public class ServiceDiscoveryExtensionMethods : IClassFixture<ServiceDiscoveryTestFixture>
   {
-    private IServiceCollection serviceCollection;
-
-    private MockConfiguration mockConfiguration = new MockConfiguration();
-
-    [TestInitialize]
-    public void InitTest()
+    private readonly ServiceDiscoveryTestFixture _fixture;
+    public ServiceDiscoveryExtensionMethods(ServiceDiscoveryTestFixture fixture)
     {
-      serviceCollection = new ServiceCollection();
-
-      string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug().AddConsole();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore>(mockConfiguration);
+      _fixture = fixture;
     }
 
-    [TestMethod]
+    private ConfigurationServiceResolver GetResolver()
+    {
+      var serviceResolvers = _fixture.serviceProvider.GetServices<IServiceResolver>();
+      return serviceResolvers.OfType<ConfigurationServiceResolver>()
+                             .Select(serviceResolver => serviceResolver)
+                             .FirstOrDefault();
+    }
+    
+    [Fact]
     public void TestKubernetesIsntAdded()
     {
-      serviceCollection.AddServiceDiscovery(false);
+      _fixture.serviceCollection.AddServiceDiscovery(false);
 
-      var resolvers = serviceCollection.BuildServiceProvider().GetServices<IServiceResolver>();
+      var resolvers = _fixture.serviceCollection.BuildServiceProvider().GetServices<IServiceResolver>();
       foreach (var serviceResolver in resolvers)
       {
-        Assert.IsNotInstanceOfType(serviceResolver, typeof(KubernetesServiceResolver));
+        Assert.IsNotType<KubernetesServiceResolver>(serviceResolver);
       }
     }
 
-    [TestMethod]
+    [Fact]
     public void TestKubernetesIsAdded()
     {
-      serviceCollection.AddServiceDiscovery(true);
+      _fixture.serviceCollection.AddServiceDiscovery(true);
 
       var found = false;
-      var resolvers = serviceCollection.BuildServiceProvider().GetServices<IServiceResolver>();
+      var resolvers = _fixture.serviceCollection.BuildServiceProvider().GetServices<IServiceResolver>();
       foreach (var serviceResolver in resolvers)
       {
         if (serviceResolver is KubernetesServiceResolver)
@@ -63,7 +50,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
         }
       }
 
-      Assert.IsTrue(found, $"Count not find {nameof(KubernetesServiceResolver)} in Resolvers");
+      Assert.True(found, $"Count not find {nameof(KubernetesServiceResolver)} in Resolvers");
     }
   }
 }
