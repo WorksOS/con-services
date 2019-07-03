@@ -55,13 +55,13 @@ namespace VSS.TRex.Profiling.Executors
         // Perform coordinate conversion on the argument before broadcasting it:
         if (arg.PositionsAreGrid)
         {
-          arg2.NEECoords = ConvertCoordinates.NullWGSLLToXY(new[] { arg.StartPoint, arg.EndPoint });
+          arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().NullWGSLLToXY(new[] { arg.StartPoint, arg.EndPoint });
         }
         else
         {
           var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
 
-          arg2.NEECoords = ConvertCoordinates.WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
+          arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
         }
 
         var request = new ProfileRequest_ClusterCompute<T>();

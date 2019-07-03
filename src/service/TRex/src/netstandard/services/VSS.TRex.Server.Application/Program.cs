@@ -7,6 +7,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
@@ -81,6 +82,7 @@ namespace VSS.TRex.Server.Application
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)

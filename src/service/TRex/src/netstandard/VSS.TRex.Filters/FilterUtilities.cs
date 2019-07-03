@@ -42,7 +42,7 @@ namespace VSS.TRex.Filters
       {
         if (!Filter.SpatialFilter.CoordsAreGrid)
         {
-          ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
+          var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
 
           XYZ[] LLHCoords;
           // If the filter has a spatial or positional context, then convert the LLH values in the
@@ -57,7 +57,7 @@ namespace VSS.TRex.Filters
               LLHCoords[FencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.Fence[FencePointIdx].X), MathUtilities.DegreesToRadians(Filter.SpatialFilter.Fence[FencePointIdx].Y));
             }
 
-            (var errorCode, XYZ[] NEECoords) = ConvertCoordinates.LLHToNEE(SiteModel.CSIB(), LLHCoords);
+            (var errorCode, XYZ[] NEECoords) = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
             if (errorCode != RequestErrorStatus.OK)
             {
@@ -81,7 +81,7 @@ namespace VSS.TRex.Filters
             // Note: Lat/Lons in positions are supplied to us in decimal degrees, not radians
             LLHCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionY)) };
 
-            (var errorCode, XYZ[] NEECoords) = ConvertCoordinates.LLHToNEE(SiteModel.CSIB(), LLHCoords);
+            (var errorCode, XYZ[] NEECoords) = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
             if (errorCode != RequestErrorStatus.OK)
             {

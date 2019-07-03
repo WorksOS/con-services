@@ -434,7 +434,7 @@ namespace VSS.TRex.Rendering.Executors
       }
       else
       {
-        var conversionResult = ConvertCoordinates.LLHToNEE(SiteModel.CSIB(), LLHCoords);
+        var conversionResult = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
         if (conversionResult.ErrorCode != RequestErrorStatus.OK)
         {
