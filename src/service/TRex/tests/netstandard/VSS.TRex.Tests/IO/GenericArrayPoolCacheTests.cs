@@ -47,7 +47,8 @@ namespace VSS.TRex.Tests.IO
       // The item rented is perfect power of two size so the size of the buffer should be exactly min size
       item.Length.Should().Be(minSize);
 
-      cache.Return(item);
+      cache.Return(ref item);
+      item.Should().BeNull();
 
       if (minSize > 2)
       {
@@ -55,13 +56,15 @@ namespace VSS.TRex.Tests.IO
         // The item rented is one less than perfect power of two size so the size of the buffer should be exactly min size
         item2.Length.Should().Be(minSize);
 
-        cache.Return(item2);
+        cache.Return(ref item2);
+        item2.Should().BeNull();
 
         var item3 = cache.Rent(minSize + 1);
         // The item rented is one less than perfect power of two size so the size of the buffer should be exactly twice min size
         item3.Length.Should().Be(minSize + 1 > GenericArrayPoolCaches<byte>.MAX_BUFFER_SIZE_CACHED ? minSize + 1 : 2 * minSize);
 
-        cache.Return(item3);
+        cache.Return(ref item3);
+        item3.Should().BeNull();
       }
     }
 
@@ -95,7 +98,8 @@ namespace VSS.TRex.Tests.IO
       var cache = new GenericArrayPoolCaches<byte>();
 
       // This should not throw an exception but may record an item in the log
-      cache.Return(new byte[7]);
+      var b = new byte[7];
+      cache.Return(ref b);
     }
 
     [Fact]
@@ -103,8 +107,10 @@ namespace VSS.TRex.Tests.IO
     {
       var cache = new GenericArrayPoolCaches<byte>();
 
+      var b = new byte[1 << 21];
+
       // This should not throw an exception but may record an item in the log
-      cache.Return(new byte[1 << 21]);
+      cache.Return(ref b);
     }
 
     [Fact]
@@ -115,12 +121,14 @@ namespace VSS.TRex.Tests.IO
       // Fill a small pool with returned elements of the correct size
       for (int i = 0; i < GenericArrayPoolCaches<byte>.SMALL_POOL_CACHE_SIZE; i++)
       {
-        cache.Return(new byte[8]);
+        var b = new byte[8];
+        cache.Return(ref b);
       }
 
       // Return an additional element. This should not throw an exception but may
       // record an item in the log
-      cache.Return(new byte[8]);
+      var b2 = new byte[8];
+      cache.Return(ref b2);
     }
   }
 }

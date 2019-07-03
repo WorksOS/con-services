@@ -73,5 +73,18 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<CellDatumExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cellDatumRequest) as CompactionCellDatumResult);
     }
+
+    [HttpPost("cells/passes")]
+    public CellPassesV2Result PostCellPasses([FromBody] CellPassesTRexRequest cellPassesRequest)
+    {
+      Log.LogInformation($"{nameof(PostCellPasses)}: {Request.QueryString}");
+
+      cellPassesRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<CellPassesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(cellPassesRequest) as CellPassesV2Result);
+    }
   }
 }

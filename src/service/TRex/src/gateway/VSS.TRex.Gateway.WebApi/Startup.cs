@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.GridFabric.Grids;
@@ -49,13 +48,8 @@ namespace VSS.TRex.Gateway.WebApi
     {
       // Add framework services.
       DIBuilder.New(services)
-        .Add(x => x.AddSingleton(new VSS.TRex.IO.RecyclableMemoryStreamManager
-        {
-          // Allow up to 256Mb worth of freed small blocks used by the recyclable streams for later reuse
-          // NOte: The default value for this setting is zero which means every block allocated to a
-          // recyclable stream is freed when the stream is disposed.
-          MaximumFreeSmallPoolBytes = 256 * 1024 * 1024
-        }))
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))

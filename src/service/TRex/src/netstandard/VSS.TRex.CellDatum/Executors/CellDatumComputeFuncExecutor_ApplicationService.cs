@@ -40,7 +40,7 @@ namespace VSS.TRex.CellDatum.Executors
       if (!arg.CoordsAreGrid)
       {
         //WGS84 coords need to be converted to NEE
-        arg.Point = ConvertCoordinates.LLHToNEE(siteModel.CSIB(), arg.Point);
+        arg.Point = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point);
         result.Northing = arg.Point.Y;
         result.Easting = arg.Point.X;
       }

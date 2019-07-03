@@ -127,6 +127,24 @@ namespace VSS.ConfigurationStore.UnitTests
     }
 
     [TestMethod]
+    public void CanGetGuid()
+    {
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var value = configuration.GetValueGuid("PEGASUS_GEOTIFF_PROCEDURE_ID");
+      Assert.AreEqual(new Guid ("f61c965b-0828-40b6-8980-26c7ee164566"), value);
+    }
+
+    [TestMethod]
+    public void CanGetDefaultGuid()
+    {
+      var defaultValue = Guid.NewGuid();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var value = configuration.GetValueGuid("UNKNOWN_KEY", defaultValue);
+      Assert.AreEqual(defaultValue, value);
+    }
+
+
+    [TestMethod]
     public void CanGetLoggingConfig()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();

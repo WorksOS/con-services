@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
@@ -6,7 +7,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
     /// AccumulatedAttributes stores a list of AccumulatedAttribute instances
     /// the record a series of attribute value observations
     /// </summary>
-    public class AccumulatedAttributes<T>
+    public struct AccumulatedAttributes<T> : IDisposable
     {
         private const int DEFAULT_ACCUMULATOR_LIST_SIZE_INCREMENT = 10;
 
@@ -15,10 +16,12 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// remove the need to resize the attributes list frequently when all but the latest attributes are
         /// discarded.
         /// </summary>
-        private AccumulatedAttribute<T>[] list = new AccumulatedAttribute<T>[DEFAULT_ACCUMULATOR_LIST_SIZE_INCREMENT];
+        private AccumulatedAttribute<T>[] list;
 
-        public AccumulatedAttributes()
+        public AccumulatedAttributes(int initialSize)
         {
+          NumAttrs = 0;
+          list = GenericArrayPoolCacheHelper<AccumulatedAttribute<T>>.Caches().Rent(initialSize);
         }
 
         /// <summary>
@@ -51,7 +54,13 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 
           // If there are available entries to reuse, then reuse them...
           if (NumAttrs >= list.Length)
-            Array.Resize(ref list, list.Length + DEFAULT_ACCUMULATOR_LIST_SIZE_INCREMENT);
+          {
+            var newList = GenericArrayPoolCacheHelper<AccumulatedAttribute<T>>.Caches().Rent(list.Length + DEFAULT_ACCUMULATOR_LIST_SIZE_INCREMENT);
+            Array.Copy(list, 0, newList, 0, list.Length);
+
+            GenericArrayPoolCacheHelper<AccumulatedAttribute<T>>.Caches().Return(ref list);
+            list = newList;
+          }
 
           list[NumAttrs++].Set(dateTime, value);
         }
@@ -59,7 +68,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         // GetLatest simply returns the last value in the list
         public T GetLatest()
         {
-            return NumAttrs > 0 ? list[NumAttrs - 1].value : default(T);
+            return NumAttrs > 0 ? list[NumAttrs - 1].value : default;
         }
 
         // GetValueAtDateTime locates the value appropriate for the given datetime
@@ -68,7 +77,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         // then the function returns false.
         public bool GetValueAtDateTime(DateTime dateTime, out T value)
         {
-            value = default(T);
+            value = default;
 
             switch (NumAttrs)
             {
@@ -115,5 +124,13 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         {
           return GetValueAtDateTime(dateTime, out T value) ? value : defaultValue;
         }
+
+    public void Dispose()
+    {
+      if (list != null)
+      {
+        GenericArrayPoolCacheHelper<AccumulatedAttribute<T>>.Caches().Return(ref list);
+      }
     }
+  }
 }

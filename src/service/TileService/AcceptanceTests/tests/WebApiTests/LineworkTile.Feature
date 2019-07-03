@@ -14,6 +14,7 @@ Examples:
 | ResultName            | ProjectUID                           | FileType      | ZoomLevel | TileY  | TileX | Difference | 
 | Linework              | ff91dd40-1569-4765-a2bc-014321f76ace | Linework      | 15        | 12844  | 5914  | 1          | 
 | Alignment             | ff91dd40-1569-4765-a2bc-014321f76ace | Alignment     | 18        | 102753 | 47317 | 1          | 
+| GeoTiff               | ff91dd40-1569-4765-a2bc-014321f76ace | GeoTiff       | 16        | 41583  | 64159 | 1          | 
 
 Scenario: Linework Tile - Missing File Type 
 Given the Linework Tile 3D service URI "/api/v1/lineworktiles3d" 

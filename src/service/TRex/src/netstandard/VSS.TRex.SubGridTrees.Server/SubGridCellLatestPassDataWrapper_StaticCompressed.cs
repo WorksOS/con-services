@@ -167,7 +167,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // from the lowest values of those attributes. Reuse the existing fields in the
             // cell passes list to avoid having to allocate an extra memory block
           
-            long[] CalculateAttributeValueRange_Buffer = GenericArrayPoolCacheHelper<long>.Caches.Rent(SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
+            long[] CalculateAttributeValueRange_Buffer = GenericArrayPoolCacheHelper<long>.Caches().Rent(SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
 
             try
             {
@@ -216,7 +216,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             finally
             {
-              GenericArrayPoolCacheHelper<long>.Caches.Return(CalculateAttributeValueRange_Buffer);
+              GenericArrayPoolCacheHelper<long>.Caches().Return(ref CalculateAttributeValueRange_Buffer);
             }
 
             // Calculate the offset bit locations for the cell pass attributes

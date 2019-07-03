@@ -24,12 +24,8 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .New()
         .AddLogging()
-        .Add(x => x.AddSingleton<RecyclableMemoryStreamManager>(new RecyclableMemoryStreamManager()))
-        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<byte>>(new GenericArrayPoolCaches<byte>()))
-        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<long>>(new GenericArrayPoolCaches<long>()))
-        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<ulong>>(new GenericArrayPoolCaches<ulong>()))
-        .Add(x => x.AddSingleton<IGenericArrayPoolCaches<CellPass>>(new GenericArrayPoolCaches<CellPass>()))
-        .Add(x => x.AddSingleton<ISlabAllocatedArrayPool<CellPass>>(new SlabAllocatedArrayPool<CellPass>(1024)))
+        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
+        .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
 
         .Add(x => x.AddSingleton<Mock<IConfigurationStore>>(mock =>
         {
@@ -111,10 +107,9 @@ namespace VSS.TRex.Tests.TestFixtures
     public void ClearHelpers()
     {
       RecyclableMemoryStreamManagerHelper.Clear();
-      GenericArrayPoolCacheHelper<byte>.Clear();
-      GenericArrayPoolCacheHelper<long>.Clear();
-      GenericArrayPoolCacheHelper<CellPass>.Clear();
-      SlabAllocatedArrayPoolHelper<CellPass>.Clear();
+      GenericArrayPoolCachesRegister.ClearAll();
+      GenericTwoDArrayCacheRegister.ClearAll();
+      GenericSlabAllocatedArrayPoolRegister.ClearAll();
     }
 
     public DILoggingFixture()

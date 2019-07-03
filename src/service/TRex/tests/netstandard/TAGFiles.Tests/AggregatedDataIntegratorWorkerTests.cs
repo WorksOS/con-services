@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -190,40 +191,60 @@ namespace TAGFiles.Tests
     {
       Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag").Length.Should().Be(expectedFileCount);
 
+      ILogger Log = VSS.TRex.Logging.Logger.CreateLogger("Test_AggregatedDataIntegratorWorker_ProcessTask_TAGFileSet");
+
+      Log.LogInformation($"Starting processing {numToTake} files from index {skipTo}.");
+
       // Convert TAG files using TAGFileConverters into mini-site models
       var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
         .ToList().OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
 
+      Log.LogInformation($"Completed constructing converters for {numToTake} files from index {skipTo}.");
+
       converters.Length.Should().Be(numToTake);
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      var targetSiteModel = BuildModel();
-      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-
-      // Create the integrator and add the processed TAG file to its processing list
-      var integrator = new AggregatedDataIntegrator();
-
-      foreach (var c in converters)
+      using (var targetSiteModel = BuildModel())
       {
-        c.Machine.ID = targetMachine.ID;
-        integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machine, targetMachine.ID,
-          c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachineTargetValueChangesAggregator);
+        var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer,
+          DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+
+        // Create the integrator and add the processed TAG file to its processing list
+        var integrator = new AggregatedDataIntegrator();
+
+        foreach (var c in converters)
+        {
+          using (c)
+          {
+            c.Machine.ID = targetMachine.ID;
+            integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machine, targetMachine.ID,
+              c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachineTargetValueChangesAggregator);
+          }
+        }
+
+        // Construct an integration worker and ask it to perform the integration
+        var processedTasks = new List<AggregatedDataIntegratorTask>();
+
+        var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
+        {
+          MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
+        };
+
+        Log.LogInformation("Calling ProcessTask");
+
+        worker.ProcessTask(processedTasks, converters.Length);
+
+        Log.LogInformation("Calling CompleteTaskProcessing");
+
+        worker.CompleteTaskProcessing();
+
+        processedTasks.Count.Should().Be(numToTake);
+
+        // Check the set of TAG files created the expected number of sub grids
+        targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubGridCount);
       }
 
-      // Construct an integration worker and ask it to perform the integration
-      var processedTasks = new List<AggregatedDataIntegratorTask>();
-
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
-      {
-        MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
-      };
-      worker.ProcessTask(processedTasks, converters.Length);
-      worker.CompleteTaskProcessing();
-
-      processedTasks.Count.Should().Be(numToTake);
-
-      // Check the set of TAG files created the expected number of sub grids
-      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubGridCount);
+      Log.LogInformation($"Completed processing {numToTake} files.");
     }
 
     [Fact]

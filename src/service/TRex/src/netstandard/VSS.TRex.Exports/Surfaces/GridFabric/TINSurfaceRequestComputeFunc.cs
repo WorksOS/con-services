@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Exports.Surfaces.Executors;
 using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.IO.Helpers;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
 
@@ -45,7 +46,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
           Log.LogError("Request execution failed");
 
         TINSurfaceResult result = new TINSurfaceResult();
-        using (MemoryStream ms = new MemoryStream(Common.Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION))
+        using (var ms = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
         {
           if (request.SurfaceSubGridsResponse.TIN != null)
           {

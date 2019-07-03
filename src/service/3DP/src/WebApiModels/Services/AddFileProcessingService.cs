@@ -78,13 +78,13 @@ namespace VSS.Productivity3D.WebApi.Models.Services
       };
       NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request_files", eventAttributes);
       log.LogInformation($"Pushing DXF tile notification for {result.FileUid}");
-      var notifyParams = new DxfTileNotificationParameters
+      var notifyParams = new RasterTileNotificationParameters()
       {
         FileUid = result.FileUid,
         MinZoomLevel = result.MinZoomLevel,
         MaxZoomLevel = result.MaxZoomLevel
       };
-      await notificationHubClient.Notify(new ProjectFileDxfTilesGeneratedNotification(notifyParams));
+      await notificationHubClient.Notify(new ProjectFileRasterTilesGeneratedNotification(notifyParams));
       return result;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,

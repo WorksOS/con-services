@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -36,22 +35,17 @@ namespace VSS.Productivity3D.Filter.WebApi
   /// </summary>
   public class Startup : BaseStartup
   {
-    internal const string LoggerRepoName = "WebApi";
-
     public override string ServiceName => "Filter Service API";
-
     public override string ServiceDescription => "A service to manage Filter related CRUD requests within the 3DP service architecture.";
-
     public override string ServiceVersion => "v1";
 
-    
     /// <summary>
     /// Gets the configuration.
     /// </summary>
     public IConfigurationRoot Configuration { get; }
 
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
