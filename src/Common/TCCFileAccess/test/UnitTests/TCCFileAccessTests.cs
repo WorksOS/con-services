@@ -5,32 +5,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
+using VSS.Serilog.Extensions;
+using Xunit;
 
 namespace VSS.TCCFileAccess.UnitTests
 {
-  [TestClass]
   public class TCCFileAccessTests
   {
     public IServiceProvider ServiceProvider;
 
-
-    [TestInitialize]
-    public virtual void InitTest()
+    public TCCFileAccessTests()
     {
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("TCCFileAccess.UnitTests.log"));
       var serviceCollection = new ServiceCollection();
-
-      const string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
@@ -39,57 +29,42 @@ namespace VSS.TCCFileAccess.UnitTests
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 
-
-    [TestMethod]
+    [Fact]
     public async Task TestConcurrencyTCCAccess()
     {
-      var serviceCollection = new ServiceCollection();
-      string loggerRepoName = "UnitTestLogTest";
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      serviceCollection.AddTransient<IFileRepository, FileRepository>();
-      ServiceProvider = serviceCollection.BuildServiceProvider();
-
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var orgName = configuration.GetValueString("TCCORG");
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var orgs = await fileaccess.ListOrganizations();
       var org = (from o in orgs where o.shortName == orgName select o).First();
       fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
-      _ = await fileaccess.GetFolders(org, DateTime.MinValue, "/");
+      await fileaccess.GetFolders(org, DateTime.MinValue, "/");
     }
 
-    [TestMethod]
+    [Fact]
     public void CanParseUTF8Files()
     {
-      string filename = "abcпривет123.txt";
+      var filename = "abcпривет123.txt";
       var noExtName = Path.GetFileNameWithoutExtension(filename);
-      Assert.AreEqual("abcпривет123", noExtName);
+      Assert.Equal("abcпривет123", noExtName);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanCreateFileAccessService()
     {
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
-      Assert.IsNotNull(fileaccess);
+      Assert.NotNull(fileaccess);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanListOrgs()
     {
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var orgs = await fileaccess.ListOrganizations();
-      Assert.IsNotNull(orgs);
+      Assert.NotNull(orgs);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanListFolders()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -98,21 +73,21 @@ namespace VSS.TCCFileAccess.UnitTests
       var orgs = await fileaccess.ListOrganizations();
       var org = (from o in orgs where o.shortName == orgName select o).First();
       var folders = await fileaccess.GetFolders(org, DateTime.MinValue, "/");
-      Assert.IsTrue(folders.entries.Length > 0);
+      Assert.True(folders.entries.Length > 0);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanListFiles()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
       var fileList = await fileaccess.GetFileList(filespaceId, "/barney");
-      Assert.IsTrue(fileList.entries.Length > 0);
+      Assert.True(fileList.entries.Length > 0);
     }
 
 
-    [TestMethod]
+    [Fact]
     public async Task CanCopyFile()
     {
       const string srcFolderName = "/barney";
@@ -125,10 +100,10 @@ namespace VSS.TCCFileAccess.UnitTests
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var copied = await fileaccess.CopyFile(filespaceId, $"{srcFolderName}/{filename}",
         $"{dstFolderName}/{filename}");
-      Assert.IsTrue(copied);
+      Assert.True(copied);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanUploadFile()
     {
       const string folderName = "/barney";
@@ -142,17 +117,17 @@ namespace VSS.TCCFileAccess.UnitTests
       var exists = await fileaccess.FolderExists(org.filespaceId, folderName);
       if (!exists)
       {
-        _ = await fileaccess.MakeFolder(org.filespaceId, folderName);
+        await fileaccess.MakeFolder(org.filespaceId, folderName);
       }
-      using (FileStream fileStream = File.Open("appsettings.json", FileMode.Open))
+      using (var fileStream = File.Open("appsettings.json", FileMode.Open))
       {
         var fileuploadresult = await fileaccess.PutFile(org, folderName, filename, fileStream, fileStream.Length);
-        Assert.IsNotNull(fileuploadresult);
-        Assert.IsTrue(fileuploadresult.success);
+        Assert.NotNull(fileuploadresult);
+        Assert.True(fileuploadresult.success);
       }
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanDownloadFile()
     {
       const string folderName = "/barney";
@@ -166,47 +141,47 @@ namespace VSS.TCCFileAccess.UnitTests
       var exists = await fileaccess.FolderExists(org.filespaceId, folderName);
       if (!exists)
       {
-        var success = await fileaccess.MakeFolder(org.filespaceId, folderName);
+        await fileaccess.MakeFolder(org.filespaceId, folderName);
       }
-      using (FileStream fileStream = File.Open("appsettings.json", FileMode.Open))
+      using (var fileStream = File.Open("appsettings.json", FileMode.Open))
       {
-        var fileuploadresult = await fileaccess.PutFile(org, folderName, filename, fileStream, fileStream.Length);
+        await fileaccess.PutFile(org, folderName, filename, fileStream, fileStream.Length);
         var downloadFileResult = await fileaccess.GetFile(org, folderName + "/" + filename);
-        Assert.AreEqual(downloadFileResult.Length, fileStream.Length);
+        Assert.Equal(downloadFileResult.Length, fileStream.Length);
       }
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanCheckFolderExists()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var exists = await fileaccess.FolderExists(filespaceId, "/77561/1158");
-      Assert.IsTrue(exists);
+      Assert.True(exists);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanCheckFolderDoesNotExist()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var exists = await fileaccess.FolderExists(filespaceId, "/123456789/987654321");
-      Assert.IsFalse(exists);
+      Assert.False(exists);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanCheckFileExists()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var exists = await fileaccess.FileExists(filespaceId, "/77561/1158/Building Pad - DesignMap.dxf");
-      Assert.IsTrue(exists);
+      Assert.True(exists);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanDeleteFile()
     {
       const string folderName = "/barney";
@@ -216,22 +191,22 @@ namespace VSS.TCCFileAccess.UnitTests
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
 
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
-      
+
       var exists = await fileaccess.FolderExists(filespaceId, folderName);
       if (!exists)
       {
-        var success = await fileaccess.MakeFolder(filespaceId, folderName);
+        await fileaccess.MakeFolder(filespaceId, folderName);
       }
-      using (FileStream fileStream = File.Open("appsettings.json", FileMode.Open))
+      using (var fileStream = File.Open("appsettings.json", FileMode.Open))
       {
-        var fileuploadresult = await fileaccess.PutFile(filespaceId, folderName, filename, fileStream, fileStream.Length);
+        await fileaccess.PutFile(filespaceId, folderName, filename, fileStream, fileStream.Length);
       }
 
       var deleted = await fileaccess.DeleteFile(filespaceId, folderName + "/" + filename);
-      Assert.IsTrue(deleted);
+      Assert.True(deleted);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanMakeFolder()
     {
       const string folderPath = "/unittest/folder";
@@ -245,10 +220,10 @@ namespace VSS.TCCFileAccess.UnitTests
         await fileaccess.DeleteFolder(filespaceId, folderPath);
       }
       var success = await fileaccess.MakeFolder(filespaceId, folderPath);
-      Assert.IsTrue(success);
+      Assert.True(success);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanDeleteFolder()
     {
       const string folderPath = "/unittest/folder";
@@ -264,15 +239,15 @@ namespace VSS.TCCFileAccess.UnitTests
         await fileaccess.MakeFolder(filespaceId, folderPath);
       }
       //Put something in it to test recursive
-      using (FileStream fileStream = File.Open("appsettings.json", FileMode.Open))
+      using (var fileStream = File.Open("appsettings.json", FileMode.Open))
       {
-        var fileuploadresult = await fileaccess.PutFile(filespaceId, folderPath, filename, fileStream, fileStream.Length);
+        await fileaccess.PutFile(filespaceId, folderPath, filename, fileStream, fileStream.Length);
       }
       var success = await fileaccess.DeleteFolder(filespaceId, folderPath);
-      Assert.IsTrue(success);
+      Assert.True(success);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanDoFileJob()
     {
       const string path = "/FileJobUnitTest/CERA.bg.dxf";
@@ -281,14 +256,14 @@ namespace VSS.TCCFileAccess.UnitTests
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var jobId = await fileaccess.CreateFileJob(filespaceId, path);
-      Assert.IsNotNull(jobId, "Failed to create file job");
+      Assert.NotNull(jobId);
 
       string fileId = null;
       var done = false;
       while (!done)
       {
         var fileJobStatus = await fileaccess.CheckFileJobStatus(jobId);
-        Assert.IsNotNull(fileJobStatus, "Failed to check file job status");
+        Assert.NotNull(fileJobStatus);
         done = fileJobStatus.status == "COMPLETED";
         if (done)
         {
@@ -301,13 +276,11 @@ namespace VSS.TCCFileAccess.UnitTests
       }
 
       var jobResult = await fileaccess.GetFileJobResult(fileId);
-      Assert.IsNotNull(jobResult, "Failed to get file job result");
-      Assert.IsNotNull(jobResult.extents, "DXF extents are null");
+      Assert.NotNull(jobResult);
+      Assert.NotNull(jobResult.extents);
     }
 
-    [TestMethod]
-    [Ignore]
-    //This test can be ignored since tile generatiion is being moved across to DataOcean
+    [Fact(Skip = "This test can be ignored since tile generatiion is being moved across to DataOcean")]
     public async Task CanDoExportToWebFormat()
     {
       const string srcPath = "/FileJobUnitTest/CERA.bg.dxf";
@@ -317,13 +290,13 @@ namespace VSS.TCCFileAccess.UnitTests
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var jobId = await fileaccess.ExportToWebFormat(filespaceId, srcPath, filespaceId, dstPath, 15);
-      Assert.IsNotNull(jobId, "Failed to export to web format"); 
+      Assert.NotNull(jobId);
 
       var exportStatus = await fileaccess.CheckExportJob(jobId);
-      Assert.IsNotNull(exportStatus, "Failed to check export job");
+      Assert.NotNull(exportStatus);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CanCacheTileFile()
     {
       const string filename = "/barney/CacheUnitTest.DXF_Tiles$/Z14/6420/2960.png";
@@ -332,31 +305,30 @@ namespace VSS.TCCFileAccess.UnitTests
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
       var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       //First time not cached
-      var downloadFileResult = await fileaccess.GetFile(filespaceId, filename);
+      await fileaccess.GetFile(filespaceId, filename);
       //Second time cached
-      downloadFileResult = await fileaccess.GetFile(filespaceId, filename);
+      await fileaccess.GetFile(filespaceId, filename);
     }
 
-    [TestMethod]
+    [Fact]
     public void FileIsCacheable()
     {
       const string cacheableFileName = "/barney/CacheUnitTest.DXF_Tiles$/Z14/6420/2960.png";
       const string nonCacheableFileName = "/barney/dummy.png";
 
-      Assert.IsTrue(TCCFile.FileCacheable(cacheableFileName), "File should be cacheable");
-      Assert.IsFalse(TCCFile.FileCacheable(nonCacheableFileName), "File should not be cacheable");
+      Assert.True(TCCFile.FileCacheable(cacheableFileName), "File should be cacheable");
+      Assert.False(TCCFile.FileCacheable(nonCacheableFileName), "File should not be cacheable");
     }
 
-    [TestMethod]
+    [Fact]
     public void CanExtractFileName()
     {
-      const string baseFileName = "/barney/CacheUnitTest.DXF";     
+      const string baseFileName = "/barney/CacheUnitTest.DXF";
       const string cacheableFileName = baseFileName + "_Tiles$/Z14/6420/2960.png";
       const string nonCacheableFileName = "/barney/dummy.png";
 
-      Assert.AreEqual(baseFileName, TCCFile.ExtractFileNameFromTileFullName(cacheableFileName), "Wrong extracted file name");
-      Assert.ThrowsException<ArgumentException>(() => TCCFile.ExtractFileNameFromTileFullName(nonCacheableFileName));
+      Assert.Equal(baseFileName, TCCFile.ExtractFileNameFromTileFullName(cacheableFileName));
+      Assert.Throws<ArgumentException>(() => TCCFile.ExtractFileNameFromTileFullName(nonCacheableFileName));
     }
-
   }
 }
