@@ -38,6 +38,7 @@ using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Proxy;
+using VSS.TRex.CoordinateSystems;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi
 {
@@ -60,6 +61,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       DIBuilder.New(services)
+         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)
          .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
