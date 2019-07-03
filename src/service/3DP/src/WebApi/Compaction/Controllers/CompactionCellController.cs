@@ -162,14 +162,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       };
 
       request.Validate();
-
+      var result = await RequestExecutorContainerFactory.Build<CellPassesV2Executor>(LoggerFactory,
 #if RAPTOR
-      var result = RequestExecutorContainerFactory.Build<CellPassesV2Executor>(LoggerFactory,
           RaptorClient,
+#endif
           configStore: ConfigStore,
           trexCompactionDataProxy: TRexCompactionDataProxy,
           customHeaders: CustomHeaders)
-        .Process(request) as CellPassesV2Result;
+        .ProcessAsync(request) as CellPassesV2Result;
+
 
       if (result?.Layers.Length > 1)
       {
@@ -188,11 +189,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // With our lift settings set to None, we should have exactly 1 layer
       return result?.Layers[0].PassData.ToList();
-
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
   }
 }

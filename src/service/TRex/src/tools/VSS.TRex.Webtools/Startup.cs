@@ -83,6 +83,10 @@ namespace VSS.TRex.Webtools
       DIContext.Inject(services.BuildServiceProvider());
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+
+      //Set up configuration for TRex
+      DIContext.Inject(services.BuildServiceProvider());
+
       services.AddSingleton<IConvertCoordinates>(new ConvertCoordinates());
       TRexGridFactory.AddGridFactoriesToDI(services);
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
