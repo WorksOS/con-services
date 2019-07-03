@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
 #if RAPTOR
 using DesignProfilerDecls;
 using VLPDDecls;
@@ -46,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
           var geoJsonList = new List<JObject>();
 
-          for (var i = 0; i < fileList.Count; i++)
+          for (var i = 0; i < fileList.Count - 2; i++)
           {
             log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
 #if RAPTOR
@@ -71,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           geoJsons = new JObject[0];
         }
 
-        return DesignResult.CreateDesignResult(geoJsons);
+        return new DesignResult(geoJsons);
       }
       finally
       {
