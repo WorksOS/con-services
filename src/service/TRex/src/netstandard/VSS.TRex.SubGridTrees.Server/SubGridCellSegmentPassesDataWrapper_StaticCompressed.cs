@@ -13,7 +13,6 @@ using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Server.Helpers;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
@@ -651,7 +650,7 @@ namespace VSS.TRex.SubGridTrees.Server
               // Compute the earliest cell pass time while we are at it
               FirstRealCellPassTime = Consts.MAX_DATETIME_AS_UTC;
 
-              var allCellPassesArray = CellPassArrayPoolCacheHelper.Caches.Rent(segmentPassCount);
+              var allCellPassesArray = GenericArrayPoolCacheHelper<CellPass>.Caches().Rent(segmentPassCount);
               try
               {
                 var cellPassIndex = 0;
@@ -871,7 +870,7 @@ namespace VSS.TRex.SubGridTrees.Server
               }
               finally
               {
-                CellPassArrayPoolCacheHelper.Caches.Return(ref allCellPassesArray);
+                GenericArrayPoolCacheHelper<CellPass>.Caches().Return(ref allCellPassesArray);
               }
             }
             finally
