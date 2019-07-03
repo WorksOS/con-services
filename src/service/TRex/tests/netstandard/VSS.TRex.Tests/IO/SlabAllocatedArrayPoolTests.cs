@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.IO
       stats.Should().NotBeNull();
       stats.Length.Should().Be(VSS.TRex.IO.Utilities.Log2(DEFAULT_TEST_SLAB_ALLOCATED_POOL_SIZE));
 
-      stats.ForEach(x => x.rentedItems.Should().Be(0));
+      stats.ForEach(x => x.RentedItems.Should().Be(0));
     }
   }
 }

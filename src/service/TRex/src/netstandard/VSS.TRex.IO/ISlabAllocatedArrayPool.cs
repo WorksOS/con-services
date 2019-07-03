@@ -1,6 +1,19 @@
 ﻿namespace VSS.TRex.IO
 {
-  public interface ISlabAllocatedArrayPool<T>
+  public interface ISlabAllocatedArrayPool
+  {
+    /// <summary>
+    /// Provides a vector of statistics on the pools in the slab allocated pool array
+    /// </summary>
+    /// <returns></returns>
+    (int PoolIndex, int ArraySize, int Capacity, int RentedItems)[] Statistics();
+
+    void Clear();
+
+    string TypeName();
+  }
+
+  public interface ISlabAllocatedArrayPool<T> : ISlabAllocatedArrayPool
   {
     /// <summary>
     /// Rents out a buffer from the pool. The buffer is greater than or equal to the size of the requested buffer.
@@ -25,11 +38,5 @@
     /// <param name="oldBuffer"></param>
     /// <returns></returns>
     TRexSpan<T> Clone(TRexSpan<T> oldBuffer);
-
-    /// <summary>
-    /// Provides a vector of statistics on the pools in the slab allocated pool array
-    /// </summary>
-    /// <returns></returns>
-    (int poolIndex, int arraySize, int capacity, int rentedItems)[] Statistics();
   }
 }

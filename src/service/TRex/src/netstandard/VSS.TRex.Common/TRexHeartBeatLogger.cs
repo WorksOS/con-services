@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
 

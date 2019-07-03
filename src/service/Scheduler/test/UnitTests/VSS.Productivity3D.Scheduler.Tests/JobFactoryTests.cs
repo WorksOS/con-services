@@ -32,9 +32,9 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Assert.IsNotNull(factory);
 
       // We should be able to register the job with different guids
-      factory.RegisterJob(Guid.NewGuid(), typeof(MockDxfTileGenerationJob));
-      factory.RegisterJob(Guid.NewGuid(), typeof(MockDxfTileGenerationJob));
-      factory.RegisterJob(Guid.NewGuid(), typeof(MockDxfTileGenerationJob));
+      factory.RegisterJob(Guid.NewGuid(), typeof(MockTileGenerationJob));
+      factory.RegisterJob(Guid.NewGuid(), typeof(MockTileGenerationJob));
+      factory.RegisterJob(Guid.NewGuid(), typeof(MockTileGenerationJob));
     }
 
     [TestMethod]
@@ -44,11 +44,11 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Assert.IsNotNull(factory);
 
       var id = Guid.Parse("7E91D04B-781D-4767-8486-FBD0B0B5F44B");
-      factory.RegisterJob(id, typeof(MockDxfTileGenerationJob));
+      factory.RegisterJob(id, typeof(MockTileGenerationJob));
 
       var job = factory.GetJob(id);
 
-      Assert.IsInstanceOfType(job, typeof(MockDxfTileGenerationJob));
+      Assert.IsInstanceOfType(job, typeof(MockTileGenerationJob));
     }
 
     [TestMethod]
@@ -65,10 +65,10 @@ namespace VSS.Productivity3D.Scheduler.Tests
         Assert.IsNull(job);
       }, $"Job Factory should throw {nameof(ArgumentException)} when a job is not registered");
 
-      factory.RegisterJob(id, typeof(MockDxfTileGenerationJob));
+      factory.RegisterJob(id, typeof(MockTileGenerationJob));
    
       var jobRegistered = factory.GetJob(id);
-      Assert.IsInstanceOfType(jobRegistered, typeof(MockDxfTileGenerationJob));
+      Assert.IsInstanceOfType(jobRegistered, typeof(MockTileGenerationJob));
 
     }
   }

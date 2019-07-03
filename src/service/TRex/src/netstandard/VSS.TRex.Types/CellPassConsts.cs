@@ -180,5 +180,21 @@ namespace VSS.TRex.Common.CellPasses
     /// The mask to be applied to the GPSModeStore member of the cell pass to access the GPSMode enumeration value
     /// </summary>
     public const byte GPS_MODE_STORE_BIT_MASK = 0b00001111;
+
+    /// <summary>
+    /// Null IC Flags
+    /// </summary>
+    public const byte NullEventIcFlags = byte.MaxValue;
+
+    /// <summary>
+    /// Event Avoid Zone State null value
+    /// </summary>
+    public const byte NullEventAvoidZoneState = byte.MaxValue;
+
+    /// <summary>
+    /// Map Reset Design Name ID Event null value
+    /// </summary>
+    public const int NullEventMapResetDesignNameId = int.MaxValue;
+
   }
 }

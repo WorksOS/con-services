@@ -4,7 +4,9 @@ namespace VSS.TRex.IO.Helpers
 {
     public static class GenericTwoDArrayCacheHelper<T>
     {
-      public const int DEFAULT_TWOD_ARRAY_CACHE_SIZE = 15000;
+      private static readonly object lockObj = new object();
+
+      public const int DEFAULT_TWOD_ARRAY_CACHE_SIZE = 10000;
       public const int DEFAULT_TWOD_DIMENSION_SIZE = 32;
 
       private static IGenericTwoDArrayCache<T> _caches;
@@ -12,10 +14,17 @@ namespace VSS.TRex.IO.Helpers
       {
         if (_caches == null)
         {
-          _caches = DIContext.Obtain<IGenericTwoDArrayCache<T>>() 
-                    ?? new GenericTwoDArrayCache<T>(DEFAULT_TWOD_DIMENSION_SIZE, DEFAULT_TWOD_DIMENSION_SIZE, DEFAULT_TWOD_ARRAY_CACHE_SIZE);
+          lock (lockObj)
+          {
+            if (_caches == null)
+            {
+              _caches = DIContext.Obtain<IGenericTwoDArrayCache<T>>()
+                        ?? new GenericTwoDArrayCache<T>(DEFAULT_TWOD_DIMENSION_SIZE, DEFAULT_TWOD_DIMENSION_SIZE,
+                          DEFAULT_TWOD_ARRAY_CACHE_SIZE);
 
-          GenericTwoDArrayCacheRegister.Add(_caches);
+              GenericTwoDArrayCacheRegister.Add(_caches);
+            }
+          }
         }
 
         return _caches;

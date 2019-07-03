@@ -230,6 +230,9 @@
     <None Update="Resources\Z15-Y12844-X5914.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Z16-Y41583-X64159.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Z18-Y102753-X47317.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

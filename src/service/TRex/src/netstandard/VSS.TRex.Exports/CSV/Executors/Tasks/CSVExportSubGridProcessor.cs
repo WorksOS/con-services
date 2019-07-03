@@ -28,6 +28,8 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   {
     private static ILogger log = Logging.Logger.CreateLogger<CSVExportSubGridProcessor>();
 
+    private IConvertCoordinates _convertCoordinates = DIContext.Obtain<IConvertCoordinates>();
+
     private readonly int _maxExportRows;
     private int _totalRowCountSoFar;
 
@@ -347,7 +349,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         NEECoords[indexIntoNEECoords] = new XYZ(easting, northing, cell.Height);
         indexIntoNEECoords++;
       });
-      var result = ConvertCoordinates.NEEToLLH(csibName, NEECoords);
+      var result = _convertCoordinates.NEEToLLH(csibName, NEECoords);
       if (result.ErrorCode != RequestErrorStatus.OK)
       {
         log.LogError($"#Out# CSVExportExecutor. Unable to convert NEE to LLH : Project: {_siteModel.ID}");

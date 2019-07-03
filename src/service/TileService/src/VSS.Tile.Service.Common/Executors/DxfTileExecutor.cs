@@ -84,7 +84,9 @@ namespace VSS.Tile.Service.Common.Executors
       {
         //foreach (var file in request.files)
         //Check file type to see if it has tiles
-        if (file.ImportedFileType == ImportedFileType.Linework || file.ImportedFileType == ImportedFileType.Alignment)
+        if (file.ImportedFileType == ImportedFileType.Linework || 
+            file.ImportedFileType == ImportedFileType.Alignment ||
+            file.ImportedFileType == ImportedFileType.GeoTiff)
         {
           var fullPath = DataOceanFileUtil.DataOceanPath(rootFolder, file.CustomerUid, file.ProjectUid);
           var fileName = DataOceanFileUtil.GeneratedFileName(file.Name, file.ImportedFileType);

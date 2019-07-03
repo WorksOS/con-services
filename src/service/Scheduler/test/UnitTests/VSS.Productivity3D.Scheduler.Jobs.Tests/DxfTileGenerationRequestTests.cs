@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     public void ValidateDxfTileGenerationRequestMissingDxfFileName()
     {
       var request = CreateDxfTileGenerationRequest();
-      request.DxfFileName = null;
+      request.FileName = null;
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         ProjectUid = Guid.NewGuid(),
         ImportedFileUid = Guid.NewGuid(),
         DataOceanRootFolder = "some folder",
-        DxfFileName = "some dxf file",
+        FileName = "some dxf file",
         DcFileName = "some coord system file",
         DxfUnitsType = DxfUnitsType.Meters
       };

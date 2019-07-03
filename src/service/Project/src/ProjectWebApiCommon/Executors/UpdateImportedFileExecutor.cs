@@ -73,27 +73,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         }
 
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment ||
-            updateImportedFile.ImportedFileType == ImportedFileType.Linework)
+            updateImportedFile.ImportedFileType == ImportedFileType.Linework ||
+            updateImportedFile.ImportedFileType == ImportedFileType.GeoTiff)
         {
-          //Generate DXF tiles
+          //Generate raster tiles
           var projectTask = ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
           Task.WhenAll(existingImportedFileTask, projectTask).Wait();
 
-          var jobRequest = new JobRequest
-          {
-            JobUid = DxfTileGenerationJob.VSSJOB_UID,
-            RunParameters = new DxfTileGenerationRequest
-            {
-              CustomerUid = Guid.Parse(customerUid),
-              ProjectUid = updateImportedFile.ProjectUid,
-              ImportedFileUid = Guid.Parse(existingImportedFile.ImportedFileUid),
-              DataOceanRootFolder = updateImportedFile.DataOceanRootFolder,
-              DxfFileName = dxfFileName,
-              DcFileName = projectTask.Result.CoordinateSystemFileName,
-              DxfUnitsType = updateImportedFile.DxfUnitsTypeId
-            }
-          };
+          var jobRequest = TileGenerationRequestHelper.CreateRequest(
+            updateImportedFile.ImportedFileType, 
+            customerUid, 
+            updateImportedFile.ProjectUid.ToString(),
+            existingImportedFile.ImportedFileUid, 
+            updateImportedFile.DataOceanRootFolder, dxfFileName,
+            projectTask.Result.CoordinateSystemFileName, 
+            updateImportedFile.DxfUnitsTypeId);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
       }
