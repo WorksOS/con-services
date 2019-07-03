@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using Apache.Ignite.Core.Binary;
+using Newtonsoft.Json;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Extensions;
 
@@ -750,7 +753,10 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// <param name="val">Object array.</param>
     public void WriteArray<T>(T[] val)
     {
-      throw new NotImplementedException();
+      var json = JsonConvert.SerializeObject(val);
+      var bytes = Encoding.UTF8.GetBytes(json);
+
+      WriteByteArray(bytes);
     }
 
     /// <summary>

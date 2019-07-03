@@ -11,6 +11,7 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -82,6 +83,11 @@ namespace VSS.TRex.Webtools
       DIContext.Inject(services.BuildServiceProvider());
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+
+      //Set up configuration for TRex
+      DIContext.Inject(services.BuildServiceProvider());
+
+      services.AddSingleton<IConvertCoordinates>(new ConvertCoordinates());
       TRexGridFactory.AddGridFactoriesToDI(services);
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 

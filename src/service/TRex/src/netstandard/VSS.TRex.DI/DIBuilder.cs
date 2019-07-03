@@ -143,7 +143,7 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Allow continuation of building the DI context
     /// </summary>
-    public static DIBuilder Continue(IServiceCollection serviceCollection) => Instance ?? New(serviceCollection);
+    public static DIBuilder Continue(IServiceCollection serviceCollection) => New(serviceCollection);
 
     /// <summary>
     /// Removes a single instance of a registered DI service type in DIContext. The first located instance of the supplied type is removed.

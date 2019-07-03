@@ -11,6 +11,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 
@@ -55,10 +56,10 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       switch (request.ConversionType)
       {
         case TwoDCoordinateConversionType.NorthEastToLatLon:
-          conversionResult = ConvertCoordinates.NEEToLLH(csib, coordinates);
+          conversionResult = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates);
           break;
         case TwoDCoordinateConversionType.LatLonToNorthEast:
-          conversionResult = ConvertCoordinates.LLHToNEE(csib, coordinates);
+          conversionResult = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(csib, coordinates);
           break;
         default:
           throw new ArgumentException($"Unknown TwoDCoordinateConversionType {Convert.ToInt16(request.ConversionType)}");

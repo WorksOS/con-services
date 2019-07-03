@@ -6,6 +6,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DI;
 using CSFileValidationRequest = VSS.Productivity3D.Models.Models.Coords.CoordinateSystemFileValidationRequest;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
@@ -34,7 +35,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       if (request == null)
         ThrowRequestTypeCastException<CSFileValidationRequest>();
 
-      var csd = ConvertCoordinates.DCFileContentToCSD(request.CSFileName, request.CSFileContent);
+      var csd = DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 
       if (csd.CoordinateSystem != null && csd.CoordinateSystem.ZoneInfo != null && csd.CoordinateSystem.DatumInfo != null)
         return ConvertResult(request.CSFileName, csd.CoordinateSystem);
