@@ -1,13 +1,13 @@
 ﻿using System;
 using Newtonsoft.Json;
-#if RAPTOR
-using SVOICDecls;
-#endif
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
+#if RAPTOR
+using SVOICDecls;
+#endif
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling
 {
 public class CellPassesV2Result : ContractExecutionResult
   {
@@ -190,6 +190,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// <summary>
       /// The layer number entered by the operator on the machine.
       /// </summary>
+      [JsonConverter(typeof(RaptorNullableConverter))]
       public ushort LayerId { get; set; }
 
       /// <summary>
@@ -431,5 +432,15 @@ public class CellPassesV2Result : ContractExecutionResult
     /// THe set of layers the comprise this cell. Each layer comprises a unique set of cell passes from the filtered pass data and the information calculated from them.
     /// </summary>
     public ProfileLayer[] Layers { get; set; }
+
+    public CellPassesV2Result()
+    {
+      
+    }
+
+    public CellPassesV2Result(int code) : base(code)
+    {
+      
+    }
   }
 }

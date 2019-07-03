@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees.Client
 {
   public class ClientCellProfileAllPassesLeafSubgrid : GenericClientLeafSubGrid<ClientCellProfileAllPassesLeafSubgridRecord>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientCellProfileLeafSubgrid>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientCellProfileAllPassesLeafSubgrid>();
 
     /// <summary>
     /// Initialise the null cell values for the client sub grid
