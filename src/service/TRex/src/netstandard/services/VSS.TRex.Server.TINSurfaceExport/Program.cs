@@ -63,6 +63,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       DIBuilder.New()
       .AddLogging()
       .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+      .Build()
       .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
       .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
       .Add(TRexGridFactory.AddGridFactoriesToDI)

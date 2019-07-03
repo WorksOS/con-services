@@ -1,19 +1,83 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using VSS.Productivity3D.Common.Proxies;
+using System.Threading.Tasks;
 #if RAPTOR
 using SVOICFiltersDecls;
 using SVOICGridCell;
 using SVOICProfileCell;
 #endif
-using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
 {
-  public class CellPassesV2Executor : CellPassesBaseExecutor<CellPassesV2Result>
+  public class CellPassesV2Executor : RequestExecutorContainer 
   {
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
+
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    {
+      var request = CastRequestObjectTo<CellPassesRequest>(item);
+      CellPassesV2Result result = null;
 #if RAPTOR
-    protected override CellPassesV2Result ConvertResult(TICProfileCell profile)
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_CELL_PASSES"))
+      {
+#endif
+        result = await GetTRexCellPasses(request);
+        if (result != null)
+          return result;
+        throw CreateServiceException<CellPassesV2Executor>();
+
+#if RAPTOR
+      }
+
+      result = GetRaptorResult(request);
+      if (result != null)
+        return result;
+      throw CreateServiceException<CellPassesV2Executor>();
+#endif 
+    }
+
+#if RAPTOR 
+    #region Raptor Conversion Code
+
+    private CellPassesV2Result GetRaptorResult(CellPassesRequest request)
+    {
+      bool isGridCoord = request.probePositionGrid != null;
+      bool isLatLgCoord = request.probePositionLL != null;
+      double probeX = isGridCoord ? request.probePositionGrid.x : (isLatLgCoord ? request.probePositionLL.Lon : 0);
+      double probeY = isGridCoord ? request.probePositionGrid.y : (isLatLgCoord ? request.probePositionLL.Lat : 0);
+
+      var raptorFilter = RaptorConverters.ConvertFilter(request.filter, request.ProjectId, raptorClient, overrideAssetIds: new List<long>());
+
+      int code = raptorClient.RequestCellProfile
+      (request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
+        RaptorConverters.convertCellAddress(request.cellAddress ?? new CellAddress()),
+        probeX, probeY,
+        isGridCoord,
+        RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
+        request.gridDataType,
+        raptorFilter,
+        out var profile);
+
+
+      if (code == 1)//TICServerRequestResult.icsrrNoError
+        return ConvertRaptorResult(profile);
+
+      return null;
+    }
+
+    private CellPassesV2Result ConvertRaptorResult(TICProfileCell profile)
     {
       if (profile == null)
         return null;
@@ -24,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private static CellPassesV2Result.ProfileLayer ConvertCellLayerItem(TICProfileLayer layer, CellPassesV2Result.FilteredPassData[] layerPasses)
+     private CellPassesV2Result.ProfileLayer ConvertCellLayerItem(TICProfileLayer layer, CellPassesV2Result.FilteredPassData[] layerPasses)
     {
       return new CellPassesV2Result.ProfileLayer
       {
@@ -63,10 +127,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private static CellPassesV2Result.ProfileLayer[] ConvertCellLayers(TICProfileLayers layers, CellPassesV2Result.FilteredPassData[] allPasses)
+    private CellPassesV2Result.ProfileLayer[] ConvertCellLayers(TICProfileLayers layers, CellPassesV2Result.FilteredPassData[] allPasses)
     {
       CellPassesV2Result.ProfileLayer[] result;
-
       if (layers.Count() == 0)
       {
         result = new CellPassesV2Result.ProfileLayer[1];
@@ -86,7 +149,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       return result;
     }
 
-    private static CellPassesV2Result.CellEventsValue ConvertCellPassEvents(TICCellEventsValue events)
+    private CellPassesV2Result.CellEventsValue ConvertCellPassEvents(TICCellEventsValue events)
     {
       return new CellPassesV2Result.CellEventsValue
       {
@@ -97,7 +160,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
         EventMachineAutomatics = RaptorConverters.convertGCSAutomaticsModeType(events.EventMachineAutomatics),
         EventMachineGear = RaptorConverters.convertMachineGearType(events.EventMachineGear),
         EventMachineRmvThreshold = events.EventMachineRMVThreshold,
-        EventMinElevMapping = events.EventMinElevMapping,
+//#if RAPTOR
+//        EventMinElevMapping = events.EventMinElevMapping,
+//#else
+//        EventMinElevMapping = false;
+//#endif
         EventOnGroundState = RaptorConverters.convertOnGroundStateType(events.EventOnGroundState),
         EventVibrationState = RaptorConverters.convertVibrationStateType(events.EventVibrationState),
         GpsAccuracy = RaptorConverters.convertGPSAccuracyType(events.GPSAccuracy),
@@ -109,7 +176,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private static CellPassesV2Result.CellPassValue ConvertCellPass(TICCellPassValue pass)
+    private CellPassesV2Result.CellPassValue ConvertCellPass(TICCellPassValue pass)
     {
       return new CellPassesV2Result.CellPassValue
       {
@@ -128,7 +195,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private static CellPassesV2Result.CellTargetsValue ConvertCellPassTargets(TICCellTargetsValue targets)
+    private CellPassesV2Result.CellTargetsValue ConvertCellPassTargets(TICCellTargetsValue targets)
     {
       return new CellPassesV2Result.CellTargetsValue
       {
@@ -141,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private static CellPassesV2Result.FilteredPassData ConvertFilteredPassDataItem(TICFilteredPassData pass)
+    private CellPassesV2Result.FilteredPassData ConvertFilteredPassDataItem(TICFilteredPassData pass)
     {
       return new CellPassesV2Result.FilteredPassData
       {
@@ -151,13 +218,34 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       };
     }
 
-    private static CellPassesV2Result.FilteredPassData[] ConvertFilteredPassData(TICFilteredMultiplePassInfo passes)
+    private CellPassesV2Result.FilteredPassData[] ConvertFilteredPassData(TICFilteredMultiplePassInfo passes)
     {
       return passes.FilteredPassData != null
         ? Array.ConvertAll(passes.FilteredPassData, ConvertFilteredPassDataItem)
         : null;
     }
 
+    #endregion
 #endif
+
+    private Task<CellPassesV2Result> GetTRexCellPasses(CellPassesRequest request)
+    {
+      CellPassesTRexRequest tRexRequest;
+      if (request.probePositionGrid != null)
+      {
+        tRexRequest = new CellPassesTRexRequest(request.ProjectUid.Value,
+          request.probePositionGrid,
+          request.filter);
+      }
+      else
+      {
+        tRexRequest = new CellPassesTRexRequest(request.ProjectUid.Value,
+          request.probePositionLL,
+          request.filter);
+      }
+
+      return trexCompactionDataProxy.SendDataPostRequest<CellPassesV2Result, CellPassesTRexRequest>(tRexRequest, "/cells/passes", customHeaders);
+    }
+
   }
 }
