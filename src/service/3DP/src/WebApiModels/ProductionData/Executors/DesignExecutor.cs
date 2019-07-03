@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
           var geoJsonList = new List<JObject>();
 
-          for (var i = 0; i < fileList.Count - 2; i++)
+          for (var i = 0; i < fileList.Count; i++)
           {
             log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
 #if RAPTOR
