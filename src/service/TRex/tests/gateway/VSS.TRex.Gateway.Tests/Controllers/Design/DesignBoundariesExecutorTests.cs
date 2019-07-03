@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Net;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
@@ -17,6 +19,7 @@ using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Gateway.Tests.Controllers.Design
@@ -65,6 +68,29 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
       boundary[0].Points.Add(new FencePoint(2889.75893340242, 1178.41010195536, 0.0));
       boundary[0].Points.Add(new FencePoint(2705.18796425658, 1224.6913839156, 0.0));
       boundary[0].Points.Add(new FencePoint(2700.20170260547, 1225.08445683629, 0.0));
+
+      // Mocked ConvertCoordinates expected result.
+      var llhCoords = new XYZ[boundary[0].Points.Count];
+
+      llhCoords[0].X = -115.02063908350371;
+      llhCoords[0].Y = 36.20750448242144;
+      llhCoords[0].X = -115.02063948986357;
+      llhCoords[0].Y = 36.20749820152535;
+      llhCoords[0].X = -115.02064019968294;
+      llhCoords[0].Y = 36.20748723020888;
+      llhCoords[0].X = -115.01853140279106;
+      llhCoords[0].Y = 36.2070834400289;
+      llhCoords[0].X = -115.0185314141189;
+      llhCoords[0].Y = 36.20708383310118;
+      llhCoords[0].X = -115.02058364119604;
+      llhCoords[0].Y = 36.20750093926768;
+      llhCoords[0].X = -115.02063908350371;
+      llhCoords[0].Y = 36.20750448242144;
+
+      var expectedCoordinateConversionResult = (RequestErrorStatus.OK, llhCoords);
+
+      var convertCoordinatesMock = new Mock<ConvertCoordinates>();
+      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).Returns(expectedCoordinateConversionResult);
 
       var designBoundaryResult = DesignBoundaryHelper.ConvertBoundary(boundary, TOLERANCE, TestConsts.CELL_SIZE, DIMENSIONS_2012_DC_CSIB, FILE_NAME);
 
