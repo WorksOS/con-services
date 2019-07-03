@@ -1,33 +1,36 @@
-﻿using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.ServiceDiscovery.Resolvers;
+using VSS.Common.ServiceDiscovery.UnitTests.Mocks;
+using VSS.Serilog.Extensions;
 using Xunit;
 
 namespace VSS.Common.ServiceDiscovery.UnitTests
 {
-  public class ServiceDiscoveryExtensionMethods : IClassFixture<ServiceDiscoveryTestFixture>
+  public class ServiceDiscoveryExtensionMethods
   {
-    private readonly ServiceDiscoveryTestFixture _fixture;
-    public ServiceDiscoveryExtensionMethods(ServiceDiscoveryTestFixture fixture)
-    {
-      _fixture = fixture;
-    }
+    private IServiceCollection serviceCollection;
+    private readonly MockConfiguration mockConfiguration = new MockConfiguration();
 
-    private ConfigurationServiceResolver GetResolver()
+    public ServiceDiscoveryExtensionMethods()
     {
-      var serviceResolvers = _fixture.serviceProvider.GetServices<IServiceResolver>();
-      return serviceResolvers.OfType<ConfigurationServiceResolver>()
-                             .Select(serviceResolver => serviceResolver)
-                             .FirstOrDefault();
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Common.ServiceDiscovery.UnitTests.log"));
+
+      serviceCollection = new ServiceCollection()
+                              .AddLogging()
+                              .AddSingleton(loggerFactory)
+                              .AddSingleton<IConfigurationStore>(mockConfiguration);
     }
     
     [Fact]
     public void TestKubernetesIsntAdded()
     {
-      _fixture.serviceCollection.AddServiceDiscovery(false);
-
-      var resolvers = _fixture.serviceCollection.BuildServiceProvider().GetServices<IServiceResolver>();
+      serviceCollection.AddServiceDiscovery(false);
+      
+      var resolvers = serviceCollection.BuildServiceProvider().GetServices<IServiceResolver>();
       foreach (var serviceResolver in resolvers)
       {
         Assert.IsNotType<KubernetesServiceResolver>(serviceResolver);
@@ -37,10 +40,10 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
     [Fact]
     public void TestKubernetesIsAdded()
     {
-      _fixture.serviceCollection.AddServiceDiscovery(true);
+      serviceCollection.AddServiceDiscovery(true);
 
       var found = false;
-      var resolvers = _fixture.serviceCollection.BuildServiceProvider().GetServices<IServiceResolver>();
+      var resolvers = serviceCollection.BuildServiceProvider().GetServices<IServiceResolver>();
       foreach (var serviceResolver in resolvers)
       {
         if (serviceResolver is KubernetesServiceResolver)

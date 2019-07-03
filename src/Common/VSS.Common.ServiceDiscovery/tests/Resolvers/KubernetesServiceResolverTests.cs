@@ -4,22 +4,35 @@ using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Moq;
+using Serilog;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Kubernetes.Interfaces;
 using VSS.Common.ServiceDiscovery.Resolvers;
+using VSS.Common.ServiceDiscovery.UnitTests.Mocks;
+using VSS.Serilog.Extensions;
 using Xunit;
 
 namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
 {
-  public class KubernetesServiceResolverTests : IClassFixture<ServiceDiscoveryTestFixture>
+  public class KubernetesServiceResolverTests
   {
-    private readonly ServiceDiscoveryTestFixture _fixture;
-    public KubernetesServiceResolverTests(ServiceDiscoveryTestFixture fixture)
+    private readonly IServiceCollection serviceCollection;
+    private readonly MockConfiguration mockConfiguration = new MockConfiguration();
+
+    public KubernetesServiceResolverTests()
     {
-      _fixture = fixture;
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Common.ServiceDiscovery.UnitTests.log"));
+      
+      serviceCollection = new ServiceCollection()
+                          .AddLogging()
+                          .AddSingleton(loggerFactory)
+                          .AddSingleton<IConfigurationStore>(mockConfiguration)
+                          .AddSingleton<IServiceResolver, KubernetesServiceResolver>();
     }
 
     private void CreateMockFactory(Mock<IKubernetes> kubernetesClientMock)
@@ -29,7 +42,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
         .Setup(m => m.CreateClient(It.IsAny<string>()))
         .Returns((kubernetesClientMock.Object, "default"));
 
-      _fixture.serviceCollection.AddSingleton(mock.Object);
+      serviceCollection.AddSingleton(mock.Object);
     }
 
     private static void AddServiceResult(Mock<IKubernetes> mock, V1ServiceList results, string serviceName = null)
@@ -80,7 +93,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
     public void TestEnabled()
     {
       CreateMockFactory(new Mock<IKubernetes>());
-      var resolver = _fixture.serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
+      var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
 
       Assert.NotNull(resolver);
       Assert.True(resolver.IsEnabled);
@@ -90,16 +103,15 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
     public void TestPriority()
     {
       const int expectedPriority = 99942;
-      _fixture.mockConfiguration.Values["KubernetesServicePriority"] = expectedPriority;
+      mockConfiguration.Values["KubernetesServicePriority"] = expectedPriority;
 
       CreateMockFactory(new Mock<IKubernetes>());
-      var resolver = _fixture.serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
+      var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
 
       Assert.NotNull(resolver);
       Assert.Equal(expectedPriority, resolver.Priority);
 
       Assert.Equal(ServiceResultType.InternalKubernetes, resolver.ServiceType);
-
     }
 
     [Fact]
@@ -107,14 +119,14 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
     {
       const string expectedContext = "test-context";
 
-      _fixture.mockConfiguration.Values["KubernetesContext"] = expectedContext;
+      mockConfiguration.Values["KubernetesContext"] = expectedContext;
 
       var mockFactory = new Mock<IKubernetesClientFactory>();
 
-      _fixture.serviceCollection.AddSingleton(mockFactory.Object);
+      serviceCollection.AddSingleton(mockFactory.Object);
 
       var resolver =
-        _fixture.serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
+        serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
 
       // Verify that the factory was called with the config values
       Assert.NotNull(resolver);
@@ -129,9 +141,9 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       mockFactory.Setup(m => m.CreateClient( It.IsAny<string>()))
         .Returns((null, null));
 
-      _fixture.serviceCollection.AddSingleton(mockFactory.Object);
+      serviceCollection.AddSingleton(mockFactory.Object);
 
-      var resolver = _fixture.serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
+      var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
       Assert.NotNull(resolver);
 
       var result = resolver.ResolveService("no-services-casue-we-are-offline").Result;
@@ -149,7 +161,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
 
       CreateMockFactory(mockClient);
       
-      var resolver = _fixture.serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
+      var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
       Assert.NotNull(resolver);
 
       var result = resolver.ResolveService(serviceName).Result;
@@ -192,7 +204,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
 
       CreateMockFactory(mockClient);
 
-      var resolver = _fixture.serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
+      var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
       Assert.NotNull(resolver);
 
       var result = resolver.ResolveService(serviceName).Result;
@@ -274,7 +286,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
 
       CreateMockFactory(mockClient);
 
-      var resolver = _fixture.serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
+      var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
       Assert.NotNull(resolver);
 
       var result = resolver.ResolveService(serviceName).Result;
@@ -313,7 +325,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       
       CreateMockFactory(mockClient);
 
-      var resolver = _fixture.serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
+      var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
       Assert.NotNull(resolver);
 
       var result = resolver.ResolveService(serviceName).Result;
