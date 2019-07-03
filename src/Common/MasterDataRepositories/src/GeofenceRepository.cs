@@ -1,12 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;

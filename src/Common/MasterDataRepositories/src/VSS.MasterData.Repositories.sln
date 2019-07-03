@@ -1,12 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories", "VSS.MasterData.Repositories.csproj", "{5D628622-F75C-4475-80C9-ECAE6709FFB5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{F2568878-B4C3-433E-94D9-30C21692557F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{5800CE33-4866-49E9-BF1C-43579294A8AB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\ITask\src\VSS.ITask.csproj", "{51DD0C7E-7550-4B72-B283-57A59CBE4752}"
 EndProject
@@ -23,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\..\..\..\.editorconfig = ..\..\..\..\.editorconfig
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{86FC96BD-87C9-44EC-B3AD-1B2D816D2D7C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,10 +37,6 @@ Global
 		{F2568878-B4C3-433E-94D9-30C21692557F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2568878-B4C3-433E-94D9-30C21692557F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2568878-B4C3-433E-94D9-30C21692557F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5800CE33-4866-49E9-BF1C-43579294A8AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5800CE33-4866-49E9-BF1C-43579294A8AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5800CE33-4866-49E9-BF1C-43579294A8AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5800CE33-4866-49E9-BF1C-43579294A8AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{51DD0C7E-7550-4B72-B283-57A59CBE4752}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{51DD0C7E-7550-4B72-B283-57A59CBE4752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51DD0C7E-7550-4B72-B283-57A59CBE4752}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,17 +49,21 @@ Global
 		{DFCCE1E6-5888-4C0C-9234-6C0700AC12EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFCCE1E6-5888-4C0C-9234-6C0700AC12EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFCCE1E6-5888-4C0C-9234-6C0700AC12EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86FC96BD-87C9-44EC-B3AD-1B2D816D2D7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86FC96BD-87C9-44EC-B3AD-1B2D816D2D7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86FC96BD-87C9-44EC-B3AD-1B2D816D2D7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86FC96BD-87C9-44EC-B3AD-1B2D816D2D7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F2568878-B4C3-433E-94D9-30C21692557F} = {8C0036E3-C05C-4197-BCDE-B5E3F3A53AD9}
-		{5800CE33-4866-49E9-BF1C-43579294A8AB} = {8C0036E3-C05C-4197-BCDE-B5E3F3A53AD9}
 		{51DD0C7E-7550-4B72-B283-57A59CBE4752} = {8C0036E3-C05C-4197-BCDE-B5E3F3A53AD9}
 		{6215A244-083D-4009-BAC1-AA14C0EA630E} = {8C0036E3-C05C-4197-BCDE-B5E3F3A53AD9}
 		{8C0036E3-C05C-4197-BCDE-B5E3F3A53AD9} = {42ADD0E7-E2AD-4B19-BBEC-5018E33CF827}
 		{DFCCE1E6-5888-4C0C-9234-6C0700AC12EE} = {8C0036E3-C05C-4197-BCDE-B5E3F3A53AD9}
+		{86FC96BD-87C9-44EC-B3AD-1B2D816D2D7C} = {8C0036E3-C05C-4197-BCDE-B5E3F3A53AD9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {53CFA766-E4C6-4A2C-AD68-397ED8CB3CA8}
