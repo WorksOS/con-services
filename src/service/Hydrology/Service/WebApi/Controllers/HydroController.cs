@@ -15,9 +15,9 @@ using VSS.MasterData.Proxies.Interfaces;
 namespace VSS.Hydrology.WebApi.Controllers
 {
   /// <summary>
-  /// ponding controller.
+  /// retrieves images for original ground.
   /// </summary>
-  public class PondingController : BaseController<PondingController>
+  public class HydroController : BaseController<HydroController>
   {
     /// <summary>
     /// Gets the service exception handler.
@@ -26,26 +26,27 @@ namespace VSS.Hydrology.WebApi.Controllers
     protected IRaptorProxy RaptorProxy => _raptorProxy ?? (_raptorProxy = HttpContext.RequestServices.GetService<IRaptorProxy>());
 
     /// <summary>
-    /// Generates a ponding pdf from a design file (TIN) using hydro libraries
+    /// Generates a zip containing hydrology images from the original ground from a design file (TIN).
+    /// The images can include e.g. ponding and drainage pdfs, which are created using the hydro libraries
     /// </summary>
     [HttpPost("api/v1")]
-    public async Task<FileResult> GetPondingImage([FromBody] PondingRequest pondingRequest)
+    public async Task<FileResult> GetHydroImages([FromBody] HydroRequest hydroRequest)
     {
-      Log.LogDebug($"{nameof(GetPondingImage)}: request {JsonConvert.SerializeObject(pondingRequest)}");
-      pondingRequest.Validate();
+      Log.LogDebug($"{nameof(GetHydroImages)}: request {JsonConvert.SerializeObject(hydroRequest)}");
+      hydroRequest.Validate();
 
       var result = ( await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<PondingExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+          .Build<HydroExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             //customerUid, userId, // todoJeannie
             null, null,
             null, CustomHeaders, LandLeveling, RaptorProxy)
-          .ProcessAsync(pondingRequest)) as PondingResult
+          .ProcessAsync(hydroRequest)) as HydroResult
       );
 
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
 
-      Log.LogInformation($"{nameof(GetPondingImage)} completed: ExportData size={fileStream.Length}");
+      Log.LogInformation($"{nameof(GetHydroImages)} completed: ExportData size={fileStream.Length}");
       return new FileStreamResult(fileStream, ContentTypeConstants.ApplicationZip);
     }
   }

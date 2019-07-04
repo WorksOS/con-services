@@ -7,9 +7,12 @@ namespace VSS.Hydrology.WebApi.Abstractions.ResultsHandling
     public HydroErrorCodesProvider()
     {
       this.DynamicAddwithOffset("Invalid ProjectUid.", 1);
-      this.DynamicAddwithOffset("Filter not supported at yet.", 2);
-      this.DynamicAddwithOffset("Resolution must be > 0 and < 1,000,000.", 3);
-      this.DynamicAddwithOffset("Must have a resultant file name.", 4);
+      this.DynamicAddwithOffset("Invalid FilterUid.", 2);
+      this.DynamicAddwithOffset("Must have a valid resultant zip file name.", 3);
+      this.DynamicAddwithOffset("Resolution must be between 0.005 and < 1,000,000.", 4);
+      this.DynamicAddwithOffset("Current ground design has too few TIN entities, must have at least 3.", 5);
+      this.DynamicAddwithOffset("TTM conversion failed. triangleCount differs with dxf", 6);
+      this.DynamicAddwithOffset("Failed to zip images.", 7);
     }
   }
 }

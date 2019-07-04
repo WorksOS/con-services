@@ -29,7 +29,7 @@ namespace VSS.Hydrology.WebApi
     public override string ServiceName => "Hydrology Service API";
 
     /// <inheritdoc />
-    public override string ServiceDescription => "API for analyzing potential ponding";
+    public override string ServiceDescription => "API for analyzing potential ponding and drainage";
 
     /// <inheritdoc />
     public override string ServiceVersion => "v1";
@@ -72,7 +72,7 @@ namespace VSS.Hydrology.WebApi
 #if NET_4_7
       try
       {
-        // generation of ponding map (GeneratePondMap) uses PresentationFramework
+        // generation of images uses PresentationFramework
         var thread = new Thread(CreateWpfApp);
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();

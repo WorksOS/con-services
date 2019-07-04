@@ -1,18 +1,20 @@
-﻿#if NET_4_7 
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Hydrology.WebApi.Common.Utilities;
+#if NET_4_7
 using VSS.Hydrology.WebApi.DXF;
 using VSS.Hydrology.WebApi.DXF.Header;
+#endif
 using VSS.Hydrology.WebApi.TTM;
 
-namespace VSS.Hydrology.Tests.Ponding.FileConverter
+namespace VSS.Hydrology.Tests.Hydro.FileConverter
 {
   [TestClass]
   public class TTMToDXFConverterTests
@@ -75,6 +77,7 @@ namespace VSS.Hydrology.Tests.Ponding.FileConverter
       Assert.AreEqual(AlphaDimensions2012TriangleCount, tin.Triangles.Count, "wrong triangle count");
     }
 
+#if NET_4_7
     [TestMethod]
     public void ReadSmallTTMWriteDXF()
     {
@@ -95,16 +98,11 @@ namespace VSS.Hydrology.Tests.Ponding.FileConverter
       var converter = new TTMtoDXFConverter(loggerFactory);
       using (var ms = new MemoryStream(File.ReadAllBytes(ttmLocalPathAndFileName)))
       {
-        converter.WriteDXFFromTTMStream(ms, dxfLocalPathAndFileName);
+        var ex = Assert.ThrowsException<ServiceException>(() => converter.CreateDXF(ms, dxfLocalPathAndFileName));
+        Assert.AreEqual(2005, ex.GetResult.Code);
+        Assert.AreEqual("Current ground design has too few TIN entities, must have at least 3.", ex.GetResult.Message);
       }
-      Assert.AreEqual(DesignSurfaceGoodContentTriangleCount, converter.TTMTriangleCount());
-      Assert.AreEqual(DesignSurfaceGoodContentTriangleCount, converter.DXFTriangleCount());
-
-      var dxfVersion = DxfDocument.CheckDxfFileVersion(dxfLocalPathAndFileName);
-      Assert.AreEqual(DxfVersion.AutoCad2000, dxfVersion, $"incorrect DXF file version. expected {DxfVersion.AutoCad2000} but got {dxfVersion}");
-
-      var dxf = DxfDocument.Load(dxfLocalPathAndFileName);
-      Assert.AreEqual(DesignSurfaceGoodContentTriangleCount, dxf.Faces3d.Count());
+      
       if (Directory.Exists(localProjectPath))
         Directory.Delete(localProjectPath, true);
     }
@@ -129,7 +127,7 @@ namespace VSS.Hydrology.Tests.Ponding.FileConverter
       var converter = new TTMtoDXFConverter(loggerFactory);
       using (var ms = new MemoryStream(File.ReadAllBytes(ttmLocalPathAndFileName)))
       {
-        converter.WriteDXFFromTTMStream(ms, dxfLocalPathAndFileName);
+        converter.CreateDXF(ms, dxfLocalPathAndFileName);
       }
       Assert.AreEqual(AlphaDimensions2012TriangleCount, converter.TTMTriangleCount());
       Assert.AreEqual(AlphaDimensions2012TriangleCount, converter.DXFTriangleCount());
@@ -142,7 +140,7 @@ namespace VSS.Hydrology.Tests.Ponding.FileConverter
       if (Directory.Exists(localProjectPath))
         Directory.Delete(localProjectPath, true);
     }
+#endif
+
   }
 }
-
-#endif
