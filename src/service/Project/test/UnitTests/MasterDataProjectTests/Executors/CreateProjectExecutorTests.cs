@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -25,11 +24,11 @@ using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
+using Xunit;
 using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  [TestClass]
   public class CreateProjectExecutorTests : ExecutorBaseTests
   {
     protected static List<TBCPoint> _boundaryLL;
@@ -38,12 +37,11 @@ namespace VSS.MasterData.ProjectTests.Executors
 
     private static string _customerUid;
 
-    [ClassInitialize]
-    public static void ClassInitialize(TestContext testContext)
+    public CreateProjectExecutorTests()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-      _boundaryLL = new List<TBCPoint>()
-      {
+      _boundaryLL = new List<TBCPoint>
+                    {
         new TBCPoint(-43.5, 172.6),
         new TBCPoint(-43.5003, 172.6),
         new TBCPoint(-43.5003, 172.603),
@@ -52,8 +50,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       _checkBoundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
 
-      _businessCenterFile = new BusinessCenterFile()
-      {
+      _businessCenterFile = new BusinessCenterFile
+                            {
         FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01",
         Path = "/BC Data/Sites/Chch Test Site",
         Name = "CTCTSITECAL.dc",
@@ -64,7 +62,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
 
-    [TestMethod]
+    [Fact]
     public async Task CreateProjectV2Executor_GetTCCFile()
     {
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -78,10 +76,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       var coordinateSystemFileContent = await TccHelper.GetFileContentFromTcc(_businessCenterFile,
           logger.CreateLogger<CreateProjectExecutorTests>(), serviceExceptionHandler, fileRepo.Object)
         .ConfigureAwait(false);
-      Assert.IsTrue(buffer.SequenceEqual(coordinateSystemFileContent), "CoordinateSystemFileContent not read from DC.");
+      Assert.True(buffer.SequenceEqual(coordinateSystemFileContent), "CoordinateSystemFileContent not read from DC.");
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CreateProjectV2Executor_HappyPath()
     {
       var userId = Guid.NewGuid().ToString();
@@ -91,7 +89,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       (ProjectType.ProjectMonitoring, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
-      Assert.AreEqual(_checkBoundaryString, createProjectEvent.ProjectBoundary, "Invalid ProjectBoundary in WKT");
+      Assert.Equal(_checkBoundaryString, createProjectEvent.ProjectBoundary);
       var coordSystemFileContent = "Some dummy content";
       createProjectEvent.CoordinateSystemFileContent = System.Text.Encoding.ASCII.GetBytes(coordSystemFileContent);
 
@@ -106,7 +104,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateProjectEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel() {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -114,10 +112,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
           sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
-        .ReturnsAsync(new List<Subscription>()
-        {
-          new Subscription()
-            {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
+        .ReturnsAsync(new List<Subscription>
+                      {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
         });
 
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
@@ -156,12 +153,11 @@ namespace VSS.MasterData.ProjectTests.Executors
       await executor.ProcessAsync(createProjectEvent);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CreateProjectV4Executor_HappyPath()
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
-      var geofenceUid = Guid.NewGuid();
 
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid(), Guid.NewGuid(),
@@ -184,7 +180,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel() {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -192,10 +188,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
           sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
-        .ReturnsAsync(new List<Subscription>()
-        {
-          new Subscription()
-            {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
+        .ReturnsAsync(new List<Subscription>
+                      {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
         });
 
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
@@ -235,12 +230,11 @@ namespace VSS.MasterData.ProjectTests.Executors
       await executor.ProcessAsync(createProjectEvent);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CreateProjectV4Executor_LandfillProject_MissingCoordSystem()
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
-      var geofenceUid = Guid.NewGuid();
 
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid(), Guid.NewGuid(),
@@ -263,7 +257,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel() {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -271,10 +265,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
           sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
-        .ReturnsAsync(new List<Subscription>()
-        {
-          new Subscription()
-            {ServiceTypeID = (int) ServiceTypeEnum.Landfill, SubscriptionUID = Guid.NewGuid().ToString()},
+        .ReturnsAsync(new List<Subscription>
+                      {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Landfill, SubscriptionUID = Guid.NewGuid().ToString()},
         });
 
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
@@ -311,20 +304,18 @@ namespace VSS.MasterData.ProjectTests.Executors
         subscriptionProxy.Object, null, null, null, projectRepo.Object, 
         subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
         dataOceanClient.Object, authn.Object);
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+      var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
 
       var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(45)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(45)));
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CreateProjectV4Executor_LandfillProject_MissingLandfillSub()
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
-      var geofenceUid = Guid.NewGuid();
-      var coordSystemName = "coordsystem.dc";
       byte[] coordSystemFileContent = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
 
       var request = CreateProjectRequest.CreateACreateProjectRequest
@@ -332,7 +323,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType.LandFill, "projectName", "this is the description",
         new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
-        456, coordSystemName, coordSystemFileContent);
+        456, "coordsystem.dc", coordSystemFileContent);
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
       createProjectEvent.ActionUTC = createProjectEvent.ReceivedUTC = DateTime.UtcNow;
 
@@ -348,7 +339,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel() {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -356,10 +347,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
           sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
-        .ReturnsAsync(new List<Subscription>()
-        {
-          new Subscription()
-            {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()},
+        .ReturnsAsync(new List<Subscription>
+                      {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()},
         });
 
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
@@ -396,18 +386,17 @@ namespace VSS.MasterData.ProjectTests.Executors
         subscriptionProxy.Object, null, null, null, projectRepo.Object, 
         subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor,
         dataOceanClient.Object, authn.Object);
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+      var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(ProjectErrorCodesProvider.FirstNameWithOffset(37)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(ProjectErrorCodesProvider.FirstNameWithOffset(37)));
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CreateProjectV4Executor_LandfillProject_HappyPath()
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
-      var geofenceUid = Guid.NewGuid();
       var coordSystemName = "coordsystem.dc";
       byte[] coordSystemFileContent = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
 
@@ -432,7 +421,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel() {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -440,10 +429,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
           sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
-        .ReturnsAsync(new List<Subscription>()
-        {
-          new Subscription()
-            {ServiceTypeID = (int) ServiceTypeEnum.Landfill, SubscriptionUID = Guid.NewGuid().ToString()},
+        .ReturnsAsync(new List<Subscription>
+                      {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Landfill, SubscriptionUID = Guid.NewGuid().ToString()},
         });
 
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};

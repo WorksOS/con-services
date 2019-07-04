@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -12,43 +11,36 @@ using VSS.MasterData.ProjectTests.Executors;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using Xunit;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests
 {
-  [TestClass]
   public class ProjectValidationTests : ExecutorBaseTests
   {
     private static List<TBCPoint> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
     private static string _checkBoundaryString;
-    private readonly string _validBoundary;
-    private readonly string _invalidBoundary;
+    private readonly string _validBoundary =
+      "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
+    private readonly string _invalidBoundary = "blah";
     private static string _customerUid;
 
 
     public ProjectValidationTests()
     {
-      _validBoundary =
-        "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
-      _invalidBoundary = "blah";
-    }
-
-    [ClassInitialize]
-    public static void ClassInitialize(TestContext testContext)
-    {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-      _boundaryLL = new List<TBCPoint>()
-      {
-        new TBCPoint(-43.5, 172.6),
-        new TBCPoint(-43.5003, 172.6),
-        new TBCPoint(-43.5003, 172.603),
-        new TBCPoint(-43.5, 172.603)
-      };
+      _boundaryLL = new List<TBCPoint>
+                    {
+                      new TBCPoint(-43.5, 172.6),
+                      new TBCPoint(-43.5003, 172.6),
+                      new TBCPoint(-43.5003, 172.603),
+                      new TBCPoint(-43.5, 172.603)
+                    };
 
       _checkBoundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
 
-      _businessCenterFile = new BusinessCenterFile()
+      _businessCenterFile = new BusinessCenterFile
       {
         FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01",
         Path = "/BC Data/Sites/Chch Test Site",
@@ -59,14 +51,14 @@ namespace VSS.MasterData.ProjectTests
       _customerUid = Guid.NewGuid().ToString();
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateCreateProjectV2Request_HappyPath()
     {
       var request = CreateProjectV2Request.CreateACreateProjectV2Request
       (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
-      Assert.AreEqual(_checkBoundaryString, createProjectEvent.ProjectBoundary, "Invalid ProjectBoundary in WKT");
+      Assert.Equal(_checkBoundaryString, createProjectEvent.ProjectBoundary);
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(false);
@@ -75,11 +67,11 @@ namespace VSS.MasterData.ProjectTests
       request.CoordinateSystem = ProjectDataValidator.ValidateBusinessCentreFile(request.CoordinateSystem);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateCreateProjectV2Request_BoundaryTooFewPoints()
     {
-      var invalidBoundaryLl = new List<TBCPoint>()
-      {
+      var invalidBoundaryLl = new List<TBCPoint>
+                              {
         new TBCPoint(-43.5, 172.6)
       };
 
@@ -91,22 +83,22 @@ namespace VSS.MasterData.ProjectTests
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(false);
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => ProjectDataValidator.Validate(createProjectEvent, projectRepo.Object, ServiceExceptionHandler));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2024", StringComparison.Ordinal), "Expected error number 2024");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2024", StringComparison.Ordinal));
     }
 
-    [TestMethod]
-    [DataRow(-43.5, -200)]
-    [DataRow(-43.5, 200)]
-    [DataRow(-90.5, -100)]
-    [DataRow(90.5, 100)]
-    [DataRow(0.1, -1.99)]
-    [DataRow(-1.99, 0.99)]
+    [Theory]
+    [InlineData(-43.5, -200)]
+    [InlineData(-43.5, 200)]
+    [InlineData(-90.5, -100)]
+    [InlineData(90.5, 100)]
+    [InlineData(0.1, -1.99)]
+    [InlineData(-1.99, 0.99)]
     public void ValidateCreateProjectV2Request_BoundaryInvalidLAtLong(double latitude, double longitude)
     {
-      var invalidBoundaryLl = new List<TBCPoint>()
-      {
+      var invalidBoundaryLl = new List<TBCPoint>
+                              {
         new TBCPoint(-43.5003, 172.6),
         new TBCPoint(latitude, longitude),
         new TBCPoint(-43.5003, 172.603),
@@ -121,12 +113,12 @@ namespace VSS.MasterData.ProjectTests
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(false);
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => ProjectDataValidator.Validate(createProjectEvent, projectRepo.Object, ServiceExceptionHandler));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2111", StringComparison.Ordinal), "Expected error number 2111");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2111", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateCreateProjectV2Request_CheckBusinessCentreFile()
     {
       var bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
@@ -134,33 +126,32 @@ namespace VSS.MasterData.ProjectTests
       bcf.Path = "BC Data/Sites/Chch Test Site/";
 
       var resultantBusinessCenterFile = ProjectDataValidator.ValidateBusinessCentreFile(bcf);
-      Assert.AreEqual("/BC Data/Sites/Chch Test Site", resultantBusinessCenterFile.Path,
-        "Path should have bounding slashes inserted");
+      Assert.Equal("/BC Data/Sites/Chch Test Site", resultantBusinessCenterFile.Path);
 
       bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
         _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
       bcf.Path = "";
-      var ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2083", StringComparison.Ordinal));
+      var ex = Assert.Throws<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2083", StringComparison.Ordinal));
 
       bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
         _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
       bcf.Name = "";
-      ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2002", StringComparison.Ordinal));
+      ex = Assert.Throws<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2002", StringComparison.Ordinal));
 
       bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
         _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
       bcf.FileSpaceId = null;
-      ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2084", StringComparison.Ordinal));
+      ex = Assert.Throws<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2084", StringComparison.Ordinal));
 
-      ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(null));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2082", StringComparison.Ordinal));
+      ex = Assert.Throws<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(null));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2082", StringComparison.Ordinal));
 
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateUpsertProjectV1Request_GoodBoundary()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
@@ -172,7 +163,7 @@ namespace VSS.MasterData.ProjectTests
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(true);
-      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new ProjectDatabaseModel()
+      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new ProjectDatabaseModel
       {
         ProjectUID = updateProjectEvent.ProjectUID.ToString(),
         StartDate = updateProjectEvent.ProjectEndDate.AddDays(-2),
@@ -183,7 +174,7 @@ namespace VSS.MasterData.ProjectTests
       ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object, ServiceExceptionHandler);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateUpsertProjectV1Request_InvalidBoundary()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
@@ -195,7 +186,7 @@ namespace VSS.MasterData.ProjectTests
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(true);
-      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new ProjectDatabaseModel()
+      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new ProjectDatabaseModel
       {
         ProjectUID = updateProjectEvent.ProjectUID.ToString(),
         StartDate = updateProjectEvent.ProjectEndDate.AddDays(-2),
@@ -203,65 +194,65 @@ namespace VSS.MasterData.ProjectTests
 
       });
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object, ServiceExceptionHandler));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2025", StringComparison.Ordinal), "Expected error number 2025");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2025", StringComparison.Ordinal));
     }
 
-    
-    [TestMethod]
+
+    [Fact]
     public void ValidateGeofenceTypes_HappyPath()
     {
-      var geofenceTypes= new List<GeofenceType>() { GeofenceType.Landfill };
+      var geofenceTypes = new List<GeofenceType> { GeofenceType.Landfill };
       ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateGeofenceTypes_LandfillTypeRequired1()
     {
-      var geofenceTypes = new List<GeofenceType>() { GeofenceType.Generic, GeofenceType.Waste };
-      var ex = Assert.ThrowsException<ServiceException>(
+      var geofenceTypes = new List<GeofenceType> { GeofenceType.Generic, GeofenceType.Waste };
+      var ex = Assert.Throws<ServiceException>(
         () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal), "Expected error number 2102");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateGeofenceTypes_LandfillTypeRequired2()
     {
-      var geofenceTypes = new List<GeofenceType>() { GeofenceType.Filter, GeofenceType.Landfill, GeofenceType.Borrow };
-      var ex = Assert.ThrowsException<ServiceException>(
+      var geofenceTypes = new List<GeofenceType> { GeofenceType.Filter, GeofenceType.Landfill, GeofenceType.Borrow };
+      var ex = Assert.Throws<ServiceException>(
         () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal), "Expected error number 2102");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal));
     }
 
 
-    [TestMethod]
+    [Fact]
     public void ValidateGeofenceTypes_UnhappyPath1()
     {
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => ProjectDataValidator.ValidateGeofenceTypes(null));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal), "Expected error number 2073");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateGeofenceTypes_UnhappyPath2()
     {
-      var geofenceTypes = new List<GeofenceType>() {GeofenceType.Waste};
-      var ex = Assert.ThrowsException<ServiceException>(
+      var geofenceTypes = new List<GeofenceType> { GeofenceType.Waste };
+      var ex = Assert.Throws<ServiceException>(
         () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal), "Expected error number 2102");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateGeofenceTypes_UnhappyPath3()
     {
       var geofenceTypes = new List<GeofenceType>();
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal), "Expected error number 2073");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_NoneHappyPath()
     {
       var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
@@ -281,7 +272,7 @@ namespace VSS.MasterData.ProjectTests
         log, ServiceExceptionHandler, projectRepo.Object);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_SameProjectHappyPath()
     {
       var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
@@ -293,7 +284,7 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project>(){ new ProjectDatabaseModel() {Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()} };
+      var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { new ProjectDatabaseModel { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString() } };
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
@@ -301,7 +292,7 @@ namespace VSS.MasterData.ProjectTests
         log, ServiceExceptionHandler, projectRepo.Object);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_OtherProject()
     {
       var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
@@ -313,21 +304,21 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<ProjectDatabaseModel>()
-      {
-        new ProjectDatabaseModel() { Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString() }
+      var projectList = new List<ProjectDatabaseModel>
+                        {
+        new ProjectDatabaseModel { Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString() }
       };
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(
+      var ex = await Assert.ThrowsAsync<ServiceException>(
         () => ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
           log, ServiceExceptionHandler, projectRepo.Object));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal), "Expected error number 2109");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_SameProjectAndOther()
     {
       var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
@@ -339,23 +330,23 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<ProjectDatabaseModel>()
-      {
-        new ProjectDatabaseModel(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectDatabaseModel() { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
+      var projectList = new List<ProjectDatabaseModel>
+                        {
+        new ProjectDatabaseModel {Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectDatabaseModel { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
       };
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(
+      var ex = await Assert.ThrowsAsync<ServiceException>(
         () => ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
           log, ServiceExceptionHandler, projectRepo.Object));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal), "Expected error number 2109");
-      Assert.IsTrue(ex.GetContent.Contains("Not allowed duplicate, active projectnames: Count:1"), "should be 1 duplicate");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal));
+      Assert.True(ex.GetContent.Contains("Not allowed duplicate, active projectnames: Count:1"), "should be 1 duplicate");
     }
 
-    [TestMethod]
+    [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_MultiMatch()
     {
       // note that this should NEVER occur as the first duplicate shouldn't have been allowed
@@ -368,21 +359,21 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<ProjectDatabaseModel>()
-      {
-        new ProjectDatabaseModel(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectDatabaseModel(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectDatabaseModel() { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
+      var projectList = new List<ProjectDatabaseModel>
+                        {
+        new ProjectDatabaseModel {Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectDatabaseModel {Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectDatabaseModel { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
       };
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(
+      var ex = await Assert.ThrowsAsync<ServiceException>(
         () => ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
           log, ServiceExceptionHandler, projectRepo.Object));
 
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal), "Expected error number 2109");
-      Assert.IsTrue(ex.GetContent.Contains("Not allowed duplicate, active projectnames: Count:2"), "should be 2 duplicate2");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal));
+      Assert.True(ex.GetContent.Contains("Not allowed duplicate, active projectnames: Count:2"), "should be 2 duplicate2");
     }
   }
 }

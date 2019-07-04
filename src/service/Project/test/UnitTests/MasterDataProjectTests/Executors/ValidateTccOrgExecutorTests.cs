@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -15,37 +14,28 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.TCCFileAccess.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Xunit;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  [TestClass]
   public class ValidateTccOrgExecutorTests : ExecutorBaseTests
   {
-    private static string _customerUid;
-
-    [ClassInitialize]
-    public static void ClassInitialize(TestContext testContext)
-    {
-      _customerUid = Guid.NewGuid().ToString();
-    }
-
-    [TestMethod]
+    [Fact]
     public void TccAuthorizationRequestValidate_HappyPath()
     {
-      var request = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest("tccTnzOrg");
-      request.Validate();
+      ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest("tccTnzOrg")
+                                     .Validate();
     }
 
-    [TestMethod]
+    [Fact]
     public void TccAuthorizationRequestValidate_Invalid()
     {
       var request = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest("");
-      var ex = Assert.ThrowsException<ServiceException>(
-        () => request.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2086", StringComparison.Ordinal));
+      var ex = Assert.Throws<ServiceException>(() => request.Validate());
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2086", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public async Task ValidateTccOrgExecutor_HappyPath()
     {
       var customHeaders = new Dictionary<string, string>();
@@ -57,9 +47,9 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       // 1) there must be an org with the shortName from the request
       // 2) the customer from TID must have that orgs orgId in our database 
-      var organizations = new List<Organization>()
-      {
-        new Organization()
+      var organizations = new List<Organization>
+                          {
+        new Organization
         {
           filespaceId = "5u8472cda0-9f59-41c9-a5e2-e19f922f91d8",
           orgDisplayName = "the orgDisplayName",
@@ -67,7 +57,7 @@ namespace VSS.MasterData.ProjectTests.Executors
           orgTitle = "the orgTitle",
           shortName = request.OrgShortName
         },
-        new Organization()
+        new Organization
         {
           filespaceId = "efsdf45345-9f59-41c9-a5e2-e19f922f91d8",
           orgDisplayName = "the Other orgDisplayName",
@@ -79,19 +69,21 @@ namespace VSS.MasterData.ProjectTests.Executors
       var fileRepo = new Mock<IFileRepository>();
       fileRepo.Setup(fr => fr.ListOrganizations()).ReturnsAsync(organizations);
 
-      var customerTccOrg = new CustomerTccOrg()
+      var customerUid = Guid.NewGuid().ToString();
+
+      var customerTccOrg = new CustomerTccOrg
       {
         CustomerType = CustomerType.Customer,
-        CustomerUID = _customerUid,
+        CustomerUID = customerUid,
         IsDeleted = false,
         TCCOrgID = organizations[0].orgId
       };
       var customerRepo = new Mock<ICustomerRepository>();
-      customerRepo.Setup(c => c.GetCustomerWithTccOrg(Guid.Parse(_customerUid))).ReturnsAsync(customerTccOrg);
-    
+      customerRepo.Setup(c => c.GetCustomerWithTccOrg(Guid.Parse(customerUid))).ReturnsAsync(customerTccOrg);
+
       var executor = RequestExecutorContainerFactory
            .Build<ValidateTccOrgExecutor>(logger, configStore, serviceExceptionHandler,
-            _customerUid, null, null, customHeaders,
+            customerUid, null, null, customHeaders,
             null, null,
             null, null, null, null, null,
             null, null, fileRepo.Object, customerRepo.Object);

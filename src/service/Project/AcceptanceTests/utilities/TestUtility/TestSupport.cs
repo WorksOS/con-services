@@ -73,6 +73,8 @@ namespace TestUtility
         BaseUri = _testConfig.webApiUri;
       }
 
+      BaseUri = "http://localhost:3001/";
+
       const string query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
 
       var result = MySqlHelper.ExecuteRead(query);

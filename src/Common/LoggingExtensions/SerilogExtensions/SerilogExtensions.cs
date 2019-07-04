@@ -38,7 +38,7 @@ namespace VSS.Serilog.Extensions
 
       // If we start deploying Release configurations then the following options could be compiled out during development.
       logger.WriteTo.File(
-        $"./logs/{logFilename}",
+        Path.Combine(Directory.GetCurrentDirectory(), $"logs/{logFilename}"),
         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message}{NewLine}{Exception}",
         shared: true);
 

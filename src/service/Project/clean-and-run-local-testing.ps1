@@ -1,7 +1,5 @@
 [Console]::ResetColor()
 
-IF ($args -contains "--set-vars") { & ./set-environment-variables.ps1 }
-
 # Set KAFKA_ADVERTISED_HOST_NAME for local testing.
 & ../../config/apply-kafka-config-local.ps1
 
@@ -46,11 +44,7 @@ Set-Location $PSScriptRoot
 Invoke-Expression "docker-compose --file docker-compose-local.yml pull"
 
 Write-Host "Building Docker containers" -ForegroundColor DarkGray
-
-Set-Location $PSScriptRoot
-
-$detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
-Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach > ${PSScriptRoot}/artifacts/logs/output.log"
+Invoke-Expression "docker-compose --file docker-compose-local.yml up --build --detach > ${PSScriptRoot}/artifacts/logs/output.log"
 
 IF ($args -contains "--no-test") { 
     $acceptanceTestContainerName = "project_accepttest"

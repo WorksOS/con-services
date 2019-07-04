@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
@@ -28,11 +27,11 @@ using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
+using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  [TestClass]
   public class ImportFileV4ExecutorTests : ExecutorBaseTests
   {
     private static string _customerUid;
@@ -42,8 +41,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     private static long _legacyProjectId;
     private static string _fileSpaceId;
 
-    [ClassInitialize]
-    public static void ClassInitialize(TestContext testContext)
+    public ImportFileV4ExecutorTests()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
       _customerUid = Guid.NewGuid().ToString();
@@ -54,8 +52,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       _fileSpaceId = "u710e3466-1d47-45e3-87b8-81d1127ed4ed";
     }
 
-
-    [TestMethod]
+    [Fact]
     public async Task CopyTCCFile()
     {
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -79,7 +76,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         logger.CreateLogger<ImportFileV4ExecutorTests>(), serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CreateImportedFile_RaptorHappyPath()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
@@ -129,7 +126,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
         DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0);
 
-      var project = new ProjectDatabaseModel() { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
+      var project = new ProjectDatabaseModel { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -163,14 +160,14 @@ namespace VSS.MasterData.ProjectTests.Executors
           customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
           projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.IsNotNull(result);
-      Assert.AreEqual(0, result.Code, "Raptor Create should have been successful");
-      Assert.IsNotNull(result.ImportedFileDescriptor, "Raptor Create should have returned single item");
-      Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Raptor Create has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Raptor Create has invalid name");
+      Assert.NotNull(result);
+      Assert.Equal(0, result.Code);
+      Assert.NotNull(result.ImportedFileDescriptor);
+      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpdateImportedFile_RaptorHappyPath()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
@@ -230,13 +227,13 @@ namespace VSS.MasterData.ProjectTests.Executors
           customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
           projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.AreEqual(0, result.Code, "Raptor Update should have been successful");
-      Assert.IsNotNull(result.ImportedFileDescriptor, "Raptor Update should have returned single item");
-      Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Raptor Update has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Raptor Update has invalid name");
+      Assert.Equal(0, result.Code);
+      Assert.NotNull(result.ImportedFileDescriptor);
+      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task DeleteImportedFile_RaptorHappyPath()
     {
       var customHeaders = new Dictionary<string, string>();
@@ -307,7 +304,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       await executor.ProcessAsync(deleteImportedFile);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CreateImportedFile_TRexHappyPath_DesignSurface()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
@@ -382,14 +379,14 @@ namespace VSS.MasterData.ProjectTests.Executors
           null, null, null, null, tRexImportFileProxy.Object,
           projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.IsNotNull(result);
-      Assert.AreEqual(0, result.Code, "Trex Create should have been successful");
-      Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Create should have returned single item");
-      Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Create has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Create has invalid name");
+      Assert.NotNull(result);
+      Assert.Equal(0, result.Code);
+      Assert.NotNull(result.ImportedFileDescriptor);
+      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpdateImportedFile_TRexHappyPath_DesignSurface()
     {
       var customHeaders = new Dictionary<string, string>();
@@ -438,13 +435,13 @@ namespace VSS.MasterData.ProjectTests.Executors
           null, null, null, null, tRexImportFileProxy.Object,
           projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.AreEqual(0, result.Code, "Trex Update should have been successful");
-      Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Update should have returned single item");
-      Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Update has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Update has invalid name");
+      Assert.Equal(0, result.Code);
+      Assert.NotNull(result.ImportedFileDescriptor);
+      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task DeleteImportedFile_TRexHappyPath_DesignSurface()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
@@ -518,7 +515,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       await executor.ProcessAsync(deleteImportedFile);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CreateImportedFile_TRexHappyPath_ReferenceSurface()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
@@ -597,14 +594,14 @@ namespace VSS.MasterData.ProjectTests.Executors
           null, null, null, null, tRexImportFileProxy.Object,
           projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.IsNotNull(result);
-      Assert.AreEqual(0, result.Code, "Trex Create should have been successful");
-      Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Create should have returned single item");
-      Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Create has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Create has invalid name");
+      Assert.NotNull(result);
+      Assert.Equal(0, result.Code);
+      Assert.NotNull(result.ImportedFileDescriptor);
+      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task CreateImportedFile_TRex_ReferenceSurface_NoParentDesign()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
@@ -622,8 +619,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       var fileCreatedUtc = DateTime.UtcNow.AddHours(-45);
       var fileUpdatedUtc = fileCreatedUtc;
 
-      var newImportedFile = new ImportedFile()
-      {
+      var newImportedFile = new ImportedFile
+                            {
         ProjectUid = _projectUid,
         ImportedFileUid = importedFileUid.ToString(),
         ImportedFileId = 999,
@@ -683,11 +680,11 @@ namespace VSS.MasterData.ProjectTests.Executors
           producer.Object, KafkaTopicName,
           null, null, null, null, tRexImportFileProxy.Object,
           projectRepo.Object);
-      await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+      await Assert.ThrowsAsync<ServiceException>(async () =>
        await executor.ProcessAsync(createImportedFile).ConfigureAwait(false));
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpdateImportedFile_TRexHappyPath_ReferenceSurface()
     {
       var customHeaders = new Dictionary<string, string>();
@@ -741,14 +738,14 @@ namespace VSS.MasterData.ProjectTests.Executors
           null, null, null, null, tRexImportFileProxy.Object,
           projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.AreEqual(0, result.Code, "Trex Update should have been successful");
-      Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Update should have returned single item");
-      Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Update has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Update has invalid name");
-      Assert.AreEqual(newOffset, result.ImportedFileDescriptor.Offset, "Trex Update has invalid offset");
+      Assert.Equal(0, result.Code);
+      Assert.NotNull(result.ImportedFileDescriptor);
+      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
+      Assert.Equal(newOffset, result.ImportedFileDescriptor.Offset);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task DeleteImportedFile_TRexHappyPath_ReferenceSurface()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
@@ -824,7 +821,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       await executor.ProcessAsync(deleteImportedFile);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task DeleteImportedFile_TRex_DesignSurface_WithReferenceSurface()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
@@ -841,8 +838,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
 
-      var referenceImportedFile = new ImportedFile()
-      {
+      var referenceImportedFile = new ImportedFile
+                                  {
         ProjectUid = _projectUid,
         ImportedFileUid = importedFileUid.ToString(),
         LegacyImportedFileId = 200000,
@@ -851,8 +848,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
       };
 
-      var parentImportedFile = new ImportedFile()
-      {
+      var parentImportedFile = new ImportedFile
+                               {
         ProjectUid = _projectUid,
         ImportedFileUid = parentUid.ToString(),
         ImportedFileId = 998,
@@ -910,7 +907,7 @@ namespace VSS.MasterData.ProjectTests.Executors
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
           customHeaders, producer.Object, KafkaTopicName, null, null, null, filterServiceProxy.Object,
           tRexImportFileProxy.Object, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
-      await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+      await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(deleteImportedFile).ConfigureAwait(false));
     }
   }

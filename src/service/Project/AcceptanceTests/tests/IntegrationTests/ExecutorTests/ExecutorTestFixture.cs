@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog;
 using TestUtility;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -17,13 +17,14 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using RdKafkaDriver = VSS.KafkaConsumer.Kafka.RdKafkaDriver;
 
 namespace IntegrationTests.ExecutorTests
 {
-  public class ExecutorTestsBase : IDisposable
+  public class ExecutorTestFixture : IDisposable
   {
     public IServiceProvider serviceProvider;
     public IConfigurationStore configStore;
@@ -34,20 +35,14 @@ namespace IntegrationTests.ExecutorTests
     public IRaptorProxy raptorProxy;
     public IKafka producer;
     public string kafkaTopicName;
-    private readonly string loggerRepoName = "UnitTestLogTest";
 
-    public ExecutorTestsBase()
+    public ExecutorTestFixture()
     {
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("IntegrationTests.ExecutorTests.log", null));
       var serviceCollection = new ServiceCollection();
       
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
       serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory)
+      serviceCollection.AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
@@ -65,6 +60,7 @@ namespace IntegrationTests.ExecutorTests
       customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
       raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
       producer = serviceProvider.GetRequiredService<IKafka>();
+
       if (!producer.IsInitializedProducer)
         producer.InitProducer(configStore);
 

@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using Xunit;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests
 {
-  [TestClass]
   public class UtilityTestsV2
   {
     private static List<TBCPoint> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
     private static string _checkBoundaryString;
     private static string _customerUid;
-    //private static byte[] _coordinateSystemFileContent;
 
-  [ClassInitialize]
-    public static void ClassInitialize(TestContext testContext)
+    public UtilityTestsV2()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-      _boundaryLL = new List<TBCPoint>()
-      {
+
+      _boundaryLL = new List<TBCPoint>
+                    {
         new TBCPoint(-43.5, 172.6),
         new TBCPoint(-43.5003, 172.6),
         new TBCPoint(-43.5003, 172.603),
@@ -32,7 +30,7 @@ namespace VSS.MasterData.ProjectTests
 
       _checkBoundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
 
-      _businessCenterFile = new BusinessCenterFile()
+      _businessCenterFile = new BusinessCenterFile
       {
         FileSpaceId = "u710e3466-1d47-45e3-87b8-81d1127ed4ed",
         Path = "/BC Data/Sites/Chch Test Site",
@@ -41,10 +39,9 @@ namespace VSS.MasterData.ProjectTests
       };
 
       _customerUid = Guid.NewGuid().ToString();
-      //_coordinateSystemFileContent = new byte[] {0, 1, 2, 3, 4};
     }
-    
-    [TestMethod]
+
+    [Fact]
     public void MapCreateProjectV2RequestToEvent()
     {
       var requestedProjectType = ProjectType.ProjectMonitoring;
@@ -54,23 +51,23 @@ namespace VSS.MasterData.ProjectTests
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var kafkaEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
 
-      Assert.IsTrue(Guid.TryParse(kafkaEvent.ProjectUID.ToString(), out var _), "ProjectUID has not been mapped correctly");
+      Assert.True(Guid.TryParse(kafkaEvent.ProjectUID.ToString(), out _), "ProjectUID has not been mapped correctly");
       Guid.TryParse(kafkaEvent.CustomerUID.ToString(), out var customerUidOut);
-      Assert.AreEqual(_customerUid, customerUidOut.ToString(), "CustomerUID has not been mapped correctly");
-      Assert.AreEqual(0, kafkaEvent.CustomerID, "CustomerID has not been mapped correctly");
-      Assert.AreEqual(expectedProjectType, kafkaEvent.ProjectType, "ProjectType has not been mapped correctly");
-      Assert.AreEqual(request.ProjectName, kafkaEvent.ProjectName, "ProjectName has not been mapped correctly");
-      Assert.IsNull(kafkaEvent.Description, "Description has not been mapped correctly");
-      Assert.AreEqual(request.ProjectStartDate, kafkaEvent.ProjectStartDate, "ProjectStartDate has not been mapped correctly");
-      Assert.AreEqual(request.ProjectEndDate, kafkaEvent.ProjectEndDate, "ProjectEndDate has not been mapped correctly");
-      Assert.AreEqual(request.ProjectTimezone, kafkaEvent.ProjectTimezone, "ProjectTimezone has not been mapped correctly");
-      Assert.AreEqual(_checkBoundaryString, kafkaEvent.ProjectBoundary, "ProjectBoundary has not been mapped correctly");
-      Assert.AreEqual(_businessCenterFile.Name, kafkaEvent.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
-      Assert.IsTrue(kafkaEvent.ActionUTC > DateTime.MinValue, "ActionUTC has not been mapped correctly");
-      Assert.IsTrue(kafkaEvent.ReceivedUTC > DateTime.MinValue, "ReceivedUTC has not been mapped correctly");
+      Assert.Equal(_customerUid, customerUidOut.ToString());
+      Assert.Equal(0, kafkaEvent.CustomerID);
+      Assert.Equal(expectedProjectType, kafkaEvent.ProjectType);
+      Assert.Equal(request.ProjectName, kafkaEvent.ProjectName);
+      Assert.Null(kafkaEvent.Description);
+      Assert.Equal(request.ProjectStartDate, kafkaEvent.ProjectStartDate);
+      Assert.Equal(request.ProjectEndDate, kafkaEvent.ProjectEndDate);
+      Assert.Equal(request.ProjectTimezone, kafkaEvent.ProjectTimezone);
+      Assert.Equal(_checkBoundaryString, kafkaEvent.ProjectBoundary);
+      Assert.Equal(_businessCenterFile.Name, kafkaEvent.CoordinateSystemFileName);
+      Assert.True(kafkaEvent.ActionUTC > DateTime.MinValue, "ActionUTC has not been mapped correctly");
+      Assert.True(kafkaEvent.ReceivedUTC > DateTime.MinValue, "ReceivedUTC has not been mapped correctly");
     }
-    
-    [TestMethod]
+
+    [Fact]
     public void MapProjectToV4Result()
     {
       var project = new ProjectDatabaseModel
@@ -101,35 +98,33 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var result = AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project);
-      Assert.AreEqual(project.ProjectUID, result.ProjectUid, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(project.LegacyProjectID, result.LegacyProjectId, "LegacyProjectID has not been mapped correctly");
-      Assert.AreEqual(project.ProjectType, result.ProjectType, "ProjectType has not been mapped correctly");
-      Assert.AreEqual(project.Name, result.Name, "Name has not been mapped correctly");
-      Assert.AreEqual(project.Description, result.Description, "Description has not been mapped correctly");
-      Assert.AreEqual(project.ProjectTimeZone, result.ProjectTimeZone, "ProjectTimeZone has not been mapped correctly");
-      Assert.AreEqual(project.LandfillTimeZone, result.IanaTimeZone, "LandfillTimeZone has not been mapped correctly");
-      Assert.AreEqual(project.StartDate.ToString("O"), result.StartDate, "StartDate has not been mapped correctly");
-      Assert.AreEqual(project.EndDate.ToString("O"), result.EndDate, "EndDate has not been mapped correctly");
-      Assert.AreEqual(project.CustomerUID, result.CustomerUid, "CustomerUID has not been mapped correctly");
-      Assert.AreEqual(project.LegacyCustomerID.ToString(), result.LegacyCustomerId, "LegacyCustomerID has not been mapped correctly");
-      Assert.AreEqual(project.SubscriptionUID, result.SubscriptionUid, "SubscriptionUID has not been mapped correctly");
+      Assert.Equal(project.ProjectUID, result.ProjectUid);
+      Assert.Equal(project.LegacyProjectID, result.LegacyProjectId);
+      Assert.Equal(project.ProjectType, result.ProjectType);
+      Assert.Equal(project.Name, result.Name);
+      Assert.Equal(project.Description, result.Description);
+      Assert.Equal(project.ProjectTimeZone, result.ProjectTimeZone);
+      Assert.Equal(project.LandfillTimeZone, result.IanaTimeZone);
+      Assert.Equal(project.StartDate.ToString("O"), result.StartDate);
+      Assert.Equal(project.EndDate.ToString("O"), result.EndDate);
+      Assert.Equal(project.CustomerUID, result.CustomerUid);
+      Assert.Equal(project.LegacyCustomerID.ToString(), result.LegacyCustomerId);
+      Assert.Equal(project.SubscriptionUID, result.SubscriptionUid);
       if (project.SubscriptionStartDate != null)
-        Assert.AreEqual((object)project.SubscriptionStartDate.Value.ToString("O"), result.SubscriptionStartDate,
-          "SubscriptionStartDate has not been mapped correctly");
+        Assert.Equal((object)project.SubscriptionStartDate.Value.ToString("O"), result.SubscriptionStartDate);
       if (project.SubscriptionEndDate != null)
-        Assert.AreEqual((object)project.SubscriptionEndDate.Value.ToString("O"), result.SubscriptionEndDate,
-          "SubscriptionEndDate has not been mapped correctly");
-      Assert.AreEqual(project.ServiceTypeID, (int)result.ServiceType, "ServiceTypeID has not been mapped correctly");
-      Assert.AreEqual(project.GeometryWKT, result.ProjectGeofenceWKT, "GeometryWKT has not been mapped correctly");
-      Assert.IsFalse(result.IsArchived, "IsArchived has not been mapped correctly");
+        Assert.Equal((object)project.SubscriptionEndDate.Value.ToString("O"), result.SubscriptionEndDate);
+      Assert.Equal(project.ServiceTypeID, (int)result.ServiceType);
+      Assert.Equal(project.GeometryWKT, result.ProjectGeofenceWKT);
+      Assert.False(result.IsArchived, "IsArchived has not been mapped correctly");
 
       // just make a copy
       var copyOfProject = AutoMapperUtility.Automapper.Map<ProjectDatabaseModel>(project);
-      Assert.AreEqual(project.ProjectUID, copyOfProject.ProjectUID, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(project.LegacyProjectID, copyOfProject.LegacyProjectID, "LegacyProjectID has not been mapped correctly");
+      Assert.Equal(project.ProjectUID, copyOfProject.ProjectUID);
+      Assert.Equal(project.LegacyProjectID, copyOfProject.LegacyProjectID);
     }
 
-    [TestMethod]
+    [Fact]
     public void MapProjectToV2Result()
     {
       var project = new ProjectDatabaseModel
@@ -160,12 +155,12 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var result = AutoMapperUtility.Automapper.Map<ProjectV2DescriptorResult>(project);
-      Assert.AreEqual(project.LegacyProjectID, result.LegacyProjectId, "LegacyProjectID has not been mapped correctly");
-      Assert.AreEqual(project.Name, result.Name, "Name has not been mapped correctly");
-      Assert.AreEqual(project.StartDate.ToString("O"), result.StartDate, "StartDate has not been mapped correctly");
-      Assert.AreEqual(project.EndDate.ToString("O"), result.EndDate, "EndDate has not been mapped correctly");
-      Assert.AreEqual(project.ProjectType, result.ProjectType, "ProjectType has not been mapped correctly");
+      Assert.Equal(project.LegacyProjectID, result.LegacyProjectId);
+      Assert.Equal(project.Name, result.Name);
+      Assert.Equal(project.StartDate.ToString("O"), result.StartDate);
+      Assert.Equal(project.EndDate.ToString("O"), result.EndDate);
+      Assert.Equal(project.ProjectType, result.ProjectType);
     }
-    
+
   }
 }

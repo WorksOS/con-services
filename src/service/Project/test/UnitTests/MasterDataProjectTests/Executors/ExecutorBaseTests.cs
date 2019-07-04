@@ -1,41 +1,36 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Serilog.Extensions;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  [TestClass]
-  public class ExecutorBaseTests
+  public class ExecutorBaseTests : IDisposable
   {
-    public static IServiceProvider ServiceProvider;
-    protected string KafkaTopicName;
-    private readonly string loggerRepoName = "UnitTestLogTest";
+    public IServiceProvider ServiceProvider;
+    public string KafkaTopicName;
     protected IErrorCodesProvider ProjectErrorCodesProvider;
     protected IServiceExceptionHandler ServiceExceptionHandler;
 
-    [TestInitialize]
-    public virtual void InitTest()
+    public ExecutorBaseTests()
     {
-      var serviceCollection = new ServiceCollection();
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
 
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Project.WebApi.log", null));
+      var serviceCollection = new ServiceCollection();
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
@@ -53,5 +48,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       ProjectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
     }
+
+    public void Dispose()
+    { }
   }
 }
