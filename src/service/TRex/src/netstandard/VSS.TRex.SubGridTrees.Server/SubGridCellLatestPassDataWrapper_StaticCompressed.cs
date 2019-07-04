@@ -222,15 +222,15 @@ namespace VSS.TRex.SubGridTrees.Server
               BF_CellPasses.StreamWriteStart();
               try
               {
-                for (int i = cellPasses.Offset, limit = cellPasses.Offset + SubGridTreeConsts.CellsPerSubGrid; i < limit; i++)
+                for (int i = cellPasses.Offset, counter = 0, limit = cellPasses.Offset + SubGridTreeConsts.CellsPerSubGrid; i < limit; i++, counter++)
                 {
                   var pass = cellPasses.Elements[i];
 
                   BF_CellPasses.StreamWrite(pass.InternalSiteModelMachineIndex,
                     EncodedFieldDescriptors.InternalMachineID);
-                  BF_CellPasses.StreamWrite(CalculateAttributeValueRange_Buffer_ModifiedTime[i],
+                  BF_CellPasses.StreamWrite(CalculateAttributeValueRange_Buffer_ModifiedTime[counter],
                     EncodedFieldDescriptors.Time);
-                  BF_CellPasses.StreamWrite(CalculateAttributeValueRange_Buffer_ModifiedHeight[i],
+                  BF_CellPasses.StreamWrite(CalculateAttributeValueRange_Buffer_ModifiedHeight[counter],
                     EncodedFieldDescriptors.Height);
                   BF_CellPasses.StreamWrite(pass.CCV, EncodedFieldDescriptors.CCV);
                   BF_CellPasses.StreamWrite(pass.RMV, EncodedFieldDescriptors.RMV);
