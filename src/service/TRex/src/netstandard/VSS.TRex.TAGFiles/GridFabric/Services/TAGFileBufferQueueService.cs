@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Services;
+﻿using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using Apache.Ignite.Core;
@@ -30,7 +29,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// The interval between epochs where the service checks to see if there is anything to do
     /// </summary>
-    private int TAGFileBufferQueueServiceCheckIntervalMS = 1000;
+    private int serviceCheckIntervalMS = 1000;
 
     /// <summary>
     /// Flag set then Cancel() is called to instruct the service to finish operations
@@ -110,7 +109,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
           do
           {
-            waitHandle.WaitOne(TAGFileBufferQueueServiceCheckIntervalMS);
+            waitHandle.WaitOne(serviceCheckIntervalMS);
             //Log.LogInformation("Continuous query scan of items to process in TAGFileBufferQueue still active");
           } while (!aborted);
         }
@@ -145,7 +144,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt(TAGFileBufferQueueServiceCheckIntervalMS);
+      writer.WriteInt(serviceCheckIntervalMS);
     }
 
     /// <summary>
@@ -156,7 +155,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      TAGFileBufferQueueServiceCheckIntervalMS = reader.ReadInt();
+      serviceCheckIntervalMS = reader.ReadInt();
     }
   }
 }
