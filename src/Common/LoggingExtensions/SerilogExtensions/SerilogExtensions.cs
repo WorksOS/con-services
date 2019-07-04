@@ -51,8 +51,6 @@ namespace VSS.Serilog.Extensions
         {
           string basePath;
 
-          Console.WriteLine($"{nameof(SerilogExtensions)}::{nameof(Configure)}() IConfigurationRoot wasn't provided, looking for {configFilename}...");
-
           if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), configFilename)))
           {
             basePath = Directory.GetCurrentDirectory();
@@ -66,8 +64,6 @@ namespace VSS.Serilog.Extensions
           {
             throw new FileNotFoundException();
           }
-
-          Console.WriteLine($"{nameof(SerilogExtensions)}::{nameof(Configure)}() Setting logging configuration basePath for the config file to '{basePath}'");
 
           config = new ConfigurationBuilder()
                    .SetBasePath(basePath)

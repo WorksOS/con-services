@@ -18,7 +18,7 @@ using Xunit;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class ValidateTccOrgExecutorTests : ExecutorBaseTests
+  public class ValidateTccOrgExecutorTestsDiFixture : UnitTestsDIFixture<ValidateTccOrgExecutorTestsDiFixture>
   {
     [Fact]
     public void TccAuthorizationRequestValidate_HappyPath()

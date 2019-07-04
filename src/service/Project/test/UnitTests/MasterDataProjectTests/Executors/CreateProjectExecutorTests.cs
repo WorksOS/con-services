@@ -29,7 +29,7 @@ using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.Databa
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class CreateProjectExecutorTests : ExecutorBaseTests
+  public class CreateProjectExecutorTestsDiFixture : UnitTestsDIFixture<CreateProjectExecutorTestsDiFixture>
   {
     protected static List<TBCPoint> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
@@ -37,7 +37,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
     private static string _customerUid;
 
-    public CreateProjectExecutorTests()
+    public CreateProjectExecutorTestsDiFixture()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
       _boundaryLL = new List<TBCPoint>
@@ -65,17 +65,15 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task CreateProjectV2Executor_GetTCCFile()
     {
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
       var fileRepo = new Mock<IFileRepository>();
+
       fileRepo.Setup(fr => fr.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
       byte[] buffer = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
       fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new MemoryStream(buffer));
 
-      var coordinateSystemFileContent = await TccHelper.GetFileContentFromTcc(_businessCenterFile,
-          logger.CreateLogger<CreateProjectExecutorTests>(), serviceExceptionHandler, fileRepo.Object)
-        .ConfigureAwait(false);
+      var coordinateSystemFileContent = await TccHelper.GetFileContentFromTcc(_businessCenterFile, Log, serviceExceptionHandler, fileRepo.Object);
+
       Assert.True(buffer.SequenceEqual(coordinateSystemFileContent), "CoordinateSystemFileContent not read from DC.");
     }
 

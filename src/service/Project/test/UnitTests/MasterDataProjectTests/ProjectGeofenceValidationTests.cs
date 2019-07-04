@@ -13,12 +13,12 @@ using Xunit;
 
 namespace VSS.MasterData.ProjectTests
 {
-  public class ProjectGeofenceValidationTests : ExecutorBaseTests
+  public class ProjectGeofenceValidationTestsDiFixture : UnitTestsDIFixture<ProjectGeofenceValidationTestsDiFixture>
   {
     protected ProjectErrorCodesProvider _projectErrorCodesProvider = new ProjectErrorCodesProvider();
     private readonly List<GeofenceWithAssociation> _geofencesWithAssociation;
 
-    public ProjectGeofenceValidationTests()
+    public ProjectGeofenceValidationTestsDiFixture()
     {
       var validBoundary =
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";

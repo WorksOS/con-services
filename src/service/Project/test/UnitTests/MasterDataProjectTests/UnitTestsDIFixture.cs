@@ -15,21 +15,24 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Serilog.Extensions;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace VSS.MasterData.ProjectTests.Executors
+namespace VSS.MasterData.ProjectTests
 {
-  public class ExecutorBaseTests : IDisposable
+  public class UnitTestsDIFixture<T> : IDisposable
   {
     public IServiceProvider ServiceProvider;
     public string KafkaTopicName;
+    
     protected IErrorCodesProvider ProjectErrorCodesProvider;
     protected IServiceExceptionHandler ServiceExceptionHandler;
+    public ILogger Log;
 
-    public ExecutorBaseTests()
+    public UnitTestsDIFixture()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
 
-      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Project.WebApi.log", null));
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Project.UnitTests.log"));
       var serviceCollection = new ServiceCollection();
 
       serviceCollection.AddLogging();
@@ -47,6 +50,8 @@ namespace VSS.MasterData.ProjectTests.Executors
                        ServiceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       ProjectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      
+      Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<T>();
     }
 
     public void Dispose()

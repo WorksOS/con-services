@@ -7,7 +7,7 @@ namespace IntegrationTests.WebApiTests
   {
     public WebApiTestsBase()
     {
-      if (Log.Logger == null) { Log.Logger = SerilogExtensions.Configure("IntegrationTests.WebApiTests.log", null); }
+      Log.Logger = SerilogExtensions.Configure("IntegrationTests.WebApiTests.log");
     }
   }
 }

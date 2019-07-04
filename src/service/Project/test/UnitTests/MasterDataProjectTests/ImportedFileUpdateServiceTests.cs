@@ -26,7 +26,7 @@ namespace VSS.MasterData.ProjectTests
 
     public ImportedFileUpdateServiceTests()
     {
-      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Project.WebApi.log", null));
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Project.WebApi.log"));
       var serviceCollection = new ServiceCollection();
 
       serviceCollection.AddLogging();

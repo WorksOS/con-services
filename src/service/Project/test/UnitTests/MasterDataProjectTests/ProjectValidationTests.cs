@@ -16,7 +16,7 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests
 {
-  public class ProjectValidationTests : ExecutorBaseTests
+  public class ProjectValidationTestsDiFixture : UnitTestsDIFixture<ProjectValidationTestsDiFixture>
   {
     private static List<TBCPoint> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
@@ -27,7 +27,7 @@ namespace VSS.MasterData.ProjectTests
     private static string _customerUid;
 
 
-    public ProjectValidationTests()
+    public ProjectValidationTestsDiFixture()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
       _boundaryLL = new List<TBCPoint>
@@ -255,7 +255,6 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_NoneHappyPath()
     {
-      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
       (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
@@ -269,13 +268,13 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
       await ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
-        log, ServiceExceptionHandler, projectRepo.Object);
+        Log, ServiceExceptionHandler, projectRepo.Object);
     }
 
     [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_SameProjectHappyPath()
     {
-      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
+      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTestsDiFixture>();
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
       (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
@@ -295,7 +294,6 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_OtherProject()
     {
-      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
       (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
@@ -313,7 +311,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = await Assert.ThrowsAsync<ServiceException>(
         () => ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
-          log, ServiceExceptionHandler, projectRepo.Object));
+          Log, ServiceExceptionHandler, projectRepo.Object));
 
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal));
     }
@@ -321,7 +319,6 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_SameProjectAndOther()
     {
-      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
       (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
@@ -340,7 +337,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = await Assert.ThrowsAsync<ServiceException>(
         () => ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
-          log, ServiceExceptionHandler, projectRepo.Object));
+          Log, ServiceExceptionHandler, projectRepo.Object));
 
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal));
       Assert.True(ex.GetContent.Contains("Not allowed duplicate, active projectnames: Count:1"), "should be 1 duplicate");
@@ -350,7 +347,6 @@ namespace VSS.MasterData.ProjectTests
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_MultiMatch()
     {
       // note that this should NEVER occur as the first duplicate shouldn't have been allowed
-      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
       (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
@@ -370,7 +366,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = await Assert.ThrowsAsync<ServiceException>(
         () => ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
-          log, ServiceExceptionHandler, projectRepo.Object));
+          Log, ServiceExceptionHandler, projectRepo.Object));
 
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal));
       Assert.True(ex.GetContent.Contains("Not allowed duplicate, active projectnames: Count:2"), "should be 2 duplicate2");

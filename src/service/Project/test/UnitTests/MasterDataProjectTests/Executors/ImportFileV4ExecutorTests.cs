@@ -32,7 +32,7 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class ImportFileV4ExecutorTests : ExecutorBaseTests
+  public class ImportFileV4ExecutorTestsDiFixture : UnitTestsDIFixture<ImportFileV4ExecutorTestsDiFixture>
   {
     private static string _customerUid;
     private static string _projectUid;
@@ -41,7 +41,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     private static long _legacyProjectId;
     private static string _fileSpaceId;
 
-    public ImportFileV4ExecutorTests()
+    public ImportFileV4ExecutorTestsDiFixture()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
       _customerUid = Guid.NewGuid().ToString();
@@ -55,7 +55,6 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task CopyTCCFile()
     {
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var importedFileTbc = new ImportedFileTbc
@@ -73,7 +72,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       await TccHelper.CopyFileWithinTccRepository(importedFileTbc,
         _customerUid, Guid.NewGuid().ToString(), "f9sdg0sf9",
-        logger.CreateLogger<ImportFileV4ExecutorTests>(), serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
+        Log, serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
     }
 
     [Fact]

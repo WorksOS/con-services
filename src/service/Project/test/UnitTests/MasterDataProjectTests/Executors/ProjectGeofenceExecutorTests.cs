@@ -20,19 +20,19 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class ProjectGeofenceExecutorTests : IClassFixture<ExecutorBaseTests>
+  public class ProjectGeofenceExecutorTests : IClassFixture<UnitTestsDIFixture<ProjectGeofenceExecutorTests>>
   {
-    private readonly ExecutorBaseTests _testFixture;
+    private readonly UnitTestsDIFixture<ProjectGeofenceExecutorTests> testDiFixtureFixture;
     private readonly ProjectErrorCodesProvider _projectErrorCodesProvider;
 
     private static string _validBoundary =
       "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
 
-    private T GetDIService<T>() => _testFixture.ServiceProvider.GetRequiredService<T>();
+    private T GetDIService<T>() => testDiFixtureFixture.ServiceProvider.GetRequiredService<T>();
 
-    public ProjectGeofenceExecutorTests(ExecutorBaseTests testFixture)
+    public ProjectGeofenceExecutorTests(UnitTestsDIFixture<ProjectGeofenceExecutorTests> testDiFixtureFixture)
     {
-      _testFixture = testFixture;
+      this.testDiFixtureFixture = testDiFixtureFixture;
       _projectErrorCodesProvider = new ProjectErrorCodesProvider();
     }
 
@@ -69,9 +69,9 @@ namespace VSS.MasterData.ProjectTests.Executors
           geofences);
       request.Validate();
 
-      var configStore = _testFixture.ServiceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = _testFixture.ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = _testFixture.ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = testDiFixtureFixture.ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = testDiFixtureFixture.ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = testDiFixtureFixture.ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
@@ -79,7 +79,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, _testFixture.KafkaTopicName,
+        producer.Object, testDiFixtureFixture.KafkaTopicName,
         null, null, null, null, null,
         projectRepo.Object);
       await executor.ProcessAsync(request);
@@ -118,9 +118,9 @@ namespace VSS.MasterData.ProjectTests.Executors
           geofences);
       request.Validate();
 
-      var configStore = _testFixture.ServiceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = _testFixture.ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = _testFixture.ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = testDiFixtureFixture.ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = testDiFixtureFixture.ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = testDiFixtureFixture.ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
@@ -128,7 +128,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, _testFixture.KafkaTopicName,
+        producer.Object, testDiFixtureFixture.KafkaTopicName,
         null, null, null, null, null,
         projectRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
@@ -167,9 +167,9 @@ namespace VSS.MasterData.ProjectTests.Executors
           geofences);
       request.Validate();
 
-      var configStore = _testFixture.ServiceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = _testFixture.ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = _testFixture.ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = testDiFixtureFixture.ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = testDiFixtureFixture.ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = testDiFixtureFixture.ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
@@ -177,7 +177,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, _testFixture.KafkaTopicName,
+        producer.Object, testDiFixtureFixture.KafkaTopicName,
         null, null, null, null, null,
         projectRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
@@ -226,7 +226,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, _testFixture.KafkaTopicName,
+        producer.Object, testDiFixtureFixture.KafkaTopicName,
         null, null, null, null, null,
         projectRepo.Object);
       await executor.ProcessAsync(request);
@@ -268,7 +268,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, _testFixture.KafkaTopicName,
+        producer.Object, testDiFixtureFixture.KafkaTopicName,
         null, null, null, null, null,
         projectRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
@@ -317,7 +317,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, _testFixture.KafkaTopicName,
+        producer.Object, testDiFixtureFixture.KafkaTopicName,
         null, null, null, null, null,
         projectRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
@@ -330,7 +330,6 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task Get_UnassignedLandfillGeofencesAsync()
     {
-      var log = GetDIService<ILoggerFactory>().CreateLogger<ProjectGeofenceValidationTests>();
       var customerUid = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
       var testGeofencesForCustomer = CreateGeofenceWithAssociations(customerUid, projectUid);
@@ -342,7 +341,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var geofenceTypes = new List<GeofenceType> { GeofenceType.Landfill };
 
       var geofences = await ProjectRequestHelper
-        .GetGeofenceList(customerUid, string.Empty, geofenceTypes, log, projectRepo.Object)
+        .GetGeofenceList(customerUid, string.Empty, geofenceTypes, testDiFixtureFixture.Log, projectRepo.Object)
         .ConfigureAwait(false);
 
       Assert.Single(geofences);
@@ -362,7 +361,6 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task Get_AssignedLandfillGeofences_FromProject()
     {
-      var log = GetDIService<ILoggerFactory>().CreateLogger<ProjectGeofenceValidationTests>();
       var customerUid = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
       var testGeofencesForCustomer = CreateGeofenceWithAssociations(customerUid, projectUid);
@@ -374,7 +372,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var geofenceTypes = new List<GeofenceType> { GeofenceType.Landfill };
 
       var geofences = await ProjectRequestHelper
-        .GetGeofenceList(customerUid, projectUid, geofenceTypes, log, projectRepo.Object)
+        .GetGeofenceList(customerUid, projectUid, geofenceTypes, testDiFixtureFixture.Log, projectRepo.Object)
         .ConfigureAwait(false);
 
       Assert.Single(geofences);

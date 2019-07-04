@@ -28,7 +28,7 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class UpdateProjectExecutorTests : ExecutorBaseTests
+  public class UpdateProjectExecutorTestsDiFixture : UnitTestsDIFixture<UpdateProjectExecutorTestsDiFixture>
   {
     private static string _boundaryString;
     private static string _updatedBoundaryString;
@@ -42,7 +42,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     private static IServiceExceptionHandler _serviceExceptionHandler;
     private static Mock<IKafka> _producer;
 
-    public UpdateProjectExecutorTests()
+    public UpdateProjectExecutorTestsDiFixture()
     {
       try
       {
@@ -119,7 +119,6 @@ namespace VSS.MasterData.ProjectTests.Executors
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
-
 
     [Fact]
     public async Task UpdateProjectExecutor_ChangeTypeToLandfill_Invalid_NoCoordinateSystem()

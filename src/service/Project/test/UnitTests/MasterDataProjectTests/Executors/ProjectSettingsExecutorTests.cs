@@ -23,7 +23,7 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class ProjectSettingsExecutorTests : ExecutorBaseTests
+  public class ProjectSettingsExecutorTestsDiFixture : UnitTestsDIFixture<ProjectSettingsExecutorTestsDiFixture>
   {
     [Theory]
     [InlineData(ProjectSettingsType.Targets)]

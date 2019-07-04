@@ -63,7 +63,7 @@ namespace VSS.WebApi.Common
         {
           loggingBuilder.AddProvider(
             p => new SerilogLoggerProvider(
-              SerilogExtensions.Configure("VSS.Project.WebAPI.log", config: kestrelConfig)));
+              SerilogExtensions.Configure(config: kestrelConfig)));
         });
 
       ThreadPool.SetMaxThreads(1024, 2048);
