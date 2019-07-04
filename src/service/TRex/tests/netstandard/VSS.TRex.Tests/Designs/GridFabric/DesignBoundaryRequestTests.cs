@@ -29,7 +29,9 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     [Fact]
     public void Test_DesignBoundaryRequest()
     {
-      const int EXPECTED_BOUNDARY_COUNT = 1;
+      const int EXPECTED_BOUNDARY_COUNT = 7;
+      const int EXPECTED_BOUNDARY_POINTS_COUNT_0 = 1528;
+      const int EXPECTED_BOUNDARY_POINTS_COUNT_2 = 15;
       const int EXPECTED_BOUNDARY_POINTS_COUNT = 6;
 
       AddDesignProfilerGridRouting();
@@ -50,7 +52,13 @@ namespace VSS.TRex.Tests.Designs.GridFabric
 
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
       response.Boundary.Count.Should().Be(EXPECTED_BOUNDARY_COUNT);
-      response.Boundary[0].Points.Count.Should().Be(EXPECTED_BOUNDARY_POINTS_COUNT);
+      response.Boundary[0].Points.Count.Should().Be(EXPECTED_BOUNDARY_POINTS_COUNT_0);
+      response.Boundary[1].Points.Count.Should().Be(EXPECTED_BOUNDARY_POINTS_COUNT);
+      response.Boundary[2].Points.Count.Should().Be(EXPECTED_BOUNDARY_POINTS_COUNT_2);
+      response.Boundary[3].Points.Count.Should().Be(EXPECTED_BOUNDARY_POINTS_COUNT);
+      response.Boundary[4].Points.Count.Should().Be(EXPECTED_BOUNDARY_POINTS_COUNT);
+      response.Boundary[5].Points.Count.Should().Be(EXPECTED_BOUNDARY_POINTS_COUNT);
+      response.Boundary[6].Points.Count.Should().Be(EXPECTED_BOUNDARY_POINTS_COUNT);
     }
   }
 }

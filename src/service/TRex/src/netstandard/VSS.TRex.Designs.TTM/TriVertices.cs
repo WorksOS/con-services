@@ -83,12 +83,7 @@ namespace VSS.TRex.Designs.TTM
 
     public void GetLimits(BoundingWorldExtent3D boundingExtent)
     {
-      boundingExtent.MinX = 1E99;
-      boundingExtent.MinY = boundingExtent.MinX;
-      boundingExtent.MinZ = boundingExtent.MinX;
-      boundingExtent.MaxX = -boundingExtent.MinX;
-      boundingExtent.MaxY = boundingExtent.MaxX;
-      boundingExtent.MaxZ = boundingExtent.MaxX;
+      boundingExtent.SetInverted();
 
       foreach (var vertex in this)
         vertex.AdjustLimits(boundingExtent);

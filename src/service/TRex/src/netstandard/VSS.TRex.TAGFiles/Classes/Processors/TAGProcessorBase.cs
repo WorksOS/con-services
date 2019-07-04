@@ -659,10 +659,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             switch (machineSide)
             {
               case MachineSide.Left:
-                myResult = _ICCCALeftFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+                myResult = ICCCALeftFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
               case MachineSide.Right:
-                myResult = _ICCCARightFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+                myResult = ICCCARightFrontValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
             }
             break;
@@ -671,17 +671,17 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             switch (machineSide)
             {
               case MachineSide.Left:
-                myResult = _ICCCALeftRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+                myResult = ICCCALeftRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
               case MachineSide.Right:
-                myResult = _ICCCARightRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+                myResult = ICCCARightRearValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
                 break;
             }
             break;
         }
 
         if (myResult == CellPassConsts.NullCCA)
-             myResult = _ICCCAValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
+             myResult = ICCCAValues.GetValueAtDateTime(dateTime, CellPassConsts.NullCCA);
 
         return myResult;
       }

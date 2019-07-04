@@ -176,7 +176,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
       //Check file type is valid
       if (Enum.TryParse(fileType, true, out ImportedFileType importedFileType))
       {
-        if (importedFileType != ImportedFileType.Linework && importedFileType != ImportedFileType.Alignment)
+        if (importedFileType != ImportedFileType.Linework && 
+            importedFileType != ImportedFileType.Alignment &&
+            importedFileType != ImportedFileType.GeoTiff)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

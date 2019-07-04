@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     public void TestInitialize()
     {
       var services = new ServiceCollection();
-      services.AddSingleton<MockDxfTileGenerationJob>();
+      services.AddSingleton<MockTileGenerationJob>();
       serviceProvider = services
         .AddLogging()
         .BuildServiceProvider();
@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       setupCalled = false;
       runCalled = false;
       tearDownCalled = false;
-      var mockJob = serviceProvider.GetRequiredService<MockDxfTileGenerationJob>();
+      var mockJob = serviceProvider.GetRequiredService<MockTileGenerationJob>();
       Assert.IsNotNull(mockJob);
       mockJob.SetupInvoked += OnSetupInvoked;
       mockJob.RunInvoked += OnRunInvoked;
@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var configStore = new Mock<IConfigurationStore>();
       var jobFactory = new JobFactory(loggerFactory, serviceProvider);
       var vssJobUid = Guid.NewGuid();
-      jobFactory.RegisterJob(vssJobUid, typeof(MockDxfTileGenerationJob));
+      jobFactory.RegisterJob(vssJobUid, typeof(MockTileGenerationJob));
       var devOpsNotification = new Mock<IDevOpsNotification>();
       var jobRunner = new JobRunner(loggerFactory, errorProvider.Object, configStore.Object, jobFactory, devOpsNotification.Object);
       var request = new JobRequest { JobUid = vssJobUid, RunParameters = new DxfTileGenerationRequest() };

@@ -36,9 +36,9 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
           Boundary = fences
         };
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception: ");
+        Log.LogError(e, $"Failed to compute design boundary. Site Model ID: {arg.ProjectID} design ID: {arg.ReferenceDesign.DesignID}");
         return null;
       }
     }

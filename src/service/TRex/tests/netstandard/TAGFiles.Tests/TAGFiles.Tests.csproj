@@ -61,9 +61,6 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="log4net.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="TestData\TAGFiles\Dimensions2018-CaseMachine\2652J085SW--CASE CX160C--121031183620.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

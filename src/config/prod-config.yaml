@@ -122,6 +122,8 @@ data:
   DATA_OCEAN_ROOT_FOLDER: prod
 #Pegasus
   PEGASUS_DXF_PROCEDURE_ID: cd1ef2a0-63fb-4469-809a-e650c4feb4ca
+  #TODO: This is staging, no prod yet, update when prod available
+  PEGASUS_GEOTIFF_PROCEDURE_ID: f61c965b-0828-40b6-8980-26c7ee164566
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
   PEGASUS_URL:  https://api-usw2.trimblepaas.com/pegasus-v1.0

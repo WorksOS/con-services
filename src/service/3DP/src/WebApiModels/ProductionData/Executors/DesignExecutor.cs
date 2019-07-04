@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 #if RAPTOR
@@ -36,17 +37,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         if (fileList != null && fileList.Count > 0)
         {
-#if RAPTOR
-          bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"), out var useTrexGateway);
-#endif
-
           var geoJsonList = new List<JObject>();
 
           for (var i = 0; i < fileList.Count; i++)
           {
             log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
 #if RAPTOR
-            if (useTrexGateway)
+            if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY") ?? false)
 #endif
               ProcessWithTRex(request, fileList[i].ImportedFileUid, fileList[i].Name, ref geoJsonList);
 #if RAPTOR
@@ -67,7 +64,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           geoJsons = new JObject[0];
         }
 
-        return DesignResult.CreateDesignResult(geoJsons);
+        return new DesignResult(geoJsons);
       }
       finally
       {
@@ -78,11 +75,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     private void ProcessWithTRex(DesignBoundariesRequest request, string designUid, string fileName, ref List<JObject> geoJsonList)
     {
       var siteModelId = request.ProjectUid.ToString();
-      var queryParams = $"?projectUid={siteModelId}&designUid={designUid}&fileName={fileName}&tolerance={request.Tolerance}";
+
+      var queryParams = new Dictionary<string, string>()
+      {
+        { "projectUid", siteModelId },
+        { "designUid", designUid },
+        { "fileName", fileName },
+        { "tolerance", request.Tolerance.ToString(CultureInfo.CurrentCulture) }
+      };
 
       var returnedResult = trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, "/design/boundaries", customHeaders, queryParams).Result;
 
-      if (returnedResult != null && returnedResult.GeoJSON != null)
+      if (returnedResult?.GeoJSON != null)
       {
         var jo = JObject.FromObject(returnedResult.GeoJSON);
         geoJsonList.Add(jo);

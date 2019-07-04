@@ -878,7 +878,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Saves a baundary for the design to a file
+    /// Saves a boundary for the design to a file
     /// </summary>
     /// <param name="fileName"></param>
     /// <returns></returns>

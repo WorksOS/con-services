@@ -3,7 +3,8 @@ using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.Log4Net.Extensions;
+using Serilog;
+using VSS.Serilog.Extensions;
 
 namespace VSS.TRex.DI
 {
@@ -72,15 +73,8 @@ namespace VSS.TRex.DI
     /// </summary>
     public DIBuilder AddLogging()
     {
-      // Set up log4net related configuration prior to instantiating the logging service
-      const string loggerRepoName = "VSS";
-
-      //Now set actual logging name and configure logger.
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName);
       // Create the LoggerFactory instance for the service collection
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddProvider(new Log4NetProvider());
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure());
 
       // Insert this immediately into the TRex.Logging namespace to get logging available as early as possible
       Logging.Logger.Inject(loggerFactory);
@@ -149,7 +143,7 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Allow continuation of building the DI context
     /// </summary>
-    public static DIBuilder Continue(IServiceCollection serviceCollection) => Instance ?? New(serviceCollection);
+    public static DIBuilder Continue(IServiceCollection serviceCollection) => New(serviceCollection);
 
     /// <summary>
     /// Removes a single instance of a registered DI service type in DIContext. The first located instance of the supplied type is removed.

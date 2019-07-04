@@ -36,9 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         var request = CastRequestObjectTo<CCARequest>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CCA") ?? false)
         {
 #endif
           var ccaSummaryRequest = new CCASummaryRequest(request.ProjectUid, request.Filter);

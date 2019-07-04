@@ -139,6 +139,7 @@ namespace VSS.TRex.GridFabric.Affinity
       writer.WriteInt(subGridY);
       writer.WriteLong(segmentStartDateTicks);
       writer.WriteLong(segmentEndDateTicks);
+      writer.WriteLong(version);
     }
 
     public void FromBinary(IBinaryRawReader reader)
@@ -150,6 +151,7 @@ namespace VSS.TRex.GridFabric.Affinity
       subGridY = reader.ReadInt();
       segmentStartDateTicks = reader.ReadLong();
       segmentEndDateTicks = reader.ReadLong();
+      version = reader.ReadLong();
     }
   }
 }

@@ -19,7 +19,6 @@ using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 using System.Drawing;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Executors
@@ -39,26 +38,26 @@ namespace VSS.TRex.Rendering.Executors
     /// <summary>
     /// The TRex application service node performing the request
     /// </summary>
-    private string RequestingTRexNodeID { get; set; }
+    private string RequestingTRexNodeID { get; }
 
-    private Guid DataModelID;
-    private DisplayMode Mode;
+    private readonly Guid DataModelID;
+    private readonly DisplayMode Mode;
 
-    private bool CoordsAreGrid;
+    private readonly bool CoordsAreGrid;
 
-    private XYZ BLPoint; // : TWGS84Point;
-    private XYZ TRPoint; // : TWGS84Point;
+    private readonly XYZ BLPoint;
+    private readonly XYZ TRPoint;
 
     private XYZ[] NEECoords;
     private XYZ[] LLHCoords;
 
-    private ushort NPixelsX;
-    private ushort NPixelsY;
+    private readonly ushort NPixelsX;
+    private readonly ushort NPixelsY;
 
     private double TileRotation;
     private double WorldTileWidth, WorldTileHeight;
 
-    private IFilterSet Filters;
+    private readonly IFilterSet Filters;
 
     /// <summary>
     /// The identifier for the design held in the designs list of the project to be used to calculate cut/fill values
@@ -67,9 +66,9 @@ namespace VSS.TRex.Rendering.Executors
     public DesignOffset CutFillDesign { get; set; }
 
     // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
-    private IPlanViewPalette ColourPalettes;
+    private readonly IPlanViewPalette ColorPalettes;
     // ICOptions ICOptions = new ICOptions();
-    private Color RepresentColor;
+    private readonly Color RepresentColor;
 
     /// <summary>
     /// Constructor for the renderer
@@ -83,21 +82,22 @@ namespace VSS.TRex.Rendering.Executors
     /// <param name="ANPixelsY"></param>
     /// <param name="filters"></param>
     /// <param name="ACutFillDesign"></param>
+    /// <param name="aColorPalettes"></param>
     /// <param name="ARepresentColor"></param>
     /// <param name="requestingTRexNodeId"></param>
     public RenderOverlayTile(Guid ADataModelID,
       //AExternalDescriptor :TASNodeRequestDescriptor;
       DisplayMode AMode,
-      XYZ ABLPoint, // : TWGS84Point;
-      XYZ ATRPoint, // : TWGS84Point;
+      XYZ ABLPoint,
+      XYZ ATRPoint,
       bool ACoordsAreGrid,
       ushort ANPixelsX,
       ushort ANPixelsY,
       IFilterSet filters,
       DesignOffset ACutFillDesign, 
-                             //AReferenceVolumeType : TComputeICVolumesType;
-      IPlanViewPalette AColourPalettes,
-                             //AICOptions: TSVOICOptions;
+      //AReferenceVolumeType : TComputeICVolumesType;
+      IPlanViewPalette aColorPalettes,
+      //AICOptions: ...ICOptions;
       Color ARepresentColor,
       string requestingTRexNodeId
     )
@@ -113,51 +113,49 @@ namespace VSS.TRex.Rendering.Executors
       Filters = filters;
       CutFillDesign = ACutFillDesign; 
       //ReferenceVolumeType = AReferenceVolumeType;
-      ColourPalettes = AColourPalettes;
+      ColorPalettes = aColorPalettes;
       //ICOptions = AICOptions;
       RepresentColor = ARepresentColor;
       RequestingTRexNodeID = requestingTRexNodeId;
     }
 
-    //        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
+    private readonly BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
 
-    private BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
-
-    /* TODO ColourPaletteClassType()
-     private TICDisplayPaletteBaseClass ColourPaletteClassType()
+    /* TODO ColorPaletteClassType()
+     private TICDisplayPaletteBaseClass ColorPaletteClassType()
         {
         case FMode of
-          icdmHeight                  : Result  = TICDisplayPalette_Height;
-          icdmCCV                     : Result  = TICDisplayPalette_CCV;
-          icdmCCVPercent              : Result  = TICDisplayPalette_CCVPercent;
-          icdmLatency                 : Result  = TICDisplayPalette_RadioLatency;
-          icdmPassCount               : Result  = TICDisplayPalette_PassCount;
-          icdmPassCountSummary        : Result  = TICDisplayPalette_PassCountSummary;  // Palettes are fixed three colour palettes - displayer will use direct transitions
-          icdmRMV                     : Result  = TICDisplayPalette_RMV;
-          icdmFrequency               : Result  = TICDisplayPalette_Frequency;
-          icdmAmplitude               : Result  = TICDisplayPalette_Amplitude;
-          icdmCutFill                 : Result  = TICDisplayPalette_CutFill;
-          icdmMoisture                : Result  = TICDisplayPalette_Moisture;
-          icdmTemperatureSummary      : Result  = TICDisplayPaletteBase; //TICDisplayPalette_Temperature;
-          icdmGPSMode                 : Result  = TICDisplayPaletteBase; //TICDisplayPalette_GPSMode;
-          icdmCCVSummary              : Result  = TICDisplayPaletteBase; //TICDisplayPalette_CCVSummary;
-          icdmCCVPercentSummary       : Result  = TICDisplayPalette_CCVPercent;
-          icdmCompactionCoverage      : Result  = TICDisplayPalette_CoverageOverlay;
-          icdmVolumeCoverage          : Result  = TICDisplayPalette_VolumeOverlay;
-          icdmMDP                     : Result  = TICDisplayPalette_MDP; // ajr15167
-          icdmMDPSummary              : Result  = TICDisplayPaletteBase;
-          icdmMDPPercent              : Result  = TICDisplayPalette_MDPPercent;
-          icdmMDPPercentSummary       : Result  = TICDisplayPalette_MDPPercent;
-          icdmMachineSpeed            : Result  = TICDisplayPalette_MachineSpeed;
-          icdmCCVPercentChange        : Result  = TICDisplayPalette_CCVPercent;
-          icdmTargetThicknessSummary  : Result  = TICDisplayPalette_VolumeOverlay;
-          icdmTargetSpeedSummary      : Result  = TICDisplayPalette_SpeedSummary;
-          icdmCCVChange               : Result  = TICDisplayPalette_CCVChange;
-          icdmCCA                     : Result  = TICDisplayPalette_CCA;
-          icdmCCASummary              : Result  = TICDisplayPalette_CCASummary;
+          ...Height                  : Result  = TICDisplayPalette_Height;
+          ...CCV                     : Result  = TICDisplayPalette_CCV;
+          ...CCVPercent              : Result  = TICDisplayPalette_CCVPercent;
+          ...Latency                 : Result  = TICDisplayPalette_RadioLatency;
+          ...PassCount               : Result  = TICDisplayPalette_PassCount;
+          ...PassCountSummary        : Result  = TICDisplayPalette_PassCountSummary;  // Palettes are fixed three color palettes - display will use direct transitions
+          ...RMV                     : Result  = TICDisplayPalette_RMV;
+          ...Frequency               : Result  = TICDisplayPalette_Frequency;
+          ...Amplitude               : Result  = TICDisplayPalette_Amplitude;
+          ...CutFill                 : Result  = TICDisplayPalette_CutFill;
+          ...Moisture                : Result  = TICDisplayPalette_Moisture;
+          ...TemperatureSummary      : Result  = TICDisplayPaletteBase; //TICDisplayPalette_Temperature;
+          ...GPSMode                 : Result  = TICDisplayPaletteBase; //TICDisplayPalette_GPSMode;
+          ...CCVSummary              : Result  = TICDisplayPaletteBase; //TICDisplayPalette_CCVSummary;
+          ...CCVPercentSummary       : Result  = TICDisplayPalette_CCVPercent;
+          ...CompactionCoverage      : Result  = TICDisplayPalette_CoverageOverlay;
+          ...VolumeCoverage          : Result  = TICDisplayPalette_VolumeOverlay;
+          ...MDP                     : Result  = TICDisplayPalette_MDP; // ajr15167
+          ...MDPSummary              : Result  = TICDisplayPaletteBase;
+          ...MDPPercent              : Result  = TICDisplayPalette_MDPPercent;
+          ...MDPPercentSummary       : Result  = TICDisplayPalette_MDPPercent;
+          ...MachineSpeed            : Result  = TICDisplayPalette_MachineSpeed;
+          ...CCVPercentChange        : Result  = TICDisplayPalette_CCVPercent;
+          ...TargetThicknessSummary  : Result  = TICDisplayPalette_VolumeOverlay;
+          ...TargetSpeedSummary      : Result  = TICDisplayPalette_SpeedSummary;
+          ...CCVChange               : Result  = TICDisplayPalette_CCVChange;
+          ...CCA                     : Result  = TICDisplayPalette_CCA;
+          ...CCASummary              : Result  = TICDisplayPalette_CCASummary;
 
         else
-          SIGLogMessage.PublishNoODS(Self, Format('ColourPaletteClassType: Unknown display type: %d', [Ord(FMode)]), slmcAssert);
+          SIGLogMessage.PublishNoODS(Self, Format('ColorPaletteClassType: Unknown display type: %d', [Ord(FMode)]), ...Assert);
           Result  = TICDisplayPaletteBase;
         end;
       end;
@@ -167,12 +165,12 @@ namespace VSS.TRex.Rendering.Executors
       function ComputeCCAPalette :Boolean;
       var
         I, J, K               :Integer;
-        ResponseVerb        :TRPCVerbBase;
+        ResponseVerb        :...VerbBase;
         ServerResult        :TICServerRequestResult;
         ResponseDataStream  :TStream;
-        CCAMinimumPasses    :TICCCAMinPassesValue;
-        CCAColorScale       :TCCAColorScale;
-        CCAPalette          :TColourPalettes;
+        CCAMinimumPasses    :...CCAMinPassesValue;
+        CCAColorScale       :...CCAColorScale;
+        CCAPalette          :TColorPalettes;
 
       begin
         Result  = False;
@@ -185,17 +183,17 @@ namespace VSS.TRex.Rendering.Executors
             FMachineID  = -1; // will fail call
           if not Assigned(ASNodeImplInstance) or ASNodeImplInstance.ServiceStopped then
             begin
-              SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Aborting request as service has been stopped', [Self.ClassName]), slmcWarning);
+              SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Aborting request as service has been stopped', [Self.ClassName]), ...Warning);
               Exit;
             end;
 
           ASNodeImplInstance.PSLoadBalancer.LoadBalancedPSService.GetMachineCCAMinimumPassesValue(FDataModelID, FMachineID, FFilter1.StartTime, FFilter1.EndTime, FFilter1.LayerID, ResponseVerb);
           if Assigned(ResponseVerb) then
-            with ResponseVerb as TVLPDRPCVerb_SendResponse do
+            with ResponseVerb as ...Verb_SendResponse do
               begin
                 ServerResult  = TICServerRequestResult(ResponseCode);
             ResponseDataStream  = ResponseData;
-                if (ServerResult = icsrrNoError) and assigned(ResponseData) then
+                if (ServerResult = ...NoError) and assigned(ResponseData) then
                   begin
                     CCAMinimumPasses  = ReadSmallIntFromStream(ResponseDataStream);
 
@@ -204,7 +202,7 @@ namespace VSS.TRex.Rendering.Executors
                     if not Result then
                       Exit;
 
-            CCAColorScale  = TCCAColorScaleManager.CreateCoverageScale(CCAMinimumPasses);
+            CCAColorScale  = ...CCAColorScaleManager.CreateCoverageScale(CCAMinimumPasses);
                     try
                       SetLength(CCAPalette.Transitions, CCAColorScale.TotalColors);
 
@@ -212,19 +210,19 @@ namespace VSS.TRex.Rendering.Executors
             k  = High(CCAPalette.Transitions);
                       for I  = J to K do
                         begin
-                          CCAPalette.Transitions[I].Colour  = CCAColorScale.ColorSegments[K - I].Color;
+                          CCAPalette.Transitions[I].Color  = CCAColorScale.ColorSegments[K - I].Color;
             CCAPalette.Transitions[I].Value   = I+1;
                         end;
                       CCAPalette.ConvertRGBToBGR; // gets done again but needed to match Anatoli palette test :)
-                      WorkingColourPalette.PopulateFromPaletteColours(CCAPalette);
-                      WorkingColourPalette.TransitionColours.ValuesCount  = Length(CCAPalette.Transitions);
+                      WorkingColorPalette.PopulateFromPaletteColors(CCAPalette);
+                      WorkingColorPalette.TransitionColors.ValuesCount  = Length(CCAPalette.Transitions);
                     finally
                       if Assigned(CCAColorScale) then
                         FreeAndNil(CCAColorScale);
             end;
                   end
                 else
-                  SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: GetMachineCCAMinimumPassesValue Failed for InternalSiteModelMachineIndex: %d. ReturnCode:%d', [Self.ClassName, FMachineID, Ord(ServerResult)]), slmcWarning);
+                  SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: GetMachineCCAMinimumPassesValue Failed for InternalSiteModelMachineIndex: %d. ReturnCode:%d', [Self.ClassName, FMachineID, Ord(ServerResult)]), ...Warning);
               end;
         finally
           if Assigned(ResponseVerb) then
@@ -233,40 +231,40 @@ namespace VSS.TRex.Rendering.Executors
       end;
     */
 
-    /* TODO: CreateAndInitialiseWorkingColourPalette
-     function CreateAndInitialiseWorkingColourPalette :Boolean;
+    /* TODO: CreateAndInitialiseWorkingColorPalette
+     function CreateAndInitialiseWorkingColorPalette :Boolean;
      begin
        Result  = True;
 
        // Create a scaled palette to use when rendering the data
        try
-         if ColourPaletteClassType<> Nil then
+         if ColorPaletteClassType<> Nil then
           begin
 
-             WorkingColourPalette  = ColourPaletteClassType.Create;
-             WorkingColourPalette.SmoothPalette  = FMode = icdmCutFill;
+             WorkingColorPalette  = ColorPaletteClassType.Create;
+             WorkingColorPalette.SmoothPalette  = FMode = ...CutFill;
 
-             // CCASummary is done per machineid
-             if FMode in [icdmCCA, icdmCCASummary]
+             // CCASummary is done per machine id
+             if FMode in [...CCA, ...CCASummary]
            then
                Result  = ComputeCCAPalette
              else
                begin
-                 if Length(FColourPalettes.Transitions) = 0 then
-                   WorkingColourPalette.SetToDefaults
+                 if Length(FColorPalettes.Transitions) = 0 then
+                   WorkingColorPalette.SetToDefaults
                  else
-                   WorkingColourPalette.PopulateFromPaletteColours(FColourPalettes);
+                   WorkingColorPalette.PopulateFromPaletteColors(FColorPalettes);
            end;
 
              if Result then
-               WorkingColourPalette.ComputePalette;
+               WorkingColorPalette.ComputePalette;
            end
          else
-           WorkingColourPalette  = Nil;
+           WorkingColorPalette  = Nil;
 
        Except
          On e:Exception do
-           SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Error: %s ', [Self.ClassName, e.Message]), slmcException);
+           SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Error: %s ', [Self.ClassName, e.Message]), ...Exception);
        end;
      end;
    */
@@ -278,27 +276,27 @@ namespace VSS.TRex.Rendering.Executors
     /// <returns></returns>
     private IBitmap RenderTileAsRepresentationalDueToScale(ISubGridTreeBitMask overallExistenceMap)
     {
-      PVMDisplayerBase RepresentationalDisplayer = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/);
+      var RepresentationalDisplay = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/);
 
-      RepresentationalDisplayer.MapView = new MapSurface
+      RepresentationalDisplay.MapView = new MapSurface
       {
         SquareAspect = false,
         Rotation = -TileRotation + Math.PI / 2
       };
 
-      RepresentationalDisplayer.MapView.SetBounds(NPixelsX, NPixelsY);
-      RepresentationalDisplayer.MapView.SetWorldBounds(NEECoords[0].X, NEECoords[0].Y,
+      RepresentationalDisplay.MapView.SetBounds(NPixelsX, NPixelsY);
+      RepresentationalDisplay.MapView.SetWorldBounds(NEECoords[0].X, NEECoords[0].Y,
         NEECoords[0].X + WorldTileWidth, NEECoords[0].Y + WorldTileHeight, 0);
 
-      // Iterate over all the bits in the subgrids drawing a rectangle for each one on the tile being rendered
+      // Iterate over all the bits in the sub grids drawing a rectangle for each one on the tile being rendered
       if (overallExistenceMap.ScanSubGrids(RotatedTileBoundingExtents,
         leaf =>
         {
           leaf.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
 
-          (leaf as SubGridTreeLeafBitmapSubGrid).Bits.ForEachSetBit((x, y) =>
+          (leaf as SubGridTreeLeafBitmapSubGrid)?.Bits.ForEachSetBit((x, y) =>
           {
-            RepresentationalDisplayer.MapView.DrawRect(WorldOriginX + (x * overallExistenceMap.CellSize),
+            RepresentationalDisplay.MapView.DrawRect(WorldOriginX + (x * overallExistenceMap.CellSize),
               WorldOriginY + (y * overallExistenceMap.CellSize),
               overallExistenceMap.CellSize, overallExistenceMap.CellSize, true, RepresentColor);
           });
@@ -306,18 +304,18 @@ namespace VSS.TRex.Rendering.Executors
           return true;
         }))
       {
-        return RepresentationalDisplayer.MapView.BitmapCanvas;
+        return RepresentationalDisplay.MapView.BitmapCanvas;
       }
 
       return null; // It did not work out...
     }
 
     /// <summary>
-    /// Executor that implements requesting and rendering subgrid information to create the rendered tile
+    /// Executor that implements requesting and rendering sub grid information to create the rendered tile
     /// </summary>
     public IBitmap Execute()
     {
-      // WorkingColourPalette  : TICDisplayPaletteBase;
+      // WorkingColorPalette  : TICDisplayPaletteBase;
 
       Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
 
@@ -327,24 +325,24 @@ namespace VSS.TRex.Rendering.Executors
      if Assigned(ASNodeImplInstance.RequestCancellations) and
         ASNodeImplInstance.RequestCancellations.IsRequestCancelled(FExternalDescriptor) then
        begin
-         if VLPDSvcLocations.Debug_LogDebugRequestCancellationToFile then
-           SIGLogMessage.PublishNoODS(Self, 'Request cancelled: ' + FExternalDescriptor.ToString, slmcDebug);
+         if ...SvcLocations.Debug_LogDebugRequestCancellationToFile then
+           SIGLogMessage.PublishNoODS(Self, 'Request cancelled: ' + FExternalDescriptor.ToString, ...Debug);
 
-         ResultStatus  = asneRequestHasBeenCancelled;
+         ResultStatus  = ...RequestHasBeenCancelled;
          InterlockedIncrement64(ASNodeRequestStats.NumMapTileRequestsCancelled);
        Exit;
        end;
 
       // The governor is intended to restrict the numbers of heavy weight processes
-      // such as pipelines that interact with the PC layer to request subgrids
+      // such as pipelines that interact with the PC layer to request sub grids
       ScheduledWithGovernor  = ASNodeImplInstance.Governor.Schedule(FExternalDescriptor, Self, gqWMS, ResultStatus);
       if not ScheduledWithGovernor then
         Exit;
       */
 
-      Guid RequestDescriptor = Guid.NewGuid();
+      var RequestDescriptor = Guid.NewGuid();
 
-      /* TODO Readd when logging available
+      /* TODO Re-add when logging available
     if VLPDSvcLocations.Debug_EmitTileRenderRequestParametersToLog then
       begin
         if FCoordsAreGrid then
@@ -361,7 +359,7 @@ namespace VSS.TRex.Rendering.Executors
                                                  Ord(FReferenceVolumeType),
                                                  FBLPoint.Lon, FBLPoint.Lat, FTRPoint.Lon, FTRPoint.Lat,
                                                  FNPixelsX, FNPixelsY]),
-                                         slmcMessage)
+                                         ...Message)
             else
               SIGLogMessage.PublishNoODS(Self,
                                          Format('RenderPlanViewTiles Execute: Performing render for Descriptor=%d ' +
@@ -374,7 +372,7 @@ namespace VSS.TRex.Rendering.Executors
                                                  Ord(FReferenceVolumeType),
                                                  FBLPoint.Lon, FBLPoint.Lat, FTRPoint.Lon, FTRPoint.Lat,
                                                  FNPixelsX, FNPixelsY]),
-                                         slmcMessage);
+                                         ...Message);
           end
         else
           begin
@@ -390,7 +388,7 @@ namespace VSS.TRex.Rendering.Executors
                                                  Ord(FReferenceVolumeType),
                                                  FBLPoint.Lon * (180/PI), FBLPoint.Lat* (180/PI), FTRPoint.Lon* (180/PI), FTRPoint.Lat* (180/PI),
                                                  FNPixelsX, FNPixelsY]),
-                                         slmcMessage)
+                                         ...Message)
             else
               SIGLogMessage.PublishNoODS(Self,
                                          Format('RenderPlanViewTiles Execute: Performing render for Descriptor=%d ' +
@@ -403,20 +401,20 @@ namespace VSS.TRex.Rendering.Executors
                                                  Ord(FReferenceVolumeType),
                                                  FBLPoint.Lon * (180/PI), FBLPoint.Lat* (180/PI), FTRPoint.Lon* (180/PI), FTRPoint.Lat* (180/PI),
                                                  FNPixelsX, FNPixelsY]),
-                                         slmcMessage);
+                                         ...Message);
           end;
 
         // Include the details of the filter with the logged tile parameters
-        SIGLogMessage.PublishNoODS(Self, Format('Filter1: %s', [IfThen(FFilter1.IsNull, 'Null', FFilter1.ToString)]), slmcMessage);
+        SIGLogMessage.PublishNoODS(Self, Format('Filter1: %s', [IfThen(FFilter1.IsNull, 'Null', FFilter1.ToString)]), ...Message);
         if Assigned(FFilter2) then
-          SIGLogMessage.PublishNoODS(Self, Format('Filter2: %s', [IfThen(FFilter2.IsNull, 'Null', FFilter2.ToString)]), slmcMessage);
+          SIGLogMessage.PublishNoODS(Self, Format('Filter2: %s', [IfThen(FFilter2.IsNull, 'Null', FFilter2.ToString)]), ...Message);
       end;
       */
 
       // Determine the grid (NEE) coordinates of the bottom/left, top/right WGS-84 positions
       // given the project's coordinate system. If there is no coordinate system then exit.
 
-      ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
+      var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
       Log.LogInformation($"Got Site model {DataModelID}, extents are {SiteModel.SiteModelExtent}");
 
       LLHCoords = new[]
@@ -434,7 +432,7 @@ namespace VSS.TRex.Rendering.Executors
       }
       else
       {
-        var conversionResult = ConvertCoordinates.LLHToNEE(SiteModel.CSIB(), LLHCoords);
+        var conversionResult = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
         if (conversionResult.ErrorCode != RequestErrorStatus.OK)
         {
@@ -453,45 +451,35 @@ namespace VSS.TRex.Rendering.Executors
 
       double dx = NEECoords[2].X - NEECoords[0].X;
       double dy = NEECoords[2].Y - NEECoords[0].Y;
-      TileRotation = (Math.PI / 2) - Math.Atan2(dy, dx);
+      TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
 
       RotatedTileBoundingExtents.SetInverted();
-      foreach (XYZ xyz in NEECoords)
+      foreach (var xyz in NEECoords)
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
-
 
       Log.LogInformation($"Tile render executing across tile: [Rotation:{TileRotation}] " +
         $" [BL:{NEECoords[0].X}, {NEECoords[0].Y}, TL:{NEECoords[2].X},{NEECoords[2].Y}, " +
         $"TR:{NEECoords[1].X}, {NEECoords[1].Y}, BR:{NEECoords[3].X}, {NEECoords[3].Y}] " +
         $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}" );
-                                        
-                                       // , ,
-                                       // , ,
-                                       // , ,
-                                       // , ,
-                                       // NEECoords[1].X - NEECoords[0].X, NEECoords[1].Y - NEECoords[0].Y,
-                                       //);
-
-
+      
       // Construct the renderer, configure it, and set it on its way
-      //  WorkingColourPalette = Nil;
+      //  WorkingColorPalette = Nil;
 
-      PlanViewTileRenderer Renderer = new PlanViewTileRenderer();
+      var Renderer = new PlanViewTileRenderer();
       try
       {
-        if (SiteModel == null)
-          return null;
-
         // Intersect the site model extents with the extents requested by the caller
-        Log.LogInformation($"Calculating intersection of bbox and site model {DataModelID}:{SiteModel.SiteModelExtent}");
+        Log.LogInformation($"Calculating intersection of bounding box and site model {DataModelID}:{SiteModel.SiteModelExtent}");
         RotatedTileBoundingExtents.Intersect(SiteModel.SiteModelExtent);
         if (!RotatedTileBoundingExtents.IsValidPlanExtent)
         {
           ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
           Log.LogInformation($"Site model extents {SiteModel.SiteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
 
-          //RenderTransparentTile();
-          return Renderer.Displayer?.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
+          var transparentDisplay = PVMDisplayerFactory.GetDisplayer(Mode);
+          transparentDisplay.MapView = new MapSurface();
+          transparentDisplay.MapView.SetBounds(NPixelsX, NPixelsY);
+          return transparentDisplay.MapView.BitmapCanvas;
         }
 
         // Compute the override cell boundary to be used when processing cells in the sub grids
@@ -500,16 +488,16 @@ namespace VSS.TRex.Rendering.Executors
 
         SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
           RotatedTileBoundingExtents.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
-          out int CellExtents_MinX, out int CellExtents_MinY);
+          out var CellExtents_MinX, out var CellExtents_MinY);
         SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
           RotatedTileBoundingExtents.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
-          out int CellExtents_MaxX, out int CellExtents_MaxY);
+          out var CellExtents_MaxX, out var CellExtents_MaxY);
 
-        BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int)CellExtents_MinX, (int)CellExtents_MinY, (int)CellExtents_MaxX, (int)CellExtents_MaxY);
+        var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
         CellExtents.Expand(1);
 
         // Construct PipelineProcessor
-        IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+        var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
           requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID,
           gridDataType: GridDataFromModeConverter.Convert(Mode),
@@ -532,7 +520,7 @@ namespace VSS.TRex.Rendering.Executors
         ((IPVMRenderingTask)processor.Task).TileRenderer = Renderer;
 
         // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
-        // a final restrictor of the spatial extent used to govern data requests
+        // a final restriction of the spatial extent used to govern data requests
         processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
 
         // Prepare the processor
@@ -544,7 +532,7 @@ namespace VSS.TRex.Rendering.Executors
 
         // Test to see if the tile can be satisfied with a representational render indicating where
         // data is but not what it is (this is useful when the zoom level is far enough away that we
-        // cannot meaningfully render the data). If the size of s subgrid is smaller than
+        // cannot meaningfully render the data). If the size of s sub grid is smaller than
         // the size of a pixel in the requested tile then do this. Just check the X dimension
         // as the data display is isotropic.
         if (Utilities.SubGridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
@@ -552,9 +540,9 @@ namespace VSS.TRex.Rendering.Executors
 
         /* TODO - Create a scaled palette to use when rendering the data
         // Create a scaled palette to use when rendering the data
-        if not CreateAndInitialiseWorkingColourPalette then
+        if not CreateAndInitialiseWorkingColorPalette then
           begin
-          SIGLogMessage.PublishNoODS(Self, Format('Failed to create and initialise working colour palette for data: %s in datamodel %d', [TypInfo.GetEnumName(TypeInfo(TICDisplayMode), Ord(FMode)), FDataModelID]), slmcWarning);
+          SIGLogMessage.PublishNoODS(Self, Format('Failed to create and initialise working color palette for data: %s in datamodel %d', [TypInfo.GetEnumName(TypeInfo(TICDisplayMode), Ord(FMode)), FDataModelID]), ...Warning);
           Exit;
           end;
         */
@@ -566,7 +554,7 @@ namespace VSS.TRex.Rendering.Executors
             Renderer.LiftBuildSettings = ICOptions.LiftBuildSettings;
         */
 
-        // Renderer.WorkingPalette = WorkingColourPalette;
+        // Renderer.WorkingPalette = WorkingColorPalette;
         // Renderer.ReferenceVolumeType = FReferenceVolumeType;
 
         Renderer.IsWhollyInTermsOfGridProjection = true; // Ensure the renderer knows we are using grid projection coordinates
@@ -575,7 +563,7 @@ namespace VSS.TRex.Rendering.Executors
         Renderer.WorldTileWidth = WorldTileWidth;
         Renderer.WorldTileHeight = WorldTileHeight;
 
-        ResultStatus = Renderer.PerformRender(Mode, processor, ColourPalettes, Filters);
+        ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters);
 
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
         {

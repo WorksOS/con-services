@@ -95,23 +95,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           .ConfigureAwait(false);
 
         if (createimportedfile.ImportedFileType == ImportedFileType.Alignment ||
-            createimportedfile.ImportedFileType == ImportedFileType.Linework)
+            createimportedfile.ImportedFileType == ImportedFileType.Linework ||
+            createimportedfile.ImportedFileType == ImportedFileType.GeoTiff)
         {
-          //Generate DXF tiles
-          var jobRequest = new JobRequest
-          {
-            JobUid = DxfTileGenerationJob.VSSJOB_UID,
-            RunParameters = new DxfTileGenerationRequest
-            {
-              CustomerUid = Guid.Parse(customerUid),
-              ProjectUid = createimportedfile.ProjectUid,
-              ImportedFileUid = Guid.Parse(existing.ImportedFileUid),
-              DataOceanRootFolder = createimportedfile.DataOceanRootFolder,
-              DxfFileName = dxfFileName,
-              DcFileName = project.CoordinateSystemFileName,
-              DxfUnitsType = createimportedfile.DxfUnitsType
-            }
-          };
+          //Generate raster tiles
+          var jobRequest = TileGenerationRequestHelper.CreateRequest(
+            createimportedfile.ImportedFileType, 
+            customerUid, 
+            createimportedfile.ProjectUid.ToString(),
+            existing.ImportedFileUid, 
+            createimportedfile.DataOceanRootFolder, 
+            dxfFileName,
+            project.CoordinateSystemFileName, 
+            createimportedfile.DxfUnitsType);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
       }

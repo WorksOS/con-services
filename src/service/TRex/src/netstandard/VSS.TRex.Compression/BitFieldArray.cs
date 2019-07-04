@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Google.Protobuf;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.IO.Helpers;
 
@@ -94,13 +93,13 @@ namespace VSS.TRex.Compression
         {
           if (Storage != null)
           {
-            GenericArrayPoolCacheHelper<ulong>.Caches.Return(Storage);
+            GenericArrayPoolCacheHelper<ulong>.Caches().Return(ref Storage);
           }
 
           var numElements = NumStorageElements();
-          var buffer = GenericArrayPoolCacheHelper<ulong>.Caches.Rent(numElements);
+          var buffer = GenericArrayPoolCacheHelper<ulong>.Caches().Rent(numElements);
 
-          // CLear the buffer
+          // Clear the buffer TODO: Move this logic to write side only
           for (int i = 0; i < numElements; i++)
             buffer[i] = 0;
 
@@ -110,13 +109,29 @@ namespace VSS.TRex.Compression
         /// <summary>
         /// Initialise the bit field array ready to store NumRecords each requiring BitsPerRecord storage
         /// </summary>
+        /// <param name="numBits"></param>
+        public void Initialise(long numBits)
+        {
+          if (numBits > int.MaxValue)
+          {
+            throw new TRexPersistencyException($"Attempt to create bit field array with {numBits} which is more than the {int.MaxValue} limit");
+          }
+
+          NumBits = checked((int)numBits);
+
+          AllocateBuffer();
+        }
+
+        /// <summary>
+        /// Initialise the bit field array ready to store NumRecords each requiring BitsPerRecord storage
+        /// </summary>
         /// <param name="bitsPerRecord"></param>
         /// <param name="numRecords"></param>
         public void Initialise(int bitsPerRecord, int numRecords)
         {
-            NumBits = bitsPerRecord * numRecords;
+            long _numBits = bitsPerRecord * (long)numRecords;
 
-            AllocateBuffer();
+            Initialise(_numBits);
         }
 
         /// <summary>
@@ -126,16 +141,13 @@ namespace VSS.TRex.Compression
         public void Initialise(BitFieldArrayRecordsDescriptor[] recordsArray)
         {
             long _numBits = 0;
-
+       
             for (int i = 0, limit = recordsArray.Length; i < limit; i++)
-              _numBits += (long)recordsArray[i].NumRecords * recordsArray[i].BitsPerRecord;
+            {
+              _numBits += (long) recordsArray[i].NumRecords * recordsArray[i].BitsPerRecord;
+            }
 
-            if (_numBits > int.MaxValue)
-               throw new TRexPersistencyException($"Attempt to create bit field array with {_numBits} which is more than the {int.MaxValue} limit");
-
-            NumBits = checked((int) _numBits);
-
-            AllocateBuffer();
+            Initialise(_numBits);
         }
 
         /// <summary>
@@ -150,7 +162,7 @@ namespace VSS.TRex.Compression
                 return;
 
             var bufferSize = NumStorageElements() * sizeof(ulong);
-            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(bufferSize);
+            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
             try
             {
               Buffer.BlockCopy(Storage, 0, buffer, 0, bufferSize);
@@ -158,7 +170,7 @@ namespace VSS.TRex.Compression
             }
             finally
             {
-              GenericArrayPoolCacheHelper<byte>.Caches.Return(buffer);
+              GenericArrayPoolCacheHelper<byte>.Caches().Return(ref buffer);
             }
         }
 
@@ -176,7 +188,7 @@ namespace VSS.TRex.Compression
             AllocateBuffer();
 
             var bufferSize = NumStorageElements() * sizeof(ulong);
-            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches.Rent(bufferSize);
+            byte[] buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
             try
             {
               reader.Read(buffer, 0, bufferSize);
@@ -184,7 +196,7 @@ namespace VSS.TRex.Compression
             }
             finally
             {
-              GenericArrayPoolCacheHelper<byte>.Caches.Return(buffer);
+              GenericArrayPoolCacheHelper<byte>.Caches().Return(ref buffer);
             }
         }
 
@@ -612,8 +624,7 @@ namespace VSS.TRex.Compression
       {
         if (Storage != null)
         {
-          GenericArrayPoolCacheHelper<ulong>.Caches.Return(Storage);
-          Storage = null;
+          GenericArrayPoolCacheHelper<ulong>.Caches().Return(ref Storage);
         }
         _disposed = true;
       }

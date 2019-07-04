@@ -113,17 +113,21 @@ namespace VSS.TRex.TAGFiles.Executors
       {
         Initialise();
 
-        TAGProcessorPreScanState Processor = new TAGProcessorPreScanState();
-        TAGValueSink Sink = new TAGVisionLinkPrerequisitesValueSink(Processor);
-        TAGReader Reader = new TAGReader(TAGData);
-        TAGFile TagFile = new TAGFile();
+        using (var Processor = new TAGProcessorPreScanState())
+        {
+          var Sink = new TAGVisionLinkPrerequisitesValueSink(Processor);
+          using (var Reader = new TAGReader(TAGData))
+          {
+            var TagFile = new TAGFile();
 
-        ReadResult = TagFile.Read(Reader, Sink);
+            ReadResult = TagFile.Read(Reader, Sink);
+          }
 
-        if (ReadResult != TAGReadResult.NoError)
-          return false;
+          if (ReadResult != TAGReadResult.NoError)
+            return false;
 
-        SetPublishedState(Processor);
+          SetPublishedState(Processor);
+        }
       }
       catch // (Exception E) // make sure any exception is trapped to return correct response to caller
       {

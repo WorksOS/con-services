@@ -1,12 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies", "..\..\MasterDataProxies\src\VSS.MasterData.Proxies.csproj", "{C6C30401-620E-48D7-8FDC-B42E96FA9E81}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{D81A2F22-E2A1-4A21-925A-B434984DC3A8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{6BE576E2-10C4-47B7-BD7B-969396A2140E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess", "VSS.TCCFileAccess.csproj", "{547154AB-7437-416C-9140-8BAB2409B179}"
 EndProject
@@ -18,6 +16,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\..\.editorconfig = ..\..\..\..\.editorconfig
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{17BB1FFF-C066-4A23-9BE7-245882E5D96E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{5609AD0E-0315-4802-AEDA-A680C06B0B00}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{6907D30B-DA03-4932-A8BA-D47DC3FA3DA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +37,6 @@ Global
 		{D81A2F22-E2A1-4A21-925A-B434984DC3A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D81A2F22-E2A1-4A21-925A-B434984DC3A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D81A2F22-E2A1-4A21-925A-B434984DC3A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6BE576E2-10C4-47B7-BD7B-969396A2140E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BE576E2-10C4-47B7-BD7B-969396A2140E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6BE576E2-10C4-47B7-BD7B-969396A2140E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6BE576E2-10C4-47B7-BD7B-969396A2140E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{547154AB-7437-416C-9140-8BAB2409B179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{547154AB-7437-416C-9140-8BAB2409B179}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{547154AB-7437-416C-9140-8BAB2409B179}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -49,9 +49,20 @@ Global
 		{4765BFDC-E4DF-4F24-9D1E-AB525C9E95E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4765BFDC-E4DF-4F24-9D1E-AB525C9E95E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4765BFDC-E4DF-4F24-9D1E-AB525C9E95E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6907D30B-DA03-4932-A8BA-D47DC3FA3DA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6907D30B-DA03-4932-A8BA-D47DC3FA3DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6907D30B-DA03-4932-A8BA-D47DC3FA3DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6907D30B-DA03-4932-A8BA-D47DC3FA3DA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C6C30401-620E-48D7-8FDC-B42E96FA9E81} = {5609AD0E-0315-4802-AEDA-A680C06B0B00}
+		{D81A2F22-E2A1-4A21-925A-B434984DC3A8} = {5609AD0E-0315-4802-AEDA-A680C06B0B00}
+		{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC} = {5609AD0E-0315-4802-AEDA-A680C06B0B00}
+		{5609AD0E-0315-4802-AEDA-A680C06B0B00} = {17BB1FFF-C066-4A23-9BE7-245882E5D96E}
+		{6907D30B-DA03-4932-A8BA-D47DC3FA3DA7} = {5609AD0E-0315-4802-AEDA-A680C06B0B00}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C1CF3C77-8753-42CC-B075-84A25959A60B}

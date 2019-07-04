@@ -43,6 +43,7 @@
     <ProjectReference Include="..\..\..\..\Common\ITask\src\VSS.ITask.csproj" />
     <ProjectReference Include="..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
     <ProjectReference Include="..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
     <ProjectReference Include="..\..\..\..\Common\Pegasus\VSS.Pegasus.Client\src\VSS.Pegasus.Client.csproj" />

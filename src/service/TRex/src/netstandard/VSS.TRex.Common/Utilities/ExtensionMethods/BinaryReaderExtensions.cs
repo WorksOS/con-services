@@ -16,7 +16,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
         /// <returns></returns>
         public static Guid ReadGuid<T>(this T item) where T : BinaryReader
         {
-            byte[] bytes = new byte[16]; // Todo: Change this to a Stackalloc when move to .Net Standard 2.1
+            byte[] bytes = new byte[16]; // TODO NETCORE: Change this to a Stackalloc when move to .Net Standard 2.1
             item.Read(bytes, 0, 16);
             return new Guid(bytes);
         }

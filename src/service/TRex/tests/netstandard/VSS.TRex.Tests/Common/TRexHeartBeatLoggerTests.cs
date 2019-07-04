@@ -30,13 +30,14 @@ namespace VSS.TRex.Tests.Common
       DIBuilder.Continue().Add(x => x.AddSingleton(configMock.Object)).Complete();
 
       var logger = new TRexHeartBeatLogger();
+      var heartbeat = new MemoryHeartBeatLogger();
 
       var testContext = new object();
-      logger.AddContext(testContext);
+      logger.AddContext(heartbeat);
 
       Thread.Sleep(200);
 
-      logger.RemoveContext(testContext);
+      logger.RemoveContext(heartbeat);
       logger.Stop();
     }
   }

@@ -8,15 +8,15 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// Defines the header written at the start of a stream containing sub grid information, either sub grid directory or sub grid segment.
     /// </summary>
-    public class SubGridStreamHeader : INonBinaryReaderWriterMimicable
+    public struct SubGridStreamHeader : INonBinaryReaderWriterMimicable
   {
         public const byte VERSION_NUMBER = 1;
 
         public const int kSubGridHeaderFlag_IsSubGridDirectoryFile = 0x1;
         public const int kSubGridHeaderFlag_IsSubGridSegmentFile = 0x2;
 
-        public static readonly byte[] kICServerSubGridLeafFileMoniker = new byte[] { 73, 67, 83, 71, 76, 69, 65, 70 }; // 'ICSGLEAF' 
-        public static readonly byte[] kICServerSubGridDirectoryFileMoniker = new byte[] { 73, 67, 83, 71, 68, 73, 82, 76 }; // 'ICSGDIRL';
+        public static readonly byte[] kICServerSubGridLeafFileMoniker = { 73, 67, 83, 71, 76, 69, 65, 70 }; // 'ICSGLEAF' 
+        public static readonly byte[] kICServerSubGridDirectoryFileMoniker = { 73, 67, 83, 71, 68, 73, 82, 76 }; // 'ICSGDIRL';
 
         public byte[] Identifier { get; set; }
 
@@ -59,10 +59,6 @@ namespace VSS.TRex.SubGridTrees
             writer.Write(LastUpdateTimeUTC.ToBinary());
         }
 
-        public SubGridStreamHeader()
-        {
-        }
-
         public SubGridStreamHeader(BinaryReader reader) : this()
         {
             Read(reader);
@@ -78,8 +74,12 @@ namespace VSS.TRex.SubGridTrees
             bool result = Identifier.Length == identifier.Length;
 
             if (result)
+            {
               for (int I = 0; I < Identifier.Length; I++)
+              {
                 result &= Identifier[I] == identifier[I];
+              }
+            }
 
             return result;
         }

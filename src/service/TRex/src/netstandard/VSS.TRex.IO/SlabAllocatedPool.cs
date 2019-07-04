@@ -69,7 +69,7 @@ namespace VSS.TRex.IO
         if (_rentalTideLevel >= _maxCapacity)
         {
           // The pool is empty. Synthesize a new span and return it. This span will be discarded when returned
-          Log.LogInformation($"Array pool for spans of size {ArraySize} has reached max capacity of {_maxCapacity} - returning non pool allocated span");
+          Log.LogTrace($"Array pool for spans of size {ArraySize} has reached max capacity of {_maxCapacity} - returning non pool allocated span");
 
           return new TRexSpan<T>(new T[ArraySize], TRexSpan<T>.NO_SLAB_INDEX, 0, ArraySize, false);
         }
@@ -102,6 +102,12 @@ namespace VSS.TRex.IO
           throw new TRexException("Rented buffer count is not zero");
         }
 
+        if (buffer.IsRented)
+        {
+          throw new TRexException("Buffer is already rented");
+        }
+
+        buffer.IsRented = true;
         return buffer;
       }
     }
@@ -110,8 +116,20 @@ namespace VSS.TRex.IO
     /// Returns a given span buffer back to the allocation pool
     /// </summary>
     /// <param name="buffer"></param>
-    public void Return(TRexSpan<T> buffer)
+    public void Return(ref TRexSpan<T> buffer)
     {
+      if (!buffer.IsRented)
+      {
+        throw new TRexException("Buffer is not rented on return to pool");
+      }
+
+      buffer.Count = 0;
+      buffer.IsRented = false;
+
+#if CELLDEBUG
+        buffer.IsReturned = true;
+#endif
+
       lock (_slabPagesLock)
       {
         if (_rentalTideLevel < 0)
@@ -119,12 +137,6 @@ namespace VSS.TRex.IO
           // There is no more capacity to accept returns
           return;
         }
-
-        buffer.Count = 0;
-
-#if CELLDEBUG
-        buffer.IsReturned = true;
-#endif
 
         // Note, buffer slab index in the span may not match the one it is being returned to, which is OK...
         _slabPages[_rentalTideLevel / SpanCountPerSlabPage].Arrays[_rentalTideLevel % SpanCountPerSlabPage] = buffer;

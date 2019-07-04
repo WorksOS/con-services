@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(), 
           It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<string>()))
+          It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(expectedResult);
 
       var assets = new List< KeyValuePair<Guid, long> >() { new KeyValuePair<Guid, long>(assetUid, assetId) };
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .ReturnsAsync(assets);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_MACHINES")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_MACHINES")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(), 
           It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<string>()))
+          It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(expectedResult);
 
       var assets = new List<KeyValuePair<Guid, long>>()
@@ -145,7 +145,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .ReturnsAsync(assets);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_MACHINES")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
@@ -202,7 +202,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .ReturnsAsync(assets);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_MACHINES")).Returns("false");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
@@ -277,7 +277,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .ReturnsAsync(assets);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_MACHINES")).Returns("false");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
