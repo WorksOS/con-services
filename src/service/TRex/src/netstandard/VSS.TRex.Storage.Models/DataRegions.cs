@@ -1,7 +1,4 @@
-﻿using VSS.Common.Abstractions.Configuration;
-using VSS.TRex.DI;
-
-namespace VSS.TRex.Storage.Models
+﻿namespace VSS.TRex.Storage.Models
 {
     /// <summary>
     /// Handles actions and configuration related to data regions introduced in Ignite 2.3 to allow per-cache control of persistency, memory usage etc

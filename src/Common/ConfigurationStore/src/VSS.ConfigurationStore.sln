@@ -1,12 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2000
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "VSS.ConfigurationStore.csproj", "{A67F8A5A-15CE-404C-A03D-60AA7F60C4E4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{315A7005-07EF-4513-973E-C4D74B5108E3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{1C462F68-F4A8-4D04-9FEA-128CC3E94AB4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.UnitTests", "..\test\UnitTests\VSS.ConfigurationStore.UnitTests.csproj", "{66FB1064-DEF4-45B9-9BD0-F95C378E556D}"
 EndProject
@@ -14,6 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\..\.editorconfig = ..\..\..\..\.editorconfig
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{93DD3D06-7494-4E5F-9B8B-FD4F867132DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{64874243-23A4-4847-9246-7D30B94E6198}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,20 +27,25 @@ Global
 		{A67F8A5A-15CE-404C-A03D-60AA7F60C4E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A67F8A5A-15CE-404C-A03D-60AA7F60C4E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A67F8A5A-15CE-404C-A03D-60AA7F60C4E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1C462F68-F4A8-4D04-9FEA-128CC3E94AB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1C462F68-F4A8-4D04-9FEA-128CC3E94AB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1C462F68-F4A8-4D04-9FEA-128CC3E94AB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1C462F68-F4A8-4D04-9FEA-128CC3E94AB4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{66FB1064-DEF4-45B9-9BD0-F95C378E556D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{66FB1064-DEF4-45B9-9BD0-F95C378E556D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66FB1064-DEF4-45B9-9BD0-F95C378E556D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66FB1064-DEF4-45B9-9BD0-F95C378E556D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93DD3D06-7494-4E5F-9B8B-FD4F867132DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93DD3D06-7494-4E5F-9B8B-FD4F867132DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93DD3D06-7494-4E5F-9B8B-FD4F867132DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93DD3D06-7494-4E5F-9B8B-FD4F867132DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64874243-23A4-4847-9246-7D30B94E6198}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64874243-23A4-4847-9246-7D30B94E6198}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64874243-23A4-4847-9246-7D30B94E6198}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64874243-23A4-4847-9246-7D30B94E6198}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{1C462F68-F4A8-4D04-9FEA-128CC3E94AB4} = {315A7005-07EF-4513-973E-C4D74B5108E3}
+		{93DD3D06-7494-4E5F-9B8B-FD4F867132DD} = {315A7005-07EF-4513-973E-C4D74B5108E3}
+		{64874243-23A4-4847-9246-7D30B94E6198} = {315A7005-07EF-4513-973E-C4D74B5108E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {60C65D49-3891-4ADB-8B44-C76A31DF7E8C}

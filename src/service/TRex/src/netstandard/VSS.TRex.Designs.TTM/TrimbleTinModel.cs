@@ -204,7 +204,7 @@ namespace VSS.TRex.Designs.TTM
 
     public void LoadFromStream(Stream stream)
     {
-      using (BinaryReader reader = new BinaryReader(stream))
+      using (var reader = new BinaryReader(stream))
       {
         Read(reader);
       }
@@ -212,7 +212,7 @@ namespace VSS.TRex.Designs.TTM
 
     public void LoadFromFile(string FileName)
     {
-      using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(FileName)))
+      using (var ms = new MemoryStream(File.ReadAllBytes(FileName)))
       {
         LoadFromStream(ms);
       }
@@ -238,7 +238,7 @@ namespace VSS.TRex.Designs.TTM
       this.CoordinateResolution = CoordinateResolution;
       this.ElevationResolution = ElevationResolution;
 
-      using (BinaryWriter writer = new BinaryWriter(stream))
+      using (var writer = new BinaryWriter(stream, Encoding.Default, true))
       {
         Write(writer);
       }
@@ -249,7 +249,7 @@ namespace VSS.TRex.Designs.TTM
       double ElevationResolution = Consts.DefaultElevationResolution,
       bool BuildEdgeListEtAl = true)
     {
-      using (FileStream fs = new FileStream(FileName, FileMode.CreateNew, FileAccess.Write))
+      using (var fs = new FileStream(FileName, FileMode.CreateNew, FileAccess.Write))
       {
         SaveToStream(CoordinateResolution, ElevationResolution, BuildEdgeListEtAl, fs);
       }

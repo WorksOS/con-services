@@ -9,8 +9,8 @@ using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Interfaces;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4NetExtensions;
 using VSS.MasterData.Repositories;
+using VSS.Serilog.Extensions;
 
 namespace VSS.KafkaConsumer
 {

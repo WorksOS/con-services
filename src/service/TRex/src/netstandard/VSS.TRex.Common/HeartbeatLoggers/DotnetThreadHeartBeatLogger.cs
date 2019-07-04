@@ -1,9 +1,18 @@
 ﻿using System.Threading;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Interfaces.Interfaces;
 
 namespace VSS.TRex.Common.HeartbeatLoggers
 {
-  public class DotnetThreadHeartBeatLogger
+  public class DotnetThreadHeartBeatLogger : IHeartBeatLogger
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<DotnetThreadHeartBeatLogger>();
+
+    public void HeartBeat()
+    {
+      Log.LogInformation("Heartbeat: " + ToString());
+    }
+
     public override string ToString()
     {
       ThreadPool.GetMaxThreads(out int maxWorkers, out int maxCompletionPortThreads);

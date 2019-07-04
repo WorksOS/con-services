@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -318,6 +317,16 @@ namespace VSS.ConfigurationStore
     }
 
     public TimeSpan GetValueTimeSpan(string key, TimeSpan defaultValue)
+    {
+      return GetValue(key, defaultValue);
+    }
+
+    public Guid GetValueGuid(string key)
+    {
+      return GetValue(key, Guid.Empty);
+    }
+
+    public Guid GetValueGuid(string key, Guid defaultValue)
     {
       return GetValue(key, defaultValue);
     }

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
 {
@@ -15,7 +12,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
   /// </summary>
   public class SurfaceTask : PipelinedSubGridTask
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SurfaceTask>();
 
     /// <summary>
     /// The collection of sub grids being collected for a patch response

@@ -24,16 +24,19 @@ namespace TAGFiles.Tests
         {
             // Create the TAG file and reader classes
             TAGFile file = new TAGFile();
-            TAGReader reader = new TAGReader(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile-TAGFile-Read-Stream.tag"), FileMode.Open, FileAccess.Read));
+            using (var reader = new TAGReader(new FileStream(
+              Path.Combine("TestData", "TAGFiles", "TestTAGFile-TAGFile-Read-Stream.tag"), FileMode.Open,
+              FileAccess.Read)))
+            {
+              // Create the state and sink
+              TAGProcessorStateBase stateBase = new TAGProcessorStateBase(); // Derivatives to construct later
+              TAGValueSink sink = new TAGValueSink(stateBase);
 
-            // Create the state and sink
-            TAGProcessorStateBase stateBase = new TAGProcessorStateBase(); // Derivatives to construct later
-            TAGValueSink sink = new TAGValueSink(stateBase);
+              //Read the TAG file
+              TAGReadResult result = file.Read(reader, sink);
 
-            //Read the TAG file
-            TAGReadResult result = file.Read(reader, sink);
-
-            Assert.Equal(TAGReadResult.NoError, result);
+              Assert.Equal(TAGReadResult.NoError, result);
+            }
         }
 
         [Fact]

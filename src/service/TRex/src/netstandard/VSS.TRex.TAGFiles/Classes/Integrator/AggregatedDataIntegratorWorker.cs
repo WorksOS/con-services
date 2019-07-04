@@ -393,7 +393,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           {
             // Stamp all the invalidated spatial streams with the project ID
             foreach (var key in subGridIntegrator.InvalidatedSpatialStreams)
+            {
               key.ProjectUID = SiteModelFromDM.ID;
+            }
 
             try
             {
@@ -407,7 +409,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               var insertUTC = DateTime.UtcNow;
 
               retirementQueue.Add(
-                new SegmentRetirementQueueKey {ProjectUID = SiteModelFromDM.ID, InsertUTCAsLong = insertUTC.Ticks},
+                new SegmentRetirementQueueKey
+                {
+                  ProjectUID = SiteModelFromDM.ID,
+                  InsertUTCAsLong = insertUTC.Ticks
+                },
                 new SegmentRetirementQueueItem
                 {
                   InsertUTCAsLong = insertUTC.Ticks,
@@ -420,7 +426,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               Log.LogCritical(e, "Unable to add segment invalidation list to segment retirement queue due to exception:");
               Log.LogCritical("The following segments will NOT be retired as a result:");
               foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
+              {
                 Log.LogCritical($"{invalidatedItem}");
+              }
             }
           }
 
@@ -453,7 +461,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           if (groupedAggregatedCellPasses != Task.AggregatedCellPasses)
           {
             groupedAggregatedCellPasses?.Dispose();
-            groupedAggregatedCellPasses = null;
           }
 
           Task.AggregatedCellPasses?.Dispose();

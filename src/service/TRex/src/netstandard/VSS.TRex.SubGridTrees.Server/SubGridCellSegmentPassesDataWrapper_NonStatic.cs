@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -22,13 +23,36 @@ namespace VSS.TRex.SubGridTrees.Server
         /// A hook that may be used to gain notification of the add, replace and remove cell pass mutations in the cell pass stack
         /// </summary>
         private static readonly ICell_NonStatic_MutationHook _mutationHook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
-     
-        private Cell_NonStatic[,] PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+
+        private Cell_NonStatic[,] PassData;
 
         public SubGridCellSegmentPassesDataWrapper_NonStatic()
         {
+          PassData = GenericTwoDArrayCacheHelper<Cell_NonStatic>.Caches().Rent(); //.RentEx(CellNonStaticRentValidator);
         }
 
+        /// <summary>
+        /// Checks if all cells in the 2D array being rented are correctly initialised for renting
+        /// </summary>
+        /// <param name="passData"></param>
+        private void CellNonStaticRentValidator(Cell_NonStatic[,] passData)
+        {
+          Core.Utilities.SubGridUtilities.SubGridDimensionalIterator
+          ((x, y) =>
+          {
+            if (passData[x, y].Passes.IsRented)
+            {
+              throw new TRexException("Cell_NonStatic already rented in T[,].Rent()");
+            }
+
+            if (passData[x, y].Passes.Count != 0)
+            {
+              throw new TRexException("Cell_NonStatic pass count not zero in T[,].Rent()");
+            }
+          });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int PassCount(int X, int Y) => PassData[X, Y].PassCount;
 
         /// <summary>
@@ -61,6 +85,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="passCount"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AllocatePasses(int X, int Y, int passCount) => PassData[X, Y].AllocatePasses(passCount);
       
         public void AddPass(int X, int Y, CellPass pass)
@@ -98,6 +123,7 @@ namespace VSS.TRex.SubGridTrees.Server
            //throw new NotImplementedException("Removal of cell passes is not yet supported");
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CellPass ExtractCellPass(int X, int Y, int passNumber) => PassData[X, Y].Passes.GetElement(passNumber);
 
         /// <summary>
@@ -110,13 +136,14 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="time"></param>
         /// <param name="index"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool LocateTime(int X, int Y, DateTime time, out int index) => PassData[X, Y].LocateTime(time, out index);
 
         public void Read(BinaryReader reader)
         {
             segmentPassCount = reader.ReadInt32();
 
-            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches.Rent(SubGridTreeConsts.CellsPerSubGrid);
+            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches().Rent(SubGridTreeConsts.CellsPerSubGrid);
             try
             {
               var fieldDescriptor = new EncodedBitFieldDescriptor();
@@ -153,7 +180,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             finally
             {
-              GenericArrayPoolCacheHelper<long>.Caches.Return(passCountBuffer);
+              GenericArrayPoolCacheHelper<long>.Caches().Return(ref passCountBuffer);
             }
         }
 
@@ -322,7 +349,7 @@ namespace VSS.TRex.SubGridTrees.Server
       public void Write(BinaryWriter writer)
         {
             int totalPasses = 0;
-            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches.Rent(SubGridTreeConsts.CellsPerSubGrid);
+            var passCountBuffer = GenericArrayPoolCacheHelper<long>.Caches().Rent(SubGridTreeConsts.CellsPerSubGrid);
             try
             {
               // Write all the cell to the stream
@@ -376,27 +403,34 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             finally
             {
-              GenericArrayPoolCacheHelper<long>.Caches.Return(passCountBuffer);
+              GenericArrayPoolCacheHelper<long>.Caches().Return(ref passCountBuffer);
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float PassHeight(int X, int Y, int passNumber) => PassData[X, Y].Passes.GetElement(passNumber).Height;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DateTime PassTime(int X, int Y, int passNumber) => PassData[X, Y].Passes.GetElement(passNumber).Time;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Integrate(int X, int Y, Cell_NonStatic sourcePasses, int StartIndex, int EndIndex, out int AddedCount, out int ModifiedCount)
         {
             PassData[X, Y].Integrate(sourcePasses, StartIndex, EndIndex, out AddedCount, out ModifiedCount);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Cell_NonStatic ExtractCellPasses(int X, int Y) => PassData[X, Y];
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CellPass Pass(int X, int Y, int passIndex) => PassData[X, Y].Passes.GetElement(passIndex);
 
         public void SetState(Cell_NonStatic[,] cellPasses)
         {
+          ReleaseCellPassesRental();
+
           segmentPassCount = 0;
-          PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+          PassData = GenericTwoDArrayCacheHelper<Cell_NonStatic>.Caches().Rent(); //.RentEx(CellNonStaticRentValidator);
 
           for (int x = 0; x < SubGridTreeConsts.SubGridTreeDimension; x++)
           {
@@ -404,7 +438,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
               var passes = cellPasses[x, y].Passes;
 
-              PassData[x, y].Passes = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Clone(passes);
+              PassData[x, y].Passes = GenericSlabAllocatedArrayPoolHelper<CellPass>.Caches().Clone(passes);
 #if CELLDEBUG
               PassData[x, y].CheckPassesAreInCorrectTimeOrder("SetState");
 #endif
@@ -413,19 +447,16 @@ namespace VSS.TRex.SubGridTrees.Server
           }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasPassData() => PassData != null;
 
         public bool IsImmutable() => false;
 
         public void ReplacePasses(int X, int Y, CellPass[] cellPasses, int cellPassCount)
         {
-          var oldPasses = PassData[X, Y].Passes;
-          if (oldPasses.NeedsToBeReturned())
-          {
-            SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(oldPasses);
-          }
+          GenericSlabAllocatedArrayPoolHelper<CellPass>.Caches().Return(ref PassData[X, Y].Passes);
 
-          var newPasses = SlabAllocatedArrayPoolHelper<CellPass>.Caches.Rent(cellPassCount);
+          var newPasses = GenericSlabAllocatedArrayPoolHelper<CellPass>.Caches().Rent(cellPassCount);
 
           newPasses.Copy(cellPasses, cellPassCount);
           newPasses.Count = cellPassCount;
@@ -437,7 +468,32 @@ namespace VSS.TRex.SubGridTrees.Server
 #endif
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Cell_NonStatic[,] GetState() => PassData;
+
+    private void ReleaseCellPassesRental()
+    {
+      if (PassData == null)
+      {
+        return;
+      }
+
+      // Return all the rented TRexSpans in the current segment
+      for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+      {
+        for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+        {
+          GenericSlabAllocatedArrayPoolHelper<CellPass>.Caches().Return(ref PassData[i, j].Passes);
+        }
+      }
+
+      // ### DEBUG ###
+      // Belt abd braces, make sure the Cell_NonStatic passes look good.
+      // CellNonStaticRentValidator(PassData);
+      // ### DEBUG ###
+
+      GenericTwoDArrayCacheHelper<Cell_NonStatic>.Caches().Return(ref PassData);
+    }
 
     #region IDisposable Support
     private bool disposedValue; // To detect redundant calls
@@ -447,24 +503,7 @@ namespace VSS.TRex.SubGridTrees.Server
       if (!disposedValue)
       {
         // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
-
-        if (PassData != null)
-        {
-          // Return all the rented TRexSpans in the current segment
-          for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
-          {
-            for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
-            {
-              var cellPasses = PassData[i, j];
-
-              if (cellPasses.Passes.NeedsToBeReturned())
-              {
-                SlabAllocatedArrayPoolHelper<CellPass>.Caches.Return(cellPasses.Passes);
-                cellPasses.Passes.MarkReturned();
-              }
-            }
-          }
-        }
+        ReleaseCellPassesRental();
 
         disposedValue = true;
       }

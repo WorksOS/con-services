@@ -6,8 +6,6 @@ using System.Threading;
 using App.Metrics;
 using App.Metrics.AspNetCore;
 using App.Metrics.AspNetCore.Health;
-using App.Metrics.Formatters;
-using App.Metrics.Formatters.Prometheus;
 using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;

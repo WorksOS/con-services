@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.ConfigurationStore;
 using VSS.Tpaas.Client.Abstractions;
 using VSS.Tpaas.Client.Clients;
 using VSS.Tpaas.Client.RequestHandlers;
@@ -27,11 +26,11 @@ namespace VSS.TRex.CoordinateSystems
   /// <remarks>
   /// While these methods can be called directly, it's recommended to utilize the static ConvertCoordinates helper.
   /// </remarks>
-  public static class ConvertCoordinates
+  public class ConvertCoordinates : IConvertCoordinates
   {
     private static readonly object lockObject = new object();
     
-    static ConvertCoordinates()
+    public ConvertCoordinates()
     {
       var configurationStore = DIContext.Obtain<IConfigurationStore>();
 
@@ -54,24 +53,24 @@ namespace VSS.TRex.CoordinateSystems
       serviceClient = DIContext.Obtain<CoordinatesServiceClient>();
     }
 
-    private static readonly CoordinatesServiceClient serviceClient;
+    private readonly CoordinatesServiceClient serviceClient;
 
     /// <summary>
     /// Provides a null conversion between the 2D coordinates in a WGS84 LL point and a XYZ NEE point.
     /// Only the 2D coordinates are used, and directly copied from the LL point to the XY point, maintaining the
     /// X == Longitude and Y == Latitude sense of the relative coordinates
     /// </summary>
-    public static XYZ NullWGSLLToXY(WGS84Point WGSLL) => new XYZ(WGSLL.Lon, WGSLL.Lat, Consts.NullDouble);
+    public XYZ NullWGSLLToXY(WGS84Point WGSLL) => new XYZ(WGSLL.Lon, WGSLL.Lat, Consts.NullDouble);
 
     /// <summary>
     /// Takes an array of <see cref="WGS84Point"/> and uses the Coordinate Service to convert it into <see cref="XYZ"/> data.
     /// </summary>
-    public static XYZ[] NullWGSLLToXY(WGS84Point[] WGSLLs) => WGSLLs.Select(x => new XYZ(x.Lon, x.Lat)).ToArray();
+    public XYZ[] NullWGSLLToXY(WGS84Point[] WGSLLs) => WGSLLs.Select(x => new XYZ(x.Lon, x.Lat)).ToArray();
 
     /// <summary>
     /// Takes a <see cref="LLH"/> and uses the Coordinate Service to convert it into <see cref="NEE"/> data.
     /// </summary>
-    public static NEE LLHToNEE(string id, LLH LLH, bool convertToRadians = true)
+    public NEE LLHToNEE(string id, LLH LLH, bool convertToRadians = true)
     {
       if (convertToRadians)
       {
@@ -85,7 +84,7 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Takes an array of <see cref="LLH"/> and uses the Coordinate Service to convert it into <see cref="NEE"/> data.
     /// </summary>
-    public static (RequestErrorStatus ErrorCode, NEE[] NEECoordinates) LLHToNEE(string id, LLH[] LLH, bool convertToRadians = true)
+    public (RequestErrorStatus ErrorCode, NEE[] NEECoordinates) LLHToNEE(string id, LLH[] LLH, bool convertToRadians = true)
     {
       return serviceClient.GetNEEFromLLHAsync(id, LLH.ToRequestArray(convertToRadians)).Result;
     }
@@ -93,7 +92,7 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Converts <see cref="XYZ"/> coordinates holding <see cref="LLH"/> data into <see cref="NEE"/> data.
     /// </summary>
-    public static XYZ LLHToNEE(string id, XYZ coordinates, bool convertToRadians = true)
+    public XYZ LLHToNEE(string id, XYZ coordinates, bool convertToRadians = true)
     {
       var result = serviceClient.GetNEEFromLLHAsync(id, coordinates.ToLLH(convertToRadians)).Result;
 
@@ -108,7 +107,7 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Converts <see cref="XYZ"/> coordinates holding <see cref="NEE"/> data into <see cref="LLH"/> data.
     /// </summary>
-    public static XYZ NEEToLLH(string id, XYZ coordinates)
+    public XYZ NEEToLLH(string id, XYZ coordinates)
     {
       var result = serviceClient.GetLLHFromNEEAsync(id, coordinates.ToNEE()).Result;
 
@@ -123,7 +122,7 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Takes an array of <see cref="XYZ"/> and uses the Coordinate Service to convert it into <see cref="NEE"/> data.
     /// </summary>
-    public static (RequestErrorStatus ErrorCode, XYZ[] NEECoordinates) LLHToNEE(string id, XYZ[] coordinates, bool convertToRadians = true)
+    public (RequestErrorStatus ErrorCode, XYZ[] NEECoordinates) LLHToNEE(string id, XYZ[] coordinates, bool convertToRadians = true)
     {
       var result = serviceClient.GetNEEFromLLHAsync(id, coordinates.ToLLHRequestArray(convertToRadians)).Result;
       if (result.ErrorCode != RequestErrorStatus.OK)
@@ -146,7 +145,7 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Takes an array of <see cref="XYZ"/> and uses the Coordinate Service to convert it into <see cref="LLH"/> data.
     /// </summary>
-    public static (RequestErrorStatus ErrorCode, XYZ[] LLHCoordinates) NEEToLLH(string id, XYZ[] coordinates)
+    public (RequestErrorStatus ErrorCode, XYZ[] LLHCoordinates) NEEToLLH(string id, XYZ[] coordinates)
     {
       var result = serviceClient.GetLLHFromNEEAsync(id, coordinates.ToNEERequestArray()).Result;
       if (result.ErrorCode != RequestErrorStatus.OK)
@@ -171,17 +170,17 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Takes a <see cref="NEE"/> and uses the Coordinate Service to convert it into <see cref="LLH"/> data.
     /// </summary>
-    public static LLH NEEToLLH(string id, NEE NEE) => serviceClient.GetLLHFromNEEAsync(id, NEE).Result;
+    public LLH NEEToLLH(string id, NEE NEE) => serviceClient.GetLLHFromNEEAsync(id, NEE).Result;
 
     /// <summary>
     /// Takes an array of <see cref="NEE"/> and uses the Coordinate Service to convert it into <see cref="LLH"/> data.
     /// </summary>
-    public static (RequestErrorStatus ErrorCode, LLH[] LLHCoordinates) NEEToLLH(string id, NEE[] NEE) => serviceClient.GetLLHFromNEEAsync(id, NEE.ToRequestArray()).Result;
+    public (RequestErrorStatus ErrorCode, LLH[] LLHCoordinates) NEEToLLH(string id, NEE[] NEE) => serviceClient.GetLLHFromNEEAsync(id, NEE.ToRequestArray()).Result;
 
     /// <summary>
     /// Uses the Coordinate Service to convert WGS84 coordinates into the site calibration used by the project.
     /// </summary>
-    public static XYZ WGS84ToCalibration(string id, WGS84Point wgs84Point, bool convertToRadians = true)
+    public XYZ WGS84ToCalibration(string id, WGS84Point wgs84Point, bool convertToRadians = true)
     {
       var nee = serviceClient.GetNEEFromLLHAsync(id, new LLH
       {
@@ -201,7 +200,7 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Uses the Coordinate Service to convert an array of WGS84 coordinates into the site calibration used by the project.
     /// </summary>
-    public static XYZ[] WGS84ToCalibration(string id, WGS84Point[] wgs84Points, bool convertToRadians = true)
+    public XYZ[] WGS84ToCalibration(string id, WGS84Point[] wgs84Points, bool convertToRadians = true)
     {
       (var errorCode, NEE[] neeCoordinates) = serviceClient.GetNEEFromLLHAsync(id, wgs84Points.ToRequestArray(convertToRadians)).Result;
 
@@ -229,25 +228,24 @@ namespace VSS.TRex.CoordinateSystems
     /// Takes the full path and name of a DC file, reads it and uses the Trimble Coordinate service to convert it into a
     /// csib string
     /// </summary>
-    public static string DCFileToCSIB(string filePath) => serviceClient.ImportFromDCAsync(filePath).Result;
+    public string DCFileToCSIB(string filePath) => serviceClient.ImportFromDCAsync(filePath).Result;
 
     /// <summary>
     /// Takes the content of a DC file as a byte array and uses the Trimble Coordinates Service to convert
     /// it into a CSIB string
     /// </summary>
-    public static string DCFileContentToCSIB(string filePath, byte[] fileContent) => serviceClient.ImportFromDCContentAsync(filePath, fileContent).Result;
+    public string DCFileContentToCSIB(string filePath, byte[] fileContent) => serviceClient.ImportFromDCContentAsync(filePath, fileContent).Result;
 
     /// <summary>
     /// Takes the content of a DC file as a byte array and uses the Trimble Coordinates Service to convert
     /// it into a coordinate system definition response object.
     /// </summary>
-    public static CoordinateSystemResponse DCFileContentToCSD(string filePath, byte[] fileContent) => serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent).Result;
+    public CoordinateSystemResponse DCFileContentToCSD(string filePath, byte[] fileContent) => serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent).Result;
 
     /// <summary>
     /// Takes the CSIB string and uses the Trimble Coordinates Service to convert
     /// it into a coordinate system definition response object.
     /// </summary>
-    public static CoordinateSystemResponse CSIBContentToCSD(string csib) => serviceClient.ImportCSDFromCSIBAsync(csib).Result;
-
+    public CoordinateSystemResponse CSIBContentToCSD(string csib) => serviceClient.ImportCSDFromCSIBAsync(csib).Result;
   }
 }

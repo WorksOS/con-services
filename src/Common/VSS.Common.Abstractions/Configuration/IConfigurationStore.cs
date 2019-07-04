@@ -19,6 +19,8 @@ namespace VSS.Common.Abstractions.Configuration
     double GetValueDouble(string v, double defaultValue);
     TimeSpan? GetValueTimeSpan(string v);
     TimeSpan GetValueTimeSpan(string v, TimeSpan defaultValue);
+    Guid GetValueGuid(string v);
+    Guid GetValueGuid(string v, Guid defaultValue);
     string GetConnectionString(string connectionType, string databaseNameKey);
     string GetConnectionString(string connectionType);
     IConfigurationSection GetSection(string key);

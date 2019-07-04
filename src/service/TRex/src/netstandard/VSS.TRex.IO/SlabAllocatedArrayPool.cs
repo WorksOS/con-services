@@ -23,27 +23,13 @@ namespace VSS.TRex.IO
     /// <summary>
     /// The set of pools providing arrays of different sizes
     /// </summary>
-    private readonly SlabAllocatedPool<T>[] _pools;
+    private SlabAllocatedPool<T>[] _pools;
 
     public SlabAllocatedArrayPool(int allocationPoolPageSize = MAX_ALLOCATION_POOL_SIZE)
     {
       _allocationPoolPageSize = allocationPoolPageSize;
 
-      if (allocationPoolPageSize < 1 || allocationPoolPageSize > MAX_ALLOCATION_POOL_SIZE)
-      {
-        throw new ArgumentException($"Allocation pool size must be in the range 1..{MAX_ALLOCATION_POOL_SIZE}");
-      }
-
-      if (1 << (Utilities.Log2(allocationPoolPageSize) - 1) != allocationPoolPageSize)
-      {
-        throw new ArgumentException("Allocation pool page size must be a power of 2");
-      }
-
-      _pools = new SlabAllocatedPool<T>[Utilities.Log2(allocationPoolPageSize)];
-      for (int i = 0, limit = _pools.Length; i < limit; i++)
-      {
-          _pools[i] = new SlabAllocatedPool<T>(allocationPoolPageSize, 1 << i);
-      }
+      Clear();
     }
 
     /// <summary>
@@ -87,11 +73,16 @@ namespace VSS.TRex.IO
     /// Returns a given buffer back to the allocation pool
     /// </summary>
     /// <param name="buffer"></param>
-    public void Return(TRexSpan<T> buffer)
+    public void Return(ref TRexSpan<T> buffer)
     {
+      if (!buffer.NeedsToBeReturned())
+      {
+        return;
+      }
+
       if (buffer.Capacity == 0)
       {
-        // This is either a default initialised span, or the zero element. In both cases just ignore it
+        // This is either a default initialized span, or the zero element. In both cases just ignore it
         return;
       }
 
@@ -106,7 +97,7 @@ namespace VSS.TRex.IO
       var log2 = Utilities.Log2(buffer.Capacity) - 1;
 
       // Return the span to the pool if it is not the zero element
-      _pools[log2].Return(buffer);
+      _pools[log2].Return(ref buffer);
     }
 
     /// <summary>
@@ -138,7 +129,7 @@ namespace VSS.TRex.IO
     /// Returns detailed statistics on each of the slab allocated array pools
     /// </summary>
     /// <returns></returns>
-    public (int poolIndex, int arraySize, int capacity, int rentedItems)[] Statistics()
+    public (int PoolIndex, int ArraySize, int Capacity, int RentedItems)[] Statistics()
     {
       var result = new (int poolIndex, int arraySize, int capacity, int availableItems)[_pools.Length];
 
@@ -149,5 +140,28 @@ namespace VSS.TRex.IO
 
       return result;
     }
+
+    public void Clear()
+    {
+      if (_allocationPoolPageSize < 1 || _allocationPoolPageSize > MAX_ALLOCATION_POOL_SIZE)
+      {
+        throw new ArgumentException($"Allocation pool size must be in the range 1..{MAX_ALLOCATION_POOL_SIZE}");
+      }
+
+      if (1 << (Utilities.Log2(_allocationPoolPageSize) - 1) != _allocationPoolPageSize)
+      {
+        throw new ArgumentException("Allocation pool page size must be a power of 2");
+      }
+
+      _pools = new SlabAllocatedPool<T>[Utilities.Log2(_allocationPoolPageSize)];
+      for (int i = 0, limit = _pools.Length; i < limit; i++)
+      {
+        _pools[i] = new SlabAllocatedPool<T>(_allocationPoolPageSize, 1 << i);
+      }
+    }
+
+    private string _typeName = typeof(T).Name;
+
+    public string TypeName() => _typeName;
   }
 }

@@ -167,7 +167,7 @@ namespace VSS.TRex.SubGridTrees.Server
       DateTime TestTimeRangeEnd = CoveredTimeRangeEnd;
       int PassesInFirstTimeRange;
       DateTime TestTime;
-
+        
       int desiredCallPassCount = TotalPassCount / NumRequiredClovenSegments;
       do
       {
@@ -252,7 +252,7 @@ namespace VSS.TRex.SubGridTrees.Server
       NewSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
       if (NewSegment.RequiresCleaving(out _, out _))
         Log.LogDebug(
-          $"Info: New cloven segment {_owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo)} ({CleavingSegment.SegmentInfo.StartTime}-{OldEndTime}) (resulting from cleave) of subgrid %s failed to reduce cell pass count below maximums");
+          $"Info: New cloven segment {_owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo)} ({CleavingSegment.SegmentInfo.StartTime}-{OldEndTime}) (resulting from cleave) of subgrid {_owner.Moniker()} failed to reduce cell pass count below maximums");
 #endif
 
       return true;
