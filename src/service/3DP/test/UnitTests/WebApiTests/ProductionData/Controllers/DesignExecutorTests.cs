@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .ReturnsAsync(expectedResult);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<DesignExecutor>(logger, configStore: configStore.Object, fileList: new List<FileData> { new FileData() },
@@ -152,7 +152,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         var expectedResult = TDesignProfilerRequestResult.dppiOK;
 
         var configStore = new Mock<IConfigurationStore>();
-        configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY")).Returns("false");
+        configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY")).Returns(false);
         configStore.Setup(x => x.GetValueString("TCCFILESPACEID")).Returns(Guid.NewGuid().ToString());
         configStore.Setup(x => x.GetValueString("TCCFILESPACENAME")).Returns("Test-Dev");
 

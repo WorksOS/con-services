@@ -44,7 +44,6 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       var response = request.Execute(new DesignBoundaryArgument()
       {
         ProjectID = siteModel.ID,
-        CellSize = SubGridTreeConsts.DefaultCellSize,
         ReferenceDesign = referenceDesign,
         Filters = new FilterSet(new CombinedFilter()),
         TRexNodeID = "UnitTest_TRexNodeID"

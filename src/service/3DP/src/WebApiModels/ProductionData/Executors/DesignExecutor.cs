@@ -37,17 +37,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         if (fileList != null && fileList.Count > 0)
         {
-#if RAPTOR
-          bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"), out var useTrexGateway);
-#endif
-
           var geoJsonList = new List<JObject>();
 
           for (var i = 0; i < fileList.Count; i++)
           {
             log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
 #if RAPTOR
-            if (useTrexGateway)
+            if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY") ?? false)
 #endif
               ProcessWithTRex(request, fileList[i].ImportedFileUid, fileList[i].Name, ref geoJsonList);
 #if RAPTOR

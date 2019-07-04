@@ -23,8 +23,7 @@ namespace VSS.TRex.Designs.GridFabric.Requests
       return request.Execute(new DesignBoundaryArgument
       {
         ProjectID = siteModel.ID,
-        ReferenceDesign = referenceDesign,
-        CellSize = siteModel.CellSize
+        ReferenceDesign = referenceDesign
       });
     }
 

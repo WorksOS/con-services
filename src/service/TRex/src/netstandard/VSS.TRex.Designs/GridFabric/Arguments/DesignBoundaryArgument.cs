@@ -11,11 +11,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
-    /// The cell stepping size to move between points in the patch being interpolated
-    /// </summary>
-    public double CellSize { get; set; }
-
-    /// <summary>
     /// Serialises content to the writer
     /// </summary>
     /// <param name="writer"></param>
@@ -24,8 +19,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       base.ToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
-
-      writer.WriteDouble(CellSize);
     }
 
     /// <summary>
@@ -37,8 +30,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       base.FromBinary(reader);
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
-      CellSize = reader.ReadDouble();
     }
   }
 }

@@ -6,6 +6,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs.Executors
 {
@@ -13,7 +14,7 @@ namespace VSS.TRex.Designs.Executors
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignBoundary>();
 
-    private static IDesignFiles designs;
+    private IDesignFiles designs;
 
     private IDesignFiles Designs => designs ?? (designs = DIContext.Obtain<IDesignFiles>());
 
@@ -34,7 +35,9 @@ namespace VSS.TRex.Designs.Executors
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
 
-      var design = Designs.Lock(arg.ReferenceDesign.DesignID, arg.ProjectID, arg.CellSize, out var lockResult);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID, false);
+
+      var design = Designs.Lock(arg.ReferenceDesign.DesignID, arg.ProjectID, siteModel.CellSize, out var lockResult);
 
       if (design == null)
       {

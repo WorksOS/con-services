@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Indicates whether to use the TRex Gateway instead of calling to the Raptor client.
     /// </summary>
-    private bool UseTRexGateway(string key) => bool.TryParse(configStore.GetValueString(key), out var useTrexGateway) && useTrexGateway;
+    private bool UseTRexGateway(string key) => configStore.GetValueBool(key) ?? false;
 
     /// <summary>
     /// Get a list of all boundaries or polygons used by the filters. 
