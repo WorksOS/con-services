@@ -10,7 +10,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
     [Fact]
     public void Test_AlignmentDesignFilterBoundaryResponse_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<DesignBoundaryResponse>("Empty AlignmentDesignFilterBoundaryResponse not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClass<AlignmentDesignFilterBoundaryResponse>("Empty AlignmentDesignFilterBoundaryResponse not same after round trip serialisation");
     }
 
     [Fact]

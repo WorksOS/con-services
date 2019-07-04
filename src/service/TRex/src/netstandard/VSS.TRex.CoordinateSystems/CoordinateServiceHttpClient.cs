@@ -48,7 +48,7 @@ namespace VSS.TRex.CoordinateSystems
       return httpClient.PutAsync(absoluteUriPath, content);
     }
 
-    private async Task<HttpResponseMessage> SendHttpClientRequest(string route, HttpMethod method, HttpContent httpContent = null)
+    private Task<HttpResponseMessage> SendHttpClientRequest(string route, HttpMethod method, HttpContent httpContent = null)
     {
       var absoluteUriPath = httpClient.BaseAddress.AbsoluteUri + route;
 
@@ -59,7 +59,7 @@ namespace VSS.TRex.CoordinateSystems
         Content = httpContent
       };
 
-      return await httpClient.SendAsync(requestMessage);
+      return httpClient.SendAsync(requestMessage);
     }
   }
 }

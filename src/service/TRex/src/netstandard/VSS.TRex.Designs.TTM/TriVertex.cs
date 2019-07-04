@@ -98,12 +98,7 @@ namespace VSS.TRex.Designs.TTM
     /// <param name="boundingExtent"></param>
     public void AdjustLimits(BoundingWorldExtent3D boundingExtent)
     {
-      if (X < boundingExtent.MinX) boundingExtent.MinX = X;
-      if (X > boundingExtent.MaxX) boundingExtent.MaxX = X;
-      if (Y < boundingExtent.MinY) boundingExtent.MinY = Y;
-      if (Y > boundingExtent.MaxY) boundingExtent.MaxY = Y;
-      if (Z < boundingExtent.MinZ) boundingExtent.MinZ = Z;
-      if (Z > boundingExtent.MaxZ) boundingExtent.MaxZ = Z;
+      boundingExtent.Include(X, Y, Z);
     }
 
 

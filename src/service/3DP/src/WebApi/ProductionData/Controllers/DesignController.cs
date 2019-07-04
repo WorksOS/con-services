@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IFileImportProxy fileImportProxy;
 
     /// <summary>
-    /// Gets the tRex CompactionData proxy interface.
+    /// Gets the TRex CompactionData proxy interface.
     /// </summary>
     private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
     #endregion

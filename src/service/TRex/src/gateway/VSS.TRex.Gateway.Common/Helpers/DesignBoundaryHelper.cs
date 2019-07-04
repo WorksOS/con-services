@@ -7,6 +7,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 using FenceGeometry = VSS.Productivity3D.Models.Models.MapHandling.Geometry;
@@ -85,7 +86,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
             neeCoords[i] = new XYZ(fence.Points[i].X, fence.Points[i].Y, 0.0);
         }
 
-        var coordConversionResult = ConvertCoordinates.NEEToLLH(csib, neeCoords);
+        var coordConversionResult = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, neeCoords);
 
         if (coordConversionResult.ErrorCode == RequestErrorStatus.OK)
         {

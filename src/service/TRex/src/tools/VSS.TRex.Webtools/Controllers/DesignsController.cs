@@ -116,7 +116,7 @@ namespace VSS.TRex.Webtools.Controllers
         throw new ArgumentException($"Unable to locate [path]fileName: {fileNameAndLocalPath}");
       
       var siteModelGuid = Guid.Parse(siteModelUid);
-      //var designUid = Guid.NewGuid();
+      
       if (string.IsNullOrEmpty(designUid.ToString()))
         designUid = Guid.NewGuid();
 
