@@ -77,15 +77,15 @@ namespace VSS.TRex.Profiling
 
       writer.WriteBoolean(OverrideMachineCCV);
       writer.WriteShort(OverridingMachineCCV);
-      CMVRange.ToBinary(writer);
+      _CMVRange.ToBinary(writer);
       writer.WriteBoolean(OverrideMachineMDP);
       writer.WriteShort(OverridingMachineMDP);
-      MDPRange.ToBinary(writer);
+      _MDPRange.ToBinary(writer);
       writer.WriteBoolean(OverrideTargetPassCount);
-      OverridingTargetPassCountRange.ToBinary(writer);
+      _OverridingTargetPassCountRange.ToBinary(writer);
       writer.WriteBoolean(OverrideTemperatureWarningLevels);
-      OverridingTemperatureWarningLevels.ToBinary(writer);
-      TargetMachineSpeed.ToBinary(writer);
+      _OverridingTemperatureWarningLevels.ToBinary(writer);
+      _TargetMachineSpeed.ToBinary(writer);
     }
 
     /// <summary>
@@ -98,15 +98,15 @@ namespace VSS.TRex.Profiling
 
       OverrideMachineCCV = reader.ReadBoolean();
       OverridingMachineCCV = reader.ReadShort();
-      CMVRange.FromBinary(reader);
+      _CMVRange.FromBinary(reader);
       OverrideMachineMDP = reader.ReadBoolean();
       OverridingMachineMDP = reader.ReadShort();
-      MDPRange.FromBinary(reader);
+      _MDPRange.FromBinary(reader);
       OverrideTargetPassCount = reader.ReadBoolean();
-      OverridingTargetPassCountRange.FromBinary(reader);
+      _OverridingTargetPassCountRange.FromBinary(reader);
       OverrideTemperatureWarningLevels = reader.ReadBoolean();
-      OverridingTemperatureWarningLevels.FromBinary(reader);
-      TargetMachineSpeed.FromBinary(reader);
+      _OverridingTemperatureWarningLevels.FromBinary(reader);
+      _TargetMachineSpeed.FromBinary(reader);
     }
 
     //TODO: refactor the BaseRequestArgument to have a base base class with just the below methods to avoid this duplication

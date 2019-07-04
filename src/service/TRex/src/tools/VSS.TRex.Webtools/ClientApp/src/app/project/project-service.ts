@@ -168,8 +168,8 @@ export class ProjectService {
     return this.executeRequest<XYZS[]>('drawProfileLineForDesign', `profiles/design/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}&offset=${designOffset}`);
   }
 
-  public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number, displayMode: number, designUid: string, designOffset: number): Observable<any[]> {
-    return this.executeRequest<any[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}&cutFillDesignUid=${designUid}&offset=${designOffset}&displayMode=${displayMode}`);
+  public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
+      return this.executeRequest<XYZS[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
   }
 
   public drawProfileLineForCompositeElevations(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<any[]> {
