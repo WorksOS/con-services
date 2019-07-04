@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Log4NetExtensions;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;

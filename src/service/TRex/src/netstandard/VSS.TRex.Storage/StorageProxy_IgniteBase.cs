@@ -2,7 +2,7 @@
 using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using System.IO;
-using VSS.Log4NetExtensions;
+using VSS.Serilog.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using VSS.Log4NetExtensions;
+using VSS.Serilog.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;

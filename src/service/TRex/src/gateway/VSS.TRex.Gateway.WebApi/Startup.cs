@@ -30,11 +30,6 @@ namespace VSS.TRex.Gateway.WebApi
 {
   public class Startup : BaseStartup
   {
-    /// <summary>
-    /// The logger repository name
-    /// </summary>
-    public const string LoggerRepoName = "TrexGatewayWebApi";
-
     public override string ServiceName => "TRex Gateway API";
     public override string ServiceDescription => "TRex Gateway API";
     public override string ServiceVersion => "v1";
@@ -48,6 +43,7 @@ namespace VSS.TRex.Gateway.WebApi
     {
       // Add framework services.
       DIBuilder.New(services)
+        .Build()
         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -95,8 +91,7 @@ namespace VSS.TRex.Gateway.WebApi
       }
     }
 
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    { }
   }
 }

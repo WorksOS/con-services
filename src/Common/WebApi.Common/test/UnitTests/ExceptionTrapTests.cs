@@ -8,10 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Exceptions;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Serilog.Extensions;
 
 namespace VSS.WebApi.Common.UnitTests
 {
@@ -23,16 +24,13 @@ namespace VSS.WebApi.Common.UnitTests
     [TestInitialize]
     public virtual void InitTest()
     {
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.WebApi.Common.UnitTests.log"));
       var serviceCollection = new ServiceCollection();
 
-      string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      serviceCollection.AddLogging();
-      serviceCollection
-        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();
+      serviceCollection.AddLogging()
+                       .AddSingleton(loggerFactory)
+                       .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+                       .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }

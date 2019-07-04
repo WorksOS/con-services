@@ -1,54 +1,38 @@
-﻿using System;
-using Apache.Ignite.Core;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage.Interfaces;
-using VSS.WebApi.Common;
-using VSS.TRex.DI;
-using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.SiteModels;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.ServiceDiscovery;
+using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
+using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
-using VSS.Productivity3D.TagFileAuth.Proxy;
-using VSS.TRex.CoordinateSystems;
+using VSS.WebApi.Common;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi
 {
   public class Startup : BaseStartup
   {
- /// <summary>
-    /// The logger repository name
-    /// </summary>
-    public const string LoggerRepoName = "TRexMutableWebApi";
-
     public override string ServiceName => "TRex Mutable Gateway API";
     public override string ServiceDescription => "TRex Mutable Gateway API";
     public override string ServiceVersion => "v1";
@@ -57,10 +41,11 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     /// This method gets called by the runtime. Use this method to add services to the container.
     /// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     /// </summary>
- 
+
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       DIBuilder.New(services)
+         .Build()
          .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -101,12 +86,9 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
-    {
-    }
+    { }
 
-
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    { }
   }
 }

@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.Models;
+using Xunit;
 
 namespace VSS.MasterData.Models.UnitTests
 {
-  [TestClass]
   public class MasterDataModelInterfaceTests
   {
-    [TestMethod]
+    [Fact]
     public void TestAllModelsImplementInterface()
     {
       // Any model that implements IMasterDataModel MUST return a list, either empty or populated
@@ -24,7 +21,7 @@ namespace VSS.MasterData.Models.UnitTests
       var assembly = Assembly.GetAssembly(typeof(BaseDataResult));
 
       // We need to be checking the master data models assembly
-      Assert.AreEqual("VSS.MasterData.Models", assembly.GetName().Name);
+      Assert.Equal("VSS.MasterData.Models", assembly.GetName().Name);
 
       var types = assembly
         .GetTypes()
@@ -37,13 +34,12 @@ namespace VSS.MasterData.Models.UnitTests
       {
         Console.WriteLine($"Testing type {type1.Name} for {nameof(IMasterDataModel.GetIdentifiers)}");
         var dataModel = Activator.CreateInstance(type1) as IMasterDataModel;
-        Assert.IsNotNull(dataModel, $"Could not create type: {type1.Name}. This should have a default constructor as it's a datamodel that's passed between services");
+        Assert.NotNull(dataModel);
         if(dataModel.GetIdentifiers() == null)
           failed.Add(type1.Name);
       }
 
-      Assert.IsTrue(failed.Count == 0, $"Failed to validate '{string.Join(", ", failed)}' models - they have null {nameof(IMasterDataModel.GetIdentifiers)}");
-
+      Assert.True(failed.Count == 0, $"Failed to validate '{string.Join(", ", failed)}' models - they have null {nameof(IMasterDataModel.GetIdentifiers)}");
     }
   }
 }

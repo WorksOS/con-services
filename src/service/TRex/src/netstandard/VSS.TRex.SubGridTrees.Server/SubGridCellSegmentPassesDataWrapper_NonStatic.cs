@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -51,6 +52,7 @@ namespace VSS.TRex.SubGridTrees.Server
           });
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int PassCount(int X, int Y) => PassData[X, Y].PassCount;
 
         /// <summary>
@@ -83,6 +85,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="passCount"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AllocatePasses(int X, int Y, int passCount) => PassData[X, Y].AllocatePasses(passCount);
       
         public void AddPass(int X, int Y, CellPass pass)
@@ -120,6 +123,7 @@ namespace VSS.TRex.SubGridTrees.Server
            //throw new NotImplementedException("Removal of cell passes is not yet supported");
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CellPass ExtractCellPass(int X, int Y, int passNumber) => PassData[X, Y].Passes.GetElement(passNumber);
 
         /// <summary>
@@ -132,6 +136,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="time"></param>
         /// <param name="index"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool LocateTime(int X, int Y, DateTime time, out int index) => PassData[X, Y].LocateTime(time, out index);
 
         public void Read(BinaryReader reader)
@@ -402,17 +407,22 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float PassHeight(int X, int Y, int passNumber) => PassData[X, Y].Passes.GetElement(passNumber).Height;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DateTime PassTime(int X, int Y, int passNumber) => PassData[X, Y].Passes.GetElement(passNumber).Time;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Integrate(int X, int Y, Cell_NonStatic sourcePasses, int StartIndex, int EndIndex, out int AddedCount, out int ModifiedCount)
         {
             PassData[X, Y].Integrate(sourcePasses, StartIndex, EndIndex, out AddedCount, out ModifiedCount);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Cell_NonStatic ExtractCellPasses(int X, int Y) => PassData[X, Y];
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CellPass Pass(int X, int Y, int passIndex) => PassData[X, Y].Passes.GetElement(passIndex);
 
         public void SetState(Cell_NonStatic[,] cellPasses)
@@ -437,6 +447,7 @@ namespace VSS.TRex.SubGridTrees.Server
           }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasPassData() => PassData != null;
 
         public bool IsImmutable() => false;
@@ -457,6 +468,7 @@ namespace VSS.TRex.SubGridTrees.Server
 #endif
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Cell_NonStatic[,] GetState() => PassData;
 
     private void ReleaseCellPassesRental()

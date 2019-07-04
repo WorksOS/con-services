@@ -29,7 +29,7 @@ namespace VSS.WebApi.Common.Swagger
         Required = false
       });
 
-      operation.Parameters.Add(new NonBodyParameter()
+      operation.Parameters.Add(new NonBodyParameter
       {
         Name = "X-Jwt-Assertion",
         In = "header",
@@ -37,7 +37,6 @@ namespace VSS.WebApi.Common.Swagger
         Description = "JWT Assertion token (normally provided by Trimble Authentication after the user/service is successfully authenticated)",
         Required = false
       });
-
     }
   }
 }
