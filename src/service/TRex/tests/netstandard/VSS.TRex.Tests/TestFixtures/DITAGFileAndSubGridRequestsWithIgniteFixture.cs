@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
@@ -16,6 +17,7 @@ using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
+using VSS.TRex.Gateway.WebApi.ActionServices;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
@@ -101,6 +103,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
 
         .Add(x => x.AddSingleton(igniteMock.mockCompute))
         .Add(x => x.AddSingleton(igniteMock.mockIgnite))

@@ -78,12 +78,17 @@ namespace VSS.TRex.Tests.Profiling
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
+      //This is required to get CCV
+      siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
+
+      //Set machine targets
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCVStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, 123);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMDPStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, 321);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetPassCountStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, 4);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMinMaterialTemperature.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, 652);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMaxMaterialTemperature.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, 655);
 
+      //Set up cell passes
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
         new CellPass
         {
@@ -113,8 +118,8 @@ namespace VSS.TRex.Tests.Profiling
 
       var arg = new ProfileRequestArgument_ApplicationService
       {
-        ProjectID = sm.ID,
-        ProfileTypeRequired = GridDataType.Height,
+        ProjectID = sm.ID,        
+        ProfileTypeRequired = GridDataType.CCV,//Note: GridDataType.Height doesn't do the population for CCV
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
         Filters = new FilterSet(new CombinedFilter()),
@@ -137,26 +142,28 @@ namespace VSS.TRex.Tests.Profiling
       response.ProfileCells[0].CellLastElev.Should().Be(9);
       response.ProfileCells[0].CellLowestElev.Should().Be(0);
       response.ProfileCells[0].CellHighestElev.Should().Be(9);
-      response.ProfileCells[0].CellCCV.Should().Be(123+9);
+      response.ProfileCells[0].CellCCV.Should().Be(132);//123+9
       response.ProfileCells[0].CellCCVElev.Should().Be(9);
       response.ProfileCells[0].CellTargetCCV.Should().Be(123);
-      response.ProfileCells[0].CellPreviousMeasuredCCV.Should().Be(CellPassConsts.NullCCV);//131
-      response.ProfileCells[0].CellPreviousMeasuredTargetCCV.Should().Be(CellPassConsts.NullCCV);//0
-      response.ProfileCells[0].CellMDP.Should().Be(321+9);
+      response.ProfileCells[0].CellPreviousMeasuredCCV.Should().Be(131);
+      response.ProfileCells[0].CellPreviousMeasuredTargetCCV.Should().Be(CellPassConsts.NullCCV);
+      response.ProfileCells[0].CellMDP.Should().Be(330);//321+9
       response.ProfileCells[0].CellMDPElev.Should().Be(9);
       response.ProfileCells[0].CellTargetMDP.Should().Be(321);
-      response.ProfileCells[0].TopLayerPassCountTargetRangeMin.Should().Be(CellPassConsts.NullPassCountValue);//4
-      response.ProfileCells[0].TopLayerPassCountTargetRangeMax.Should().Be(CellPassConsts.NullPassCountValue);//4
+      response.ProfileCells[0].TopLayerPassCountTargetRangeMin.Should().Be(4);
+      response.ProfileCells[0].TopLayerPassCountTargetRangeMax.Should().Be(4);
       response.ProfileCells[0].TopLayerPassCount.Should().Be(10);
       response.ProfileCells[0].CellMinSpeed.Should().Be(456);
-      response.ProfileCells[0].CellMaxSpeed.Should().Be(456+9);
-      response.ProfileCells[0].CellMaterialTemperatureWarnMin.Should().Be(652);//652
-      response.ProfileCells[0].CellMaterialTemperatureWarnMax.Should().Be(655);//652
-      response.ProfileCells[0].CellMaterialTemperature.Should().Be(652 + 9);
+      response.ProfileCells[0].CellMaxSpeed.Should().Be(465);//456+9
+      response.ProfileCells[0].CellMaterialTemperatureWarnMin.Should().Be(652);
+      response.ProfileCells[0].CellMaterialTemperatureWarnMax.Should().Be(655);
+      response.ProfileCells[0].CellMaterialTemperature.Should().Be(661);//652+9
       response.ProfileCells[0].CellMaterialTemperatureElev.Should().Be(9);
 
       response.ProfileCells[1].CellFirstElev.Should().Be(CellPassConsts.NullHeight);
+      response.ProfileCells[1].CellLastElev.Should().Be(CellPassConsts.NullHeight);
       response.ProfileCells[1].CellLowestElev.Should().Be(CellPassConsts.NullHeight);
+      response.ProfileCells[1].CellHighestElev.Should().Be(CellPassConsts.NullHeight);
       response.ProfileCells[1].CellCCV.Should().Be(CellPassConsts.NullCCV);
       response.ProfileCells[1].CellCCVElev.Should().Be(CellPassConsts.NullHeight);
       response.ProfileCells[1].CellTargetCCV.Should().Be(CellPassConsts.NullCCV);
@@ -165,13 +172,14 @@ namespace VSS.TRex.Tests.Profiling
       response.ProfileCells[1].CellMDP.Should().Be(CellPassConsts.NullMDP);
       response.ProfileCells[1].CellMDPElev.Should().Be(CellPassConsts.NullHeight);
       response.ProfileCells[1].CellTargetMDP.Should().Be(CellPassConsts.NullMDP);
-      response.ProfileCells[1].TopLayerPassCountTargetRangeMin.Should().Be(CellPassConsts.NullPassCountValue);//0
-      response.ProfileCells[1].TopLayerPassCountTargetRangeMax.Should().Be(CellPassConsts.NullPassCountValue);//0
-      response.ProfileCells[1].TopLayerPassCount.Should().Be(CellPassConsts.NullPassCountValue);//0
-      response.ProfileCells[1].CellMinSpeed.Should().Be(CellPassConsts.NullMachineSpeed);//65535
-      response.ProfileCells[1].CellMaxSpeed.Should().Be(CellPassConsts.NullMachineSpeed);//0
-      response.ProfileCells[1].CellMaterialTemperatureWarnMin.Should().Be(CellPassConsts.NullMaterialTemperatureValue);//4096
-      response.ProfileCells[1].CellMaterialTemperatureWarnMax.Should().Be(CellPassConsts.NullMaterialTemperatureValue);//4096
+      response.ProfileCells[1].TopLayerPassCountTargetRangeMin.Should().Be(CellPassConsts.NullPassCountValue);
+      response.ProfileCells[1].TopLayerPassCountTargetRangeMax.Should().Be(CellPassConsts.NullPassCountValue);
+      response.ProfileCells[1].TopLayerPassCount.Should().Be(CellPassConsts.NullPassCountValue);
+      //Note: MinSpeed of Null and MaxSpeed of 0 are the defaults meaning no speed values
+      response.ProfileCells[1].CellMinSpeed.Should().Be(CellPassConsts.NullMachineSpeed);
+      response.ProfileCells[1].CellMaxSpeed.Should().Be(0);
+      response.ProfileCells[1].CellMaterialTemperatureWarnMin.Should().Be(CellPassConsts.NullMaterialTemperatureValue);
+      response.ProfileCells[1].CellMaterialTemperatureWarnMax.Should().Be(CellPassConsts.NullMaterialTemperatureValue);
       response.ProfileCells[1].CellMaterialTemperature.Should().Be(CellPassConsts.NullMaterialTemperatureValue);
       response.ProfileCells[1].CellMaterialTemperatureElev.Should().Be(CellPassConsts.NullHeight);
     }
@@ -201,7 +209,7 @@ namespace VSS.TRex.Tests.Profiling
           OverrideMachineMDP = true,
           OverridingMachineMDP = 789,
           OverrideTargetPassCount = true,
-          OverridingTargetPassCountRange = new PassCountRangeRecord(4, 6),
+          OverridingTargetPassCountRange = new PassCountRangeRecord(5, 6),
           OverrideTemperatureWarningLevels = true,
           OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(400, 1200),
           TargetMachineSpeed = new MachineSpeedExtendedRecord(777, 888)
@@ -221,47 +229,46 @@ namespace VSS.TRex.Tests.Profiling
       response.ProfileCells[0].CellLastElev.Should().Be(9);
       response.ProfileCells[0].CellLowestElev.Should().Be(0);
       response.ProfileCells[0].CellHighestElev.Should().Be(9);
-      /*
-      response.ProfileCells[0].CellCCV.Should().Be();
-      response.ProfileCells[0].CellCCVElev.Should().Be();
-      response.ProfileCells[0].CellTargetCCV.Should().Be();
-      response.ProfileCells[0].CellPreviousMeasuredCCV.Should().Be();
-      response.ProfileCells[0].CellPreviousMeasuredTargetCCV.Should().Be();
-      response.ProfileCells[0].CellMDP.Should().Be();
-      response.ProfileCells[0].CellMDPElev.Should().Be();
-      response.ProfileCells[0].CellTargetMDP.Should().Be();
-      response.ProfileCells[0].TopLayerPassCountTargetRangeMin.Should().Be();
-      response.ProfileCells[0].TopLayerPassCountTargetRangeMax.Should().Be();
-      response.ProfileCells[0].TopLayerPassCount.Should().Be();
-      response.ProfileCells[0].CellMinSpeed.Should().Be();
-      response.ProfileCells[0].CellMaxSpeed.Should().Be();
-      response.ProfileCells[0].CellMaterialTemperatureWarnMin.Should().Be();
-      response.ProfileCells[0].CellMaterialTemperatureWarnMax.Should().Be();
-      response.ProfileCells[0].CellMaterialTemperature.Should().Be();
-      response.ProfileCells[0].CellMaterialTemperatureElev.Should().Be();
-      */
+      response.ProfileCells[0].CellCCV.Should().Be(132);//123+9
+      response.ProfileCells[0].CellCCVElev.Should().Be(9);
+      response.ProfileCells[0].CellTargetCCV.Should().Be(987);
+      response.ProfileCells[0].CellPreviousMeasuredCCV.Should().Be(131);
+      response.ProfileCells[0].CellPreviousMeasuredTargetCCV.Should().Be(987);
+      response.ProfileCells[0].CellMDP.Should().Be(330);//321+9
+      response.ProfileCells[0].CellMDPElev.Should().Be(9);
+      response.ProfileCells[0].CellTargetMDP.Should().Be(789);
+      response.ProfileCells[0].TopLayerPassCountTargetRangeMin.Should().Be(5);
+      response.ProfileCells[0].TopLayerPassCountTargetRangeMax.Should().Be(6);
+      response.ProfileCells[0].TopLayerPassCount.Should().Be(10);
+      response.ProfileCells[0].CellMinSpeed.Should().Be(456);
+      response.ProfileCells[0].CellMaxSpeed.Should().Be(465);//456+9
+      response.ProfileCells[0].CellMaterialTemperatureWarnMin.Should().Be(400);
+      response.ProfileCells[0].CellMaterialTemperatureWarnMax.Should().Be(1200);
+      response.ProfileCells[0].CellMaterialTemperature.Should().Be(661);//652+9
+      response.ProfileCells[0].CellMaterialTemperatureElev.Should().Be(9);
 
-      response.ProfileCells[1].CellFirstElev.Should().Be(Consts.NullHeight);
-      response.ProfileCells[1].CellLowestElev.Should().Be(Consts.NullHeight);
-      /*
-      response.ProfileCells[1].CellCCV.Should().Be();
-      response.ProfileCells[1].CellCCVElev.Should().Be();
-      response.ProfileCells[1].CellTargetCCV.Should().Be();
-      response.ProfileCells[1].CellPreviousMeasuredCCV.Should().Be();
-      response.ProfileCells[1].CellPreviousMeasuredTargetCCV.Should().Be();
-      response.ProfileCells[1].CellMDP.Should().Be();
-      response.ProfileCells[1].CellMDPElev.Should().Be();
-      response.ProfileCells[1].CellTargetMDP.Should().Be();
-      response.ProfileCells[1].TopLayerPassCountTargetRangeMin.Should().Be();
-      response.ProfileCells[1].TopLayerPassCountTargetRangeMax.Should().Be();
-      response.ProfileCells[1].TopLayerPassCount.Should().Be();
-      response.ProfileCells[1].CellMinSpeed.Should().Be();
-      response.ProfileCells[1].CellMaxSpeed.Should().Be();
-      response.ProfileCells[1].CellMaterialTemperatureWarnMin.Should().Be();
-      response.ProfileCells[1].CellMaterialTemperatureWarnMax.Should().Be();
-      response.ProfileCells[1].CellMaterialTemperature.Should().Be();
-      response.ProfileCells[1].CellMaterialTemperatureElev.Should().Be();
-      */
+      response.ProfileCells[1].CellFirstElev.Should().Be(CellPassConsts.NullHeight);
+      response.ProfileCells[1].CellLastElev.Should().Be(CellPassConsts.NullHeight);
+      response.ProfileCells[1].CellLowestElev.Should().Be(CellPassConsts.NullHeight);
+      response.ProfileCells[1].CellHighestElev.Should().Be(CellPassConsts.NullHeight);
+      response.ProfileCells[1].CellCCV.Should().Be(CellPassConsts.NullCCV);
+      response.ProfileCells[1].CellCCVElev.Should().Be(CellPassConsts.NullHeight);
+      response.ProfileCells[1].CellTargetCCV.Should().Be(CellPassConsts.NullCCV);
+      response.ProfileCells[1].CellPreviousMeasuredCCV.Should().Be(CellPassConsts.NullCCV);
+      response.ProfileCells[1].CellPreviousMeasuredTargetCCV.Should().Be(CellPassConsts.NullCCV);
+      response.ProfileCells[1].CellMDP.Should().Be(CellPassConsts.NullMDP);
+      response.ProfileCells[1].CellMDPElev.Should().Be(CellPassConsts.NullHeight);
+      response.ProfileCells[1].CellTargetMDP.Should().Be(CellPassConsts.NullMDP);
+      response.ProfileCells[1].TopLayerPassCountTargetRangeMin.Should().Be(CellPassConsts.NullPassCountValue);
+      response.ProfileCells[1].TopLayerPassCountTargetRangeMax.Should().Be(CellPassConsts.NullPassCountValue);
+      response.ProfileCells[1].TopLayerPassCount.Should().Be(CellPassConsts.NullPassCountValue);
+      //Note: MinSpeed of Null and MaxSpeed of 0 are the defaults meaning no speed values
+      response.ProfileCells[1].CellMinSpeed.Should().Be(CellPassConsts.NullMachineSpeed);
+      response.ProfileCells[1].CellMaxSpeed.Should().Be(0);
+      response.ProfileCells[1].CellMaterialTemperatureWarnMin.Should().Be(CellPassConsts.NullMaterialTemperatureValue);
+      response.ProfileCells[1].CellMaterialTemperatureWarnMax.Should().Be(CellPassConsts.NullMaterialTemperatureValue);
+      response.ProfileCells[1].CellMaterialTemperature.Should().Be(CellPassConsts.NullMaterialTemperatureValue);
+      response.ProfileCells[1].CellMaterialTemperatureElev.Should().Be(CellPassConsts.NullHeight);
     }
 
     [Theory]

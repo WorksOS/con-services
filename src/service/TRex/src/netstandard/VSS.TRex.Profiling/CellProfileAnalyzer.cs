@@ -92,7 +92,7 @@ namespace VSS.TRex.Profiling
       out ushort maxWarning)
     {
       minWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _, CellPassConsts.NullMaterialTemperatureValue);
-      maxWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _, CellPassConsts.NullMaterialTemperatureValue);
+      maxWarning = SiteModel.MachinesTargetValues[machineID].TargetMaxMaterialTemperature.GetValueAtDate(time, out int _, CellPassConsts.NullMaterialTemperatureValue);
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ namespace VSS.TRex.Profiling
               continue;
 
             for (int PassIndex = ProfileCell.Layers[I].StartCellPassIdx;
-              PassIndex < ProfileCell.Layers[I].EndCellPassIdx;
+              PassIndex <= ProfileCell.Layers[I].EndCellPassIdx;
               PassIndex++)
             {
               if (ProfileCell.Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed < ProfileCell.CellMinSpeed)
