@@ -174,9 +174,6 @@
     <None Update="immutablePersistence.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="log4net.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="build" Condition="'$(SolutionDir)'!='*Undefined*'">

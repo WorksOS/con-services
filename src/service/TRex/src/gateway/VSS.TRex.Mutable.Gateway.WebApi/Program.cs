@@ -1,10 +1,5 @@
 ﻿using System;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using VSS.Log4Net.Extensions;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.WebApi.Common;
 
@@ -46,11 +41,10 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       {
         return builder.UseKestrel()
           .UseLibuv(opts => { opts.ThreadCount = 32; })
-          .BuildKestrelWebHost(Startup.LoggerRepoName)
+          .BuildKestrelWebHost()
           .UseStartup<Startup>()
           .Build();
       });
-
     }
   }
 }

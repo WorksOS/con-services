@@ -6,8 +6,6 @@ using System.Threading;
 using App.Metrics;
 using App.Metrics.AspNetCore;
 using App.Metrics.AspNetCore.Health;
-using App.Metrics.Formatters;
-using App.Metrics.Formatters.Prometheus;
 using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
@@ -17,7 +15,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
 using OpenTracing.Util;
-using VSS.Log4Net.Extensions;
+using Serilog.Extensions.Logging;
+using VSS.Serilog.Extensions;
 
 namespace VSS.WebApi.Common
 {
@@ -51,7 +50,7 @@ namespace VSS.WebApi.Common
     }
 
 
-    public static IWebHostBuilder BuildKestrelWebHost(this IWebHostBuilder builder, string loggerName)
+    public static IWebHostBuilder BuildKestrelWebHost(this IWebHostBuilder builder)
     {
       var kestrelConfig = new ConfigurationBuilder()
         .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
@@ -60,12 +59,11 @@ namespace VSS.WebApi.Common
       builder
         .UseContentRoot(Directory.GetCurrentDirectory())
         .UseConfiguration(kestrelConfig)
-        .ConfigureLogging(localBuilder =>
+        .ConfigureLogging((hostContext, loggingBuilder) =>
         {
-          Log4NetProvider.RepoName = loggerName;
-          localBuilder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          localBuilder.SetMinimumLevel(LogLevel.Debug);
-          localBuilder.AddConfiguration(kestrelConfig);
+          loggingBuilder.AddProvider(
+            p => new SerilogLoggerProvider(
+              SerilogExtensions.Configure(config: kestrelConfig)));
         });
 
       ThreadPool.SetMaxThreads(1024, 2048);
