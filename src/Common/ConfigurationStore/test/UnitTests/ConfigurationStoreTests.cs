@@ -1,155 +1,151 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Log4Net.Extensions;
+using VSS.Serilog.Extensions;
+using Xunit;
 
 namespace VSS.ConfigurationStore.UnitTests
 {
-  [TestClass]
   public class ConfigurationStoreTests
   {
     public IServiceProvider ServiceProvider;
 
-    [TestInitialize]
-    public virtual void InitTest()
+    public ConfigurationStoreTests()
     {
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.ConfigurationStore.UnitTests.log"));
       var serviceCollection = new ServiceCollection();
 
-      string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
       serviceCollection.AddLogging();
+      serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 
-    [TestMethod]
+    [Fact]
     public void CanCreateConfigStore()
     {
-      Assert.IsNotNull(ServiceProvider.GetRequiredService<IConfigurationStore>());
-      Assert.IsInstanceOfType(ServiceProvider.GetRequiredService<IConfigurationStore>(), typeof(GenericConfiguration));
+      Assert.NotNull(ServiceProvider.GetRequiredService<IConfigurationStore>());
+      Assert.IsType<GenericConfiguration>(ServiceProvider.GetRequiredService<IConfigurationStore>());
     }
 
-
-    [TestMethod]
+    [Fact]
     public void CanGetConnectionString()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.IsFalse(String.IsNullOrEmpty(configuration.GetConnectionString("VSPDB")));
+      Assert.False(string.IsNullOrEmpty(configuration.GetConnectionString("VSPDB")));
     }
 
-
-    [TestMethod]
+    [Fact]
     public void ThrowsWhenInvalidConnectionName()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.ThrowsException<InvalidOperationException>(() => configuration.GetConnectionString("VSPDB2"));
+      Assert.Throws<InvalidOperationException>(() => configuration.GetConnectionString("VSPDB2"));
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetString()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.IsFalse(String.IsNullOrEmpty(configuration.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")));
+      Assert.False(string.IsNullOrEmpty(configuration.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")));
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetDefaultString()
     {
-      string defaultValue = "gotThisInstead";
+      var defaultValue = "gotThisInstead";
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.AreEqual(defaultValue, configuration.GetValueString("UNKNOWN_KEY", defaultValue));
+      Assert.Equal(defaultValue, configuration.GetValueString("UNKNOWN_KEY", defaultValue));
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetInt()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.AreEqual(1, configuration.GetValueInt("KAFKA_STACKSIZE"));
+      Assert.Equal(1, configuration.GetValueInt("KAFKA_STACKSIZE"));
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetDefaultInt()
     {
-      int defaultValue = 9988;
+      var defaultValue = 9988;
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.AreEqual(defaultValue, configuration.GetValueInt("UNKNOWN_KEY", defaultValue));
+      Assert.Equal(defaultValue, configuration.GetValueInt("UNKNOWN_KEY", defaultValue));
     }
 
-    [TestMethod]
+    [Fact]
     public void ReturnsNegativeWhenInvalidInteger()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.AreEqual(int.MinValue, configuration.GetValueInt("KAFKA_PORT"));
+      Assert.Equal(int.MinValue, configuration.GetValueInt("KAFKA_PORT"));
     }
 
-    [TestMethod]
+    [Fact]
     public void ReturnsNullWhenInvalidBool()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.IsNull(configuration.GetValueBool("KAFKA_PORT"));
+      Assert.Null(configuration.GetValueBool("KAFKA_PORT"));
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetBool()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var value = configuration.GetValueBool("KAFKA_AUTO_COMMIT");
-      Assert.IsTrue(value.HasValue);
-      Assert.IsFalse(value.Value);
+      Assert.True(value.HasValue);
+      Assert.False(value.Value);
     }
-    [TestMethod]
+
+    [Fact]
     public void CanGetDefaultBool()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var value = configuration.GetValueBool("UNKNOWN_KEY", false);
-      Assert.AreEqual(false, value);
+      Assert.False(value);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetTimeSpan()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var value = configuration.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY");
-      Assert.IsTrue(value.HasValue);
-      Assert.AreEqual(TimeSpan.FromDays(7), value.Value);
+      Assert.True(value.HasValue);
+      Assert.Equal(TimeSpan.FromDays(7), value.Value);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetDefaultTimeSpan()
     {
       var defaultValue = new TimeSpan(5, 4, 3, 2);
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var value = configuration.GetValueTimeSpan("UNKNOWN_KEY", defaultValue);
-      Assert.AreEqual(defaultValue, value);
+      Assert.Equal(defaultValue, value);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetGuid()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var value = configuration.GetValueGuid("PEGASUS_GEOTIFF_PROCEDURE_ID");
-      Assert.AreEqual(new Guid ("f61c965b-0828-40b6-8980-26c7ee164566"), value);
+      Assert.Equal(new Guid("f61c965b-0828-40b6-8980-26c7ee164566"), value);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetDefaultGuid()
     {
       var defaultValue = Guid.NewGuid();
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var value = configuration.GetValueGuid("UNKNOWN_KEY", defaultValue);
-      Assert.AreEqual(defaultValue, value);
+      Assert.Equal(defaultValue, value);
     }
 
-
-    [TestMethod]
+    [Fact]
     public void CanGetLoggingConfig()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var section = configuration.GetLoggingConfig();
-      Assert.IsNotNull(section);
+      Assert.NotNull(section);
     }
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using k8s;
@@ -7,42 +6,33 @@ using k8s.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Kubernetes.Interfaces;
 using VSS.Common.ServiceDiscovery.Resolvers;
 using VSS.Common.ServiceDiscovery.UnitTests.Mocks;
-using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
+using VSS.Serilog.Extensions;
+using Xunit;
 
 namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
 {
-  [TestClass]
   public class KubernetesServiceResolverTests
   {
-    private IServiceCollection serviceCollection;
+    private readonly IServiceCollection serviceCollection;
+    private readonly MockConfiguration mockConfiguration = new MockConfiguration();
 
-    private MockConfiguration mockConfiguration = new MockConfiguration();
-    [TestInitialize]
-    public void InitTest()
+    public KubernetesServiceResolverTests()
     {
-      serviceCollection = new ServiceCollection();
-
-      string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug().AddConsole();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore>(mockConfiguration);
-      serviceCollection.AddSingleton<IServiceResolver, KubernetesServiceResolver>();
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Common.ServiceDiscovery.UnitTests.log"));
+      
+      serviceCollection = new ServiceCollection()
+                          .AddLogging()
+                          .AddSingleton(loggerFactory)
+                          .AddSingleton<IConfigurationStore>(mockConfiguration)
+                          .AddSingleton<IServiceResolver, KubernetesServiceResolver>();
     }
 
     private void CreateMockFactory(Mock<IKubernetes> kubernetesClientMock)
@@ -52,10 +42,10 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
         .Setup(m => m.CreateClient(It.IsAny<string>()))
         .Returns((kubernetesClientMock.Object, "default"));
 
-      serviceCollection.AddSingleton<IKubernetesClientFactory>(mock.Object);
+      serviceCollection.AddSingleton(mock.Object);
     }
 
-    private void AddServiceResult(Mock<IKubernetes> mock, V1ServiceList results, string serviceName = null)
+    private static void AddServiceResult(Mock<IKubernetes> mock, V1ServiceList results, string serviceName = null)
     {
       // If we have a specific service name, this will restrict the method to that
       var expectedFilter = $"service-name={serviceName}";
@@ -81,7 +71,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
         .Returns(Task.FromResult(result));
     }
 
-    private void VerifyKubernetesServiceSearch(Mock<IKubernetes> client, string serviceName)
+    private static void VerifyKubernetesServiceSearch(Mock<IKubernetes> client, string serviceName)
     {
       var expectedFilter = $"service-name={serviceName}";
 
@@ -99,17 +89,17 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
         It.IsAny<CancellationToken>()));
     }
 
-    [TestMethod]
+    [Fact]
     public void TestEnabled()
     {
       CreateMockFactory(new Mock<IKubernetes>());
       var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
 
-      Assert.IsNotNull(resolver);
-      Assert.IsTrue(resolver.IsEnabled);
+      Assert.NotNull(resolver);
+      Assert.True(resolver.IsEnabled);
     }
 
-    [TestMethod]
+    [Fact]
     public void TestPriority()
     {
       const int expectedPriority = 99942;
@@ -118,17 +108,15 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       CreateMockFactory(new Mock<IKubernetes>());
       var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
 
-      Assert.IsNotNull(resolver);
-      Assert.AreEqual(expectedPriority, resolver.Priority);
+      Assert.NotNull(resolver);
+      Assert.Equal(expectedPriority, resolver.Priority);
 
-      Assert.AreEqual(ServiceResultType.InternalKubernetes, resolver.ServiceType);
-
+      Assert.Equal(ServiceResultType.InternalKubernetes, resolver.ServiceType);
     }
 
-    [TestMethod]
+    [Fact]
     public void TestKubernetesConfigValues()
     {
-      const string expectedNamespace = "test-namespace";
       const string expectedContext = "test-context";
 
       mockConfiguration.Values["KubernetesContext"] = expectedContext;
@@ -141,12 +129,12 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
         serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
 
       // Verify that the factory was called with the config values
-      Assert.IsNotNull(resolver);
+      Assert.NotNull(resolver);
       mockFactory.Verify(m =>
         m.CreateClient(It.Is<string>(c => c == expectedContext)));
     }
 
-    [TestMethod]
+    [Fact]
     public void TestNoKubernetesResult()
     {
       var mockFactory = new Mock<IKubernetesClientFactory>();
@@ -156,13 +144,13 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       serviceCollection.AddSingleton(mockFactory.Object);
 
       var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
-      Assert.IsNotNull(resolver);
+      Assert.NotNull(resolver);
 
       var result = resolver.ResolveService("no-services-casue-we-are-offline").Result;
-      Assert.IsNull(result);
+      Assert.Null(result);
     }
 
-    [TestMethod]
+    [Fact]
     public void TestKubernetesNoServicesMatch()
     {
       const string serviceName = "my-service";
@@ -174,16 +162,16 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       CreateMockFactory(mockClient);
       
       var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
-      Assert.IsNotNull(resolver);
+      Assert.NotNull(resolver);
 
       var result = resolver.ResolveService(serviceName).Result;
-      Assert.IsNull(result);
+      Assert.Null(result);
 
       // Verify that we searched for a service with the name expected
       VerifyKubernetesServiceSearch(mockClient, serviceName);
     }
 
-    [TestMethod]
+    [Fact]
     public void TestKubernetesReturnsService()
     {
       const string expectedUrl = "http://127.0.0.1:80";
@@ -217,20 +205,20 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       CreateMockFactory(mockClient);
 
       var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
-      Assert.IsNotNull(resolver);
+      Assert.NotNull(resolver);
 
       var result = resolver.ResolveService(serviceName).Result;
-      Assert.AreEqual(expectedUrl, result);
+      Assert.Equal(expectedUrl, result);
       
       // Ensure that a service doesn't exist has no results
       var noResult = resolver.ResolveService(missingServiceName).Result;
-      Assert.IsNull(noResult);
+      Assert.Null(noResult);
 
       VerifyKubernetesServiceSearch(mockClient, serviceName);
       VerifyKubernetesServiceSearch(mockClient, missingServiceName);
     }
 
-    [TestMethod]
+    [Fact]
     public void TestKubernetesReturnsServiceWithPort80()
     {
       const string expectedUrl = "http://my-host:80";
@@ -299,14 +287,14 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       CreateMockFactory(mockClient);
 
       var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
-      Assert.IsNotNull(resolver);
+      Assert.NotNull(resolver);
 
       var result = resolver.ResolveService(serviceName).Result;
-      Assert.AreEqual(expectedUrl, result);
+      Assert.Equal(expectedUrl, result);
       VerifyKubernetesServiceSearch(mockClient, serviceName);
     }
 
-    [TestMethod]
+    [Fact]
     public void TestKubernetesReturnsNoServiceWithoutPort80()
     {
       const string serviceName = "my-service-but-no-http";
@@ -338,10 +326,10 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       CreateMockFactory(mockClient);
 
       var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
-      Assert.IsNotNull(resolver);
+      Assert.NotNull(resolver);
 
       var result = resolver.ResolveService(serviceName).Result;
-      Assert.IsNull(result);
+      Assert.Null(result);
     }
   }
 }

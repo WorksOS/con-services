@@ -1,53 +1,43 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.ServiceDiscovery.Resolvers;
 using VSS.Common.ServiceDiscovery.UnitTests.Mocks;
-using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
+using VSS.Serilog.Extensions;
+using Xunit;
 
 namespace VSS.Common.ServiceDiscovery.UnitTests
 {
-  [TestClass]
   public class ServiceDiscoveryExtensionMethods
   {
     private IServiceCollection serviceCollection;
+    private readonly MockConfiguration mockConfiguration = new MockConfiguration();
 
-    private MockConfiguration mockConfiguration = new MockConfiguration();
-
-    [TestInitialize]
-    public void InitTest()
+    public ServiceDiscoveryExtensionMethods()
     {
-      serviceCollection = new ServiceCollection();
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Common.ServiceDiscovery.UnitTests.log"));
 
-      string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug().AddConsole();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore>(mockConfiguration);
+      serviceCollection = new ServiceCollection()
+                              .AddLogging()
+                              .AddSingleton(loggerFactory)
+                              .AddSingleton<IConfigurationStore>(mockConfiguration);
     }
-
-    [TestMethod]
+    
+    [Fact]
     public void TestKubernetesIsntAdded()
     {
       serviceCollection.AddServiceDiscovery(false);
-
+      
       var resolvers = serviceCollection.BuildServiceProvider().GetServices<IServiceResolver>();
       foreach (var serviceResolver in resolvers)
       {
-        Assert.IsNotInstanceOfType(serviceResolver, typeof(KubernetesServiceResolver));
+        Assert.IsNotType<KubernetesServiceResolver>(serviceResolver);
       }
     }
 
-    [TestMethod]
+    [Fact]
     public void TestKubernetesIsAdded()
     {
       serviceCollection.AddServiceDiscovery(true);
@@ -63,7 +53,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
         }
       }
 
-      Assert.IsTrue(found, $"Count not find {nameof(KubernetesServiceResolver)} in Resolvers");
+      Assert.True(found, $"Count not find {nameof(KubernetesServiceResolver)} in Resolvers");
     }
   }
 }
