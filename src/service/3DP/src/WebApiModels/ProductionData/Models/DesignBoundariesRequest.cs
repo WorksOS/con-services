@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using VSS.Productivity3D.Common.Models;
+﻿using System;
+using Newtonsoft.Json;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
@@ -11,24 +11,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
   public class DesignBoundariesRequest : ProjectID
   {
     [JsonProperty(PropertyName = "tolerance", Required = Required.Default)]
-    public double tolerance { get; protected set; }
+    public double Tolerance { get; protected set; }
 
     /// <summary>
     /// Creates an instance of DesignBoundariesRequest class to display in Help documentation.
     /// </summary>
     /// <param name="projectId"></param>
+    /// <param name="projectUid"></param>
     /// <param name="tolerance"></param>
     /// <returns></returns>
-    /// 
-    public static DesignBoundariesRequest CreateDesignBoundariesRequest(long projectId, double tolerance)
+    public DesignBoundariesRequest(long projectId, Guid? projectUid, double tolerance)
     {
-      return new DesignBoundariesRequest
-      {
-        ProjectId = projectId,
-        tolerance = tolerance
-      };
+      ProjectId = projectId;
+      ProjectUid = projectUid;
+      Tolerance = tolerance;
     }
     
-    public const double BOUNDARY_POINTS_INTERVAL = 1.00;
+    public const double BOUNDARY_POINTS_INTERVAL = 0.0;
   }
 }
