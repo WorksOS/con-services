@@ -40,7 +40,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <param name="stream"></param>
-    public static void FromStream<T>(this T item, Stream stream) where T : class, IBinaryReaderWriter => FromStream(stream, item.Read);
+    public static void FromStream<T>(this T item, Stream stream) where T :  class, IBinaryReaderWriter => FromStream(stream, item.Read);
 
     /// <summary>
     /// An extension method providing a ToStream() semantic to serialise its state to a stream via the class defined Write() implementation
@@ -48,7 +48,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns></returns>
-    public static byte[] ToBytes<T>(this T item) where T : class, IBinaryReaderWriter => ToBytes(item.Write);
+    public static byte[] ToBytes<T>(this T item) where T :  class, IBinaryReaderWriter => ToBytes(item.Write);
 
     /// <summary>
     /// An extension method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation
@@ -56,7 +56,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns></returns>
-    public static MemoryStream ToStream<T>(this T item) where T : class, IBinaryReaderWriter => ToStream(item.Write);
+    public static MemoryStream ToStream<T>(this T item) where T :  class, IBinaryReaderWriter => ToStream(item.Write);
 
     /// <summary>
     /// A generic method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation

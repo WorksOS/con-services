@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.IO.Heartbeats;
 
 namespace VSS.TRex.IO
 {
@@ -20,6 +22,13 @@ namespace VSS.TRex.IO
     public static void AddPoolCachesToDI(IServiceCollection services)
     {
       DIBuilder.Continue(services).Add(x => AddDIEntries(services));
+    }
+
+    public static void AddHeartBeatLoggers()
+    {
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericSlabAllocatedPoolRegisterHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericArrayPoolRegisterHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new GenericTwoDArrayCacheRegisterHeartBeatLogger());
     }
   }
 }

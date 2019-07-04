@@ -10,6 +10,7 @@ using VSS.Productivity3D.Models.Models.Coords;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
 using VSS.TRex.CoordinateSystems.GridFabric.Requests;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
 {
@@ -37,7 +38,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       if (request == null)
         ThrowRequestTypeCastException<CoordinateSystemFile>();
 
-      var csd = ConvertCoordinates.DCFileContentToCSD(request.CSFileName, request.CSFileContent);
+      var csd = DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 
       if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

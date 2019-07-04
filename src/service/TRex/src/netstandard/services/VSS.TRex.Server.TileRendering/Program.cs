@@ -8,9 +8,9 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Tpaas.Client.Clients;
 using VSS.Tpaas.Client.RequestHandlers;
-using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.HeartbeatLoggers;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -21,7 +21,6 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.HttpClients;
-using VSS.TRex.IO;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -66,12 +65,14 @@ namespace VSS.TRex.Server.TileRendering
       }
     }
 
-    private static void DependencyInjection()
+    private static void DependencyInjection() 
     {
       DIBuilder
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Build()
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)

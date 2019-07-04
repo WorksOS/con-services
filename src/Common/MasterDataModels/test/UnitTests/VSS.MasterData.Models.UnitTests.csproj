@@ -26,7 +26,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="log4net.netcore" Version="3.0.*" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
     <PackageReference Include="coverlet.msbuild" Version="2.0.1" />
   </ItemGroup>
@@ -39,7 +38,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\service\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
     <ProjectReference Include="..\..\src\VSS.MasterData.Models.csproj" />

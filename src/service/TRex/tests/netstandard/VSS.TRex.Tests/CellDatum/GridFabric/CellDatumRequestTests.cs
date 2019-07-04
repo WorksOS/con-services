@@ -323,7 +323,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       siteModel.CSIB().Should().Be(DIMENSIONS_2012_DC_CSIB);
 
       var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height);
-      arg.Point = ConvertCoordinates.NEEToLLH(siteModel.CSIB(), arg.Point);
+      arg.Point = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(siteModel.CSIB(), arg.Point);
       arg.CoordsAreGrid = false;
 
       var request = new CellDatumRequest_ApplicationService();

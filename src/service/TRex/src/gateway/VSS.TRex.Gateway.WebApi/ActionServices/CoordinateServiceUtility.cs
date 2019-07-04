@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 
@@ -37,7 +38,7 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
 
       if (NEECoords.Count > 0)
       {
-        (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(CSIB, NEECoords.ToArray());
+        (var errorCode, XYZ[] LLHCoords) = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(CSIB, NEECoords.ToArray());
      
         // if the count returned is different to that sent, then we can't match with the machines list
         if (errorCode == RequestErrorStatus.OK && NEECoords.Count == LLHCoords.Length)

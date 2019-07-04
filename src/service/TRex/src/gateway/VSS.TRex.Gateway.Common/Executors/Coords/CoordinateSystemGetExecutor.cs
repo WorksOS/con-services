@@ -6,6 +6,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
 {
@@ -41,7 +42,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      var csd = ConvertCoordinates.CSIBContentToCSD(csib);
+      var csd = DIContext.Obtain<IConvertCoordinates>().CSIBContentToCSD(csib);
 
       if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

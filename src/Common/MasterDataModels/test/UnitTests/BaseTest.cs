@@ -1,12 +1,12 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Common.Exceptions;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Serilog.Extensions;
 
 namespace VSS.MasterData.Models.UnitTests
 {
@@ -21,21 +21,13 @@ namespace VSS.MasterData.Models.UnitTests
     [TestInitialize]
     public virtual void InitTest()
     {
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.MasterData.Models.UnitTests.log"));
       var serviceCollection = new ServiceCollection();
 
-      string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      serviceCollection
-        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, FilterValidationErrorCodesProvider>();
+      serviceCollection.AddLogging()
+                       .AddSingleton(loggerFactory)
+                       .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+                       .AddTransient<IErrorCodesProvider, FilterValidationErrorCodesProvider>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }
