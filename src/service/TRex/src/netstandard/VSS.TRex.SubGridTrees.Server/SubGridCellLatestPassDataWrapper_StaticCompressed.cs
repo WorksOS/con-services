@@ -226,12 +226,9 @@ namespace VSS.TRex.SubGridTrees.Server
                 {
                   var pass = cellPasses.Elements[i];
 
-                  BF_CellPasses.StreamWrite(pass.InternalSiteModelMachineIndex,
-                    EncodedFieldDescriptors.InternalMachineID);
-                  BF_CellPasses.StreamWrite(CalculateAttributeValueRange_Buffer_ModifiedTime[counter],
-                    EncodedFieldDescriptors.Time);
-                  BF_CellPasses.StreamWrite(CalculateAttributeValueRange_Buffer_ModifiedHeight[counter],
-                    EncodedFieldDescriptors.Height);
+                  BF_CellPasses.StreamWrite(pass.InternalSiteModelMachineIndex, EncodedFieldDescriptors.InternalMachineID);
+                  BF_CellPasses.StreamWrite(CalculateAttributeValueRange_Buffer_ModifiedTime[counter], EncodedFieldDescriptors.Time);
+                  BF_CellPasses.StreamWrite(CalculateAttributeValueRange_Buffer_ModifiedHeight[counter], EncodedFieldDescriptors.Height);
                   BF_CellPasses.StreamWrite(pass.CCV, EncodedFieldDescriptors.CCV);
                   BF_CellPasses.StreamWrite(pass.RMV, EncodedFieldDescriptors.RMV);
                   BF_CellPasses.StreamWrite(pass.MDP, EncodedFieldDescriptors.MDP);
