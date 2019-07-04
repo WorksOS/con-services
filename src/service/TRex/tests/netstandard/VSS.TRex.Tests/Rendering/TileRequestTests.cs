@@ -147,7 +147,7 @@ namespace VSS.TRex.Tests.Rendering
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
       response.Should().BeOfType<TileRenderResponse_Core2>();
-      ((TileRenderResponse_Core2) response).TileBitmapData.Should().BeNull();
+      ((TileRenderResponse_Core2) response).TileBitmapData.Should().NotBeNull();
     }
 
     [Theory]
@@ -179,7 +179,7 @@ namespace VSS.TRex.Tests.Rendering
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
       response.Should().BeOfType<TileRenderResponse_Core2>();
-      ((TileRenderResponse_Core2)response).TileBitmapData.Should().BeNull();
+      ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
     }
 
     [Theory]
