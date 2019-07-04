@@ -72,7 +72,7 @@ namespace TestUtility
       {
         BaseUri = _testConfig.webApiUri;
       }
-
+      
       const string query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
 
       var result = MySqlHelper.ExecuteRead(query);
