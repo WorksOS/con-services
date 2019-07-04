@@ -45,6 +45,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       DIBuilder.New(services)
+         .Build()
          .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)

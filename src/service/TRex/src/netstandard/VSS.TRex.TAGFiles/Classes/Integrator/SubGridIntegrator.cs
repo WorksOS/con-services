@@ -143,15 +143,29 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                            Action<int, int> subGridChangeNotifier)
         {
             var TargetSubGrid = LocateOrCreateSubGrid(Target, SourceSubGrid.OriginX, SourceSubGrid.OriginY);
-            if (TargetSubGrid == null)
+
+            try
             {
+              if (TargetSubGrid == null)
+              {
                 Log.LogError("Failed to locate or create sub grid in IntegrateIntoLiveGrid");
                 return;
-            }
+              }
 
-            if (!IntegrateIntoLiveDatabase(SourceSubGrid, TargetSubGrid, SegmentIterator, subGridChangeNotifier))
-            {
+              if (!IntegrateIntoLiveDatabase(SourceSubGrid, TargetSubGrid, SegmentIterator, subGridChangeNotifier))
+              {
                 Log.LogError("Integration into live database failed");
+              }
+            }
+            finally
+            {
+              // At this point TargetSubGrid is of no further interest. The site model will be dropped in-toto once all 
+              // changes have been integrated into the live sub grids and releasing it's resources here alleviates memory
+              // pressure that occurs if all sub grids are integrated before any resource freeing occurs
+              // This is not mediated by a using block as we want the sub grid to remain in the sub grid tree (ie:
+              // removing it is messy and not necessary here, it can be delegated to the DropSiteModel() phase.
+              TargetSubGrid?.DeAllocateLeafFullPassStacks();
+              TargetSubGrid?.DeAllocateLeafLatestPassGrid();
             }
         }
 
@@ -271,7 +285,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     // ReSharper disable once MemberCanBePrivate.Global
     public IServerLeafSubGrid LocateOrCreateSubGrid(IServerSubGridTree Grid, int CellX, int CellY)
         {
-            IServerLeafSubGrid Result = SubGridUtilities.LocateSubGridContaining(
+            var Result = SubGridUtilities.LocateSubGridContaining(
                                     StorageProxy,
                                     Grid,
                                     // DataStoreInstance.GridDataCache,
