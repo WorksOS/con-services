@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using VSS.Log4Net.Extensions;
+﻿using Microsoft.AspNetCore.Hosting;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.WebApi.Common;
 
@@ -11,14 +6,12 @@ namespace VSS.TRex.Gateway.WebApi
 {
   public class Program
   {
-    public static void Main(string[] args)
+    public static void Main()
     {
-      var webHost = BuildWebHost(args);
-
-      webHost.Run();
+      BuildWebHost().Run();
     }
 
-    public static IWebHost BuildWebHost(string[] args)
+    public static IWebHost BuildWebHost()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
 
@@ -26,12 +19,10 @@ namespace VSS.TRex.Gateway.WebApi
       {
         return builder.UseKestrel()
           .UseLibuv(opts => { opts.ThreadCount = 32; })
-          .BuildKestrelWebHost(Startup.LoggerRepoName)
+          .BuildKestrelWebHost()
           .UseStartup<Startup>()
           .Build();
       });
-
     }
   }
 }
-

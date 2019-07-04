@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Core;
@@ -17,7 +18,7 @@ namespace VSS.Serilog.Extensions
     /// <param name="config">Optional configuration overrides.</param>
     /// <param name="httpContextAccessor">Used for the <see cref="HttpContextEnricher"/> to log the interservice RequestID.</param>
     /// <returns></returns>
-    public static Logger Configure(string logFilename, IConfigurationRoot config = null, IHttpContextAccessor httpContextAccessor = null)
+    public static Logger Configure(string logFilename = null, IConfigurationRoot config = null, IHttpContextAccessor httpContextAccessor = null)
     {
       const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message} {EscapedException}{NewLine}";
 
@@ -41,7 +42,28 @@ namespace VSS.Serilog.Extensions
         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message}{NewLine}{Exception}",
         shared: true);
 
-      if (config != null) { logger.ReadFrom.Configuration(config); }
+      if (config == null)
+      {
+        try
+        {
+          config = new ConfigurationBuilder()
+                   .SetBasePath(Directory.GetCurrentDirectory())
+                   .AddJsonFile(path: "appsettings.json")
+                   .Build();
+        }
+        catch (FileNotFoundException)
+        { 
+          if (string.IsNullOrEmpty(logFilename))
+          {
+            throw new InvalidDataException("Must provide either a valid logFilename or appsettings.json configuration file.");
+          }
+        }
+      }
+
+      if (config != null)
+      {
+        logger.ReadFrom.Configuration(config);
+      }
 
       return logger.CreateLogger();
     }
