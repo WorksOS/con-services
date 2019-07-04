@@ -1,28 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Converters;
+using Xunit;
 
 namespace VSS.MasterData.Models.UnitTests.Converters
 {
-  [TestClass]
   public class RaptorNullableConverterTests
   {
-    [TestMethod]
+    [Fact]
     public void EnsureException()
     {
       // Cannot read values, must throw an exception
       var converter = new RaptorNullableConverter();
-      Assert.IsFalse(converter.CanRead);
-      Assert.ThrowsException<NotSupportedException>(() =>
+      Assert.False(converter.CanRead);
+      Assert.Throws<NotSupportedException>(() =>
       {
         converter.ReadJson(null, null, null, null);
       });
     }
 
-    [TestMethod]
+    [Fact]
     public void TestDefaultNullValues()
     {
       var jsonWriter = new Mock<JsonWriter>();
@@ -43,19 +42,19 @@ namespace VSS.MasterData.Models.UnitTests.Converters
         DateTime.MinValue
       };
 
-      Assert.IsTrue(converter.CanWrite);
+      Assert.True(converter.CanWrite);
 
       foreach (var nullValue in nullValues)
       {
         var t = nullValue.GetType();
-        Assert.IsTrue(converter.CanConvert(t), $"Should be able to convert {t}");  
+        Assert.True(converter.CanConvert(t), $"Should be able to convert {t}");  
         converter.WriteJson(jsonWriter.Object, nullValue, null);
       }
 
       jsonWriter.Verify(j => j.WriteNull(), Times.Exactly(nullValues.Count));
     }
 
-    [TestMethod]
+    [Fact]
     public void TestNormalValues()
     {
       var jsonWriter = new Mock<JsonWriter>();
@@ -75,12 +74,12 @@ namespace VSS.MasterData.Models.UnitTests.Converters
         new float(),
         DateTime.Now,
       };
-      Assert.IsTrue(converter.CanWrite);
+      Assert.True(converter.CanWrite);
 
       foreach (var goodValue in goodValues)
       {
         var t = goodValue.GetType();
-        Assert.IsTrue(converter.CanConvert(t), $"Should be able to convert {t}");  
+        Assert.True(converter.CanConvert(t), $"Should be able to convert {t}");  
         converter.WriteJson(jsonWriter.Object, goodValue, null);
       }
 
@@ -97,7 +96,7 @@ namespace VSS.MasterData.Models.UnitTests.Converters
       }
     }
 
-    [TestMethod]
+    [Fact]
     public void TestOverrideValues()
     {
       var jsonWriter = new Mock<JsonWriter>();
@@ -120,11 +119,11 @@ namespace VSS.MasterData.Models.UnitTests.Converters
         jsonWriter.Reset();
         var t = defaultValue.Item1.GetType();
         var t2 = defaultValue.Item2.GetType();
-        Assert.AreEqual(t, t2);
+        Assert.Equal(t, t2);
         var overrideConverter = new RaptorNullableConverter(defaultValue.Item1);
 
-        Assert.IsTrue(overrideConverter.CanConvert(t), $"Should be able to convert {t}");
-        Assert.IsTrue(overrideConverter.CanConvert(t2), $"Should be able to convert {t}");
+        Assert.True(overrideConverter.CanConvert(t), $"Should be able to convert {t}");
+        Assert.True(overrideConverter.CanConvert(t2), $"Should be able to convert {t}");
 
         overrideConverter.WriteJson(jsonWriter.Object, defaultValue.Item1, null); // the null value
         overrideConverter.WriteJson(jsonWriter.Object, defaultValue.Item2, null); // The non null value

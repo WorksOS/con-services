@@ -41,18 +41,28 @@ namespace VSS.Serilog.Extensions
         $"./logs/{logFilename}",
         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message}{NewLine}{Exception}",
         shared: true);
-      
+
       if (config == null)
       {
-        config = new ConfigurationBuilder()
-                 .SetBasePath(Directory.GetCurrentDirectory())
-                 .AddJsonFile(path: "appsettings.json")
-                 .Build();
+        try
+        {
+          config = new ConfigurationBuilder()
+                   .SetBasePath(Directory.GetCurrentDirectory())
+                   .AddJsonFile(path: "appsettings.json")
+                   .Build();
+        }
+        catch (FileNotFoundException)
+        { 
+          if (string.IsNullOrEmpty(logFilename))
+          {
+            throw new InvalidDataException("Must provide either a valid logFilename or appsettings.json configuration file.");
+          }
+        }
       }
 
       if (config != null)
-      { 
-        logger.ReadFrom.Configuration(config); 
+      {
+        logger.ReadFrom.Configuration(config);
       }
 
       return logger.CreateLogger();
