@@ -15,11 +15,6 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 {
   public class Startup : BaseStartup
   {
-    /// <summary>
-    /// The name of this service for swagger etc.
-    /// </summary>
-    public const string LoggerRepoName = "WebApi";
-    
     private const string CONNECTED_SITE_URL_ENV_KEY = "CONNECTED_SITE_URL";
 
     public override string ServiceName => "Works manager tag file processor";
@@ -45,7 +40,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
       {
         TPaaSClient = context.GetService<ITPaaSClient>()
       });
-      
+
       services.AddHttpClient<IConnectedSiteClient, ConnectedSiteClient>(client =>
         client.BaseAddress = new Uri(Configuration.GetValueString(CONNECTED_SITE_URL_ENV_KEY))
       ).AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>();
@@ -58,17 +53,14 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
         });
       });
 
-     //Set up logging etc. for TRex
+      //Set up logging etc. for TRex
       DIContext.Inject(services.BuildServiceProvider());
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
-    {
-    }
+    { }
 
- 
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    { }
   }
 }

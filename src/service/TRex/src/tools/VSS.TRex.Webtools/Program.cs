@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using VSS.Log4Net.Extensions;
+using Serilog.Extensions.Logging;
+using VSS.Serilog.Extensions;
 
 namespace VSS.TRex.Webtools
 {
@@ -11,29 +9,20 @@ namespace VSS.TRex.Webtools
     {
     public static void Main(string[] args)
     {
-      var webHost = BuildWebHost(args);
-
-      webHost.Run();
+      BuildWebHost(args).Run();
     }
 
     public static IWebHost BuildWebHost(string[] args)
     {
-
       return WebHost.CreateDefaultBuilder(args)
-        .ConfigureLogging(builder =>
-        {
-          Log4NetProvider.RepoName = Startup.LoggerRepoName;
-          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          builder.SetMinimumLevel(LogLevel.Trace);
-        })
-        .ConfigureAppConfiguration((hostingContext, config) =>
-        {
-          var env = hostingContext.HostingEnvironment;
-          env.ConfigureLog4Net(repoName: Startup.LoggerRepoName, configFileRelativePath: "log4net.xml");
-
-        })
-        .UseStartup<Startup>()
-        .Build();
+                    .ConfigureLogging((hostContext, loggingBuilder) =>
+                    {
+                      loggingBuilder.AddProvider(
+                        p => new SerilogLoggerProvider(
+                          SerilogExtensions.Configure()));
+                    })
+                    .UseStartup<Startup>()
+                    .Build();
     }
   }
 }
