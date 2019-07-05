@@ -71,5 +71,10 @@ namespace VSS.TRex.Storage
     {
       throw new NotImplementedException();
     }
+
+    public IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> ProjectMachineCache(FileSystemStreamType streamType)
+    {
+      throw new NotImplementedException();
+    }
   }
 }
