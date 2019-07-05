@@ -1,79 +1,72 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Repositories.ExtendedModels;
+using Xunit;
 
 namespace VSS.MasterData.ProjectTests
 {
-  [TestClass]
   public class ProjectTimezoneValidationTests
   {
-    private List<string> _projectTimezones;
+    private readonly List<string> _projectTimezones = PreferencesTimeZones.WindowsTimeZoneNames().ToList();
 
-    [TestInitialize]
-    public void TestInitialize()
-    {
-      _projectTimezones = PreferencesTimeZones.WindowsTimeZoneNames().ToList();
-    }
-
-    [TestMethod]
+    [Fact]
     public void ValidateCreateProject_InvalidProjectTimeZone()
     {
-      Assert.IsFalse(_projectTimezones.Contains("whatever"), "ProjectTimezone should be invalid");
+      Assert.False(_projectTimezones.Contains("whatever"), "ProjectTimezone should be invalid");
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateCreateProject_ValidProjectTimeZone()
     {
-      Assert.IsTrue(_projectTimezones.Contains("Namibia Standard Time"), "ProjectTimezone should be valid");
+      Assert.True(_projectTimezones.Contains("Namibia Standard Time"), "ProjectTimezone should be valid");
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateCreateProject_ValidProjectTimeZoneCaseSensitive()
     {
-      Assert.IsFalse(_projectTimezones.Contains("Namibia sTandard Time"), "ProjectTimezone should be correct case");
+      Assert.DoesNotContain("Namibia sTandard Time", _projectTimezones);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateCreateProject_InValidProjectTimeZone()
     {
-      Assert.IsFalse(_projectTimezones.Contains("Namibia Standard Time Namibia Standard Time"), "ProjectTimezone should be invalid");
+      Assert.DoesNotContain("Namibia Standard Time Namibia Standard Time", _projectTimezones);
     }
 
-    [TestMethod]
+    [Fact]
     public void WindowsToIana_MissingWindowsTimeZone()
     {
-      Assert.AreEqual(string.Empty, PreferencesTimeZones.WindowsToIana(null), "IANA time zone should be empty string");
+      Assert.Equal(string.Empty, PreferencesTimeZones.WindowsToIana(null));
     }
 
-    [TestMethod]
+    [Fact]
     public void WindowsToIana_InvalidWindowsTimeZone()
     {
-      Assert.IsNull(PreferencesTimeZones.WindowsToIana("NZST"), "IANA time zone should be null");
+      Assert.Null(PreferencesTimeZones.WindowsToIana("NZST"));
     }
 
-    [TestMethod]
+    [Fact]
     public void WindowsToIana_ValidWindowsTimeZone()
     {
-      Assert.AreEqual("Pacific/Auckland", PreferencesTimeZones.WindowsToIana("New Zealand Standard Time"), "IANA time zone should be correct");
+      Assert.Equal("Pacific/Auckland", PreferencesTimeZones.WindowsToIana("New Zealand Standard Time"));
     }
 
-    [TestMethod]
+    [Fact]
     public void IanaToWindows_MissingIanaTimeZone()
     {
-      Assert.AreEqual(string.Empty, PreferencesTimeZones.IanaToWindows(null), "Windows time zone should be empty string");
+      Assert.Equal(string.Empty, PreferencesTimeZones.IanaToWindows(null));
     }
 
-    [TestMethod]
+    [Fact]
     public void IanaToWindows_InvalidIanaTimeZone()
     {
-      Assert.IsNull(PreferencesTimeZones.IanaToWindows("Pacific/Wellington"), "Windows time zone should be null");
+      Assert.Null(PreferencesTimeZones.IanaToWindows("Pacific/Wellington"));
     }
 
-    [TestMethod]
+    [Fact]
     public void IanaToWindows_ValidIanaTimeZone()
     {
-      Assert.AreEqual("New Zealand Standard Time", PreferencesTimeZones.IanaToWindows("Pacific/Auckland"), "Windows time zone should be correct");
+      Assert.Equal("New Zealand Standard Time", PreferencesTimeZones.IanaToWindows("Pacific/Auckland"));
     }
   }
 }

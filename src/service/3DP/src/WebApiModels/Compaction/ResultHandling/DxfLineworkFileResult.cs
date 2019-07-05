@@ -5,6 +5,7 @@ using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Algorithms;
+using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class ProjectV4Tests
+  public class ProjectV4Tests : WebApiTestsBase
   {
     [Fact]
     public void CreateStandardProjectAndGetProjectListV4()

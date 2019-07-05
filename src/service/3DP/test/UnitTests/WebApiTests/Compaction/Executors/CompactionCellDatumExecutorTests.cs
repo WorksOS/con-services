@@ -128,7 +128,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .ReturnsAsync(expectedResult);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCellDatumExecutor>(logger, configStore: configStore.Object, trexCompactionDataProxy: tRexProxy.Object);
@@ -159,7 +159,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .ReturnsAsync(expectedResult);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCellDatumExecutor>(logger, configStore: configStore.Object, trexCompactionDataProxy: tRexProxy.Object);

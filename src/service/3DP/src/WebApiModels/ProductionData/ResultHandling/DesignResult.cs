@@ -9,7 +9,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// Array of design boundaries in GeoJson format.
     /// </summary>
     /// 
-    public JObject[] designBoundaries { get; private set; }
+    public JObject[] DesignBoundaries { get; private set; }
 
     /// <summary>
     /// Private constructor.
@@ -26,9 +26,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// <param name="designBoundaries">Array of design boundaries in GeoJson format.</param>
     /// <returns>A created instance of the SurveyedSurfaceResult class.</returns>
     /// 
-    public static DesignResult CreateDesignResult(JObject[] designBoundaries)
+    public DesignResult (JObject[] designBoundaries)
     {
-      return new DesignResult { designBoundaries = designBoundaries };
+      DesignBoundaries = designBoundaries;
     }
   }
 }

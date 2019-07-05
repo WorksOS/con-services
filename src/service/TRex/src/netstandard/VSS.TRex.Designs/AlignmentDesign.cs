@@ -80,15 +80,15 @@ namespace VSS.TRex.Designs
       //{
       //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
       //  if (!isDownloaded)
-      //  {
       //    return DesignLoadResult.UnableToLoadSubgridIndex;
-      //  }
-
+      //
       //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
       //  if (!isDownloaded)
-      //  {
       //    return DesignLoadResult.UnableToLoadSpatialIndex;
-      //  }
+      //
+      //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
+      //  if (!isDownloaded)
+      //    return DesignLoadResult.UnableToLoadBoundary;
       //}
 
       return DesignLoadResult.Success;
@@ -190,6 +190,16 @@ namespace VSS.TRex.Designs
     /// <param name="cellSize"></param>
     /// <returns></returns>
     public override List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize)
+    {
+      // todo when SDK available
+      return null;
+    }
+
+    /// <summary>
+    /// Computes the requested boundary.
+    /// </summary>
+    /// <returns></returns>
+    public override List<Fence> GetBoundary()
     {
       // todo when SDK available
       return null;

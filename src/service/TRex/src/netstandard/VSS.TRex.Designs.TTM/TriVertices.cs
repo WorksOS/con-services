@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM
 {
@@ -78,6 +79,14 @@ namespace VSS.TRex.Designs.TTM
     /// </summary>
     public TriVertices()
     {
+    }
+
+    public void GetLimits(BoundingWorldExtent3D boundingExtent)
+    {
+      boundingExtent.SetInverted();
+
+      foreach (var vertex in this)
+        vertex.AdjustLimits(boundingExtent);
     }
 
     public void GetLimits(ref double MinX, ref double MinY, ref double MinZ, ref double MaxX, ref double MaxY, ref double MaxZ)

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class ProjectSettingsAccTests
+  public class ProjectSettingsAccTests : WebApiTestsBase
   {
     [Fact]
     public void AddProjectSettingsGoodPath()

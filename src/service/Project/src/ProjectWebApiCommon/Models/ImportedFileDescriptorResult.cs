@@ -210,23 +210,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     {
       var otherImportedFile = obj as ImportedFileDescriptor;
       if (otherImportedFile == null) return false;
-      return otherImportedFile.ImportedFileUid == this.ImportedFileUid
-             && otherImportedFile.LegacyFileId == this.LegacyFileId
-             && otherImportedFile.CustomerUid == this.CustomerUid
-             && otherImportedFile.ProjectUid == this.ProjectUid
-             && otherImportedFile.ImportedFileType == this.ImportedFileType
-             && otherImportedFile.DxfUnitsType == this.DxfUnitsType
-             && otherImportedFile.Name == this.Name
-             && otherImportedFile.FileCreatedUtc == this.FileCreatedUtc
-             && otherImportedFile.FileUpdatedUtc == this.FileUpdatedUtc
-             && otherImportedFile.ImportedBy == this.ImportedBy
-             && otherImportedFile.SurveyedUtc == this.SurveyedUtc
-             && otherImportedFile.ImportedUtc == this.ImportedUtc
-             && otherImportedFile.IsActivated == this.IsActivated
-             && otherImportedFile.MinZoomLevel == this.MinZoomLevel
-             && otherImportedFile.MaxZoomLevel == this.MaxZoomLevel
-             && otherImportedFile.ImportedFileHistory == this.ImportedFileHistory
-             && otherImportedFile.ParentUid == this.ParentUid
+      return otherImportedFile.ImportedFileUid == ImportedFileUid
+             && otherImportedFile.LegacyFileId == LegacyFileId
+             && otherImportedFile.CustomerUid == CustomerUid
+             && otherImportedFile.ProjectUid == ProjectUid
+             && otherImportedFile.ImportedFileType == ImportedFileType
+             && otherImportedFile.DxfUnitsType == DxfUnitsType
+             && otherImportedFile.Name == Name
+             && otherImportedFile.FileCreatedUtc == FileCreatedUtc
+             && otherImportedFile.FileUpdatedUtc == FileUpdatedUtc
+             && otherImportedFile.ImportedBy == ImportedBy
+             && otherImportedFile.SurveyedUtc == SurveyedUtc
+             && otherImportedFile.ImportedUtc == ImportedUtc
+             && otherImportedFile.IsActivated == IsActivated
+             && otherImportedFile.MinZoomLevel == MinZoomLevel
+             && otherImportedFile.MaxZoomLevel == MaxZoomLevel
+             && otherImportedFile.ImportedFileHistory == ImportedFileHistory
+             && otherImportedFile.ParentUid == ParentUid
              && otherImportedFile.Offset.EqualsToNearestMillimeter(Offset)
         ;
     }

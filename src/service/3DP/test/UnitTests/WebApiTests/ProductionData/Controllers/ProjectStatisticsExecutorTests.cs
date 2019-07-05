@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<ProjectStatisticsExecutor>(logger, configStore: configStore.Object,
@@ -166,7 +166,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .Returns(true);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS")).Returns("false");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS")).Returns(false);
 
       var executor = RequestExecutorContainerFactory
         .Build<ProjectStatisticsExecutor>(logger, raptorClient.Object, configStore: configStore.Object);

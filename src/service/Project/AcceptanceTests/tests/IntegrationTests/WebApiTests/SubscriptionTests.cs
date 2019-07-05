@@ -6,12 +6,12 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class SubscriptionTests
+  public class SubscriptionTests : WebApiTestsBase
   {
     [Fact]
     public void Get2SubscriptionsForProjectMonitoring()
     {
-      Msg.Title("Project Subtest 1", "Get 2 project monitoring subscriptions ");
+      Msg.Title("Project Subtest 1: Get 2 project monitoring subscriptions");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();

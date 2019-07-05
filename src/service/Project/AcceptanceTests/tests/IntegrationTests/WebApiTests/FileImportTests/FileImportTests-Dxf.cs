@@ -6,7 +6,7 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests.FileImportTests
 {
-  public class FileImportTestsDxf
+  public class FileImportTestsDxf : WebApiTestsBase
   {
     [Theory]
     [InlineData("api/v4/importedfile")]

@@ -11,10 +11,10 @@ using Xunit;
 
 namespace IntegrationTests.ExecutorTests
 {
-  public class ProjectSettingsTests : IClassFixture<ExecutorTestsBase>
+  public class ProjectSettingsTests : IClassFixture<ExecutorTestFixture>
   {
-    private readonly ExecutorTestsBase _fixture;
-    public ProjectSettingsTests(ExecutorTestsBase fixture)
+    private readonly ExecutorTestFixture _fixture;
+    public ProjectSettingsTests(ExecutorTestFixture fixture)
     {
       _fixture = fixture;
     }
