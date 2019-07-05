@@ -38,7 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       }
 
       var validType = (importedFileType >= ImportedFileType.Linework && importedFileType <= ImportedFileType.Alignment)
-                      || importedFileType == ImportedFileType.ReferenceSurface;
+                      || importedFileType == ImportedFileType.ReferenceSurface || importedFileType == ImportedFileType.GeoTiff;
       if (!validType)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -52,11 +52,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         if (!(importedFileType == ImportedFileType.Linework && fileExtension == ".dxf" ||
               importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm" ||
               importedFileType == ImportedFileType.SurveyedSurface && fileExtension == ".ttm" ||
-              importedFileType == ImportedFileType.Alignment && fileExtension == ".svl"))
+              importedFileType == ImportedFileType.Alignment && fileExtension == ".svl" ||
+              importedFileType == ImportedFileType.GeoTiff && fileExtension == ".tif"))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(32),
-              ProjectErrorCodesProvider.FirstNameWithOffset(32)));
+              ProjectErrorCodesProvider.FirstNameWithOffset(32) + $"imported filetype: {importedFileType} and extension is {fileExtension} "));
         }
       }
 
@@ -95,7 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             ProjectErrorCodesProvider.FirstNameWithOffset(35)));
       }
 
-      if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc == null)
+      if ((importedFileType == ImportedFileType.SurveyedSurface || importedFileType == ImportedFileType.GeoTiff) && surveyedUtc == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(36),

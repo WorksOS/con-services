@@ -19,7 +19,7 @@ namespace VSS.MasterData.Project.WebAPI
       {
         return builder.UseKestrel()
           .UseLibuv(opts => { opts.ThreadCount = 32; })
-          .BuildKestrelWebHost(Startup.LoggerRepoName)
+          .BuildKestrelWebHost()
           .UseStartup<Startup>()
           .Build();
       });
