@@ -24,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueue>();
 
-    private ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> QueueCache;
+    private readonly ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> QueueCache;
 
     public void Add(ISegmentRetirementQueueKey key, SegmentRetirementQueueItem value)
     {
@@ -38,7 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public SegmentRetirementQueue()
     {
-      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable);
+      var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable);
 
       QueueCache = ignite.GetOrCreateCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(
         new CacheConfiguration
@@ -48,16 +48,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           // Replicate the maps across nodes
           CacheMode = CacheMode.Partitioned,
 
-//          AffinityFunction = new MutableNonSpatialAffinityFunction(),
-
           // No backups for now
           Backups = 0,
           KeepBinaryInStore = true,
-
-          //QueryEntities = new[]
-          //{
-          //  new QueryEntity(typeof(ISegmentRetirementQueueKey), typeof(SegmentRetirementQueueItem))
-          //}
         });
     }
 
@@ -78,7 +71,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           Local = true
         };
 
-        List<ISegmentRetirementQueueKey> toRemove = QueueCache.Query(query).GetAll().Select(x => x.Key).ToList();
+        var toRemove = QueueCache.Query(query).GetAll().Select(x => x.Key).ToList();
 
         Log.LogInformation($"Removing {toRemove.Count} retirement groups from retirement queue cache");
 

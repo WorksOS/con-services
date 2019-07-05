@@ -25,6 +25,7 @@ namespace VSS.TRex.Storage.Caches
         private const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
 
         private const string kTAGFileBufferQueueCacheName = "TAGFileBufferQueue";
+        private const string kSiteModelChangeBufferQueueName = "SiteModelChangeBufferQueue";
 
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
@@ -93,5 +94,11 @@ namespace VSS.TRex.Storage.Caches
         /// replaced by small cloven segments as a result of TAG file processing
         /// </summary>
         public static string SegmentRetirementQueueCacheName() => "SegmentRetirementQueue";
-    }
+
+        /// <summary>
+        /// Name of the cache holding queued & buffered TAG files awaiting processing
+        /// </summary>
+        /// <returns></returns>
+        public static string SiteModelChangeBufferQueueCacheName() => kSiteModelChangeBufferQueueName;
+  }
 }

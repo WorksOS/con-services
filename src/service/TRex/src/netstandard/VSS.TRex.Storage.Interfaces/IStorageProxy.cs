@@ -10,6 +10,7 @@ namespace VSS.TRex.Storage.Interfaces
   {
     IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType);
     IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; }
+    IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> ProjectMachineCache(FileSystemStreamType streamType);
 
     StorageMutability Mutability { get; set; }
 

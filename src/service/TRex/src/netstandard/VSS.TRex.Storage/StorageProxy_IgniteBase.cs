@@ -35,6 +35,15 @@ namespace VSS.TRex.Storage
     public IStorageProxyCache<INonSpatialAffinityKey, byte[]> SiteModelCache => siteModelCache;
 
 
+    protected IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> siteModelMachineElevationChangeMapCache;
+
+    public IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> SiteModelMachineElevationChangeMapCache => siteModelMachineElevationChangeMapCache;
+
+    /// <summary>
+    /// Determines the correct cache to read/write particular types of information from/to
+    /// </summary>
+    /// <param name="streamType"></param>
+    /// <returns></returns>
     public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType)
     {
       switch (streamType)
@@ -43,6 +52,25 @@ namespace VSS.TRex.Storage
           return siteModelCache;
         default:
           return generalNonSpatialCache;
+      }
+    }
+
+    /// <summary>
+    /// Determines the correct cache to read/write information related to a machines activities within a project
+    /// that are not a part of the general schema representing the ingested production data from machine control systems.
+    /// eg: THe site model elevation change maps used to request only that spatial information has changed since the
+    /// last time a machine asked for that information from a project.
+    /// </summary>
+    /// <param name="streamType"></param>
+    /// <returns></returns>
+    public IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> ProjectMachineCache(FileSystemStreamType streamType)
+    {
+      switch (streamType)
+      {
+        case FileSystemStreamType.SiteModelMachineElevationChangeMap:
+          return siteModelMachineElevationChangeMapCache;
+        default:
+          return null;
       }
     }
 
@@ -133,7 +161,7 @@ namespace VSS.TRex.Storage
         // Convert from the mutable to the immutable form and store it into the immutable cache
         if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out immutableStream) && immutableStream != null)
         {
-          using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
+          using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
           {
             if (Log.IsTraceEnabled())
               Log.LogInformation(
