@@ -22,8 +22,8 @@ namespace VSS.Productivity3D.Common.Interfaces
   /// </summary>
   public abstract class RequestExecutorContainer
   {
-    protected bool UseTRexGateway(string key) => bool.TryParse(configStore.GetValueString(key), out var useTrexGateway) && useTrexGateway;
-    protected bool UseRaptorGateway(string key) => bool.TryParse(configStore.GetValueString(key), out var useRaptorGateway) && useRaptorGateway;
+    protected bool UseTRexGateway(string key) => configStore.GetValueBool(key) ?? false;
+    protected bool UseRaptorGateway(string key) => configStore.GetValueBool(key) ?? false;
 
     private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
@@ -234,6 +234,29 @@ namespace VSS.Productivity3D.Common.Interfaces
     ~RequestExecutorContainer()
     {
       ContractExecutionStates?.ClearDynamic();
+    }
+
+    /// <summary>
+    /// Helper for creating overrides for TRex.
+    /// </summary>
+    /// <param name="liftBuildSettings"></param>
+    /// <returns></returns>
+    public OverridingTargets GetOverridingTargets(LiftBuildSettings liftBuildSettings)
+    {
+      return new OverridingTargets(
+        liftBuildSettings.OverridingMachineCCV ?? 0,
+        liftBuildSettings.OverridingMachineCCV.HasValue,
+        liftBuildSettings.CCVRange.Max, liftBuildSettings.CCVRange.Min,
+        liftBuildSettings.OverridingMachineMDP ?? 0,
+        liftBuildSettings.OverridingMachineMDP.HasValue,
+        liftBuildSettings.MDPRange.Max,
+        liftBuildSettings.MDPRange.Min,
+        liftBuildSettings.OverridingTargetPassCountRange,
+        liftBuildSettings.OverridingTemperatureWarningLevels != null
+          ? new TemperatureSettings(liftBuildSettings.OverridingTemperatureWarningLevels.Max,
+            liftBuildSettings.OverridingTemperatureWarningLevels.Min, true)
+          : null,
+        liftBuildSettings.MachineSpeedTarget);
     }
   }
 }

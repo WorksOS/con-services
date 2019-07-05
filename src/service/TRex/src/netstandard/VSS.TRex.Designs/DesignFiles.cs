@@ -77,7 +77,7 @@ end;
 
           if (descriptor == null)
           {
-            var surveyedSurfaceRef = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID).SurveyedSurfaces.Locate(designUid);
+            var surveyedSurfaceRef = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID).SurveyedSurfaces?.Locate(designUid);
             descriptor = surveyedSurfaceRef?.DesignDescriptor;
           }
           

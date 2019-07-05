@@ -46,10 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var request = CastRequestObjectTo<CompactionTagFileRequestExtended>(item);
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
 #if RAPTOR
-      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TAGFILE"), out var useTrexGateway);
-      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_TAGFILE"), out var useRaptorGateway);
-
-      if (useTrexGateway)
+      if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_TAGFILE") ?? false)
       {
 #endif
         request.Validate();
@@ -58,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 #if RAPTOR
       }
 
-      if (useRaptorGateway)
+      if (configStore.GetValueBool("ENABLE_RAPTOR_GATEWAY_TAGFILE") ?? false)
       {
         // legacyProjectId must have been retrieved by here else GetLegacyProjectId() would have thrown exception
         var tagFileRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data,

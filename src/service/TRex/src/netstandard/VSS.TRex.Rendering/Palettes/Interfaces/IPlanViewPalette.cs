@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Apache.Ignite.Core.Binary;
 
 namespace VSS.TRex.Rendering.Palettes.Interfaces
 {
@@ -7,11 +8,14 @@ namespace VSS.TRex.Rendering.Palettes.Interfaces
     /// </summary>
     public interface IPlanViewPalette
     {
-    /// <summary>
-    /// Returns a Color derived from the given value datum
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    Color ChooseColour(double value);
+      /// <summary>
+      /// Returns a Color derived from the given value datum
+      /// </summary>
+      /// <param name="value"></param>
+      /// <returns></returns>
+      Color ChooseColour(double value);
+
+      void FromBinary(IBinaryRawReader reader);
+      void ToBinary(IBinaryRawWriter writer);
     }
 }

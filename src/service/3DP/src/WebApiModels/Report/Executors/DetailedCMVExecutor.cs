@@ -39,10 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         var request = CastRequestObjectTo<CMVRequest>(item);
 #if RAPTOR
-        if (!request.IsCustomCMVTargets || !bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway))
-          useTrexGateway = false;
-
-        if (useTrexGateway)
+        if (request.IsCustomCMVTargets && (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CMV") ?? false))
         {
 #endif
           var settings = (CMVSettingsEx)request.CmvSettings;

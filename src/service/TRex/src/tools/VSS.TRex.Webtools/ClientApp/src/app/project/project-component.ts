@@ -551,6 +551,7 @@ constructor(
   public addNewDesignSurface(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.designFileName;
+    descriptor.designId = this.designUid;
     this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;

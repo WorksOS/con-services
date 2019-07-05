@@ -37,9 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         var request = CastRequestObjectTo<PatchRequest>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PATCHES"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES") ?? false)
         {
 #endif
           var patchDataRequest = new PatchDataRequest(

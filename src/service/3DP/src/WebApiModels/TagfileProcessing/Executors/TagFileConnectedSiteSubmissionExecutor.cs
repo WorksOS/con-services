@@ -19,8 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, DISABLED_MESSAGE);
       
       // Send the tagfile to the connected site gateway if enabled first, no project/subscription validation is required.
-      bool.TryParse(configStore.GetValueString("ENABLE_CONNECTED_SITE_GATEWAY"), out var enableConnectedSiteGateway);
-      if (enableConnectedSiteGateway)
+      if (configStore.GetValueBool("ENABLE_CONNECTED_SITE_GATEWAY") ?? false)
       {
         request.Validate();
         result = await CallConnectedSiteEndpoint(request);
