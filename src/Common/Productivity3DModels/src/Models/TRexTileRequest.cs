@@ -6,10 +6,9 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Validation;
 
-namespace VSS.Productivity3D.Models
+namespace VSS.Productivity3D.Models.Models
 {
   public class TRexTileRequest
   {
