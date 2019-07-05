@@ -7,6 +7,7 @@ root = true
 [*]
 indent_style = space
 # (Please don't specify an indent_size here; that has too many unintended consequences.)
+max_line_length = off
 
 # Code files
 [*.{cs,csx,vb,vbx}]

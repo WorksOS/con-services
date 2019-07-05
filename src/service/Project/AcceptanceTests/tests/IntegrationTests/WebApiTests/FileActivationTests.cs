@@ -13,7 +13,7 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class FileActivationTests
+  public class FileActivationTests : WebApiTestsBase
   {
     [Fact]
     public void GetImportedFiles_should_return_activation_state()

@@ -45,14 +45,13 @@ namespace VSS.MasterData.Project.WebAPI
   /// </summary>
   public class Startup : BaseStartup
   {
-    public const string LoggerRepoName = "projectservice";
     public override string ServiceName => "Project Service API";
     public override string ServiceDescription => " Project masterdata service";
     public override string ServiceVersion => "v4";
 
     private static IServiceProvider serviceProvider;
 
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
     { }
 
     protected override void ConfigureAdditionalServices(IServiceCollection services)
