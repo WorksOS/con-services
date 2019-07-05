@@ -18,6 +18,7 @@ using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Exceptions;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
 

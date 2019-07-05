@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models.Designs;
 
 namespace VSS.Productivity3D.Models.Models.Reports
 {

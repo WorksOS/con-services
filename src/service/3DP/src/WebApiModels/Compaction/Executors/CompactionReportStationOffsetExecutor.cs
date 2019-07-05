@@ -41,9 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (request == null)
           ThrowRequestTypeCastException<CompactionReportStationOffsetRequest>();
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_STATIONOFFSET") ?? false)
         {
 #endif
           var responseData = trexCompactionDataProxy

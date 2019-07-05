@@ -36,9 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         var request = CastRequestObjectTo<CMVRequest>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CMV") ?? false)
         {
 #endif
           var cmvSummaryRequest = new CMVSummaryRequest(

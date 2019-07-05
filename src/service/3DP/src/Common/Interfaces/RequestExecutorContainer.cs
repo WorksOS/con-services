@@ -22,8 +22,8 @@ namespace VSS.Productivity3D.Common.Interfaces
   /// </summary>
   public abstract class RequestExecutorContainer
   {
-    protected bool UseTRexGateway(string key) => bool.TryParse(configStore.GetValueString(key), out var useTrexGateway) && useTrexGateway;
-    protected bool UseRaptorGateway(string key) => bool.TryParse(configStore.GetValueString(key), out var useRaptorGateway) && useRaptorGateway;
+    protected bool UseTRexGateway(string key) => configStore.GetValueBool(key) ?? false;
+    protected bool UseRaptorGateway(string key) => configStore.GetValueBool(key) ?? false;
 
     private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";

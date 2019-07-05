@@ -39,9 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         var request = CastRequestObjectTo<PassCounts>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PASSCOUNT"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_PASSCOUNT") ?? false)
         {
 #endif
           var pcSummaryRequest = new PassCountSummaryRequest(
