@@ -12,6 +12,8 @@ namespace VSS.Pegasus.Client
       IDictionary<string, string> customHeaders);
 
     [Obsolete("Use DeleteTiles")]
+
+
     Task<bool> DeleteDxfTiles(string dxfFileName, IDictionary<string, string> customHeaders);
 
     Task<TileMetadata> GenerateGeoTiffTiles(string geoTiffFileName, IDictionary<string, string> customHeaders);
