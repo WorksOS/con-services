@@ -39,9 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (request == null)
           ThrowRequestTypeCastException<CompactionReportGridRequest>();
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_GRIDREPORT"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_GRIDREPORT") ?? false)
         {
 #endif
           var responseData = trexCompactionDataProxy

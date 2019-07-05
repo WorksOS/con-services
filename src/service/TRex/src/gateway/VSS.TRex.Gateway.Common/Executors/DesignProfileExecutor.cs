@@ -4,7 +4,6 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
@@ -38,7 +37,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      DesignProfileRequest request = item as DesignProfileRequest;
+      var request = item as DesignProfileRequest;
       
       if (request == null)
         ThrowRequestTypeCastException<DesignProfileRequest>();
@@ -48,12 +47,12 @@ namespace VSS.TRex.Gateway.Common.Executors
       var designProfileRequest = new VSS.TRex.Designs.GridFabric.Requests.DesignProfileRequest();
       var referenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, request.Offset ?? 0);
 
-      CalculateDesignProfileResponse designProfileResponse = designProfileRequest.Execute(new CalculateDesignProfileArgument
+      var designProfileResponse = designProfileRequest.Execute(new CalculateDesignProfileArgument
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,
         CellSize = siteModel.CellSize,
-        ProfilePath = new XYZ[] {new XYZ(request.StartX.Value, request.StartY.Value), new XYZ (request.EndX.Value, request.EndY.Value)}
+        ProfilePath = new [] {new XYZ(request.StartX.Value, request.StartY.Value), new XYZ (request.EndX.Value, request.EndY.Value)}
       });
 
       if (designProfileResponse != null)

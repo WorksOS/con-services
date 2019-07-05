@@ -20,9 +20,11 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Scheduler.Abstractions;
+using VSS.Productivity3D.Scheduler.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -301,6 +303,91 @@ namespace VSS.MasterData.ProjectTests.Executors
           customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, filterServiceProxy.Object,
           null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
+    }
+
+    [Fact]
+    public async Task CreateImportedFile_HappyPath_GeoTiff()
+    {
+      // FlowFile uploads the file from client (possibly as a background task via scheduler)
+      // Controller uploads file to TCC and/or S3
+      //    V2 Note: BCC file has already put the file on TCC.
+      //          the controller a) copies within TCC to client project (raptor)
+      //                         b) copies locally and hence to S3. (TRex)
+      var customHeaders = new Dictionary<string, string>();
+      var importedFileUid = Guid.NewGuid();
+      var TCCFilePath = "/BC Data/Sites/Chch Test Site";
+      var fileName = "MoundRoad.tif";
+      var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
+      var fileCreatedUtc = DateTime.UtcNow.AddHours(-45);
+      var fileUpdatedUtc = fileCreatedUtc;
+
+      var newImportedFile = new ImportedFile
+      {
+        ProjectUid = _projectUid,
+        ImportedFileUid = importedFileUid.ToString(),
+        ImportedFileId = 999,
+        LegacyImportedFileId = 200000,
+        ImportedFileType = ImportedFileType.GeoTiff,
+        Name = fileDescriptor.FileName,
+        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor)
+      };
+
+      _ = new CreateImportedFileEvent
+      {
+        CustomerUID = Guid.Parse(_customerUid),
+        ProjectUID = Guid.Parse(_projectUid),
+        ImportedFileUID = importedFileUid,
+        ImportedFileType = ImportedFileType.GeoTiff,
+        DxfUnitsType = DxfUnitsType.Meters,
+        Name = fileDescriptor.FileName,
+        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
+        FileCreatedUtc = fileCreatedUtc,
+        FileUpdatedUtc = fileUpdatedUtc,
+        ImportedBy = string.Empty,
+        SurveyedUTC = null,
+        ParentUID = null,
+        Offset = 0,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+
+      var createImportedFile = new CreateImportedFile(
+        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, null, DxfUnitsType.Meters,
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0);
+
+      var importedFilesList = new List<ImportedFile> { newImportedFile };
+      var mockConfigStore = new Mock<IConfigurationStore>();
+
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var producer = new Mock<IKafka>();
+      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
+      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
+
+      var project = new ProjectDatabaseModel() { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
+      var projectList = new List<ProjectDatabaseModel> { project };
+
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
+      projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
+      projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
+      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+
+      var scheduler = new Mock<ISchedulerProxy>();
+      scheduler.Setup(s => s.ScheduleVSSJob(It.IsAny<JobRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ScheduleJobResult());
+
+      var executor = RequestExecutorContainerFactory
+        .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
+          _customerUid, _userId, _userEmailAddress, customHeaders,
+          producer.Object, KafkaTopicName,
+          null, null, null, null, null,
+          projectRepo.Object, schedulerProxy: scheduler.Object);
+      var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
+      Assert.NotNull(result);
+      Assert.Equal(0, result.Code);
+      Assert.NotNull(result.ImportedFileDescriptor);
+      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
     [Fact]

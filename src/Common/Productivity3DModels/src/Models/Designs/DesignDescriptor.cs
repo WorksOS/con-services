@@ -5,7 +5,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.Models.Models.Designs
 {
   /// <summary>
   /// Description to identify a design file either by id or by its location in TCC.

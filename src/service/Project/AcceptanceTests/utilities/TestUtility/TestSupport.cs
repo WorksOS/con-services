@@ -1303,48 +1303,12 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "DxfUnitsType)"))
           {
-            switch (eventObject.DxfUnitsType)
-            {
-              case "0":
-                importedFileDescriptor.DxfUnitsType = DxfUnitsType.Meters;
-                break;
-              case "1":
-                importedFileDescriptor.DxfUnitsType = DxfUnitsType.ImperialFeet;
-                break;
-              case "2":
-                importedFileDescriptor.DxfUnitsType = DxfUnitsType.UsSurveyFeet;
-                break;
-            }
+            importedFileDescriptor.DxfUnitsType = Enum.Parse<DxfUnitsType>((string)eventObject.DxfUnitsType);
+
           }
 
-          switch (eventObject.ImportedFileType)
-          {
-            case "0":
-              importedFileDescriptor.ImportedFileType = ImportedFileType.Linework;
-              break;
-            case "1":
-              importedFileDescriptor.ImportedFileType = ImportedFileType.DesignSurface;
-              break;
-            case "2":
-              importedFileDescriptor.ImportedFileType = ImportedFileType.SurveyedSurface;
-              break;
-            case "3":
-              importedFileDescriptor.ImportedFileType = ImportedFileType.Alignment;
-              break;
-            case "4":
-              importedFileDescriptor.ImportedFileType = ImportedFileType.MobileLinework;
-              break;
-            case "5":
-              importedFileDescriptor.ImportedFileType = ImportedFileType.SiteBoundary;
-              break;
-            case "6":
-              importedFileDescriptor.ImportedFileType = ImportedFileType.ReferenceSurface;
-              break;
-            case "7":
-              importedFileDescriptor.ImportedFileType = ImportedFileType.MassHaulPlan;
-              break;
-          }
-          jsonString = JsonConvert.SerializeObject(importedFileDescriptor, JsonSettings);
+          importedFileDescriptor.ImportedFileType = Enum.Parse<ImportedFileType>((string)eventObject.ImportedFileType);
+           jsonString = JsonConvert.SerializeObject(importedFileDescriptor, JsonSettings);
           break;
       }
       return jsonString;

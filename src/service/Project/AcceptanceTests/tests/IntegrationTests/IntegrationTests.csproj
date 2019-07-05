@@ -39,6 +39,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="FileImportFiles\cea.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="FileImportFiles\MillingDesignMap.dxf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

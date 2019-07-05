@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.WebApi.Models.MapHandling
+namespace VSS.Productivity3D.Models.Models.MapHandling
 {
   /// <summary>
   /// Classes that are the model for the GeoJSON for design boundaries.
   /// </summary>
   public class GeoJson
   {
-    internal class FeatureType
+    public class FeatureType
     {
       public const string FEATURE = "Feature";
       public const string FEATURE_COLLECTION = "FeatureCollection";
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public class Geometry
   {
-    internal class Types
+    public class Types
     {
       public const string LINESTRING = "LineString";
       public const string POLYGON = "Polygon";
