@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
 using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
-using VSS.Hydrology.WebApi.Middleware;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;

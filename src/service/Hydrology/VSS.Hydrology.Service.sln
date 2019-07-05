@@ -75,6 +75,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Hydrology.WebApi.DXF", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Hydrology.WebApi.TTM", "Service\TTM\VSS.Hydrology.WebApi.TTM.csproj", "{54D2D669-9EF7-4A31-B803-AA5CD10CA371}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{75AB954E-B2A4-4D42-B799-95223AC3561B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -352,6 +354,18 @@ Global
 		{54D2D669-9EF7-4A31-B803-AA5CD10CA371}.Release|x64.ActiveCfg = Release|x64
 		{54D2D669-9EF7-4A31-B803-AA5CD10CA371}.Release|x64.Build.0 = Release|x64
 		{54D2D669-9EF7-4A31-B803-AA5CD10CA371}.Release|x86.ActiveCfg = Release|x64
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Debug|x64.Build.0 = Debug|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Debug|x86.Build.0 = Debug|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Release|x64.ActiveCfg = Release|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Release|x64.Build.0 = Release|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Release|x86.ActiveCfg = Release|Any CPU
+		{75AB954E-B2A4-4D42-B799-95223AC3561B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -385,6 +399,7 @@ Global
 		{AF8FEF21-9B3B-4032-A929-08B167963CD3} = {16169ACE-DE45-4976-AD60-C436ACDF994D}
 		{E0FEAA11-8644-453D-A644-188C9F0DD5A0} = {43565126-429D-4188-9C6F-3F08A7E7793C}
 		{54D2D669-9EF7-4A31-B803-AA5CD10CA371} = {43565126-429D-4188-9C6F-3F08A7E7793C}
+		{75AB954E-B2A4-4D42-B799-95223AC3561B} = {D063D43B-8826-414E-9500-1C0B6A5B69D0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BC80D564-806A-49F9-8B6D-0093E539EE81}

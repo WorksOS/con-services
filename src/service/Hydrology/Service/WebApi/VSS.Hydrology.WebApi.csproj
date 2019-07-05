@@ -139,12 +139,14 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="RecomputeDimBlock_4.00_11.tx">
-      <HintPath>..\HydroLibraries\RecomputeDimBlock_4.00_11.tx</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  
+
+  <!-- this needs to be copied! If you remove this from the SolutionExplorer view, it deletes this include, so leave it there :{ -->
+  <ItemGroup>
+    <None Include="$(SolutionDir)Service\HydroLibraries\RecomputeDimBlock_4.00_11.tx" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Update="web.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

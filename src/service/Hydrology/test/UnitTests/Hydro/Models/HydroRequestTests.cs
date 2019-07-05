@@ -28,14 +28,60 @@ namespace VSS.Hydrology.Tests.Hydro.Models
     }
 
     [TestMethod]
-     [DataRow("33abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip", 1.0)]
-    public void ValidateRequestFilter(string projectUid, string fileName, double resolution)
+     [DataRow("33abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip")]
+    public void ValidateRequestFilter(string projectUid, string fileName)
     {
-      var options = new HydroOptions(resolution);
+      var options = new HydroOptions();
       var request =
         new HydroRequest(Guid.Parse(projectUid), null, options, fileName);
 
       request.Validate();
+      Assert.AreEqual(1, request.Options.Resolution);
+      Assert.AreEqual(10, request.Options.Levels);
     }
+
+    [TestMethod]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip", 0.01, 1, 2008, "Levels must be between 2 and 240.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip", 0.01, 241, 2008, "Levels must be between 2 and 240.")]
+    public void ValidateRequestPonding(string projectUid, string filterUid, string fileName, double resolution, int levels, int expectedErrorCode, string expectedErrorMessage)
+    {
+      var options = new HydroOptions(resolution, levels);
+      var request =
+        new HydroRequest(Guid.Parse(projectUid), Guid.Parse(filterUid), options, fileName);
+
+      var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
+      Assert.AreEqual(expectedErrorCode, ex.GetResult.Code);
+      Assert.AreEqual(expectedErrorMessage, ex.GetResult.Message);
+    }
+
+    [TestMethod]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.0001, 1000, "", "", "", "", "", "", 2018, "MinSlope must be between 0.005 and 100.0.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 1000, "", "", "", "", "", "", 2019, "MaxSlope must be between 0.005 and 100.0.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 1.0, 0.2, "", "", "", "", "", "", 2020, "MaxSlope must be greater than MinSlope.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "", "", "", "", "", "", 2021, "VortexViolationColor must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "", "", "", "", "", 2021, "MaxSlopeViolationColor must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "bb", "", "", "", "", 2021, "NoViolationColorDark must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "bb", "bb", "", "", "", 2021, "NoViolationColorMid must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "bb", "bb", "bb", "", "", 2021, "NoViolationColorLight must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "bb", "bb", "bb", "bb", "", 2021, "MinSlopeViolationColor must be a valid color.")]
+    public void ValidateRequestDrainageViolation(string projectUid, string filterUid, string fileName, 
+      double minSlope, double maxSlope,
+      string vortexViolationColor, string maxSlopeViolationColor, 
+      string noViolationColorDark, string noViolationColorMid, string noViolationColorLight,
+      string minSlopeViolationColor,
+      int expectedErrorCode, string expectedErrorMessage)
+    {
+      var options = new HydroOptions(minSlope: minSlope, maxSlope: maxSlope,
+        vortexViolationColor: vortexViolationColor, maxSlopeViolationColor: maxSlopeViolationColor,
+        noViolationColorDark: noViolationColorDark, noViolationColorMid: noViolationColorMid, noViolationColorLight: noViolationColorLight,
+       minSlopeViolationColor: minSlopeViolationColor);
+      var request =
+        new HydroRequest(Guid.Parse(projectUid), Guid.Parse(filterUid), options, fileName);
+
+      var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
+      Assert.AreEqual(expectedErrorCode, ex.GetResult.Code);
+      Assert.AreEqual(expectedErrorMessage, ex.GetResult.Message);
+    }
+
   }
 }
