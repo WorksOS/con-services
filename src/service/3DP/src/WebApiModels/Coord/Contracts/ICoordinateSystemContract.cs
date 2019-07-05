@@ -42,12 +42,11 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Contracts
     /// 
     Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid);
 
-    /// <summary>
-    /// Posts a list of coordinates to a Raptor's data model for conversion.
-    /// </summary>
-    /// <param name="request">>Description of the coordinate conversion request.</param>
-    /// <returns>Execution result with a list of converted coordinates.</returns>
-    /// 
-    CoordinateConversionResult Post([FromBody]CoordinateConversionRequest request);
+	    /// <summary>
+	    /// Posts a list of coordinates to a Raptor's data model for conversion.
+	    /// </summary>
+	    /// <param name="request">>Description of the coordinate conversion request.</param>
+	    /// <returns>Execution result with a list of converted coordinates.</returns>
+	    Task<CoordinateConversionResult> Post([FromBody] CoordinateConversionRequest request);
   }
 }

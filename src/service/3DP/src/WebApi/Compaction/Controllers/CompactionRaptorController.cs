@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         overlayTypes = new List<TileOverlayType>((TileOverlayType[])Enum.GetValues(typeof(TileOverlayType)));
         overlayTypes.Remove(TileOverlayType.AllOverlays);
       }
-      var result = boundingBoxService.GetBoundingBox(project, filter, overlayTypes.ToArray(), sumVolParameters.Item1,
+      var result = await boundingBoxService.GetBoundingBox(project, filter, overlayTypes.ToArray(), sumVolParameters.Item1,
         sumVolParameters.Item2, designDescriptor, GetUserId(), CustomHeaders);
       var bbox = $"{result.minLatDegrees},{result.minLngDegrees},{result.maxLatDegrees},{result.maxLngDegrees}";
       Log.LogInformation($"GetBoundingBox: returning {bbox}");
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       
       var project = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId};
       var result = new PointsListResult();
-      var polygons = boundingBoxService.GetDesignBoundaryPolygons(project, designDescriptor, CustomHeaders);
+      var polygons = await boundingBoxService.GetDesignBoundaryPolygons(project, designDescriptor, CustomHeaders);
       result.PointsList = ConvertPoints(polygons);
 
       return result;
@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       PointsListResult result = new PointsListResult();
       if (filter != null)
       {
-        var polygons = boundingBoxService.GetFilterBoundaries(
+        var polygons = await boundingBoxService.GetFilterBoundaries(
           project, filter, FilterBoundaryType.All, CustomHeaders);
         result.PointsList = ConvertPoints(polygons);
       }
@@ -158,7 +158,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       await Task.WhenAll(projectTask, filterTask, baseFilterTask, topFilterTask);
 
-      var polygons = boundingBoxService.GetFilterBoundaries(projectTask.Result, filterTask.Result, baseFilterTask.Result, topFilterTask.Result, boundaryType, CustomHeaders);
+      var polygons = await boundingBoxService.GetFilterBoundaries(projectTask.Result, filterTask.Result, baseFilterTask.Result, topFilterTask.Result, boundaryType, CustomHeaders);
 
       result.PointsList = ConvertPoints(polygons);
 

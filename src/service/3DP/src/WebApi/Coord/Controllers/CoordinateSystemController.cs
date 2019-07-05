@@ -133,15 +133,15 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [PostRequestVerifier]
     [Route("api/v1/coordinateconversion")]
     [HttpPost]
-    public CoordinateConversionResult Post([FromBody]CoordinateConversionRequest request)
+    public async Task<CoordinateConversionResult> Post([FromBody] CoordinateConversionRequest request)
     {
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger,
 #if RAPTOR
         raptorClient,
 #endif
-        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateConversionResult;
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateConversionResult;
     }
   }
 }

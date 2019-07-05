@@ -125,15 +125,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       reportGridRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionReportGridExecutor>(LoggerFactory,
+      return await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionReportGridExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient, 
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy)
-          .Process(reportGridRequest) as CompactionReportResult
+          .ProcessAsync(reportGridRequest) as CompactionReportResult
       );
     }
 
@@ -215,15 +213,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       reportRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory,
+      return await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionReportStationOffsetExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+          RaptorClient, 
 #endif
-            configStore: ConfigStore,
-            trexCompactionDataProxy: TRexCompactionDataProxy)
-          .Process(reportRequest) as CompactionReportResult
+          configStore: ConfigStore,
+          trexCompactionDataProxy: TRexCompactionDataProxy)
+        .ProcessAsync(reportRequest) as CompactionReportResult
       );
     }
 

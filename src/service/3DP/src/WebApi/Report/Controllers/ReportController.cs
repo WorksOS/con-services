@@ -144,15 +144,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [PostRequestVerifier]
     [Route("api/v1/export")]
     [HttpPost]
-    public ExportResult PostExportReport([FromBody] ExportReport request)
+    public async Task<ExportResult> PostExportReport([FromBody] ExportReport request)
     {
       log.LogDebug($"{nameof(PostExportReport)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
 #if RAPTOR
-      return
-        RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
-          .Process(request) as ExportResult;
+      return await RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
+          .ProcessAsync(request) as ExportResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
@@ -171,21 +170,19 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/compaction/passcounts/summary")]
     [HttpPost]
-    public PassCountSummaryResult PostExportSummaryPasscounts([FromBody] PassCounts request)
+    public async Task<PassCountSummaryResult> PostExportSummaryPasscounts([FromBody] PassCounts request)
     {
       log.LogDebug($"{nameof(PostExportSummaryPasscounts)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return
-        RequestExecutorContainerFactory
-            .Build<SummaryPassCountsExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(logger,
 #if RAPTOR
             raptorClient, 
 #endif
             configStore: configStore,
             trexCompactionDataProxy: tRexCompactionDataProxy,
             customHeaders: CustomHeaders)
-            .Process(request) as PassCountSummaryResult;
+            .ProcessAsync(request) as PassCountSummaryResult;
     }
 
     /// <summary>
@@ -200,7 +197,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/compaction/passcounts/detailed")]
     [HttpPost]
-    public PassCountDetailedResult PostExportDetailedPasscounts([FromBody] PassCounts request)
+    public async Task<PassCountDetailedResult> PostExportDetailedPasscounts([FromBody] PassCounts request)
     {
       log.LogDebug($"{nameof(PostExportDetailedPasscounts)}: {JsonConvert.SerializeObject(request)}");
 
@@ -212,14 +209,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Pass count settings required for detailed pass count report"));
       }
-      return
-        RequestExecutorContainerFactory
-            .Build<DetailedPassCountExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<DetailedPassCountExecutor>(logger,
 #if RAPTOR
             raptorClient, 
 #endif
             configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(request) as PassCountDetailedResult;
+            .ProcessAsync(request) as PassCountDetailedResult;
     }
 
     /// <summary>
@@ -233,19 +228,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/compaction/cmv/summary")]
     [HttpPost]
-    public CMVSummaryResult PostExportSummaryCmv([FromBody] CMVRequest request)
+    public async Task<CMVSummaryResult> PostExportSummaryCmv([FromBody] CMVRequest request)
     {
       log.LogDebug($"{nameof(PostExportSummaryCmv)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return
-        RequestExecutorContainerFactory
-            .Build<SummaryCMVExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(logger,
 #if RAPTOR
             raptorClient, 
 #endif
             configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(request) as CMVSummaryResult;
+            .ProcessAsync(request) as CMVSummaryResult;
     }
 
     /// <summary>
@@ -259,19 +252,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/compaction/cmv/detailed")]
     [HttpPost]
-    public CMVDetailedResult PostExportDetailedCmv([FromBody] CMVRequest request)
+    public async Task<CMVDetailedResult> PostExportDetailedCmv([FromBody] CMVRequest request)
     {
       log.LogDebug($"{nameof(PostExportDetailedCmv)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return
-        RequestExecutorContainerFactory
-            .Build<DetailedCMVExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(logger,
 #if RAPTOR
             raptorClient, 
 #endif
             configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(request) as CMVDetailedResult;
+            .ProcessAsync(request) as CMVDetailedResult;
     }
 
     /// <summary>
@@ -367,19 +358,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/speed/summary")]
     [HttpPost]
-    public SpeedSummaryResult PostExportSummarySpeed([FromBody] SummarySpeedRequest request)
+    public async Task<SpeedSummaryResult> PostExportSummarySpeed([FromBody] SummarySpeedRequest request)
     {
       log.LogDebug($"{nameof(PostExportSummarySpeed)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return
-        RequestExecutorContainerFactory
-            .Build<SummarySpeedExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger,
 #if RAPTOR
             raptorClient, 
 #endif
             configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(request) as SpeedSummaryResult;
+            .ProcessAsync(request) as SpeedSummaryResult;
     }
 
     /// <summary>
@@ -392,19 +381,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/cmvchange/summary")]
     [HttpPost]
-    public CMVChangeSummaryResult PostExportSummaryCmvChange([FromBody] CMVChangeSummaryRequest request)
+    public async Task<CMVChangeSummaryResult> PostExportSummaryCmvChange([FromBody] CMVChangeSummaryRequest request)
     {
       log.LogDebug($"{nameof(PostExportSummaryCmvChange)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return
-        RequestExecutorContainerFactory
-            .Build<CMVChangeSummaryExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(logger,
 #if RAPTOR
             raptorClient, 
 #endif
             configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(request) as CMVChangeSummaryResult;
+            .ProcessAsync(request) as CMVChangeSummaryResult;
     }
 
     /// <summary>
@@ -443,7 +430,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/compaction/cca/summary")]
     [HttpPost]
-    public CCASummaryResult PostExportCcaSummary([FromBody] CCARequest request)
+    public async Task<CCASummaryResult> PostExportCcaSummary([FromBody] CCARequest request)
     {
       log.LogDebug($"{nameof(PostExportCcaSummary)}: {JsonConvert.SerializeObject(request)}");
 
@@ -452,12 +439,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
 
-      return
-        RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger,
 #if RAPTOR
             raptorClient, 
 #endif
-          configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
+          configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as
           CCASummaryResult;
     }
   }

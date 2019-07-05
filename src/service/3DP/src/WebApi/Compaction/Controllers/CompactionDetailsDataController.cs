@@ -69,13 +69,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainerFactory
-          .Build<CMVChangeSummaryExecutor>(LoggerFactory,
+        var result = await RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .Process(request) as CMVChangeSummaryResult;
+          .ProcessAsync(request) as CMVChangeSummaryResult;
         var returnResult = new CompactionCmvPercentChangeResult(result);
         Log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
 
@@ -122,13 +121,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainerFactory
-          .Build<DetailedCMVExecutor>(LoggerFactory,
+        var result = await RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .Process(request) as CMVDetailedResult;
+          .ProcessAsync(request) as CMVDetailedResult;
 
         var returnResult = new CompactionCmvDetailedResult(result, null);
         Log.LogInformation("GetCmvDetailsTargets result: " + JsonConvert.SerializeObject(returnResult));
@@ -169,23 +167,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result1 = RequestExecutorContainerFactory
-          .Build<DetailedCMVExecutor>(LoggerFactory,
+        var result1 = await RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .Process(request) as CMVDetailedResult;
+          .ProcessAsync(request) as CMVDetailedResult;
 
         if (result1 != null && result1.ConstantTargetCmv == -1)
         {
-          var result2 = RequestExecutorContainerFactory
-            .Build<SummaryCMVExecutor>(LoggerFactory,
+          var result2 = await RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(LoggerFactory,
 #if RAPTOR
               RaptorClient,
 #endif
               configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(request) as CMVSummaryResult;
+            .ProcessAsync(request) as CMVSummaryResult;
 
           if (result2 != null && result2.HasData())
           {
@@ -234,13 +230,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainerFactory
-                     .Build<DetailedPassCountExecutor>(LoggerFactory,
+        var result = await RequestExecutorContainerFactory.Build<DetailedPassCountExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-                     .Process(passCountsRequest) as PassCountDetailedResult;
+                     .ProcessAsync(passCountsRequest) as PassCountDetailedResult;
 
         var returnResult = new CompactionPassCountDetailedResult(result);
 
@@ -349,14 +344,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //When TRex done for temperature details, assume it will set target in details call
         if (result1 != null && result1.TemperatureTarget == null)
         {
-          var result2 = RequestExecutorContainerFactory
+          var result2 = await RequestExecutorContainerFactory
             .Build<SummaryTemperatureExecutor>(LoggerFactory,
 #if RAPTOR
               RaptorClient,
 #endif
               configStore: ConfigStore,
               trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(summaryRequest) as TemperatureSummaryResult;
+            .ProcessAsync(summaryRequest) as TemperatureSummaryResult;
           result1.SetTargets(result2?.TargetData);
         }
 

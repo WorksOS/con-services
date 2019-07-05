@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
@@ -33,7 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns>a TemperatureSummaryResult if successful</returns>      
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.Filter,
             request.TemperatureSettings);
 
-          return trexCompactionDataProxy.SendDataPostRequest<TemperatureSummaryResult, TemperatureSummaryRequest>(temperatureSummaryRequest, "/temperature/summary", customHeaders).Result;
+          return await trexCompactionDataProxy.SendDataPostRequest<TemperatureSummaryResult, TemperatureSummaryRequest>(temperatureSummaryRequest, "/temperature/summary", customHeaders);
 #if RAPTOR
         }
 
@@ -106,5 +107,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       };
     }
 #endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

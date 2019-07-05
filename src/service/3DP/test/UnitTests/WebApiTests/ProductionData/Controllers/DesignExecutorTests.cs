@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .Build<DesignExecutor>(logger, configStore: configStore.Object, fileList: new List<FileData> { new FileData() },
           trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);
 
-      var result = executor.Process(request) as DesignResult;
+      var result = executor.ProcessAsync(request).Result as DesignResult;
       
       result.Should().NotBeNull();
       result.DesignBoundaries.Should().NotBeNull();
@@ -167,7 +167,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           .Build<DesignExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
             fileList: new List<FileData> { new FileData() }, customHeaders: _customHeaders);
 
-        var result = executor.Process(request) as DesignResult;
+        var result = executor.ProcessAsync(request).Result as DesignResult;
 
         result.Should().NotBeNull();
         result.DesignBoundaries.Should().NotBeNull();

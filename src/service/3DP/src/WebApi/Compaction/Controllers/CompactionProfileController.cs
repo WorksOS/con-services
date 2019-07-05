@@ -124,14 +124,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       slicerProductionDataProfileRequest.Validate();
 
-      var slicerProductionDataResult = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(LoggerFactory,
+      var slicerProductionDataResult = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionProfileExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, profileResultHelper: profileResultHelper, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileDataResult>
+          .ProcessAsync(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileDataResult>
       );
 
       if (cutFillDesign != null)
