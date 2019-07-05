@@ -21,6 +21,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -71,7 +72,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
 
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns("false");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns(false);
 
       MemoryStream responseData;
 
@@ -122,7 +123,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var mockConfigStore = new Mock<IConfigurationStore>();
 #if RAPTOR
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns(true);
 #endif
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,

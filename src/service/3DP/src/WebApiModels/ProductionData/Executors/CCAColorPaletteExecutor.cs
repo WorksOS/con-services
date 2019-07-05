@@ -44,9 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         {
           var request = CastRequestObjectTo<CCAColorPaletteRequest>(item);
 #if RAPTOR
-          bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA_PALETTE"), out var useTrexGateway);
-
-          if (useTrexGateway)
+          if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CCA_PALETTE") ?? false)
           {
 #endif
             var filter = FilterResult.CreateFilterForCCATileRequest

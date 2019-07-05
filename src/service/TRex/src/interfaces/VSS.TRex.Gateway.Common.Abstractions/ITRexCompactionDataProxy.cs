@@ -39,9 +39,9 @@ namespace VSS.TRex.Gateway.Common.Abstractions
     /// <param name="siteModelId"></param>
     /// <param name="route"></param>
     /// <param name="customHeaders"></param>
+    /// <param name="queryParameters"></param>
     /// <returns></returns>
     Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
-      IDictionary<string, string> customHeaders = null)
-      where TResponse : class, IMasterDataModel;
+      IDictionary<string, string> customHeaders = null, IDictionary<string, string> queryParameters = null) where TResponse : class, IMasterDataModel;
   }
 }

@@ -6,14 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -24,7 +25,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// Controller to get designs for a project.
   ///     Create/Update/Delete endpoints use the mutable endpoint (at present VSS.TRex.Mutable.Gateway.WebApi)
   /// </summary>
-  [Route("api/v1/design/get")]
+  [Route("api/v1/design")]
   public class DesignController : BaseController
   {
     /// <inheritdoc />
@@ -41,7 +42,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="projectUid"></param>
     /// <param name="fileType"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("get")]
     public DesignListResult GetDesignsForProject([FromQuery] Guid projectUid, [FromQuery] ImportedFileType? fileType)
     {
       Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid{projectUid} fileType: {fileType}");
@@ -91,6 +92,31 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       }
 
       return new DesignListResult { DesignFileDescriptors = designFileDescriptorList };
+    }
+
+    /// <summary>
+    /// Gets a list of design boundaries in GeoJson format from TRex database.
+    /// </summary>
+    /// <param name="projectUid">The site model/project unique identifier.</param>
+    /// <param name="designUid">The design file unique identidier.</param>
+    /// <param name="fileName">The design file name.</param>
+    /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
+    /// <returns>Execution result with a list of design boundaries.</returns>
+    [HttpGet("boundaries")]
+    public ContractExecutionResult GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] Guid designUid, [FromQuery] string fileName, [FromQuery] double? tolerance)
+    {
+      Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid:{projectUid}, designUid:{designUid}, fileName:{fileName}, tolerance: {tolerance}");
+
+      const double BOUNDARY_POINTS_INTERVAL = 0.0;
+
+      var designBoundariesRequest = new TRexDesignBoundariesRequest(projectUid, designUid, fileName, tolerance ?? BOUNDARY_POINTS_INTERVAL);
+
+      designBoundariesRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<DesignBoundariesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(designBoundariesRequest) as DesignBoundaryResult);
     }
   }
 }
