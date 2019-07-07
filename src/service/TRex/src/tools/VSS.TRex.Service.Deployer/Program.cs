@@ -7,7 +7,7 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Logging;
-using VSS.TRex.SiteModels.GridFabric.Services;
+using VSS.TRex.SiteModelChangeMaps.GridFabric.Services;
 using VSS.TRex.TAGFiles.GridFabric.Services;
 
 namespace VSS.TRex.Service.Deployer
@@ -68,6 +68,9 @@ namespace VSS.TRex.Service.Deployer
       Log.LogInformation("Completed service deployment for mutable segment retirement queue service");
     }
 
+    /// <summary>
+    /// Deploys the site model change processor service to the immutable grid.
+    /// </summary>
     private static void DeploySiteModelChangeProcessorService()
     {
       Log.LogInformation("Obtaining proxy for site model change processor service");
@@ -75,7 +78,7 @@ namespace VSS.TRex.Service.Deployer
       var siteModelChangeProcessorService = new SiteModelChangeProcessorServiceProxy();
       try
       {
-        Log.LogInformation("Deploying segment retirement queue service to the mutable grid");
+        Log.LogInformation("Deploying site model change processor service service to the immutable grid");
         siteModelChangeProcessorService.Deploy();
       }
       catch (Exception e)
@@ -83,7 +86,7 @@ namespace VSS.TRex.Service.Deployer
         Log.LogError(e, "Exception occurred deploying service:");
       }
 
-      Log.LogInformation("Completed service deployment for mutable segment retirement queue service");
+      Log.LogInformation("Completed service deployment for site model change processor service");
     }
   
     static void Main(string[] args)

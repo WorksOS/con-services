@@ -3,7 +3,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 
-namespace VSS.TRex.SiteModels.GridFabric.Queues
+namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 {
   /// <summary>
   /// Represents the state of a TAG file stored in the TAG file buffer queue awaiting processing.

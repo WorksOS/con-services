@@ -2,9 +2,9 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.SiteModels.Interfaces.GridFabric.Queues;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 
-namespace VSS.TRex.SiteModels.GridFabric.Queues
+namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 {
   /// <summary>
   /// The key used to identify site model change in the buffer queue

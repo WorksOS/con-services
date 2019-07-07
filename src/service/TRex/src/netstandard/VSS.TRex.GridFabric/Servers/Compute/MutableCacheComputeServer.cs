@@ -188,7 +188,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //cfg.Backups = 0;
     }
 
-    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
     {
       return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(CacheCfg);
     }
@@ -278,7 +278,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //CacheConfiguration CacheCfg = new CacheConfiguration();
       //ConfigureNonSpatialMutableCache(CacheCfg);
       var nonSpatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
-      NonSpatialMutableCache = InstantiateTRexCacheReference(nonSpatialCacheConfiguration);
+      NonSpatialMutableCache = InstantiateNonSpatialTRexCacheReference(nonSpatialCacheConfiguration);
 
       //CacheCfg = new CacheConfiguration();
       //ConfigureMutableSpatialCache(CacheCfg);

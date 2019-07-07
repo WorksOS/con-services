@@ -4,11 +4,11 @@ using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModels.Interfaces.GridFabric.Queues;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 
-namespace VSS.TRex.SiteModels.GridFabric.Queues
+namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 {
   /// <summary>
   /// Represents a buffered queue of site model spatial change sets. The queue is stored in a

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Apache.Ignite.Core.Transactions;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
@@ -52,10 +53,15 @@ namespace VSS.TRex.Storage.Interfaces
 
     IStorageProxy ImmutableProxy { get; }
 
+    ITransaction StartTransaction();
 
     bool Commit();
 
+    bool Commit(ITransaction tx);
+
     bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
+
+    bool Commit(ITransaction tx, out int numDeleted, out int numUpdated, out long numBytesWritten);
 
     void Clear();
 

@@ -2,9 +2,10 @@
 using Apache.Ignite.Core.Cache.Event;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.SiteModels.Interfaces.GridFabric.Queues;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
+using VSS.TRex.SiteModels;
 
-namespace VSS.TRex.SiteModels.GridFabric.Queues
+namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 {
     public class LocalSiteModelChangeListener : ICacheEntryEventListener<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>
     {
@@ -26,35 +27,25 @@ namespace VSS.TRex.SiteModels.GridFabric.Queues
         /// <param name="events"></param>
         public void OnEvent(IEnumerable<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> events)
         {
-            // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
-            // to acquire them. 
-
-            int countOfCreatedEvents = 0;
-
+            // Pass the item creation events to the handler for processing 
+          
             foreach (var evt in events)
             {
                 // Only interested in newly added items to the cache. Updates and deletes are ignored.
                 if (evt.EventType != CacheEntryEventType.Created)
                     continue;
 
-                countOfCreatedEvents++;
                 try
                 {
-                    Handler.Process(evt.Value);
+                    Handler.Add(evt);
 
                     if (OutputInformationalMessagesToLog)
-                      Log.LogInformation($"#Progress# Added item [{evt.Key}] to the grouper");
+                      Log.LogInformation($"Added item [{evt.Key}]");
                 }
                 catch (Exception e)
                 {
-                    Log.LogError(e, $"Exception occurred adding item {evt.Key} to the grouper");
+                    Log.LogError(e, $"Exception occurred adding item [{evt.Key}]");
                 }
-            }
-
-            if (countOfCreatedEvents > 0)
-            {
-              if (OutputInformationalMessagesToLog)
-                Log.LogInformation($"#Progress# Added {countOfCreatedEvents} TAG file items to the grouper");
             }
         }
     }

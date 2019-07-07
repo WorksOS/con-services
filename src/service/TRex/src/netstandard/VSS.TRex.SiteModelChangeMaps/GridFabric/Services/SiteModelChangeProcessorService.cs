@@ -11,12 +11,14 @@ using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModels.GridFabric.Queues;
-using VSS.TRex.SiteModels.Interfaces.GridFabric.Queues;
+using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Services;
+using VSS.TRex.SiteModels;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 
-namespace VSS.TRex.SiteModels.GridFabric.Services
+namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
 {
   /// <summary>
   /// The Ignite deployed service that processes site model change notifications (representing the set of sub grid spatial data
@@ -75,8 +77,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Services
 
         // Get the ignite grid and cache references
 
-        var _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ??
-                      Ignition.GetIgnite(TRexGrids.MutableGridName());
+        var _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable) ??
+                      Ignition.GetIgnite(TRexGrids.ImmutableGridName());
 
         if (_ignite == null)
         {
@@ -93,23 +95,26 @@ namespace VSS.TRex.SiteModels.GridFabric.Services
         // Instantiate the queryHandle and start the continuous query on the remote nodes
         // Note: Only cache items held on this local node will be handled here
         using (var queryHandle = queueCache.QueryContinuous
-        (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(new LocalSiteModelChangeListener(handler)) {Local = true},
-          initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> {Local = true}))
+        (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(new LocalSiteModelChangeListener(handler))
+          {
+            Local = true
+          },
+          initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>
+          {
+            Local = true
+          }))
         {
           Log.LogInformation("Performing initial continuous query cursor scan of items to process");
 
-          // Perform the initial query to grab all existing elements and process them
-          queryHandle.GetInitialQueryCursor().ForEach(x =>
-          {
-            if (handler.Process(x.Value))
-            {
-              queueCache.Remove(x.Key);
-            }
-          });
+          // Perform the initial query to grab all existing elements and process them. Make sure to sort them in time order first
+          queryHandle.GetInitialQueryCursor().OrderBy(x => x.Key.InsertUTCTicks).ForEach(handler.Add);
 
           // Cycle looking for new work to do as items arrive until aborted...
           Log.LogInformation("Entering steady state continuous query scan of items to process");
 
+          // Activate the handler with the inject initial continuous query and move into steady state processing
+
+          handler.Activate();
           do
           {
             waitHandle.WaitOne(serviceCheckIntervalMS);

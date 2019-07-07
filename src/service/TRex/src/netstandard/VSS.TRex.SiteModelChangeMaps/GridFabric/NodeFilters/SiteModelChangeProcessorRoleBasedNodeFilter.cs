@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.NodeFilters;
 
-namespace VSS.TRex.SiteModels.GridFabric.NodeFilters
+namespace VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters
 {
     /// <summary>
     /// Defines a node filter that filters nodes based on membership of the "TAG Processing" role

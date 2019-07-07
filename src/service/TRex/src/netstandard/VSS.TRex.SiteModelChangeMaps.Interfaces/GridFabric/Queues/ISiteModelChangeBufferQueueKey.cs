@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.GridFabric.Interfaces;
 
-namespace VSS.TRex.SiteModels.Interfaces.GridFabric.Queues
+namespace VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues
 {
   public interface ISiteModelChangeBufferQueueKey : IProjectAffinity
   {

@@ -1,13 +1,13 @@
 ﻿using System;
-using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModels.GridFabric.NodeFilters;
+using VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Services;
 using VSS.TRex.Storage.Models;
 
-namespace VSS.TRex.SiteModels.GridFabric.Services
+namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
 {
   /// <summary>
   /// Class responsible for deploying the site model change processor service
@@ -36,7 +36,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Services
     /// </summary>
     public SiteModelChangeProcessorServiceProxy()
     {
-      IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+      var _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
 
       // Get an instance of IServices for the cluster group.
       services = _ignite.GetServices();
