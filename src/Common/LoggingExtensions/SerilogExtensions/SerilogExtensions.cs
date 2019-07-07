@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Core;
@@ -16,8 +18,8 @@ namespace VSS.Serilog.Extensions
     /// <param name="logFilename">The target log filename.</param>
     /// <param name="config">Optional configuration overrides.</param>
     /// <param name="httpContextAccessor">Used for the <see cref="HttpContextEnricher"/> to log the interservice RequestID.</param>
-    /// <returns></returns>
-    public static Logger Configure(string logFilename, IConfigurationRoot config = null, IHttpContextAccessor httpContextAccessor = null)
+    /// <returns>Returns the Serilog.Core.Logger instance.</returns>
+    public static Logger Configure(string logFilename = null, IConfigurationRoot config = null, IHttpContextAccessor httpContextAccessor = null)
     {
       const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message} {EscapedException}{NewLine}";
 
@@ -37,11 +39,50 @@ namespace VSS.Serilog.Extensions
 
       // If we start deploying Release configurations then the following options could be compiled out during development.
       logger.WriteTo.File(
-        $"./logs/{logFilename}",
+        Path.Combine(Directory.GetCurrentDirectory(), $"logs/{logFilename}"),
         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message}{NewLine}{Exception}",
         shared: true);
 
-      if (config != null) { logger.ReadFrom.Configuration(config); }
+      if (config == null)
+      {
+        const string configFilename = "appsettings.json";
+
+        try
+        {
+          string basePath;
+
+          if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), configFilename)))
+          {
+            basePath = Directory.GetCurrentDirectory();
+          }
+          else if (File.Exists(Path.Combine(AppContext.BaseDirectory, configFilename)))
+          {
+            // Likely if the application assembly is executed via a script from a different location.
+            basePath = Path.Combine(AppContext.BaseDirectory);
+          }
+          else
+          {
+            throw new FileNotFoundException();
+          }
+
+          config = new ConfigurationBuilder()
+                   .SetBasePath(basePath)
+                   .AddJsonFile(path: configFilename)
+                   .Build();
+        }
+        catch (FileNotFoundException)
+        {
+          if (string.IsNullOrEmpty(logFilename))
+          {
+            throw new Exception($"Unable to resolve {configFilename} location; must provide either a valid logFilename or appsettings.json configuration file.");
+          }
+        }
+      }
+
+      if (config != null)
+      {
+        logger.ReadFrom.Configuration(config);
+      }
 
       return logger.CreateLogger();
     }

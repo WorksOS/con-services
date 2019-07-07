@@ -8,7 +8,6 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.CoordinateSystems;
@@ -36,9 +35,6 @@ namespace VSS.TRex.Webtools
 {
   public class Startup
   {
-
-    public const string LoggerRepoName = "Webtools";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Startup"/> class.
     /// </summary>
@@ -49,8 +45,6 @@ namespace VSS.TRex.Webtools
         .SetBasePath(env.ContentRootPath)
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();

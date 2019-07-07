@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var mockLogger = new Mock<ILoggerFactory>();
 
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TILES")).Returns("false");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_TILES")).Returns(false);
 
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var mockConfigStore = new Mock<IConfigurationStore>();
 #if RAPTOR
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TILES")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_TILES")).Returns(true);
 #endif
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
@@ -112,7 +112,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           $"Get project extents has not been implemented in TRex yet. ProjectUid: {projectUid}"));
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
-      trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+      trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), 
+          It.IsAny<string>(), 
+          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<IDictionary<string, string>>()))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

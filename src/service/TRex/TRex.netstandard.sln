@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29006.145
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard", "netstandard", "{60739A56-DAB5-4BDD-B54E-1ACA0FF82092}"
 EndProject
@@ -1305,14 +1305,6 @@ Global
 		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Release|x64.ActiveCfg = Release|Any CPU
 		{A60A9586-2065-4A4F-80E7-961CDB684A76}.Release|x64.Build.0 = Release|Any CPU
-		{70FC1627-0AC9-4141-9E3D-176574446417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70FC1627-0AC9-4141-9E3D-176574446417}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70FC1627-0AC9-4141-9E3D-176574446417}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{70FC1627-0AC9-4141-9E3D-176574446417}.Debug|x64.Build.0 = Debug|Any CPU
-		{70FC1627-0AC9-4141-9E3D-176574446417}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70FC1627-0AC9-4141-9E3D-176574446417}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70FC1627-0AC9-4141-9E3D-176574446417}.Release|x64.ActiveCfg = Release|Any CPU
-		{70FC1627-0AC9-4141-9E3D-176574446417}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1445,7 +1437,6 @@ Global
 		{68B43728-D376-4AB6-8982-452F208B48A6} = {5ABC6984-0C9C-4A5C-80B4-5B559AF79F2D}
 		{62B19080-1A48-4B48-92FF-DE003FD5B1CC} = {5ABC6984-0C9C-4A5C-80B4-5B559AF79F2D}
 		{A60A9586-2065-4A4F-80E7-961CDB684A76} = {9AAEFDCA-DA56-4830-8FF4-8840AF43C825}
-		{70FC1627-0AC9-4141-9E3D-176574446417} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}

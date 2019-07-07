@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -24,12 +23,12 @@ using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using Xunit;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  [TestClass]
-  public class UpdateProjectExecutorTests : ExecutorBaseTests
+  public class UpdateProjectExecutorTestsDiFixture : UnitTestsDIFixture<UpdateProjectExecutorTestsDiFixture>
   {
     private static string _boundaryString;
     private static string _updatedBoundaryString;
@@ -43,9 +42,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     private static IServiceExceptionHandler _serviceExceptionHandler;
     private static Mock<IKafka> _producer;
 
-
-    [ClassInitialize]
-    public static void ClassInitialize(TestContext testContext)
+    public UpdateProjectExecutorTestsDiFixture()
     {
       try
       {
@@ -53,7 +50,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       }
       catch (Exception ex)
       {
-        Assert.IsNotNull(ex, $"{ex}");
+        Assert.NotNull(ex);
       }
 
       _boundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
@@ -70,7 +67,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpdateProjectExecutor_HappyPath()
     {
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -96,9 +93,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
           .ReturnsAsync(existingProject);
 
-        var projectGeofence = new List<ProjectGeofence>()
-        {
-          new ProjectGeofence()
+        var projectGeofence = new List<ProjectGeofence>
+                              {
+          new ProjectGeofence
           {
             GeofenceType = GeofenceType.Project,
             GeofenceUID = _geofenceUid.ToString(),
@@ -123,8 +120,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       }
     }
 
-
-    [TestMethod]
+    [Fact]
     public async Task UpdateProjectExecutor_ChangeTypeToLandfill_Invalid_NoCoordinateSystem()
     {
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -151,9 +147,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
           .ReturnsAsync(existingProject);
 
-        var projectGeofence = new List<ProjectGeofence>()
-        {
-          new ProjectGeofence()
+        var projectGeofence = new List<ProjectGeofence>
+                              {
+          new ProjectGeofence
           {
             GeofenceType = GeofenceType.Project,
             GeofenceUID = _geofenceUid.ToString(),
@@ -174,16 +170,16 @@ namespace VSS.MasterData.ProjectTests.Executors
           _producer.Object, KafkaTopicName,
           raptorProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
-        var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+        var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
 
         var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
-        Assert.AreNotEqual(-1,
+        Assert.NotEqual(-1,
           ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(45), StringComparison.Ordinal));
       }
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpdateProjectExecutor_ChangeTypeToLandfill_Invalid_NoSubscription()
     {
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -210,9 +206,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
           .ReturnsAsync(existingProject);
 
-        var projectGeofence = new List<ProjectGeofence>()
-        {
-          new ProjectGeofence()
+        var projectGeofence = new List<ProjectGeofence>
+                              {
+          new ProjectGeofence
           {
             GeofenceType = GeofenceType.Project,
             GeofenceUID = _geofenceUid.ToString(),
@@ -233,16 +229,16 @@ namespace VSS.MasterData.ProjectTests.Executors
           _producer.Object, KafkaTopicName,
           raptorProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
-        var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+        var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
 
         var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
-        Assert.AreNotEqual(-1,
+        Assert.NotEqual(-1,
           ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(37), StringComparison.Ordinal));
       }
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpdateProjectExecutor_ChangeTypeToLandfill_HappyPath()
     {
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -269,9 +265,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
           .ReturnsAsync(existingProject);
 
-        var projectGeofence = new List<ProjectGeofence>()
-        {
-          new ProjectGeofence()
+        var projectGeofence = new List<ProjectGeofence>
+                              {
+          new ProjectGeofence
           {
             GeofenceType = GeofenceType.Project,
             GeofenceUID = _geofenceUid.ToString(),
@@ -280,9 +276,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         };
         projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
 
-        var availSubs = new List<Subscription>()
-        {
-          new Subscription()
+        var availSubs = new List<Subscription>
+                        {
+          new Subscription
           {
             SubscriptionUID = Guid.NewGuid().ToString(),
             ServiceTypeID = (int) ServiceTypeEnum.Landfill,
@@ -316,7 +312,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       }
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpdateProjectExecutor_ChangeTypeToLandfill_HappyPath_CoordSystemProvidedOnUpdate()
     {
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -343,9 +339,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
           .ReturnsAsync(existingProject);
 
-        var projectGeofence = new List<ProjectGeofence>()
-        {
-          new ProjectGeofence()
+        var projectGeofence = new List<ProjectGeofence>
+                              {
+          new ProjectGeofence
           {
             GeofenceType = GeofenceType.Project,
             GeofenceUID = _geofenceUid.ToString(),
@@ -354,9 +350,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         };
         projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
 
-        var availSubs = new List<Subscription>()
-        {
-          new Subscription()
+        var availSubs = new List<Subscription>
+                        {
+          new Subscription
           {
             SubscriptionUID = Guid.NewGuid().ToString(),
             ServiceTypeID = (int) ServiceTypeEnum.Landfill,
@@ -406,7 +402,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
 
-    [TestMethod]
+    [Fact]
     public async Task UpdateProjectExecutor_ChangeTypeToStandard_Invalid()
     {
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -432,9 +428,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
         projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>())).ReturnsAsync(existingProject);
 
-        var projectGeofence = new List<ProjectGeofence>()
-        {
-          new ProjectGeofence()
+        var projectGeofence = new List<ProjectGeofence>
+                              {
+          new ProjectGeofence
           {
             GeofenceType = GeofenceType.Project,
             GeofenceUID = _geofenceUid.ToString(),
@@ -455,16 +451,16 @@ namespace VSS.MasterData.ProjectTests.Executors
           _producer.Object, KafkaTopicName,
           raptorProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object);
-        var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+        var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
 
         var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
-        Assert.AreNotEqual(-1,
+        Assert.NotEqual(-1,
           ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(85), StringComparison.Ordinal));
       }
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpdateProjectExecutor_ChangeTypeBetweenNonStandard_Invalid()
     {
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -490,9 +486,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
         projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>())).ReturnsAsync(existingProject);
 
-        var projectGeofence = new List<ProjectGeofence>()
-        {
-          new ProjectGeofence()
+        var projectGeofence = new List<ProjectGeofence>
+                              {
+          new ProjectGeofence
           {
             GeofenceType = GeofenceType.Project,
             GeofenceUID = _geofenceUid.ToString(),
@@ -513,19 +509,19 @@ namespace VSS.MasterData.ProjectTests.Executors
           _producer.Object, KafkaTopicName,
           raptorProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object);
-        var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+        var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
 
         var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
-        Assert.AreNotEqual(-1,
+        Assert.NotEqual(-1,
           ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(85), StringComparison.Ordinal));
       }
     }
 
     private async Task<ProjectDatabaseModel> CreateProject(Guid projectUid, ProjectType projectType, string coordinateSystemFileName = null, byte[] coordinateSystemFileContent = null)
     {
-      var createProjectEvent = new CreateProjectEvent()
-      {
+      var createProjectEvent = new CreateProjectEvent
+                               {
         ProjectUID = projectUid,
         ProjectType = projectType,
         CoordinateSystemFileName = coordinateSystemFileName,
@@ -547,7 +543,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel() {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -555,10 +551,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
           sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
-        .ReturnsAsync(new List<Subscription>()
-        {
-          new Subscription()
-            {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
+        .ReturnsAsync(new List<Subscription>
+                      {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
         });
 
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};

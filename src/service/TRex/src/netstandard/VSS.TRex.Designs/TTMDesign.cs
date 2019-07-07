@@ -1,20 +1,22 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Designs.TTM.Optimised;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Consts = VSS.TRex.Designs.TTM.Optimised.Consts;
 using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
+using Triangle = VSS.TRex.Designs.TTM.Optimised.Triangle;
+using TrimbleTINModel = VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel;
 
 namespace VSS.TRex.Designs
 {
@@ -45,6 +47,8 @@ namespace VSS.TRex.Designs
     }
 
     private int[] SpatialIndexOptimisedTriangles;
+
+    private List<Fence> boundary;
 
     public OptimisedSpatialIndexSubGridTree SpatialIndexOptimised { get; private set; }
 
@@ -593,7 +597,7 @@ namespace VSS.TRex.Designs
 
     /// <summary>
     /// Loads the TTM design file/s, from storage
-    /// Includes design file and 2 index files (if they exist)
+    /// Includes design file, 2 index files and a boundary file (if they exist)
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <param name="fileName"></param>
@@ -604,30 +608,28 @@ namespace VSS.TRex.Designs
     {
       var isDownloaded = S3FileTransfer.ReadFile(siteModelUid, fileName, localPath).Result;
       if (!isDownloaded)
-      {
         return DesignLoadResult.UnknownFailure;
-      }
 
       if (loadIndices)
       {
         isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
         if (!isDownloaded)
-        {
           return DesignLoadResult.UnableToLoadSubgridIndex;
-        }
 
         isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
         if (!isDownloaded)
-        {
           return DesignLoadResult.UnableToLoadSpatialIndex;
-        }
+
+        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
+        if (!isDownloaded)
+          return DesignLoadResult.UnableToLoadBoundary;
       }
 
       return DesignLoadResult.Success;
     }
 
     /// <summary>
-    /// Loads the TTM design from a TTM file, along with the sub grid existence map file if it exists (created otherwise)
+    /// Loads the TTM design from a TTM file, along with the sub grid existence map file and  if it exists (created otherwise)
     /// </summary>
     /// <param name="localPathAndFileName"></param>
     /// <param name="saveIndexFiles"></param>
@@ -650,6 +652,9 @@ namespace VSS.TRex.Designs
 
         if (!LoadSpatialIndexFile(localPathAndFileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, saveIndexFiles))
           return DesignLoadResult.UnableToLoadSubgridIndex;
+
+        if (!LoadBoundaryFile(localPathAndFileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION, saveIndexFiles))
+          return DesignLoadResult.UnableToLoadBoundary;
 
         Log.LogInformation(
           $"Area: ({Data.Header.MinimumEasting}, {Data.Header.MinimumNorthing}) -> ({Data.Header.MaximumEasting}, {Data.Header.MaximumNorthing}): [{Data.Header.MaximumEasting - Data.Header.MinimumEasting} x {Data.Header.MaximumNorthing - Data.Header.MinimumNorthing}]");
@@ -808,6 +813,106 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
+    /// Loads a boundary for the design from a file.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <param name="saveBoundaryFile"></param>
+    /// <returns></returns>
+    private bool LoadBoundaryFile(string fileName, bool saveBoundaryFile)
+    {
+      Log.LogInformation($"Loading boundary file {fileName}");
+
+      if (boundary != null)
+        return true;
+
+      bool result = LoadBoundary(fileName);
+
+      if (!result)
+      {
+        boundary = new List<Fence>();
+
+        result = DesignBoundaryBuilder.CalculateBoundary(fileName, boundary);
+
+        if (result)
+        {
+          if (saveBoundaryFile && !SaveBoundary(fileName))
+            Log.LogError("Continuing with unsaved boundary");
+        }
+        else
+          Log.LogError($"Unable to create and save boundary file {fileName}");
+
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Loads the boundary from a file.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    private bool LoadBoundary(string fileName)
+    {
+      try
+      {
+        if (!File.Exists(fileName))
+          return false;
+
+        using (var ms = new MemoryStream(File.ReadAllBytes(fileName)))
+        {
+          using (var reader = new BinaryReader(ms))
+          {
+            foreach (var fence in boundary)
+              fence.Read(reader);
+          }
+        }
+
+        return true;
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, $"Exception in {nameof(LoadBoundary)}: fileName:{fileName}, message:{e.Message}.");
+
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Saves a boundary for the design to a file
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    private bool SaveBoundary(string fileName)
+    {
+      try
+      {
+        if (File.Exists(fileName))
+          return true;
+
+        // Write the boundary out to a file
+        using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+        {
+          using (var writer = new BinaryWriter(fs))
+          {
+            foreach (var fence in boundary)
+              fence.Write(writer);
+          }
+        }
+
+        Log.LogInformation($"Saved boundary file {fileName}");
+
+        return true;
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, $"Exception in {nameof(SaveBoundary)}.");
+      }
+
+      Log.LogError($"Unable to save sub grid index file {fileName}");
+      return false;
+    }
+    
+    /// <summary>
     /// Saves a sub grid existence map for the design to a file
     /// </summary>
     /// <param name="fileName"></param>
@@ -894,6 +999,18 @@ namespace VSS.TRex.Designs
     {
       var profiler = DIContext.Obtain<IOptimisedTTMProfilerFactory>().NewInstance(Data, SpatialIndexOptimised, SpatialIndexOptimisedTriangles);
       return profiler.Compute(profilePath);
+    }
+
+    /// <summary>
+    /// Computes the requested boundary.
+    /// </summary>
+    /// <returns></returns>
+    public override List<Fence> GetBoundary()
+    {
+      if (!LoadBoundaryFile(FileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION, false))
+        return null;
+
+      return boundary;
     }
   }
 }

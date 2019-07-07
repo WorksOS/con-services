@@ -28,10 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     private ContractExecutionResult RequestCSIBForProject(ProjectID request)
     {
 #if RAPTOR
-      if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CS"), out var useTrexGateway))
-        useTrexGateway = false;
-
-      if (useTrexGateway)
+      if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CS") ?? false)
       {
 #endif
         var siteModelId = request.ProjectUid.ToString();

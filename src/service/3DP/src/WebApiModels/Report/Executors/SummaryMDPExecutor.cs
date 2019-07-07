@@ -40,9 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         var request = CastRequestObjectTo<MDPRequest>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_MDP"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_MDP") ?? false)
         {
 #endif
           var mdpSummaryRequest = new MDPSummaryRequest(

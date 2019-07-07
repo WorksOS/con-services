@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
@@ -90,7 +91,6 @@ namespace VSS.TRex.Tests.TestFixtures
 
         // Override the main Ignite grid factory method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
-
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
@@ -101,7 +101,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
-
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
         .Add(x => x.AddSingleton(igniteMock.mockCompute))
         .Add(x => x.AddSingleton(igniteMock.mockIgnite))
         .Complete();
@@ -155,6 +155,8 @@ namespace VSS.TRex.Tests.TestFixtures
                 destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
       File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION,
                 destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+      File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION,
+        destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
 
       return designUid;
     }
@@ -203,6 +205,8 @@ namespace VSS.TRex.Tests.TestFixtures
                 destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
       File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION,
                 destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+      File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION,
+        destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
 
       return surveyedSurfaceUid;
     }

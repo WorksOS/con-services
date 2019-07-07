@@ -5,6 +5,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VolumeCalcTypes = VSS.MasterData.Models.Models.VolumeCalcType;
 

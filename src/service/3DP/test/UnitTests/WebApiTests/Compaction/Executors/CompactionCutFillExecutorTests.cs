@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var raptorClient = new Mock<IASNodeClient>();
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL")).Returns("false");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_CUTFILL")).Returns(false);
 
       raptorClient
         .Setup(x => x.GetCutFillDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var configStore = new Mock<IConfigurationStore>();
 #if RAPTOR
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_CUTFILL")).Returns(true);
 #endif
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,

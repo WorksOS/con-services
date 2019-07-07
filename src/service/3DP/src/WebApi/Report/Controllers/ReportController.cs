@@ -447,9 +447,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       log.LogDebug($"{nameof(PostExportCcaSummary)}: {JsonConvert.SerializeObject(request)}");
 
-      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA"), out var useTrexGateway);
-
-      if (useTrexGateway)
+      if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CCA") ?? false)
         request.ProjectUid = GetProjectUid(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID).Result;
 
       request.Validate();

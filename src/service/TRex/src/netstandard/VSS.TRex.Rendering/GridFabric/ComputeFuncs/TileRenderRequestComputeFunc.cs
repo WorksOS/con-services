@@ -71,7 +71,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
         var RenderingFactory = DIContext.Obtain<IRenderingFactory>();
         var response = RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
         if (response != null)
-          response.ResultStatus = bmp == null ? render.ResultStatus : RequestErrorStatus.OK;
+          response.ResultStatus = render.ResultStatus;
 
         return response;
       }

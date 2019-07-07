@@ -34,7 +34,7 @@ node ('jenkinsslave-pod') {
 				name: 'BUILD_DB'
 			),
 			booleanParam(
-				defaultValue: true,
+				defaultValue: false,
 				description: 'Run Acceptance Tests',
 				name: 'RUN_ACCTEST'
 			),
@@ -85,6 +85,10 @@ node ('jenkinsslave-pod') {
 	def runtimeImage
 	def dbRuntimeImage
 	def testImage
+	
+	// Run acceptance tests only for non-feature branches
+	if (!runTests)
+		runTests = !(branchName ==~ /\d{5}-.*/)
 
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber

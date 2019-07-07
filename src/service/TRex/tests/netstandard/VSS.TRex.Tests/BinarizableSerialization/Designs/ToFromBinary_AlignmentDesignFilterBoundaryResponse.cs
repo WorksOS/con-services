@@ -16,7 +16,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
     [Fact]
     public void Test_AlignmentDesignFilterBoundaryResponse_Polygon()
     {
-      var response = new AlignmentDesignFilterBoundaryResponse
+      var response = new AlignmentDesignFilterBoundaryResponse()
       {
          Boundary = new Fence(1, 2, 3, 4)
          {

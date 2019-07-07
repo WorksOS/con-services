@@ -25,7 +25,7 @@ namespace VSS.WebApi.Common
     /// <returns></returns>
     public async Task Invoke(HttpContext context)
     {
-      log.LogInformation($"Request {context.Request.Method} {context.Request.Path}");
+      log.LogInformation($"Request {context.Request.Method} {context.Request.Path} {context.Request.QueryString.Value}");
       var watch = Stopwatch.StartNew();
       await this._next.Invoke(context);
       watch.Stop();

@@ -16,7 +16,6 @@
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />  
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
     <PackageReference Include="Apache.Ignite" Version="2.7.5" />
-    <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
   </ItemGroup>
 
@@ -36,8 +35,6 @@
     <ProjectReference Include="..\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
   </ItemGroup>
 
-
-
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -45,9 +42,6 @@
     <Content Update="kestrelsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Update="log4net.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

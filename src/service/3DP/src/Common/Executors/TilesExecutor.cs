@@ -36,9 +36,7 @@ namespace VSS.Productivity3D.Common.Executors
       {
         var request = CastRequestObjectTo<TileRequest>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_TILES") ?? false)
         {
 #endif
           var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/tile", customHeaders).Result;
