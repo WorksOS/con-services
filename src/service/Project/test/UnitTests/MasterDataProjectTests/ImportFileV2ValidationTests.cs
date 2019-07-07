@@ -1,13 +1,12 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Xunit;
 
 namespace VSS.MasterData.ProjectTests
 {
-  [TestClass]
   public class ImportFileV2ValidationTests
   {
     private readonly long _projectId;
@@ -27,10 +26,10 @@ namespace VSS.MasterData.ProjectTests
       _createdUtc = DateTime.UtcNow.AddDays(-0.5);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_InvalidProjectId()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
@@ -39,15 +38,15 @@ namespace VSS.MasterData.ProjectTests
         CreatedUtc = _createdUtc
       };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(0, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2005", StringComparison.Ordinal), "Expected error number 2005");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2005", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_UnsupportedImportedFileType()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
@@ -56,15 +55,15 @@ namespace VSS.MasterData.ProjectTests
         CreatedUtc = _createdUtc
       };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2031", StringComparison.Ordinal), "Expected error number 2031");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2031", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_IncompleteLinework()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
@@ -73,31 +72,31 @@ namespace VSS.MasterData.ProjectTests
         CreatedUtc = _createdUtc
       };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2075", StringComparison.Ordinal), "Expected error number 2075");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2075", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_CompleteLinework()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
         Name = "TheLineWork.dxf",
         ImportedFileTypeId = ImportedFileType.Linework,
         CreatedUtc = _createdUtc,
-        LineworkFile = new LineworkFile() { DxfUnitsTypeId = DxfUnitsType.ImperialFeet }
+        LineworkFile = new LineworkFile { DxfUnitsTypeId = DxfUnitsType.ImperialFeet }
       };
 
       FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_IncompleteSurveyedSurface()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
@@ -106,31 +105,31 @@ namespace VSS.MasterData.ProjectTests
         CreatedUtc = _createdUtc
       };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2033", StringComparison.Ordinal), "Expected error number 2033");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2033", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_CompleteSurveyedSurface()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
         Name = "TheSurfaceFile.ttm",
         ImportedFileTypeId = ImportedFileType.SurveyedSurface,
         CreatedUtc = _createdUtc,
-        SurfaceFile = new SurfaceFile() { SurveyedUtc = DateTime.UtcNow.AddDays(-1) }
+        SurfaceFile = new SurfaceFile { SurveyedUtc = DateTime.UtcNow.AddDays(-1) }
       };
 
       FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_IncompleteAlignment()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
@@ -139,32 +138,32 @@ namespace VSS.MasterData.ProjectTests
         CreatedUtc = _createdUtc
       };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2095", StringComparison.Ordinal), "Expected error number 2095");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2095", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_CompleteAlignment()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
         Name = "TheAlignment.svl",
         ImportedFileTypeId = ImportedFileType.Alignment,
         CreatedUtc = _createdUtc,
-        AlignmentFile = new AlignmentFile() { Offset = 3 }
+        AlignmentFile = new AlignmentFile { Offset = 3 }
       };
 
       FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);
     }
 
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_NoFilename()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
@@ -173,15 +172,15 @@ namespace VSS.MasterData.ProjectTests
         CreatedUtc = _createdUtc
       };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2002", StringComparison.Ordinal), "Expected error number 2002");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2002", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_IncompleteDesignSurface()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
@@ -190,15 +189,15 @@ namespace VSS.MasterData.ProjectTests
         CreatedUtc = _createdUtc
       };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2032", StringComparison.Ordinal), "Expected error number 2032");
+      Assert.NotEqual(-1, ex.GetContent.IndexOf("2032", StringComparison.Ordinal));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_CompleteDesignSurface()
     {
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
@@ -210,7 +209,7 @@ namespace VSS.MasterData.ProjectTests
       FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);
     }
 
-    [TestMethod]
+    [Fact]
     public void ImportedFileV2_RemoveSurveyedUtcFromName()
     {
       // JB topo southern motorway_2010-11-29T153300Z.TTM   SS=2010-11-29 15:33:00.0000000
@@ -219,20 +218,20 @@ namespace VSS.MasterData.ProjectTests
       var expectedProjectName = "JB topo southern motorway.TTM";
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
-      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+      Assert.Equal(expectedProjectName, projectName);
     }
 
-    [TestMethod]
+    [Fact]
     public void ImportedFileV2_RemoveSurveyedUtcFromNameWithDash()
     {
       var nhOpName = "Marylands Road - Marylands.ttm";
       var expectedProjectName = "Marylands Road - Marylands.ttm";
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
-      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+      Assert.Equal(expectedProjectName, projectName);
     }
 
-    [TestMethod]
+    [Fact]
     public void ImportedFileV2_RemoveSurveyedUtcFromName_DoubleUtc()
     {
       // Aerial Survey 120819_2012-08-19T035400Z_2016-08-16T003724Z.TTM ssUtc=2016-08-16 00:37:24.0000000
@@ -241,27 +240,27 @@ namespace VSS.MasterData.ProjectTests
       var expectedProjectName = "Aerial Survey 120819_2012-08-19T035400Z.TTM";
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
-      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+      Assert.Equal(expectedProjectName, projectName);
     }
 
-    [TestMethod]
+    [Fact]
     public void ImportedFileV2_RemoveSurveyedUtcFromNameWithUnderscores()
     {
       var nhOpName = "Surveyed_Surface_2010-11-29T153300Z.TTM";
       var expectedProjectName = "Surveyed_Surface.TTM";
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
-      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+      Assert.Equal(expectedProjectName, projectName);
     }
 
-    [TestMethod]
+    [Fact]
     public void ImportedFileV2_RemoveSurveyedUtcFromNameWithNoSurveyedUtc()
     {
       var nhOpName = "Design_Surface.TTM";
       var expectedProjectName = nhOpName;
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
-      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+      Assert.Equal(expectedProjectName, projectName);
     }
   }
 }

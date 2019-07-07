@@ -128,6 +128,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Missing parent design for reference surface", 120);
       this.DynamicAddwithOffset("Reference surface already exists", 121);
       this.DynamicAddwithOffset("This endpoint does not support importing reference surfaces", 122);
+      this.DynamicAddwithOffset("Unable to retrieve existing file for the update", 123);
 
     }
   }
