@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 
@@ -35,6 +36,11 @@ namespace VSS.TRex.GridFabric.Arguments
     /// </summary>
     public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 
+    /// <summary>
+    /// Any overriding targets to be used instead of machine targets
+    /// </summary>
+    public IOverrideParameters Overrides { get; set; } 
+
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
 
     public override void ToBinary(IBinaryRawWriter writer)
@@ -50,8 +56,10 @@ namespace VSS.TRex.GridFabric.Arguments
       ReferenceDesign?.ToBinary(writer);
 
       writer.WriteBoolean(Filters != null);
-
       Filters?.ToBinary(writer);
+
+      writer.WriteBoolean(Overrides != null);
+      Overrides?.ToBinary(writer);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -71,6 +79,12 @@ namespace VSS.TRex.GridFabric.Arguments
       {
         Filters = DI.DIContext.Obtain<IFilterSet>();
         Filters.FromBinary(reader);
+      }
+
+      if (reader.ReadBoolean())
+      {
+        Overrides = new OverrideParameters();
+        Overrides.FromBinary(reader);
       }
     }
   }

@@ -383,5 +383,33 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
                       apiRequest.Offsets.Length > 0 ? apiRequest.Offsets[0] : -6666, "Offset[0] not mapped correctly");
 
     }
+
+    [TestMethod]
+    public void MapLiftBuildSettingsToOverrideTargets()
+    {
+      var lbs = new LiftBuildSettings(new CCVRangePercentage(70, 100), false, 0, 0, 0, LiftDetectionType.AutoMapReset, 
+        LiftThicknessType.Compacted, new MDPRangePercentage(80, 125), false, null, 70, 812, new TargetPassCountRange(3, 8),
+        new TemperatureWarningLevels(1000, 1800), null, null, new MachineSpeedTarget(123, 456));
+
+      var overrides = AutoMapperUtility.Automapper.Map<OverridingTargets>(lbs);
+
+      Assert.AreEqual(lbs.CCVRange.Min, overrides.MinCMVPercent, "MinCMVPercent not mapped correctly");
+      Assert.AreEqual(lbs.CCVRange.Max, overrides.MaxCMVPercent, "MaxCMVPercent not mapped correctly");
+      Assert.AreEqual(true, overrides.OverrideTargetCMV, "OverrideTargetCMV not mapped correctly");
+      Assert.AreEqual(lbs.OverridingMachineCCV, overrides.CmvTarget, "CmvTarget not mapped correctly");
+      Assert.AreEqual(lbs.MDPRange.Min, overrides.MinMDPPercent, "MinMDPPercent not mapped correctly");
+      Assert.AreEqual(lbs.MDPRange.Max, overrides.MaxMDPPercent, "MaxMDPPercent not mapped correctly");
+      Assert.AreEqual(true, overrides.OverrideTargetMDP, "OverrideTargetMDP not mapped correctly");
+      Assert.AreEqual(lbs.OverridingMachineMDP, overrides.MdpTarget, "MdpTarget not mapped correctly");
+      Assert.IsNotNull(overrides.OverridingTargetPassCountRange, "OverridingTargetPassCountRange should not be null");
+      Assert.AreEqual(lbs.OverridingTargetPassCountRange.Min, overrides.OverridingTargetPassCountRange.Min, "OverridingTargetPassCountRange.Min not mapped correctly");
+      Assert.AreEqual(lbs.OverridingTargetPassCountRange.Max, overrides.OverridingTargetPassCountRange.Max, "OverridingTargetPassCountRange.Max not mapped correctly");
+      Assert.IsNotNull(overrides.TemperatureSettings, "TemperatureSettings should not be null");
+      Assert.AreEqual(lbs.OverridingTemperatureWarningLevels.Min/10.0, overrides.TemperatureSettings.MinTemperature, "TemperatureSettings.MinTemperature not mapped correctly");
+      Assert.AreEqual(lbs.OverridingTemperatureWarningLevels.Max/10.0, overrides.TemperatureSettings.MaxTemperature, "TemperatureSettings.MaxTemperature not mapped correctly");
+      Assert.IsNotNull(overrides.MachineSpeedTarget, "MachineSpeedTarget should not be null");
+      Assert.AreEqual(lbs.MachineSpeedTarget.MinTargetMachineSpeed, overrides.MachineSpeedTarget.MinTargetMachineSpeed, "MachineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
+      Assert.AreEqual(lbs.MachineSpeedTarget.MaxTargetMachineSpeed, overrides.MachineSpeedTarget.MaxTargetMachineSpeed, "MachineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
+    }
   }
 }

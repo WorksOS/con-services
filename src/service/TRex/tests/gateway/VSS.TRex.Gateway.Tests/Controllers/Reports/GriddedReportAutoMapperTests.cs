@@ -41,7 +41,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null);
 
       var result = AutoMapperUtility.Automapper.Map<GriddedReportData>(request);
 
@@ -77,7 +77,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null);
 
       var result = AutoMapperUtility.Automapper.Map<GriddedReportRequestArgument>(request);
 
@@ -110,7 +110,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null);
       request.Validate();
     }
 
@@ -133,7 +133,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null);
 
       var ex = Assert.Throws<ServiceException>(() => request.Validate());
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
@@ -153,7 +153,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         true, true, true, true, true, true,
         cutFillDesignUid, cutFillDesignOffset,
         null, GridReportOption.Automatic,
-        800000, 400000, 800001, 400001, 2);
+        800000, 400000, 800001, 400001, 2, null);
 
       var computeResult = new GriddedReportResult()
       {

@@ -18,6 +18,7 @@ using VSS.Productivity3D.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -57,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             request.BoundBoxGrid,
             request.Width,
             request.Height,
-            GetOverridingTargets(request.LiftBuildSettings)
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings)
           );
           var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(trexRequest, "/tile", customHeaders);
 

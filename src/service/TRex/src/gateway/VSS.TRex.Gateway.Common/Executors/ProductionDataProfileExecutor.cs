@@ -12,6 +12,7 @@ using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
@@ -62,7 +63,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         StartPoint = new WGS84Point(request.StartX, request.StartY),
         EndPoint = new WGS84Point(request.EndX, request.EndY),
         ReturnAllPassesAndLayers = true,
-        Overrides = GetOverrideParameters(request.Overrides)
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 

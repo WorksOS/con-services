@@ -9,6 +9,7 @@ using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;

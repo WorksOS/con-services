@@ -8,6 +8,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;

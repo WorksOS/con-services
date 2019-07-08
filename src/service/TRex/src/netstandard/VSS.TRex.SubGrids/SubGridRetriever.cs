@@ -635,7 +635,7 @@ namespace VSS.TRex.SubGrids
       _segmentIterator.Directory = _subGridAsLeaf.Directory;
     }
 
-    public ServerRequestResult RetrieveSubGrid(// liftBuildSettings          : TICLiftBuildSettings;
+    public ServerRequestResult RetrieveSubGrid(IOverrideParameters overrides,
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
@@ -765,6 +765,7 @@ namespace VSS.TRex.SubGrids
 
         // TODO Add when cell left build settings supported
         // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
+        _assignmentContext.Overrides = overrides;
 
         // Determine if a sieve filter is required for the sub grid where the sieve matches
         // the X and Y pixel world size (used for WMS tile computation)

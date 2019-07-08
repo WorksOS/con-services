@@ -1,15 +1,12 @@
 ﻿using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Records;
-using VSS.TRex.Profiling.Interfaces;
 
-namespace VSS.TRex.Profiling
+namespace VSS.TRex.Common.Models
 {
   /// <summary>
   /// The set of global overriding values when overriding machine targets.
   /// </summary>
-  public class OverrideParameters : IOverrideParameters, IBinarizable, IFromToBinary
+  public class OverrideParameters : IOverrideParameters, IBinarizable
   {
     private const byte VERSION_NUMBER = 1;
 
