@@ -27,12 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Dockerfile;log4net.xml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
     <ProjectReference Include="..\Common.netcore\Common.netstandard.csproj" />
   </ItemGroup>
@@ -41,9 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
-    </Reference>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="appsettingsAlpha.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
