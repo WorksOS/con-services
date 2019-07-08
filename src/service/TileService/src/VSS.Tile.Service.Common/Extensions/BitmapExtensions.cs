@@ -2,7 +2,6 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-
 namespace VSS.Tile.Service.Common.Extensions
 {
   public static class BitmapExtensions
