@@ -153,7 +153,7 @@
                 - NoViolationColor: the color to use when slope is within range: default green
                 
 -->
-<TestCase Surface="Large Sites Road - Trimble Road.dxf" Resolution="1.1" MinSlope="0.1" MaxSlope="0.1" MaxCutDepth="NaN" ExportVolume="NaN" Compute="SurfaceBestFit">
+<TestCase Surface="LargeSitesRoad_TrimbleRoad_Change.dxf" Resolution="1.1" MinSlope="0.1" MaxSlope="0.1" MaxCutDepth="NaN" ExportVolume="NaN" Compute="SurfaceBestFit">
   <OriginalVisualizationTools>
     <OmniSlope Pixels="1024" MinSlope="0.05" MaxSlope="0.1">
       <GradientStops>

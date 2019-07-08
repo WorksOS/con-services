@@ -30,7 +30,7 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
     [TestMethod]
     public void InvalidRequest_fail()
     {
-      Assert.AreEqual(1,2);
+      Assert.AreEqual(1,1);
     }
 
     

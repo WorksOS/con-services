@@ -46,6 +46,18 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
+    public Task<Stream> GetExportSurface(Guid projectUid, string fileName, Guid? filterUid, IDictionary<string, string> customHeaders)
+    {
+      var parameters = new Dictionary<string, string>
+      {
+        { "projectUid", projectUid.ToString() }, { "fileName", fileName }, { "filterUid", filterUid == null ? string.Empty : filterUid.ToString() }
+      };
+
+      var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
+      var result = GetMasterDataStreamContent("RAPTOR_3DPM_API_URL", customHeaders, HttpMethod.Get, null, queryParams, "/export/surface");
+      return result;
+    }
+
     /// <summary>
     /// Validates the CoordinateSystem for the project.
     /// </summary>

@@ -4,8 +4,10 @@ using Microsoft.Extensions.Options;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
 using VSS.Hydrology.WebApi.Configuration;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -28,6 +30,7 @@ namespace VSS.Hydrology.WebApi
       services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddScoped<IErrorCodesProvider, HydroErrorCodesProvider>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
     }

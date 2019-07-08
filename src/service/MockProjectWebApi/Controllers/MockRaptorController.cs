@@ -26,6 +26,14 @@ namespace MockProjectWebApi.Controllers
       return new FileStreamResult(zipStream, ContentTypeConstants.ApplicationZip);
     }
 
+    [Route("api/v2/export/surface")]
+    [HttpGet]
+    public FileResult GetSurface([FromQuery] Guid projectUid, [FromQuery] string fileName, [FromQuery] Guid? filterUid)
+    {
+      var zipStream = new FileStream("Resources/Large Sites Road - Trimble Road.ttm", FileMode.Open);
+      return new FileStreamResult(zipStream, ContentTypeConstants.ApplicationZip);
+    }
+
     [Route("api/v2/mock/export/veta")]
     [Route("api/v2/export/veta")]
     [HttpGet]
@@ -71,6 +79,7 @@ namespace MockProjectWebApi.Controllers
         "Unknown project or file for mock export data"));
 
     }
+
 
     /// <summary>
     /// Dummies the post.

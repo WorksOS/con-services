@@ -17,6 +17,9 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<Stream> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid,
       IDictionary<string, string> customHeaders);
 
+    Task<Stream> GetExportSurface(Guid projectUid, string fileName, Guid? filterUid,
+      IDictionary<string, string> customHeaders);
+
     Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent,
       string coordinateSystemFilename,
       IDictionary<string, string> customHeaders = null);
