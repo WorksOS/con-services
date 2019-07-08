@@ -1,0 +1,3 @@
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2-windowsservercore-ltsc2016 AS Build
+COPY . /monorepo
+RUN dotnet publish c:\monorepo\src\service\Hydrology\VSS.Hydrology.Service.sln  -o c:\Artifacts\WebApi -f net471
