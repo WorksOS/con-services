@@ -180,8 +180,20 @@ namespace VSS.TRex.SiteModels
 
             updateMask.FromBytes(item.Content);
 
-            // Add the two of them together...
-            currentMask.SetOp_OR(updateMask);
+            switch (item.Operation)
+            {
+              case SiteModelChangeMapOperation.AddSpatialChanges: // Add the two of them together...
+                currentMask.SetOp_OR(updateMask);
+                break;
+
+              case SiteModelChangeMapOperation.RemoveSpatialChanges: // Subtract from the change map...
+                currentMask.SetOp_ANDNOT(updateMask);
+                break;
+
+              default:
+                Log.LogError($"Unknown operation encountered: {(int) item.Operation}");
+                break;
+            }
 
             // Commit the updated mask to the store
             _changeMapCache.Put(key, currentMask.ToBytes());
