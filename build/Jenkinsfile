@@ -175,6 +175,11 @@ node ('jenkinsslave-pod') {
 			dbRuntimeImage.push()
 		}
 	}
+
+	//Do not run acceptance tests if ther eis no dockerfile - mockapi is an example
+	def dockerTestsFileExists = fileExists "./${servicePath}/build/Dockerfile.tests"
+	if (!dockerTestsFileExists)
+		runTests = false
 	
 	if (runTests)
 	{

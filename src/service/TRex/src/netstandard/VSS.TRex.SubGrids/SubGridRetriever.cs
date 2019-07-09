@@ -676,7 +676,7 @@ namespace VSS.TRex.SubGrids
         _profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
         _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, new FilterSet(_filter),
-          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None);
+          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None, new OverrideParameters());
 
         _cellProfile = new ProfileCell();
 

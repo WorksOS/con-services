@@ -4,7 +4,6 @@ using VSS.MasterData.Models.Models;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Models;
 
-
 namespace VSS.Tile.Service.Common.Services
 {
   /// <summary>

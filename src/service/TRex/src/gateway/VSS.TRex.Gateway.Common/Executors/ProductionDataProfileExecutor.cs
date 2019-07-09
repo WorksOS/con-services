@@ -24,7 +24,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   /// <summary>
   /// Processes the request to get production data profile.
   /// </summary>
-  public class ProductionDataProfileExecutor : ProfileBaseExecutor
+  public class ProductionDataProfileExecutor : BaseExecutor
   {
     public ProductionDataProfileExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)

@@ -5,14 +5,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard", "netstandard", "{60739A56-DAB5-4BDD-B54E-1ACA0FF82092}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Common", "src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj", "{737BFD08-031B-4506-8205-947B82C6D2BA}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CC3B7973-6248-4456-AE1B-ABB2BDA0DABF} = {CC3B7973-6248-4456-AE1B-ABB2BDA0DABF}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex", "src\netstandard\VSS.TRex\VSS.TRex.csproj", "{40DB7CF3-5817-45A5-9F90-29BAA80E2C7A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{737BFD08-031B-4506-8205-947B82C6D2BA} = {737BFD08-031B-4506-8205-947B82C6D2BA}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Geometry", "src\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj", "{BAC0B22F-B4FD-406A-9196-2E864416EF4E}"
 EndProject
@@ -21,9 +15,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{34164EB1-38C2-4301-AEF3-83E3A0DFA8F3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.TTM.Tests", "tests\netstandard\VSS.TRex.Designs.TTM.Tests\VSS.TRex.Designs.TTM.Tests.csproj", "{13EB6387-02E9-460B-AAC2-BC5F670661D3}"
-	ProjectSection(ProjectDependencies) = postProject
-		{8F7A2465-2E5F-4627-9162-2F1EED8B0747} = {8F7A2465-2E5F-4627-9162-2F1EED8B0747}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.DesignProfiling.Tests", "tests\netstandard\VSS.TRex.DesignProfiling.Tests\VSS.TRex.DesignProfiling.Tests.csproj", "{F375B5F3-84C4-4385-85D0-EAA6A5855C3B}"
 EndProject
@@ -38,9 +29,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{EABE5BA3-7F2D-4F6B-80C2-674EE09037DC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Tools.TagfileSubmitter", "src\tools\VSS.TRex.Tools.TagfileSubmitter\VSS.TRex.Tools.TagfileSubmitter.csproj", "{35312D6A-ED8D-4AD3-8EFB-46F6BDAA7EE9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{00400CF0-8011-4B1E-8AC6-2A752A79F527} = {00400CF0-8011-4B1E-8AC6-2A752A79F527}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Service.Deployer", "src\tools\VSS.TRex.Service.Deployer\VSS.TRex.Service.Deployer.csproj", "{AB3CB0AF-41DE-4106-AF08-BEEA60CB120D}"
 EndProject
@@ -51,13 +39,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.DesignElevation", "src\netstandard\services\VSS.TRex.Server.DesignElevation\VSS.TRex.Server.DesignElevation.csproj", "{5DE88FC2-0BD0-4B08-85D1-5308E4CE1212}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.MutableData", "src\netstandard\services\VSS.TRex.Server.MutableData\VSS.TRex.Server.MutableData.csproj", "{7FFCE29D-AEA3-47F8-9C45-FA97EACC73EE}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9D515217-6D86-4114-889B-19230921E8EB} = {9D515217-6D86-4114-889B-19230921E8EB}
-		{CD42D023-9286-4300-AF77-31BC68E86A9E} = {CD42D023-9286-4300-AF77-31BC68E86A9E}
-		{E6425A3D-7565-4435-B421-5234ECFA0393} = {E6425A3D-7565-4435-B421-5234ECFA0393}
-		{C87D4753-2930-47C0-B51E-AD84B4C3DFCE} = {C87D4753-2930-47C0-B51E-AD84B4C3DFCE}
-		{62B19080-1A48-4B48-92FF-DE003FD5B1CC} = {62B19080-1A48-4B48-92FF-DE003FD5B1CC}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.PSNode", "src\netstandard\services\VSS.TRex.Server.PSNode\VSS.TRex.Server.PSNode.csproj", "{B441691C-8EA0-4573-A68E-411BC23DED85}"
 EndProject
@@ -75,10 +56,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common", "src\gateway\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj", "{EE833C5F-15CF-4860-AD03-A7CA211B388B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.WebApi", "src\gateway\VSS.TRex.Gateway.WebApi\VSS.TRex.Gateway.WebApi.csproj", "{9B5290E8-1126-487B-A828-F94BB72F7C6F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{21221A03-1B1D-450A-9D9C-4277543B2BFC} = {21221A03-1B1D-450A-9D9C-4277543B2BFC}
-		{D204A0B5-B24E-48F5-A7AD-EF150D96CD8E} = {D204A0B5-B24E-48F5-A7AD-EF150D96CD8E}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Tests", "tests\gateway\VSS.TRex.Gateway.Tests\VSS.TRex.Gateway.Tests.csproj", "{3651E743-8003-440C-8E1C-E426A82CF873}"
 EndProject
@@ -93,10 +70,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TTMPerf", "TTMPerf", "{490C354B-AE0E-42E0-996C-58F8DAE470D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TTMPerformanceTest", "src\netstandard\SandBox\TTMPerformanceTest\TTMPerformanceTest.csproj", "{DAC9191A-3CB3-46F8-9BBF-95C08C71B536}"
-	ProjectSection(ProjectDependencies) = postProject
-		{28DA8E55-DF7D-4241-A525-797B664BC09C} = {28DA8E55-DF7D-4241-A525-797B664BC09C}
-		{8F7A2465-2E5F-4627-9162-2F1EED8B0747} = {8F7A2465-2E5F-4627-9162-2F1EED8B0747}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamingPerfTest", "src\netstandard\SandBox\StreamingPerfTest\StreamingPerfTest.csproj", "{7776A913-9EF2-43F1-9F5A-603749DBF23F}"
 EndProject
@@ -199,10 +172,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.TileRendering", "src\netstandard\services\VSS.TRex.Server.TileRendering\VSS.TRex.Server.TileRendering.csproj", "{28024D34-C65F-43EC-908C-678DECB1577D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Mutable.Gateway.WebApi", "src\gateway\VSS.TRex.Mutable.Gateway.WebApi\VSS.TRex.Mutable.Gateway.WebApi.csproj", "{56377651-DF13-42B9-8AA6-24150410BB73}"
-	ProjectSection(ProjectDependencies) = postProject
-		{68B43728-D376-4AB6-8982-452F208B48A6} = {68B43728-D376-4AB6-8982-452F208B48A6}
-		{62B19080-1A48-4B48-92FF-DE003FD5B1CC} = {62B19080-1A48-4B48-92FF-DE003FD5B1CC}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.GridActivator", "src\tools\VSS.TRex.GridActivator\VSS.TRex.GridActivator.csproj", "{591023D4-E15C-44D3-B4DF-CE18E20083BB}"
 EndProject
@@ -235,9 +204,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\Common\ITask\src\VSS.ITask.csproj", "{5873EA3A-3C44-4C3E-9BEF-1B9CAA4B9BBB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gateway.WebApi", "src\gateway\VSS.TRex.ConnectedSite.Gateway.WebApi\VSS.TRex.ConnectedSite.Gateway.WebApi.csproj", "{D92A5B1D-DCC7-4947-B78B-3F32CB4D6B8C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E4330E49-645A-43DD-AB04-1CB13446FC3D} = {E4330E49-645A-43DD-AB04-1CB13446FC3D}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.HttpClients", "src\netstandard\VSS.TRex.HttpClients\VSS.TRex.HttpClients.csproj", "{E4330E49-645A-43DD-AB04-1CB13446FC3D}"
 EndProject
@@ -292,16 +258,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Abstractions", "src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj", "{73BFC3AF-CEE9-471F-A9CD-62395A61AF35}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{C50C3849-CA1C-483E-A79D-F3A63DF10423}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7ED58E75-7A99-4412-8C1A-A93250222422} = {7ED58E75-7A99-4412-8C1A-A93250222422}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.IO", "src\netstandard\VSS.TRex.IO\VSS.TRex.IO.csproj", "{0C7AAE1F-45A3-4940-A92A-32DDA50B3D6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Proxy", "src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj", "{FF4E1B55-8047-40F7-AAC0-087294667828}"
-	ProjectSection(ProjectDependencies) = postProject
-		{73BFC3AF-CEE9-471F-A9CD-62395A61AF35} = {73BFC3AF-CEE9-471F-A9CD-62395A61AF35}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Common.Interfaces", "src\netstandard\VSS.TRex.Common.Interfaces\VSS.TRex.Common.Interfaces.csproj", "{CC3B7973-6248-4456-AE1B-ABB2BDA0DABF}"
 EndProject
