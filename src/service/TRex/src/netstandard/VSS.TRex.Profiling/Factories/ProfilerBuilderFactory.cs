@@ -44,6 +44,7 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="cellLiftBuilder"></param>
     /// <param name="profileStyle"></param>
     /// <param name="volumeComputationType"></param>
+    /// <param name="overrides"></param>
     /// <returns></returns>
     public ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
       ISiteModel siteModel,
@@ -52,13 +53,14 @@ namespace VSS.TRex.Profiling.Factories
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
-      VolumeComputationType volumeComputationType)
+      VolumeComputationType volumeComputationType,
+      IOverrideParameters overrides)
     {
       switch (profileStyle)
       {
         case ProfileStyle.CellPasses:
-          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
-            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder);
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, IOverrideParameters, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder, overrides);
 
         case ProfileStyle.SummaryVolume:
           return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, ICellProfileAnalyzer<T>>>()
