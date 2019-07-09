@@ -209,6 +209,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filterTask = GetCompactionFilter(projectUid, filterUid);
       var userPreferences = GetUserPreferences();
 
+      await Task.WhenAll(projectTask, projectSettings, filterTask, userPreferences);
+
       var project = projectTask.Result;
       var filter = filterTask.Result;
 
@@ -238,8 +240,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      var result = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
+      var result = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
@@ -247,7 +248,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
             customHeaders: CustomHeaders)
-          .Process(exportRequest) as CompactionExportResult);
+          .ProcessAsync(exportRequest) as CompactionExportResult);
 
 #if RAPTOR
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
@@ -288,6 +289,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filterTask = GetCompactionFilter(projectUid, filterUid);
       var userPreferences = GetUserPreferences();
 
+      await Task.WhenAll(projectTask, projectSettings, filterTask, userPreferences);
       var project = projectTask.Result;
       var filter = filterTask.Result;
 
@@ -317,16 +319,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      var result = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionExportExecutor>(LoggerFactory,
+      var result = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
             customHeaders: CustomHeaders)
-          .Process(exportRequest) as CompactionExportResult);
+          .ProcessAsync(exportRequest) as CompactionExportResult);
 
 
 #if RAPTOR
@@ -365,24 +365,26 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
-      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var userPreferences = await GetUserPreferences();
+      var project = ((RaptorPrincipal)User).GetProject(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var userPreferences = GetUserPreferences();
+
+      await Task.WhenAll(project, projectSettings, filter, userPreferences);
 
       tolerance = tolerance ?? surfaceExportTolerance;
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(project.LegacyProjectId)
+          .ProjectId(project.Result.LegacyProjectId)
           .Headers(CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter))
-        .SetUserPreferences(userPreferences)
+          .ProjectSettings(projectSettings.Result)
+          .Filter(filter.Result))
+        .SetUserPreferences(userPreferences.Result)
 #if RAPTOR
         .SetRaptorClient(RaptorClient)
 #endif
-        .SetProjectDescriptor(project)
+        .SetProjectDescriptor(project.Result)
         .CreateExportRequest(
           null, //startUtc,
           null, //endUtc,
@@ -397,15 +399,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      var result = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionExportExecutor>(LoggerFactory,
+      var result = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .Process(exportRequest) as CompactionExportResult);
+          .ProcessAsync(exportRequest) as CompactionExportResult);
 
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
 

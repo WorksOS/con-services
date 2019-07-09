@@ -28,9 +28,7 @@ namespace VSS.Productivity3D.Project.Proxy
         "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, $"/projectsettings/{projectUid}");
 
       if (result.Code == 0)
-      {
         return result.Settings;
-      }
 
       log.LogWarning($"Failed to get project settings, using default values: {result.Code}, {result.Message}");
       return null;
@@ -55,9 +53,7 @@ namespace VSS.Productivity3D.Project.Proxy
         "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, uri);
 
       if (result.Code == 0)
-      {
         return result.Settings;
-      }
  
       log.LogWarning("Failed to get project settings, using default values: {0}, {1}", result.Code, result.Message);
       return null;

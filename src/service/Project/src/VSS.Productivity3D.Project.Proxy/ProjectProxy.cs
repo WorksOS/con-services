@@ -21,8 +21,10 @@ namespace VSS.Productivity3D.Project.Proxy
     public async Task<List<ProjectData>> GetProjectsV4(string customerUid, IDictionary<string, string> customHeaders = null)
     {
       var result = await GetContainedMasterDataList<ProjectDataResult>(customerUid, null, "PROJECT_CACHE_LIFE", "PROJECT_API_URL", customHeaders);
+
       if (result.Code == 0)
         return result.ProjectDescriptors;
+
       log.LogDebug("Failed to get list of projects: {0}, {1}", result.Code, result.Message);
       return null;
     }
@@ -52,6 +54,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
       if (result.Code == 0)
         return result.ProjectDescriptor;
+
       log.LogDebug("Failed to get project with Uid {0}: {1}, {2}", projectUid, result.Code, result.Message);
       return null;
     }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
@@ -67,12 +68,13 @@ namespace VSS.TRex.Designs
     /// <param name="localPath"></param>
     /// <param name="loadIndices"></param>
     /// <returns></returns>
-    public override DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
+    public override Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
+      bool loadIndices = false)
     {
       var isDownloaded = S3FileTransfer.ReadFile(siteModelUid, fileName, localPath).Result;
       if (!isDownloaded)
       {
-        return DesignLoadResult.UnknownFailure;
+        return Task.FromResult(DesignLoadResult.UnknownFailure);
       }
 
       // todo when SDK available
@@ -91,7 +93,7 @@ namespace VSS.TRex.Designs
       //    return DesignLoadResult.UnableToLoadBoundary;
       //}
 
-      return DesignLoadResult.Success;
+      return Task.FromResult(DesignLoadResult.Success);
     }
 
 

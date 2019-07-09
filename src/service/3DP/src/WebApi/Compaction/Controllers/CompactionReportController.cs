@@ -95,17 +95,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation($"{nameof(GetReportGrid)}: " + Request.QueryString);
 
-      var projectId = await GetLegacyProjectId(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, OperationType.Profiling);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectId = GetLegacyProjectId(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, OperationType.Profiling);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+
+      await Task.WhenAll(projectId, filter, cutFillDesign, projectSettings);
 
       var reportGridRequest = requestFactory.Create<CompactionReportGridRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(projectId)
+          .ProjectId(projectId.Result)
           .Headers(CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter))
+          .ProjectSettings(projectSettings.Result)
+          .Filter(filter.Result))
         .CreateCompactionReportGridRequest(
           reportElevation,
           reportCmv,
@@ -113,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           reportPassCount,
           reportTemperature,
           reportCutFill,
-          cutFillDesign,
+          cutFillDesign.Result,
           gridInterval,
           gridReportOption,
           startNorthing,
@@ -165,20 +167,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogInformation($"{nameof(GetStationOffsetReport)}: " + Request.QueryString);
 
       var user = (RaptorPrincipal) User;
-      var project = await user.GetProject(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
-      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var userPreferences = user.IsApplication ? new UserPreferenceData() : await GetUserPreferences();
 
+      var project = user.GetProject(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var cutFillDesignDescriptor = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
+      var alignmentDescriptor = GetAndValidateDesignDescriptor(projectUid, alignmentUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+
+      var userPreferences = user.IsApplication ? Task.FromResult(new UserPreferenceData()) : GetUserPreferences();
+
+      await Task.WhenAll(project, filter, cutFillDesignDescriptor, alignmentDescriptor, projectSettings, userPreferences);
+      
       double[] updatedOffsets;
       if (leftOffsets.Length > 0 || rightOffsets.Length > 0)
       {
         for (int i = 0; i < leftOffsets.Length; i++)
-        {
           leftOffsets[i] *= -1;
-        }
 
         updatedOffsets = leftOffsets.Concat(rightOffsets).ToArray().AddZeroDistinctSortBy();
         ;
@@ -191,10 +195,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(project.LegacyProjectId)
+          .ProjectId(project.Result.LegacyProjectId)
           .Headers(CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter))
+          .ProjectSettings(projectSettings.Result)
+          .Filter(filter.Result))
         .CreateRequest(
           reportElevation,
           reportCmv,
@@ -202,14 +206,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           reportPassCount,
           reportTemperature,
           reportCutFill,
-          cutFillDesignDescriptor,
-          alignmentDescriptor,
+          cutFillDesignDescriptor.Result,
+          alignmentDescriptor.Result,
           crossSectionInterval,
           startStation,
           endStation,
           updatedOffsets,
-          userPreferences,
-          project.ProjectTimeZone);
+          userPreferences.Result,
+          project.Result.ProjectTimeZone);
 
       reportRequest.Validate();
 
@@ -226,7 +230,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     private async Task<UserPreferenceData> GetUserPreferences()
     {
-      var userPreferences = await prefProxy.GetUserPreferences(this.CustomHeaders);
+      var userPreferences = await prefProxy.GetUserPreferences(CustomHeaders);
       if (userPreferences == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

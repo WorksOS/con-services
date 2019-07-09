@@ -13,7 +13,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -60,20 +59,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "At least one overlay type must be specified to calculate bounding box"));
       }
-      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, baseUid, topUid);
+      var project = ((RaptorPrincipal)User).GetProject(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid);
+      var sumVolParametersTask = GetSummaryVolumesParameters(projectUid, volumeCalcType, baseUid, topUid);
+
+      var sumVolParameters = sumVolParametersTask.Result;
+
+      await Task.WhenAll(project, filter, cutFillDesign, sumVolParametersTask);
+
       var designDescriptor = (!volumeCalcType.HasValue || volumeCalcType.Value == VolumeCalcType.None)
-        ? cutFillDesign
+        ? cutFillDesign.Result
         : sumVolParameters.Item3;
+
       var overlayTypes = overlays.ToList();
       if (overlays.Contains(TileOverlayType.AllOverlays))
       {
         overlayTypes = new List<TileOverlayType>((TileOverlayType[])Enum.GetValues(typeof(TileOverlayType)));
         overlayTypes.Remove(TileOverlayType.AllOverlays);
       }
-      var result = await boundingBoxService.GetBoundingBox(project, filter, overlayTypes.ToArray(), sumVolParameters.Item1,
+
+      var result = await boundingBoxService.GetBoundingBox(project.Result, filter.Result, overlayTypes.ToArray(), sumVolParameters.Item1,
         sumVolParameters.Item2, designDescriptor, GetUserId(), CustomHeaders);
       var bbox = $"{result.minLatDegrees},{result.minLngDegrees},{result.maxLatDegrees},{result.maxLngDegrees}";
       Log.LogInformation($"GetBoundingBox: returning {bbox}");
@@ -93,12 +99,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetDesignBoundaryPoints: " + Request.QueryString);
 
-      var projectId = await GetLegacyProjectId(projectUid);
-      var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUid);
-      
-      var project = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId};
+      var projectId = GetLegacyProjectId(projectUid);
+      var designDescriptor = GetAndValidateDesignDescriptor(projectUid, designUid);
+
+      await Task.WhenAll(projectId, designDescriptor);
+
+      var project = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId.Result};
       var result = new PointsListResult();
-      var polygons = await boundingBoxService.GetDesignBoundaryPolygons(project, designDescriptor, CustomHeaders);
+      var polygons = await boundingBoxService.GetDesignBoundaryPolygons(project, designDescriptor.Result, CustomHeaders);
       result.PointsList = ConvertPoints(polygons);
 
       return result;
@@ -117,14 +125,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetFilterPoints: " + Request.QueryString);
 
-      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var project = ((RaptorPrincipal)User).GetProject(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
 
-      PointsListResult result = new PointsListResult();
-      if (filter != null)
+      await Task.WhenAll(project, filter);
+
+      var result = new PointsListResult();
+      if (filter.Result != null)
       {
         var polygons = await boundingBoxService.GetFilterBoundaries(
-          project, filter, FilterBoundaryType.All, CustomHeaders);
+          project.Result, filter.Result, FilterBoundaryType.All, CustomHeaders);
         result.PointsList = ConvertPoints(polygons);
       }
 
@@ -151,10 +161,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
       var filterTask = GetCompactionFilter(projectUid, filterUid);
       //Base or top may be a design UID
-      var baseFilterTask = summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
-      var topFilterTask = summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
+      var baseFilterTask = summaryDataHelper.WithSwallowExceptionExecute(() => GetCompactionFilter(projectUid, baseUid));
+      var topFilterTask = summaryDataHelper.WithSwallowExceptionExecute(() => GetCompactionFilter(projectUid, topUid));
 
-      PointsListResult result = new PointsListResult();
+      var result = new PointsListResult();
 
       await Task.WhenAll(projectTask, filterTask, baseFilterTask, topFilterTask);
 
@@ -178,11 +188,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetAlignmentPoints: " + Request.QueryString);
 
-      var projectId = await GetLegacyProjectId(projectUid);
+      var projectId = GetLegacyProjectId(projectUid);
+      var alignmentDescriptor = GetAndValidateDesignDescriptor(projectUid, alignmentUid);
 
-      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
-      AlignmentPointsResult result = new AlignmentPointsResult();
-      var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId, alignmentDescriptor);
+      await Task.WhenAll(projectId, alignmentDescriptor);
+
+      var result = new AlignmentPointsResult();
+      var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId.Result, alignmentDescriptor.Result);
 
       if (alignmentPoints != null && alignmentPoints.Any())
       {
@@ -205,14 +217,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetAlignmentPointsList: " + Request.QueryString);
 
-      var projectId = await GetLegacyProjectId(projectUid);
+      var projectId = GetLegacyProjectId(projectUid);
+      var alignmentDescriptors = GetAlignmentDescriptors(projectUid);
 
-      PointsListResult result = new PointsListResult();
-      List<List<WGSPoint>> list = new List<List<WGSPoint>>();
-      var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
-      foreach (var alignmentDescriptor in alignmentDescriptors)
+      await Task.WhenAll(projectId, alignmentDescriptors);
+
+      var result = new PointsListResult();
+      var list = new List<List<WGSPoint>>();
+      
+      foreach (var alignmentDescriptor in alignmentDescriptors.Result)
       {
-        var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId, alignmentDescriptor);
+        var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId.Result, alignmentDescriptor);
 
         if (alignmentPoints != null && alignmentPoints.Any())
         {
@@ -234,13 +249,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private async Task<List<DesignDescriptor>> GetAlignmentDescriptors(Guid projectUid)
     {
       var alignmentFiles = await GetFilesOfType(projectUid, ImportedFileType.Alignment);
-      List<DesignDescriptor> alignmentDescriptors = new List<DesignDescriptor>();
+      var alignmentDescriptors = new List<DesignDescriptor>();
       if (alignmentFiles != null)
       {
         foreach (var alignmentFile in alignmentFiles)
-        {
           alignmentDescriptors.Add(await GetAndValidateDesignDescriptor(projectUid, new Guid(alignmentFile.ImportedFileUid)));
-        }
       }
       return alignmentDescriptors;
     }
@@ -255,9 +268,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       var fileList = await FileImportProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
-      {
         return new List<FileData>();
-      }
 
       return fileList.Where(f => f.ImportedFileType == fileType && f.IsActivated).ToList();
     }
@@ -273,9 +284,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         foreach (var polygon in polygons)
         {
           if (result == null)
-          {
             result = new List<List<WGSPoint>>();
-          }
 
           //TODO: Fix this when WGSPoint & WGSPoint3D aligned
           result.Add(polygon.Select(x => new WGSPoint(x.Lat, x.Lon)).ToList());

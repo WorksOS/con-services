@@ -46,9 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var summaryVolumesResult = await ProcessSummaryVolumes(request, totalResult);
 
         if (summaryVolumesResult != null)
-        {
           totalResult.results.Add(summaryVolumesResult);
-        }
 
         profileResultHelper.RemoveRepeatedNoData(totalResult, request.VolumeCalcType);
         profileResultHelper.AddMidPoints(totalResult);

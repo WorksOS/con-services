@@ -56,12 +56,16 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
         {
           var suffix = FileUtils.GeneratedFileSuffix(fileType);
           //Delete generated files
-          bool success = await DeleteGeneratedFile(request.ProjectId.Value, request.File, suffix, FileUtils.PROJECTION_FILE_EXTENSION) &&
-                         await DeleteGeneratedFile(request.ProjectId.Value, request.File, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
+          var deletePRJFile = DeleteGeneratedFile(request.ProjectId.Value, request.File, suffix, FileUtils.PROJECTION_FILE_EXTENSION);
+          var deleteHAFile = DeleteGeneratedFile(request.ProjectId.Value, request.File, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
+
+          await Task.WhenAll(deletePRJFile, deleteHAFile);
+
+          bool success = deletePRJFile.Result && deleteHAFile.Result;
+
           if (fileType != ImportedFileType.Linework)
-          {
             success = success && await DeleteGeneratedFile(request.ProjectId.Value, request.File, suffix, FileUtils.DXF_FILE_EXTENSION);
-          }
+
           if (!success)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -69,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
                 "Failed to delete generated files"));
           }
           //Delete tiles 
-          string generatedName = FileUtils.GeneratedFileName(request.File.FileName, suffix, FileUtils.DXF_FILE_EXTENSION);
+          var generatedName = FileUtils.GeneratedFileName(request.File.FileName, suffix, FileUtils.DXF_FILE_EXTENSION);
           await tileGenerator.DeleteDxfTiles(request.ProjectId.Value, generatedName, request.File).ConfigureAwait(false);
         }
 

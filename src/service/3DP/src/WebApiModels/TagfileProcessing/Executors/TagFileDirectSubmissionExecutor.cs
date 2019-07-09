@@ -65,13 +65,9 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       // For nonDirect the harvester uses TCC (for now, soon to be s3)
       var data = new MemoryStream(request.Data);
       if (useRaptorGateway)
-      {
         await ArchiveFile((TAGProcServerProcessResultCode) result.Code, data, request.FileName, request.OrgId);
-      }
       else if (useTrexGateway)
-      {
         await ArchiveFile((TRexTagFileResultCode)result.Code, data, request.FileName, request.OrgId);
-      }
       else
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,

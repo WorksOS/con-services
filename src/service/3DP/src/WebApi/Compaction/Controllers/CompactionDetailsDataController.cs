@@ -9,11 +9,10 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -50,21 +49,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
 
-      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
-      if (!isValidFilterForProjectExtents)
-      {
+      var validationResult = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+
+      if (!validationResult.isValidFilterForProjectExtents)
         return new CompactionCmvPercentChangeResult();
-      }
 
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var filter = validationResult.filterResult == null ? GetCompactionFilter(projectUid, filterUid) : Task.FromResult(validationResult.filterResult);
 
-      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
+      var projectId = GetLegacyProjectId(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
 
-      double[] cmvChangeSummarySettings = SettingsManager.CompactionCmvPercentChangeSettings(projectSettings);
-      var projectId = await GetLegacyProjectId(projectUid);
+      await Task.WhenAll(projectId, projectSettings, filter);
 
-      var request = new CMVChangeSummaryRequest(projectId, projectUid, null, liftSettings, filter, -1, cmvChangeSummarySettings);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
+
+      double[] cmvChangeSummarySettings = SettingsManager.CompactionCmvPercentChangeSettings(projectSettings.Result);
+      
+      var request = new CMVChangeSummaryRequest(projectId.Result, projectUid, null, liftSettings, filter.Result, -1, cmvChangeSummarySettings);
       request.Validate();
 
       try
@@ -116,7 +117,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
-      CMVRequest request = await GetCmvRequest(projectUid, filterUid);
+      var request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
 
       try
@@ -162,7 +163,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
-      CMVRequest request = await GetCmvRequest(projectUid, filterUid, true);
+      var request = await GetCmvRequest(projectUid, filterUid, true);
       request.Validate();
 
       try
@@ -273,30 +274,30 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetCutFillDetails: " + Request.QueryString);
 
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var projectId = await GetLegacyProjectId(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var projectId = GetLegacyProjectId(projectUid);
+
+      await Task.WhenAll(projectSettings, cutFillDesign, filter, projectId);
 
       var cutFillRequest = RequestFactory.Create<CutFillRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(projectId)
+          .ProjectId(projectId.Result)
           .Headers(CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter)
-          .DesignDescriptor(cutFillDesign))
+          .ProjectSettings(projectSettings.Result)
+          .Filter(filter.Result)
+          .DesignDescriptor(cutFillDesign.Result))
         .Create();
 
       cutFillRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionCutFillExecutor>(LoggerFactory,
+      return await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionCutFillExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .Process(cutFillRequest) as CompactionCutFillDetailedResult);
+          .ProcessAsync(cutFillRequest) as CompactionCutFillDetailedResult);
     }
 
     /// <summary>
@@ -310,24 +311,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetTemperatureDetails: " + Request.QueryString);
 
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var projectId = await GetLegacyProjectId(projectUid);
-      var temperatureSettings = SettingsManager.CompactionTemperatureSettings(projectSettings, false);
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var projectId = GetLegacyProjectId(projectUid);
+
+      await Task.WhenAll(projectSettings, filter, projectId);
+
+      var temperatureSettings = SettingsManager.CompactionTemperatureSettings(projectSettings.Result, false);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
 
       var detailsRequest = RequestFactory.Create<TemperatureRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(projectId)
+          .ProjectId(projectId.Result)
           .Headers(CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter))
+          .ProjectSettings(projectSettings.Result)
+          .Filter(filter.Result))
         .CreateTemperatureDetailsRequest();
 
       detailsRequest.Validate();
 
-      var summaryRequest = new TemperatureRequest(projectId, projectUid, null,
-        temperatureSettings, liftSettings, filter, -1, null, null, null);
+      var summaryRequest = new TemperatureRequest(projectId.Result, projectUid, null,
+        temperatureSettings, liftSettings, filter.Result, -1, null, null, null);
       summaryRequest.Validate();
 
       try

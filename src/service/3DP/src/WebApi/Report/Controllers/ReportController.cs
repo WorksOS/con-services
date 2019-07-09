@@ -281,7 +281,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
 
       if (!request.ProjectUid.HasValue)
-        request.ProjectUid = ((RaptorPrincipal) User).GetProjectUid(request.ProjectId ?? -1).Result;
+        request.ProjectUid = await ((RaptorPrincipal) User).GetProjectUid(request.ProjectId ?? -1);
 
       request.Validate();
 
@@ -435,7 +435,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostExportCcaSummary)}: {JsonConvert.SerializeObject(request)}");
 
       if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CCA") ?? false)
-        request.ProjectUid = GetProjectUid(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID).Result;
+        request.ProjectUid = await GetProjectUid(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID);
 
       request.Validate();
 

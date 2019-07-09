@@ -115,19 +115,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IBoundingBoxService boundingBoxService)
     {
       Log.LogInformation("GetAlignmentStationRange: " + Request.QueryString);
-      var projectId = await GetLegacyProjectId(projectUid);
 
-      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentFileUid);
+      var projectId = GetLegacyProjectId(projectUid);
+      var alignmentDescriptor = GetAndValidateDesignDescriptor(projectUid, alignmentFileUid);
+
+      await Task.WhenAll(projectId, alignmentDescriptor);
 
       var request = requestFactory.Create<AlignmentStationRangeRequestHelper>(r => r
-          .ProjectId(projectId)
+          .ProjectId(projectId.Result)
           .Headers(CustomHeaders))
-        .CreateAlignmentStationRangeRequest(alignmentDescriptor);
+        .CreateAlignmentStationRangeRequest(alignmentDescriptor.Result);
 
       request.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
-        boundingBoxService.GetAlignmentStationRange(projectId, alignmentDescriptor));
+        boundingBoxService.GetAlignmentStationRange(projectId.Result, alignmentDescriptor.Result));
 
       return result;
     }

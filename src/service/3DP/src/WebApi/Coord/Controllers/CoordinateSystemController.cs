@@ -55,15 +55,15 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [PostRequestVerifier]
     [Route("api/v1/coordsystem")]
     [HttpPost]
-    public CoordinateSystemSettings Post([FromBody]CoordinateSystemFile request)
+    public async Task<CoordinateSystemSettings> Post([FromBody] CoordinateSystemFile request)
     {
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
+      return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
 #if RAPTOR
         raptorClient,
 #endif
-        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateSystemSettings;
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -72,15 +72,15 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [PostRequestVerifier]
     [Route("api/v1/coordsystem/validation")]
     [HttpPost]
-    public CoordinateSystemSettings PostValidate([FromBody]CoordinateSystemFileValidationRequest request)
+    public async Task<CoordinateSystemSettings> PostValidate([FromBody] CoordinateSystemFileValidationRequest request)
     {
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
+      return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
 #if RAPTOR
         raptorClient,
 #endif
-        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateSystemSettings;
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -89,10 +89,10 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [Route("api/v1/projects/{projectId}/coordsystem")]
     [ProjectVerifier]
     [HttpGet]
-    public CoordinateSystemSettings Get([FromRoute] long projectId)
+    public async Task<CoordinateSystemSettings> Get([FromRoute] long projectId)
     {
 #if !RAPTOR
-      var projectUid = ((RaptorPrincipal)User).GetProjectUid(projectId).Result;
+      var projectUid = await ((RaptorPrincipal)User).GetProjectUid(projectId);
       var request = new ProjectID(projectId, projectUid);
 #else
       var request = new ProjectID(projectId);
@@ -100,11 +100,11 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
 
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger,
+      return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger,
 #if RAPTOR
         raptorClient,
 #endif
-        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateSystemSettings;
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -120,11 +120,11 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
 
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger,
+      return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger,
 #if RAPTOR
         raptorClient,
 #endif
-        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateSystemSettings;
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateSystemSettings;
     }
 
     /// <summary>

@@ -21,6 +21,7 @@ namespace VSS.Productivity3D.Project.Proxy
       {
         var result = await GetContainedMasterDataList<FileDataResult>(projectUid, userId, 
           "IMPORTED_FILE_CACHE_LIFE", "IMPORTED_FILE_API_URL", customHeaders, $"?projectUid={projectUid}");
+
         if (result.Code == 0)
           return result.ImportedFileDescriptors;
 

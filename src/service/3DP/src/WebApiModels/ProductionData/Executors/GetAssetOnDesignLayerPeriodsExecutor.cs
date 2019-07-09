@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         }
         else
         {
-          log.LogError($"GetAssetOnDesignLayerPeriodsExecutor: No projectUid provided. ");
+          log.LogError("GetAssetOnDesignLayerPeriodsExecutor: No projectUid provided. ");
           throw CreateServiceException<GetAssetOnDesignLayerPeriodsExecutor>();
         }
       }

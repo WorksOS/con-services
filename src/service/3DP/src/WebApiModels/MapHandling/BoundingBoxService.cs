@@ -98,9 +98,16 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType,
       IDictionary<string, string> customHeaders)
     {
-      var boundaries = await GetFilterBoundaries(project, filter, boundaryType, customHeaders);
-      boundaries.AddRange(await GetFilterBoundaries(project, baseFilter, boundaryType, customHeaders));
-      boundaries.AddRange(await GetFilterBoundaries(project, topFilter, boundaryType, customHeaders));
+      var boundariesTask = GetFilterBoundaries(project, filter, boundaryType, customHeaders);
+      var baseFilterBoundaryTask = GetFilterBoundaries(project, baseFilter, boundaryType, customHeaders);
+      var topFilterBoundaryTask = GetFilterBoundaries(project, topFilter, boundaryType, customHeaders);
+
+      await Task.WhenAll(boundariesTask, baseFilterBoundaryTask, topFilterBoundaryTask);
+
+      var boundaries = boundariesTask.Result;
+
+      boundaries.AddRange(baseFilterBoundaryTask.Result);
+      boundaries.AddRange(topFilterBoundaryTask.Result);
       
       return boundaries;
     }
@@ -338,13 +345,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       var coordRequest = new CoordinateConversionRequest(projectId,
         TwoDCoordinateConversionType.NorthEastToLatLon, coordList.ToArray());
-      var coordResult = await RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger,
+
+      return await RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger,
 #if RAPTOR          
           raptorClient,
 #endif          
           configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy)
         .ProcessAsync(coordRequest) as CoordinateConversionResult;
-      return coordResult;
     }
 
     /// <summary>
@@ -354,17 +361,16 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="project"></param>
     /// <param name="designDescriptor">The design to get the boundary of</param>
     /// <param name="customHeaders"></param>
-    /// <param name="projectId">Legacy project ID</param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
     public async Task<List<List<WGSPoint>>> GetDesignBoundaryPolygons(ProjectData project,
       DesignDescriptor designDescriptor, IDictionary<string, string> customHeaders)
     {
       var polygons = new List<List<WGSPoint>>();
       var description = TileServiceUtils.DesignDescriptionForLogging(designDescriptor);
-      log.LogDebug($"GetDesignBoundaryPolygons: projectUid={project.ProjectUid}, projectId={project.LegacyProjectId}, design={description}");
+      log.LogDebug($"{nameof(GetDesignBoundaryPolygons)}: projectUid={project.ProjectUid}, projectId={project.LegacyProjectId}, design={description}");
       if (designDescriptor == null) return polygons;
       var geoJson = await GetDesignBoundary(project, designDescriptor, customHeaders);
-      log.LogDebug($"GetDesignBoundaryPolygons: geoJson={geoJson}");
+      log.LogDebug($"{nameof(GetDesignBoundaryPolygons)}: geoJson={geoJson}");
       if (string.IsNullOrEmpty(geoJson)) return polygons;
       var root = JsonConvert.DeserializeObject<GeoJson>(geoJson);
       foreach (var feature in root.Features)

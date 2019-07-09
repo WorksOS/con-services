@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
@@ -604,23 +605,23 @@ namespace VSS.TRex.Designs
     /// <param name="localPath"></param>
     /// <param name="loadIndices"></param>
     /// <returns></returns>
-    public override DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
+    public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
-      var isDownloaded = S3FileTransfer.ReadFile(siteModelUid, fileName, localPath).Result;
+      var isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
       if (!isDownloaded)
         return DesignLoadResult.UnknownFailure;
 
       if (loadIndices)
       {
-        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
+        isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadSubgridIndex;
 
-        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
+        isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadSpatialIndex;
 
-        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
+        isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadBoundary;
       }
