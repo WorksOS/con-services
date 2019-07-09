@@ -17,6 +17,7 @@ using VSS.Common.Abstractions.Http;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.FIlters;
+using VSS.Log4Net.Extensions;
 
 namespace VSS.WebApi.Common
 {
@@ -32,7 +33,12 @@ namespace VSS.WebApi.Common
     /// <param name="loggerRepoName">Logger Repo Name for Log4Net</param>
     /// <param name="useSerilog">If set then we're opting to use Serilog and not the default Log4Net</param>
     protected BaseStartup(IHostingEnvironment env, string loggerRepoName, bool useSerilog = false)
-    { }
+    { 
+      if (useSerilog) return;
+
+      Log4NetProvider.RepoName = loggerRepoName;
+      env.ConfigureLog4Net("log4net.xml", loggerRepoName);
+    }
 
     //Backing field
     private ILogger _logger;
