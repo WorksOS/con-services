@@ -162,16 +162,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         design = GetAndValidateDesignDescriptor(projectUid, designUid);
 
-        await Task.WhenAll(projectId, projectSettings, filter, design);
-
         projectSettingsColors = GetGreyScaleHeightColors();
+
+        await Task.WhenAll(projectId, projectSettings, filter, design, projectSettingsColors);
         mode = DisplayMode.Design3D;
       }
       else if (type == MapDisplayType.HeightMap)
       {
-        await Task.WhenAll(projectId, projectSettings, filter);
-
         projectSettingsColors = GetGreyScaleHeightColors();
+        
+        await Task.WhenAll(projectId, projectSettings, filter, projectSettingsColors);
         mode = DisplayMode.Height; // The height map must be of type height....
       }
       else if(type == MapDisplayType.Texture)
@@ -185,7 +185,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       else
         throw new NotImplementedException();
-      
+
       var tileResult = await WithServiceExceptionTryExecuteAsync(async () =>
         await tileService.GetProductionDataTile(
           projectSettings.Result,
@@ -643,7 +643,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         colors.Add((uint)i << 16 | (uint)i << 8 | (uint)i << 0);
       }
 
-      return new Task<CompactionProjectSettingsColors>(() => CompactionProjectSettingsColors.Create(false, colors));
+      return Task.FromResult(CompactionProjectSettingsColors.Create(false, colors));
     }
   }
 }
