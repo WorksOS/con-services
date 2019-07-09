@@ -8,7 +8,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -26,8 +25,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
     private static bool WarnOnTFAServiceDisabled = false;
 
-    private static readonly int minTagFileLength = DIContext.Obtain<IConfigurationStore>().GetValueInt("MIN_TAGFILE_LENGTH", Consts.kMinTagFileLengthDefault);
-    private static readonly bool tfaServiceEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TFA_SERVICE", Consts.ENABLE_TFA_SERVICE);
+    private static readonly int MinTagFileLength = DIContext.Obtain<IConfigurationStore>().GetValueInt("MIN_TAGFILE_LENGTH", Consts.kMinTagFileLengthDefault);
+    private static readonly bool TfaServiceEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TFA_SERVICE", Consts.ENABLE_TFA_SERVICE);
 
     /// <summary>
     /// Calls the TFA service via the nuget Proxy,
@@ -48,7 +47,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
       catch (Exception e)
       {
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, (int) TRexTagFileResultCode.TfaException, e.Message);
+        return new GetProjectAndAssetUidsResult(string.Empty, string.Empty, (int) TRexTagFileResultCode.TfaException, e.Message);
       }
       
       return tfaResult;
@@ -59,7 +58,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       const string EC520_SUFFIX = "YU";
 
       //Check if the value is a valid EC520 Serial ID else make field empty
-      string EC520Serial = String.Empty;
+      var EC520Serial = String.Empty;
       if (!string.IsNullOrEmpty(sValue))
       {
         if (sValue.Length > 2 && sValue.Substring(sValue.Length - 2, 2) == EC520_SUFFIX)
@@ -72,9 +71,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <summary>
     /// this needs to be public, only for unit tests
     /// </summary>
-    /// <param name="tagDetail"></param>
-    /// <param name="processor"></param>
-    /// <returns></returns>
     public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessible(TagFileDetail tagDetail, TAGFilePreScan preScanState)
     {
       /*
@@ -96,7 +92,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Type C. Do we have what we need already (Most likely test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
         if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty)
-          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 0, "success");
+          return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 0, "success");
 
       // Business rule for device type conversion
       var radioType = preScanState.RadioType == "torch" ? DeviceTypeEnum.SNM940 : DeviceTypeEnum.MANUALDEVICE; // torch device set to type 6
@@ -106,15 +102,24 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
         var message = "Must have either a valid TCCOrgID or RadioSerialNo or EC520SerialNo or ProjectUID";
         Log.LogWarning(message);
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
+        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }
 
-      var tfaRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(
+      if ((!preScanState.SeedLatitude.HasValue || !preScanState.SeedLongitude.HasValue ) && (!preScanState.SeedNorthing.HasValue || !preScanState.SeedEasting.HasValue))
+      {
+        // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
+        var message = "Must have a location, either LatLong or Grid point";
+        Log.LogWarning(message);
+        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3051, message);
+      }
+
+      var tfaRequest = new GetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
         (int)radioType, preScanState.RadioSerial, EC520SerialID, tagDetail.tccOrgId,
         MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0),
         MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0),
-        preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC);
+        preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC,
+        preScanState.SeedNorthing, preScanState.SeedEasting);
 
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
@@ -146,7 +151,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     public static async Task<ContractExecutionResult> ValidSubmission(TagFileDetail tagDetail)
     {
       // Perform some Validation Checks
-      if (tagDetail.tagFileContent.Length <= minTagFileLength)
+      if (tagDetail.tagFileContent.Length <= MinTagFileLength)
       {
         return new ContractExecutionResult((int) TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());
       }
@@ -164,7 +169,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
 
       // TAG file contents are OK so proceed
-      if (!tfaServiceEnabled) // allows us to bypass a TFA service
+      if (!TfaServiceEnabled) // allows us to bypass a TFA service
       {
         if (WarnOnTFAServiceDisabled)
           Log.LogWarning("SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");

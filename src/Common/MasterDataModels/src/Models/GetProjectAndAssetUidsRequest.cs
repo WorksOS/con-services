@@ -45,13 +45,13 @@ namespace VSS.MasterData.Models.Models
     /// WGS84 latitude in decimal degrees. 
     /// </summary>
     [JsonProperty(PropertyName = "latitude", Required = Required.Always)]
-    public double Latitude { get; set; }
+    public double Latitude { get; set; } = 0;
 
     /// <summary>
     /// WGS84 longitude in decimal degrees. 
     /// </summary>    
     [JsonProperty(PropertyName = "longitude", Required = Required.Always)]
-    public double Longitude { get; set; }
+    public double Longitude { get; set; } = 0;
 
     /// <summary>
     /// Date and time the asset was at the given location. 
@@ -60,31 +60,45 @@ namespace VSS.MasterData.Models.Models
     public DateTime TimeOfPosition { get; set; }
 
     /// <summary>
+    /// Grid position NEE. 
+    /// </summary>
+    [JsonProperty(PropertyName = "northing", Required = Required.Default)]
+    public double? Northing { get; set; }
+
+    /// <summary>
+    /// Grid position NEE.  
+    /// </summary>    
+    [JsonProperty(PropertyName = "easting", Required = Required.Default)]
+    public double? Easting { get; set; }
+
+
+    /// <summary>
     /// Private constructor
     /// </summary>
     private GetProjectAndAssetUidsRequest()
     {
     }
 
+
     /// <summary>
     /// Create instance of GetProjectAndAssetUidsRequest
     /// </summary>
-    public static GetProjectAndAssetUidsRequest CreateGetProjectAndAssetUidsRequest
-    (string projectUid, int deviceType, string radioSerial, string ec520Serial, 
+    public GetProjectAndAssetUidsRequest
+    (string projectUid, int deviceType, string radioSerial, string ec520Serial,
       string tccOrgUid,
-      double latitude, double longitude, DateTime timeOfPosition)
+      double latitude, double longitude, DateTime timeOfPosition,
+      double? northing = null, double? easting = null)
     {
-      return new GetProjectAndAssetUidsRequest
-      {
-        ProjectUid = projectUid,
-        DeviceType = deviceType,
-        RadioSerial = radioSerial,
-        Ec520Serial = ec520Serial,
-        TccOrgUid = tccOrgUid,
-        Latitude = latitude,
-        Longitude = longitude,
-        TimeOfPosition = timeOfPosition
-      };
+      ProjectUid = projectUid;
+      DeviceType = deviceType;
+      RadioSerial = radioSerial;
+      Ec520Serial = ec520Serial;
+      TccOrgUid = tccOrgUid;
+      Latitude = latitude;
+      Longitude = longitude;
+      TimeOfPosition = timeOfPosition;
+      Northing = northing;
+      Easting = easting;
     }
 
 
@@ -129,12 +143,20 @@ namespace VSS.MasterData.Models.Models
         return 37;
       }
 
-      if (Latitude < -90 || Latitude > 90)
+      var hasLatLong = Math.Abs(Latitude) > 0.0 && Math.Abs(Longitude) > 0.0;
+      bool hasNee = Northing.HasValue && Easting.HasValue;
+
+      if (!hasLatLong && !hasNee)
+      {
+        return 51;
+      }
+
+      if (hasLatLong && (Latitude < -90 || Latitude > 90))
       {
         return 21;
       }
 
-      if (Longitude < -180 || Longitude > 180)
+      if (hasLatLong && (Longitude < -180 || Longitude > 180))
       {
         return 22;
       }

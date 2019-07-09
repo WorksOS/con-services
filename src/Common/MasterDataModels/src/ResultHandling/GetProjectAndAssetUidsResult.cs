@@ -21,17 +21,14 @@ namespace VSS.MasterData.Models.ResultHandling
     ///    The Code is the unique code (or 0 for success) code to use for translations.
     ///       We re-purpose ContractExecutionResult.Code with this unique code.
     ///    For TFA, these are 3k based 
-    ///    Message is the english verion of any error
+    ///    Message is the english version of any error
     /// </summary>
-    public static GetProjectAndAssetUidsResult CreateGetProjectAndAssetUidsResult(string projectUid, string assetUid, int uniqueCode = 0, string messageDetail = null)
+    public GetProjectAndAssetUidsResult(string projectUid, string assetUid, int uniqueCode = 0, string messageDetail = null)
     {
-      return new GetProjectAndAssetUidsResult
-      {
-        ProjectUid = projectUid,
-        AssetUid = assetUid,
-        Code = uniqueCode,
-        Message = messageDetail
-      };
+      ProjectUid = projectUid;
+      AssetUid = assetUid;
+      Code = uniqueCode;
+      Message = messageDetail;
     }
 
     public List<string> GetIdentifiers() => string.IsNullOrEmpty(ProjectUid) ? new List<string>() : new List<string>(){ ProjectUid };

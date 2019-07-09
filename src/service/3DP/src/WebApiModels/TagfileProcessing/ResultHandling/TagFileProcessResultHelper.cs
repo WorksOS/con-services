@@ -221,6 +221,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
         case TRexTagFileResultCode.TFABadRequestInvalidDeviceType:
         case TRexTagFileResultCode.TFABadRequestInvalidProjectUid:
         case TRexTagFileResultCode.TFAManualInternalErrorUnhandledPath:
+        case TRexTagFileResultCode.TFABadRequestMissingPosition:
         {
           return (code: 22, message: "Internal Error. Failed validation.", type: string.Empty, continuable: null);
         }
@@ -257,7 +258,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
         {
           return (code: 27,
             message:
-            "TFA Processing Error: Manual Import: no Asset provided or identifyable. Unable to locate any valid Project subscriptions.",
+            "TFA Processing Error: Manual Import: no Asset provided or identify-able. Unable to locate any valid Project subscriptions.",
             type: temporary, continuable: false);
         }
 

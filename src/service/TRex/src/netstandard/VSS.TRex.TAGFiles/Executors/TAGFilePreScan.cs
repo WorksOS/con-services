@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.TAGFiles.Classes;
@@ -19,8 +20,10 @@ namespace VSS.TRex.TAGFiles.Executors
   {
     public double? SeedLatitude { get; set; }
     public double? SeedLongitude { get; set; }
-
     public double? SeedHeight { get; set; }
+    public double? SeedNorthing { get; set; }
+    public double? SeedEasting { get; set; }
+    public double? SeedElevation { get; set; }
 
     public DateTime? SeedTimeUTC { get; set; }
 
@@ -57,6 +60,9 @@ namespace VSS.TRex.TAGFiles.Executors
 
       SeedLatitude = null;
       SeedLongitude = null;
+      SeedNorthing = null;
+      SeedEasting = null;
+
       ProcessedEpochCount = 0;
 
       RadioType = string.Empty;
@@ -81,24 +87,69 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <summary>
     /// Fill out the local class properties with the information wanted from the TAG file
     /// </summary>
-    /// <param name="Processor"></param>
-    private void SetPublishedState(TAGProcessorPreScanState Processor)
+    /// <param name="processor"></param>
+    private void SetPublishedState(TAGProcessorPreScanState processor)
     {
-      LastDataTime = Processor.DataTime;
-      SeedLatitude = Processor.LLHLat;
-      SeedLongitude = Processor.LLHLon;
-      SeedHeight = Processor.LLHHeight;
-      SeedTimeUTC = Processor.LLHLatRecordedTime; //We arbitrarily choose LLHLat, in the majority of cases this will be same for any LLH.
+      LastDataTime = processor.DataTime;
+      SeedLatitude = Math.Abs(processor.LLHLat - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?)null : processor.LLHLat;
+      SeedLongitude = Math.Abs(processor.LLHLon - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?) null : processor.LLHLon;
+      SeedHeight = Math.Abs(processor.LLHHeight - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?) null : processor.LLHHeight;
+      SeedTimeUTC = processor.LLHLatRecordedTime; //We arbitrarily choose LLHLat, in the majority of cases this will be same for any LLH.
+      SetSeedNEE(processor);
+     
+      ProcessedEpochCount = processor.ProcessedEpochCount;
+      RadioType = processor.RadioType;
+      RadioSerial = processor.RadioSerial;
+      MachineType = processor.MachineType;
+      MachineID = processor.MachineID;
+      HardwareID = processor.HardwareID;
+      ApplicationVersion = processor.ApplicationVersion;
+      DesignName = processor.Design;
+      PlatformType = processor.GetPlatformType();
+    }
 
-      ProcessedEpochCount = Processor.ProcessedEpochCount;
-      RadioType = Processor.RadioType;
-      RadioSerial = Processor.RadioSerial;
-      MachineType = Processor.MachineType;
-      MachineID = Processor.MachineID;
-      HardwareID = Processor.HardwareID;
-      ApplicationVersion = Processor.ApplicationVersion;
-      DesignName = Processor.Design;
-      PlatformType = Processor.GetPlatformType();
+    /// <summary>
+    /// Grid point from on-machine positions
+    /// </summary>
+    /// <param name="processor"></param>
+    private void SetSeedNEE(TAGProcessorPreScanState processor)
+    {
+      if (!processor.LLHLatRecordedTime.HasValue)
+        SeedTimeUTC = processor._FirstDataTime;
+
+      if (processor.HaveReceivedValidTipPositions)
+      {
+        SeedNorthing = (processor.DataLeft.Y + processor.DataRight.Y) / 2;
+        SeedEasting = (processor.DataLeft.X + processor.DataRight.X) / 2;
+        SeedElevation = (processor.DataLeft.Z + processor.DataRight.Z) / 2;
+      }
+      else
+      {
+        if (processor.HaveReceivedValidRearPositions)
+        {
+          SeedNorthing = (processor.DataRearLeft.Y + processor.DataRearRight.Y) / 2;
+          SeedEasting = (processor.DataRearLeft.X + processor.DataRearRight.X) / 2;
+          SeedElevation = (processor.DataRearLeft.Z + processor.DataRearRight.Z) / 2;
+        }
+        else
+        {
+          if (processor.HaveReceivedValidWheelPositions)
+          {
+            SeedNorthing = (processor.DataWheelLeft.Y + processor.DataWheelRight.Y) / 2;
+            SeedEasting = (processor.DataWheelLeft.X + processor.DataWheelRight.X) / 2;
+            SeedElevation = (processor.DataWheelLeft.Z + processor.DataWheelRight.Z) / 2;
+          }
+          else
+          {
+            if (processor.HaveReceivedValidTrackPositions)
+            {
+              SeedNorthing = (processor.DataTrackLeft.Y + processor.DataTrackRight.Y) / 2;
+              SeedEasting = (processor.DataTrackLeft.X + processor.DataTrackRight.X) / 2;
+              SeedElevation = (processor.DataTrackLeft.Z + processor.DataTrackRight.Z) / 2;
+            }
+          }
+        }
+      }
     }
 
     /// <summary>

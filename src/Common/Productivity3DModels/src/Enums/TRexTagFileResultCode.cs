@@ -35,5 +35,6 @@
     TFAAutoAssetOrTccOrgIdFoundButNoProject = 3048,
     TFAAutoMultipleProjectsMatchCriteria = 3049,
     TFAManualValidProjectsFoundButNotRequestedOne = 3050,
+    TFABadRequestMissingPosition = 3051,
   }
 }
