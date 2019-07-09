@@ -465,6 +465,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         .ConfigureAwait(false);
 
       bool creating = existing == null;
+      string geotifFileName = null;
       logger.LogInformation(
         creating
           ? $"{nameof(UpsertFileInternal)}. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
@@ -490,11 +491,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), filename,
             importedFileType == ImportedFileType.GeoTiff,
             surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn);
-        filename = ImportedFileUtils.IncludeSurveyedUtcInName(Path.GetFileName(filename), surveyedUtc.Value);
+        geotifFileName = ImportedFileUtils.IncludeSurveyedUtcInName(Path.GetFileName(filename), surveyedUtc.Value);
         fileDescriptor = FileDescriptor.CreateFileDescriptor(
           FileSpaceId,
           $"/{customerUid}/{projectUid}",
-          filename);
+          geotifFileName);
       }
       else
       {
@@ -545,7 +546,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (creating)
       {
         var createImportedFile = new CreateImportedFile(
-          projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset);
+          projectUid, importedFileType == ImportedFileType.GeoTiff ? geotifFileName : filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
