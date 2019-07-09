@@ -4,6 +4,8 @@ using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.Requests;
@@ -35,7 +37,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       StationOffsetReportRequestArgument_ClusterCompute,
       StationOffsetReportRequestResponse_ClusterCompute>();
 
-    private StationOffsetReportRequestArgument_ApplicationService SimpleStationOffsetReportRequestArgument_ApplicationService(ISiteModel siteModel)
+    private StationOffsetReportRequestArgument_ApplicationService SimpleStationOffsetReportRequestArgument_ApplicationService(ISiteModel siteModel, bool withOverrides)
     {
       return new StationOffsetReportRequestArgument_ApplicationService
       {
@@ -48,7 +50,8 @@ namespace VSS.TRex.Tests.Reports.StationOffset
         EndStation = 800, 
         Offsets = new double[] {-1},
         ReportElevation = true,
-        ReportCmv = true
+        ReportCmv = true,
+        Overrides = withOverrides ? new OverrideParameters { OverrideMachineCCV = true, OverridingMachineCCV = 123 } : null
       };
     }
     
@@ -69,14 +72,16 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new StationOffsetReportRequest_ApplicationService();
 
-      var response = request.Execute(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel));
+      var response = request.Execute(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, false));
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.NoProductionDataFound);
     }
 
-    [Fact]
-    public void StationOffsetReport_SiteModelWithSingleCell()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void StationOffsetReport_SiteModelWithSingleCell(bool withOverrides)
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -84,7 +89,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       var siteModel = BuildModelForSingleCellElevationAndCmv(ELEVATION_INCREMENT_1_0);
 
       var request = new StationOffsetReportRequest_ApplicationService();
-      var response = request.Execute(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel));
+      var response = request.Execute(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, withOverrides));
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -93,7 +98,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       response.StationOffsetReportDataRowList.Count.Should().Be(1);
       response.StationOffsetReportDataRowList[0].Station.Should().Be(1);
       response.StationOffsetReportDataRowList[0].Offsets.Count.Should().Be(1);
-      response.StationOffsetReportDataRowList[0].Offsets[0].Cmv.Should().Be(34);
+      response.StationOffsetReportDataRowList[0].Offsets[0].Cmv.Should().Be((short)(withOverrides ? 123 : 34));
       response.StationOffsetReportDataRowList[0].Offsets[0].Elevation.Should().Be(10);
     }
 

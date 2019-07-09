@@ -3,6 +3,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters;
@@ -201,12 +202,13 @@ namespace VSS.TRex.Profiling
     /// Determines if the compaction observed in the cell is within the acceptable limits
     /// </summary>
     /// <param name="lift"></param>
-    private void CheckProfileCellLiftCompaction(ProfileLayer lift)
+    /// <param name="overrides"></param>
+    private void CheckProfileCellLiftCompaction(ProfileLayer lift, IOverrideParameters overrides)
     {
       if (lift.CCV == CellPassConsts.NullCCV && lift.MDP == CellPassConsts.NullMDP && lift.CCA == CellPassConsts.NullCCA)
         return;
 
-      Cell.CheckLiftCompaction(lift, /* todo LiftBuildSettings,*/ ProfileTypeRequired);
+      Cell.CheckLiftCompaction(lift, overrides, /* todo LiftBuildSettings,*/ ProfileTypeRequired);
     }
 
     /// <summary>

@@ -182,7 +182,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var speed = overrideSpeed ? new MachineSpeedTarget(minSpeed, maxSpeed) : null;
       var overrides = new OverridingTargets(ccv, overrideCCV, minCCV, maxCCV,
         mdp, overrideMDP, minMDP, maxMDP, pc, temp, speed);
-      var result = AutoMapperUtility.Automapper.Map<OverrideParameters>(overrides);
+      var result = AutoMapperUtility.Automapper.Map<IOverrideParameters>(overrides);
       Assert.Equal(overrides.OverrideTargetCMV, result.OverrideMachineCCV);
       Assert.Equal(overrides.CmvTarget, result.OverridingMachineCCV);
       Assert.Equal(overrides.MaxCMVPercent, result.CMVRange.Max);

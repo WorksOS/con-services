@@ -30,7 +30,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.ReferenceDesign,
           opt => opt.ResolveUsing<CustomStationOffsetReferenceDesignResolver>())
-        .ForMember(x => x.Overrides, opt => opt.Ignore());
+        .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides));
 
       CreateMap<CompactionReportGridTRexRequest, GriddedReportData>()
         .ForMember(x => x.NumberOfRows,
@@ -48,7 +48,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
         .ForMember(x => x.ReferenceDesign,
-          opt => opt.ResolveUsing<CustomGridReferenceDesignResolver>());
+          opt => opt.ResolveUsing<CustomGridReferenceDesignResolver>())
+        .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides));
     }
 
     
@@ -67,17 +68,5 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         return new DesignOffset(src.CutFillDesignUid ?? Guid.Empty, src.CutFillDesignOffset ?? 0);
       }
     }
-
-    public class CustomStationOffsetOverrideParametersResolver : IValueResolver<CompactionReportStationOffsetTRexRequest, StationOffsetReportRequestArgument_ApplicationService, OverrideParameters>
-    {
-      public OverrideParameters Resolve(CompactionReportStationOffsetTRexRequest src, StationOffsetReportRequestArgument_ApplicationService dst, OverrideParameters member, ResolutionContext context)
-      {
-        var srcOverrides = src.Overrides;
-        var dstOverrides = new OverrideParameters();
-        dstOverrides.OverrideMachineCCV = srcOverrides.OverrideTargetCMV;
-        return dstOverrides;
-      }
-    }
-
   }
 }

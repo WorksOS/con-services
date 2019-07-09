@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
 #endif
           var trexRequest = new TRexTileRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Mode,
             request.Palettes,
             request.DesignDescriptor,

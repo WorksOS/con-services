@@ -73,9 +73,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         crossSectionInterval, startStation, endStation, offsets, overrides);
 
       var result = AutoMapperUtility.Automapper.Map<StationOffsetReportRequestArgument_ApplicationService>(request);
-      //Need to do this mapping separately because overrides declared as an interface.
-      //Couldn't get automapper to accept the automapper profile using an interface.
-      result.Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides);
 
       Assert.Equal(request.ProjectUid, result.ProjectID);
       Assert.Null(result.Filters);

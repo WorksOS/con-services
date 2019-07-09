@@ -60,24 +60,29 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       true, false, true, false, true, false,
       null, null,
       null, GridReportOption.Automatic,
-      800000, 400000, 800001, 400001, 2)]
+      800000, 400000, 800001, 400001, 2, false)]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       false, true, false, true, false, true,
       null, null,
       null, GridReportOption.Automatic,
-      800000, 400000, 800001, 400001, 2)]
+      800000, 400000, 800001, 400001, 2, true)]
     public void MapGriddedRequestToArgument(
       Guid projectUid, FilterResult filter,
       bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
       Guid? cutFillDesignUid, double? cutfillDesignOffset,
       double? gridInterval, GridReportOption gridReportOption,
-      double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth)
+      double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth, bool useOverrides)
     {
+      var overrides = useOverrides
+        ? new OverridingTargets(75, true, 70, 90, 0, false, 80, 125, new TargetPassCountRange(4, 10),
+          new TemperatureSettings(120, 70, true), null)
+        : null;
+
       var request = new CompactionReportGridTRexRequest(
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, overrides);
 
       var result = AutoMapperUtility.Automapper.Map<GriddedReportRequestArgument>(request);
 
@@ -91,6 +96,11 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       Assert.Equal(request.ReportMdp, result.ReportMdp);
       Assert.Equal(request.ReportPassCount, result.ReportPassCount);
       Assert.Equal(request.ReportTemperature, result.ReportTemperature);
+      //Overrides mapping tested separately in AutoMapperTests
+      if (useOverrides)
+        Assert.NotNull(result.Overrides);
+      else
+        Assert.Null(result.Overrides);
     }
 
     [Theory]
