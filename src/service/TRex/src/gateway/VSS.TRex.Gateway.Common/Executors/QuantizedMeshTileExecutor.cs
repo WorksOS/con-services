@@ -1,33 +1,19 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Designs.Models;
-using VSS.TRex.Common.Utilities;
-using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Converters;
-using VSS.TRex.Geometry;
-using VSS.TRex.Rendering.GridFabric.Arguments;
-using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
-using VSS.TRex.Rendering.Palettes;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.QuantizedMesh.GridFabric.Requests;
-using VSS.TRex.QuantizedMesh.GridFabric.Arguments;
-using VSS.TRex.QuantizedMesh.GridFabric.Responses;
+using System.IO;
+using System.IO.Compression;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
+  /// <summary>
+  /// QuantizedMeshTileExecutor controls execution of quantized mesh execution
+  /// </summary>
   public class QuantizedMeshTileExecutor : BaseExecutor
   {
 
@@ -44,6 +30,65 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
 
+    /// <summary>
+    /// todo Temporary compression here. Part one
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+
+    public static byte[] Compress(byte[] data)
+    {
+      using (var compressedStream = new MemoryStream())
+      using (var zipStream = new GZipStream(compressedStream, CompressionMode.Compress))
+      {
+        zipStream.Write(data, 0, data.Length);
+        zipStream.Close();
+        return compressedStream.ToArray();
+      }
+    }
+
+
+    /// <summary>
+    /// Temporary part one method to return dummy tiles
+    /// </summary>
+    /// <returns></returns>
+    protected byte[] GetTempDummyTile(int x, int y, int z)
+    {
+      var dstr = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+      string fname = @"Executors\TestData\0.terrain";
+      if (z == 0)
+        {
+          if ( y == 0)
+            fname = @"Executors\TestData\0.terrain";
+          else
+            fname = @"Executors\TestData\1.terrain";
+        }
+      else
+        fname = @"Executors\TestData\x.terrain";
+
+      var fileInfo = new FileInfo(Path.Combine(dstr, fname));
+      if (fileInfo.Exists)
+      {
+        var buffer = new byte[fileInfo.Length];
+        using (var fileStream = fileInfo.OpenRead())
+        {
+          fileStream.Read(buffer, 0, buffer.Length);
+          Console.WriteLine("Tile {0} sent", fileInfo);
+          return buffer.ToArray(); // already compressed files
+
+         // var compressed = Compress(buffer); // gzip
+          //return compressed;
+        }
+      }
+      return null;
+    }
+
+    /// <summary>
+    /// Process QM tile request from WebAPI controller 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="item"></param>
+    /// <returns></returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = item as QMTileRequest;
@@ -51,29 +96,23 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
         ThrowRequestTypeCastException<QMTileRequest>();
 
-      BoundingWorldExtent3D extents = null;
-      bool hasGridCoords = false;
-      if (request.BoundBoxLatLon != null)
-      {
-        extents = AutoMapperUtility.Automapper.Map<BoundingBox2DLatLon, BoundingWorldExtent3D>(request.BoundBoxLatLon);
-      }
-      else// if (request.BoundBoxGrid != null)
-      {
-        // throw exception
-      //  hasGridCoords = true;
-      //  extents = AutoMapperUtility.Automapper.Map<BoundingBox2DGrid, BoundingWorldExtent3D>(request.BoundBoxGrid);
-      }
 
-      var siteModel = GetSiteModel(request.ProjectUid);
+      return new QMTileResult(GetTempDummyTile(request.X, request.Y,request.Z)); // for now return a dummy tile
 
-      var tileRequest = new QuantizedMeshRequest();
-      var response = tileRequest.Execute(new QuantizedMeshRequestArgument
-        (siteModel.ID,
-        extents,
-        new FilterSet(ConvertFilter(request.Filter1, siteModel), null))
-        ) as DummyQMResponse;
+      // todo Part Two. Follow surface export pattern
 
-   //   return new QMTileResult(response.TileQMData);
+      // var siteModel = GetSiteModel(request.ProjectUid);
+
+      /*  var tileRequest = new QuantizedMeshRequest();
+        var response = tileRequest.Execute(new QuantizedMeshRequestArgument
+          (siteModel.ID,
+          extents,
+          new FilterSet(ConvertFilter(request.Filter1, siteModel), null))
+          ) as DummyQMResponse;
+          */
+
+
+      //   return new QMTileResult(response.TileQMData);
 
 
       // return new QMTileRequest(reponse);
@@ -94,10 +133,6 @@ namespace VSS.TRex.Gateway.Common.Executors
         )) as TileRenderResponse_Core2;
         */
 
-      // return dummy data for now
-      // need repository for level 0 static files
-      var dummyResponse = new byte[] { 0x41, 0x42, 0x41, 0x42, 0x41, 0x42, 0x41 };
-      return new QMTileResult(dummyResponse);
     }
 
 

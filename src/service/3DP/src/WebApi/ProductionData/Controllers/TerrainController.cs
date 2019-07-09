@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Proxies;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Executors;
-using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -18,12 +15,13 @@ using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
-    [Route("api/[controller]")]
-  //  [ApiController]
-  //  [ProjectVerifier]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-    public class TerrainController : ControllerBase, ITerrainContract
-    {
+  /// <summary>
+  /// TerrainController responsible for all quantized mesh tile requests
+  /// </summary>
+  [Route("api/[controller]")]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  public class TerrainController : ControllerBase, ITerrainContract
+  {
     private readonly string _TerrainDataQM = "application/octet-stream";
 
     /// <summary>
@@ -65,47 +63,36 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
-    /*
-    public async Task<byte[]> FetchTile(string tileDir, int x, int y, int z)
+    /// <summary>
+    /// Async call to make quantized mesh tile
+    /// </summary>
+    /// <param name="projectUId"> project id</param>
+    /// <param name="filterId">filter id</param>
+    /// <param name="x">tile x coordinate</param>
+    /// <param name="y">tile y coordinate</param>
+    /// <param name="z">tile z coordinate</param>
+    /// <returns></returns>
+    public async Task<byte[]> FetchTile(Guid projectUId, long filterId, int x, int y, int z)
     {
-      // todo go get precompiled tile from disk or cache
-
-      var fileInfo = new FileInfo(Path.Combine(tileDir, string.Format(@"{0}\{1}\{2}.terrain", z, x, y)));
-      if (fileInfo.Exists)
+      var request = new QMTileRequest()
       {
-        var buffer = new byte[fileInfo.Length];
-        using (var fileStream = fileInfo.OpenRead())
-        {
-          await fileStream.ReadAsync(buffer, 0, buffer.Length);
-          Console.WriteLine("Tile {0} sent", fileInfo);
-          return buffer.ToArray();
-        }
-      }
-      Console.WriteLine("*** Tile {0} was NOT sent ***", fileInfo);
-      return null;
-    }
-    */
-
-    public async Task<byte[]> FetchTile(Guid projectId, long filterId, int x, int y, int z)
-    {
-      var request = new QMTileRequest();
-
-      request.BoundBoxGrid = null;
-      request.BoundBoxLatLon = new BoundingBox2DLatLon(0.0, 0.0, 0.0, 0.0);
-      request.CallId = new Guid();
-      request.Filter1 = new FilterResult();
-      request.FilterId1 = filterId;
-      request.ProjectUid = projectId;
-
-
+        X = x,
+        Y = y,
+        Z = z,
+        CallId = new Guid(),
+        Filter1 = new FilterResult(),
+        FilterId1 = filterId,
+        ProjectUid = projectUId
+      };
 
       request.Validate();
-      var qmTileResult = RequestExecutorContainerFactory.Build<QMTilesExecutor>(logger,
-        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as QMTileResult;
+      // Execute tile reuest
+      var qmTileResult = await RequestExecutorContainerFactory.Build<QMTilesExecutor>(logger,
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as QMTileResult;
+
       return qmTileResult.TileData;
     }
 
-    
 
     /// <summary>
     /// Request for a quantized mesh tile
@@ -123,75 +110,42 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       log.LogInformation("Get: " + Request.QueryString);
       log.LogDebug($"QMesh tile request params. x:{x},y:{y},z:{z}, ProjectId:{projectUid}, FilterId:{filterId} *");
-      //      Console.WriteLine($"* Params x:{x},y:{y},z:{z}, prjid:{projectUid}, filterid:{filterId} *");
-
-      var testDataPath = ConfigStore.GetValueString("TestDataPath");
-      if (testDataPath == null)
-        testDataPath = @"c:\map\data\TestData\";
 
       // var basicTile = await FetchTile(testDataPath, x, y, z);
       var basicTile = await FetchTile(projectUid, filterId, x, y, z);
       if (basicTile != null)
       {
-    //    HttpContext.Response.Headers.Add("Content-Encoding", "gzip"); // already compressed on disk
+        HttpContext.Response.Headers.Add("Content-Encoding", "gzip"); // already compressed on disk
         HttpContext.Response.Headers.Add("Content-Length", basicTile.Length.ToString());
         HttpContext.Response.Headers.Add("Content-Type", "application/octet-stream");
         HttpContext.Response.Headers.Add("Content-Disposition", $"attachment;filename={y}.terrain");
         return File(basicTile, _TerrainDataQM);
       }
 
-      Console.WriteLine($"Tile x:{x},y:{y},z:{z} was not found");
+      log.LogDebug($"Warning! Requested tile x:{x},y: {y},z:{z} for Project:{projectUid} was not found");
       return NotFound();
-
-    }
-    
-
-
-
-      /* test 2
-
-    [HttpGet("v1/qmesh/{z}/{x}/{y}.{formatExtension}")]
-    public async Task<IActionResult> Get(int x, int y, int z, string formatExtension, [FromQuery] Guid projectUid, [FromQuery] long filterId)
-    {
-
-      log.LogInformation("Get: " + Request.QueryString);
-
-      var basicTile = new byte[] { 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41 };
-      if (basicTile != null)
-      {
-      //  HttpContext.Response.Headers.Add("Content-Encoding", "gzip"); // already compressed on disk
-        HttpContext.Response.Headers.Add("Content-Length", basicTile.Length.ToString());
-        HttpContext.Response.Headers.Add("Content-Type", "application/octet-stream");
-        HttpContext.Response.Headers.Add("Content-Disposition", $"attachment;filename={y}.terrain");
-        return File(basicTile, _TerrainDataQM);
-      }
-
-      Console.WriteLine($"Tile x:{x},y:{y},z:{z} was not found");
-      return NotFound();
-
     }
 
-  */
-
-
-
-
-
+    /// <summary>
+    /// Genric function to return a static layer file. Will change in Part Two to be dynamic
+    /// </summary>
+    /// <returns></returns>
     public string GetGenericLayerFile()
     {
-      var fileLocation = @"C:\map\data\TestData\TRexlayer.json";
-
-      var fileInfo = new FileInfo(fileLocation);
+      // Todo. Part two this could be improved to a more taylored layer file based on projectid
+      var dstr = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+      const string fname = @"TestData\layer.json";
+      var fileInfo = new FileInfo(Path.Combine(dstr, fname));
       if (!fileInfo.Exists)
         throw new FileNotFoundException("[layer.json not in folder}]");
       try
       {
-        return System.IO.File.ReadAllText(fileLocation);
+        return System.IO.File.ReadAllText(fileInfo.FullName);
       }
       catch (Exception e)
       {
         Console.WriteLine("[Data File Missing] {0}", e);
-        throw new FileNotFoundException($"[layer.json not in {fileLocation}] ", e);
+        throw new FileNotFoundException($"[layer.json not in {fileInfo.FullName}] ", e);
       }
 
     }
@@ -203,7 +157,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet("v1/qmesh/layer.json")]
     public string GetTRexLayerFile()
     {
-    
+
       // Its possible this layer file could be custom made to control tile requests to a certain area around 
       // a projects boundary only. Hence reducing overall tile requets
       return GetGenericLayerFile();

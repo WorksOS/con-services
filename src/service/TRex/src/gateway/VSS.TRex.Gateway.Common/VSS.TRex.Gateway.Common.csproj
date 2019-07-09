@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -10,6 +10,12 @@
     <RootNamespace>VSS.TRex.Gateway.Common</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Executors\NewFolder\**" />
+    <EmbeddedResource Remove="Executors\NewFolder\**" />
+    <None Remove="Executors\NewFolder\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.2" />
@@ -36,6 +42,18 @@
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Executors\TestData\0.terrain">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Executors\TestData\1.terrain">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Executors\TestData\x.terrain">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 

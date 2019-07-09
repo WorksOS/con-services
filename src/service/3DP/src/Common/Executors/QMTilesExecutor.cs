@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
@@ -8,8 +9,6 @@ namespace VSS.Productivity3D.Common.Executors
 {
   public class QMTilesExecutor : RequestExecutorContainer
   {
-
-
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -21,16 +20,16 @@ namespace VSS.Productivity3D.Common.Executors
     /// <summary>
     /// Processes the request for type T.
     /// </summary>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
         var request = CastRequestObjectTo<QMTileRequest>(item);
-//        var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/qmtile", customHeaders).Result;
-        var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/terrain", customHeaders).Result;
+        // Send request to TRex webapi endpoint
+        var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/terrain", customHeaders);
         using (var ms = new MemoryStream())
         {
-          fileResult.CopyTo(ms);
+          fileResult.CopyTo(ms); // QM tile
           return new QMTileResult(ms.ToArray());
         }
       }
@@ -44,5 +43,9 @@ namespace VSS.Productivity3D.Common.Executors
     {
     }
 
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new System.NotImplementedException();
+    }
   }
 }

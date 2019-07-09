@@ -1,20 +1,18 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.QuantizedMesh.Abstractions;
 
+/// <summary>
+/// Todo Ignore for checkin as will change in part two
+/// </summary>
 namespace VSS.TRex.QuantizedMesh.Executors
 {
   /// <summary>
@@ -81,6 +79,8 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// </summary>
     public IQuantizedMeshTile Execute()
     {
+
+      // todo . Most likely to change in part two to surface export pattern. Currently based on TileRender pattern
 
       Log.LogInformation($"Performing Execute for DataModel:{DataModelID}");
 

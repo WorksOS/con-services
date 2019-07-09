@@ -24,8 +24,16 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
     {
     }
 
+    /// <summary>
+    /// todo Quantized Mesh Response. Part One only
+    /// </summary>
+    /// <param name="arg"></param>
+    /// <returns></returns>
     public QuantizedMeshResponse Invoke(QuantizedMeshRequestArgument arg)
     {
+
+      // Todo this will all change in Part Two. Leave for now
+
       DateTime startTime = DateTime.UtcNow;
 
       Log.LogInformation("In QuantizedMeshRequestComputeFunc.Invoke()");
@@ -50,7 +58,6 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 
         IQuantizedMeshTile qm = render.Execute();
         
-
         Log.LogInformation($"Render status = {render.ResultStatus}");
 
         if (qm == null)
