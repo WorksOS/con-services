@@ -16,31 +16,9 @@ using Xunit;
 
 namespace VSS.Productivity3D.Push.UnitTests
 {
-  public class NotificationMethodTestFixture : IDisposable
+  public class NotificationMethodTests
   {
     public IServiceProvider ServiceProvider;
-
-    public NotificationMethodTestFixture()
-    {
-      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Push.UnitTests.log"));
-      var serviceCollection = new ServiceCollection();
-
-      serviceCollection.AddLogging()
-                       .AddSingleton(loggerFactory)
-                       .AddSingleton(new Mock<IConfigurationStore>().Object)
-                       .AddSingleton(new Mock<IServiceResolution>().Object)
-                       .AddTransient<INotificationHubClient, NotificationHubClient>();
-
-      ServiceProvider = serviceCollection.BuildServiceProvider();
-    }
-
-    public void Dispose()
-    { }
-  }
-
-  public class NotificationMethodTests : IClassFixture<NotificationMethodTestFixture>
-  {
-    private readonly NotificationMethodTestFixture TestFixture;
 
     private const string NOTIFICATION_GUID_KEY = "test_key_do_not_repeat_for_guid";
     private const string NOTIFICATION_OBJ_KEY = "test_key_do_not_repeat_for_obj";
@@ -52,19 +30,18 @@ namespace VSS.Productivity3D.Push.UnitTests
     private static object methodTwoObject;
     private static object methodTwoAsyncObject;
 
-    private void Reset()
+    public NotificationMethodTests()
     {
-      methodOneGuid = null;
-      methodOneAsyncGuid = null;
-      methodTwoObject = null;
-      methodTwoAsyncObject = null;
-    }
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Push.UnitTests.log"));
+      var serviceCollection = new ServiceCollection();
 
-    public NotificationMethodTests(NotificationMethodTestFixture testFixture)
-    {
-      Reset();
+      serviceCollection.AddLogging()
+                       .AddSingleton(loggerFactory)
+                       .AddSingleton(new Mock<IConfigurationStore>().Object)
+                       .AddSingleton(new Mock<IServiceResolution>().Object)
+                       .AddTransient<INotificationHubClient, NotificationHubClient>();
 
-      TestFixture = testFixture;
+      ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 
     [Notification(NOTIFICATION_UID_TYPE, NOTIFICATION_GUID_KEY)]
@@ -96,7 +73,7 @@ namespace VSS.Productivity3D.Push.UnitTests
     [Fact]
     public void TestMethodSignatures()
     {
-      var notificationHub = TestFixture.ServiceProvider.GetService<INotificationHubClient>() as NotificationHubClient;
+      var notificationHub = ServiceProvider.GetService<INotificationHubClient>() as NotificationHubClient;
       Assert.NotNull(notificationHub);
 
       const int expectedObj = 12345;
@@ -109,7 +86,6 @@ namespace VSS.Productivity3D.Push.UnitTests
       var notificationObj = new Notification(NOTIFICATION_OBJ_KEY,
         expectedObj,
         NOTIFICATION_UID_TYPE);
-
 
       Assert.Null(methodOneGuid);
       Assert.Null(methodOneAsyncGuid);
