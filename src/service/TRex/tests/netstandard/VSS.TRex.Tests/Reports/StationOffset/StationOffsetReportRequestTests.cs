@@ -98,7 +98,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       response.StationOffsetReportDataRowList.Count.Should().Be(1);
       response.StationOffsetReportDataRowList[0].Station.Should().Be(1);
       response.StationOffsetReportDataRowList[0].Offsets.Count.Should().Be(1);
-      response.StationOffsetReportDataRowList[0].Offsets[0].Cmv.Should().Be((short)(withOverrides ? 123 : 34));
+      response.StationOffsetReportDataRowList[0].Offsets[0].Cmv.Should().Be(34);//S&O doesn't use override targets
       response.StationOffsetReportDataRowList[0].Offsets[0].Elevation.Should().Be(10);
     }
 

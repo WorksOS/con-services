@@ -39,7 +39,7 @@ namespace VSS.TRex.GridFabric.Arguments
     /// <summary>
     /// Any overriding targets to be used instead of machine targets
     /// </summary>
-    public IOverrideParameters Overrides { get; set; } 
+    public IOverrideParameters Overrides { get; set; } = new OverrideParameters();
 
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
 

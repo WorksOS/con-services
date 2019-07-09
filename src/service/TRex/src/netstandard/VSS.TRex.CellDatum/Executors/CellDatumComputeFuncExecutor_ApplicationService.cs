@@ -58,7 +58,7 @@ namespace VSS.TRex.CellDatum.Executors
 
       //Now get the production data for this cell
       var argClusterCompute = new CellDatumRequestArgument_ClusterCompute(
-        arg.ProjectID, arg.Mode, arg.Point, OTGCellX, OTGCellY, arg.Filters, arg.ReferenceDesign);
+        arg.ProjectID, arg.Mode, arg.Point, OTGCellX, OTGCellY, arg.Filters, arg.ReferenceDesign, arg.Overrides);
       var request = new CellDatumRequest_ClusterCompute();
       var response = request.Execute(argClusterCompute, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, OTGCellX, OTGCellY));
       result.ReturnCode = response.ReturnCode;

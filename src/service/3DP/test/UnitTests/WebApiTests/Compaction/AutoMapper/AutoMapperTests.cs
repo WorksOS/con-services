@@ -385,7 +385,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     }
 
     [TestMethod]
-    public void MapLiftBuildSettingsToOverrideTargets()
+    public void MapLiftBuildSettingsToOverridingTargets()
     {
       var lbs = new LiftBuildSettings(new CCVRangePercentage(70, 100), false, 0, 0, 0, LiftDetectionType.AutoMapReset, 
         LiftThicknessType.Compacted, new MDPRangePercentage(80, 125), false, null, 70, 812, new TargetPassCountRange(3, 8),
