@@ -8,9 +8,11 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Models;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -57,7 +59,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           OverrideTemperatureWarningLevels = temperatureSettings != null && temperatureSettings.OverrideTemperatureRange,
           OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(
             temperatureSettings != null ? Convert.ToUInt16(temperatureSettings.MinTemperature * TEMPERATURE_CONVERSION_FACTOR) : MIN_TEMPERATURE,
-            temperatureSettings != null ? Convert.ToUInt16(temperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE)
+            temperatureSettings != null ? Convert.ToUInt16(temperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE),
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
         }
       );
 

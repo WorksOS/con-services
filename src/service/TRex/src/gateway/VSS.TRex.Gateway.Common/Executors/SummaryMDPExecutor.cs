@@ -6,9 +6,11 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Models;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 using MDPSummaryResult = VSS.TRex.Analytics.MDPStatistics.MDPStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.MDPSummaryResult;
@@ -53,7 +55,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           Filters = new FilterSet(filter),
           MDPPercentageRange = new MDPRangePercentageRecord(overrides.MinMDPPercent, overrides.MaxMDPPercent),
           OverrideMachineMDP = overrides.OverrideTargetMDP,
-          OverridingMachineMDP = overrides.MdpTarget
+          OverridingMachineMDP = overrides.MdpTarget,
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
         }
       );
 

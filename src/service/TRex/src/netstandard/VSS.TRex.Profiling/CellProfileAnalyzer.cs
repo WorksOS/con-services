@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
@@ -137,7 +139,7 @@ namespace VSS.TRex.Profiling
     /// </summary>
     private void CalculateSummaryCellAttributeData()
     {
-      TargetPassCountRange PassCountTargetRange = new TargetPassCountRange();
+      PassCountRangeRecord PassCountTargetRange = new PassCountRangeRecord();
 
       ProfileCell.CellCCV = CellPassConsts.NullCCV;
       ProfileCell.CellTargetCCV = CellPassConsts.NullCCV;

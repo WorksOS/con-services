@@ -2,7 +2,6 @@
 using VSS.TRex.Common;
 using VSS.TRex.Common.Records;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 {
