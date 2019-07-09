@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Log4NetExtensions;
+using VSS.Serilog.Extensions;
 
 namespace VSS.MasterData.Proxies
 {

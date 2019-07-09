@@ -39,7 +39,7 @@ namespace VSS.Serilog.Extensions
 
       // If we start deploying Release configurations then the following options could be compiled out during development.
       logger.WriteTo.File(
-        $"./logs/{logFilename}",
+        Path.Combine(Directory.GetCurrentDirectory(), $"logs/{logFilename}"),
         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message}{NewLine}{Exception}",
         shared: true);
 
@@ -50,8 +50,6 @@ namespace VSS.Serilog.Extensions
         try
         {
           string basePath;
-
-          Console.WriteLine($"{nameof(SerilogExtensions)}::{nameof(Configure)}() IConfigurationRoot wasn't provided, looking for {configFilename}...");
 
           if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), configFilename)))
           {
@@ -66,8 +64,6 @@ namespace VSS.Serilog.Extensions
           {
             throw new FileNotFoundException();
           }
-
-          Console.WriteLine($"{nameof(SerilogExtensions)}::{nameof(Configure)}() Setting logging configuration basePath for the config file to '{basePath}'");
 
           config = new ConfigurationBuilder()
                    .SetBasePath(basePath)

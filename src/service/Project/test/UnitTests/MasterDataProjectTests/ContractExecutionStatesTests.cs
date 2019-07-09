@@ -1,18 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+﻿using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using Xunit;
 
 namespace VSS.MasterData.ProjectTests
 {
-  [TestClass]
   public class ContractExecutionStatesEnumTests
   {
-    [TestMethod]
+    [Fact]
     public void DynamicAddwithOffsetTest()
     {
       var projectErrorCodesProvider = new ProjectErrorCodesProvider();
-      Assert.AreEqual(123, projectErrorCodesProvider.DynamicCount);
-      Assert.AreEqual("Supplied CoordinateSystem filename is not valid. Exceeds the length limit of 256, is empty, or contains illegal characters.", projectErrorCodesProvider.FirstNameWithOffset(2));
-      Assert.AreEqual("LegacyImportedFileId has not been generated.", projectErrorCodesProvider.FirstNameWithOffset(50));
+      Assert.Equal(123, projectErrorCodesProvider.DynamicCount);
+      Assert.Equal("Supplied CoordinateSystem filename is not valid. Exceeds the length limit of 256, is empty, or contains illegal characters.", projectErrorCodesProvider.FirstNameWithOffset(2));
+      Assert.Equal("LegacyImportedFileId has not been generated.", projectErrorCodesProvider.FirstNameWithOffset(50));
     }
   }
 }

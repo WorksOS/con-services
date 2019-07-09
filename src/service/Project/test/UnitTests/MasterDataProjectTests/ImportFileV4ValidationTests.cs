@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -10,10 +9,10 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Xunit;
 
 namespace VSS.MasterData.ProjectTests
 {
-  [TestClass]
   public class ImportFileV4ValidationTests
   {
     protected IServiceExceptionHandler ServiceExceptionHandler;
@@ -32,8 +31,7 @@ namespace VSS.MasterData.ProjectTests
       projectErrorCodesProvider = new ProjectErrorCodesProvider();
     }
 
-    [TestInitialize]
-    public virtual void InitTest()
+    public ImportFileV4ValidationTests()
     {
       var serviceCollection = new ServiceCollection();
       serviceCollection
@@ -43,104 +41,104 @@ namespace VSS.MasterData.ProjectTests
       ServiceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_NoFlowFile()
     {
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(null, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(27)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(27)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_FlowFileNameTooLong()
     {
       var file = new FlowFile { path = "", flowFilename = "" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(28)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(28)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_NoPath()
     {
       var file = new FlowFile { path = "", flowFilename = "deblah" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(29)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(29)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_InvalidProjectUid()
     {
       var file = new FlowFile { path = "blahblah", flowFilename = "deblah" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, Guid.Empty, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(5)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(5)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_UnsupportedImportedFileType()
     {
       var file = new FlowFile { path = "blahblah", flowFilename = "deblah" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(31)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(31)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_InvalidFileExtension()
     {
       var file = new FlowFile { path = "blahblah", flowFilename = "deblah.ttm" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_InvalidFileCreatedUtc()
     {
       var file = new FlowFile { path = "blahblah", flowFilename = "deblah.svl" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
           DateTime.MinValue, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(33)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(33)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_InvalidFileUpdatedUtc()
     {
       var file = new FlowFile { path = "blahblah", flowFilename = "deblah.svl" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, DateTime.MinValue, IMPORTED_BY, surfaceUtc, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(34)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(34)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_InvalidImportedBy()
     {
       var file = new FlowFile { path = "blahblah", flowFilename = "deblah.svl" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, null, surfaceUtc, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(35)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(35)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_LineworkHappyPath()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.dxf" };
@@ -149,18 +147,18 @@ namespace VSS.MasterData.ProjectTests
         fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUid, offset);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_LineworkWrongFileExtension()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.bbbb" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Linework, DxfUnitsType.Meters,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, null, 0));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_DesignSurfaceHappyPath()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
@@ -169,18 +167,18 @@ namespace VSS.MasterData.ProjectTests
         fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, null, 0);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_DesignSurfaceWrongFileExtension()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.bbbb" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, null, 0));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_ReferenceSurfaceHappyPath()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah" };
@@ -189,25 +187,25 @@ namespace VSS.MasterData.ProjectTests
         fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, "deblah", parentUid, offset);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_ReferenceSurfaceMissingParent()
     {
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, "deblah", null, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(118)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(118)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_ReferenceSurfaceMissingOffset()
     {
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, "deblah", parentUid, 0));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(118)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(118)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_SurveyedSurfaceHappyPath()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
@@ -216,30 +214,30 @@ namespace VSS.MasterData.ProjectTests
         fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, null, 0);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_SurveyedSurfaceWrongFileExtension()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.bbbb" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, null, 0));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_SurveyedSurfaceMissingUtc()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.SurveyedSurface, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, null, 0));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(36)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(36)));
     }
 
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_AlignmentHappyPath()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.svl" };
@@ -248,27 +246,27 @@ namespace VSS.MasterData.ProjectTests
         fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, null, 0);
     }
 
-    [TestMethod]
+    [Fact]
     public void ValidateImportFile_AlignmentWrongFileExtension()
     {
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
 
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, null, 0));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
-    [TestMethod]
-    [DataRow(ImportedFileType.Alignment, "true", "false")]
-    [DataRow(ImportedFileType.Alignment, "false", "true")]
-    [DataRow(ImportedFileType.DesignSurface, "true", "false")]
-    [DataRow(ImportedFileType.DesignSurface, "true", "true")]
-    [DataRow(ImportedFileType.DesignSurface, "false", "true")]
-    [DataRow(ImportedFileType.SurveyedSurface, "false", "true")]
-    [DataRow(ImportedFileType.ReferenceSurface, "true", "false")]
-    [DataRow(ImportedFileType.ReferenceSurface, "true", "true")]
-    [DataRow(ImportedFileType.ReferenceSurface, "false", "true")]
+    [Theory]
+    [InlineData(ImportedFileType.Alignment, "true", "false")]
+    [InlineData(ImportedFileType.Alignment, "false", "true")]
+    [InlineData(ImportedFileType.DesignSurface, "true", "false")]
+    [InlineData(ImportedFileType.DesignSurface, "true", "true")]
+    [InlineData(ImportedFileType.DesignSurface, "false", "true")]
+    [InlineData(ImportedFileType.SurveyedSurface, "false", "true")]
+    [InlineData(ImportedFileType.ReferenceSurface, "true", "false")]
+    [InlineData(ImportedFileType.ReferenceSurface, "true", "true")]
+    [InlineData(ImportedFileType.ReferenceSurface, "false", "true")]
     public void ValidateImportFile_EnvironmentVariables_HappyPath(ImportedFileType importedFileType, string raptorEnabled, string tRexEnabled)
     {
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -277,18 +275,18 @@ namespace VSS.MasterData.ProjectTests
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, mockConfigStore.Object, ServiceExceptionHandler);
     }
 
-    [TestMethod]
-    [DataRow(ImportedFileType.Alignment, "false", "false")]
-    [DataRow(ImportedFileType.DesignSurface, "false", "false")]
-    [DataRow(ImportedFileType.ReferenceSurface, "false", "false")]
+    [Theory]
+    [InlineData(ImportedFileType.Alignment, "false", "false")]
+    [InlineData(ImportedFileType.DesignSurface, "false", "false")]
+    [InlineData(ImportedFileType.ReferenceSurface, "false", "false")]
     public void ValidateImportFile_EnvironmentVariables_UnHappyPath(ImportedFileType importedFileType, string raptorEnabled, string tRexEnabled)
     {
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns(tRexEnabled);
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns(raptorEnabled);
-      var ex = Assert.ThrowsException<ServiceException>(
+      var ex = Assert.Throws<ServiceException>(
         () => ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, mockConfigStore.Object, ServiceExceptionHandler));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(113)));
+      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(113)));
     }
 
   }

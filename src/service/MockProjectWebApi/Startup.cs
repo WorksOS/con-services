@@ -13,9 +13,6 @@ namespace MockProjectWebApi
 {
   public class Startup
   {
-    private ILogger log;
-    private IServiceCollection serviceCollection;
-
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -34,8 +31,6 @@ namespace MockProjectWebApi
     /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddLogging();
-
       services.AddCors(options =>
       {
         options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
@@ -50,8 +45,6 @@ namespace MockProjectWebApi
       services.AddSingleton<IImportedFilesService, ImportedFilesService>();
       services.AddSingleton<IProjectService, ProjectService>();
       services.AddSingleton<IGeofenceservice, GeofenceService>();
-
-      serviceCollection = services;
     }
 
     /// <summary>
@@ -59,10 +52,6 @@ namespace MockProjectWebApi
     /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      serviceCollection.AddSingleton(loggerFactory);
-      var serviceProvider = serviceCollection.BuildServiceProvider();
-      log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(Startup));
-
       app.UseExceptionTrap();
       app.UseCors("VSS");
       app.UseExceptionDummyPostMiddleware();
