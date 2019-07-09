@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// VSS.Productivity3D.Filter main
     /// </summary>
-    public static void Main(string[] args)
+    public static void Main()
     {
       var host = new WebHostBuilder().BuildHostWithReflectionException(builder =>
       {

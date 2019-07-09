@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
@@ -18,6 +19,7 @@ using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
@@ -27,17 +29,15 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
   public class DxfTileGenerationJobTests
   {
     private ILoggerFactory loggerFactory;
-    private IServiceProvider serviceProvider;
 
     [TestInitialize]
     public void TestInitialize()
     {
-      var services = new ServiceCollection();
-      serviceProvider = services
-        .AddLogging()
-        .BuildServiceProvider();
+      loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Scheduler.Jobs.UnitTests"));
+      var serviceCollection = new ServiceCollection();
 
-      loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+      serviceCollection.AddLogging()
+                       .AddSingleton(loggerFactory);
     }
 
     [TestMethod]
