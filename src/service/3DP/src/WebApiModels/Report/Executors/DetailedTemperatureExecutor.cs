@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using SVOICOptionsDecls;
@@ -18,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   public class DetailedTemperatureExecutor : RequestExecutorContainer
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<TemperatureDetailsRequest>(item);
 
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           request.Filter,
           temperatureTargets);
 
-        var temperatureDetailsResult = trexCompactionDataProxy.SendDataPostRequest<TemperatureDetailResult, TemperatureDetailRequest>(temperatureDetailsRequest, "/temperature/details", customHeaders).Result as TemperatureDetailResult;
+        var temperatureDetailsResult = await trexCompactionDataProxy.SendDataPostRequest<TemperatureDetailResult, TemperatureDetailRequest>(temperatureDetailsRequest, "/temperature/details", customHeaders);
 
         return new CompactionTemperatureDetailResult(temperatureDetailsResult);
 #if RAPTOR
@@ -57,6 +58,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       throw CreateServiceException<DetailedTemperatureExecutor>((int)raptorResult);
 #endif
+    }
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

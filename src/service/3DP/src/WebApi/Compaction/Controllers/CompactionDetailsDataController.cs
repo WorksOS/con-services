@@ -336,14 +336,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result1 = WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainerFactory
+        var result1 = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory
             .Build<DetailedTemperatureExecutor>(LoggerFactory,
 #if RAPTOR
               RaptorClient,
 #endif
               configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(detailsRequest) as CompactionTemperatureDetailResult);
+            .ProcessAsync(detailsRequest) as CompactionTemperatureDetailResult);
 
         //When TRex done for temperature details, assume it will set target in details call
         if (result1 != null && result1.TemperatureTarget == null)
