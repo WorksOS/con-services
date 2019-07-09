@@ -490,10 +490,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), filename,
             importedFileType == ImportedFileType.GeoTiff,
             surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn);
+        filename = ImportedFileUtils.IncludeSurveyedUtcInName(Path.GetFileName(filename), surveyedUtc.Value);
         fileDescriptor = FileDescriptor.CreateFileDescriptor(
           FileSpaceId,
           $"/{customerUid}/{projectUid}",
-          ImportedFileUtils.IncludeSurveyedUtcInName(Path.GetFileName(filename), surveyedUtc.Value));
+          filename);
       }
       else
       {
