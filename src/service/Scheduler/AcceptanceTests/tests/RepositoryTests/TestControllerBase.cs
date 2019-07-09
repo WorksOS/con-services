@@ -57,7 +57,7 @@ namespace RepositoryTests
           var table = connection.Query(GetQuery(tableName, true)).FirstOrDefault();
 
           Assert.NotNull(table);
-          Assert.Equal(tableName, table.TABLE_NAME, "Wrong table name");
+          Assert.Equal(tableName, (string)table.TABLE_NAME);
 
           //Check table columns exist
           var columns = connection.Query(GetQuery(tableName, false)).ToList();

@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob\VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob.csproj" />
@@ -41,7 +40,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
-    <None Update="appsettings.json;log4net.xml;log4nettest.xml">
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
