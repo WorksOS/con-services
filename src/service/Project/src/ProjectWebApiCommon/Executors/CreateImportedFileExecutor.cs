@@ -70,7 +70,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           .ConfigureAwait(false);
       }
 
-      if (useRaptorGatewayDesignImport)
+      if (useRaptorGatewayDesignImport && createimportedfile.ImportedFileType != ImportedFileType.GeoTiff)
       {
         var project =
           await ProjectRequestHelper.GetProject(createimportedfile.ProjectUid.ToString(), customerUid, log,
@@ -80,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createimportedfile.ProjectUid,
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileDescriptor,
           createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
-          log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo).ConfigureAwait(false);
+          log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo);
 
         var dxfFileName = createimportedfile.FileName;
         if (createimportedfile.ImportedFileType == ImportedFileType.Alignment)
@@ -95,8 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           .ConfigureAwait(false);
 
         if (createimportedfile.ImportedFileType == ImportedFileType.Alignment ||
-            createimportedfile.ImportedFileType == ImportedFileType.Linework ||
-            createimportedfile.ImportedFileType == ImportedFileType.GeoTiff)
+            createimportedfile.ImportedFileType == ImportedFileType.Linework)
         {
           //Generate raster tiles
           var jobRequest = TileGenerationRequestHelper.CreateRequest(
@@ -110,6 +109,26 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             createimportedfile.DxfUnitsType);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
+      }
+
+      if (createimportedfile.ImportedFileType == ImportedFileType.GeoTiff)
+      {
+        var project = ProjectRequestHelper.GetProject(createimportedfile.ProjectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
+
+        var existing = projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
+
+        await Task.WhenAll(project, existing);
+
+        var jobRequest = TileGenerationRequestHelper.CreateRequest(
+          createimportedfile.ImportedFileType,
+          customerUid,
+          createimportedfile.ProjectUid.ToString(),
+          existing.Result.ImportedFileUid,
+          createimportedfile.DataOceanRootFolder,
+          createimportedfile.FileName,
+          project.Result.CoordinateSystemFileName,
+          createimportedfile.DxfUnitsType);
+        await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
       }
 
       var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});

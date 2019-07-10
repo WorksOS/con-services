@@ -1,4 +1,6 @@
-﻿using VSS.MasterData.Models.Models;
+﻿using System;
+using System.Threading.Tasks;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
@@ -16,7 +18,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     /// <summary>
     /// Calls raptor to get project extents
     /// </summary>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -29,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #endif
           var siteModelId = request.ProjectUid.ToString();
 
-          bbExtents = trexCompactionDataProxy.SendDataGetRequest<BoundingBox3DGrid>(siteModelId, $"/sitemodels/{siteModelId}/extents", customHeaders).Result;
+          bbExtents = await trexCompactionDataProxy.SendDataGetRequest<BoundingBox3DGrid>(siteModelId, $"/sitemodels/{siteModelId}/extents", customHeaders);
           success = bbExtents != null;
 #if RAPTOR
         }
@@ -51,6 +53,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         ContractExecutionStates.ClearDynamic(); // clear memory
       }
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

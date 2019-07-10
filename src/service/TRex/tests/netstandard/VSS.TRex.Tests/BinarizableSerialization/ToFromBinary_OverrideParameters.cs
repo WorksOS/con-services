@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.Common.Records;
-using VSS.TRex.Profiling.Models;
+using VSS.TRex.Profiling;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
 using Xunit;
 
@@ -27,15 +27,15 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       {
         OverrideMachineCCV = true,
         OverridingMachineCCV = 72,
-        CMVRange = new CMVRangePercentageRecord { Min = 91, Max = 108 },
+        CMVRange = new CMVRangePercentageRecord(91, 108),
         OverrideMachineMDP = true,
         OverridingMachineMDP = 24,
-        MDPRange = new MDPRangePercentageRecord { Min = 87, Max = 123 },
-        OverridingTargetPassCountRange = new PassCountRangeRecord { Min = 3, Max = 7 },
+        MDPRange = new MDPRangePercentageRecord (87, 123),
+        OverridingTargetPassCountRange = new PassCountRangeRecord (3, 7),
         OverrideTargetPassCount = true,
-        OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord { Min = 250, Max = 692 },
+        OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord (250, 692),
         OverrideTemperatureWarningLevels = true,
-        TargetMachineSpeed = new MachineSpeedExtendedRecord { Min = 12, Max = 163 },
+        TargetMachineSpeed = new MachineSpeedExtendedRecord (12, 163),
       };
 
       SimpleBinarizableInstanceTester.TestClass(overrides, "Custom override parameters not same after round trip serialisation");

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using DesignProfilerDecls;
 using VLPDDecls;
@@ -26,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   /// 
   public class DesignExecutor : RequestExecutorContainer
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -45,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
             if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY") ?? false)
 #endif
-              ProcessWithTRex(request, fileList[i].ImportedFileUid, fileList[i].Name, ref geoJsonList);
+              await ProcessWithTRex(request, fileList[i].ImportedFileUid, fileList[i].Name, geoJsonList);
 #if RAPTOR
             else
             {
@@ -72,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
     }
 
-    private void ProcessWithTRex(DesignBoundariesRequest request, string designUid, string fileName, ref List<JObject> geoJsonList)
+    private async Task ProcessWithTRex(DesignBoundariesRequest request, string designUid, string fileName, List<JObject> geoJsonList)
     {
       var siteModelId = request.ProjectUid.ToString();
 
@@ -84,7 +86,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         { "tolerance", request.Tolerance.ToString(CultureInfo.CurrentCulture) }
       };
 
-      var returnedResult = trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, "/design/boundaries", customHeaders, queryParams).Result;
+      var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, "/design/boundaries", customHeaders, queryParams);
 
       if (returnedResult?.GeoJSON != null)
       {
@@ -133,5 +135,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
     }
 #endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

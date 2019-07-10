@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNode.CMVChange.RPC;
 using ASNodeDecls;
@@ -41,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     }
 #endif
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -51,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(request.ProjectUid, request.Filter, request.CMVChangeSummaryValues);
-          return trexCompactionDataProxy.SendDataPostRequest<CMVChangeSummaryResult, CMVChangeDetailsRequest>(cmvChangeDetailsRequest, "/cmv/percentchange", customHeaders).Result;
+          return await trexCompactionDataProxy.SendDataPostRequest<CMVChangeSummaryResult, CMVChangeDetailsRequest>(cmvChangeDetailsRequest, "/cmv/percentchange", customHeaders);
 #if RAPTOR
         }
         new TASNodeCMVChangeResult();
@@ -83,6 +84,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
 #endif
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

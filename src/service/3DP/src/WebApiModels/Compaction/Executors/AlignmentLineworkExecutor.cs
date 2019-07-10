@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
         {
-          return ProcessWithTRex(request);
+          return await ProcessWithTRex(request);
         }
 
         return ProcessWithRaptor(request);
@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
     }
 
-    private AlignmentLineworkResult ProcessWithTRex(AlignmentLineworkRequest request)
+    private Task<AlignmentLineworkResult> ProcessWithTRex(AlignmentLineworkRequest request)
     {
       throw new NotImplementedException("TRex Gateway not yet implemented for AlignmentLineworkExecutor");
     }

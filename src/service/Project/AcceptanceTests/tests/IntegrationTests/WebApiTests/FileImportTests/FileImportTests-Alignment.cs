@@ -7,7 +7,7 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests.FileImportTests
 {
-  public class FileImportTests_Alignment
+  public class FileImportTests_Alignment : WebApiTestsBase
   {
     [Theory]
     [InlineData("api/v4/importedfile")]

@@ -55,9 +55,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
       if (fileList == null || fileList.Count == 0)
-      {
         return null;
-      }
 
       var results = fileList
         .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
@@ -138,9 +136,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       List<Guid> excludedSSUids = null;
       if (filterSSExclusionList != null && filterSSExclusionList.Count > 0)
-      {
         excludedSSUids = await GetExcludedSurveyedSurfacesMatches(projectUid, filterSSExclusionList.ToList(), userId, customHeaders);
-      }
 
       var request = new ProjectStatisticsMultiRequest(projectUid, projectId,
         excludedSSUids?.ToArray(), filterSSExclusionList?.ToArray());

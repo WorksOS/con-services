@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 #if RAPTOR
@@ -36,18 +37,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   /// </summary>
   public class CompactionProfileExecutor : RequestExecutorContainer
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
         var request = CastRequestObjectTo<CompactionProfileProductionDataRequest>(item);
-        var totalResult = ProcessProductionData(request);
-        var summaryVolumesResult = ProcessSummaryVolumes(request, totalResult);
+        var totalResult = await ProcessProductionData(request);
+        var summaryVolumesResult = await ProcessSummaryVolumes(request, totalResult);
 
         if (summaryVolumesResult != null)
-        {
           totalResult.results.Add(summaryVolumesResult);
-        }
 
         profileResultHelper.RemoveRepeatedNoData(totalResult, request.VolumeCalcType);
         profileResultHelper.AddMidPoints(totalResult);
@@ -68,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// </summary>
     /// <param name="request">Profile request</param>
     /// <returns>Profile for each production data type except summary volumes</returns>
-    private CompactionProfileResult<CompactionProfileDataResult> ProcessProductionData(CompactionProfileProductionDataRequest request)
+    private async Task<CompactionProfileResult<CompactionProfileDataResult>> ProcessProductionData(CompactionProfileProductionDataRequest request)
     {
       CompactionProfileResult<CompactionProfileDataResult> totalResult;
 
@@ -76,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #if RAPTOR
           UseTRexGateway("ENABLE_TREX_GATEWAY_PROFILING") ?
 #endif
-        ProcessProductionDataWithTRexGateway(request)
+        await ProcessProductionDataWithTRexGateway(request)
 #if RAPTOR
             : ProcessProductionDataWithRaptor(request)
 #endif
@@ -154,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     }
 #endif
 
-    private CompactionProfileResult<CompactionProfileCell> ProcessProductionDataWithTRexGateway(CompactionProfileProductionDataRequest request)
+    private async Task<CompactionProfileResult<CompactionProfileCell>> ProcessProductionDataWithTRexGateway(CompactionProfileProductionDataRequest request)
     {
       if (request.IsAlignmentDesign)
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -173,20 +172,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.GridPoints?.y1 ?? (request.WGS84Points?.lat1 ?? 0.0),
         request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
         request.GridPoints?.y2 ?? (request.WGS84Points?.lat2 ?? 0.0),
-        new OverridingTargets(liftBuildSettings.OverridingMachineCCV ?? 0,
-          liftBuildSettings.OverridingMachineCCV.HasValue,
-          liftBuildSettings.CCVRange.Max, liftBuildSettings.CCVRange.Min,
-          liftBuildSettings.OverridingMachineMDP ?? 0,
-          liftBuildSettings.OverridingMachineMDP.HasValue,
-          liftBuildSettings.MDPRange.Max,
-          liftBuildSettings.MDPRange.Min,
-          liftBuildSettings.OverridingTargetPassCountRange,
-          liftBuildSettings.OverridingTemperatureWarningLevels != null ?
-            new TemperatureSettings(liftBuildSettings.OverridingTemperatureWarningLevels.Max,
-              liftBuildSettings.OverridingTemperatureWarningLevels.Min, true) : null,
-          liftBuildSettings.MachineSpeedTarget));
+        GetOverridingTargets(liftBuildSettings));
 
-      var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders).Result;
+      var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders);
 
       return trexResult != null && trexResult.HasData() ? ConvertTRexProductioDataProfileResult(trexResult, request.LiftBuildSettings) : null;
     }
@@ -486,13 +474,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// <param name="request">Profile request</param>
     /// <param name="totalResult">Results for other production data profile types</param>
     /// <returns>Summary volumes profile</returns>
-    private CompactionProfileDataResult ProcessSummaryVolumes(CompactionProfileProductionDataRequest request, CompactionProfileResult<CompactionProfileDataResult> totalResult)
+    private async Task<CompactionProfileDataResult> ProcessSummaryVolumes(CompactionProfileProductionDataRequest request, CompactionProfileResult<CompactionProfileDataResult> totalResult)
     {
       var volumesResult =
 #if RAPTOR
       UseTRexGateway("ENABLE_TREX_GATEWAY_PROFILING") ?
 #endif
-          ProcessSummaryVolumesWithTRexGateway(request)
+          await ProcessSummaryVolumesWithTRexGateway(request)
 #if RAPTOR
           : ProcessSummaryVolumesWithRaptor(request)
 #endif
@@ -522,7 +510,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return profileResultHelper.RearrangeProfileResult(volumesResult, request.VolumeCalcType);
     }
 
-    private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ProcessSummaryVolumesWithTRexGateway(CompactionProfileProductionDataRequest request)
+    private async Task<CompactionProfileResult<CompactionSummaryVolumesProfileCell>> ProcessSummaryVolumesWithTRexGateway(CompactionProfileProductionDataRequest request)
     {
       if (request.IsAlignmentDesign)
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -543,21 +531,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y1 ?? request.WGS84Points.lat1,
         request.GridPoints?.y2 ?? request.WGS84Points.lat2,
-        new OverridingTargets(liftBuildSettings.OverridingMachineCCV ?? 0,
-          liftBuildSettings.OverridingMachineCCV.HasValue,
-          liftBuildSettings.CCVRange.Max, liftBuildSettings.CCVRange.Min,
-          liftBuildSettings.OverridingMachineMDP ?? 0,
-          liftBuildSettings.OverridingMachineMDP.HasValue,
-          liftBuildSettings.MDPRange.Max,
-          liftBuildSettings.MDPRange.Min,
-          liftBuildSettings.OverridingTargetPassCountRange,
-          liftBuildSettings.OverridingTemperatureWarningLevels != null ? 
-            new TemperatureSettings(liftBuildSettings.OverridingTemperatureWarningLevels.Max, 
-              liftBuildSettings.OverridingTemperatureWarningLevels.Min, true) : null,
-          liftBuildSettings.MachineSpeedTarget)
+        GetOverridingTargets(liftBuildSettings)
       );
 
-      var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest>(summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders).Result;
+      var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest>(summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders);
 
       return trexResult != null ? ConvertTRexSummaryVolumesProfileResult(trexResult, volumeCalcType) : null;
     }
@@ -790,5 +767,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return profile;
     }
     #endregion
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

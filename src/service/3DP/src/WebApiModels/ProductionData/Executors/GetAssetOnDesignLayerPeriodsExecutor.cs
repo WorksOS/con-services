@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_LAYERS"))
 #endif
       {
-        if (request.ProjectUid.HasValue && request.ProjectUid != System.Guid.Empty)
+        if (request.ProjectUid.HasValue && request.ProjectUid != Guid.Empty)
         {
           var siteModelId = request.ProjectUid.ToString();
 
@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         }
         else
         {
-          log.LogError($"GetAssetOnDesignLayerPeriodsExecutor: No projectUid provided. ");
+          log.LogError("GetAssetOnDesignLayerPeriodsExecutor: No projectUid provided. ");
           throw CreateServiceException<GetAssetOnDesignLayerPeriodsExecutor>();
         }
       }

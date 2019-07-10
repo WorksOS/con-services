@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Executors
     [TestMethod]
     public void ExportReportExecutor_Should_throw_When_T_conversion_to_ExportReport_fails()
     {
-      Assert.ThrowsException<ServiceException>(() => new ExportReportExecutor().Process(new { Id = 1 }));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await new ExportReportExecutor().ProcessAsync(new { Id = 1 }));
     }
   }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -96,7 +97,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void ProfileExecutorSlicerNoResult()
+    public async Task ProfileExecutorSlicerNoResult()
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
@@ -118,7 +119,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
 
-      var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
+      var result = await executor.ProcessAsync(request) as CompactionProfileResult<CompactionProfileDataResult>;
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(0, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
       Assert.AreEqual(0, result.results.Count, ResultsShouldBeEmpty);
@@ -126,7 +127,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
     #region Production Data Profile
     [TestMethod]
-    public void ProfileExecutorSlicerInOneCell()
+    public async Task ProfileExecutorSlicerInOneCell()
     {
       // O-----O
 
@@ -151,7 +152,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(2, result.Count, IncorrectNumberOfPoints);
@@ -168,7 +169,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
 
     [TestMethod]
-    public void ProfileExecutorSlicesOneEdge()
+    public async Task ProfileExecutorSlicesOneEdge()
     {
       // O-----X-------O
 
@@ -204,7 +205,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
       
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(3, result.Count, IncorrectNumberOfPoints);
@@ -223,7 +224,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void ProfileExecutorSlicesTwoEdges()
+    public async Task ProfileExecutorSlicesTwoEdges()
     {
       // O-----X-------X-----O
 
@@ -270,7 +271,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(5, result.Count, IncorrectNumberOfPoints);
@@ -300,7 +301,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
 
     [TestMethod]
-    public void ProfileExecutorSlicerNoGaps()
+    public async Task ProfileExecutorSlicerNoGaps()
     {
       // O-----X------X------X------O
 
@@ -358,7 +359,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(7, result.Count, IncorrectNumberOfPoints);
@@ -398,7 +399,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
 
     [TestMethod]
-    public void ProfileExecutorWithOneGap()
+    public async Task ProfileExecutorWithOneGap()
     {
       // O-----X      X------X------O
 
@@ -446,7 +447,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(6, result.Count, IncorrectNumberOfPoints);
@@ -479,7 +480,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void ProfileExecutorWithOnlyAGap()
+    public async Task ProfileExecutorWithOnlyAGap()
     {
       // O----X    X-------O
 
@@ -516,7 +517,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(4, result.Count, IncorrectNumberOfPoints);
@@ -539,7 +540,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void ProfileExecutorWithTwoGaps()
+    public async Task ProfileExecutorWithTwoGaps()
     {
       // O-------X        X---------X      X-----O
 
@@ -588,7 +589,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(7, result.Count, IncorrectNumberOfPoints);
@@ -623,7 +624,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void ProfileExecutorWithGapFromNoData()
+    public async Task ProfileExecutorWithGapFromNoData()
     {
       // O-----X------X------X------O becomes O-----X      X------X------O
 
@@ -683,7 +684,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(6, result.Count, IncorrectNumberOfPoints);
@@ -716,7 +717,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void ProfileExecutorStartInGapFromNoData()
+    public async Task ProfileExecutorStartInGapFromNoData()
     {
       // O-----X------X------X------O becomes O     X------X------X------O
 
@@ -776,7 +777,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(7, result.Count, IncorrectNumberOfPoints);
@@ -815,7 +816,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void ProfileExecutorEndInGapFromNoData()
+    public async Task ProfileExecutorEndInGapFromNoData()
     {
       // O-----X------X------X------O becomes O-----X------X------X      O
 
@@ -875,7 +876,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetProductionDataProfile(packager);
+      var result = await MockGetProductionDataProfile(packager);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(7, result.Count, IncorrectNumberOfPoints);
@@ -913,7 +914,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       Assert.AreEqual(float.NaN, result[6].y, WrongLastPassHeight7);
     }
 
-    private List<CompactionDataPoint> MockGetProductionDataProfile(TICProfileCellListPackager packager)
+    private async Task<List<CompactionDataPoint>> MockGetProductionDataProfile(TICProfileCellListPackager packager)
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
@@ -938,7 +939,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
         var executor = RequestExecutorContainerFactory
           .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
-        var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
+        var result = await executor.ProcessAsync(request) as CompactionProfileResult<CompactionProfileDataResult>;
         Assert.IsNotNull(result, ExecutorFailed);
         Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
 
@@ -956,7 +957,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [DataRow(VolumeCalcType.GroundToGround)]
     [DataRow(VolumeCalcType.GroundToDesign)]
     [DataRow(VolumeCalcType.DesignToGround)]
-    public void ProfileExecutorSummaryVolumesSlicerInOneCell(VolumeCalcType calcType)
+    public async Task ProfileExecutorSummaryVolumesSlicerInOneCell(VolumeCalcType calcType)
     {
       // O-----O
 
@@ -970,7 +971,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         GridDistanceBetweenProfilePoints = 1.234
       };
 
-      var result = MockGetSummaryVolumesProfile(packager, calcType);
+      var result = await MockGetSummaryVolumesProfile(packager, calcType);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(2, result.Count, IncorrectNumberOfPoints);
@@ -997,7 +998,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [DataRow(VolumeCalcType.GroundToGround)]
     [DataRow(VolumeCalcType.GroundToDesign)]
     [DataRow(VolumeCalcType.DesignToGround)]
-    public void ProfileExecutorSummaryVolumesSlicerNoGaps(VolumeCalcType calcType)
+    public async Task ProfileExecutorSummaryVolumesSlicerNoGaps(VolumeCalcType calcType)
     {
       // O-----X------X------X------O
 
@@ -1014,7 +1015,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         GridDistanceBetweenProfilePoints = 1.234
       };
  
-      var result = MockGetSummaryVolumesProfile(packager, calcType);
+      var result = await MockGetSummaryVolumesProfile(packager, calcType);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(7, result.Count, IncorrectNumberOfPoints);
@@ -1078,7 +1079,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [DataRow(VolumeCalcType.GroundToGround)]
     [DataRow(VolumeCalcType.GroundToDesign)]
     [DataRow(VolumeCalcType.DesignToGround)]
-    public void ProfileExecutorSummaryVolumesWithOneGap(VolumeCalcType calcType)
+    public async Task ProfileExecutorSummaryVolumesWithOneGap(VolumeCalcType calcType)
     {
       // O-----X      X------X------O
 
@@ -1095,7 +1096,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         GridDistanceBetweenProfilePoints = 1.234
       };
 
-      var result = MockGetSummaryVolumesProfile(packager, calcType);
+      var result = await MockGetSummaryVolumesProfile(packager, calcType);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(6, result.Count, IncorrectNumberOfPoints);
@@ -1182,7 +1183,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       y2Expected = useY2 ? y2Interpolated : y2Expected;
     }
 
-    private List<CompactionDataPoint> MockGetSummaryVolumesProfile(TICSummaryVolumesProfileCellListPackager packager, VolumeCalcType calcType)
+    private async Task<List<CompactionDataPoint>> MockGetSummaryVolumesProfile(TICSummaryVolumesProfileCellListPackager packager, VolumeCalcType calcType)
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
@@ -1207,7 +1208,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
         var executor = RequestExecutorContainerFactory
           .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
-        var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
+        var result = await executor.ProcessAsync(request) as CompactionProfileResult<CompactionProfileDataResult>;
         Assert.IsNotNull(result, ExecutorFailed);
         Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
 
@@ -1223,14 +1224,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [DataRow(VolumeCalcType.GroundToGround)]
     [DataRow(VolumeCalcType.GroundToDesign)]
     [DataRow(VolumeCalcType.DesignToGround)]
-    public void ProfileExecutorCombinedSlicer(VolumeCalcType calcType)
+    public async Task ProfileExecutorCombinedSlicer(VolumeCalcType calcType)
     {
       //Summary Volumes - No Gaps
       // O-----X------X------X------O
       //Production Data - One Gap
       // O-----X      X------X------O
 
-      TICSummaryVolumesProfileCellListPackager svPackager = new TICSummaryVolumesProfileCellListPackager
+      var svPackager = new TICSummaryVolumesProfileCellListPackager
       {
         CellList = new TICSummaryVolumesProfileCellList
         {
@@ -1243,7 +1244,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         GridDistanceBetweenProfilePoints = 1.234
       };
 
-      TICProfileCellListPackager pdPackager = new TICProfileCellListPackager
+      var pdPackager = new TICProfileCellListPackager
       {
         CellList = new TICProfileCellList
         {
@@ -1287,7 +1288,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         LatLongList = new TWGS84StationPoint[0]
       };
 
-      var result = MockGetCombinedProfile(pdPackager, svPackager, calcType);
+      var result = await MockGetCombinedProfile(pdPackager, svPackager, calcType);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(CompactionDataPoint.TOTAL_NUMBER_OF_PROFILES, result.results.Count, "Wrong number of profiles");
@@ -1385,7 +1386,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       Assert.AreEqual(-valueExpected, sumVolData[6].value, WrongValue7);
     }
 
-    private CompactionProfileResult<CompactionProfileDataResult> MockGetCombinedProfile(TICProfileCellListPackager pdPackager, TICSummaryVolumesProfileCellListPackager svPackager, VolumeCalcType calcType)
+    private async Task<CompactionProfileResult<CompactionProfileDataResult>> MockGetCombinedProfile(TICProfileCellListPackager pdPackager, TICSummaryVolumesProfileCellListPackager svPackager, VolumeCalcType calcType)
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
@@ -1417,7 +1418,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
         var executor = RequestExecutorContainerFactory
           .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
-        var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
+        var result = await executor.ProcessAsync(request) as CompactionProfileResult<CompactionProfileDataResult>;
         Assert.IsNotNull(result, ExecutorFailed);
         Assert.AreEqual(pdPackager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
 

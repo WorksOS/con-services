@@ -8,16 +8,14 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TCCFileAccess;
-using MasterDataModels = VSS.MasterData.Models.Models;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
-using Point = SixLabors.Primitives.Point;
+using MasterDataModels = VSS.MasterData.Models.Models;
 
 namespace VSS.Tile.Service.Common.Services
 {
@@ -84,23 +82,23 @@ namespace VSS.Tile.Service.Common.Services
       log.LogDebug($"JoinDxfTiles: {dxfFile.ImportedFileUid}, {dxfFile.Name}");
 
       //Find the tiles that the bounding box fits into.
-      MasterDataModels.Point tileTopLeft = WebMercatorProjection.PixelToTile(parameters.pixelTopLeft);
+      MasterDataModels.Point tileTopLeft = MasterDataModels.WebMercatorProjection.PixelToTile(parameters.pixelTopLeft);
       MasterDataModels.Point pixelBottomRight = TileServiceUtils.LatLngToPixel(
         parameters.bbox.minLat, parameters.bbox.maxLng, parameters.numTiles);
-      MasterDataModels.Point tileBottomRight = WebMercatorProjection.PixelToTile(pixelBottomRight);
+      MasterDataModels.Point tileBottomRight = MasterDataModels.WebMercatorProjection.PixelToTile(pixelBottomRight);
 
       int xnumTiles = (int) (tileBottomRight.x - tileTopLeft.x) + 1;
       int ynumTiles = (int) (tileBottomRight.y - tileTopLeft.y) + 1;
-      int width = xnumTiles * WebMercatorProjection.TILE_SIZE;
-      int height = ynumTiles * WebMercatorProjection.TILE_SIZE;
+      int width = xnumTiles * MasterDataModels.WebMercatorProjection.TILE_SIZE;
+      int height = ynumTiles * MasterDataModels.WebMercatorProjection.TILE_SIZE;
 
       using (Image<Rgba32> tileBitmap = new Image<Rgba32>(width, height))
       {
         //Find the offset of the bounding box top left point inside the top left tile
         var point = new MasterDataModels.Point
         {
-          x = tileTopLeft.x * WebMercatorProjection.TILE_SIZE,
-          y = tileTopLeft.y * WebMercatorProjection.TILE_SIZE
+          x = tileTopLeft.x * MasterDataModels.WebMercatorProjection.TILE_SIZE,
+          y = tileTopLeft.y * MasterDataModels.WebMercatorProjection.TILE_SIZE
         };
         //Clip to the actual bounding box within the tiles. 
         int clipWidth = parameters.mapWidth;
@@ -159,8 +157,8 @@ namespace VSS.Tile.Service.Common.Services
             Image<Rgba32> tile = Image.Load<Rgba32>(file);
 
             Point offset = new Point(
-              (xTile - (int)tileTopLeft.x) * WebMercatorProjection.TILE_SIZE,
-              (yTile - (int)tileTopLeft.y) * WebMercatorProjection.TILE_SIZE);
+              (xTile - (int)tileTopLeft.x) * MasterDataModels.WebMercatorProjection.TILE_SIZE,
+              (yTile - (int)tileTopLeft.y) * MasterDataModels.WebMercatorProjection.TILE_SIZE);
             tileBitmap.Mutate(ctx => ctx.DrawImage(tile, PixelBlenderMode.Normal, 1f, offset));
           }
         }
@@ -191,8 +189,8 @@ namespace VSS.Tile.Service.Common.Services
               Image<Rgba32> tile = Image.Load<Rgba32>(file);
 
               Point offset = new Point(
-                (xTile - (int)tileTopLeft.x) * WebMercatorProjection.TILE_SIZE,
-                (yTile - (int)tileTopLeft.y) * WebMercatorProjection.TILE_SIZE);
+                (xTile - (int)tileTopLeft.x) * MasterDataModels.WebMercatorProjection.TILE_SIZE,
+                (yTile - (int)tileTopLeft.y) * MasterDataModels.WebMercatorProjection.TILE_SIZE);
               tileBitmap.Mutate(ctx => ctx.DrawImage(tile, PixelBlenderMode.Normal, 1f, offset));
             }
           }

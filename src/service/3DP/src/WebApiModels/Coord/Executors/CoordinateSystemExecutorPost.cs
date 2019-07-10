@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using VSS.Productivity3D.Common;
 #if RAPTOR
 using ASNodeDecls;
@@ -16,7 +17,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
   /// </summary>
   public class CoordinateSystemExecutorPost : CoordinateSystemExecutor
   {
-    protected override CoordinateSystemSettings SendRequestToTRexGatewayClient(object item)
+    protected override Task<CoordinateSystemSettings> SendRequestToTRexGatewayClient(object item)
     {
       if (!(item is IIsProjectIDApplicable file))
         return null;
@@ -24,11 +25,11 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
       if (file.HasProjectID())
       {
         var request = file as CoordinateSystemFile;
-        return trexCompactionDataProxy.SendDataPostRequest<CoordinateSystemSettings, CoordinateSystemFile>(request, "/coordsystem", customHeaders, true).Result;
+        return trexCompactionDataProxy.SendDataPostRequest<CoordinateSystemSettings, CoordinateSystemFile>(request, "/coordsystem", customHeaders, true);
       }
 
       var validationRequest = file as CoordinateSystemFileValidationRequest;
-      return trexCompactionDataProxy.SendDataPostRequest<CoordinateSystemSettings, CoordinateSystemFileValidationRequest>(validationRequest, "/coordsystem/validation", customHeaders).Result;
+      return trexCompactionDataProxy.SendDataPostRequest<CoordinateSystemSettings, CoordinateSystemFileValidationRequest>(validationRequest, "/coordsystem/validation", customHeaders);
     }
 
 #if RAPTOR

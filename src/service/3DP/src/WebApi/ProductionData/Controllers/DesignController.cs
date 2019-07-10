@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet]
     public async Task<ContractExecutionResult> GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] double? tolerance)
     {
-      log.LogInformation("GetDesignBoundaries: " + Request.QueryString);
+      log.LogInformation($"{nameof(GetDesignBoundaries)}: " + Request.QueryString);
 
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       tolerance = tolerance ?? DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL;
@@ -107,11 +107,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
-      return RequestExecutorContainerFactory.Build<DesignExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<DesignExecutor>(logger,
 #if RAPTOR
         raptorClient,
 #endif
-        configStore: configStore, fileList: fileList, trexCompactionDataProxy: tRexCompactionDataProxy).Process(request);
+        configStore: configStore, fileList: fileList, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request);
     }
 
     /// <summary>

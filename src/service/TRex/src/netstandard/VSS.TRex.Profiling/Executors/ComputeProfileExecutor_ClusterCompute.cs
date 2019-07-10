@@ -34,7 +34,8 @@ namespace VSS.TRex.Profiling.Executors
     private readonly XYZ[] NEECoords;
     private readonly IFilterSet Filters;
     private readonly ProfileStyle ProfileStyle;
-    private readonly VolumeComputationType VolumeType;	
+    private readonly VolumeComputationType VolumeType;
+    private readonly OverrideParameters Overrides;
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
@@ -59,10 +60,11 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="design"></param>
     /// <param name="returnAllPassesAndLayers"></param>
     /// <param name="volumeType"></param>
+    /// <param name="overrides"></param>
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
+      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, OverrideParameters overrides)
     {
       ProfileStyle = profileStyle;
       ProjectID = projectID;
@@ -71,6 +73,7 @@ namespace VSS.TRex.Profiling.Executors
       Filters = filters;
       Design = design;
       VolumeType = volumeType;
+      Overrides = overrides;
     }
 
     /// <summary>
@@ -154,7 +157,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, new DesignWrapper(Design, design),
-            /* todo elevation range design + offset: */null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel), VolumeType);
+            /* todo elevation range design + offset: */null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides);
 
           Log.LogInformation("Building cell profile");
           if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))

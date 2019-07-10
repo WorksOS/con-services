@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void Should_return_correct_grid_distance_and_point_count()
+    public async Task Should_return_correct_grid_distance_and_point_count()
     {
       var designProfile = new DesignProfile
       {
@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         GridDistanceBetweenProfilePoints = 13.951246308791798
       };
  
-      var result = MockGetProfile(designProfile).Result;
+      var result = await MockGetProfile(designProfile);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(designProfile.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void Should_fix_gap_points()
+    public async Task Should_fix_gap_points()
     {
       var designProfile = new DesignProfile
       {
@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         GridDistanceBetweenProfilePoints = 13.951246308791798
       };
 
-      var result = MockGetProfile(designProfile).Result;
+      var result = await MockGetProfile(designProfile);
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(designProfile.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);

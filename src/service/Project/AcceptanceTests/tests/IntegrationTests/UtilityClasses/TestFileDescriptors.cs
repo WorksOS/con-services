@@ -12,5 +12,6 @@
     public static string TestDesignSurface2 = "TestDesignSurface2.TTM";
     public static string TestDesignSurface3_GoodContent = "TestDesignSurface3_GoodContent.TTM";
     public static string TestDxFfile = "MillingDesignMap.dxf";
+    public static string TestGeotiffFile = "cea.tif";
   }
 }

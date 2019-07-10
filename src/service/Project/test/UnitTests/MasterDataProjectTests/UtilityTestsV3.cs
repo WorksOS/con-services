@@ -1,34 +1,24 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using VSS.Authentication.JWT;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using Xunit;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests
 {
-  [TestClass]
   public class UtilityTestsV3
   {
-    [ClassInitialize]
-    public static void ClassInitialize(TestContext testContext)
+    public UtilityTestsV3()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
-    [TestMethod]
-    public void TestJWTKey()
-    {
-      const string jwt = "eyJhbGciOiJSUzI1NiIsIng1dCI6IlltRTNNelE0TVRZNE5EVTJaRFptT0RkbU5UUm1OMlpsWVRrd01XRXpZbU5qTVRrek1ERXpaZyJ9.eyJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9hcHBsaWNhdGlvbm5hbWUiOiJDb21wYWN0aW9uLURldmVsb3AtQ0kiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9wYXNzd29yZFBvbGljeURldGFpbHMiOiJleUoxY0dSaGRHVmtWR2x0WlNJNk1UUTVNVEUzTURFNE5qazNNaXdpYUdsemRHOXllU0k2V3lJMk5UTmlaakl5T0RnMk5qYzVOV1V3TkRFNU1qQTJOekUwWTJVek1EWmxNRE15WW1ReU1qWmlaRFUwWmpRek5qZzFOREkwTlRkbFpUSXhNRGcxTlRBd0lpd2lNakUyTnpkbU56bGlOVFZtWmpjek5qbGxNV1ZtT0RCaE5XRXdZVEZpWldJNE1qZzBaR0kwTXpZNU16QTNPVGt4WlRsalpEVTNORGcyTXpWallUZGxNaUlzSW1NNU5UQXdNRFpqTlRJelpXSTFPRGRoWkdFek1EVTFNakkwWVdSbFptRTNOMkl4TURjMllXUmxPVGcyTWpFMFpqSmpPREl6TWpZNE1HWXlOemsyTURVaVhYMD0iLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9rZXl0eXBlIjoiUFJPRFVDVElPTiIsInNjb3BlcyI6Im9wZW5pZCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2VtYWlsVmVyaWZpZWQiOiJ0cnVlIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvc3Vic2NyaWJlciI6ImRldi12c3NhZG1pbkB0cmltYmxlLmNvbSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL3VzZXJ0eXBlIjoiQVBQTElDQVRJT05fVVNFUiIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL3JvbGUiOiJwdWJsaXNoZXIiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9sYXN0VXBkYXRlVGltZVN0YW1wIjoiMTQ5NzI3ODIwNDkyMiIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2FjY291bnR1c2VybmFtZSI6IkRhdmlkX0dsYXNzZW5idXJ5IiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvaWRlbnRpdHlcL3VubG9ja1RpbWUiOiIwIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvYWNjb3VudG5hbWUiOiJ0cmltYmxlLmNvbSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2ZpcnN0bmFtZSI6IkRhdmUiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9wYXNzd29yZFBvbGljeSI6IkhJR0giLCJpc3MiOiJ3c28yLm9yZ1wvcHJvZHVjdHNcL2FtIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvbGFzdG5hbWUiOiJHbGFzc2VuYnVyeSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2FwcGxpY2F0aW9uaWQiOiIzNzQzIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvdmVyc2lvbiI6IjEuNCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2VuZHVzZXIiOiJkYXZpZF9nbGFzc2VuYnVyeUB0cmltYmxlLmNvbSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL3V1aWQiOiJjZTc5YjRiNy0yYTZmLTQ3NTUtOWNhOS0zZTQ5Yzg3ZWI0YjciLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9lbmR1c2VyVGVuYW50SWQiOiIxIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvZ2l2ZW5uYW1lIjoiRGF2ZSIsImV4cCI6MTQ5ODE3NjM2MiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvaWRlbnRpdHlcL2ZhaWxlZExvZ2luQXR0ZW1wdHMiOiIwIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvaWRlbnRpdHlcL2FjY291bnRMb2NrZWQiOiJmYWxzZSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2FwaWNvbnRleHQiOiJcL3RcL3RyaW1ibGUuY29tXC92c3MtZGV2LXByb2plY3RzIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvbGFzdExvZ2luVGltZVN0YW1wIjoiMTQ5ODE2NTAxOTM3MCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL3RpZXIiOiJVbmxpbWl0ZWQiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9zdGF0dXMiOiJleUpDVEU5RFMwVkVJam9pWm1Gc2MyVWlMQ0pYUVVsVVNVNUhYMFpQVWw5RlRVRkpURjlXUlZKSlJrbERRVlJKVDA0aU9pSm1ZV3h6WlNJc0lrSlNWVlJGWDBaUFVrTkZYMHhQUTB0RlJDSTZJbVpoYkhObElpd2lRVU5VU1ZaRklqb2lkSEoxWlNKOSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2xhc3RQd2RTZXRUaW1lU3RhbXAiOiIxNDkxMTcwMTg3Mjk3IiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvYXBwbGljYXRpb250aWVyIjoiVW5saW1pdGVkIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvZW1haWxhZGRyZXNzIjoiRGF2aWRfR2xhc3NlbmJ1cnlAVHJpbWJsZS5jb20ifQ.d2n4ioMqEVmkQVYRcHaAhfayA1tt6b_Py6TlnFJtS2gL_b-gyU2g9g00sz1xq4gywPPZENhM1o6FX8dAA-HnVg2OIfp-unFDvB-jHo1-VEQxUQ--Ii04z0fE5Ed7NJkQjC-tUOpJD-wL62bACxB1e9nrpW8nlZoPACUUP6k6zI8";
-      var jwtToken = new TPaaSJWT(jwt);
-    }
-
-    [TestMethod]
+    [Fact]
     public void MapCreateProjectRequestToEvent()
     {
       var request = CreateProjectRequest.CreateACreateProjectRequest
@@ -39,28 +29,28 @@ namespace VSS.MasterData.ProjectTests
         456, null, null);
 
       var kafkaEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
-      Assert.AreEqual(request.ProjectUID, kafkaEvent.ProjectUID, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(request.CustomerID, kafkaEvent.CustomerID, "CustomerID has not been mapped correctly");
-      Assert.AreEqual(request.ProjectType, kafkaEvent.ProjectType, "ProjectType has not been mapped correctly");
-      Assert.AreEqual(request.ProjectName, kafkaEvent.ProjectName, "ProjectName has not been mapped correctly");
-      Assert.AreEqual(request.Description, kafkaEvent.Description, "Description has not been mapped correctly");
-      Assert.AreEqual(request.ProjectStartDate, kafkaEvent.ProjectStartDate, "ProjectStartDate has not been mapped correctly");
-      Assert.AreEqual(request.ProjectEndDate, kafkaEvent.ProjectEndDate, "ProjectEndDate has not been mapped correctly");
-      Assert.AreEqual(request.ProjectTimezone, kafkaEvent.ProjectTimezone, "ProjectTimezone has not been mapped correctly");
-      Assert.AreEqual(request.ProjectBoundary, kafkaEvent.ProjectBoundary, "ProjectBoundary has not been mapped correctly");
-      Assert.AreEqual(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
-      Assert.AreEqual(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent, "CoordinateSystemFileContent has not been mapped correctly");
+      Assert.Equal(request.ProjectUID, kafkaEvent.ProjectUID);
+      Assert.Equal(request.CustomerID, kafkaEvent.CustomerID);
+      Assert.Equal(request.ProjectType, kafkaEvent.ProjectType);
+      Assert.Equal(request.ProjectName, kafkaEvent.ProjectName);
+      Assert.Equal(request.Description, kafkaEvent.Description);
+      Assert.Equal(request.ProjectStartDate, kafkaEvent.ProjectStartDate);
+      Assert.Equal(request.ProjectEndDate, kafkaEvent.ProjectEndDate);
+      Assert.Equal(request.ProjectTimezone, kafkaEvent.ProjectTimezone);
+      Assert.Equal(request.ProjectBoundary, kafkaEvent.ProjectBoundary);
+      Assert.Equal(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName);
+      Assert.Equal(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent);
 
-      Assert.AreEqual(DateTime.MinValue, kafkaEvent.ActionUTC, "ActionUTC has not been mapped correctly");
-      Assert.AreEqual(DateTime.MinValue, kafkaEvent.ReceivedUTC, "ReceivedUTC has not been mapped correctly");
+      Assert.Equal(DateTime.MinValue, kafkaEvent.ActionUTC);
+      Assert.Equal(DateTime.MinValue, kafkaEvent.ReceivedUTC);
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<CreateProjectRequest>(request);
-      Assert.AreEqual(request.ProjectUID, copyOfRequest.ProjectUID, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
+      Assert.Equal(request.ProjectUID, copyOfRequest.ProjectUID);
+      Assert.Equal(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName);
     }
 
-    [TestMethod]
+    [Fact]
     public void MapUpdateProjectRequestToEvent()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
@@ -68,24 +58,24 @@ namespace VSS.MasterData.ProjectTests
         new DateTime(2017, 02, 15), "csName", new byte[] { 1, 2, 3 }, null);
 
       var kafkaEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
-      Assert.AreEqual(request.ProjectUid, kafkaEvent.ProjectUID, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(request.ProjectType, kafkaEvent.ProjectType, "ProjectType has not been mapped correctly");
-      Assert.AreEqual(request.ProjectName, kafkaEvent.ProjectName, "ProjectName has not been mapped correctly");
-      Assert.AreEqual(request.Description, kafkaEvent.Description, "Description has not been mapped correctly");
-      Assert.AreEqual(request.ProjectEndDate, kafkaEvent.ProjectEndDate, "ProjectEndDate has not been mapped correctly");
-      Assert.AreEqual(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
-      CollectionAssert.AreEqual(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent, "CoordinateSystemFileContent has not been mapped correctly");
+      Assert.Equal(request.ProjectUid, kafkaEvent.ProjectUID);
+      Assert.Equal(request.ProjectType, kafkaEvent.ProjectType);
+      Assert.Equal(request.ProjectName, kafkaEvent.ProjectName);
+      Assert.Equal(request.Description, kafkaEvent.Description);
+      Assert.Equal(request.ProjectEndDate, kafkaEvent.ProjectEndDate);
+      Assert.Equal(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName);
+      Assert.Equal(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent);
 
-      Assert.AreEqual(DateTime.MinValue, kafkaEvent.ActionUTC, "ActionUTC has not been mapped correctly");
-      Assert.AreEqual(DateTime.MinValue, kafkaEvent.ReceivedUTC, "ReceivedUTC has not been mapped correctly");
+      Assert.Equal(DateTime.MinValue, kafkaEvent.ActionUTC);
+      Assert.Equal(DateTime.MinValue, kafkaEvent.ReceivedUTC);
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<UpdateProjectRequest>(request);
-      Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
+      Assert.Equal(request.ProjectUid, copyOfRequest.ProjectUid);
+      Assert.Equal(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName);
     }
 
-    [TestMethod]
+    [Fact]
     public void MapProjectToResult()
     {
       var project = new ProjectDatabaseModel
@@ -116,35 +106,33 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var result = AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project);
-      Assert.AreEqual(project.ProjectUID, result.ProjectUid, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(project.LegacyProjectID, result.LegacyProjectId, "LegacyProjectID has not been mapped correctly");
-      Assert.AreEqual(project.ProjectType, result.ProjectType, "ProjectType has not been mapped correctly");
-      Assert.AreEqual(project.Name, result.Name, "Name has not been mapped correctly");
-      Assert.AreEqual(project.Description, result.Description, "Description has not been mapped correctly");
-      Assert.AreEqual(project.ProjectTimeZone, result.ProjectTimeZone, "ProjectTimeZone has not been mapped correctly");
-      Assert.AreEqual(project.LandfillTimeZone, result.IanaTimeZone, "LandfillTimeZone has not been mapped correctly");
-      Assert.AreEqual(project.StartDate.ToString("O"), result.StartDate, "StartDate has not been mapped correctly");
-      Assert.AreEqual(project.EndDate.ToString("O"), result.EndDate, "EndDate has not been mapped correctly");
-      Assert.AreEqual(project.CustomerUID, result.CustomerUid, "CustomerUID has not been mapped correctly");
-      Assert.AreEqual(project.LegacyCustomerID.ToString(), result.LegacyCustomerId, "LegacyCustomerID has not been mapped correctly");
-      Assert.AreEqual(project.SubscriptionUID, result.SubscriptionUid, "SubscriptionUID has not been mapped correctly");
+      Assert.Equal(project.ProjectUID, result.ProjectUid);
+      Assert.Equal(project.LegacyProjectID, result.LegacyProjectId);
+      Assert.Equal(project.ProjectType, result.ProjectType);
+      Assert.Equal(project.Name, result.Name);
+      Assert.Equal(project.Description, result.Description);
+      Assert.Equal(project.ProjectTimeZone, result.ProjectTimeZone);
+      Assert.Equal(project.LandfillTimeZone, result.IanaTimeZone);
+      Assert.Equal(project.StartDate.ToString("O"), result.StartDate);
+      Assert.Equal(project.EndDate.ToString("O"), result.EndDate);
+      Assert.Equal(project.CustomerUID, result.CustomerUid);
+      Assert.Equal(project.LegacyCustomerID.ToString(), result.LegacyCustomerId);
+      Assert.Equal(project.SubscriptionUID, result.SubscriptionUid);
       if (project.SubscriptionStartDate != null)
-        Assert.AreEqual((object)project.SubscriptionStartDate.Value.ToString("O"), result.SubscriptionStartDate,
-          "SubscriptionStartDate has not been mapped correctly");
+        Assert.Equal((object)project.SubscriptionStartDate.Value.ToString("O"), result.SubscriptionStartDate);
       if (project.SubscriptionEndDate != null)
-        Assert.AreEqual((object)project.SubscriptionEndDate.Value.ToString("O"), result.SubscriptionEndDate,
-          "SubscriptionEndDate has not been mapped correctly");
-      Assert.AreEqual(project.ServiceTypeID, (int)result.ServiceType, "ServiceTypeID has not been mapped correctly");
-      Assert.AreEqual(project.GeometryWKT, result.ProjectGeofenceWKT, "GeometryWKT has not been mapped correctly");
-      Assert.IsFalse(result.IsArchived, "IsArchived has not been mapped correctly");
+        Assert.Equal((object)project.SubscriptionEndDate.Value.ToString("O"), result.SubscriptionEndDate);
+      Assert.Equal(project.ServiceTypeID, (int)result.ServiceType);
+      Assert.Equal(project.GeometryWKT, result.ProjectGeofenceWKT);
+      Assert.False(result.IsArchived, "IsArchived has not been mapped correctly");
 
       // just make a copy
       var copyOfProject = AutoMapperUtility.Automapper.Map<ProjectDatabaseModel>(project);
-      Assert.AreEqual(project.ProjectUID, copyOfProject.ProjectUID, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(project.LegacyProjectID, copyOfProject.LegacyProjectID, "LegacyProjectID has not been mapped correctly");
+      Assert.Equal(project.ProjectUID, copyOfProject.ProjectUID);
+      Assert.Equal(project.LegacyProjectID, copyOfProject.LegacyProjectID);
     }
 
-    [TestMethod]
+    [Fact]
     public void MapImportedFileRepoToResponse()
     {
       var request = new ImportedFile
@@ -166,27 +154,27 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var importedFileDescriptor = AutoMapperUtility.Automapper.Map<ImportedFileDescriptor>(request);
-      Assert.AreEqual(request.ProjectUid, importedFileDescriptor.ProjectUid, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(request.ImportedFileUid, importedFileDescriptor.ImportedFileUid, "ImportedFileUid has not been mapped correctly");
-      Assert.AreEqual(request.CustomerUid, importedFileDescriptor.CustomerUid, "CustomerUid has not been mapped correctly");
-      Assert.AreEqual(request.ImportedFileType, importedFileDescriptor.ImportedFileType, "ImportedFileType has not been mapped correctly");
-      Assert.AreEqual(request.Name, importedFileDescriptor.Name, "Name has not been mapped correctly");
-      Assert.AreEqual(request.FileCreatedUtc, importedFileDescriptor.FileCreatedUtc, "FileCreatedUtc has not been mapped correctly");
-      Assert.AreEqual(request.FileUpdatedUtc, importedFileDescriptor.FileUpdatedUtc, "FileUpdatedUtc has not been mapped correctly");
-      Assert.AreEqual(request.ImportedBy, importedFileDescriptor.ImportedBy, "ImportedBy has not been mapped correctly");
-      Assert.AreEqual(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
-      Assert.AreEqual(request.ParentUid, importedFileDescriptor.ParentUid, "ParentUid has not been mapped correctly");
-      Assert.AreEqual(request.Offset, importedFileDescriptor.Offset, "Offset has not been mapped correctly");
-      Assert.AreEqual(request.LastActionedUtc, importedFileDescriptor.ImportedUtc, "ImportedUtc has not been mapped correctly");
-      Assert.AreEqual(true, importedFileDescriptor.IsActivated, "IsActivated has not been mapped correctly");
+      Assert.Equal(request.ProjectUid, importedFileDescriptor.ProjectUid);
+      Assert.Equal(request.ImportedFileUid, importedFileDescriptor.ImportedFileUid);
+      Assert.Equal(request.CustomerUid, importedFileDescriptor.CustomerUid);
+      Assert.Equal(request.ImportedFileType, importedFileDescriptor.ImportedFileType);
+      Assert.Equal(request.Name, importedFileDescriptor.Name);
+      Assert.Equal(request.FileCreatedUtc, importedFileDescriptor.FileCreatedUtc);
+      Assert.Equal(request.FileUpdatedUtc, importedFileDescriptor.FileUpdatedUtc);
+      Assert.Equal(request.ImportedBy, importedFileDescriptor.ImportedBy);
+      Assert.Equal(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc);
+      Assert.Equal(request.ParentUid, importedFileDescriptor.ParentUid.HasValue ? "Fail assertion" : null);
+      Assert.Equal(request.Offset, importedFileDescriptor.Offset);
+      Assert.Equal(request.LastActionedUtc, importedFileDescriptor.ImportedUtc);
+      Assert.True(importedFileDescriptor.IsActivated);
 
       // just make a copy file descriptor is only in the source file, not the destination
       var copyOfRequest = AutoMapperUtility.Automapper.Map<ImportedFile>(request);
-      Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(request.FileDescriptor, copyOfRequest.FileDescriptor, "FileDescriptor has not been mapped correctly");
+      Assert.Equal(request.ProjectUid, copyOfRequest.ProjectUid);
+      Assert.Equal(request.FileDescriptor, copyOfRequest.FileDescriptor);
     }
 
-    [TestMethod]
+    [Fact]
     public void MapImportedFileRepoToUpdateEvent()
     {
       var request = new ImportedFile
@@ -208,28 +196,28 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(request);
-      Assert.AreEqual(request.LastActionedUtc, updateImportedFileEvent.ActionUTC, "ActionUTC has not been mapped correctly");
-      Assert.AreEqual(request.FileCreatedUtc, updateImportedFileEvent.FileCreatedUtc, "FileCreatedUtc has not been mapped correctly");
-      Assert.AreEqual(request.FileDescriptor, updateImportedFileEvent.FileDescriptor, "FileDescriptor has not been mapped correctly");
-      Assert.AreEqual(request.FileUpdatedUtc, updateImportedFileEvent.FileUpdatedUtc, "FileUpdatedUtc has not been mapped correctly");
-      Assert.AreEqual(request.ImportedBy, updateImportedFileEvent.ImportedBy, "ImportedBy has not been mapped correctly");
-      Assert.AreEqual(request.ImportedFileUid, updateImportedFileEvent.ImportedFileUID.ToString(), "ImportedFileUID has not been mapped correctly");
-      Assert.AreEqual(request.ProjectUid, updateImportedFileEvent.ProjectUID.ToString(), "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(request.LastActionedUtc, updateImportedFileEvent.ReceivedUTC, "ReceivedUTC has not been mapped correctly");
-      Assert.AreEqual(request.SurveyedUtc, updateImportedFileEvent.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
+      Assert.Equal(request.LastActionedUtc, updateImportedFileEvent.ActionUTC);
+      Assert.Equal(request.FileCreatedUtc, updateImportedFileEvent.FileCreatedUtc);
+      Assert.Equal(request.FileDescriptor, updateImportedFileEvent.FileDescriptor);
+      Assert.Equal(request.FileUpdatedUtc, updateImportedFileEvent.FileUpdatedUtc);
+      Assert.Equal(request.ImportedBy, updateImportedFileEvent.ImportedBy);
+      Assert.Equal(request.ImportedFileUid, updateImportedFileEvent.ImportedFileUID.ToString());
+      Assert.Equal(request.ProjectUid, updateImportedFileEvent.ProjectUID.ToString());
+      Assert.Equal(request.LastActionedUtc, updateImportedFileEvent.ReceivedUTC);
+      Assert.Equal(request.SurveyedUtc, updateImportedFileEvent.SurveyedUtc);
 
       // just make a copy file descriptor is only in the source file, not the destination
       var copyOfRequest = AutoMapperUtility.Automapper.Map<ImportedFile>(request);
-      Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
-      Assert.AreEqual(request.FileDescriptor, copyOfRequest.FileDescriptor, "FileDescriptor has not been mapped correctly");
+      Assert.Equal(request.ProjectUid, copyOfRequest.ProjectUid);
+      Assert.Equal(request.FileDescriptor, copyOfRequest.FileDescriptor);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanCalculateProjectBoundaryArea()
     {
       var geometryWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))";
       var area = GeofenceValidation.CalculateAreaSqMeters(geometryWKT);
-      Assert.AreEqual(375300.594251673, area, 0.00001);
+      Assert.Equal(375300.594251673, area, 5);
     }
   }
 }

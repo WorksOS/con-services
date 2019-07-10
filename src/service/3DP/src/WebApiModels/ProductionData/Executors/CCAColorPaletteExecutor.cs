@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -36,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     /// <param name="item">A Domain object.</param>
     /// <returns>An instance of the ContractExecutionResult class with CCA data colour palettes.</returns>}
     /// 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       if (item != null)
       {
@@ -58,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
               new List<MachineDetails> { new MachineDetails(request.assetId, null, false, request.assetUid) }
             );
             var trexRequest = new CCAColorPaletteTrexRequest(request.ProjectUid.Value, filter);
-            return trexCompactionDataProxy.SendDataPostRequest<CCAColorPaletteResult, CCAColorPaletteTrexRequest>(trexRequest, "/ccacolors", customHeaders).Result;
+            return await trexCompactionDataProxy.SendDataPostRequest<CCAColorPaletteResult, CCAColorPaletteTrexRequest>(trexRequest, "/ccacolors", customHeaders);
 #if RAPTOR
           }
 
@@ -110,6 +112,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
 #endif
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

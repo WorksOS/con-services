@@ -101,13 +101,9 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       ProjectData projectData = null;
 
       if (request.ProjectId != null)
-      {
         projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectId.Value);
-      }
       else if (request.ProjectUid != null)
-      {
         projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectUid.Value);
-      }
 
       if (projectData != null && projectData.IsArchived)
       {
@@ -116,15 +112,18 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
             "The project has been archived and this function is not allowed."));
       }
 
-      WGS84Fence boundary = null;
+      Task<WGS84Fence> boundary = null;
       if (request.ProjectUid != null)
       {
-        request.ProjectId = GetLegacyProjectId(request.ProjectUid).Result;
-        boundary = await GetProjectBoundary(request.ProjectUid.Value);
+        var projectTask = GetLegacyProjectId(request.ProjectUid);
+        boundary = GetProjectBoundary(request.ProjectUid.Value);
+
+        await Task.WhenAll(projectTask, boundary);
+
+        request.ProjectId = projectTask.Result;
       }
 
-      var requestExt =
-        CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, boundary);
+      var requestExt = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, boundary?.Result);
 
       var responseObj = await RequestExecutorContainerFactory
         .Build<TagFileNonDirectSubmissionExecutor>(_logger,
@@ -168,7 +167,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           _configStore, _tccRepository, null, null, null, _transferProxy, _tRexTagFileProxy, null, customHeaders: CustomHeaders)
         .ProcessAsync(request) as TagFileDirectSubmissionResult;
 
-      if (result.Code == 0)
+      if (result?.Code == 0)
         return StatusCode((int)HttpStatusCode.OK, result);
       return StatusCode((int)HttpStatusCode.BadRequest, result);
     }
