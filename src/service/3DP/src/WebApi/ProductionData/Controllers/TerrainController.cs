@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="y">tile y coordinate</param>
     /// <param name="z">tile z coordinate</param>
     /// <returns></returns>
-    public async Task<byte[]> FetchTile(Guid projectUId, long filterId, int x, int y, int z)
+    private async Task<byte[]> FetchTile(Guid projectUId, long filterId, int x, int y, int z)
     {
       var request = new QMTileRequest()
       {
@@ -130,7 +130,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Genric function to return a static layer file. Will change in Part Two to be dynamic
     /// </summary>
     /// <returns></returns>
-    public string GetGenericLayerFile()
+    private string GetGenericLayerFile()
     {
       // Todo. Part two this could be improved to a more taylored layer file based on projectid
       var dstr = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
