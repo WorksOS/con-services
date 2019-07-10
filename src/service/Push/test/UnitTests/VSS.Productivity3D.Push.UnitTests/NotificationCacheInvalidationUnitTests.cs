@@ -2,55 +2,56 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.Productivity.Push.Models.Notifications.Changes;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.Clients.Notifications;
+using VSS.Serilog.Extensions;
+using Xunit;
 
 namespace VSS.Productivity3D.Push.UnitTests
 {
-  [TestClass]
-  public class NotificationCacheInvalidationUnitTests
+  public class NotificationCacheInvalidationFixture : IDisposable
   {
-    protected IServiceProvider ServiceProvider;
+    public IServiceProvider ServiceProvider;
+    public Mock<IDataCache> MockCache;
 
-    protected Mock<IDataCache> mockCache;
-
-    [TestInitialize]
-    public virtual void InitTest()
+    public NotificationCacheInvalidationFixture()
     {
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Push.UnitTests.log"));
       var serviceCollection = new ServiceCollection();
 
-      string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug().AddConsole();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<IConfigurationStore>(new Mock<IConfigurationStore>().Object);
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      serviceCollection.AddSingleton<IServiceResolution>(new Mock<IServiceResolution>().Object);
-      serviceCollection.AddTransient<INotificationHubClient, NotificationHubClient>();
+      serviceCollection.AddLogging()
+                       .AddSingleton(loggerFactory)
+                       .AddSingleton(new Mock<IConfigurationStore>().Object)
+                       .AddSingleton(new Mock<IServiceResolution>().Object)
+                       .AddTransient<INotificationHubClient, NotificationHubClient>();
 
       // This is the main test object
-      mockCache = new Mock<IDataCache>();
-      serviceCollection.AddSingleton<IDataCache>(mockCache.Object);
+      MockCache = new Mock<IDataCache>();
+      serviceCollection.AddSingleton(MockCache.Object);
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 
-    [TestMethod]
+    public void Dispose()
+    { }
+  }
+
+  public class NotificationCacheInvalidationUnitTests : IClassFixture<NotificationCacheInvalidationFixture>
+  {
+    private readonly NotificationCacheInvalidationFixture TestFixture;
+    
+    public NotificationCacheInvalidationUnitTests(NotificationCacheInvalidationFixture testFixture)
+    {
+      TestFixture = testFixture;
+    }
+
+    [Fact]
     public void Test_CacheIsInvalidated()
     {
       var mockCache = new Mock<IDataCache>();
@@ -67,7 +68,7 @@ namespace VSS.Productivity3D.Push.UnitTests
       mockCache.Verify(m => m.RemoveByTag(tag.ToString()), Times.Once);
     }
 
-    [TestMethod]
+    [Fact]
     public void Test_CacheInvalidatedOnMessage()
     {
       // Our Invalidation Service is hooked up to the project / customer / user changed notifications
@@ -75,15 +76,15 @@ namespace VSS.Productivity3D.Push.UnitTests
       // We will test indirectly that this is the case.
       var tag = new Guid("1D6F21DD-8A5B-4ED0-9FBB-7E1B83439BE0");
 
-      mockCache.Setup(m => m.RemoveByTag(tag.ToString()));
+      TestFixture.MockCache.Setup(m => m.RemoveByTag(tag.ToString()));
 
-      var notificationHub = ServiceProvider.GetService<INotificationHubClient>() as NotificationHubClient;
+      var notificationHub = TestFixture.ServiceProvider.GetService<INotificationHubClient>() as NotificationHubClient;
 
-      Assert.IsNotNull(notificationHub);
+      Assert.NotNull(notificationHub);
       var tasks = notificationHub.ProcessNotificationAsTasks(new CustomerChangedNotification(tag)); // one
       Task.WaitAll(tasks.ToArray());
 
-      mockCache.Verify(m => m.RemoveByTag(tag.ToString()), Times.Once);
+      TestFixture.MockCache.Verify(m => m.RemoveByTag(tag.ToString()), Times.Once);
 
       tasks = notificationHub.ProcessNotificationAsTasks(new ProjectChangedNotification(tag)); // two
       Task.WaitAll(tasks.ToArray());
@@ -92,7 +93,7 @@ namespace VSS.Productivity3D.Push.UnitTests
       Task.WaitAll(tasks.ToArray());
 
       // We should have called invalidate cache 3 times (once per notification).
-      mockCache.Verify(m => m.RemoveByTag(tag.ToString()), Times.Exactly(3));
+      TestFixture.MockCache.Verify(m => m.RemoveByTag(tag.ToString()), Times.Exactly(3));
     }
   }
 }

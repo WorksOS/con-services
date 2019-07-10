@@ -1,23 +1,22 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity.Push.Models;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Push.Hubs.AssetLocations;
+using Xunit;
 
 namespace VSS.Productivity3D.Push.UnitTests
 {
-  [TestClass]
   public class InMemoryAssetStatusStateTest
   {
-    [TestMethod]
+    [Fact]
     public void TestAddAndRemove()
     {
       var state = new InMemoryAssetStatusState() as IAssetStatusState;
-      Assert.IsNotNull(state);
+      Assert.NotNull(state);
 
       {
         var count = state.GetSubscriptions().Result.Count;
-        Assert.IsTrue(count == 0, $"Expected a zero count with a new state, got ${count} instead");
+        Assert.True(count == 0, $"Expected a zero count with a new state, got ${count} instead");
       }
 
       const string clientId1 = "307CA37C-2422-4AD9-A512-34DFB3BC7507";
@@ -42,8 +41,8 @@ namespace VSS.Productivity3D.Push.UnitTests
       // count should be 1
       {
         var items = state.GetSubscriptions().Result;
-        Assert.IsTrue(items.Count == 1, $"Added a model, count should be one but it is ${items.Count}");
-        Assert.AreEqual(model1, items[0]);
+        Assert.True(items.Count == 1, $"Added a model, count should be one but it is ${items.Count}");
+        Assert.Equal(model1, items[0]);
       }
 
       // Add the second model, with the same identifier (this should replace the existing one)
@@ -52,8 +51,8 @@ namespace VSS.Productivity3D.Push.UnitTests
       // count should be 1
       {
         var items = state.GetSubscriptions().Result;
-        Assert.IsTrue(items.Count == 1,$"Added a model with the same identifier, count should be one but it is ${items.Count}");
-        Assert.AreEqual(model2, items[0]);
+        Assert.True(items.Count == 1, $"Added a model with the same identifier, count should be one but it is ${items.Count}");
+        Assert.Equal(model2, items[0]);
       }
 
       // Add another model, with another identifier
@@ -62,9 +61,9 @@ namespace VSS.Productivity3D.Push.UnitTests
       // Count should be 2
       {
         var items = state.GetSubscriptions().Result;
-        Assert.IsTrue(items.Count == 2,$"Added a model with a new identifier, count should be two but it is ${items.Count}");
-        Assert.IsTrue(items.Contains(model2));
-        Assert.IsTrue(items.Contains(model3));
+        Assert.True(items.Count == 2, $"Added a model with a new identifier, count should be two but it is ${items.Count}");
+        Assert.Contains(model2, items);
+        Assert.Contains(model3, items);
       }
 
       // Remove the first subscription and an unknown subscription
@@ -74,8 +73,8 @@ namespace VSS.Productivity3D.Push.UnitTests
       // Count should be 1
       {
         var items = state.GetSubscriptions().Result;
-        Assert.IsTrue(items.Count == 1,$"Removed a subscription, count should be one but it is ${items.Count}");
-        Assert.IsTrue(items.Contains(model3));
+        Assert.True(items.Count == 1, $"Removed a subscription, count should be one but it is ${items.Count}");
+        Assert.Contains(model3, items);
       }
 
       state.RemoveSubscription(clientId2);
@@ -83,16 +82,16 @@ namespace VSS.Productivity3D.Push.UnitTests
       // should be empty
       {
         var count = state.GetSubscriptions().Result.Count;
-        Assert.IsTrue(count == 0, $"Expected a zero count with all clients removed, got ${count} instead");
+        Assert.True(count == 0, $"Expected a zero count with all clients removed, got ${count} instead");
       }
     }
 
-    [TestMethod]
+    [Fact]
     public void TestClientsForProject()
     {
       // This test will ensure that when subscription is added, only events for that subscription get sent to it 
       var state = new InMemoryAssetStatusState() as IAssetStatusState;
-      Assert.IsNotNull(state);
+      Assert.NotNull(state);
 
       const string clientId1 = "AF284FC0-4D38-4337-A782-564ABD65D5CC";
       const string clientId2 = "C670850B-BF18-4AA3-963F-9820C47481C8";
@@ -119,8 +118,8 @@ namespace VSS.Productivity3D.Push.UnitTests
       // Now we should only get one clientid back
       {
         var clients = state.GetClientsForProject(customerUid1, projectUid1).Result;
-        Assert.IsTrue(clients.Count == 1, $"Expected a single client but got ${clients.Count}");
-        Assert.AreEqual(clientId1, clients[0]);
+        Assert.True(clients.Count == 1, $"Expected a single client but got ${clients.Count}");
+        Assert.Equal(clientId1, clients[0]);
       }
 
       // Now same project UID but different customer UID (also this should replace the existing subscription)
@@ -140,9 +139,9 @@ namespace VSS.Productivity3D.Push.UnitTests
       {
         var subs = state.GetSubscriptions().Result;
         var clients = state.GetClientsForProject(customerUid2, projectUid2).Result;
-        Assert.IsTrue(subs.Count == 2,$"Subs don't match, expected two got ${subs.Count}");
-        Assert.IsTrue(clients.Count == 1, $"Expected a single client but got ${clients.Count}");
-        Assert.AreEqual(clientId2, clients[0]);
+        Assert.True(subs.Count == 2, $"Subs don't match, expected two got ${subs.Count}");
+        Assert.True(clients.Count == 1, $"Expected a single client but got ${clients.Count}");
+        Assert.Equal(clientId2, clients[0]);
       }
 
       // Now update the subscriptions to be the same
@@ -158,21 +157,21 @@ namespace VSS.Productivity3D.Push.UnitTests
         ProjectUid = projectUid1
       });
 
-      
+
       // We should have 2 subscriptions, both for the same proejct / customer
       {
         var subs = state.GetSubscriptions().Result;
         var clients = state.GetClientsForProject(customerUid1, projectUid1).Result;
-        Assert.IsTrue(subs.Count == 2,$"Subs don't match, expected two got ${subs.Count}");
-        Assert.IsTrue(clients.Count == 2, $"Expected two clients but got ${clients.Count}");
-        Assert.IsTrue(clients.Contains(clientId1));
-        Assert.IsTrue(clients.Contains(clientId2));
+        Assert.True(subs.Count == 2, $"Subs don't match, expected two got ${subs.Count}");
+        Assert.True(clients.Count == 2, $"Expected two clients but got ${clients.Count}");
+        Assert.Contains(clientId1, clients);
+        Assert.Contains(clientId2, clients);
       }
 
       // Now test a combo that returns no results
       {
         var clients = state.GetClientsForProject(customerUid2, projectUid2).Result;
-        Assert.IsTrue(clients.Count == 0, $"Expected no clients but got ${clients.Count}");
+        Assert.True(clients.Count == 0, $"Expected no clients but got ${clients.Count}");
       }
     }
   }

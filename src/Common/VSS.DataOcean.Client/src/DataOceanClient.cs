@@ -5,13 +5,11 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
-using VSS.DataOcean.Client.Models;
-using VSS.DataOcean.Client.ResultHandling;
-using VSS.ConfigurationStore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
+using VSS.DataOcean.Client.Models;
+using VSS.DataOcean.Client.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.DataOcean.Client
