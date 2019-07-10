@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
+﻿namespace VSS.TRex.SiteModelChangeMaps.Interfaces
 {
   public enum SiteModelChangeMapOperation
   {

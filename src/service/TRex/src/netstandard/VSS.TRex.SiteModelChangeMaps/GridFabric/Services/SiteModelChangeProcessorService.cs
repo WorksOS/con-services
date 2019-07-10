@@ -8,13 +8,12 @@ using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Extensions;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Services;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Services;
-using VSS.TRex.SiteModels;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 
@@ -25,7 +24,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
   /// that changed as a result of processing a set of TAG file data) and representing those changes in the per-machine tracking
   /// to enable machine to request data with 'only data that changed since last visit' semantics
   /// </summary>
-  public class SiteModelChangeProcessorService : IService, ISiteModelChangeProcessorService, IBinarizable, IFromToBinary
+  public class SiteModelChangeProcessorService : BaseService, IService, ISiteModelChangeProcessorService
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelChangeProcessorService>();
 
@@ -139,15 +138,11 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
       waitHandle?.Set();
     }
 
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
     /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -158,7 +153,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// The service has no serialization requirements
     /// </summary>
     /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 

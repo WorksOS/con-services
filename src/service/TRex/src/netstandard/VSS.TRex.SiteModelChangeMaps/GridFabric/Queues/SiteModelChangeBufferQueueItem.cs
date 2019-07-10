@@ -2,13 +2,15 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.SiteModelChangeMaps.Interfaces;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 
 namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 {
   /// <summary>
   /// Represents the state of a TAG file stored in the TAG file buffer queue awaiting processing.
   /// </summary>
-  public class SiteModelChangeBufferQueueItem : IBinarizable, IFromToBinary
+  public class SiteModelChangeBufferQueueItem : IBinarizable, IFromToBinary, ISiteModelChangeBufferQueueItem
   { 
     public const byte VERSION_NUMBER = 1;
 

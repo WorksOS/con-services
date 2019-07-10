@@ -3,14 +3,15 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
+using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.Storage.Caches;
@@ -19,7 +20,7 @@ using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.SiteModels
+namespace VSS.TRex.SiteModelChangeMaps
 {
   public class SiteModelChangeProcessorItemHandler : IDisposable
   {
@@ -31,14 +32,14 @@ namespace VSS.TRex.SiteModels
     private const int kQueueServiceCheckIntervalMS = 1000;
 
     private bool _aborted;
+    public bool Aborted => _aborted;
 
     /// <summary>
     /// The handler is initially inactive until all elements from the initial query scan are complete
     /// </summary>
     private bool _active;
+    public bool Active => _active;
 
-    private readonly IIgnite _ignite;
-    private readonly IStorageProxyFactory _storageProxyFactory;
     private readonly IStorageProxy _storageProxy;
     private readonly IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> _changeMapCache;
 
@@ -47,17 +48,18 @@ namespace VSS.TRex.SiteModels
 
     public SiteModelChangeProcessorItemHandler()
     {
-      _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
+      var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
 
-      if (_ignite == null)
+      if (ignite == null)
       {
-        Log.LogError("Failed to obtain immutable ignite reference");
+        throw new TRexException("Failed to obtain immutable ignite reference");
       }
 
       _queue = new ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
-      _itemQueueCache = _ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
-      _storageProxyFactory = DIContext.Obtain<IStorageProxyFactory>();
-      _storageProxy = _storageProxyFactory.ImmutableGridStorage();
+      _itemQueueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
+
+      var storageProxyFactory = DIContext.Obtain<IStorageProxyFactory>();
+      _storageProxy = storageProxyFactory.ImmutableGridStorage();
       _changeMapCache = _storageProxy.ProjectMachineCache(FileSystemStreamType.SiteModelMachineElevationChangeMap);
 
       var _ = Task.Factory.StartNew(ProcessChangeMaoUpdateItems, TaskCreationOptions.LongRunning);
@@ -66,6 +68,11 @@ namespace VSS.TRex.SiteModels
     public void Activate()
     {
       _active = true;
+    }
+
+    public void Abort()
+    {
+      _aborted = true;
     }
 
     public void Add(ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> item)
@@ -192,7 +199,7 @@ namespace VSS.TRex.SiteModels
 
               default:
                 Log.LogError($"Unknown operation encountered: {(int) item.Operation}");
-                break;
+                return false;
             }
 
             // Commit the updated mask to the store
