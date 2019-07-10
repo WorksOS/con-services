@@ -31,12 +31,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
     }
 
-    [HttpGet]
-    public String Get()
-    {
-      return "Welcome";
-    }
-
     /// <summary>
     /// Get production quantized mesh tile.
     /// </summary>

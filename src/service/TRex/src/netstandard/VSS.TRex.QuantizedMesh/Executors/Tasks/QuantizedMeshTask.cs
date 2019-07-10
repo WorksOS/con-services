@@ -12,13 +12,12 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
   /// </summary>
   public class QuantizedMeshTask : PipelinedSubGridTask, IQuantizedMeshTask
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-
+     private static readonly ILogger Log = Logging.Logger.CreateLogger<QuantizedMeshTask>();
     /// <summary>
     /// The tile renderer responsible for processing sub grid information into tile based thematic rendering
     /// </summary>
     /// 
- // todo   public PlanViewTileRenderer TileRenderer { get; set; }
+    // todo   public PlanViewTileRenderer TileRenderer { get; set; }
 
     public QuantizedMeshTask()
     { }
