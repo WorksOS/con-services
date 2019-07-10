@@ -49,18 +49,28 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
+
     /// <summary>
-    /// Constructor with injection
+    /// Genric function to return a static layer file. Will change in Part Two to be dynamic
     /// </summary>
-    /// <param name="logger">LoggerFactory</param>
-    /// <param name="configStore">Configuration Store</param>
-    /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
-    public TerrainController(ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+    /// <returns></returns>
+    private string GetGenericLayerFile()
     {
-      this.logger = logger;
-      log = this.logger.CreateLogger<TerrainController>();
-      ConfigStore = configStore;
-      TRexCompactionDataProxy = trexCompactionDataProxy;
+      // Todo. Part two this could be improved to a more taylored layer file based on projectid
+      var dstr = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+      const string fname = @"TestData\layer.json";
+      var fileInfo = new FileInfo(Path.Combine(dstr, fname));
+      if (!fileInfo.Exists)
+        throw new FileNotFoundException("[layer.json not in folder}]");
+      try
+      {
+        return System.IO.File.ReadAllText(fileInfo.FullName);
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine("[Data File Missing] {0}", e);
+        throw new FileNotFoundException($"[layer.json not in {fileInfo.FullName}] ", e);
+      }
     }
 
     /// <summary>
@@ -91,6 +101,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as QMTileResult;
 
       return qmTileResult.TileData;
+    }
+
+    /// <summary>
+    /// Constructor with injection
+    /// </summary>
+    /// <param name="logger">LoggerFactory</param>
+    /// <param name="configStore">Configuration Store</param>
+    /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
+    public TerrainController(ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+    {
+      this.logger = logger;
+      log = this.logger.CreateLogger<TerrainController>();
+      ConfigStore = configStore;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
 
@@ -127,30 +151,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     }
 
     /// <summary>
-    /// Genric function to return a static layer file. Will change in Part Two to be dynamic
-    /// </summary>
-    /// <returns></returns>
-    private string GetGenericLayerFile()
-    {
-      // Todo. Part two this could be improved to a more taylored layer file based on projectid
-      var dstr = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-      const string fname = @"TestData\layer.json";
-      var fileInfo = new FileInfo(Path.Combine(dstr, fname));
-      if (!fileInfo.Exists)
-        throw new FileNotFoundException("[layer.json not in folder}]");
-      try
-      {
-        return System.IO.File.ReadAllText(fileInfo.FullName);
-      }
-      catch (Exception e)
-      {
-        Console.WriteLine("[Data File Missing] {0}", e);
-        throw new FileNotFoundException($"[layer.json not in {fileInfo.FullName}] ", e);
-      }
-
-    }
-
-    /// <summary>
     /// Returns layer.json that controls the layout of all future tile requets
     /// </summary>
     /// <returns></returns>
@@ -162,7 +162,5 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       // a projects boundary only. Hence reducing overall tile requets
       return GetGenericLayerFile();
     }
-
-
   }
 }
