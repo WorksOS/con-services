@@ -292,12 +292,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       cutFillRequest.Validate();
 
-      return await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionCutFillExecutor>(LoggerFactory,
+      return await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory.Build<CompactionCutFillExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .ProcessAsync(cutFillRequest) as CompactionCutFillDetailedResult);
+          .ProcessAsync(cutFillRequest)) as CompactionCutFillDetailedResult;
     }
 
     /// <summary>
@@ -336,13 +336,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result1 = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory
+        var result1 = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
             .Build<DetailedTemperatureExecutor>(LoggerFactory,
 #if RAPTOR
               RaptorClient,
 #endif
               configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .ProcessAsync(detailsRequest) as CompactionTemperatureDetailResult);
+            .ProcessAsync(detailsRequest)) as CompactionTemperatureDetailResult;
 
         //When TRex done for temperature details, assume it will set target in details call
         if (result1 != null && result1.TemperatureTarget == null)

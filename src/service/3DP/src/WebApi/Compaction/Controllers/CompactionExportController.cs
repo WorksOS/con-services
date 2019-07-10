@@ -240,7 +240,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      var result = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory
+      var result = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
@@ -248,7 +248,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
             customHeaders: CustomHeaders)
-          .ProcessAsync(exportRequest) as CompactionExportResult);
+          .ProcessAsync(exportRequest)) as CompactionExportResult;
 
 #if RAPTOR
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
@@ -319,14 +319,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      var result = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionExportExecutor>(LoggerFactory,
+      var result = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory.Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
             customHeaders: CustomHeaders)
-          .ProcessAsync(exportRequest) as CompactionExportResult);
+          .ProcessAsync(exportRequest)) as CompactionExportResult;
 
 
 #if RAPTOR
@@ -399,13 +399,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      var result = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionExportExecutor>(LoggerFactory,
+      var result = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory.Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .ProcessAsync(exportRequest) as CompactionExportResult);
+          .ProcessAsync(exportRequest)) as CompactionExportResult;
 
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
 

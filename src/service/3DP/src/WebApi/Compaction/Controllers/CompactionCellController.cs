@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       patchRequest.Validate();
 
-      var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory
+      var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
         .Build<CompactionPatchV2Executor>(LoggerFactory,
 #if RAPTOR
           RaptorClient,

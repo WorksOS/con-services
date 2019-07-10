@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       await Task.WhenAll(projectId, projectSettings, projectSettingsColors, filter, cutFillDesign, sumVolParameters);
 
-      return await WithServiceExceptionTryExecuteAsync(async () => await tileService.GetProductionDataTile(
+      return await WithServiceExceptionTryExecuteAsync(() => tileService.GetProductionDataTile(
         projectSettings.Result, 
         projectSettingsColors.Result, 
         filter.Result, 
@@ -208,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       await Task.WhenAll(projectId, projectSettings, projectSettingsColors, filter, cutFillDesign, sumVolParameters);
 
-      var tileResult = await WithServiceExceptionTryExecuteAsync(async () => await tileService.GetProductionDataTile(
+      var tileResult = await WithServiceExceptionTryExecuteAsync(() => tileService.GetProductionDataTile(
         projectSettings.Result, 
         projectSettingsColors.Result, 
         filter.Result, 

@@ -186,8 +186,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       else
         throw new NotImplementedException();
 
-      var tileResult = await WithServiceExceptionTryExecuteAsync(async () =>
-        await tileService.GetProductionDataTile(
+      var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
+        tileService.GetProductionDataTile(
           projectSettings.Result,
           projectSettingsColors.Result,
           filter.Result,
@@ -315,44 +315,47 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // First get the export of production data from Raptor
       // comes in a zip file
-      var result = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainerFactory.Build<CompactionExportExecutor>(LoggerFactory,
+      var result = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory.Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
             raptorClient, 
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy,
             customHeaders: CustomHeaders)
-          .ProcessAsync(exportRequest) as CompactionExportResult);
+          .ProcessAsync(exportRequest)) as CompactionExportResult;
 
-      var zipStream = new FileStream(result.FullFileName, FileMode.Open);
-
-      using (var archive = new ZipArchive(zipStream))
+      if (result != null)
       {
-        // The zip file will have exactly one file in it
-        if (archive.Entries.Count == 1)
+        var zipStream = new FileStream(result.FullFileName, FileMode.Open);
+
+        using (var archive = new ZipArchive(zipStream))
         {
-          try
+          // The zip file will have exactly one file in it
+          if (archive.Entries.Count == 1)
           {
-            var tin = new TrimbleTINModel();
-            using (var stream = archive.Entries[0].Open() as DeflateStream)
-            using (var ms = new MemoryStream())
+            try
             {
-              // Unzip the file, copy to memory as the TIN file needs the byte array, and stream
-              stream.CopyTo(ms);
-              ms.Seek(0, SeekOrigin.Begin);
+              var tin = new TrimbleTINModel();
+              using (var stream = archive.Entries[0].Open() as DeflateStream)
+              using (var ms = new MemoryStream())
+              {
+                // Unzip the file, copy to memory as the TIN file needs the byte array, and stream
+                stream.CopyTo(ms);
+                ms.Seek(0, SeekOrigin.Begin);
 
-              tin.LoadFromStream(ms, ms.GetBuffer());
+                tin.LoadFromStream(ms, ms.GetBuffer());
 
-              tins.Add(tin);
+                tins.Add(tin);
+              }
+            }
+            catch (TTMFileReadException e)
+            {
+              // Not valid, continue
+              Log.LogWarning(e, "Failed to parse ttm in zip file");
             }
           }
-          catch (TTMFileReadException e)
-          {
-            // Not valid, continue
-            Log.LogWarning(e, "Failed to parse ttm in zip file");
-          }
-        }
 
+        }
       }
 
       // If we didn't get a valid file, then we failed to read the ttm from raptor
