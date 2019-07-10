@@ -44,17 +44,11 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
       AddDesignProfilerGridRouting();
     }
 
-    private void AddRenderingFactoryToDI()
-    {
-      // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
-      DIBuilder.Continue().Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory())).Complete();
-    }
 
     [Fact]
     public void TileExecutor_EmptySiteModel()
     {
       AddRoutings();
-      AddRenderingFactoryToDI();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
