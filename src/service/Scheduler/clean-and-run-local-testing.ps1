@@ -33,6 +33,13 @@ FOR ($i = 0; $i -lt $array.length; $i++) {
 
 Write-Host "Done" -ForegroundColor Green
 
+Write-Host "Connecting to image host" -ForegroundColor DarkGray
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
+
+IF (-not $?) {
+    Write-Host "Error: Logging in to AWS, won't pull latest images for container dependancies." -ForegroundColor Red
+}
+
 Write-Host "Building solution" -ForegroundColor DarkGray
 
 $artifactsWorkingDir = "${PSScriptRoot}/artifacts/VSS.Productivity3D.Scheduler.WebApi"
@@ -48,7 +55,6 @@ Set-Location ./src/VSS.Productivity3D.Scheduler.WebApi
 Copy-Item ./appsettings.json $artifactsWorkingDir
 Copy-Item ./Dockerfile $artifactsWorkingDir
 Copy-Item ./web.config $artifactsWorkingDir
-Copy-Item ./log4net.xml $artifactsWorkingDir
 Copy-Item ./bin/Docker/netcoreapp2.1/VSS.Productivity3D.Scheduler.WebAPI.xml $artifactsWorkingDir
 
 & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
@@ -57,16 +63,9 @@ Write-Host "Building image dependencies" -ForegroundColor DarkGray
 Set-Location $PSScriptRoot
 Invoke-Expression "docker-compose --file docker-compose-local.yml pull"
 
-Write-Host "Connecting to image host" -ForegroundColor DarkGray
-Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
-
 Write-Host "Building Docker containers" -ForegroundColor DarkGray
 
-# This legacy setting suppresses logging to the console by piping it to a file on disk. If you're looking for the application logs from within the container see .artifacts/logs/.
-$logToFile = IF ($args -contains "--no-log") { "" } ELSE { "> C:\Temp\output.log" }
-$detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
-
-Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach $logToFile"
+Invoke-Expression "docker-compose --file docker-compose-local.yml up --build --detach > ${PSScriptRoot}/artifacts/logs/output.log"
 
 IF ($args -notcontains "--no-test") {
     Write-Host "Running acceptance tests" -ForegroundColor DarkGray

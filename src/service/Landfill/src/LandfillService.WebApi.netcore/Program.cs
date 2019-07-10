@@ -1,29 +1,22 @@
-﻿using System.IO;
-using System.Net;
-using System.Threading;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using VSS.Log4Net.Extensions;
+﻿using Microsoft.AspNetCore.Hosting;
 using VSS.WebApi.Common;
 
 namespace LandfillService.WebApi.netcore
 {
   public class Program
   {
-    public static void Main(string[] args)
+    public static void Main()
     {
       var host = new WebHostBuilder().BuildHostWithReflectionException(builder =>
       {
         return builder.UseKestrel()
           .UseLibuv(opts => { opts.ThreadCount = 32; })
-          .BuildKestrelWebHost(Startup.LoggerRepoName)
+          .BuildKestrelWebHost()
           .UseStartup<Startup>()
           .Build();
       });
 
-       host.Run();
+      host.Run();
     }
   }
 }
