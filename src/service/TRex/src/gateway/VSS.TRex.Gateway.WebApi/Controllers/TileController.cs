@@ -33,7 +33,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
-    public FileResult GetTile([FromBody] TileRequest request)
+    public FileResult GetTile([FromBody] TRexTileRequest request)
     {
       Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
 

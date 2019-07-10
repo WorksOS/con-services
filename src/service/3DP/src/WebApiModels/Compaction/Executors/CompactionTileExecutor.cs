@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -45,7 +46,20 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
 #endif
-          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/tile", customHeaders);
+          var trexRequest = new TRexTileRequest(
+            request.ProjectUid,
+            request.Mode,
+            request.Palettes,
+            request.DesignDescriptor,
+            request.Filter1,
+            request.Filter2,
+            request.BoundBoxLatLon,
+            request.BoundBoxGrid,
+            request.Width,
+            request.Height,
+            GetOverridingTargets(request.LiftBuildSettings)
+          );
+          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(trexRequest, "/tile", customHeaders);
 
           using (var ms = new MemoryStream())
           {

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Cache.Models;
-using VSS.Log4NetExtensions;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Common.Cache.MemoryCache
 {

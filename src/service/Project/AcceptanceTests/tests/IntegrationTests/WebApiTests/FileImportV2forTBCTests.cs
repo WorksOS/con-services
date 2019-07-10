@@ -11,7 +11,7 @@ using ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.Impo
 
 namespace IntegrationTests.WebApiTests
 {
-  public class FileImportV2forTBCTests
+  public class FileImportV2forTBCTests : WebApiTestsBase
   {
     [Fact]
     public void TestImportV2ForTbcSvlFile_AlignmentType_OK()

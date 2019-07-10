@@ -3,7 +3,5 @@
 namespace VSS.Productivity3D.Push
 {
   public class PushResult : ContractExecutionStatesEnum
-  {
-
-  }
+  { }
 }

@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     public bool PositionsAreGrid { get; private set; }
 
     /// <summary>
-    ///  Are positions grid or latlon
+    /// Any overriding machine targets
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     public OverridingTargets Overrides { get; private set; }

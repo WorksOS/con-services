@@ -6,3 +6,4 @@ COPY . /build/
 WORKDIR /build
 
 RUN dotnet publish ./$SERVICE_PATH/VSS.VisionLink.Landfill.netcore.sln -o /artifacts --runtime linux-x64
+

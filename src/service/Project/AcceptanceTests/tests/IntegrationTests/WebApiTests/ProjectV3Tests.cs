@@ -8,7 +8,7 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class ProjectV3Tests
+  public class ProjectV3Tests : WebApiTestsBase
   {
     [Fact]
     public void Create_Project_All_Ok()

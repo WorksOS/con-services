@@ -4,12 +4,11 @@ using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
+using VSS.MasterData.Models.Models;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Models;
-using VSS.MasterData.Models.Models;
-using PointF = SixLabors.Primitives.PointF;
-
 
 namespace VSS.Tile.Service.Common.Services
 {

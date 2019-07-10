@@ -172,18 +172,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.GridPoints?.y1 ?? (request.WGS84Points?.lat1 ?? 0.0),
         request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
         request.GridPoints?.y2 ?? (request.WGS84Points?.lat2 ?? 0.0),
-        new OverridingTargets(liftBuildSettings.OverridingMachineCCV ?? 0,
-          liftBuildSettings.OverridingMachineCCV.HasValue,
-          liftBuildSettings.CCVRange.Max, liftBuildSettings.CCVRange.Min,
-          liftBuildSettings.OverridingMachineMDP ?? 0,
-          liftBuildSettings.OverridingMachineMDP.HasValue,
-          liftBuildSettings.MDPRange.Max,
-          liftBuildSettings.MDPRange.Min,
-          liftBuildSettings.OverridingTargetPassCountRange,
-          liftBuildSettings.OverridingTemperatureWarningLevels != null ?
-            new TemperatureSettings(liftBuildSettings.OverridingTemperatureWarningLevels.Max,
-              liftBuildSettings.OverridingTemperatureWarningLevels.Min, true) : null,
-          liftBuildSettings.MachineSpeedTarget));
+        GetOverridingTargets(liftBuildSettings));
 
       var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders);
 
@@ -542,18 +531,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y1 ?? request.WGS84Points.lat1,
         request.GridPoints?.y2 ?? request.WGS84Points.lat2,
-        new OverridingTargets(liftBuildSettings.OverridingMachineCCV ?? 0,
-          liftBuildSettings.OverridingMachineCCV.HasValue,
-          liftBuildSettings.CCVRange.Max, liftBuildSettings.CCVRange.Min,
-          liftBuildSettings.OverridingMachineMDP ?? 0,
-          liftBuildSettings.OverridingMachineMDP.HasValue,
-          liftBuildSettings.MDPRange.Max,
-          liftBuildSettings.MDPRange.Min,
-          liftBuildSettings.OverridingTargetPassCountRange,
-          liftBuildSettings.OverridingTemperatureWarningLevels != null ? 
-            new TemperatureSettings(liftBuildSettings.OverridingTemperatureWarningLevels.Max, 
-              liftBuildSettings.OverridingTemperatureWarningLevels.Min, true) : null,
-          liftBuildSettings.MachineSpeedTarget)
+        GetOverridingTargets(liftBuildSettings)
       );
 
       var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest>(summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders);

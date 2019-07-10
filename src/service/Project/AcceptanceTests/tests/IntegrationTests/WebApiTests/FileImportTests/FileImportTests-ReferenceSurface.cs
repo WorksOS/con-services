@@ -10,7 +10,7 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests.FileImportTests
 {
-  public class FileImportTests_ReferenceSurface
+  public class FileImportTests_ReferenceSurface : WebApiTestsBase
   {
     [Theory]
     [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
