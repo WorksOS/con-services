@@ -73,6 +73,7 @@ namespace VSS.Productivity3D.Models.Models
     public override void Validate()
     {
       base.Validate();
+      Filter1?.Validate();
     }
 
   }
