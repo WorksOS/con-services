@@ -23,7 +23,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class TerrainController : ControllerBase, ITerrainContract
   {
-    private readonly string _TerrainDataQM = "application/octet-stream";
 
     /// <summary>
     /// LoggerFactory for logging
@@ -120,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         HttpContext.Response.Headers.Add("Content-Length", basicTile.Length.ToString());
         HttpContext.Response.Headers.Add("Content-Type", ContentTypeConstants.ApplicationOctetStream);
         HttpContext.Response.Headers.Add("Content-Disposition", $"attachment;filename={y}.terrain");
-        return File(basicTile, _TerrainDataQM);
+        return File(basicTile, ContentTypeConstants.ApplicationOctetStream);
       }
 
       log.LogDebug($"Requested tile x:{x},y: {y},z:{z} for Project:{projectUid} was not found");
