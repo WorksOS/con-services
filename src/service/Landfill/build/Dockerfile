@@ -32,3 +32,4 @@ ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
 COPY --from=build_container /artifacts .
+
