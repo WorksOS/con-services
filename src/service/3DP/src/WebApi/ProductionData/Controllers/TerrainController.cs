@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="y">tile y coordinate</param>
     /// <param name="z">tile z coordinate</param>
     /// <returns></returns>
-    private async Task<byte[]> FetchTile(Guid projectUId, long filterId, int x, int y, int z)
+    private async Task<byte[]> FetchTile(Guid projectUId, Guid filterId, int x, int y, int z)
     {
       var request = new QMTileRequest()
       {
@@ -90,8 +90,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         Y = y,
         Z = z,
         CallId = new Guid(),
+
+        // Todo setup correct filter in part two
         Filter1 = new FilterResult(),
-        FilterId1 = filterId,
         ProjectUid = projectUId
       };
 
@@ -130,7 +131,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="filterId">Filter Id</param>
     /// <returns></returns>
     [HttpGet("v1/qmesh/{z}/{x}/{y}.{formatExtension}")]
-    public async Task<IActionResult> Get(int x, int y, int z, string formatExtension, [FromQuery] Guid projectUid, [FromQuery] long filterId)
+    public async Task<IActionResult> Get(int x, int y, int z, string formatExtension, [FromQuery] Guid projectUid, [FromQuery] Guid filterId)
     {
 
       log.LogInformation("Get: " + Request.QueryString);

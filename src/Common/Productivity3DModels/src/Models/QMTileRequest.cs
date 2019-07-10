@@ -21,12 +21,6 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "filter1", Required = Required.Default)]
     public FilterResult Filter1 { get; set; }
 
-    /// <summary>
-    /// The ID of the base or earliest filter to be used.
-    /// </summary>
-    [JsonProperty(PropertyName = "filterId1", Required = Required.Default)]
-    public long FilterId1 { get; set; }
-
     [JsonProperty(Required = Required.Always)]
     public int X { get; set; }
 
@@ -64,7 +58,6 @@ namespace VSS.Productivity3D.Models.Models
       ProjectUid = projectUid;
       CallId = callId;
       Filter1 = filter1;
-      FilterId1 = filterId1;
       X = x;
       Y = y;
       Z = z;
