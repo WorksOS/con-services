@@ -12,12 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Executors\NewFolder\**" />
-    <EmbeddedResource Remove="Executors\NewFolder\**" />
-    <None Remove="Executors\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.2" />
     <PackageReference Include="SimpleBase" Version="1.3.1" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
