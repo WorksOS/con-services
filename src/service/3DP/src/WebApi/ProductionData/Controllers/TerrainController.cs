@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Interfaces;
@@ -115,9 +116,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var basicTile = await FetchTile(projectUid, filterId, x, y, z);
       if (basicTile != null)
       {
-        HttpContext.Response.Headers.Add("Content-Encoding", "gzip"); // already compressed on disk
+        HttpContext.Response.Headers.Add("Content-Encoding", ContentTypeConstants.ContentEncodingGzip); // already compressed on disk
         HttpContext.Response.Headers.Add("Content-Length", basicTile.Length.ToString());
-        HttpContext.Response.Headers.Add("Content-Type", "application/octet-stream");
+        HttpContext.Response.Headers.Add("Content-Type", ContentTypeConstants.ApplicationOctetStream);
         HttpContext.Response.Headers.Add("Content-Disposition", $"attachment;filename={y}.terrain");
         return File(basicTile, _TerrainDataQM);
       }
