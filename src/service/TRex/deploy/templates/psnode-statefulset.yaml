@@ -85,4 +85,5 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: {{ .Values.psnode.storageSize }}
+          storage: {{ .Values.psnode.storage.size }}
+      storageClassName: {{ .Values.psnode.storage.className }}
