@@ -27,10 +27,8 @@ namespace VSS.Productivity3D.Push
 {
   public class Startup : BaseStartup
   {
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
-    public const string LoggerRepoName = "push";
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    { }
 
     /// <inheritdoc />
     public override string ServiceName => "Push Service API";

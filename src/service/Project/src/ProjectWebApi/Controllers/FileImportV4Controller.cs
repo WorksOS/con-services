@@ -493,7 +493,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         fileDescriptor = FileDescriptor.CreateFileDescriptor(
           FileSpaceId,
           $"/{customerUid}/{projectUid}",
-          ImportedFileUtils.IncludeSurveyedUtcInName(Path.GetFileName(filename), surveyedUtc.Value));
+          filename);
       }
       else
       {

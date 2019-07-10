@@ -1,19 +1,16 @@
 ﻿using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace RepositoryTests
 {
-  [TestClass]
   public class SchedulerRepositoryTests : TestControllerBase
   {
-    [TestInitialize]
-    public void Init()
+    public SchedulerRepositoryTests()
     {
       SetupDI();
     }
-
-
-    [TestMethod]
+    
+    [Fact]
     public void SchedulerSchemaExists_JobTable()
     {
       const string tableName = "Job";
@@ -30,7 +27,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_CounterTable()
     {
       const string tableName = "Counter";
@@ -44,7 +41,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_AggregatedCounterTable()
     {
       const string tableName = "AggregatedCounter";
@@ -58,7 +55,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_DistributedLockTable()
     {
       const string tableName = "DistributedLock";
@@ -70,7 +67,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_HashTable()
     {
       const string tableName = "Hash";
@@ -85,7 +82,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_JobParameterTable()
     {
       const string tableName = "JobParameter";
@@ -99,7 +96,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_JobQueueTable()
     {
       const string tableName = "JobQueue";
@@ -114,7 +111,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_JobStateTable()
     {
       const string tableName = "JobState";
@@ -130,7 +127,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_ServerQueueTable()
     {
       const string tableName = "Server";
@@ -143,7 +140,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_SetQueueTable()
     {
       const string tableName = "Set";
@@ -158,7 +155,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_StateQueueTable()
     {
       const string tableName = "State";
@@ -174,7 +171,7 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
-    [TestMethod]
+    [Fact]
     public void SchedulerSchemaExists_ListQueueTable()
     {
       const string tableName = "List";
