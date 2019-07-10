@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using SVOICVolumeCalculationsDecls;
@@ -30,7 +31,7 @@ namespace VSS.Productivity3D.Common.Executors
     /// <summary>
     /// Processes the request for type T.
     /// </summary>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -39,7 +40,7 @@ namespace VSS.Productivity3D.Common.Executors
         if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_TILES") ?? false)
         {
 #endif
-          var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/tile", customHeaders).Result;
+          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/tile", customHeaders);
 
           using (var ms = new MemoryStream())
           {
@@ -125,6 +126,11 @@ namespace VSS.Productivity3D.Common.Executors
 #if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
 #endif
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

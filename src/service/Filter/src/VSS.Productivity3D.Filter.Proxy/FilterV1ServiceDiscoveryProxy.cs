@@ -40,10 +40,9 @@ namespace VSS.Productivity3D.Filter.Proxy
     {
       var result = await GetMasterDataItemServiceDiscovery<FilterListData>
         ($"/filters/{projectUid}", projectUid, null, customHeaders);
+
       if (result.Code == 0)
-      {
         return result.filterDescriptors;
-      }
 
       log.LogWarning($"Failed to get Filter Descriptors: {result.Code}, {result.Message}");
       return null;
@@ -53,10 +52,9 @@ namespace VSS.Productivity3D.Filter.Proxy
     {
       var result = await GetMasterDataItemServiceDiscovery<FilterData>
       ($"/filter/{projectUid}", filterUid, null, customHeaders, new Dictionary<string, string> { { "filterUid", filterUid } });
+
       if (result.Code == 0)
-      {
         return result.filterDescriptor;
-      }
 
       log.LogWarning("Failed to get Filter Descriptor: {result.Code}, {result.Message}");
       return null;

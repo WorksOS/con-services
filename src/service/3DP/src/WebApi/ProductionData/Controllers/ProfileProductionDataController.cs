@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -73,17 +74,16 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/profiles/productiondata")]
     [HttpPost]
-    public ProfileResult Post([FromBody] ProfileProductionDataRequest request)
+    public async Task<ProfileResult> Post([FromBody] ProfileProductionDataRequest request)
     {
       request.Validate();
 
-      return RequestExecutorContainerFactory
-        .Build<ProfileProductionDataExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(logger,
 #if RAPTOR
           raptorClient,
 #endif
           configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-        .Process(request) as ProfileResult;
+        .ProcessAsync(request) as ProfileResult;
     }
   }
 }

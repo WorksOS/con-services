@@ -35,16 +35,12 @@ namespace VSS.Productivity3D.Filter.Proxy
     {
       var result = await GetContainedMasterDataList<FilterData>(filterUid, null, "FILTER_CACHE_LIFE", "FILTER_API_URL",
         customHeaders, $"/{projectUid}?filterUid={filterUid}", "/filter");
-      if (result.Code == 0)
-      {
-        return result.filterDescriptor;
-      }
-      else
-      {
-        log.LogWarning("Failed to get Filter Descriptor: {0}, {1}", result.Code, result.Message);
-        return null;
-      }
 
+      if (result.Code == 0)
+        return result.filterDescriptor;
+
+      log.LogWarning("Failed to get Filter Descriptor: {0}, {1}", result.Code, result.Message);
+      return null;
     }
 
     /// <summary>
@@ -74,16 +70,12 @@ namespace VSS.Productivity3D.Filter.Proxy
     {
       var result = await GetContainedMasterDataList<FilterListData>(projectUid, null, "FILTER_CACHE_LIFE", "FILTER_API_URL",
         customHeaders, $"/{projectUid}", "/filters");
-      if (result.Code == 0)
-      {
-        return result.filterDescriptors;
-      }
-      else
-      {
-        log.LogWarning("Failed to get Filter Descriptors: {0}, {1}", result.Code, result.Message);
-        return null;
-      }
 
+      if (result.Code == 0)
+        return result.filterDescriptors;
+
+      log.LogWarning("Failed to get Filter Descriptors: {0}, {1}", result.Code, result.Message);
+      return null;
     }
 
 

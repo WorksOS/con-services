@@ -4,10 +4,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Utilities;
@@ -46,9 +44,10 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns></returns>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      if (!(item is DesignRequest request))
+      var request = item as DesignRequest;
+      if (request == null)
       {
         ThrowRequestTypeCastException<DesignRequest>();
         return null; // to keep compiler happy
@@ -62,8 +61,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         var localPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
         var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
 
-        AlignmentDesign alignmentDesign = new AlignmentDesign(SubGridTreeConsts.DefaultCellSize);
-        var designLoadResult = alignmentDesign.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
+        var alignmentDesign = new AlignmentDesign(SubGridTreeConsts.DefaultCellSize);
+        var designLoadResult = await alignmentDesign.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# AddSVLDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
@@ -73,7 +72,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
 
         // todo when SDK avail
-        BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+        var extents = new BoundingWorldExtent3D();
         alignmentDesign.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         alignmentDesign.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
@@ -103,12 +102,11 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
     /// <summary>
-    /// Processes the request asynchronously.
+    /// Processes the request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
-
   }
 }

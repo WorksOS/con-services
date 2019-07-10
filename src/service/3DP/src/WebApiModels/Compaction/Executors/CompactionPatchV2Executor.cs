@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using SVOICVolumeCalculationsDecls;
@@ -29,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ProcessErrorCodes();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.
@@ -48,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             request.PatchNumber,
             request.PatchSize);
 
-          var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders).Result;
+          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders);
 
           return fileResult.Length > 0
               ? ConvertPatchResult(fileResult, true)
@@ -231,6 +232,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           dataPatchSubgridCount,
           subgrids);
       }
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

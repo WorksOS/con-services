@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 
@@ -14,6 +15,6 @@ namespace VSS.Productivity3D.Common.Contracts
     /// </summary>
     /// <param name="request">A representation of the tile rendering request.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    TileResult Post([FromBody] TileRequest request);
+    Task<TileResult> Post([FromBody] TileRequest request);
   }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 #if RAPTOR
 using ASNodeDecls;
@@ -44,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <summary>
     /// Processes the summary pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -60,7 +61,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
                 new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.Tolerance);
 
               log.LogInformation($"Calling TRex SendSurfaceExportRequest for projectUid: {request.ProjectUid}");
-              return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionSurfaceExportRequest>(compactionSurfaceExportRequest, "/export/surface/ttm", customHeaders).Result;
+              return await trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionSurfaceExportRequest>(compactionSurfaceExportRequest, "/export/surface/ttm", customHeaders);
 
             case ExportTypes.VedaExport:
             default://to satisfy the compiler
@@ -70,14 +71,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
               //Note: this way of setting the machine name list is slightly different to the code in CompactionExportExecutor so we don't change the historical behaviour
 
               log.LogInformation($"Calling TRex SendVetaExportRequest for projectUid: {request.ProjectUid}");
-              return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders).Result;
+              return await trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders);
 
             case ExportTypes.PassCountExport:
               var compactionPassCountExportRequest =
                 new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
 
               log.LogInformation($"Calling TRex SendPassCountExportRequest for projectUid: {request.ProjectUid}");
-              return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionPassCountExportRequest>(compactionPassCountExportRequest, "/export/passcount", customHeaders).Result;
+              return await trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionPassCountExportRequest>(compactionPassCountExportRequest, "/export/passcount", customHeaders);
           }
   #if RAPTOR
         }
@@ -141,6 +142,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #if RAPTOR
       RaptorResult.AddExportErrorMessages(ContractExecutionStates);
 #endif
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

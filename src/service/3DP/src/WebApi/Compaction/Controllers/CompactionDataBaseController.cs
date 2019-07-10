@@ -51,17 +51,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected async Task<CMVRequest> GetCmvRequest(Guid projectUid, Guid? filterUid, bool isCustomCMVTargets = false)
     {
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-
-      var cmvSettings = !isCustomCMVTargets ?
-        SettingsManager.CompactionCmvSettings(projectSettings) :
-        SettingsManager.CompactionCmvSettingsEx(projectSettings);
-
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
       var filterTask = GetCompactionFilter(projectUid, filterUid);
       var projectIdTask = GetLegacyProjectId(projectUid);
 
-      await Task.WhenAll(filterTask, projectIdTask);
+      await Task.WhenAll(filterTask, projectIdTask, projectSettings);
+
+      var cmvSettings = !isCustomCMVTargets ?
+        SettingsManager.CompactionCmvSettings(projectSettings.Result) :
+        SettingsManager.CompactionCmvSettingsEx(projectSettings.Result);
+
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
 
       return new CMVRequest(projectIdTask.Result, projectUid, null, cmvSettings, liftSettings, filterTask.Result, -1, null, null, null, isCustomCMVTargets);
     }
@@ -74,22 +74,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Task<FilterResult> filterTask = null;
 
       if (filterResult == null)
-      {
         filterTask = GetCompactionFilter(projectUid, filterUid);
-      }
 
       var projectIdTask = GetLegacyProjectId(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
 
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var passCountSettings = isSummary ? null : SettingsManager.CompactionPassCountSettings(projectSettings);
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      await Task.WhenAll(filterTask ?? Task.CompletedTask, projectIdTask, projectSettings);
 
-      await Task.WhenAll(filterTask ?? Task.CompletedTask, projectIdTask);
+      var passCountSettings = isSummary ? null : SettingsManager.CompactionPassCountSettings(projectSettings.Result);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
 
       if (filterResult == null)
-      {
         filterResult = await filterTask;
-      }
 
       return new PassCounts(projectIdTask.Result, projectUid, passCountSettings, liftSettings, filterResult, -1, null, null, null);
     }
@@ -100,15 +96,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<(bool isValidFilterForProjectExtents, FilterResult filterResult)> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
     {
       if (!filterUid.HasValue) return (true, null);
-      var filter = await GetCompactionFilter(projectUid, filterUid, filterMustExist: true);
 
       try
       {
-        var projectId = await GetLegacyProjectId(projectUid);
-        var projectExtents = await ProjectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, GetUserId(), CustomHeaders);
+        var filterTask = GetCompactionFilter(projectUid, filterUid, filterMustExist: true);
+        var projectId = GetLegacyProjectId(projectUid);
+
+        await Task.WhenAll(filterTask, projectId);
+
+        var projectExtents = await ProjectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId.Result, GetUserId(), CustomHeaders);
 
         //No data in Raptor - stop
         if (projectExtents == null) return (false, null);
+
+        var filter = await filterTask;
 
         //No filter dates defined - project extents requested. Proceed further
         if (filter.StartUtc == null && filter.EndUtc == null) return (true, filter);

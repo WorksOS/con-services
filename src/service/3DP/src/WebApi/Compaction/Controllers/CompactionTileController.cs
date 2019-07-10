@@ -4,19 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Jaeger.Thrift;
-using k8s.KubeConfigModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Asn1.Ocsp;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -91,6 +86,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
+    /// <param name="explicitFilters"></param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ValidateTileParameters]
@@ -119,19 +115,32 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogDebug($"{nameof(GetProductionDataTile)}: " + Request.QueryString);
 
-      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
-      
-      var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
-        tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, projectUid, mode, width, height,
-          boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
-          volumeCalcType, CustomHeaders, explicitFilters));
+      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = GetProjectSettingsColors(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid);
+      var sumVolParameters = GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
 
-      return tileResult;
+      await Task.WhenAll(projectId, projectSettings, projectSettingsColors, filter, cutFillDesign, sumVolParameters);
+
+      return await WithServiceExceptionTryExecuteAsync(() => tileService.GetProductionDataTile(
+        projectSettings.Result, 
+        projectSettingsColors.Result, 
+        filter.Result, 
+        projectId.Result, 
+        projectUid, 
+        mode, 
+        width, 
+        height,
+        boundingBoxHelper.GetBoundingBox(bbox), 
+        cutFillDesign.Result, 
+        sumVolParameters.Result.Item1, 
+        sumVolParameters.Result.Item2, 
+        sumVolParameters.Result.Item3,
+        volumeCalcType, 
+        CustomHeaders, 
+        explicitFilters));
     }
 
     /// <summary>
@@ -156,6 +165,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
+    /// <param name="explicitFilters"></param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
     /// If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered 
     /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to 
@@ -187,22 +197,35 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] VolumeCalcType? volumeCalcType,
       [FromQuery] bool explicitFilters=false)
     {
-      Log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetProductionDataTileRaw)}: " + Request.QueryString);
 
-      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = GetProjectSettingsColors(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid);
+      var sumVolParameters = GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
 
-      var cutFillDesign = cutFillDesignUid.HasValue
-        ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value)
-        : null;
+      await Task.WhenAll(projectId, projectSettings, projectSettingsColors, filter, cutFillDesign, sumVolParameters);
 
-      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
-      var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
-        tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, projectUid, mode, width, height,
-          boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
-          volumeCalcType, CustomHeaders, explicitFilters));
+      var tileResult = await WithServiceExceptionTryExecuteAsync(() => tileService.GetProductionDataTile(
+        projectSettings.Result, 
+        projectSettingsColors.Result, 
+        filter.Result, 
+        projectId.Result, 
+        projectUid, 
+        mode, 
+        width, 
+        height,
+        boundingBoxHelper.GetBoundingBox(bbox), 
+        cutFillDesign.Result, 
+        sumVolParameters.Result.Item1, 
+        sumVolParameters.Result.Item2, 
+        sumVolParameters.Result.Item3,
+        volumeCalcType, 
+        CustomHeaders, 
+        explicitFilters));
+
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
       return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
@@ -246,7 +269,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] string fileType)
     {
-      Log.LogDebug("GetLineworkTile: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetLineworkTile)}: " + Request.QueryString);
 
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
@@ -254,9 +277,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       dxfTileRequest.Validate();
 #if RAPTOR
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
-      var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
-
-      return result;
+      return await executor.ProcessAsync(dxfTileRequest) as TileResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
@@ -301,7 +322,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] string fileType)
     {
-      Log.LogDebug("GetLineworkTileRaw: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetLineworkTileRaw)}: " + Request.QueryString);
 
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
@@ -310,6 +331,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
+
+      if (result?.TileData == null)
+        result = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
 
       return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
 #else
