@@ -2,27 +2,28 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.WebAPI.JobRunner;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.Scheduler.Tests
 {
   [TestClass]
   public class JobFactoryTests
   {
-    private ILoggerFactory loggerFactory;
     private IServiceProvider serviceProvider;
 
     [TestInitialize]
     public void TestInitialize()
     {
-      var services = new ServiceCollection();
-      services.AddSingleton<IJobFactory, JobFactory>();
-      serviceProvider = services
-        .AddLogging()
-        .BuildServiceProvider();
+      var logger = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Scheduler.UnitTests"));
+      var serviceCollection = new ServiceCollection();
 
-      loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+      serviceProvider = serviceCollection.AddLogging()
+                                         .AddSingleton(logger)
+                                         .AddSingleton<IJobFactory, JobFactory>()
+                                         .BuildServiceProvider();
     }
 
     [TestMethod]

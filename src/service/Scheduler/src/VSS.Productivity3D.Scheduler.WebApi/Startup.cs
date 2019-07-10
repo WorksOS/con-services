@@ -41,29 +41,21 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   /// </summary>
   public class Startup : BaseStartup
   {
-
     // This method gets called by the runtime. Use this method to add services to the container
     public override string ServiceName => "Scheduler Service API";
     public override string ServiceDescription => "A service to run scheduled jobs";
     public override string ServiceVersion => "v1";
 
-    public const string LoggerRepoName = "scheduler";
     /// <summary>
     /// THe name of this service for swagger etc.
-    /// </summary>
-    /// <summary>
-    /// The log file name
     /// </summary>
     private MySqlStorage _storage;
 
     /// <summary>
     /// VSS.Productivity3D.Scheduler startup
     /// </summary>
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
-
-
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    { }
 
     /// <summary>
     /// Configures the services.
