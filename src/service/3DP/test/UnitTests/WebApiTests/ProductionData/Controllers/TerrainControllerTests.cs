@@ -66,7 +66,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         Z = 0,
         CallId = new Guid(),
         Filter1 = new FilterResult(),
-        FilterId1 = 1,
         ProjectId = 1,
         ProjectUid = projectIds.ProjectUid
       };
@@ -122,7 +121,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         Z = 0,
         CallId = new Guid(),
         Filter1 = new FilterResult(),
-        FilterId1 = 1,
         ProjectId = 1,
         ProjectUid = projectIds.ProjectUid
       };
