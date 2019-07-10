@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new System.NotImplementedException();
+      throw new System.NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }
