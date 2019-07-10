@@ -100,7 +100,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var qmTileResult = await RequestExecutorContainerFactory.Build<QMTilesExecutor>(logger,
         configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as QMTileResult;
 
-      return qmTileResult.TileData;
+      return (qmTileResult == null) ? null : qmTileResult.TileData;
+
     }
 
     /// <summary>
