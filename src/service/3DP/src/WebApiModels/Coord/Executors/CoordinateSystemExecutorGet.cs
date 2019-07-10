@@ -1,4 +1,5 @@
 ﻿
+using System.Threading.Tasks;
 using VSS.Productivity3D.Common;
 #if RAPTOR
 using ASNodeDecls;
@@ -13,13 +14,13 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
   /// </summary>
   public class CoordinateSystemExecutorGet : CoordinateSystemExecutor
   {
-    protected override CoordinateSystemSettings SendRequestToTRexGatewayClient(object item)
+    protected override async Task<CoordinateSystemSettings> SendRequestToTRexGatewayClient(object item)
     {
       var request = CastRequestObjectTo<ProjectID>(item);
 
       var siteModelId = request.ProjectUid.ToString();
 
-      return trexCompactionDataProxy.SendDataGetRequest<CoordinateSystemSettings>(siteModelId, $"/projects/{siteModelId}/coordsystem", customHeaders).Result;
+      return await trexCompactionDataProxy.SendDataGetRequest<CoordinateSystemSettings>(siteModelId, $"/projects/{siteModelId}/coordsystem", customHeaders);
     }
 
 #if RAPTOR

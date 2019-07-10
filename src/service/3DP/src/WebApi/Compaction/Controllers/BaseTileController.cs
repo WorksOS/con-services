@@ -34,30 +34,36 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Tuple of base filter, top filter and volume design descriptor</returns>
     protected async Task<Tuple<FilterResult, FilterResult, DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
     {
-      FilterResult baseFilter = null;
-      FilterResult topFilter = null;
-      DesignDescriptor volumeDesign = null;
+      Task<FilterResult> baseFilter = null;
+      Task<FilterResult> topFilter = null;
+      Task<DesignDescriptor> volumeDesign = null;
 
       if (volumeCalcType.HasValue)
       {
         switch (volumeCalcType.Value)
         {
           case VolumeCalcType.GroundToGround:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
+            baseFilter = GetCompactionFilter(projectUid, volumeBaseUid);
+            topFilter = GetCompactionFilter(projectUid, volumeTopUid);
+
+            await Task.WhenAll(baseFilter, topFilter);
             break;
           case VolumeCalcType.GroundToDesign:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, OperationType.Profiling);
+            baseFilter = GetCompactionFilter(projectUid, volumeBaseUid);
+            volumeDesign = GetAndValidateDesignDescriptor(projectUid, volumeTopUid, OperationType.Profiling);
+
+            await Task.WhenAll(baseFilter, volumeDesign);
             break;
           case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, OperationType.Profiling);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
+            volumeDesign = GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, OperationType.Profiling);
+            topFilter = GetCompactionFilter(projectUid, volumeTopUid);
+
+            await Task.WhenAll(volumeDesign, topFilter);
             break;
         }
       }
 
-      return new Tuple<FilterResult, FilterResult, DesignDescriptor>(baseFilter, topFilter, volumeDesign);
+      return new Tuple<FilterResult, FilterResult, DesignDescriptor>(baseFilter?.Result, topFilter?.Result, volumeDesign?.Result);
     }
   }
 }

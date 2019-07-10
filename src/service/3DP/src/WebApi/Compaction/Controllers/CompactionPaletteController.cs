@@ -48,8 +48,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid)
     {
       Log.LogInformation("GetColorPalettes: " + Request.QueryString);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var projectSettingsColors = GetProjectSettingsColors(projectUid);
+
+      await Task.WhenAll(projectSettings, projectSettingsColors);
 
       //Note: elevation palette is a separate call as it requires a filter
       List<DisplayMode> modes = new List<DisplayMode>
@@ -80,7 +82,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       foreach (var mode in modes)
       {
         List<ColorValue> colorValues;
-        var compactionPalette = SettingsManager.CompactionPalette(mode, null, projectSettings, projectSettingsColors);
+        var compactionPalette = SettingsManager.CompactionPalette(mode, null, projectSettings.Result, projectSettingsColors.Result);
         switch (mode)
         {
           case DisplayMode.CCV:
