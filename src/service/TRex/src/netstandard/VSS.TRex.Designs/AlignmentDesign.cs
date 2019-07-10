@@ -68,32 +68,30 @@ namespace VSS.TRex.Designs
     /// <param name="localPath"></param>
     /// <param name="loadIndices"></param>
     /// <returns></returns>
-    public override Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
+    public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
       bool loadIndices = false)
     {
-      var isDownloaded = S3FileTransfer.ReadFile(siteModelUid, fileName, localPath).Result;
+      var isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
       if (!isDownloaded)
-      {
-        return Task.FromResult(DesignLoadResult.UnknownFailure);
-      }
+        return await Task.FromResult(DesignLoadResult.UnknownFailure);
 
       // todo when SDK available
       //if (loadIndices)
       //{
-      //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
+      //  isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
       //  if (!isDownloaded)
       //    return DesignLoadResult.UnableToLoadSubgridIndex;
       //
-      //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
+      //  isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
       //  if (!isDownloaded)
       //    return DesignLoadResult.UnableToLoadSpatialIndex;
       //
-      //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
+      //  isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
       //  if (!isDownloaded)
       //    return DesignLoadResult.UnableToLoadBoundary;
       //}
 
-      return Task.FromResult(DesignLoadResult.Success);
+      return await Task.FromResult(DesignLoadResult.Success);
     }
 
 
