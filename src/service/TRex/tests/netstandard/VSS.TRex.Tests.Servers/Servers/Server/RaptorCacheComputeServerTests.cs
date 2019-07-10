@@ -12,6 +12,7 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.GridFabric.Servers.Compute;
 using VSS.TRex.Profiling.Servers.Client;
+using VSS.TRex.QuantizedMesh.Servers.Client;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Reports.Servers.Client;
 using VSS.TRex.Storage.Caches;
@@ -154,6 +155,14 @@ namespace VSS.TRex.Tests.Servers.Server
     public void Test_TileRenderingServer_Creation()
     {
       var server = new TileRenderingServer();
+
+      server.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Test_QuantizedMeshServer_Creation()
+    {
+      var server = new QuantizedMeshServer();
 
       server.Should().NotBeNull();
     }

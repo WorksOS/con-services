@@ -11,7 +11,7 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.QuantizedMesh.Abstractions;
 
 /// <summary>
-/// Todo Ignore for checkin as will change in part two
+/// Todo Ignore for Part One checkin as will change/go in part two
 /// </summary>
 namespace VSS.TRex.QuantizedMesh.Executors
 {

@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         return File(basicTile, _TerrainDataQM);
       }
 
-      log.LogDebug($"Warning! Requested tile x:{x},y: {y},z:{z} for Project:{projectUid} was not found");
+      log.LogDebug($"Requested tile x:{x},y: {y},z:{z} for Project:{projectUid} was not found");
       return NotFound();
     }
 

@@ -27,10 +27,18 @@ namespace VSS.Productivity3D.Common.Executors
         var request = CastRequestObjectTo<QMTileRequest>(item);
         // Send request to TRex webapi endpoint
         var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/terrain", customHeaders);
-        using (var ms = new MemoryStream())
+        if (fileResult == null)
         {
-          fileResult.CopyTo(ms); // QM tile
-          return new QMTileResult(ms.ToArray());
+          // No tile produced is valid. Any unexpected errors should be logged earlier
+          return null;
+        }
+        else
+        {
+          using (var ms = new MemoryStream())
+          {
+            fileResult.CopyTo(ms); // QM tile
+            return new QMTileResult(ms.ToArray());
+          }
         }
       }
       finally
