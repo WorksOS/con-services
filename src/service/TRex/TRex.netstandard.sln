@@ -273,9 +273,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArrayPoolBenchmark", "src\n
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{CB17A0A6-06C3-4EE1-B71D-03EB9613AE6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.SiteModelChangeMaps", "src\netstandard\VSS.TRex.SiteModelChangeMaps\VSS.TRex.SiteModelChangeMaps.csproj", "{BB40EFDC-2BD9-4C97-9798-DF7C43168E6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.SiteModelChangeMaps", "src\netstandard\VSS.TRex.SiteModelChangeMaps\VSS.TRex.SiteModelChangeMaps.csproj", "{BB40EFDC-2BD9-4C97-9798-DF7C43168E6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.SiteModelChangeMaps.Interfaces", "src\netstandard\VSS.TRex.SiteModelChangeMaps.Interfaces\VSS.TRex.SiteModelChangeMaps.Interfaces.csproj", "{5AD665FD-9CF9-4CAB-A617-2B9C159A62AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.SiteModelChangeMaps.Interfaces", "src\netstandard\VSS.TRex.SiteModelChangeMaps.Interfaces\VSS.TRex.SiteModelChangeMaps.Interfaces.csproj", "{5AD665FD-9CF9-4CAB-A617-2B9C159A62AF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.QuantizedMesh", "src\netstandard\VSS.TRex.QuantizedMesh\VSS.TRex.QuantizedMesh.csproj", "{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1293,6 +1295,14 @@ Global
 		{5AD665FD-9CF9-4CAB-A617-2B9C159A62AF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5AD665FD-9CF9-4CAB-A617-2B9C159A62AF}.Release|x64.ActiveCfg = Release|Any CPU
 		{5AD665FD-9CF9-4CAB-A617-2B9C159A62AF}.Release|x64.Build.0 = Release|Any CPU
+		{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A}.Debug|x64.Build.0 = Debug|Any CPU
+		{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A}.Release|x64.ActiveCfg = Release|Any CPU
+		{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1428,6 +1438,7 @@ Global
 		{CB17A0A6-06C3-4EE1-B71D-03EB9613AE6D} = {5ABC6984-0C9C-4A5C-80B4-5B559AF79F2D}
 		{BB40EFDC-2BD9-4C97-9798-DF7C43168E6A} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{5AD665FD-9CF9-4CAB-A617-2B9C159A62AF} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
+		{EF1A2CA2-FE73-441B-9323-CD2B4FDD3B3A} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}
