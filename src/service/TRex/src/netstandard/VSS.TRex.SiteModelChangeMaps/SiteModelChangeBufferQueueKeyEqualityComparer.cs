@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 
 namespace VSS.TRex.SiteModelChangeMaps

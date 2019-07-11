@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
@@ -14,7 +15,6 @@ using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
@@ -43,7 +43,9 @@ namespace VSS.TRex.SiteModelChangeMaps
     private readonly IStorageProxy _storageProxy;
     private readonly IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> _changeMapCache;
 
-    private readonly ICache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> _itemQueueCache;
+    //private readonly ICache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> _itemQueueCache;
+    private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> _itemQueueCache;
+
     private readonly ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> _queue;
 
     public SiteModelChangeProcessorItemHandler()
@@ -56,8 +58,9 @@ namespace VSS.TRex.SiteModelChangeMaps
       }
 
       _queue = new ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
-      _itemQueueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
-
+      //_itemQueueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
+      _itemQueueCache = DIContext.Obtain<Func<IIgnite, IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>>()(ignite);
+      
       var storageProxyFactory = DIContext.Obtain<IStorageProxyFactory>();
       _storageProxy = storageProxyFactory.ImmutableGridStorage();
       _changeMapCache = _storageProxy.ProjectMachineCache(FileSystemStreamType.SiteModelMachineElevationChangeMap);
@@ -151,9 +154,6 @@ namespace VSS.TRex.SiteModelChangeMaps
           return false;
         }
 
-        // Create a new storage proxy to perform the update for this item with
-
-
         var sw = Stopwatch.StartNew();
 
         // Implement change map integration into machine change maps
@@ -205,6 +205,7 @@ namespace VSS.TRex.SiteModelChangeMaps
             // Commit the updated mask to the store
             _changeMapCache.Put(key, currentMask.ToBytes());
           }
+          _changeMapCache.Commit();
           
           if (_storageProxy.Commit(tx, out var numDeleted, out var numUpdated, out var numBytesWritten))
           {
