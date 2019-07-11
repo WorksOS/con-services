@@ -9,6 +9,7 @@ using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Gateway.Common.Helpers;
+using VSS.TRex.Gateway.Common.Requests;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
