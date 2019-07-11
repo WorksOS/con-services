@@ -21,6 +21,9 @@ namespace VSS.TRex.Storage.Utilities
       DIBuilder.Continue()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
 
+        //***********************************************
+        // Injected factories for non-transacted proxies
+        // **********************************************
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>
         (factory => (ignite, mutability, streamType) => new StorageProxyCache<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability, streamType)))))
@@ -38,6 +41,9 @@ namespace VSS.TRex.Storage.Utilities
           return new StorageProxyCache<ISiteModelMachineAffinityKey, byte[]>(ignite?.GetCache<ISiteModelMachineAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability, streamType)));
         }))
 
+        //***********************************************
+        // Injected factories for transacted proxies
+        // **********************************************
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>>>
         (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability, streamType)), new SubGridSpatialAffinityKeyEqualityComparer())))

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
