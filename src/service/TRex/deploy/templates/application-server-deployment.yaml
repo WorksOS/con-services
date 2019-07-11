@@ -23,14 +23,6 @@ spec:
         
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
-      #volumes:
-        # Custom name for the storage that holds Ignite's configuration
-        # which is example-kube.xml.
-        # TODO Workout peristance!
-        #- name: ignite-storage
-        #  persistentVolumeClaim:
-        #   # Must be equal to the PersistentVolumeClaim created before.
-        #   claimName: ignite-volume-claim	
       containers:
         # Custom Ignite pod name.
       - name: ignite-node

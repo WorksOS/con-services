@@ -12,6 +12,8 @@ timeout 4
 start /D "src/netstandard/services/VSS.TRex.Server.TileRendering/bin/Debug/netcoreapp2.1/" "TileRendering" cmd.exe /k "dotnet VSS.TRex.Server.TileRendering.dll"
 timeout 4
 start /D "src/netstandard/services/VSS.TRex.Server.Reports/bin/Debug/netcoreapp2.1/" "Reports" cmd.exe /k "dotnet VSS.TRex.Server.Reports.dll"
+timeout 4
+start /D "src/netstandard/services/VSS.TRex.Server.QuantizedMesh/bin/Debug/netcoreapp2.1/" "QuantizedMesh" cmd.exe /k "dotnet VSS.TRex.Server.QuantizedMesh.dll"
 
 timeout 10
 start /D "src/tools/VSS.TRex.GridActivator/bin/Debug/netcoreapp2.1/" "GridActivator" cmd.exe /k "dotnet VSS.TRex.GridActivator.dll"

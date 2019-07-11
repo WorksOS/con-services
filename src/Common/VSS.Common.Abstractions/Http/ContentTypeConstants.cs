@@ -8,5 +8,10 @@
     public const string ApplicationOctetStream = "application/octet-stream";
     public const string ImagePng = "image/png";
     public const string TextPlain = "text/plain";
+    public const string ContentEncodingGzip = "gzip";
+    public const string ContentEncoding = "Content-Encoding";
+    public const string ContentLength = "Content-Length";
+    public const string ContentType = "Content-Type";
+    public const string ContentDisposition = "Content-Disposition";
   }
 }
