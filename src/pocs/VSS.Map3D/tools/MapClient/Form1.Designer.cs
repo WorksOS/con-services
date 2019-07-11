@@ -65,6 +65,7 @@
       this.pictureBox1 = new System.Windows.Forms.PictureBox();
       this.btnBMLoad = new System.Windows.Forms.Button();
       this.tabPage3 = new System.Windows.Forms.TabPage();
+      this.btnDistance = new System.Windows.Forms.Button();
       this.btnCenter = new System.Windows.Forms.Button();
       this.btnMyData = new System.Windows.Forms.Button();
       this.btnTileInfo = new System.Windows.Forms.Button();
@@ -105,7 +106,6 @@
       this.btnClipboard = new System.Windows.Forms.Button();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
       this.listBox1 = new System.Windows.Forms.ListBox();
-      this.btnDistance = new System.Windows.Forms.Button();
       this.tabControl1.SuspendLayout();
       this.tabPage1.SuspendLayout();
       this.tabPage2.SuspendLayout();
@@ -203,7 +203,7 @@
       this.txtURL.Name = "txtURL";
       this.txtURL.Size = new System.Drawing.Size(287, 44);
       this.txtURL.TabIndex = 24;
-      this.txtURL.Text = "http://localhost:5002/api/terrain/1.0.0/12/8025/1052.terrain?v=1.1.0";
+      this.txtURL.Text = "http://localhost:5002/api/terrain/trex/1.0/4/31/4.terrain?v=1.1.0";
       // 
       // btnURLView
       // 
@@ -513,6 +513,16 @@
       this.tabPage3.TabIndex = 2;
       this.tabPage3.Text = "Tile Maths";
       this.tabPage3.UseVisualStyleBackColor = true;
+      // 
+      // btnDistance
+      // 
+      this.btnDistance.Location = new System.Drawing.Point(32, 535);
+      this.btnDistance.Name = "btnDistance";
+      this.btnDistance.Size = new System.Drawing.Size(205, 23);
+      this.btnDistance.TabIndex = 46;
+      this.btnDistance.Text = "Distance LL to Metres";
+      this.btnDistance.UseVisualStyleBackColor = true;
+      this.btnDistance.Click += new System.EventHandler(this.btnDistance_Click);
       // 
       // btnCenter
       // 
@@ -889,16 +899,6 @@
       this.listBox1.ScrollAlwaysVisible = true;
       this.listBox1.Size = new System.Drawing.Size(587, 615);
       this.listBox1.TabIndex = 14;
-      // 
-      // btnDistance
-      // 
-      this.btnDistance.Location = new System.Drawing.Point(32, 535);
-      this.btnDistance.Name = "btnDistance";
-      this.btnDistance.Size = new System.Drawing.Size(205, 23);
-      this.btnDistance.TabIndex = 46;
-      this.btnDistance.Text = "Distance LL to Metres";
-      this.btnDistance.UseVisualStyleBackColor = true;
-      this.btnDistance.Click += new System.EventHandler(this.btnDistance_Click);
       // 
       // frmMain
       // 
