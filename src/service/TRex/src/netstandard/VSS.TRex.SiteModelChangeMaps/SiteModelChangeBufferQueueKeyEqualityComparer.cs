@@ -14,6 +14,6 @@ namespace VSS.TRex.SiteModelChangeMaps
              x.ProjectUID.Equals(y.ProjectUID) && x.InsertUTCTicks.Equals(y.InsertUTCTicks);
     }
 
-    public int GetHashCode(ISiteModelChangeBufferQueueKey obj) => obj.GetHashCode();
+    public int GetHashCode(ISiteModelChangeBufferQueueKey obj) => (int)(obj.InsertUTCTicks & 0xffff_ffff);
   }
 }

@@ -1,12 +1,9 @@
 ﻿using System;
-using Apache.Ignite.Core;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SiteModelChangeMaps
@@ -22,13 +19,19 @@ namespace VSS.TRex.SiteModelChangeMaps
 
     public SiteModelChangeMapDeltaNotifier()
     {
-      queueCache = DIContext.Obtain<Func<IIgnite, IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>>()(DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable));
+      queueCache = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
     }
 
-    public void Notify(Guid projectUID, ISubGridTreeBitMask changeMap, SiteModelChangeMapOrigin origin, SiteModelChangeMapOperation operation)
+    /// <summary>
+    /// Creates a change map buffer queue item and places it in to the cache for the service processor to collect
+    /// </summary>
+    /// <param name="projectUID"></param>
+    /// <param name="insertUTC"></param>
+    /// <param name="changeMap"></param>
+    /// <param name="origin"></param>
+    /// <param name="operation"></param>
+    public void Notify(Guid projectUID, DateTime insertUTC, ISubGridTreeBitMask changeMap, SiteModelChangeMapOrigin origin, SiteModelChangeMapOperation operation)
     {
-      var insertUTC = DateTime.UtcNow;
-
       queueCache.Put(new SiteModelChangeBufferQueueKey(projectUID, insertUTC), 
         new SiteModelChangeBufferQueueItem
         {

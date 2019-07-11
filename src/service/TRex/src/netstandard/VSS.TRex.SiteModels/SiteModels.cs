@@ -224,7 +224,7 @@ namespace VSS.TRex.SiteModels
         DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(message.SiteModelID, mask);
 
         // Advise any registered site model change map notifier of the changes
-        DIContext.Obtain<ISiteModelChangeMapDeltaNotifier>()?.Notify(siteModel.ID, mask, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);
+        DIContext.Obtain<ISiteModelChangeMapDeltaNotifier>()?.Notify(siteModel.ID, DateTime.UtcNow, mask, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);
       }
     }
 

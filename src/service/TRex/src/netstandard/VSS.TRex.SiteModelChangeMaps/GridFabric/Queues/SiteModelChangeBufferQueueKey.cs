@@ -9,7 +9,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
   /// <summary>
   /// The key used to identify site model change in the buffer queue
   /// </summary>
-  class SiteModelChangeBufferQueueKey : ISiteModelChangeBufferQueueKey, IBinarizable, IFromToBinary
+  public class SiteModelChangeBufferQueueKey : ISiteModelChangeBufferQueueKey, IBinarizable, IFromToBinary
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -22,19 +22,19 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     public long InsertUTCTicks { get; set; }
 
     /// <summary>
-    /// TAG File Buffer Queue key constructor taking project, asset and filename
+    /// Site model change map queue key constructor taking project and  insert date
     /// </summary>
     /// <param name="projectID"></param>
-    /// <param name="insertDate"></param>
-    public SiteModelChangeBufferQueueKey(Guid projectID, DateTime insertDate)
+    /// <param name="insertUTC"></param>
+    public SiteModelChangeBufferQueueKey(Guid projectID, DateTime insertUTC)
     {
-      if (insertDate.Kind != DateTimeKind.Utc)
+      if (insertUTC.Kind != DateTimeKind.Utc)
       {
         throw new ArgumentException("Date for site model change set is not in UTC as expected");
       }
 
       ProjectUID = projectID;
-      InsertUTCTicks = insertDate.Ticks;
+      InsertUTCTicks = insertUTC.Ticks;
     }
 
     /// <summary>
