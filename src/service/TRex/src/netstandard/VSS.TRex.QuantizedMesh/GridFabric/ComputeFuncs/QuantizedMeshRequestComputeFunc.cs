@@ -72,7 +72,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
       }
       finally
       {
-        Log.LogInformation($"Exiting QuantizedMeshRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
+        Log.LogDebug($"Exiting QuantizedMeshRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
       }
     }
 
