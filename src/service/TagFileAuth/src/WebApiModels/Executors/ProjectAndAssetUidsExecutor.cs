@@ -95,6 +95,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           projectCustomerSubs =
             (await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow));
           log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded ProjectCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
+
+          if (!request.HasLatLong)
+          {
+              var projectCSIBs = dataRepository.LoadCSIBs(project.CustomerUID, project.ProjectUID, DateTime.UtcNow, request.Northing, request.Easting);
+              log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded ProjectCSIB {JsonConvert.SerializeObject(projectCSIBs)}");
+          }
         }
         else
         {
@@ -134,7 +140,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       // if a SNM device was not provided, or did not have any subs,
-      //     then see if we can get a relavant sub from any EC520 device 
+      //     then see if we can get a relevant sub from any EC520 device 
       if (assetSubs.Count == 0 && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         var assetDevice =

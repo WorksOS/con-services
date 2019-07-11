@@ -64,7 +64,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -113,7 +113,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.EC520, string.Empty, "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.EC520, string.Empty, "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -162,7 +162,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM941, "snm941serial", "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM941, "snm941serial", "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -219,7 +219,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -267,7 +267,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -315,7 +315,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -363,7 +363,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-99)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-99)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -415,7 +415,7 @@ namespace WebApiTests.Executors
       };
   
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -455,7 +455,7 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -495,7 +495,7 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -535,7 +535,7 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -579,7 +579,7 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -619,7 +619,7 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -659,7 +659,7 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -699,7 +699,7 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -752,7 +752,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, "tccOrgId", 91, 181, projectOfInterestStd.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, "tccOrgId", 91, 181, projectOfInterestStd.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),

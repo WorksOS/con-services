@@ -16,8 +16,7 @@ namespace WebApiTests.Models
     {
       var timeOfPosition = DateTime.UtcNow;
       GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
-        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
-        (projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, 
+        new GetProjectAndAssetUidsRequest(projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, 
           latitude, longitude, timeOfPosition);
       var errorCodeResult = projectAndAssetUidsRequest.Validate();
       Assert.AreEqual(errorCode, errorCodeResult);
@@ -34,9 +33,8 @@ namespace WebApiTests.Models
       double latitude, double longitude, int errorCode)
     {
       var timeOfPosition = DateTime.UtcNow;
-      GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
-        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
-        (projectUid, (int)deviceType, radioSerial, ec520Serial, tccOrgUid,
+      var projectAndAssetUidsRequest =
+        new GetProjectAndAssetUidsRequest(projectUid, (int)deviceType, radioSerial, ec520Serial, tccOrgUid,
           latitude, longitude, timeOfPosition);
       var errorCodeResult = projectAndAssetUidsRequest.Validate();
       Assert.AreEqual(errorCode, errorCodeResult);
@@ -53,10 +51,41 @@ namespace WebApiTests.Models
       double latitude, double longitude, int errorCode)
     {
       var timeOfPosition = DateTime.UtcNow;
-      GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
-        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
-          (projectUid, (int)deviceType, radioSerial, ec520Serial,
+      var projectAndAssetUidsRequest =
+        new GetProjectAndAssetUidsRequest(projectUid, (int)deviceType, radioSerial, ec520Serial,
           tccOrgUid, latitude, longitude, timeOfPosition);
+      var errorCodeResult = projectAndAssetUidsRequest.Validate();
+      Assert.AreEqual(errorCode, errorCodeResult);
+    }
+
+    [TestMethod]
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", 0, 0, null, null, 51)] // invalid lat/long
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", 0, 0, null, null, 51)] // position missing
+    public void ValidateGetProjectAndAssetUidsRequest_ValidationErrorsPosition
+    (string projectUid, DeviceTypeEnum deviceType, string radioSerial,
+      double latitude, double longitude, double? northing = null, double? easting = null, int errorCode = 0 )
+    {
+      var timeOfPosition = DateTime.UtcNow;
+      var projectAndAssetUidsRequest =
+        new GetProjectAndAssetUidsRequest(projectUid, (int)deviceType, radioSerial, string.Empty, string.Empty, 
+          latitude, longitude, timeOfPosition, northing, easting);
+      var errorCodeResult = projectAndAssetUidsRequest.Validate();
+      Assert.AreEqual(errorCode, errorCodeResult);
+    }
+
+    [TestMethod]
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", 79, -170, null, null, 0)]
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", 79, -170, -567000.456, 333000.444, 0)]
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", 0, 0, -567000.456, -333000.444, 0)]
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", 0, 0, 0.0, 0.0, 0)]
+    public void ValidateGetProjectAndAssetUidsRequest_ValidationHappyPathPosition
+    (string projectUid, DeviceTypeEnum deviceType, string radioSerial,
+      double latitude, double longitude, double? northing = null, double? easting = null, int errorCode = 0 )
+    {
+      var timeOfPosition = DateTime.UtcNow;
+      var projectAndAssetUidsRequest =
+        new GetProjectAndAssetUidsRequest(projectUid, (int)deviceType, radioSerial, string.Empty, string.Empty,
+          latitude, longitude, timeOfPosition, northing, easting);
       var errorCodeResult = projectAndAssetUidsRequest.Validate();
       Assert.AreEqual(errorCode, errorCodeResult);
     }

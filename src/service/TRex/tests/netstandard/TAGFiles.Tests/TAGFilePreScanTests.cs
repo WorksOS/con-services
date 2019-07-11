@@ -88,11 +88,11 @@ namespace TAGFiles.Tests
     }
 
     [Fact()]
-    public void Test_TAGFilePreScan_Execute_NoSeedLLH()
+    public void Test_TAGFilePreScan_Execute_NoSeedLLH_NoUTM()
     {
       var preScan = new TAGFilePreScan();
 
-      Assert.True(preScan.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTagFile_NoSeedLLH.tag"), FileMode.Open, FileAccess.Read)),
+      Assert.True(preScan.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTagFile_NoSeedLLHandNoUTM.tag"), FileMode.Open, FileAccess.Read)),
         "Pre-scan execute returned false");
 
       preScan.ProcessedEpochCount.Should().Be(272);

@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Repository;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
@@ -43,6 +46,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Gets the <see cref="SubscriptionRepository"/> field. 
     /// </summary>
     protected SubscriptionRepository subscriptionsRepository;
+
+    private ITRexCompactionDataProxy _tRexCompactionDataProxy;
+    /// <summary>
+    /// Gets the TRex proxy
+    /// </summary>
+    protected ITRexCompactionDataProxy TRexCompactionDataProxy => _tRexCompactionDataProxy ?? (_tRexCompactionDataProxy = HttpContext.RequestServices.GetService<ITRexCompactionDataProxy>());
+
 
     /// <summary>
     /// Default constructor.

@@ -65,7 +65,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: (new List<Subscription>()
@@ -108,7 +108,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: (new List<Subscription>()
@@ -151,7 +151,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.EC520, string.Empty, "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.EC520, string.Empty, "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: (new List<Subscription>()
@@ -187,7 +187,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, DateTime.UtcNow),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, DateTime.UtcNow),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -228,7 +228,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -271,7 +271,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -311,7 +311,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -358,7 +358,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -405,7 +405,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -448,7 +448,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -492,7 +492,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -535,7 +535,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -576,7 +576,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty,  91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty,  91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -619,7 +619,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, String.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, String.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -638,6 +638,49 @@ namespace WebApiTests.Executors
         intersectingProjects: new List<Project> {projectOfInterest},
         expectedProjectUidResult: projectUid,
         expectedAssetUidResult: string.Empty,
+        expectedCodeResult: 0,
+        expectedMessageResult: "success"
+      );
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Happy_StdPrj_PrjMan3d_NEEResolved()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectCustomerUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new Project()
+      {
+        ProjectUID = projectUid,
+        ProjectType = ProjectType.Standard,
+        CustomerUID = projectCustomerUid,
+        StartDate = DateTime.UtcNow.AddDays(-4),
+        EndDate = DateTime.UtcNow.AddDays(-3)
+      };
+
+      string assetUid = Guid.NewGuid().ToString();
+      string ec520Uid = Guid.NewGuid().ToString();
+      string assetCustomerUid = Guid.NewGuid().ToString();
+
+      await Execute
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 0, 0, projectOfInterest.StartDate.AddDays(1), 300345.670, 600000.64),
+        projectUid: projectUid,
+        projectCustomerUid: projectCustomerUid,
+        projectCustomerSubs: (new List<Subscription>()
+        {
+          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        }),
+        assetUid: assetUid,
+        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetSubs: new List<Subscription>(),
+        ec520Uid: ec520Uid,
+        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Subs: new List<Subscription>(),
+        assetCustomerUid: assetCustomerUid,
+        assetCustomerSubs: new List<Subscription>(),
+        projectOfInterest: projectOfInterest,
+        intersectingProjects: new List<Project> { projectOfInterest },
+        expectedProjectUidResult: projectUid,
+        expectedAssetUidResult: assetUid,
         expectedCodeResult: 0,
         expectedMessageResult: "success"
       );
@@ -666,7 +709,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -713,7 +756,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -755,7 +798,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -796,7 +839,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -840,7 +883,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -888,7 +931,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -933,7 +976,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -978,7 +1021,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),

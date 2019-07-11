@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
+using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
@@ -38,7 +41,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
         .AddSingleton<IKafka, RdKafkaDriver>()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>();
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddServiceDiscovery()
+        .AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1ServiceDiscoveryProxy>();
 
       services.AddOpenTracing(builder =>
       {

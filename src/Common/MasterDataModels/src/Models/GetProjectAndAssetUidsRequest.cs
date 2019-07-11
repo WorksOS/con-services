@@ -71,6 +71,10 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "easting", Required = Required.Default)]
     public double? Easting { get; set; }
 
+    [JsonIgnore] public bool HasLatLong => Math.Abs(Latitude) > 0.0 && Math.Abs(Longitude) > 0.0;
+
+    [JsonIgnore]
+    public bool HasNE => Northing.HasValue && Easting.HasValue;
 
     /// <summary>
     /// Private constructor
@@ -143,20 +147,19 @@ namespace VSS.MasterData.Models.Models
         return 37;
       }
 
-      var hasLatLong = Math.Abs(Latitude) > 0.0 && Math.Abs(Longitude) > 0.0;
-      bool hasNee = Northing.HasValue && Easting.HasValue;
-
-      if (!hasLatLong && !hasNee)
+      if (!HasLatLong && !HasNE)
       {
         return 51;
       }
 
-      if (hasLatLong && (Latitude < -90 || Latitude > 90))
+      // NE can be negative and zero
+
+      if (HasLatLong && (Latitude < -90 || Latitude > 90))
       {
         return 21;
       }
 
-      if (hasLatLong && (Longitude < -180 || Longitude > 180))
+      if (HasLatLong && (Longitude < -180 || Longitude > 180))
       {
         return 22;
       }

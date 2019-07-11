@@ -6,11 +6,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   public class ProjectUidHelper
   {
-    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected static readonly ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
     public static GetProjectAndAssetUidsResult FormatResult(string projectUid, string assetUid, int uniqueCode = 0)
     {
-      return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid, assetUid,
+      return new GetProjectAndAssetUidsResult(projectUid, assetUid,
         (uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode)),
         (uniqueCode == 0 ? ContractExecutionResult.DefaultMessage :
           (uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)))));

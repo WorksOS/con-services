@@ -52,7 +52,7 @@ namespace VSS.TRex.TAGFiles.Executors
     public DateTime? LastDataTime { get; set; }
 
     /// <summary>
-    /// Set the state of the executor to an initialised state
+    /// Set the state of the executor to an initialized state
     /// </summary>
     private void Initialise()
     {
@@ -91,11 +91,7 @@ namespace VSS.TRex.TAGFiles.Executors
     private void SetPublishedState(TAGProcessorPreScanState processor)
     {
       LastDataTime = processor.DataTime;
-      SeedLatitude = Math.Abs(processor.LLHLat - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?)null : processor.LLHLat;
-      SeedLongitude = Math.Abs(processor.LLHLon - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?) null : processor.LLHLon;
-      SeedHeight = Math.Abs(processor.LLHHeight - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?) null : processor.LLHHeight;
-      SeedTimeUTC = processor.LLHLatRecordedTime; //We arbitrarily choose LLHLat, in the majority of cases this will be same for any LLH.
-      SetSeedNEE(processor);
+      SetSeedPosition(processor);
      
       ProcessedEpochCount = processor.ProcessedEpochCount;
       RadioType = processor.RadioType;
@@ -112,10 +108,36 @@ namespace VSS.TRex.TAGFiles.Executors
     /// Grid point from on-machine positions
     /// </summary>
     /// <param name="processor"></param>
-    private void SetSeedNEE(TAGProcessorPreScanState processor)
+    private void SetSeedPosition(TAGProcessorPreScanState processor)
     {
-      if (!processor.LLHLatRecordedTime.HasValue)
-        SeedTimeUTC = processor._FirstDataTime;
+      PopulateNEE(processor);
+
+      if (processor.LLHLatRecordedTime.HasValue)
+      {
+        SeedLatitude = Math.Abs(processor.LLHLat - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?) null : processor.LLHLat;
+        SeedLongitude = Math.Abs(processor.LLHLon - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?) null : processor.LLHLon;
+        SeedHeight = Math.Abs(processor.LLHHeight - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?) null : processor.LLHHeight;
+        SeedTimeUTC = processor.LLHLatRecordedTime; //We arbitrarily choose LLHLat, in the majority of cases this will be same for any LLH.
+      }
+      else
+      {
+        // todoJeannie Grant to determine if this is a real-world scenario (no LL but NE and UTMZone)
+        // Corner case where UTMZone may be different to the projects CSIB.
+        // safer to convert to lat/long using the UTMZone
+        // if no UTMZone, then lat/long can only be determined from the projects CSIB
+        if (processor.UTMZoneAtFirstPosition != CellPassConsts.NullUTMZone)
+        {
+          //convertNEEusing UTMZone
+          //SeedLatitude = Math.Abs(processor.LLHLat - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?)null : processor.LLHLat;
+          //SeedLongitude = Math.Abs(processor.LLHLon - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?)null : processor.LLHLon;
+          //SeedHeight = Math.Abs(processor.LLHHeight - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?)null : processor.LLHHeight;
+        }
+      }
+    }
+
+    private void PopulateNEE(TAGProcessorPreScanState processor)
+    {
+      SeedTimeUTC = processor._FirstDataTime;
 
       if (processor.HaveReceivedValidTipPositions)
       {

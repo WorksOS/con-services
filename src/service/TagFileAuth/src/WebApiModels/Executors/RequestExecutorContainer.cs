@@ -14,6 +14,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.TRex.Gateway.Common.Abstractions;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -109,21 +110,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    /// <param name="subscriptionsRepository"></param>
-    /// <param name="logger">Ilogger</param>
+    /// <param name="logger"></param>
     /// <param name="configStore"></param>
     /// <param name="assetRepository"></param>
     /// <param name="deviceRepository"></param>
     /// <param name="customerRepository"></param>
     /// <param name="projectRepository"></param>
+    /// <param name="subscriptionsRepository"></param>
+    /// <param name="tRexCompactionDataProxy"></param>
     /// <param name="producer"></param>
     /// <param name="kafkaTopicName"></param>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, 
-      IAssetRepository assetRepository = null, IDeviceRepository deviceRepository = null, 
+    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,
+      IAssetRepository assetRepository = null, IDeviceRepository deviceRepository = null,
       ICustomerRepository customerRepository = null, IProjectRepository projectRepository = null,
-      ISubscriptionRepository subscriptionsRepository = null, IKafka producer = null, string kafkaTopicName = null) where TExecutor : RequestExecutorContainer, new()
+      ISubscriptionRepository subscriptionsRepository = null, 
+      IKafka producer = null, string kafkaTopicName = null,
+      ITRexCompactionDataProxy tRexCompactionDataProxy = null) where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor() { log = logger, configStore = configStore,
         assetRepository = assetRepository as AssetRepository, deviceRepository = deviceRepository as DeviceRepository,
@@ -133,7 +137,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         dataRepository = new DataRepository(logger, configStore, assetRepository, deviceRepository, 
         customerRepository, projectRepository, 
         subscriptionsRepository,
-        producer, kafkaTopicName);
+        producer, kafkaTopicName,
+        tRexCompactionDataProxy);
       return executor;
     }
     

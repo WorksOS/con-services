@@ -102,7 +102,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       if (errorCodeResult > 0)
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult("", "", errorCodeResult));
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>
+        (_log, configStore, 
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository,
+        tRexCompactionDataProxy: TRexCompactionDataProxy);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       _log.LogResult(nameof(GetProjectAndAssetUids), request, result);

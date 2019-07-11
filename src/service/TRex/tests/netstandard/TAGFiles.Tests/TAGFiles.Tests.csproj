@@ -1087,7 +1087,7 @@
     <None Update="TestData\TAGFiles\TestTAGFile3.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\TAGFiles\TestTagFile_NoSeedLLH.tag">
+    <None Update="TestData\TAGFiles\TestTagFile_NoSeedLLHandNoUTM.tag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
