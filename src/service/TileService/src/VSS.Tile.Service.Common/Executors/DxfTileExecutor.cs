@@ -80,6 +80,21 @@ namespace VSS.Tile.Service.Common.Executors
       var tileList = new List<byte[]>();
       var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
 
+      //For GeoTIFF files, use the latest version of a file
+      var geoTiffFiles = files.Where(x => x.ImportedFileType == ImportedFileType.GeoTiff);
+      if (geoTiffFiles.Any())
+      {
+        //Find any with multiple versions and remove old ones from the list
+        var latestFiles = geoTiffFiles.GroupBy(g => g.Name).Select(g => g.OrderBy(o => o.SurveyedUtc).Last()).ToList();
+        foreach (var geoTiffFile in geoTiffFiles)
+        {
+          if (!latestFiles.Contains(geoTiffFile))
+          {
+            files.Remove(geoTiffFile);
+          }
+        }
+      }
+
       var fileTasks = files.Select(async file =>
       {
         //foreach (var file in request.files)
@@ -90,6 +105,8 @@ namespace VSS.Tile.Service.Common.Executors
         {
           var fullPath = DataOceanFileUtil.DataOceanPath(rootFolder, file.CustomerUid, file.ProjectUid);
           var fileName = DataOceanFileUtil.GeneratedFileName(file.Name, file.ImportedFileType);
+          if (file.ImportedFileType == ImportedFileType.GeoTiff)
+            fileName = IncludeSurveyedUtcInName(fileName, file.SurveyedUtc.Value);
 
           if (zoomLevel >= file.MinZoomLevel)
           {
@@ -123,6 +140,18 @@ namespace VSS.Tile.Service.Common.Executors
       byte[] overlayData = TileOverlay.OverlayTiles(tileList);
 
       return new TileResult(overlayData);
+    }
+
+    /// <summary>
+    /// Add surveyed UTC to file name. Used for GeoTIFF files so we can keep versions of them in DataOcean
+    /// </summary>
+    private string IncludeSurveyedUtcInName(string name, DateTime surveyedUtc)
+    {
+      //Note: ':' is an invalid character for filenames in Windows so get rid of them
+      // There is a need to potentially suffix a date a 2nd time, so don't check if one exists.
+      return Path.GetFileNameWithoutExtension(name) +
+             "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty) +
+             Path.GetExtension(name);
     }
 
     /// <summary>
