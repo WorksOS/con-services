@@ -77,12 +77,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Async call to make quantized mesh tile
     /// </summary>
     /// <param name="projectUId"> project id</param>
-    /// <param name="filterId">filter id</param>
+    /// <param name="filterUId">filter id</param>
     /// <param name="x">tile x coordinate</param>
     /// <param name="y">tile y coordinate</param>
     /// <param name="z">tile z coordinate</param>
     /// <returns></returns>
-    private async Task<byte[]> FetchTile(Guid projectUId, Guid filterId, int x, int y, int z)
+    private async Task<byte[]> FetchTile(Guid projectUId, Guid filterUId, int x, int y, int z)
     {
       var request = new QMTileRequest()
       {
@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         Z = z,
         CallId = new Guid(),
 
-        // Todo setup correct filter in part two
+        // Todo setup correct filterUId filter in part two
         Filter1 = new FilterResult(),
         ProjectUid = projectUId
       };
@@ -128,17 +128,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="z">z tile coordinate</param>
     /// <param name="formatExtension">terrain ext</param>
     /// <param name="projectUid">Project UId</param>
-    /// <param name="filterId">Filter Id</param>
+    /// <param name="filterUId">Filter Id</param>
     /// <returns></returns>
     [HttpGet("v1/qmesh/{z}/{x}/{y}.{formatExtension}")]
-    public async Task<IActionResult> Get(int x, int y, int z, string formatExtension, [FromQuery] Guid projectUid, [FromQuery] Guid filterId)
+    public async Task<IActionResult> Get(int x, int y, int z, string formatExtension, [FromQuery] Guid projectUid, [FromQuery] Guid filterUId)
     {
 
       log.LogInformation("Get: " + Request.QueryString);
-      log.LogDebug($"QMesh tile request params. x:{x},y:{y},z:{z}, ProjectId:{projectUid}, FilterId:{filterId} *");
+      log.LogDebug($"QMesh tile request params. x:{x},y:{y},z:{z}, ProjectId:{projectUid}, FilterUId:{filterUId} *");
 
       // var basicTile = await FetchTile(testDataPath, x, y, z);
-      var basicTile = await FetchTile(projectUid, filterId, x, y, z);
+      var basicTile = await FetchTile(projectUid, filterUId, x, y, z);
       if (basicTile != null)
       {
         HttpContext.Response.Headers.Add(ContentTypeConstants.ContentEncoding, ContentTypeConstants.ContentEncodingGzip); // already compressed on disk
