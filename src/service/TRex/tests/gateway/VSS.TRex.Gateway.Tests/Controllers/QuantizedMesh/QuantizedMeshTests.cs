@@ -57,7 +57,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
         siteModel.ID,
         new Guid(),
         new FilterResult(),
-        1,
         0,0,0
       );
             

@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         CallId = new Guid(),
 
         // Todo setup correct filterUId filter in part two
-        Filter1 = new FilterResult(),
+        Filter = new FilterResult(),
         ProjectUid = projectUId
       };
 

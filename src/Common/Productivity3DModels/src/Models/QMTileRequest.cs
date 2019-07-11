@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Models.Models
     /// The base or earliest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter1", Required = Required.Default)]
-    public FilterResult Filter1 { get; set; }
+    public FilterResult Filter { get; set; }
 
     [JsonProperty(Required = Required.Always)]
     public int X { get; set; }
@@ -41,23 +41,21 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     /// <param name="projectUId">Project ID</param>
     /// <param name="callId">Caller ID</param>
-    /// <param name="filter1">Filter 1</param>
-    /// <param name="filterId1">Fileter ID</param>
+    /// <param name="filter">Filter 1</param>
     /// <param name="X">tile X coordinate</param>
     /// <param name="Y">tile Y coordinate</param>
     /// <param name="Z">tile Z coordinate</param>
     public QMTileRequest(
       Guid? projectUid,
       Guid? callId,
-      FilterResult filter1,
-      long filterId1,
+      FilterResult filter,
       int x,
       int y,
       int z)
     {
       ProjectUid = projectUid;
       CallId = callId;
-      Filter1 = filter1;
+      Filter = filter;
       X = x;
       Y = y;
       Z = z;
@@ -69,7 +67,7 @@ namespace VSS.Productivity3D.Models.Models
     public override void Validate()
     {
       base.Validate();
-      Filter1?.Validate();
+      Filter?.Validate();
       if (ProjectUid == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
