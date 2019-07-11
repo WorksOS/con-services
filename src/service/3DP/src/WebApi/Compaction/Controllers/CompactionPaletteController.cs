@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
@@ -194,6 +200,47 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       return CompactionDetailPaletteResult.CreateCompactionDetailPaletteResult(elevationPalette);
+    }
+
+    /// <summary>
+    /// Get the CCA color palette for a project.
+    /// This assumes the filter contains the machine whose palette is requested
+    /// </summary>
+    [ProjectVerifier]
+    [HttpGet("api/v2/ccapalette")]
+    public async Task<CompactionDetailPaletteResult> GetCCAPalette(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid filterUid)
+    {
+      Log.LogInformation($"{nameof(GetCCAPalette)}: " + Request.QueryString);
+
+      var filterTask = GetCompactionFilter(projectUid, filterUid);
+      var projectIdTask = GetLegacyProjectId(projectUid);
+
+      await Task.WhenAll(filterTask, projectIdTask);
+
+      //Quickest for now to use old Landfill executor
+      var filter = filterTask.Result;
+      if (filter?.ContributingMachines?.Count != 1)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "CCA palette requires one and only one machine filter"));
+      }
+      var machine = filter.ContributingMachines[0];
+      var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectIdTask.Result, machine.AssetId, filter.StartUtc, filter.EndUtc, null, projectUid, machine.AssetUid);
+      request.Validate();
+      var palette = await RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(LoggerFactory,
+#if RAPTOR
+        RaptorClient,
+#endif   
+        configStore: ConfigStore,
+        trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(request) as CCAColorPaletteResult;
+
+      return CompactionDetailPaletteResult.CreateCompactionDetailPaletteResult(
+        DetailPalette.CreateDetailPalette(
+          palette.Palettes.Select(x => ColorValue.CreateColorValue(x.Color, x.Value)).ToList(), 
+          0, null));//black for too thick
     }
   }
 }
