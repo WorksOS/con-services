@@ -227,7 +227,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       
       foreach (var alignmentDescriptor in alignmentDescriptors.Result)
       {
-        var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId.Result, alignmentDescriptor);
+        var alignmentPoints = boundingBoxService.GetAlignmentPoints(
+          new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId.Result },
+          alignmentDescriptor,
+          0, 0, 0, 0,
+          CustomHeaders);
 
         if (alignmentPoints != null && alignmentPoints.Any())
           list.Add(alignmentPoints.ToList());
