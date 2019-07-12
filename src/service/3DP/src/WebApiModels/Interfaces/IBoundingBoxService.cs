@@ -24,13 +24,13 @@ namespace VSS.Productivity3D.WebApi.Models.Interfaces
     Task<List<List<WGSPoint>>> GetFilterBoundaries(ProjectData project, FilterResult filter,
       FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders);
 
-    IEnumerable<WGSPoint> GetAlignmentPoints(ProjectData project, DesignDescriptor alignDescriptor,
+    Task<IEnumerable<WGSPoint>> GetAlignmentPoints(ProjectData project, DesignDescriptor alignDescriptor,
       double startStation = 0, double endStation = 0, double leftOffset = 0, double rightOffset = 0, IDictionary<string, string> customHeaders = null);
 
     Task<List<List<WGSPoint>>> GetDesignBoundaryPolygons(ProjectData project, DesignDescriptor designDescriptor,
       IDictionary<string, string> customHeaders);
 
-    AlignmentStationRangeResult GetAlignmentStationRange(ProjectData project, DesignDescriptor alignDescriptor, IDictionary<string, string> customHeaders);
+    Task<AlignmentStationRangeResult> GetAlignmentStationRange(ProjectData project, DesignDescriptor alignDescriptor, IDictionary<string, string> customHeaders);
 
     Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId, List<long> excludedIds,
       string userId, IDictionary<string, string> customHeaders);

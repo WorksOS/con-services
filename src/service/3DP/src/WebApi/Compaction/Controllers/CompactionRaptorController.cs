@@ -194,7 +194,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       await Task.WhenAll(projectId, alignmentDescriptor);
 
       var result = new AlignmentPointsResult();
-      var alignmentPoints = boundingBoxService.GetAlignmentPoints(
+      var alignmentPoints = await boundingBoxService.GetAlignmentPoints(
         new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId.Result }, 
         alignmentDescriptor.Result);
 
@@ -229,7 +229,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       
       foreach (var alignmentDescriptor in alignmentDescriptors.Result)
       {
-        var alignmentPoints = boundingBoxService.GetAlignmentPoints(
+        var alignmentPoints = await boundingBoxService.GetAlignmentPoints(
           new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId.Result },
           alignmentDescriptor,
           0, 0, 0, 0,
