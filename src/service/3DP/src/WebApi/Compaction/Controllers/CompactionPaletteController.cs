@@ -228,7 +228,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             "CCA palette requires one and only one machine filter"));
       }
       var machine = filter.ContributingMachines[0];
-      var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectIdTask.Result, machine.AssetId, filter.StartUtc, filter.EndUtc, null, projectUid, machine.AssetUid);
+      var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectIdTask.Result, machine.AssetId, filter.StartUtc, filter.EndUtc, filter.LayerNumber, projectUid, machine.AssetUid);
       request.Validate();
       var palette = await RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(LoggerFactory,
 #if RAPTOR
