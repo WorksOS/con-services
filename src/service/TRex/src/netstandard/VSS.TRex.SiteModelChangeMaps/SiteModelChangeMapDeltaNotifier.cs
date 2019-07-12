@@ -41,8 +41,6 @@ namespace VSS.TRex.SiteModelChangeMaps
           Origin = origin,
           Content = changeMap?.ToBytes()
         });
-
-      queueCache.Commit();
     }
   }
 }
