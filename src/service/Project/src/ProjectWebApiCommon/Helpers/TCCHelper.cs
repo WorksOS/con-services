@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -117,7 +118,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string tccFileName = Path.GetFileName(pathAndFileName);
 
       if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
-        tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
+        tccFileName = tccFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
 
       bool ccPutFileResult = false;
       bool folderAlreadyExists = false;
@@ -213,7 +214,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string tccDestinationFileName = sourceFile.Name;
       if (sourceFile.ImportedFileTypeId == ImportedFileType.SurveyedSurface)
         tccDestinationFileName =
-          ImportedFileUtils.IncludeSurveyedUtcInName(tccDestinationFileName, sourceFile.SurfaceFile.SurveyedUtc);
+          tccDestinationFileName.IncludeSurveyedUtcInName(sourceFile.SurfaceFile.SurveyedUtc);
 
       var destTccPathAndFile = $"/{customerUid}/{projectUid}/{tccDestinationFileName}";
       var tccCopyFileResult = false;

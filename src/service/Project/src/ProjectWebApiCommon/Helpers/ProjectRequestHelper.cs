@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
@@ -252,7 +253,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     {
       string finalFilename = filename;
       if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
-        finalFilename = ImportedFileUtils.IncludeSurveyedUtcInName(finalFilename, surveyedUtc.Value);
+        finalFilename = finalFilename.IncludeSurveyedUtcInName(surveyedUtc.Value);
 
       var s3FullPath = $"{projectUid}/{finalFilename}";
       try
