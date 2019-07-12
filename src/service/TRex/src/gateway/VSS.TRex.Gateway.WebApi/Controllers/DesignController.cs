@@ -125,7 +125,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
     /// <summary>
-    /// 
+    /// Gets a list of design filter boundaries in GeoJson format from TRex database.
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="designUid"></param>
