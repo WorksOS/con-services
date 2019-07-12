@@ -24,6 +24,10 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public FileSystemStreamType StreamType { get; set; }
 
+    public SiteModelMachineAffinityKey()
+    {
+    }
+
     /// <summary>
     /// TAG File Buffer Queue key constructor taking project, asset and filename
     /// </summary>

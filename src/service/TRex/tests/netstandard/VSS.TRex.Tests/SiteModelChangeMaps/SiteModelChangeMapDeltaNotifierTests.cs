@@ -19,43 +19,8 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SiteModelChangeMaps
 {
-  public class SiteModelChangeMapDeltaNotifierTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
+  public class SiteModelChangeMapDeltaNotifierTests : SiteModelChangeTestsBase
   {
-    private void AddChangeMapQueueCacheToDI()
-    {
-      var nonTransactedProxy = new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetOrCreateCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer());
-      var transactedProxy = new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetOrCreateCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer());
-
-      DIBuilder
-        .Continue()
-
-        // Add the factories for the storage proxy caches, both standard and transacted, for spatial and non spatial caches in TRex
-
-        ////////////////////////////////////////////////////
-        // Injected standard storage proxy cache 
-        ////////////////////////////////////////////////////
-
-        // Add the singleton reference to the non-transacted site model change map cache
-        .Add(x => x.AddSingleton<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>(nonTransactedProxy))
-
-        /////////////////////////////////////////////////////
-        // Injected transacted storage proxy cache factories
-        /////////////////////////////////////////////////////
-
-        // Add the singleton reference to the transacted site model change map cache
-        .Add(x => x.AddSingleton<IStorageProxyCacheTransacted<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>(transactedProxy))
-
-        .Build()
-        .Add(x => x.AddSingleton<ISiteModelChangeMapDeltaNotifier>(new SiteModelChangeMapDeltaNotifier()))
-
-        .Build();
-    }
-
-    public SiteModelChangeMapDeltaNotifierTests()
-    {
-      AddChangeMapQueueCacheToDI();
-    }
-
     [Fact]
     public void Creation()
     {

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SiteModelChangeMaps
 {
-  public class SiteModelChangeProcessorItemHandlerTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
+  public class SiteModelChangeProcessorItemHandlerTests : SiteModelChangeTestsBase
   {
     [Fact]
     public void Creation()

@@ -21,6 +21,9 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 
     public long InsertUTCTicks { get; set; }
 
+    public SiteModelChangeBufferQueueKey()
+    { }
+
     /// <summary>
     /// Site model change map queue key constructor taking project and  insert date
     /// </summary>
