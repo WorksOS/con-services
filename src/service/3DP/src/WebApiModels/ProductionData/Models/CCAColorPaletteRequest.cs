@@ -48,7 +48,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "assetUid", Required = Required.Default)]
-    [Required]
     public Guid? assetUid { get; private set; }
 
     /// <summary>
