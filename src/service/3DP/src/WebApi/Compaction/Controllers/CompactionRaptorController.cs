@@ -194,7 +194,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       await Task.WhenAll(projectId, alignmentDescriptor);
 
       var result = new AlignmentPointsResult();
-      var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId.Result, alignmentDescriptor.Result);
+      var alignmentPoints = boundingBoxService.GetAlignmentPoints(
+        new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId.Result }, 
+        alignmentDescriptor.Result);
 
       if (alignmentPoints != null && alignmentPoints.Any())
       {

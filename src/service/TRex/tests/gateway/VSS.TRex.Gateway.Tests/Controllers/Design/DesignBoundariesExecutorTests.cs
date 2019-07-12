@@ -14,6 +14,7 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Helpers;
+using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
@@ -32,7 +33,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
 
       var projectUid = Guid.NewGuid();
 
-      var request = new TRexDesignBoundariesRequest(projectUid, Guid.NewGuid(), FILE_NAME, TOLERANCE);
+      var request = new DesignBoundariesRequest(projectUid, Guid.NewGuid(), FILE_NAME, TOLERANCE);
       request.Validate();
 
       var executor = RequestExecutorContainer

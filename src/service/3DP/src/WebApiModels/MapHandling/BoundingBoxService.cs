@@ -549,7 +549,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
     private List<WGSPoint> ProcessDesignFilterBoundaryWithTRex(string projectUid, DesignDescriptor alignDescriptor, IDictionary<string, string> customHeaders)
     {
-      var queryParams = $"?projectUid={projectUid}&designUid={alignDescriptor.FileUid}&fileName={alignDescriptor.File.FileName}&tolerance={DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL}";
+      var queryParams = new Dictionary<string, string>()
+      {
+        { "projectUid", projectUid },
+        { "designUid", alignDescriptor.FileUid.ToString() },
+        { "fileName", alignDescriptor.File?.FileName },
+        { "tolerance", DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL.ToString(CultureInfo.CurrentCulture) }
+      };
 
       var returnedResult = tRexCompactionDataProxy.SendDataGetRequest<DesignFilterBoundaryResult>(projectUid, "/design/filter/boundary", customHeaders, queryParams).Result;
 
@@ -587,7 +593,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
       {
 #endif
-        var queryParams = $"?projectUid={project.ProjectUid}&designUid={alignDescriptor.FileUid}";
+        var queryParams = new Dictionary<string, string>()
+        {
+          { "projectUid", project.ProjectUid },
+          { "designUid", alignDescriptor.FileUid.ToString() }
+        };
 
         return tRexCompactionDataProxy.SendDataGetRequest<AlignmentStationRangeResult>(project.ProjectUid, "/design/alignment/stationrange", customHeaders, queryParams).Result;
 #if RAPTOR
