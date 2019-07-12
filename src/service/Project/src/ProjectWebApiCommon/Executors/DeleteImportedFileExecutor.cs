@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -103,8 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
               switch (deleteImportedFile.ImportedFileType)
               {
                 case ImportedFileType.GeoTiff:
-                  dxfFileName = ImportedFileUtils.IncludeSurveyedUtcInName(deleteImportedFile.FileDescriptor.FileName,
-                    deleteImportedFile.SurveyedUtc.Value);
+                  dxfFileName = deleteImportedFile.FileDescriptor.FileName.IncludeSurveyedUtcInName(deleteImportedFile.SurveyedUtc.Value);
                   break;
                 case ImportedFileType.Linework:
                   dxfFileName = deleteImportedFile.FileDescriptor.FileName;

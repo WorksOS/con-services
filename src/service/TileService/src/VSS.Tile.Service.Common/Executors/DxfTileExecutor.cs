@@ -8,6 +8,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
+using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -55,7 +56,7 @@ namespace VSS.Tile.Service.Common.Executors
         files = request3d.files?.ToList();
         zoomLevel = request3d.zoomLevel;
         numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
-        topLeftTile = new Point { x = request3d.xTile, y = request3d.yTile };
+        topLeftTile = new Point {x = request3d.xTile, y = request3d.yTile};
       }
       else
       {
@@ -72,6 +73,7 @@ namespace VSS.Tile.Service.Common.Executors
         {
           emptyOverlayData = bitmap.BitmapToByteArray();
         }
+
         return new TileResult(emptyOverlayData);
       }
 
@@ -99,14 +101,14 @@ namespace VSS.Tile.Service.Common.Executors
       {
         //foreach (var file in request.files)
         //Check file type to see if it has tiles
-        if (file.ImportedFileType == ImportedFileType.Linework || 
+        if (file.ImportedFileType == ImportedFileType.Linework ||
             file.ImportedFileType == ImportedFileType.Alignment ||
             file.ImportedFileType == ImportedFileType.GeoTiff)
         {
           var fullPath = DataOceanFileUtil.DataOceanPath(rootFolder, file.CustomerUid, file.ProjectUid);
           var fileName = DataOceanFileUtil.GeneratedFileName(file.Name, file.ImportedFileType);
           if (file.ImportedFileType == ImportedFileType.GeoTiff)
-            fileName = IncludeSurveyedUtcInName(fileName, file.SurveyedUtc.Value);
+            fileName = fileName.IncludeSurveyedUtcInName(file.SurveyedUtc.Value);
 
           if (zoomLevel >= file.MinZoomLevel)
           {
@@ -126,6 +128,7 @@ namespace VSS.Tile.Service.Common.Executors
               log.LogDebug(
                 "DxfTileExecutor: difference between requested and maximum zooms too large; not even going to try to scale tile");
             }
+
             if (tileData != null && tileData.Length > 0)
             {
               tileList.Add(tileData);
@@ -140,18 +143,6 @@ namespace VSS.Tile.Service.Common.Executors
       byte[] overlayData = TileOverlay.OverlayTiles(tileList);
 
       return new TileResult(overlayData);
-    }
-
-    /// <summary>
-    /// Add surveyed UTC to file name. Used for GeoTIFF files so we can keep versions of them in DataOcean
-    /// </summary>
-    private string IncludeSurveyedUtcInName(string name, DateTime surveyedUtc)
-    {
-      //Note: ':' is an invalid character for filenames in Windows so get rid of them
-      // There is a need to potentially suffix a date a 2nd time, so don't check if one exists.
-      return Path.GetFileNameWithoutExtension(name) +
-             "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty) +
-             Path.GetExtension(name);
     }
 
     /// <summary>
