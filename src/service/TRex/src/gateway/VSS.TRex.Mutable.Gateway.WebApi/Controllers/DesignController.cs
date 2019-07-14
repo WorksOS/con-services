@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -49,7 +50,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     /// <param name="designRequest"></param>
     /// <returns></returns>
     [HttpPost]
-    public ContractExecutionResult CreateDesign([FromBody] DesignRequest designRequest)
+    public Task<ContractExecutionResult> CreateDesign([FromBody] DesignRequest designRequest)
     {
       Log.LogInformation($"{nameof(CreateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
@@ -57,23 +58,21 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
      
       if (DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
-        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
+        return Task.FromResult(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add."));
       }
 
       if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
       {
-        return WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainer
+        return WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainer
             .Build<AddTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(designRequest));
+            .ProcessAsync(designRequest));
       }
 
       if (designRequest.FileType == ImportedFileType.Alignment)
       {
-        return WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainer
+        return WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainer
             .Build<AddSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(designRequest));
+            .ProcessAsync(designRequest));
       }
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface, SurveyedSurface or Alignment"));
@@ -86,7 +85,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     /// <param name="designRequest"></param>
     /// <returns></returns>
     [HttpPut]
-    public ContractExecutionResult UpdateDesign([FromBody] DesignRequest designRequest)
+    public async Task<ContractExecutionResult> UpdateDesign([FromBody] DesignRequest designRequest)
     {
       Log.LogInformation($"{nameof(UpdateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
@@ -99,18 +98,17 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 
       if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
       {
-        return WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainer
+        return await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainer
             .Build<UpdateTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(designRequest));
+            .ProcessAsync(designRequest));
       }
 
       if (designRequest.FileType == ImportedFileType.Alignment)
       {
-        return WithServiceExceptionTryExecute(() =>
+        return await WithServiceExceptionTryExecuteAsync(async () => await 
           RequestExecutorContainer
             .Build<UpdateSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(designRequest));
+            .ProcessAsync(designRequest));
       }
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface, SurveyedSurface or Alignment"));
     }

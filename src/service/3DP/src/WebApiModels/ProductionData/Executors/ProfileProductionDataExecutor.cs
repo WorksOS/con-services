@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using SVOICOptionsDecls;
 using SVOICProfileCell;
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   /// </summary>
   public class ProfileProductionDataExecutor : RequestExecutorContainer
   {
-    private ProfileResult PerformTRexProductionDataProfilePost(ProfileProductionDataRequest request)
+    private async Task<ProfileResult> PerformTRexProductionDataProfilePost(ProfileProductionDataRequest request)
     {
       if (request.IsAlignmentDesign)
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -54,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings)
       );
 
-      var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders).Result;
+      var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders);
 
       return trexResult != null ? ConvertTRexProfileResult(trexResult) : null;
     }
@@ -248,7 +249,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       return profile;
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -258,7 +259,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
           UseTRexGateway("ENABLE_TREX_GATEWAY_PROFILING") ?
 #endif
-            PerformTRexProductionDataProfilePost(request)
+            await PerformTRexProductionDataProfilePost(request)
 #if RAPTOR
             : PerformProductionDataProfilePost(request)
 #endif
@@ -363,6 +364,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         profile.maxHeight = double.NaN;
         profile.alignmentPoints = points;
       }
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

@@ -69,5 +69,12 @@
     /// A server responsible for assembling reporting queries, such as grid report, from production data
     /// </summary>
     public const string REPORTING_ROLE = "Reporting";
+
+    /// <summary>
+    /// A server responsible for rendering quantized mesh tiles from production data
+    /// </summary>
+    public const string QNANTIZED_MESH_NODE = "QuantizedMesh";
+
+
   }
 }

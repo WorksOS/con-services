@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Abstractions.Http;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
@@ -39,7 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
       //TODO: DataOcean has versions of files. We should leverage that rather than appending surveyed UTC to file name.
       if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
-        dataOceanFileName = ImportedFileUtils.IncludeSurveyedUtcInName(dataOceanFileName, surveyedUtc.Value);
+        dataOceanFileName = dataOceanFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
 
       bool ccPutFileResult = false;
       bool folderAlreadyExists = false;

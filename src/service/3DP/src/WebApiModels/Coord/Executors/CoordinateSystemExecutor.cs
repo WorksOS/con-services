@@ -1,4 +1,7 @@
-﻿#if RAPTOR
+﻿
+using System;
+using System.Threading.Tasks;
+#if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
 #endif
@@ -108,13 +111,12 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     protected TCoordinateSystemSettings coordSystemSettings;
 #endif
 
-    /// <summary>
-    /// Sends a request to TRex Gateway client.
-    /// </summary>
-    /// <param name="item">A domain object.</param>
-    /// <returns>Result of the processed request from TRex Gateway.</returns>
-    /// 
-    protected virtual CoordinateSystemSettings SendRequestToTRexGatewayClient(object item)
+      /// <summary>
+      /// Sends a request to TRex Gateway client.
+      /// </summary>
+      /// <param name="item">A domain object.</param>
+      /// <returns>Result of the processed request from TRex Gateway.</returns>
+      protected virtual Task<CoordinateSystemSettings> SendRequestToTRexGatewayClient(object item)
     {
       return null;
     }
@@ -139,14 +141,14 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// <param name="item">A domain object.</param>
     /// <returns></returns>
     /// 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
 #if RAPTOR
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_CS"))
 #endif
-          return SendRequestToTRexGatewayClient(item);
+          return await SendRequestToTRexGatewayClient(item);
 #if RAPTOR
         var code = SendRequestToPDSClient(item);
             
@@ -161,5 +163,9 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
         ContractExecutionStates.ClearDynamic();
       }
     }
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+      }
   }
 }

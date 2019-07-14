@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -15,7 +16,8 @@ namespace VSS.TRex.Designs.Interfaces
     bool IsStale { get; set; }
     bool Locked { get; }
     DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);
-    DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false);
+    Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
+      bool loadIndices = false);
     void GetExtents(out double x1, out double y1, out double x2, out double y2);
     void GetHeightRange(out double z1, out double z2);
 

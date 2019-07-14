@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNode.Volumes.RPC;
 using ASNodeDecls;
@@ -30,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       ProcessErrorCodes();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -49,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.TopDesignDescriptor.Offset,
             request.VolumeCalcType);
 
-          return trexCompactionDataProxy.SendDataPostRequest<SummaryVolumesResult, SummaryVolumesDataRequest>(summaryVolumesRequest, "/volumes/summary", customHeaders).Result;
+          return await trexCompactionDataProxy.SendDataPostRequest<SummaryVolumesResult, SummaryVolumesDataRequest>(summaryVolumesRequest, "/volumes/summary", customHeaders);
 #if RAPTOR
         }
 
@@ -126,6 +127,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
 #endif
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

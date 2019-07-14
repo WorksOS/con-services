@@ -49,9 +49,10 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns></returns>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      if (!(item is DesignRequest request))
+      var request = item as DesignRequest;
+      if (request == null)
       {
         ThrowRequestTypeCastException<DesignRequest>();
         return null; // to keep compiler happy
@@ -65,8 +66,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         var localPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
         var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
         
-        TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-        var designLoadResult = ttm.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
+        var ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+        var designLoadResult = await ttm.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# AddTTMDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
@@ -85,7 +86,7 @@ namespace VSS.TRex.Gateway.Common.Executors
               RequestErrorStatus.DesignImportUnableToCreateDesign, designLoadResult.ToString());
         }
 
-        BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+        var extents = new BoundingWorldExtent3D();
         ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
@@ -126,14 +127,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       return new ContractExecutionResult(); 
     }
-    
-    /// <summary>
-    /// Processes the request asynchronously.
-    /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
-    {
-      throw new NotImplementedException();
-    }
 
+    /// <summary>
+    /// Processes the request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

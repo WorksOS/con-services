@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 #endif
@@ -106,11 +107,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       raptorClient.Setup(x => x.GetReportStationOffset(args, out responseData)).Returns(0); // icsrrUnknownError
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportStationOffsetExecutor>(_logger, raptorClient.Object, configStore: mockConfigStore.Object);
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
     }
 #endif
     [TestMethod]
-    public void CompactionReportStationOffsetExecutor_TRex_NoResult()
+    public async Task CompactionReportStationOffsetExecutor_TRex_NoResult()
     {
       var projectUid = Guid.NewGuid();
       var alignmentDesignUid = Guid.NewGuid();
@@ -132,7 +133,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<CompactionReportStationOffsetTRexRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).Throws(exception);
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportStationOffsetExecutor>(_logger, configStore: mockConfigStore.Object, trexCompactionDataProxy: tRexProxy.Object);
-      var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      var result = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
       Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
       Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
       Assert.AreEqual(exception.GetResult.Message, result.GetResult.Message);

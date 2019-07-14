@@ -106,7 +106,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             createimportedfile.DataOceanRootFolder, 
             dxfFileName,
             project.CoordinateSystemFileName, 
-            createimportedfile.DxfUnitsType);
+            createimportedfile.DxfUnitsType,
+            createimportedfile.SurveyedUtc);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
       }
@@ -127,7 +128,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createimportedfile.DataOceanRootFolder,
           createimportedfile.FileName,
           project.Result.CoordinateSystemFileName,
-          createimportedfile.DxfUnitsType);
+          createimportedfile.DxfUnitsType,
+          createimportedfile.SurveyedUtc);
         await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
       }
 

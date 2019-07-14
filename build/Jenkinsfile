@@ -205,7 +205,7 @@ node ('jenkinsslave-pod') {
 			def label = "testingpod-${UUID.randomUUID().toString()}"
 
 			// https://github.com/jenkinsci/kubernetes-plugin Pod and container template configuration documentation.
-			podTemplate(label: label, nodeSelector:"lifecycle=Ec2Spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: elbTestContainer, ttyEnabled: true,  envVars: vars)], activeDeadlineSeconds: 300, podRetention: onFailure())
+			podTemplate(label: label, nodeSelector:"lifecycle=Ec2Spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: elbTestContainer, ttyEnabled: true,  envVars: vars)], podRetention: never())
 			{
 				node (label) {
 					dir ("/app/${servicePath}") {

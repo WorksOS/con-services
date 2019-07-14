@@ -319,7 +319,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       var fileName = "MoundRoad.tif";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
       var fileCreatedUtc = DateTime.UtcNow.AddHours(-45);
-      var fileUpdatedUtc = fileCreatedUtc;
+      var fileUpdatedUtc = fileCreatedUtc.AddHours(1);
+      var surveyedUtc = fileCreatedUtc.AddHours(-1);
 
       var newImportedFile = new ImportedFile
       {
@@ -329,7 +330,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.GeoTiff,
         Name = fileDescriptor.FileName,
-        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor)
+        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
+        SurveyedUtc = surveyedUtc
       };
 
       _ = new CreateImportedFileEvent
@@ -344,7 +346,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         FileCreatedUtc = fileCreatedUtc,
         FileUpdatedUtc = fileUpdatedUtc,
         ImportedBy = string.Empty,
-        SurveyedUTC = null,
+        SurveyedUTC = surveyedUtc,
         ParentUID = null,
         Offset = 0,
         ActionUTC = DateTime.UtcNow,
@@ -352,8 +354,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var createImportedFile = new CreateImportedFile(
-        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0);
+        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, surveyedUtc, DxfUnitsType.Meters,
+        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0);
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();

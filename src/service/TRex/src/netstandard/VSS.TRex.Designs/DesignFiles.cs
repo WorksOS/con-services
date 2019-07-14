@@ -73,7 +73,7 @@ end;
         {
           // Verify the design does exist in either the designs or surveyed surface lists for the site model
           var designRef = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID).Designs.Locate(designUid);
-          DesignDescriptor descriptor = designRef?.DesignDescriptor;
+          var descriptor = designRef?.DesignDescriptor;
 
           if (descriptor == null)
           {

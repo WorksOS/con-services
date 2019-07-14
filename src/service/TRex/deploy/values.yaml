@@ -57,7 +57,10 @@ mutableData:
     requests:
       cpu: 300m
       memory: 1.6Gi
-  storageSize: 10Gi
+  storage:
+    size: 10Gi
+    className: efs
+    
   environment:
     enableTfa: false
     enableTagFileArchiving: false
@@ -78,7 +81,10 @@ psnode:
     requests:
       cpu: 500m
       memory: 2.0Gi
-  storageSize: 10Gi
+  storage:
+    size: 10Gi
+    className: efs
+  
 
 reportServer:
   replicaCount: 1
