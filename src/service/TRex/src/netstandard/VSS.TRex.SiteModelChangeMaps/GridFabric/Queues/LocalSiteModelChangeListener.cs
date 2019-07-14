@@ -3,7 +3,6 @@ using Apache.Ignite.Core.Cache.Event;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
-using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 {
@@ -13,11 +12,11 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 
         public readonly SiteModelChangeProcessorItemHandler Handler;
 
-        private bool OutputInformationalMessagesToLog = false;
+        private bool OutputInformationalMessagesToLog = true;
 
         public LocalSiteModelChangeListener(SiteModelChangeProcessorItemHandler handler)
         {
-            Handler = handler;
+          Handler = handler ?? throw new ArgumentException("Listener must be supplied with a handler");
         }
 
         /// <summary>

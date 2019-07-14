@@ -7,6 +7,7 @@ using Apache.Ignite.Core.Transactions;
 using VSS.Serilog.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -362,8 +363,8 @@ namespace VSS.TRex.Storage
     }
 
     public ITransaction StartTransaction()
-    {
-      return ignite.GetTransactions().TxStart();
+    { 
+      return (ignite ?? DIContext.Obtain<ITRexGridFactory>().Grid(Mutability)).GetTransactions().TxStart();
     }
   }
 }

@@ -10,7 +10,7 @@ namespace VSS.TRex.GridFabric.Affinity
   /// <summary>
   /// The key used to identify machine spatial data change maps within projects
   /// </summary>
-  public class SiteModelMachineAffinityKey : ISiteModelMachineAffinityKey, IBinarizable, IFromToBinary
+  public class SiteModelMachineAffinityKey : ISiteModelMachineAffinityKey, IBinarizable, IFromToBinary, IEquatable<SiteModelMachineAffinityKey>
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -67,6 +67,32 @@ namespace VSS.TRex.GridFabric.Affinity
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       AssetUID = reader.ReadGuid() ?? Guid.Empty;
       StreamType = (FileSystemStreamType) reader.ReadInt();
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = ProjectUID.GetHashCode();
+        hashCode = (hashCode * 397) ^ AssetUID.GetHashCode();
+        hashCode = (hashCode * 397) ^ (int) StreamType;
+        return hashCode;
+      }
+    }
+
+    public bool Equals(SiteModelMachineAffinityKey other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return ProjectUID.Equals(other.ProjectUID) && AssetUID.Equals(other.AssetUID) && StreamType == other.StreamType;
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((SiteModelMachineAffinityKey) obj);
     }
   }
 }

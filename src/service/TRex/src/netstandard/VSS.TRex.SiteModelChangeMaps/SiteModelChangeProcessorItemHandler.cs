@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -17,18 +14,12 @@ using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModelChangeMaps
 {
   public class SiteModelChangeProcessorItemHandler : IDisposable
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelChangeProcessorItemHandler>();
-
-    /// <summary>
-    /// The interval between epochs where the service checks to see if there is anything to do
-    /// </summary>
-    private const int kQueueServiceCheckIntervalMS = 1000;
 
     private bool _aborted;
     public bool Aborted => _aborted;
@@ -40,12 +31,13 @@ namespace VSS.TRex.SiteModelChangeMaps
     public bool Active => _active;
 
     private readonly IStorageProxy _storageProxy;
-    private readonly IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> _changeMapCache;
+    private readonly SiteModelChangeMapProxy _changeMapProxy;
 
-    //private readonly ICache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> _itemQueueCache;
     private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> _itemQueueCache;
 
     private readonly ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> _queue;
+
+    private readonly EventWaitHandle _waitHandle;
 
     public SiteModelChangeProcessorItemHandler()
     {
@@ -53,23 +45,26 @@ namespace VSS.TRex.SiteModelChangeMaps
 
       if (ignite == null)
       {
-        throw new TRexException("Failed to obtain immutable ignite reference");
+        throw new TRexException("Failed to obtain immutable Ignite reference");
       }
 
-      _queue = new ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
-      //_itemQueueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
-      _itemQueueCache = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
-      
-      var storageProxyFactory = DIContext.Obtain<IStorageProxyFactory>();
-      _storageProxy = storageProxyFactory.ImmutableGridStorage();
-      _changeMapCache = _storageProxy.ProjectMachineCache(FileSystemStreamType.SiteModelMachineElevationChangeMap);
+      _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
-      var _ = Task.Factory.StartNew(ProcessChangeMaoUpdateItems, TaskCreationOptions.LongRunning);
+      _queue = new ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      _itemQueueCache = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+
+      _changeMapProxy = new SiteModelChangeMapProxy();
+      _storageProxy = DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage();
+
+      var _ = Task.Factory.StartNew(ProcessChangeMapUpdateItems, TaskCreationOptions.LongRunning);
     }
+
+    public int QueueCount => _queue.Count;
 
     public void Activate()
     {
       _active = true;
+      _waitHandle.Set();
     }
 
     public void Abort()
@@ -80,17 +75,17 @@ namespace VSS.TRex.SiteModelChangeMaps
     public void Add(ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> item)
     {
       _queue.Enqueue(item);
-      // Todo: Wake up the processor here, rather than allowing it to sleep for a fixed period of time
+      _waitHandle.Set();
     }
 
     /// <summary>
     /// A version of ProcessTAGFilesFromGrouper2 that uses task parallelism
     /// </summary>
-    private void ProcessChangeMaoUpdateItems()
+    private void ProcessChangeMapUpdateItems()
     {
       try
       {
-        Log.LogInformation("#In# ProcessChangeMaoUpdateItems starting executing");
+        Log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
 
         // Cycle looking for new work to until aborted...
         do
@@ -111,15 +106,15 @@ namespace VSS.TRex.SiteModelChangeMaps
           }
           else
           {
-            Thread.Sleep(kQueueServiceCheckIntervalMS);
+            _waitHandle.WaitOne();
           }
         } while (!_aborted);
 
-        Log.LogInformation("#Out# ProcessChangeMaoUpdateItems completed executing");
+        Log.LogInformation($"#Out# {nameof(ProcessChangeMapUpdateItems)} completed executing");
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception thrown in ProcessChangeMaoUpdateItems");
+        Log.LogError(e, $"Exception thrown in {nameof(ProcessChangeMapUpdateItems)}");
       }
     }
 
@@ -128,7 +123,7 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// site model.
     /// Once items are processed they are removed from the change map queue retirement queue.
     /// </summary>
-    private bool ProcessItem(SiteModelChangeBufferQueueItem item)
+    private bool ProcessItem(ISiteModelChangeBufferQueueItem item)
     {
       try
       {
@@ -144,16 +139,13 @@ namespace VSS.TRex.SiteModelChangeMaps
           return false;
         }
 
-        var siteModels = DIContext.Obtain<ISiteModels>();
-        var siteModel = siteModels.GetSiteModel(item.ProjectUID);
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(item.ProjectUID);
 
         if (siteModel == null)
         {
           Log.LogError($"Site model {item.ProjectUID} does not exist. Aborting");
           return false;
         }
-
-        var sw = Stopwatch.StartNew();
 
         // Implement change map integration into machine change maps
         // 0. Obtain transaction (will create implicit locks on items)
@@ -166,19 +158,7 @@ namespace VSS.TRex.SiteModelChangeMaps
         {
           foreach (var machine in siteModel.Machines)
           {
-            var key = new SiteModelMachineAffinityKey(item.ProjectUID, machine.ID, FileSystemStreamType.SiteModelMachineElevationChangeMap);
-
-            // Read the serialized change map from the cache
-            var changeMapBytes = _changeMapCache.Get(key);
-
-            //using (var mask = new SubGridTreeSubGridExistenceBitMask())
-            var currentMask = new SubGridTreeSubGridExistenceBitMask();
-
-            // If there is an existing change map for the machine then read its contents in the newly created bitmask sub grid tree
-            if (changeMapBytes != null)
-            {
-              currentMask.FromBytes(changeMapBytes);
-            }
+            var currentMask = _changeMapProxy.Get(item.ProjectUID, machine.ID) ?? new SubGridTreeSubGridExistenceBitMask();
 
             // Extract the change map from the item  
             //using (var updateMask = new SubGridTreeSubGridExistenceBitMask())
@@ -201,20 +181,10 @@ namespace VSS.TRex.SiteModelChangeMaps
                 return false;
             }
 
-            // Commit the updated mask to the store
-            _changeMapCache.Put(key, currentMask.ToBytes());
+            _changeMapProxy.Put(item.ProjectUID, machine.ID, currentMask);
           }
-          _changeMapCache.Commit();
-          
-          if (_storageProxy.Commit(tx, out var numDeleted, out var numUpdated, out var numBytesWritten))
-          {
-            Log.LogInformation($"Item processed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written in {sw.Elapsed}");
-          }
-          else
-          {
-            Log.LogInformation("Commit failed");
-            return false;
-          }
+
+          _storageProxy.Commit(tx);
         }
 
         return true;
