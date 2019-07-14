@@ -9,6 +9,7 @@ using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Messaging;
+using Apache.Ignite.Core.Transactions;
 using Moq;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Serialisation;
@@ -35,6 +36,8 @@ namespace VSS.TRex.Tests.TestFixtures
     public Mock<IClusterGroup> mockClusterGroup { get; }
     public Mock<ICluster> mockCluster { get; }
     public Mock<IIgnite> mockIgnite { get; }
+    public Mock<ITransactions> mockTransactions { get; }
+    public Mock<ITransaction> mockTransaction { get; }
 
     /// <summary>
     /// Constructor that creates the collection of mocks that together mock the Ignite infrastructure layer in TRex
@@ -109,10 +112,15 @@ namespace VSS.TRex.Tests.TestFixtures
       mockCluster.Setup(x => x.IsActive()).Returns(() => clusterActiveState);
       mockCluster.Setup(x => x.SetActive(It.IsAny<bool>())).Callback((bool state) => { /* Never change state from true... clusterActiveState = state; */ });
 
+      mockTransaction = new Mock<ITransaction>();
+      mockTransactions = new Mock<ITransactions>();
+      mockTransactions.Setup(x => x.TxStart()).Returns(mockTransaction.Object);
+
       mockIgnite = new Mock<IIgnite>();
       mockIgnite.Setup(x => x.GetCluster()).Returns(mockCluster.Object);
       mockIgnite.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
       mockIgnite.Setup(x => x.Name).Returns(TRexGrids.ImmutableGridName);
+      mockIgnite.Setup(x => x.GetTransactions()).Returns(mockTransactions.Object);
     }
 
     /// <summary>
