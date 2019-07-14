@@ -10,8 +10,7 @@ namespace VSS.TRex.SiteModelChangeMaps
       if (ReferenceEquals(x, y))
         return true;
 
-      return x != null && y != null &&
-             x.ProjectUID.Equals(y.ProjectUID) && x.InsertUTCTicks.Equals(y.InsertUTCTicks);
+      return x != null && y != null && x.ProjectUID.Equals(y.ProjectUID) && x.InsertUTCTicks.Equals(y.InsertUTCTicks);
     }
 
     public int GetHashCode(ISiteModelChangeBufferQueueKey obj) => (int)(obj.InsertUTCTicks & 0xffff_ffff);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Apache.Ignite.Core.Transactions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
