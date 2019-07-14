@@ -9,6 +9,7 @@ using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Gateway.Common.Helpers;
+using VSS.TRex.Gateway.Common.Requests;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -32,10 +33,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as TRexDesignBoundariesRequest;
+      var request = item as DesignBoundariesRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException<TRexDesignBoundariesRequest>();
+        ThrowRequestTypeCastException<DesignBoundariesRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -45,7 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      var referenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, 0.0);
+      var referenceDesign = new DesignOffset(request.DesignUid, 0.0);
       var designBoundaryResponse = DesignBoundaryRequest.Execute(siteModel, referenceDesign);
 
       if (designBoundaryResponse != null && 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.TRex.Alignments;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
