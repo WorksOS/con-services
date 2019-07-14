@@ -8,14 +8,23 @@ namespace VSS.TRex.Rendering.Palettes.Interfaces
     /// </summary>
     public interface IPlanViewPalette
     {
-      /// <summary>
-      /// Returns a Color derived from the given value datum
-      /// </summary>
-      /// <param name="value"></param>
-      /// <returns></returns>
-      Color ChooseColour(double value);
+    /// <summary>
+    /// Returns a Color derived from the given value datum
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    Color ChooseColour(double value);
 
-      void FromBinary(IBinaryRawReader reader);
-      void ToBinary(IBinaryRawWriter writer);
+    /// <summary>
+    /// Serialises content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    void ToBinary(IBinaryRawWriter writer);
+
+    /// <summary>
+    /// Serialises content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    void FromBinary(IBinaryRawReader reader);
     }
 }

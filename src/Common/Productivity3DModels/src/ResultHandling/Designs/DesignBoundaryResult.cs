@@ -3,7 +3,7 @@ using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.MapHandling;
 
-namespace VSS.Productivity3D.Models.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling.Designs
 {
   /// <summary>
   /// Design boundary in GeoJSON format.
@@ -13,9 +13,6 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// Design boundary as GeoJSON string.
     /// </summary>
-    /// <value>
-    /// The ImportedFile descriptors.
-    /// </value>
     public GeoJson GeoJSON { get; private set; }
 
     /// <summary>

@@ -28,6 +28,7 @@
         NoAlignmentsFound,
         InvalidResponseCode,
         DesignDoesNotExist,
-        FailedToCalculateBoundary
-    }
+        FailedToCalculateBoundary,
+        FailedToCalculateAlignmentStationRange
+  }
 }
