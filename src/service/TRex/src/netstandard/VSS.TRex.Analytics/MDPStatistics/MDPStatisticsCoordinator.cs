@@ -24,9 +24,9 @@ namespace VSS.TRex.Analytics.MDPStatistics
       SiteModelID = argument.ProjectID,
       //LiftBuildSettings := LiftBuildSettings;
       CellSize = SiteModel.CellSize,
-      OverrideMachineMDP = argument.OverrideMachineMDP,
-      OverridingMachineMDP = argument.OverridingMachineMDP,
-      MDPPercentageRange = argument.MDPPercentageRange,
+      OverrideMachineMDP = argument.Overrides.OverrideMachineMDP,
+      OverridingMachineMDP = argument.Overrides.OverridingMachineMDP,
+      MDPPercentageRange = argument.Overrides.MDPRange,
       DetailsDataValues = argument.MDPDetailValues,
       Counts = argument.MDPDetailValues != null ? new long[argument.MDPDetailValues.Length] : null
     };

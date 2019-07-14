@@ -48,11 +48,6 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      var machineSpeedTargetRange = new MachineSpeedExtendedRecord();
-      var machineSpeedTarget = request.Overrides?.MachineSpeedTarget;
-      if (machineSpeedTarget != null)
-        machineSpeedTargetRange.SetMinMax(machineSpeedTarget.MinTargetMachineSpeed, machineSpeedTarget.MaxTargetMachineSpeed);
-
       var operation = new SpeedStatisticsOperation();
       var speedSummaryResult = operation.Execute(
         new SpeedStatisticsArgument()

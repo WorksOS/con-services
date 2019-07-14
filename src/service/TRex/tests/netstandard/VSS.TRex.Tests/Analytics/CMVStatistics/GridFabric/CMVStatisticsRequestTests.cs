@@ -6,6 +6,7 @@ using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -30,9 +31,12 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
-        OverridingMachineCMV = target,
-        OverrideMachineCMV = target > 0,
-        CMVPercentageRange = new CMVRangePercentageRecord(minPercentage, maxPercentage)
+        Overrides = new OverrideParameters
+        { 
+          OverridingMachineCCV = target,
+          OverrideMachineCCV = target > 0,
+          CMVRange = new CMVRangePercentageRecord(minPercentage, maxPercentage)
+        }
       };
     }
 

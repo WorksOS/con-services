@@ -131,9 +131,12 @@ namespace VSS.TRex.Webtools.Controllers
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet(new CombinedFilter()),
-              CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
-              OverrideMachineCMV = false,
-              OverridingMachineCMV = 50
+              Overrides = new OverrideParameters
+              { 
+                CMVRange = new CMVRangePercentageRecord(80, 120),
+                OverrideMachineCCV = false,
+                OverridingMachineCCV = 50
+              }
             }
           );
 
@@ -247,9 +250,12 @@ namespace VSS.TRex.Webtools.Controllers
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
-              OverrideMachineMDP = false,
-              OverridingMachineMDP = 1000
+              Overrides = new OverrideParameters
+              { 
+                MDPRange = new MDPRangePercentageRecord(80, 120),
+                OverrideMachineMDP = false,
+                OverridingMachineMDP = 1000
+              }
             }
           );
 
@@ -357,8 +363,11 @@ namespace VSS.TRex.Webtools.Controllers
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
-              OverrideTargetPassCount = false
+              Overrides = new OverrideParameters
+              { 
+                OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
+                OverrideTargetPassCount = false
+              }
             }
           );
 
@@ -524,8 +533,11 @@ namespace VSS.TRex.Webtools.Controllers
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              OverrideTemperatureWarningLevels = true,
-              OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
+              Overrides = new OverrideParameters
+              { 
+                OverrideTemperatureWarningLevels = true,
+                OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
+              }
             }
           );
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
@@ -25,9 +26,12 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
         ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
-        CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
-        OverrideMachineCMV = false,
-        OverridingMachineCMV = 50,
+        Overrides = new OverrideParameters
+        { 
+          CMVRange = new CMVRangePercentageRecord(80, 120),
+          OverrideMachineCCV = false,
+          OverridingMachineCCV = 50
+        },
         CMVDetailValues = new[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 }
       };
 
