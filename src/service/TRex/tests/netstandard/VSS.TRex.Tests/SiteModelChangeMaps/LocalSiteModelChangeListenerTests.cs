@@ -23,7 +23,10 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
     [Fact]
     public void Creation_NoHandler()
     {
-      Action act = () => new LocalSiteModelChangeListener(null);
+      Action act = () =>
+      {
+        var _ = new LocalSiteModelChangeListener(null);
+      };
       act.Should().Throw<ArgumentException>().WithMessage("Listener must be supplied with a handler");
     }
 

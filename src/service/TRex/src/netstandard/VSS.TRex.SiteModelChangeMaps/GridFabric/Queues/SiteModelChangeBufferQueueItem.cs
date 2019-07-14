@@ -10,7 +10,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
   /// <summary>
   /// Represents the state of a TAG file stored in the TAG file buffer queue awaiting processing.
   /// </summary>
-  public class SiteModelChangeBufferQueueItem : IBinarizable, IFromToBinary, ISiteModelChangeBufferQueueItem
+  public class SiteModelChangeBufferQueueItem : IBinarizable, IFromToBinary, ISiteModelChangeBufferQueueItem, IEquatable<SiteModelChangeBufferQueueItem>
   { 
     public const byte VERSION_NUMBER = 1;
 
@@ -31,6 +31,14 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     /// store this TAG file.
     /// </summary>
     public Guid ProjectUID { get; set; }
+
+    /// <summary>
+    /// UID identifier for the machine the change map relates to.
+    /// In ingest operations this is the machine that originated the change map and may be
+    /// null/empty if the machine context is unknown or unimportant.
+    /// In Query operations the is the machine the originated the query and may NOT be null
+    /// </summary>
+    public Guid MachineUid { get; set; }
 
     /// <summary>
     /// The type of operation to be performed between the change map content in this item and the
@@ -55,6 +63,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
       writer.WriteLong(InsertUTC.ToBinary());
       writer.WriteByteArray(Content);
       writer.WriteGuid(ProjectUID);
+      writer.WriteGuid(MachineUid);
       writer.WriteInt((int)Operation);
       writer.WriteInt((int)Origin);
     }
@@ -66,8 +75,38 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
       InsertUTC = DateTime.FromBinary(reader.ReadLong());
       Content = reader.ReadByteArray();
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
+      MachineUid = reader.ReadGuid() ?? Guid.Empty;
       Operation = (SiteModelChangeMapOperation) reader.ReadInt();
       Origin = (SiteModelChangeMapOrigin) reader.ReadInt();
+    }
+
+    public bool Equals(SiteModelChangeBufferQueueItem other)
+    {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return InsertUTC.Equals(other.InsertUTC) && Equals(Content, other.Content) && ProjectUID.Equals(other.ProjectUID) && MachineUid.Equals(other.MachineUid) && Operation == other.Operation && Origin == other.Origin;
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((SiteModelChangeBufferQueueItem) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = InsertUTC.GetHashCode();
+        hashCode = (hashCode * 397) ^ (Content != null ? Content.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ ProjectUID.GetHashCode();
+        hashCode = (hashCode * 397) ^ MachineUid.GetHashCode();
+        hashCode = (hashCode * 397) ^ (int) Operation;
+        hashCode = (hashCode * 397) ^ (int) Origin;
+        return hashCode;
+      }
     }
   }
 }

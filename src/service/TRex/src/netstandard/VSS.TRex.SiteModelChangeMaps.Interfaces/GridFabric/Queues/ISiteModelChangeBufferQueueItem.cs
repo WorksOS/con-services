@@ -23,6 +23,14 @@ namespace VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues
     Guid ProjectUID { get; set; }
 
     /// <summary>
+    /// UID identifier for the machine the change map relates to.
+    /// In ingest operations this is the machine that originated the change map and may be
+    /// null/empty if the machine context is unknown or unimportant.
+    /// In Query operations the is the machine the originated the query and may NOT be null
+    /// </summary>
+    Guid MachineUid { get; set; }
+
+    /// <summary>
     /// The type of operation to be performed between the change map content in this item and the
     /// destination change map maintained for a machine in a project
     /// </summary>
