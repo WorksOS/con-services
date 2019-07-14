@@ -5,6 +5,7 @@ using System.Threading;
 using Apache.Ignite.Core.Cache.Event;
 using FluentAssertions;
 using Moq;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SiteModelChangeMaps;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
@@ -14,6 +15,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SiteModelChangeMaps
@@ -159,7 +161,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       var value = new SiteModelChangeBufferQueueItem
       {
         ProjectUID = siteModel.ID,
-        MachineUid = machineUid, //siteModel.Machines.First().ID,
+        MachineUid = machineUid,
         InsertUTC = insertTC,
         Operation = SiteModelChangeMapOperation.RemoveSpatialChanges,
         Origin = SiteModelChangeMapOrigin.Query,
@@ -211,6 +213,31 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
       TestSiteModelAndChangeMap_Ingest(siteModel, siteModel.ExistenceMap, 12);
       TestSiteModelAndChangeMap_Query(siteModel, siteModel.Machines.First().ID, siteModel.ExistenceMap, 0);
+    }
+
+    [Fact]
+    public void ProcessChangeMapUpdateItems_NonEmptyMap_SingleTAGFile_IngestAndQuery_MultipleMachines()
+    {
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
+      };
+
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var firstMachine = siteModel.Machines.First();
+      var secondMachine = siteModel.Machines.CreateNew("Test Machine2", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+
+      TestSiteModelAndChangeMap_Ingest(siteModel, siteModel.ExistenceMap, 12);
+
+      var mapProxy = new SiteModelChangeMapProxy();
+      mapProxy.Get(siteModel.ID, firstMachine.ID).CountBits().Should().Be(12);
+      mapProxy.Get(siteModel.ID, secondMachine.ID).CountBits().Should().Be(12);
+
+      TestSiteModelAndChangeMap_Query(siteModel, firstMachine.ID, siteModel.ExistenceMap, 0);
+
+      // Check second machine still has the change map from the TAG file.
+      mapProxy.Get(siteModel.ID, secondMachine.ID).CountBits().Should().Be(12);
+      TestSiteModelAndChangeMap_Query(siteModel, secondMachine.ID, siteModel.ExistenceMap, 0);
     }
   }
 }
