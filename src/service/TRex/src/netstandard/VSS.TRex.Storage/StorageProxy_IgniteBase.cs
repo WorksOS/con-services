@@ -35,9 +35,9 @@ namespace VSS.TRex.Storage
     public IStorageProxyCache<INonSpatialAffinityKey, byte[]> SiteModelCache => siteModelCache;
 
 
-    protected IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> siteModelMachineElevationChangeMapCache;
+    protected IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> siteModelMachineCache;
 
-    public IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> SiteModelMachineElevationChangeMapCache => siteModelMachineElevationChangeMapCache;
+    public IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> SiteModelMachineCache => siteModelMachineCache;
 
     /// <summary>
     /// Determines the correct cache to read/write particular types of information from/to
@@ -68,7 +68,7 @@ namespace VSS.TRex.Storage
       switch (streamType)
       {
         case FileSystemStreamType.SiteModelMachineElevationChangeMap:
-          return siteModelMachineElevationChangeMapCache;
+          return siteModelMachineCache;
         default:
           return null;
       }
