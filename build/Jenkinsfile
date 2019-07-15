@@ -114,7 +114,7 @@ node ('jenkinsslave-pod') {
         
 	checkout([$class: 'GitSCM', 
         branches: [[name: fullBranchName]],
-        extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true]]		
+        extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/merge:refs/pull/*/merge', shallow: true]]		
         ])
 		
 //		checkout scm
