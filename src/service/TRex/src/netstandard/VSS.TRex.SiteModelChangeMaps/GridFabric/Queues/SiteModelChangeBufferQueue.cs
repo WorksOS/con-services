@@ -20,8 +20,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 
     /// <summary>
     /// The Ignite cache reference that holds the TAG files. This cache is keyed on the TAG file name and uses the
-    /// ProjectUID field in the queue item to control affinity placement of the TAG files themselves
-    /// The key is a string that 
+    /// ProjectUID field in the queue item to control affinity placement of the TAG files themselves.
     /// </summary>
     private ICache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> QueueCache;
 
