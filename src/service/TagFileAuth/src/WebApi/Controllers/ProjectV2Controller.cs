@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>
         (_log, configStore, 
         assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository,
-        tRexCompactionDataProxy: TRexCompactionDataProxy);
+        tRexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       _log.LogResult(nameof(GetProjectAndAssetUids), request, result);

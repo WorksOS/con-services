@@ -58,6 +58,9 @@
       DynamicAddwithOffset("Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements", 48);
       DynamicAddwithOffset("Auto Import: more than 1 project meets the time/location/subscription requirements", 49);
       DynamicAddwithOffset("Manual Import: intersecting projects found, but not the one requested", 50);
+      DynamicAddwithOffset("Must contain a location: lat/long or northing/easting", 51);
+      DynamicAddwithOffset("Unable to determine lat/long for requested northing/easting", 52);
+      DynamicAddwithOffset("A problem occurred attempting to get CSIB for project. Exception: {0}", 53);
     }
 
     /// <summary>

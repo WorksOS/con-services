@@ -59,11 +59,10 @@ namespace WebApiTests.Models
     }
 
     [TestMethod]
-    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", 0, 0, null, null, 51)] // invalid lat/long
-    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", 0, 0, null, null, 51)] // position missing
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", 0, 0, null, null, 51)] 
     public void ValidateGetProjectAndAssetUidsRequest_ValidationErrorsPosition
     (string projectUid, DeviceTypeEnum deviceType, string radioSerial,
-      double latitude, double longitude, double? northing = null, double? easting = null, int errorCode = 0 )
+      double latitude, double longitude, double? northing, double? easting, int errorCode = 0 )
     {
       var timeOfPosition = DateTime.UtcNow;
       var projectAndAssetUidsRequest =

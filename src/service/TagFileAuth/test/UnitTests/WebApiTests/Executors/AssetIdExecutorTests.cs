@@ -81,12 +81,10 @@ namespace WebApiTests.Executors
         RadioSerial = radioSerialExpected
       };
 
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      Mock<IDeviceRepository> deviceRepo = new Mock<IDeviceRepository>();
+      var deviceRepo = new Mock<IDeviceRepository>();
       deviceRepo.Setup(d => d.GetAssociatedAsset(radioSerialRequested, deviceTypeRequested)).ReturnsAsync(assetDeviceIdsToBeReturned);
 
-      DataRepository dataRepository = new DataRepository(logger, configStore, null, deviceRepo.Object,
-        null, null, null, null, null);
+      var dataRepository = new DataRepository(null, deviceRepo.Object);
      
       var assetDevice = await dataRepository.LoadAssetDevice(radioSerialRequested, deviceTypeRequested);
       Assert.AreEqual(assetDevice.DeviceType, deviceTypeExpected);
@@ -98,12 +96,10 @@ namespace WebApiTests.Executors
     public async Task AssetUidExecutor_GetAssetDevice_UnHappyPath(
       string deviceTypeRequested, string radioSerialRequested)
     {
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      Mock<IDeviceRepository> deviceRepo = new Mock<IDeviceRepository>();
+      var deviceRepo = new Mock<IDeviceRepository>();
       deviceRepo.Setup(d => d.GetAssociatedAsset(radioSerialRequested, deviceTypeRequested)).ReturnsAsync((AssetDeviceIds)null);
 
-      DataRepository dataRepository = new DataRepository(logger, configStore, null, deviceRepo.Object,
-        null, null, null, null, null);
+      var dataRepository = new DataRepository(null, deviceRepo.Object);
 
       var assetDevice = await dataRepository.LoadAssetDevice(radioSerialRequested, deviceTypeRequested);
       Assert.IsNull(assetDevice);

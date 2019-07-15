@@ -10,12 +10,14 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace WebApiTests.Executors
 {
@@ -29,6 +31,7 @@ namespace WebApiTests.Executors
     private Mock<ICustomerRepository> _customerRepo;
     private Mock<ISubscriptionRepository> _subscriptionRepo;
     private Mock<IProjectRepository> _projectRepo;
+    private Mock<ITRexCompactionDataProxy> _tRexCompactionDataProxy;
 
     [TestInitialize]
     public override void InitTest()
@@ -42,6 +45,7 @@ namespace WebApiTests.Executors
       _customerRepo = new Mock<ICustomerRepository>();
       _projectRepo = new Mock<IProjectRepository>();
       _subscriptionRepo = new Mock<ISubscriptionRepository>();
+      _tRexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
     }
 
     #region StandardProjects
@@ -51,7 +55,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -60,32 +64,30 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        }),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+         new List<Subscription>
+          { new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}},
+        assetUid,
+        new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        assetUid,
+        0,
+        "success"
       );
     }
 
@@ -94,7 +96,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -103,32 +105,30 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        }),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> { projectOfInterest },
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>
+        { new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}},
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> { projectOfInterest },
+        projectUid,
+        assetUid,
+        0,
+        "success"
       );
     }
 
@@ -137,7 +137,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -146,32 +146,30 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.EC520, string.Empty, "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        }),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> { projectOfInterest },
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: ec520Uid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.EC520, string.Empty, "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>
+        { new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}},
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> { projectOfInterest },
+        projectUid,
+        ec520Uid,
+        0,
+        "success"
       );
     }
 
@@ -180,31 +178,30 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      Project projectOfInterest = null;
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, DateTime.UtcNow),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project>(),
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3038,
-        expectedMessageResult: "Unable to find the Project requested"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, DateTime.UtcNow),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        null,
+        new List<Project>(),
+        string.Empty,
+        string.Empty,
+        3038,
+        "Unable to find the Project requested"
       );
 
     }
@@ -214,7 +211,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -223,32 +220,30 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>
+        { new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring} },
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        assetUid,
+        0,
+        "success"
       );
     }
 
@@ -257,7 +252,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -266,29 +261,29 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3039,
-        expectedMessageResult: "Manual Import: got asset. Unable to locate any valid project, or asset subscriptions"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        string.Empty,
+        string.Empty,
+        3039,
+        "Manual Import: got asset. Unable to locate any valid project, or asset subscriptions"
       );
     }
 
@@ -297,7 +292,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -306,18 +301,18 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = projectCustomerUid },
-        assetSubs: new List<Subscription>()
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = projectCustomerUid },
+        new List<Subscription>
         {
           new Subscription()
           {
@@ -325,17 +320,17 @@ namespace WebApiTests.Executors
             CustomerUID = projectCustomerUid
           }
         },
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        assetUid,
+        0,
+        "success"
       );
     }
 
@@ -344,7 +339,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -353,36 +348,36 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>()
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>
         {
-          new Subscription()
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             CustomerUID = assetCustomerUid
           }
         },
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3039,
-        expectedMessageResult: "Manual Import: got asset. Unable to locate any valid project, or asset subscriptions"
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        string.Empty,
+        string.Empty,
+        3039,
+        "Manual Import: got asset. Unable to locate any valid project, or asset subscriptions"
       );
     }
 
@@ -391,7 +386,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -400,32 +395,30 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> { },
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3041,
-        expectedMessageResult: "Manual Import: no intersecting projects found"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>
+        { new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring} },
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project>{},
+        string.Empty,
+        string.Empty,
+        3041,
+        "Manual Import: no intersecting projects found"
       );
     }
 
@@ -434,7 +427,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -443,32 +436,30 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>
+        { new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring} },
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        assetUid,
+        0,
+        "success"
       );
     }
 
@@ -477,7 +468,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -487,29 +478,29 @@ namespace WebApiTests.Executors
         IsDeleted = true
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3043,
-        expectedMessageResult: "Manual Import: cannot import to an archived project"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        string.Empty,
+        string.Empty,
+        3043,
+        "Manual Import: cannot import to an archived project"
       );
     }
 
@@ -520,7 +511,7 @@ namespace WebApiTests.Executors
 
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -530,29 +521,29 @@ namespace WebApiTests.Executors
         IsDeleted = true
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3043,
-        expectedMessageResult: "Manual Import: cannot import to an archived project"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        string.Empty,
+        string.Empty,
+        3043,
+        "Manual Import: cannot import to an archived project"
       );
     }
 
@@ -562,7 +553,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -571,32 +562,30 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty,  91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty,  91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>
+        { new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring} },
+        assetUid,
+        null,
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        string.Empty,
+        0,
+        "success"
       );
     }
 
@@ -605,7 +594,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -614,32 +603,30 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, String.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: (AssetDeviceIds)null,
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, String.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>
+        { new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring} },
+        assetUid,
+        null,
+        new List<Subscription>(),
+        ec520Uid,
+        null,
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        string.Empty,
+        0,
+        "success"
       );
     }
 
@@ -648,7 +635,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
@@ -657,32 +644,30 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 0, 0, projectOfInterest.StartDate.AddDays(1), 300345.670, 600000.64),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        }),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> { projectOfInterest },
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 0, 0, projectOfInterest.StartDate.AddDays(1), 300345.670, 600000.64),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>
+        { new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring} },
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> { projectOfInterest },
+        projectUid,
+        assetUid,
+        0,
+        "success"
       );
     }
 
@@ -695,7 +680,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.ProjectMonitoring,
@@ -704,29 +689,29 @@ namespace WebApiTests.Executors
         EndDate = DateTime.UtcNow.AddDays(-3)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3044,
-        expectedMessageResult: "Manual Import: cannot import to a Civil type project"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        string.Empty,
+        string.Empty,
+        3044,
+        "Manual Import: cannot import to a Civil type project"
       );
     }
 
@@ -740,7 +725,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
@@ -751,29 +736,29 @@ namespace WebApiTests.Executors
         SubscriptionEndDate = DateTime.UtcNow.AddDays(6)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        assetUid,
+        0,
+        "success"
       );
     }
 
@@ -782,7 +767,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
@@ -793,29 +778,29 @@ namespace WebApiTests.Executors
         SubscriptionEndDate = DateTime.UtcNow.AddDays(6)
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        assetUid,
+        0,
+        "success"
       );
     }
 
@@ -824,7 +809,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
@@ -834,32 +819,30 @@ namespace WebApiTests.Executors
         SubscriptionEndDate = null
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3045,
-        expectedMessageResult: "Manual Import: landfill project does not have a valid subscription at that time"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>
+        { new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring} },
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        string.Empty,
+        string.Empty,
+        3045,
+        "Manual Import: landfill project does not have a valid subscription at that time"
       );
     }
 
@@ -868,7 +851,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
@@ -878,32 +861,30 @@ namespace WebApiTests.Executors
         SubscriptionEndDate = null
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3045,
-        expectedMessageResult: "Manual Import: landfill project does not have a valid subscription at that time"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>
+        { new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring} },
+        assetUid,
+        new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        ec520Uid,
+        new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        string.Empty,
+        string.Empty,
+        3045,
+        "Manual Import: landfill project does not have a valid subscription at that time"
       );
     }
 
@@ -914,7 +895,7 @@ namespace WebApiTests.Executors
 
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
@@ -926,29 +907,29 @@ namespace WebApiTests.Executors
         SubscriptionEndDate = new DateTime(9999, 12, 31).Date
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: (AssetDeviceIds)null,
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        null,
+        new List<Subscription>(),
+        ec520Uid,
+        null,
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        string.Empty,
+        0,
+        "success"
       );
     }
 
@@ -959,7 +940,7 @@ namespace WebApiTests.Executors
 
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
@@ -971,29 +952,29 @@ namespace WebApiTests.Executors
         SubscriptionEndDate = new DateTime(9999, 12, 31).Date
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: (AssetDeviceIds)null,
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        null,
+        new List<Subscription>(),
+        ec520Uid,
+        null,
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        string.Empty,
+        0,
+        "success"
       );
     }
 
@@ -1004,7 +985,7 @@ namespace WebApiTests.Executors
 
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
+      var projectOfInterest = new Project
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
@@ -1016,33 +997,74 @@ namespace WebApiTests.Executors
         SubscriptionEndDate = new DateTime(9999, 12, 31).Date
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var ec520Uid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: (AssetDeviceIds)null,
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
+      (new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+        projectUid,
+        projectCustomerUid,
+        new List<Subscription>(),
+        assetUid,
+        null,
+        new List<Subscription>(),
+        ec520Uid,
+        null,
+        new List<Subscription>(),
+        assetCustomerUid,
+        new List<Subscription>(),
+        projectOfInterest,
+        new List<Project> {projectOfInterest},
+        projectUid,
+        string.Empty,
+        0,
+        "success"
       );
     }
 
     #endregion LandfillProjects
+
+    #region dataRepo
+    [TestMethod]
+    [DataRow("77e6bd66-54d8-4651-8907-88b15d81b2d7", 0, 0, 50.0, 50.0)] 
+    public async Task TRexExecutor_GetCSIBForProject_HappyPath(
+      string projectUid, double northing, double easting,
+      double expectedLat, double expectedLong)
+    {
+      var csibResult = new CSIBResult("blah blah");
+      _tRexCompactionDataProxy.Setup(d => d.SendDataGetRequest<CSIBResult>(It.IsAny<string>(), It.IsAny<string>(),
+          It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(csibResult);
+
+      var dataRepository = new DataRepository(null, null,
+        null, null, null, _tRexCompactionDataProxy.Object, new Dictionary<string, string>());
+
+      var latLongDegrees = await dataRepository.GenerateLatLong(projectUid, northing, easting);
+      Assert.AreEqual(latLongDegrees.Lat, expectedLat);
+      Assert.AreEqual(latLongDegrees.Lat, expectedLong);
+    }
+
+    [TestMethod]
+    [DataRow("77e6bd66-54d8-4651-8907-88b15d81b2d7", 0, 0, 0.0, 0.0)]
+    public async Task TRexExecutor_GetCSIBForProject_UnHappyPath(
+      string projectUid, double northing, double easting,
+      double expectedLat, double expectedLong)
+    {
+      var csibResult = new CSIBResult(String.Empty);
+      _tRexCompactionDataProxy.Setup(d => d.SendDataGetRequest<CSIBResult>(It.IsAny<string>(), It.IsAny<string>(),
+          It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(csibResult);
+
+      var dataRepository = new DataRepository(null, null,
+        null, null, null, _tRexCompactionDataProxy.Object, new Dictionary<string, string>());
+
+      var latLongDegrees = await dataRepository.GenerateLatLong(projectUid, northing, easting);
+      Assert.AreEqual(latLongDegrees.Lat, expectedLat);
+      Assert.AreEqual(latLongDegrees.Lat, expectedLong);
+    }
+
+    #endregion dateRepo
 
 
     [TestMethod]
@@ -1072,7 +1094,7 @@ namespace WebApiTests.Executors
     {
       _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(projectOfInterest);
       _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(),
-        It.IsAny<int[]>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
+        It.IsAny<int[]>(), It.IsAny<DateTime?>(), It.IsAny<string>())).ReturnsAsync(intersectingProjects);
 
       _deviceRepo.Setup(d => d.GetAssociatedAsset(request.RadioSerial, It.IsAny<string>())).ReturnsAsync(assetDevice);
       _deviceRepo.Setup(d => d.GetAssociatedAsset(request.Ec520Serial, It.IsAny<string>())).ReturnsAsync(ec520Device);
@@ -1084,9 +1106,15 @@ namespace WebApiTests.Executors
       _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(assetSubs);
       _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(ec520Uid, It.IsAny<DateTime>())).ReturnsAsync(ec520Subs);
 
+      _tRexCompactionDataProxy.Setup(d => d.SendDataGetRequest<CSIBResult>(It.IsAny<string>(), It.IsAny<string>(),
+          It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(new CSIBResult("blahblah"));
+
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
-        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
+        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object,
+        null, null,
+        _tRexCompactionDataProxy.Object, new Dictionary<string, string>());
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       ValidateResult(result, expectedProjectUidResult, expectedAssetUidResult, expectedCodeResult,

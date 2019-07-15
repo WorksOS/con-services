@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Repository;
@@ -53,6 +55,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// </summary>
     protected ITRexCompactionDataProxy TRexCompactionDataProxy => _tRexCompactionDataProxy ?? (_tRexCompactionDataProxy = HttpContext.RequestServices.GetService<ITRexCompactionDataProxy>());
 
+    /// <summary>
+    /// Gets the custom headers for the request.
+    /// </summary>
+    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Default constructor.

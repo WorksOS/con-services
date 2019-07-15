@@ -117,9 +117,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <param name="customerRepository"></param>
     /// <param name="projectRepository"></param>
     /// <param name="subscriptionsRepository"></param>
-    /// <param name="tRexCompactionDataProxy"></param>
     /// <param name="producer"></param>
     /// <param name="kafkaTopicName"></param>
+    /// <param name="tRexCompactionDataProxy"></param>
+    /// <param name="customHeaders"></param>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
     public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,
@@ -127,18 +128,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       ICustomerRepository customerRepository = null, IProjectRepository projectRepository = null,
       ISubscriptionRepository subscriptionsRepository = null, 
       IKafka producer = null, string kafkaTopicName = null,
-      ITRexCompactionDataProxy tRexCompactionDataProxy = null) where TExecutor : RequestExecutorContainer, new()
+      ITRexCompactionDataProxy tRexCompactionDataProxy = null, IDictionary<string, string> customHeaders = null) where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor() { log = logger, configStore = configStore,
         assetRepository = assetRepository as AssetRepository, deviceRepository = deviceRepository as DeviceRepository,
         customerRepository = customerRepository as CustomerRepository, projectRepository = projectRepository as ProjectRepository,
         subscriptionsRepository = subscriptionsRepository as SubscriptionRepository,
         producer = producer, kafkaTopicName = kafkaTopicName};
-        dataRepository = new DataRepository(logger, configStore, assetRepository, deviceRepository, 
+        dataRepository = new DataRepository(assetRepository, deviceRepository, 
         customerRepository, projectRepository, 
         subscriptionsRepository,
-        producer, kafkaTopicName,
-        tRexCompactionDataProxy);
+        tRexCompactionDataProxy, customHeaders);
       return executor;
     }
     

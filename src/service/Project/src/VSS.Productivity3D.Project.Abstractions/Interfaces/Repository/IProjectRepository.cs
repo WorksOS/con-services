@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
     Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectMonitoringProject(string customerUID, double latitude, double longitude,
       DateTime timeOfPosition, int projectType, int serviceType);
     Task<IEnumerable<Models.DatabaseModels.Project>> GetIntersectingProjects(string customerUid, double latitude, double longitude,
-      int[] projectTypes, DateTime? timeOfPosition = null);
+      int[] projectTypes, DateTime? timeOfPosition = null, string projectUid = null);
     
     Task<int> StoreEvent(IProjectEvent evt);
   }

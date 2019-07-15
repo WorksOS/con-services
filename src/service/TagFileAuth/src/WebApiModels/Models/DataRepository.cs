@@ -1,76 +1,52 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 using ProjectDataModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
-  ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
-  ///   from
-  ///   controller logic for testability and possible executor versioning.
+  ///   various data requests whether from database or other services
   /// </summary>
   public class DataRepository : IDataRepository
   {
-    /// <summary>
-    /// Logger used in ProcessEx
-    /// </summary>
-    public ILogger Log;
-    protected IConfigurationStore ConfigStore;
+    private readonly IAssetRepository _assetRepository;
+    private readonly IDeviceRepository _deviceRepository;
+    private readonly ICustomerRepository _customerRepository;
+    private readonly IProjectRepository _projectRepository;
+    private readonly ISubscriptionRepository _subscriptionsRepository;
 
-    /// <summary>
-    /// Repository factory used in ProcessEx
-    /// </summary>
-    protected IAssetRepository AssetRepository;
-    protected IDeviceRepository DeviceRepository;
-    protected ICustomerRepository CustomerRepository;
-    protected IProjectRepository ProjectRepository;
-    protected ISubscriptionRepository SubscriptionsRepository;
-
-    protected IKafka Producer;
-    protected string KafkaTopicName;
-
-    protected ITRexCompactionDataProxy TRexCompactionDataProxy;
+    private readonly ITRexCompactionDataProxy _rexCompactionDataProxy;
+    private readonly IDictionary<string, string> _customHeaders;
 
 
-    /// <summary>
-    /// allows mapping between CG (which Raptor requires) and NG
-    /// </summary>
-    public ServiceTypeMappings ServiceTypeMappings = new ServiceTypeMappings();
-
-    public DataRepository(ILogger logger, IConfigurationStore configStore, IAssetRepository assetRepository, IDeviceRepository deviceRepository,
-      ICustomerRepository customerRepository, IProjectRepository projectRepository,
-      ISubscriptionRepository subscriptionsRepository,
-      IKafka producer, string kafkaTopicName,
-      ITRexCompactionDataProxy tRexCompactionDataProxy)
+    public DataRepository(
+      IAssetRepository assetRepository = null, IDeviceRepository deviceRepository = null,
+      ICustomerRepository customerRepository = null, IProjectRepository projectRepository = null,
+      ISubscriptionRepository subscriptionsRepository = null,
+      ITRexCompactionDataProxy tRexCompactionDataProxy = null,
+      IDictionary<string, string> customHeaders = null)
     {
-      Log = logger;
-      ConfigStore = configStore;
-      AssetRepository = assetRepository;
-      DeviceRepository = deviceRepository;
-      CustomerRepository = customerRepository;
-      ProjectRepository = projectRepository;
-      SubscriptionsRepository = subscriptionsRepository;
-      Producer = producer;
-      KafkaTopicName = kafkaTopicName;
-      TRexCompactionDataProxy = tRexCompactionDataProxy;
+      _assetRepository = assetRepository;
+      _deviceRepository = deviceRepository;
+      _customerRepository = customerRepository;
+      _projectRepository = projectRepository;
+      _subscriptionsRepository = subscriptionsRepository;
+      _rexCompactionDataProxy = tRexCompactionDataProxy;
+      _customHeaders = customHeaders;
     }
 
     public async Task<ProjectDataModel> LoadProject(long legacyProjectId)
@@ -79,7 +55,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (legacyProjectId > 0)
-          project = await ProjectRepository.GetProject(legacyProjectId);
+          project = await _projectRepository.GetProject(legacyProjectId);
       }
       catch (Exception e)
       {
@@ -97,7 +73,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(projectUid))
-          project = await ProjectRepository.GetProject(projectUid);
+          project = await _projectRepository.GetProject(projectUid);
       }
       catch (Exception e)
       {
@@ -116,7 +92,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (customerUid != null)
         {
-          var p = await ProjectRepository.GetProjectsForCustomer(customerUid);
+          var p = await _projectRepository.GetProjectsForCustomer(customerUid);
 
           if (p != null)
           {
@@ -136,82 +112,120 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    /// <summary>
-    /// Get CSIB/s for either:
-    ///   project: assumes project already found and ok so far
-    ///   customer: if customer found a) via asset or b) TCCOrgId, then get that customers projects valid at that time, then get each projects CSIB
-    /// Note that this is only used by v2 endpoint, which is TRex only, so can call trex, not 3dp (which could get raptor csib)
-    /// </summary>
-    /// <param name="customerUid"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="validAtDate"></param>
-    /// <param name="northing"></param>
-    /// <param name="easting"></param>
-    /// <returns></returns>
-    public async Task<List<ProjectDataModel>> LoadCSIBs(string customerUid, string projectUid, DateTime validAtDate, double? northing, double? easting)
+    public async Task<List<ProjectDataModel>> LoadProjects(string customerUid, DateTime validAtDate, List<int> projectTypes)
     {
-      if (northing == null || easting == null)
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 51));
-
-      var projectCSIBs = new List<Tuple<string, string>>();
-
-      if (!string.IsNullOrEmpty(projectUid))
-      {
-        projectCSIBs.Add(new Tuple<string, string>(projectUid, GetCSIBFromTRex(projectUid))); // todoJeannie
-      }
-      else
-      {
-        try
-        {
-          if (customerUid != null)
-          {
-            var projects = new List<ProjectDataModel>();
-            var p = await ProjectRepository.GetProjectsForCustomer(customerUid);
-
-            if (p != null)
-            {
-              projects = p
-                .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsDeleted)
-                .ToList();
-            }
-
-            if (projects != null)
-            {
-              foreach (var project in projects)
-              {
-                projectCSIBs.Add(new Tuple<string, string>(projectUid, GetCSIBFromTRex(project.ProjectUID))); // todoJeannie
-              }
-            }
-          }
-        }
-        catch (Exception e)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-              ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-        }
-      }
-
-      return projectCSIBs;
-    }
-
-    private string GetCSIBFromTRex(string projectUid)
-    {
+      var projects = new List<ProjectDataModel>();
       try
       {
-        var returnedResult = await TRexCompactionDataProxy.SendDataGetRequest<CSIBResult>(projectUid, $"/projects/{projectUid}/csib", customHeadersTodo);
-        return returnedResult.CSIB;
+        if (customerUid != null)
+        {
+          var p = await _projectRepository.GetProjectsForCustomer(customerUid);
+
+          if (p != null)
+          {
+            projects = p
+              .Where(x => x.StartDate <= validAtDate.Date 
+                          && validAtDate.Date <= x.EndDate 
+                          && !x.IsDeleted
+                          && projectTypes.Contains((int)x.ProjectType)).ToList();
+          }
+        }
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 999 /* todoJeannie*/, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
       }
 
-      return string.Empty;
+      return projects;
+    }
+
+    /// <summary>
+    /// Convert projects northing/easting to a lat/long
+    ///   obtains projects CSIB to call NE-->LL conversion
+    ///  Note: this comes from a v2 manual import and assumes project already found and ok so far
+    /// </summary>
+    public async Task<WGSPoint> GenerateLatLong(string projectUid, double northing, double easting)
+    {
+      var projectCSIB = await GetCSIBFromTRex(projectUid);
+
+      var northingEasting = new WGSPoint(northing, easting); // todoJeannie Aaron to establish new NEE class
+      var latLongDegrees = new WGSPoint(0, 0); // 0,0 is invalid lat/long
+      if (!string.IsNullOrEmpty(projectCSIB))
+      {
+        //todoJeannie latLongDegrees = AaronsNewConvertCoordinates.NEEToLLH(projectCSIB, northingEasting);
+        latLongDegrees = new WGSPoint(50, 50); 
+      }
+
+      return latLongDegrees; 
+    }
+
+    /// <summary>
+    /// Get CSIB/s for a customers projects
+    ///   customer: if customer found a) via asset or b) TCCOrgId, then get that customers projects valid at that time, then get each projects CSIB
+    /// Note that this is only used by v2 endpoint, which is TRex only, so can call trex, not 3dp (which could get raptor csib)
+    /// </summary>
+    //public async Task<List<Tuple<string, WGSPoint>>> LoadCSIBs(string customerUid, DateTime validAtDate, double? northing, double? easting)
+    //{
+    //  if (northing == null || easting == null)
+    //    throw new ServiceException(HttpStatusCode.InternalServerError,
+    //      TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+    //        ContractExecutionStatesEnum.InternalProcessingError, 52));
+
+    //  var projectCSIBs = new List<Tuple<string, WGSPoint>>();
+
+    //    try
+    //    {
+    //      if (customerUid != null)
+    //      {
+    //        var projects = new List<ProjectDataModel>();
+    //        var p = await _projectRepository.GetProjectsForCustomer(customerUid);
+
+    //        if (p != null)
+    //        {
+    //          projects = p
+    //            .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsDeleted)
+    //            .ToList();
+    //        }
+
+    //        if (projects != null)
+    //        {
+    //          foreach (var project in projects)
+    //          {
+    //            projectCSIBs.Add(new Tuple<string, string>(project.ProjectUID, await GetCSIBFromTRex(project.ProjectUID))); // todoJeannie
+    //          }
+    //        }
+    //      }
+    //    }
+    //    catch (Exception e)
+    //    {
+    //      throw new ServiceException(HttpStatusCode.InternalServerError,
+    //        TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+    //          ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+    //    }
+
+    //  return projectCSIBs;
+    //}
+
+    /// <summary>
+    /// Get CSIB/s for a project
+    ///    this is cached in proxy
+    /// Note: this comes from a v2 endpoint, which is TRex only, so can call trex directly, not 3dp (which would allow access to raptor csib)
+    /// </summary>
+    private async Task<string> GetCSIBFromTRex(string projectUid)
+    {
+      try
+      {
+        var returnResult = await _rexCompactionDataProxy.SendDataGetRequest<CSIBResult>(projectUid, $"/projects/{projectUid}/csib", _customHeaders);
+        return returnResult.CSIB;
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 53, e.Message));
+      }
     }
 
     public async Task<List<ProjectDataModel>> GetStandardProject(string customerUid, double latitude,
@@ -223,7 +237,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (customerUid != null)
         {
-          var p = (await ProjectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition));
+          var p = (await _projectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition));
           if (p != null)
             projects = p.ToList();
         }
@@ -247,7 +261,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (customerUid != null)
         {
-          var p = await ProjectRepository.GetProjectMonitoringProject(customerUid,
+          var p = await _projectRepository.GetProjectMonitoringProject(customerUid,
             latitude, longitude, timeOfPosition,
             projectType,
             serviceType);
@@ -267,15 +281,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     public async Task<List<ProjectDataModel>> GetIntersectingProjects(string customerUid,
-      double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition = null)
+      double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition = null, string projectUid = null)
     {
       var projects = new List<ProjectDataModel>();
       try
       {
         if (customerUid != null)
         {
-          var p = await ProjectRepository.GetIntersectingProjects(customerUid, latitude, longitude, projectTypes,
-              timeOfPosition);
+          var p = await _projectRepository.GetIntersectingProjects(customerUid, latitude, longitude, projectTypes,
+              timeOfPosition, projectUid);
           if (p != null)
             projects = p.ToList();
         }
@@ -296,7 +310,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(radioSerial) && !string.IsNullOrEmpty(deviceType))
-          assetDevice = await DeviceRepository.GetAssociatedAsset(radioSerial, deviceType);
+          assetDevice = await _deviceRepository.GetAssociatedAsset(radioSerial, deviceType);
       }
       catch (Exception e)
       {
@@ -316,7 +330,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(customerUid))
         {
-          var a = await CustomerRepository.GetCustomer(new Guid(customerUid));
+          var a = await _customerRepository.GetCustomer(new Guid(customerUid));
           if (a != null &&
               (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
                a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
@@ -342,7 +356,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(tccOrgUid))
         {
-          var customerTccOrg = await CustomerRepository.GetCustomerWithTccOrg(tccOrgUid);
+          var customerTccOrg = await _customerRepository.GetCustomerWithTccOrg(tccOrgUid);
           if (customerTccOrg != null &&
               (customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
                customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
@@ -368,7 +382,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (customerUid != null)
         {
-          var a = await CustomerRepository.GetCustomerWithTccOrg(new Guid(customerUid));
+          var a = await _customerRepository.GetCustomerWithTccOrg(new Guid(customerUid));
           if (a != null &&
               (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
                a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
@@ -392,7 +406,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (legacyAssetId > 0)
-          asset = await AssetRepository.GetAsset(legacyAssetId);
+          asset = await _assetRepository.GetAsset(legacyAssetId);
       }
       catch (Exception e)
       {
@@ -414,7 +428,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(customerUid))
         {
-          var s = await SubscriptionsRepository.GetProjectBasedSubscriptionsByCustomer(customerUid, validAtDate);
+          var s = await _subscriptionsRepository.GetProjectBasedSubscriptionsByCustomer(customerUid, validAtDate);
           if (s != null)
           {
             subs = s
@@ -442,7 +456,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(assetUid))
         {
-          var s = await SubscriptionsRepository.GetSubscriptionsByAsset(assetUid, validAtDate.Date);
+          var s = await _subscriptionsRepository.GetSubscriptionsByAsset(assetUid, validAtDate.Date);
           if (s != null)
           {
             subs = s

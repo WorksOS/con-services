@@ -1884,9 +1884,10 @@ namespace VSS.Productivity3D.Project.Repository
     /// <param name="longitude"></param>
     /// <param name="projectTypes"></param>
     /// <param name="timeOfPosition"></param>
+    /// <param name="projectUid"></param>
     /// <returns>The project</returns>
     public Task<IEnumerable<ProjectDataModel>> GetIntersectingProjects(string customerUid,
-      double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition)
+      double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition, string projectUid = null)
     {
       var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
       var projectTypesString = string.Empty;
@@ -1908,6 +1909,12 @@ namespace VSS.Productivity3D.Project.Repository
         timeRangeString = $"  AND '{formattedDate}' BETWEEN p.StartDate AND p.EndDate ";
       }
 
+      var projectUidString = string.Empty;
+      if (projectUid != null)
+      {
+        projectUidString = $"  AND p.ProjectUID = '{projectUid}'";
+      }
+
       var select = "SELECT DISTINCT " +
                    "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
                    "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT, " +
@@ -1922,6 +1929,7 @@ namespace VSS.Productivity3D.Project.Repository
                    $"        AND cp.fk_CustomerUID = '{customerUid}' " +
                    $"       {projectTypesString} " +
                    $"       {timeRangeString} " +
+                   $"       {projectUidString} " +
                    $"        AND st_Intersects({point}, PolygonST) = 1";
 
       return QueryWithAsyncPolicy<ProjectDataModel>(select);
