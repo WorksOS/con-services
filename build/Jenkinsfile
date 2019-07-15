@@ -112,12 +112,12 @@ node ('jenkinsslave-pod') {
 
     stage('Build Solution') {
         
-		//checkout([$class: 'GitSCM', 
-        //branches: [[name: fullBranchName]],
-        //extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true]]		
-        //])
+	checkout([$class: 'GitSCM', 
+        branches: [[name: fullBranchName]],
+        extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true]]		
+        ])
 		
-		checkout scm
+//		checkout scm
 		
 		sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
 		
