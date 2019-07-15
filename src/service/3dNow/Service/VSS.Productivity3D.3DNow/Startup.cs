@@ -21,16 +21,22 @@ using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Now3D
 {
+  /// <summary>
+  /// VSS.Productivity3D.Now3D application startup.
+  /// </summary>
   public class Startup : BaseStartup
   {
+    /// <inheritdoc />
     public override string ServiceName => "3D Now Composite API";
 
+    /// <inheritdoc />
     public override string ServiceDescription => "A service to manage requests to multiple services for each of use for external customers";
 
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
     
     /// <summary>
-    /// 
+    /// Configures services and the application request pipeline.
     /// </summary>
     public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
     { }
