@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
       {
-        if (Requestors[0].RequestSubGridInternal(x, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
+        if (Requestors[0].RequestSubGridInternal(x, null, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
           requestedSubGrids.Add(clientGrid);
       });
 
@@ -90,7 +90,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
       {
-        if (requestors[0].RequestSubGridInternal(x, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
+        if (requestors[0].RequestSubGridInternal(x, null, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
           requestedSubGrids.Add(clientGrid);
       });
 

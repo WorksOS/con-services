@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -29,6 +30,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.CellDatum.Arguments
         OTGCellY = 28451,
         Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
         ReferenceDesign = new DesignOffset(),
+        Overrides = new OverrideParameters { OverrideMachineCCV = true, OverridingMachineCCV = 123 }
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom CellDatumRequestArgument_ClusterCompute not same after round trip serialisation");

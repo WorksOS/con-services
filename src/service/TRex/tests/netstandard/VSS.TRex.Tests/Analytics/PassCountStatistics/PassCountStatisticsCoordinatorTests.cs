@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.Analytics.Common;
@@ -23,8 +24,11 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet(new CombinedFilter()),
-      OverrideTargetPassCount = true,
-      OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
+      Overrides = new OverrideParameters
+      { 
+        OverrideTargetPassCount = true,
+        OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10)
+      }
     };
 
     private PassCountStatisticsCoordinator _getCoordinator()
@@ -71,9 +75,9 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg_Summary.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
-      Assert.True(aggregator.OverrideTargetPassCount == Arg_Summary.OverrideTargetPassCount, "Invalid aggregator value for OverrideTargetPassCount.");
-      Assert.True(aggregator.OverridingTargetPassCountRange.Min == Arg_Summary.OverridingTargetPassCountRange.Min, "Invalid aggregator value for OverridingTargetPassCountRange.Min.");
-      Assert.True(aggregator.OverridingTargetPassCountRange.Max == Arg_Summary.OverridingTargetPassCountRange.Max, "Invalid aggregator value for OverridingTargetPassCountRange.Max.");
+      Assert.True(aggregator.OverrideTargetPassCount == Arg_Summary.Overrides.OverrideTargetPassCount, "Invalid aggregator value for OverrideTargetPassCount.");
+      Assert.True(aggregator.OverridingTargetPassCountRange.Min == Arg_Summary.Overrides.OverridingTargetPassCountRange.Min, "Invalid aggregator value for OverridingTargetPassCountRange.Min.");
+      Assert.True(aggregator.OverridingTargetPassCountRange.Max == Arg_Summary.Overrides.OverridingTargetPassCountRange.Max, "Invalid aggregator value for OverridingTargetPassCountRange.Max.");
     }
 
     [Fact]

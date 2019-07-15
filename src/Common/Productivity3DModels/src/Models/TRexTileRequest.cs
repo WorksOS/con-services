@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "projectUid", Required = Required.Always)]
     [ValidProjectUID]
 
-    public Guid? ProjectUid { get; private set; }
+    public Guid ProjectUid { get; private set; }
     /// <summary>
     /// The thematic mode to be rendered; elevation, compaction, temperature etc
     /// </summary>
@@ -102,7 +102,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public TRexTileRequest(
-      Guid? projectUid,
+      Guid projectUid,
       DisplayMode mode,
       List<ColorPalette> palettes,
       DesignDescriptor designDescriptor,

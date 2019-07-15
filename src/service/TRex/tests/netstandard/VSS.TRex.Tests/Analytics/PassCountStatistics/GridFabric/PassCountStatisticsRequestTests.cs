@@ -5,6 +5,7 @@ using FluentAssertions;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -28,8 +29,11 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
-        OverridingTargetPassCountRange = new PassCountRangeRecord(targetMin, targetMax),
-        OverrideTargetPassCount = targetMin > 0 && targetMax > 0
+        Overrides = new OverrideParameters
+        { 
+          OverridingTargetPassCountRange = new PassCountRangeRecord(targetMin, targetMax),
+          OverrideTargetPassCount = targetMin > 0 && targetMax > 0
+        }
       };
     }
 

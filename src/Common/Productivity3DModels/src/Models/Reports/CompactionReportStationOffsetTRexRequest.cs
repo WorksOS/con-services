@@ -52,7 +52,8 @@ namespace VSS.Productivity3D.Models.Models.Reports
       double crossSectionInterval,
       double startStation,
       double endStation,
-      double[] offsets)
+      double[] offsets,
+      OverridingTargets overrides)
     {
       return new CompactionReportStationOffsetTRexRequest
       {
@@ -70,7 +71,8 @@ namespace VSS.Productivity3D.Models.Models.Reports
         CrossSectionInterval = crossSectionInterval,
         StartStation = startStation,
         EndStation = endStation,
-        Offsets = offsets
+        Offsets = offsets,
+        Overrides = overrides
       };
     }
 

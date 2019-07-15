@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
@@ -25,8 +26,11 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
         ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
-        OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
-        OverrideTargetPassCount = false,
+        Overrides = new OverrideParameters
+        { 
+          OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
+          OverrideTargetPassCount = false,
+        },
         PassCountDetailValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }
       };
 

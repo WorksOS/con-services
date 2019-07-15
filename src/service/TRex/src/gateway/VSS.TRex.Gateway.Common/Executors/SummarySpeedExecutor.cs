@@ -1,15 +1,15 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 using SpeedSummaryResult = VSS.TRex.Analytics.SpeedStatistics.SpeedStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.SpeedSummaryResult;
@@ -48,18 +48,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      var machineSpeedTargetRange = new MachineSpeedExtendedRecord();
-      var machineSpeedTarget = request.Overrides?.MachineSpeedTarget;
-      if (machineSpeedTarget != null)
-        machineSpeedTargetRange.SetMinMax(machineSpeedTarget.MinTargetMachineSpeed, machineSpeedTarget.MaxTargetMachineSpeed);
-
       var operation = new SpeedStatisticsOperation();
       var speedSummaryResult = operation.Execute(
         new SpeedStatisticsArgument()
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          TargetMachineSpeed = machineSpeedTargetRange
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
         }
       );
 

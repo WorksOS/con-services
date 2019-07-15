@@ -84,7 +84,7 @@ namespace VSS.TRex.CellDatum.Executors
 
       // using the cell address get the index of cell in clientGrid
       var thisSubGridOrigin = new SubGridCellAddress(arg.OTGCellX, arg.OTGCellY);
-      var request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true, out var clientGrid);
+      var request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, arg.Overrides, true, true, out var clientGrid);
       if (request != ServerRequestResult.NoError)
       {
         if (request == ServerRequestResult.SubGridNotFound)
@@ -124,7 +124,7 @@ namespace VSS.TRex.CellDatum.Executors
         case DisplayMode.CCVSummary:
         case DisplayMode.CCVPercentSummary:
           result.Value = 0; // default - no value...
-          intValue = Dummy_LiftBuildSettings.OverrideMachineCCV ? Dummy_LiftBuildSettings.OverridingMachineCCV : cell.TargetCCV;
+          intValue = arg.Overrides.OverrideMachineCCV ? arg.Overrides.OverridingMachineCCV : cell.TargetCCV;
           if (intValue != 0)
           {
             success = cell.LastPassValidCCV != CellPassConsts.NullCCV && intValue != CellPassConsts.NullCCV;
@@ -138,12 +138,12 @@ namespace VSS.TRex.CellDatum.Executors
           break;
         case DisplayMode.PassCountSummary:
           result.Value = 0; // default - no value...
-          if (Dummy_LiftBuildSettings.OverrideTargetPassCount)
+          if (arg.Overrides.OverrideTargetPassCount)
           {
-            if (cell.PassCount > Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Max)
-              intValue = Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Max;
-            else if (cell.PassCount < Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Min)
-              intValue = Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Min;
+            if (cell.PassCount > arg.Overrides.OverridingTargetPassCountRange.Max)
+              intValue = arg.Overrides.OverridingTargetPassCountRange.Max;
+            else if (cell.PassCount < arg.Overrides.OverridingTargetPassCountRange.Min)
+              intValue = arg.Overrides.OverridingTargetPassCountRange.Min;
             else
               intValue = cell.PassCount;
           }
@@ -184,7 +184,7 @@ namespace VSS.TRex.CellDatum.Executors
         case DisplayMode.MDPPercent:
         case DisplayMode.MDPPercentSummary:
           result.Value = 0; // default - no value...
-          intValue = Dummy_LiftBuildSettings.OverrideMachineMDP ? Dummy_LiftBuildSettings.OverridingMachineMDP : cell.TargetMDP;
+          intValue = arg.Overrides.OverrideMachineMDP ? arg.Overrides.OverridingMachineMDP : cell.TargetMDP;
           if (intValue != 0)
           {
             success = cell.LastPassValidMDP != CellPassConsts.NullMDP && intValue != CellPassConsts.NullMDP;
