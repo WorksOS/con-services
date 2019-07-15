@@ -11,6 +11,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters;
@@ -98,7 +99,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       const ushort TEMPERATURE_LEVELS_MIN = 0;
       const ushort TEMPERATURE_LEVELS_MAX = 100;
 
-      var overrides = GetOverrideParameters(request.Overrides);
+      var overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides);
 
       PaletteBase convertedPalette;
 

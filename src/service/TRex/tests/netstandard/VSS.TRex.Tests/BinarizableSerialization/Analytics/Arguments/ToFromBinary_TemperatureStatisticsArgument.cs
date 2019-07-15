@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
@@ -25,8 +26,11 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
         ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
-        OverrideTemperatureWarningLevels = false,
-        OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(100, 200),
+        Overrides = new OverrideParameters
+        { 
+          OverrideTemperatureWarningLevels = false,
+          OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(100, 200),
+        },
         TemperatureDetailValues = new[] { 0, 120, 140, 160, 4000 }
       };
 

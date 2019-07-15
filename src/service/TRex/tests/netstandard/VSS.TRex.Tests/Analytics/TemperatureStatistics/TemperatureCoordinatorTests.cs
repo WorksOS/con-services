@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.Analytics.Common;
@@ -16,8 +17,11 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet(new CombinedFilter()),
-      OverrideTemperatureWarningLevels = true,
-      OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
+      Overrides = new OverrideParameters
+      { 
+        OverrideTemperatureWarningLevels = true,
+        OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
+      }
     };
 
     private TemperatureStatisticsCoordinator _getCoordinator()
@@ -49,9 +53,9 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
-      Assert.True(aggregator.OverrideTemperatureWarningLevels == Arg.OverrideTemperatureWarningLevels, "Invalid aggregator value for OverrideTemperatureWarningLevels.");
-      Assert.True(aggregator.OverridingTemperatureWarningLevels.Max == Arg.OverridingTemperatureWarningLevels.Max, "Invalid aggregator value for OverridingTemperatureWarningLevels.Max.");
-      Assert.True(aggregator.OverridingTemperatureWarningLevels.Min == Arg.OverridingTemperatureWarningLevels.Min, "Invalid aggregator value for OverridingTemperatureWarningLevels.Min.");
+      Assert.True(aggregator.OverrideTemperatureWarningLevels == Arg.Overrides.OverrideTemperatureWarningLevels, "Invalid aggregator value for OverrideTemperatureWarningLevels.");
+      Assert.True(aggregator.OverridingTemperatureWarningLevels.Max == Arg.Overrides.OverridingTemperatureWarningLevels.Max, "Invalid aggregator value for OverridingTemperatureWarningLevels.Max.");
+      Assert.True(aggregator.OverridingTemperatureWarningLevels.Min == Arg.Overrides.OverridingTemperatureWarningLevels.Min, "Invalid aggregator value for OverridingTemperatureWarningLevels.Min.");
     }
 
     [Fact]

@@ -6,6 +6,7 @@ using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -27,7 +28,8 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics.GridFabric
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
-        TargetMachineSpeed = new MachineSpeedExtendedRecord(minSpeed, maxSpeed)
+        Overrides = new OverrideParameters
+        { TargetMachineSpeed = new MachineSpeedExtendedRecord(minSpeed, maxSpeed) }
       };
     }
 

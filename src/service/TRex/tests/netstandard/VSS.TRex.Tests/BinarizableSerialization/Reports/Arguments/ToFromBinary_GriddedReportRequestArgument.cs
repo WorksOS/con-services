@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Reports.Gridded.GridFabric;
@@ -45,7 +46,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Arguments
         StartEasting = 400000,
         EndNorthing = 809000,
         EndEasting = 400100,
-        Azimuth = 4.6
+        Azimuth = 4.6,
+        Overrides = new OverrideParameters { OverrideMachineCCV = true, OverridingMachineCCV = 45 }
       };
 
       SimpleBinarizableInstanceTester.TestClass(request, "Empty GriddedReportRequestArgument not same after round trip serialisation");
