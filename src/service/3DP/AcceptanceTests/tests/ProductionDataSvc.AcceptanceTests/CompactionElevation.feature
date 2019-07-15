@@ -57,6 +57,6 @@ Scenario Outline: Compaction Get Alignment Station Range - Bad request
   # First example is a design file
   # Second example is a file not belonging to the project
   Examples: 
-  | Message                                        | AlignmentFileUid                     | ProjectUID                           | ErrorCode | HttpCode |
-  | Failed to get station range for alignment file | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | ff91dd40-1569-4765-a2bc-014321f76ace | -4        | 400      |
-  | Unable to access design or alignment file.     | dcb41fbd-7d43-4b36-a144-e22bbccc24a8 | ff91dd40-1569-4765-a2bc-014321f76ace | -1        | 400      |
+  | Message                                                                             | AlignmentFileUid                     | ProjectUID                           | ErrorCode | HttpCode |
+  | Failed to get station range for alignment file: Large Sites Road - Trimble Road.TTM | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | ff91dd40-1569-4765-a2bc-014321f76ace | -4        | 400      |
+  | Unable to access design or alignment file.                                          | dcb41fbd-7d43-4b36-a144-e22bbccc24a8 | ff91dd40-1569-4765-a2bc-014321f76ace | -1        | 400      |

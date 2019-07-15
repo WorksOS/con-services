@@ -25,9 +25,9 @@ namespace VSS.TRex.Analytics.CMVStatistics
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       CellSize = SiteModel.CellSize,
-      OverrideMachineCMV = argument.OverrideMachineCMV,
-      OverridingMachineCMV = argument.OverridingMachineCMV,
-      CMVPercentageRange = argument.CMVPercentageRange,
+      OverrideMachineCMV = argument.Overrides.OverrideMachineCCV,
+      OverridingMachineCMV = argument.Overrides.OverridingMachineCCV,
+      CMVPercentageRange = argument.Overrides.CMVRange,
       DetailsDataValues = argument.CMVDetailValues,
       Counts = argument.CMVDetailValues != null ? new long[argument.CMVDetailValues.Length] : null
     };

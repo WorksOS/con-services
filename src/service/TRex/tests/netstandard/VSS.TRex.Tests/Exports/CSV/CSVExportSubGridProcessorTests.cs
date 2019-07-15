@@ -367,6 +367,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       out CSVExportRequestArgument requestArgument, out ISiteModel siteModel, string tagFileDirectory = "ElevationMappingMode-KettlewellDrive")
     {
       siteModel = SetupSiteAndRequestArgument(coordType, outputType, isRawDataAsDBaseRequired, tagFileDirectory, out requestArgument);
+      var overrides = requestArgument.Overrides;
 
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var gridDataType = outputType == OutputTypes.PassCountLastPass || outputType == OutputTypes.VedaFinalPass
@@ -381,7 +382,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
       {
-        if (requestors[0].RequestSubGridInternal(x, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
+        if (requestors[0].RequestSubGridInternal(x, overrides, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
           requestedSubGrids.Add(clientGrid);
       });
       requestedSubGrids.Count.Should().Be(tagFileDirectory == "ElevationMappingMode-KettlewellDrive" ? 18 : 9);

@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;
@@ -22,8 +23,11 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet(new CombinedFilter()),
-      OverrideMachineMDP = true,
-      OverridingMachineMDP = 70
+      Overrides = new OverrideParameters
+      { 
+        OverrideMachineMDP = true,
+        OverridingMachineMDP = 70
+      }
     };
     private MDPStatisticsCoordinator _getCoordinator()
     {
@@ -69,8 +73,8 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg_Summary.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
-      Assert.True(aggregator.OverrideMachineMDP == Arg_Summary.OverrideMachineMDP, "Invalid aggregator value for OverrideMachineMDP.");
-      Assert.True(aggregator.OverridingMachineMDP == Arg_Summary.OverridingMachineMDP, "Invalid aggregator value for OverridingMachineMDP.");
+      Assert.True(aggregator.OverrideMachineMDP == Arg_Summary.Overrides.OverrideMachineMDP, "Invalid aggregator value for OverrideMachineMDP.");
+      Assert.True(aggregator.OverridingMachineMDP == Arg_Summary.Overrides.OverridingMachineMDP, "Invalid aggregator value for OverridingMachineMDP.");
     }
 
     [Fact]
