@@ -11,7 +11,7 @@ namespace VSS.DataOcean.Client
     public const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
     public const string GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX = "_AlignmentCenterline$";
     public const string DXF_FILE_EXTENSION = ".dxf";
-    public string[] SUPPORTED_FILE_EXTENSIONS = {".tif",".tiff", DXF_FILE_EXTENSION};
+    public static readonly string[] SUPPORTED_FILE_EXTENSIONS = {".tif",".tiff", DXF_FILE_EXTENSION};
 
     public string FileName { get; private set; }
     public string FilePath { get; private set; }
