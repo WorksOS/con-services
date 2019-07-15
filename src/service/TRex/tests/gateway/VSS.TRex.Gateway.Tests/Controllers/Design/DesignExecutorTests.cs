@@ -9,6 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.TRex.Alignments;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
