@@ -356,15 +356,16 @@ namespace VSS.TRex.Storage
     public bool Commit(ITransaction tx)
     {
       Commit();
-      
       tx.Commit();
 
       return true;
     }
 
-    public ITransaction StartTransaction()
+    public ITransaction StartTransaction(TransactionConcurrency concurrency, TransactionIsolation isolation)
     { 
-      return (ignite ?? DIContext.Obtain<ITRexGridFactory>().Grid(Mutability)).GetTransactions().TxStart();
+      return (ignite ?? DIContext.Obtain<ITRexGridFactory>().Grid(Mutability))
+        .GetTransactions()
+        .TxStart(concurrency, isolation);
     }
   }
 }

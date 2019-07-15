@@ -88,7 +88,7 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
-    public ITransaction StartTransaction()
+    public ITransaction StartTransaction(TransactionConcurrency concurrency, TransactionIsolation isolation)
     {
       throw new NotImplementedException();
     }

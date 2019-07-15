@@ -11,6 +11,7 @@ using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
+using VSS.TRex.SiteModelChangeMaps.Utilities;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
@@ -154,7 +155,7 @@ namespace VSS.TRex.SiteModelChangeMaps
         // 3. Write record back to store
         // 4. Commit transaction
 
-        using (var tx = _storageProxy.StartTransaction())
+        using (var tx = Transactions.StartTransaction(_storageProxy))
         {
           switch (item.Operation)
           {

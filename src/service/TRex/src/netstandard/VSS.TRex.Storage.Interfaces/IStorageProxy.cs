@@ -53,7 +53,7 @@ namespace VSS.TRex.Storage.Interfaces
 
     IStorageProxy ImmutableProxy { get; }
 
-    ITransaction StartTransaction();
+    ITransaction StartTransaction(TransactionConcurrency concurrency, TransactionIsolation isolation);
 
     bool Commit();
 
