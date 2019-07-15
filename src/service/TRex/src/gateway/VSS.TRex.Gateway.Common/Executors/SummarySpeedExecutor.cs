@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -9,7 +9,6 @@ using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 using SpeedSummaryResult = VSS.TRex.Analytics.SpeedStatistics.SpeedStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.SpeedSummaryResult;
@@ -37,7 +36,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as SpeedSummaryRequest;
 
@@ -54,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         machineSpeedTargetRange.SetMinMax(machineSpeedTarget.MinTargetMachineSpeed, machineSpeedTarget.MaxTargetMachineSpeed);
 
       var operation = new SpeedStatisticsOperation();
-      var speedSummaryResult = operation.Execute(
+      var speedSummaryResult = await operation.ExecuteAsync(
         new SpeedStatisticsArgument()
         {
           ProjectID = siteModel.ID,
@@ -83,6 +82,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         Math.Round(result.WithinTargetPercent, PRECISION_PERCENTAGE, MidpointRounding.AwayFromZero),
         Math.Round(result.TotalAreaCoveredSqMeters, PRECISION_AREA)
       );
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -33,16 +34,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     [Route("api/v1/coordsystem/validation")]
     [HttpPost]
-    public CoordinateSystemSettings ValidateCoordinateSystem([FromBody] CoordinateSystemFileValidationRequest request)
+    public async Task<CoordinateSystemSettings> ValidateCoordinateSystem([FromBody] CoordinateSystemFileValidationRequest request)
     {
       Log.LogInformation($"{nameof(ValidateCoordinateSystem)}: {Request.QueryString}");
 
       request.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CoordinateSystemValidationExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(request) as CoordinateSystemSettings);
+          .ProcessAsync(request)) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -50,7 +51,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     [Route("api/v1/projects/{projectUid}/coordsystem")]
     [HttpGet]
-    public CoordinateSystemSettings GetCoordinateSystem([FromRoute] Guid projectUid)
+    public async Task<CoordinateSystemSettings> GetCoordinateSystem([FromRoute] Guid projectUid)
     {
       Log.LogInformation($"{nameof(GetCoordinateSystem)}: {Request.QueryString}");
 
@@ -58,10 +59,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       request.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CoordinateSystemGetExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(request) as CoordinateSystemSettings);
+          .ProcessAsync(request)) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -69,16 +70,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     [Route("api/v1/coordinateconversion")]
     [HttpPost]
-    public CoordinateConversionResult PostCoordinateConversion([FromBody] CoordinateConversionRequest request)
+    public async Task<CoordinateConversionResult> PostCoordinateConversion([FromBody] CoordinateConversionRequest request)
     {
       Log.LogInformation($"{nameof(PostCoordinateConversion)}: {Request.QueryString}");
 
       request.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CoordinateConversionExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(request) as CoordinateConversionResult);
+          .ProcessAsync(request)) as CoordinateConversionResult;
     }
 
     /// <summary>

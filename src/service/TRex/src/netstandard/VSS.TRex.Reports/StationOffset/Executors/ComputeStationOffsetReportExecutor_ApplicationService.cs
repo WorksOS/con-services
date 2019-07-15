@@ -42,7 +42,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         if (arg.Filters?.Filters != null && arg.Filters.Filters.Length > 0)
         {
           // Prepare the filters for use in stationOffset operations. Failure to prepare any filter results in this request terminating
-          if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK)))
+          if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x.Result == RequestErrorStatus.OK)))
           {
             return new StationOffsetReportRequestResponse_ApplicationService {ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
           }

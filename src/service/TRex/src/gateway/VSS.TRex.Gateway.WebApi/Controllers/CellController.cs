@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -31,7 +31,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="patchRequest"></param>
     /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>
     [HttpPost("patches")]
-    public FileResult PostSubGridPatches([FromBody] PatchDataRequest patchRequest)
+    public async Task<FileResult> PostSubGridPatches([FromBody] PatchDataRequest patchRequest)
     {
       Log.LogInformation($"{nameof(PostSubGridPatches)}: {Request.QueryString}");
 
@@ -39,10 +39,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter1);
       ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter2);
       
-      var patchResult = WithServiceExceptionTryExecute(() =>
+      var patchResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<PatchRequestExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(patchRequest)) as PatchDataResult;
+          .ProcessAsync(patchRequest)) as PatchDataResult;
 
       if (patchResult?.PatchData == null)
       {
@@ -61,30 +61,30 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     /// <returns>The requested thematic value expressed as a floating point number. Interpretation is dependant on the thematic domain.</returns>
     [HttpPost("cells/datum")]
-    public CompactionCellDatumResult PostCellDatum([FromBody] CellDatumTRexRequest cellDatumRequest)
+    public async Task<CompactionCellDatumResult> PostCellDatum([FromBody] CellDatumTRexRequest cellDatumRequest)
     {
       Log.LogInformation($"{nameof(PostCellDatum)}: {Request.QueryString}");
 
       cellDatumRequest.Validate();
       ValidateFilterMachines(nameof(PostCellDatum), cellDatumRequest.ProjectUid, cellDatumRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CellDatumExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(cellDatumRequest) as CompactionCellDatumResult);
+          .ProcessAsync(cellDatumRequest)) as CompactionCellDatumResult;
     }
 
     [HttpPost("cells/passes")]
-    public CellPassesV2Result PostCellPasses([FromBody] CellPassesTRexRequest cellPassesRequest)
+    public async Task<CellPassesV2Result> PostCellPasses([FromBody] CellPassesTRexRequest cellPassesRequest)
     {
       Log.LogInformation($"{nameof(PostCellPasses)}: {Request.QueryString}");
 
       cellPassesRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CellPassesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(cellPassesRequest) as CellPassesV2Result);
+          .ProcessAsync(cellPassesRequest)) as CellPassesV2Result;
     }
   }
 }

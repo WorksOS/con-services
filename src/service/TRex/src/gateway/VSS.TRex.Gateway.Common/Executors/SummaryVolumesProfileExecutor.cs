@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Common;
@@ -42,7 +41,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as SummaryVolumesProfileDataRequest;
       if (request == null)
@@ -109,7 +108,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     private ProfileDataResult<SummaryVolumesProfileCell> ConvertResult(ProfileRequestResponse<SummaryVolumeProfileCell> result)
     {
-      List<SummaryVolumesProfileCell> profileCells = result.ProfileCells.Select(pc => 
+      var profileCells = result.ProfileCells.Select(pc => 
         new SummaryVolumesProfileCell(
           pc.Station, 
           pc.InterceptLength, 
@@ -121,6 +120,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         .ToList();
 
       return new ProfileDataResult<SummaryVolumesProfileCell>(result.GridDistanceBetweenProfilePoints, profileCells);
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

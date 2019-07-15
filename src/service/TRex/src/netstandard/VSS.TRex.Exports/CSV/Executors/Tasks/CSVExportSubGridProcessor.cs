@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -104,7 +105,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       int runningIndexLLHCoords = 0;
       if (_requestArgument.CoordType == CoordType.LatLon)
-        _llhCoords = SetupLLPositions(_siteModel.CSIB(), lastPassSubGrid);
+        _llhCoords = SetupLLPositions(_siteModel.CSIB(), lastPassSubGrid).Result;
 
       lastPassSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
@@ -136,7 +137,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       var runningIndexLLHCoords = 0;
       var halfPassCount = 0;
       if (_requestArgument.CoordType == CoordType.LatLon)
-        _llhCoords = SetupLLPositions(_siteModel.CSIB(), allPassesSubGrid);
+        _llhCoords = SetupLLPositions(_siteModel.CSIB(), allPassesSubGrid).Result;
 
       allPassesSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
@@ -332,7 +333,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     //  which is sent to Coordinate service
     //  to resolve into a list of LHH (in same order)
     // Note: only adds entry where cellPassCount exists, so may not be 1024 entries
-    private XYZ[] SetupLLPositions(string csibName, IClientLeafSubGrid subGrid)
+    private async Task<XYZ[]> SetupLLPositions(string csibName, IClientLeafSubGrid subGrid)
     {
       var indexIntoNEECoords = 0;
       var NEECoords = new XYZ[1024];
@@ -349,7 +350,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         NEECoords[indexIntoNEECoords] = new XYZ(easting, northing, cell.Height);
         indexIntoNEECoords++;
       });
-      var result = _convertCoordinates.NEEToLLH(csibName, NEECoords);
+      var result = await _convertCoordinates.NEEToLLH(csibName, NEECoords);
       if (result.ErrorCode != RequestErrorStatus.OK)
       {
         log.LogError($"#Out# CSVExportExecutor. Unable to convert NEE to LLH : Project: {_siteModel.ID}");

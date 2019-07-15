@@ -34,7 +34,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 
       // Todo this will all change in Part Two. Leave for now
 
-      DateTime startTime = DateTime.UtcNow;
+      var startTime = DateTime.UtcNow;
 
       Log.LogInformation("In QuantizedMeshRequestComputeFunc.Invoke()");
 
@@ -46,7 +46,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
-        RenderQMTile render = new RenderQMTile
+        var render = new RenderQMTile
             (arg.ProjectID,
              new XYZ(arg.Extents.MinX, arg.Extents.MinY),
              new XYZ(arg.Extents.MaxX, arg.Extents.MaxY),
@@ -56,14 +56,12 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 
         Log.LogInformation("Executing render.Execute()");
 
-        IQuantizedMeshTile qm = render.Execute();
+        var qm = render.ExecuteAsync().Result;
         
         Log.LogInformation($"Render status = {render.ResultStatus}");
 
         if (qm == null)
-        {
           Log.LogInformation("Null quantized mesh returned by executor");
-        }
 
         //var response = new QuantizedMeshResponse();
         var response = new DummyQMResponse();

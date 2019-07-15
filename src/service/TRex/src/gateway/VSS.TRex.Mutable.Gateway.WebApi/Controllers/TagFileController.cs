@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -71,10 +70,9 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     private async Task<ContractExecutionResult> ExecuteRequest(CompactionTagFileRequest tfRequest)
     {
 
-      var tagfileResult = WithServiceExceptionTryExecute(() => RequestExecutorContainer
+      return await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
                                                      .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-                                                     .Process(tfRequest)) as TagFileResult;
-      return tagfileResult;
+                                                     .ProcessAsync(tfRequest)) as TagFileResult;
     }
   }
 }

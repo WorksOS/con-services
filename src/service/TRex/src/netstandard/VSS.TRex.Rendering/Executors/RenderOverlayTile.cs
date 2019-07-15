@@ -18,6 +18,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 using System.Drawing;
+using System.Threading.Tasks;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
@@ -313,7 +314,7 @@ namespace VSS.TRex.Rendering.Executors
     /// <summary>
     /// Executor that implements requesting and rendering sub grid information to create the rendered tile
     /// </summary>
-    public IBitmap Execute()
+    public async Task<IBitmap> ExecuteAsync()
     {
       // WorkingColorPalette  : TICDisplayPaletteBase;
 
@@ -432,7 +433,7 @@ namespace VSS.TRex.Rendering.Executors
       }
       else
       {
-        var conversionResult = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+        var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
         if (conversionResult.ErrorCode != RequestErrorStatus.OK)
         {

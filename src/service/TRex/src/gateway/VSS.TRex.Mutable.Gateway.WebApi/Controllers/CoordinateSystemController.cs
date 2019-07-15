@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -33,16 +34,16 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     /// </summary>
     [Route("api/v1/coordsystem")]
     [HttpPost]
-    public CoordinateSystemSettings PostCoordinateSystem([FromBody] CoordinateSystemFile request)
+    public async Task<CoordinateSystemSettings> PostCoordinateSystem([FromBody] CoordinateSystemFile request)
     {
       Log.LogInformation($"{nameof(PostCoordinateSystem)}: {Request.QueryString}");
 
       request.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CoordinateSystemPostExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(request) as CoordinateSystemSettings);
+          .ProcessAsync(request)) as CoordinateSystemSettings;
     }
   }
 }

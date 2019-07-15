@@ -43,7 +43,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       return siteModel.SurveyedSurfaces == null || includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as TRexTileRequest;
 
@@ -65,7 +65,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var siteModel = GetSiteModel(request.ProjectUid);
       
       var tileRequest = new TileRenderRequest();
-      var response = tileRequest.Execute(
+      var response = await tileRequest.ExecuteAsync(
         new TileRenderRequestArgument
         (siteModel.ID,
           request.Mode,
@@ -82,11 +82,11 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
     /// <summary>
-    /// Processes the tile request asynchronously.
+    /// Processes the tile request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
 
     private PaletteBase ConvertColorPalettes(TRexTileRequest request, ISiteModel siteModel)

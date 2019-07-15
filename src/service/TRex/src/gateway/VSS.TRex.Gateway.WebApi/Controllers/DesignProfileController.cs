@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -33,16 +34,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/profile/design")]
     [HttpPost]
-    public DesignProfileResult PostDesignProfile([FromBody] DesignProfileRequest designProfileRequest)
+    public async Task<DesignProfileResult> PostDesignProfile([FromBody] DesignProfileRequest designProfileRequest)
     {
       Log.LogInformation($"{nameof(PostDesignProfile)}: {Request.QueryString}");
 
       designProfileRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DesignProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(designProfileRequest) as DesignProfileResult);
+          .ProcessAsync(designProfileRequest)) as DesignProfileResult;
     }
 
     /// <summary>
@@ -58,7 +59,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/profile/design")]
     [HttpGet]
-    public DesignProfileResult GetDesignProfile(
+    public async Task<DesignProfileResult> GetDesignProfile(
       [FromQuery] Guid projectUID,
       [FromQuery] Guid designUID,
       [FromQuery] double offset,
@@ -68,7 +69,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       [FromQuery] double endY)
     {
       var designProfileRequest = new DesignProfileRequest(projectUID, designUID, offset, startX, startY, endX, endY);
-      return PostDesignProfile(designProfileRequest);
+      return await PostDesignProfile(designProfileRequest);
     }
   }
 }

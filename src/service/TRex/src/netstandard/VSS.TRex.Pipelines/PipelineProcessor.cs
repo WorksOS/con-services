@@ -262,7 +262,7 @@ namespace VSS.TRex.Pipelines
 
           if (filter.AttributeFilter.AnyFilterSelections)
           {
-            Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
+            Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID).Result;
             if (Response.ResultStatus != RequestErrorStatus.OK)
             {
               Log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");

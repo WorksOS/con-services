@@ -1,8 +1,9 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.CoordinateSystems;
@@ -28,14 +29,14 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CSFileValidationRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<CSFileValidationRequest>();
 
-      var csd = DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
+      var csd = await DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 
       if (csd.CoordinateSystem != null && csd.CoordinateSystem.ZoneInfo != null && csd.CoordinateSystem.DatumInfo != null)
         return ConvertResult(request.CSFileName, csd.CoordinateSystem);
@@ -44,5 +45,12 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         $"Failed to convert DC File {request.CSFileName} content to Coordinate System definition data."));
     }
 
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Tests.Common;
@@ -27,16 +28,16 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
     }
 
     [Fact]
-    public void MachineStatusConvertCoords_NoMachines()
+    public async Task MachineStatusConvertCoords_NoMachines()
     {
       var machines = new List<MachineStatus>();
 
-      var result = DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
+      var result = await DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
       result.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
     }
 
     [Fact]
-    public void MachineStatusConvertCoords_Machines_DefaultNEE()
+    public async Task MachineStatusConvertCoords_Machines_DefaultNEE()
     {
       var machines = new List<MachineStatus>()
       {
@@ -46,13 +47,13 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
           Consts.NullDouble, Consts.NullDouble, Guid.NewGuid())
       };
 
-      var result = DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
+      var result = await DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
       result.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
     }
 
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void MachineStatusConvertCoords_OneMachine()
+    public async Task MachineStatusConvertCoords_OneMachine()
     {
       var machines = new List<MachineStatus>() {new MachineStatus
         (Consts.NULL_LEGACY_ASSETID, "", false, "", null, null,
@@ -60,14 +61,14 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
           lastKnownX: 2313, lastKnownY: 1204)
       };
 
-      var result = DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
+      var result = await DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
       result.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       machines[0].lastKnownLongitude.Should().Be(-115.05065884125976);
       machines[0].lastKnownLatitude.Should().Be(36.196461918456677);
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void MachineStatusConvertCoords_TwoMachine()
+    public async Task MachineStatusConvertCoords_TwoMachine()
     {
       var machines = new List<MachineStatus>() {new MachineStatus
         (Consts.NULL_LEGACY_ASSETID, "machine1", false, "", null, null,
@@ -79,7 +80,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
           lastKnownX: 2314, lastKnownY: 1205)
       };
 
-      var result = DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
+      var result = await DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
       result.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       machines[0].lastKnownLongitude.Should().Be(-115.05065884125976);
       machines[0].lastKnownLatitude.Should().Be(36.196461918456677);

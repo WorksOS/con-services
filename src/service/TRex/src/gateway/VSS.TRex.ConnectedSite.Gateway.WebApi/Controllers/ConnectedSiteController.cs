@@ -77,7 +77,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
 
     private async Task<ContractExecutionResult> ExecuteRequest(ConnectedSiteRequest request)
     {
-      var tagfileResult = await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainer
+      var tagfileResult = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
                                                      .Build<ConnectedSiteMessageSubmissionExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
                                                      .ProcessAsync(request)) as ConnectedSiteMessageResult;
       return tagfileResult;

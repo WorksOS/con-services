@@ -1,8 +1,7 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -33,17 +32,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/cmv/summary")]
     [HttpPost]
-    public CMVSummaryResult PostCmvSummary([FromBody] CMVSummaryRequest cmvSummaryRequest)
+    public async Task<CMVSummaryResult> PostCmvSummary([FromBody] CMVSummaryRequest cmvSummaryRequest)
     {
       Log.LogInformation($"{nameof(PostCmvSummary)}: {Request.QueryString}");
 
       cmvSummaryRequest.Validate();
       ValidateFilterMachines(nameof(PostCmvSummary), cmvSummaryRequest.ProjectUid, cmvSummaryRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<SummaryCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(cmvSummaryRequest) as CMVSummaryResult);
+          .ProcessAsync(cmvSummaryRequest)) as CMVSummaryResult;
     }
 
 
@@ -54,17 +53,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/mdp/summary")]
     [HttpPost]
-    public MDPSummaryResult PostMdpSummary([FromBody] MDPSummaryRequest mdpSummaryRequest)
+    public async Task<MDPSummaryResult> PostMdpSummary([FromBody] MDPSummaryRequest mdpSummaryRequest)
     {
       Log.LogInformation($"{nameof(PostMdpSummary)}: " + Request.QueryString);
 
       mdpSummaryRequest.Validate();
       ValidateFilterMachines(nameof(PostMdpSummary), mdpSummaryRequest.ProjectUid, mdpSummaryRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<SummaryMDPExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(mdpSummaryRequest) as MDPSummaryResult);
+          .ProcessAsync(mdpSummaryRequest)) as MDPSummaryResult;
     }
 
     /// <summary>
@@ -74,7 +73,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/passcounts/summary")]
     [HttpPost]
-    public PassCountSummaryResult PostPassCountSummary([FromBody] PassCountSummaryRequest passCountSummaryRequest)
+    public async Task<PassCountSummaryResult> PostPassCountSummary([FromBody] PassCountSummaryRequest passCountSummaryRequest)
     {
       Log.LogInformation($"#In# {nameof(PostPassCountSummary)}: {Request.QueryString}");
 
@@ -84,10 +83,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         ValidateFilterMachines(nameof(PostPassCountSummary), passCountSummaryRequest.ProjectUid,
           passCountSummaryRequest.Filter);
 
-        return WithServiceExceptionTryExecute(() =>
+        return await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainer
             .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(passCountSummaryRequest) as PassCountSummaryResult);
+            .ProcessAsync(passCountSummaryRequest)) as PassCountSummaryResult;
       }
       finally
       {
@@ -102,17 +101,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/speed/summary")]
     [HttpPost]
-    public SpeedSummaryResult PostSpeedSummary([FromBody] SpeedSummaryRequest speedSummaryRequest)
+    public async Task<SpeedSummaryResult> PostSpeedSummary([FromBody] SpeedSummaryRequest speedSummaryRequest)
     {
       Log.LogInformation($"{nameof(PostSpeedSummary)}: {Request.QueryString}");
 
       speedSummaryRequest.Validate();
       ValidateFilterMachines(nameof(PostSpeedSummary), speedSummaryRequest.ProjectUid, speedSummaryRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<SummarySpeedExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(speedSummaryRequest) as SpeedSummaryResult);
+          .ProcessAsync(speedSummaryRequest)) as SpeedSummaryResult;
     }
 
     /// <summary>
@@ -120,17 +119,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     [Route("api/v1/temperature/summary")]
     [HttpPost]
-    public TemperatureSummaryResult PostTemperatureSummary([FromBody] TemperatureSummaryRequest temperatureSummaryRequest)
+    public async Task<TemperatureSummaryResult> PostTemperatureSummary([FromBody] TemperatureSummaryRequest temperatureSummaryRequest)
     {
       Log.LogInformation($"{nameof(PostTemperatureSummary)}: {Request.QueryString}");
 
       temperatureSummaryRequest.Validate();
       ValidateFilterMachines(nameof(PostTemperatureSummary), temperatureSummaryRequest.ProjectUid, temperatureSummaryRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<SummaryTemperatureExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(temperatureSummaryRequest) as TemperatureSummaryResult);
+          .ProcessAsync(temperatureSummaryRequest)) as TemperatureSummaryResult;
     }
 
     /// <summary>
@@ -140,17 +139,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/cca/summary")]
     [HttpPost]
-    public CCASummaryResult PostCcaSummary([FromBody] CCASummaryRequest ccaSummaryRequest)
+    public async Task<CCASummaryResult> PostCcaSummary([FromBody] CCASummaryRequest ccaSummaryRequest)
     {
       Log.LogInformation($"{nameof(PostCcaSummary)}: {Request.QueryString}");
 
       ccaSummaryRequest.Validate();
       ValidateFilterMachines(nameof(PostCcaSummary), ccaSummaryRequest.ProjectUid, ccaSummaryRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<SummaryCCAExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(ccaSummaryRequest) as CCASummaryResult);
+          .ProcessAsync(ccaSummaryRequest)) as CCASummaryResult;
     }
    
   }

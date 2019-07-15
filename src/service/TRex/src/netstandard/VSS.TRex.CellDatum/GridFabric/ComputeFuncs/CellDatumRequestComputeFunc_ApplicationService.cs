@@ -33,7 +33,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
         Log.LogInformation("Executing CellDatumRequestComputeFunc_ApplicationService.Execute()");
 
-        return request.Execute(arg);
+        return request.ExecuteAsync(arg).Result;
       }
       finally
       {

@@ -28,7 +28,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
         Log.LogInformation($"Executing {nameof(CellPassesRequestComputeFunc_ApplicationService)}.Execute()");
 
-        return request.Execute(arg);
+        return request.ExecuteAsync(arg).Result;
       }
       finally
       {

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -25,7 +26,7 @@ namespace VSS.TRex.Profiling.Executors
     /// <summary>
     /// Executes the profiler
     /// </summary>
-    public ProfileRequestResponse<T> Execute(ProfileRequestArgument_ApplicationService arg)
+    public async Task<ProfileRequestResponse<T>> ExecuteAsync(ProfileRequestArgument_ApplicationService arg)
     {
       Log.LogInformation("Start execution");
 
@@ -34,7 +35,7 @@ namespace VSS.TRex.Profiling.Executors
         if (arg.Filters?.Filters != null && arg.Filters.Filters.Length > 0)
         {
           // Prepare the filters for use in profiling operations. Failure to prepare any filter results in this request terminating
-          if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK)))
+          if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x.Result == RequestErrorStatus.OK)))
           {
             return new ProfileRequestResponse<T>{ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
           }
@@ -62,7 +63,7 @@ namespace VSS.TRex.Profiling.Executors
         {
           var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
 
-          arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
+          arg2.NEECoords = await DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
         }
 
         var request = new ProfileRequest_ClusterCompute<T>();

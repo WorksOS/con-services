@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
@@ -32,17 +33,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/cmv/percentchange")]
     [HttpPost]
-    public CMVChangeSummaryResult PostCmvPercentChange([FromBody] CMVChangeDetailsRequest cmvChangeDetailsRequest)
+    public async Task<CMVChangeSummaryResult> PostCmvPercentChange([FromBody] CMVChangeDetailsRequest cmvChangeDetailsRequest)
     {
       Log.LogInformation($"{nameof(PostCmvPercentChange)}: {Request.QueryString}");
 
       cmvChangeDetailsRequest.Validate();
       ValidateFilterMachines(nameof(PostCmvPercentChange), cmvChangeDetailsRequest.ProjectUid, cmvChangeDetailsRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DetailedCMVChangeExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(cmvChangeDetailsRequest) as CMVChangeSummaryResult);
+          .ProcessAsync(cmvChangeDetailsRequest)) as CMVChangeSummaryResult;
     }
 
     /// <summary>
@@ -52,17 +53,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/cmv/details")]
     [HttpPost]
-    public CMVDetailedResult PostCmvDetails([FromBody] CMVDetailsRequest cmvDetailsRequest)
+    public async Task<CMVDetailedResult> PostCmvDetails([FromBody] CMVDetailsRequest cmvDetailsRequest)
     {
       Log.LogInformation($"{nameof(PostCmvDetails)}: {Request.QueryString}");
 
       cmvDetailsRequest.Validate();
       ValidateFilterMachines(nameof(PostCmvDetails), cmvDetailsRequest.ProjectUid, cmvDetailsRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DetailedCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(cmvDetailsRequest) as CMVDetailedResult);
+          .ProcessAsync(cmvDetailsRequest)) as CMVDetailedResult;
     }
 
     /// <summary>
@@ -72,17 +73,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/passcounts/details")]
     [HttpPost]
-    public PassCountDetailedResult PostPassCountDetails([FromBody] PassCountDetailsRequest passCountDetailsRequest)
+    public async Task<PassCountDetailedResult> PostPassCountDetails([FromBody] PassCountDetailsRequest passCountDetailsRequest)
     {
       Log.LogInformation($"{nameof(PostPassCountDetails)}: {Request.QueryString}");
 
       passCountDetailsRequest.Validate();
       ValidateFilterMachines(nameof(PostPassCountDetails), passCountDetailsRequest.ProjectUid, passCountDetailsRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DetailedPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(passCountDetailsRequest) as PassCountDetailedResult);
+          .ProcessAsync(passCountDetailsRequest)) as PassCountDetailedResult;
     }
 
     /// <summary>
@@ -92,17 +93,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/cutfill/details")]
     [HttpPost]
-    public CompactionCutFillDetailedResult PostCutFillDetails([FromBody] CutFillDetailsRequest cutFillRequest)
+    public async Task<CompactionCutFillDetailedResult> PostCutFillDetails([FromBody] CutFillDetailsRequest cutFillRequest)
     {
       Log.LogInformation($"{nameof(PostCutFillDetails)}: {Request.QueryString}");
 
       cutFillRequest.Validate();
       ValidateFilterMachines(nameof(PostCutFillDetails), cutFillRequest.ProjectUid, cutFillRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CutFillExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(cutFillRequest) as CompactionCutFillDetailedResult);
+          .ProcessAsync(cutFillRequest)) as CompactionCutFillDetailedResult;
     }
 
 
@@ -113,17 +114,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/temperature/details")]
     [HttpPost]
-    public TemperatureDetailResult PostTemperatureDetails([FromBody] TemperatureDetailRequest temperatureDetailRequest)
+    public async Task<TemperatureDetailResult> PostTemperatureDetails([FromBody] TemperatureDetailRequest temperatureDetailRequest)
     {
       Log.LogInformation($"{nameof(PostTemperatureDetails)}: {Request.QueryString}");
       
       temperatureDetailRequest.Validate();
       ValidateFilterMachines(nameof(PostTemperatureDetails), temperatureDetailRequest.ProjectUid, temperatureDetailRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DetailedTemperatureExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(temperatureDetailRequest) as TemperatureDetailResult);
+          .ProcessAsync(temperatureDetailRequest)) as TemperatureDetailResult;
     }
   }
 }

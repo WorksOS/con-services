@@ -48,7 +48,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     /// <param name="designRequest"></param>
     /// <returns></returns>
     [HttpPost]
-    public Task<ContractExecutionResult> CreateDesign([FromBody] DesignRequest designRequest)
+    public async Task<ContractExecutionResult> CreateDesign([FromBody] DesignRequest designRequest)
     {
       Log.LogInformation($"{nameof(CreateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
@@ -56,19 +56,19 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
      
       if (DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
-        return Task.FromResult(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add."));
+        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
       }
 
       if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
       {
-        return WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainer
+        return await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
             .Build<AddTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
             .ProcessAsync(designRequest));
       }
 
       if (designRequest.FileType == ImportedFileType.Alignment)
       {
-        return WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainer
+        return await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
             .Build<AddSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
             .ProcessAsync(designRequest));
       }
@@ -96,14 +96,14 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 
       if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
       {
-        return await WithServiceExceptionTryExecuteAsync(async () => await RequestExecutorContainer
+        return await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
             .Build<UpdateTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
             .ProcessAsync(designRequest));
       }
 
       if (designRequest.FileType == ImportedFileType.Alignment)
       {
-        return await WithServiceExceptionTryExecuteAsync(async () => await 
+        return await WithServiceExceptionTryExecuteAsync(() => 
           RequestExecutorContainer
             .Build<UpdateSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
             .ProcessAsync(designRequest));
