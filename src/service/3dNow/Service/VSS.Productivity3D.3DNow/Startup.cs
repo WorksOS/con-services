@@ -23,19 +23,19 @@ namespace VSS.Productivity3D.Now3D
 {
   public class Startup : BaseStartup
   {
-    public const string LoggerRepoName = "3d-now";
-
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
-
-
     public override string ServiceName => "3D Now Composite API";
 
     public override string ServiceDescription => "A service to manage requests to multiple services for each of use for external customers";
 
     public override string ServiceVersion => "v1";
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    { }
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       services.AddMvc();
@@ -56,8 +56,7 @@ namespace VSS.Productivity3D.Now3D
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
-
-
+      
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>
@@ -67,6 +66,7 @@ namespace VSS.Productivity3D.Now3D
       });
     }
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<Now3DAuthentication>();

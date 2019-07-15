@@ -39,12 +39,6 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="log4net.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <ItemGroup>
       <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
