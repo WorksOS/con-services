@@ -209,7 +209,7 @@ constructor(
 
     this.getAllProjectMetadata();
 
-    this.switchToMutable();
+    this.switchToImmutable();
   }
 
   public selectProject(): void {
@@ -891,7 +891,7 @@ constructor(
   // between all others
   public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number,
     getValue: (point: any) => number, setResult: (theResult: string) => void) {
-      return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
+      return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY, this.mode, this.designUid, this.designOffset)
           .subscribe(
               points => {
                   // Compute the overall scale factor for the elevation range

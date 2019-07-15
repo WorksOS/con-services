@@ -103,7 +103,7 @@ export class ProjectService {
 
   public addDesignSurface(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-        ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileNameAndLocalPath=${descriptor.fileName}&designUid=${descriptor.designId}`, null);
+        ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileNameAndLocalPath=${descriptor.fileName}`, null);
   }
 
   public getDesignSurfaces(projectUid: string): Observable<DesignSurface[]> {
@@ -168,8 +168,8 @@ export class ProjectService {
     return this.executeRequest<XYZS[]>('drawProfileLineForDesign', `profiles/design/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}&offset=${designOffset}`);
   }
 
-  public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
-      return this.executeRequest<XYZS[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number, displayMode: number, designUid: string, designOffset: number): Observable<any[]> {
+      return this.executeRequest<any[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}&cutFillDesignUid=${designUid}&offset=${designOffset}&displayMode=${displayMode}`);
   }
 
   public drawProfileLineForCompositeElevations(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<any[]> {
