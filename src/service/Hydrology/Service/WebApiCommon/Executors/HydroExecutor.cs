@@ -18,6 +18,7 @@ using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
 using VSS.Hydrology.WebApi.Common.Helpers;
 using VSS.Hydrology.WebApi.Common.Utilities;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using System.Text;
 
 
 namespace VSS.Hydrology.WebApi.Common.Executors
@@ -42,20 +43,20 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     {
       var request = CastRequestObjectTo<HydroRequest>(item);
 
-      var currentGroundTTMStream = await GetCurrentGround3Dp(request); 
+      var currentGroundTTMStream = await GetCurrentGround3Dp(request);
       //var currentGroundTTMStream = GetCurrentGroundTest(); 
-     
+
       var localTempProjectPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
 
       // convert ttm to dxf
-      var dxfLocalPathAndFileName = Path.Combine(new[] {localTempProjectPath, (Path.GetFileNameWithoutExtension(request.FileName) + ".dxf")});
+      var dxfLocalPathAndFileName = Path.Combine(new[] { localTempProjectPath, (Path.GetFileNameWithoutExtension(request.FileName) + ".dxf") });
       var triangleCount = ConvertTTMToDXF(currentGroundTTMStream, dxfLocalPathAndFileName);
       currentGroundTTMStream.Close();
       if (triangleCount < 3)
         return new ContractExecutionResult(5, hydroErrorCodesProvider.FirstNameWithOffset(5));
 
       // generate and zip images
-      var zipLocalPath = Path.Combine(new[] {localTempProjectPath, (Path.GetFileNameWithoutExtension(request.FileName))});
+      var zipLocalPath = Path.Combine(new[] { localTempProjectPath, (Path.GetFileNameWithoutExtension(request.FileName)) });
       if (!Directory.Exists(zipLocalPath))
         Directory.CreateDirectory(zipLocalPath);
       GenerateHydroImages(dxfLocalPathAndFileName, zipLocalPath, request.Options);
@@ -63,7 +64,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       var finalZippedFile = HydroRequestHelper.ZipImages(localTempProjectPath, zipLocalPath, request.FileName, Log, ServiceExceptionHandler);
 
       // clean up temp files
-      if (Directory.Exists(zipLocalPath) )
+      if (Directory.Exists(zipLocalPath))
         Directory.Delete(zipLocalPath, true);
       if (File.Exists(dxfLocalPathAndFileName))
         File.Delete(dxfLocalPathAndFileName);
@@ -73,13 +74,28 @@ namespace VSS.Hydrology.WebApi.Common.Executors
 
     private async Task<Stream> GetCurrentGround3Dp(HydroRequest request)
     {
-      var currentGroundTTMStream =
+      var currentGroundTTMStream = new MemoryStream();
+      var currentGroundTTMStreamCompressed =
         await RaptorProxy.GetExportSurface(request.ProjectUid, request.FileName, request.FilterUid, CustomHeaders);
 
+      //3dpm returns a zipped ttm we need to extract it.
+      using (var temp = new ZipArchive(currentGroundTTMStreamCompressed))
+      {
+        foreach (var entry in temp.Entries)
+        {
+          if (entry.FullName.EndsWith("ttm", StringComparison.InvariantCultureIgnoreCase))
+          {
+            await entry.Open().CopyToAsync(currentGroundTTMStream);
+            break;
+          }
+        }
+      }
+
       //GracefulWebRequest should throw an exception if the web api call fails but just in case...
-      if (currentGroundTTMStream == null || currentGroundTTMStream.Length == 0)
+      if (currentGroundTTMStream.Length == 0)
       {
         currentGroundTTMStream?.Close();
+        currentGroundTTMStreamCompressed.Close();
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 22);
       }
 
@@ -137,7 +153,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
         var errorMessage = $"{nameof(GenerateHydroImages)} Surface import failed.";
         if (e.Source == "TD_SwigDbMgd")
           errorMessage += " Failure is in reader 'TD_SwigDbMgd'. Container may be missing the RecomputeDimBlock_4.00_11.tx file in bin directory";
-        
+
         Log.LogError(e, errorMessage);
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 9, errorMessage1: e.Message);
       }
@@ -180,7 +196,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       }
 
       SaveBitmap(bitmap, imageFilename);
-     
+
       Log.LogInformation($"{nameof(GeneratePondingImage)} targetImageFile: {imageFilename}");
       return true;
     }
@@ -227,7 +243,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
 
       var pngBitmapEncoder = new PngBitmapEncoder();
       pngBitmapEncoder.Frames.Add(BitmapFrame.Create(bitmap));
-      using (var stream = (Stream) File.Create(targetFilenameAndPath))
+      using (var stream = (Stream)File.Create(targetFilenameAndPath))
         pngBitmapEncoder.Save(stream);
 
       if (!File.Exists(targetFilenameAndPath))

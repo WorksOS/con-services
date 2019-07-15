@@ -45,6 +45,7 @@ namespace VSS.Hydrology.WebApi
               p => new SerilogLoggerProvider(
                 SerilogExtensions.Configure("VSS.Hydrology.WebAPI.log", config, p.GetService<IHttpContextAccessor>())));
           })
+          .UseUrls("http://0.0.0.0:5001")
           .Build();
       }).Run();
     }

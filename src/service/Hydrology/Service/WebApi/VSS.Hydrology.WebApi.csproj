@@ -165,6 +165,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="$(SolutionDir)Service\HydroLibraries\RecomputeDimBlock_4.00_11.tx" CopyToOutputDirectory="Always" />
+    <None Include="$(SolutionDir)Service\HydroLibraries\TD_SwigDb_4.00_11.dll" CopyToOutputDirectory="Always" />
+    <None Include="$(SolutionDir)Service\HydroLibraries\TD_SwigCore_4.00_11.dll" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <ItemGroup>
       <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
