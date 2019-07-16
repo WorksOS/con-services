@@ -266,7 +266,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       // Add the immutable Spatial & NonSpatial caches
 
-      CacheConfiguration CacheCfg = new CacheConfiguration();
+      var CacheCfg = new CacheConfiguration();
       ConfigureNonSpatialImmutableCache(CacheCfg);
       NonSpatialImmutableCache = InstantiateNonSpatialTRexCacheReference(CacheCfg);
 

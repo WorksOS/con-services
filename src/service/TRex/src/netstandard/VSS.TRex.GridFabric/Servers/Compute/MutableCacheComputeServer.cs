@@ -94,9 +94,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
                 }
       };
 
-      cfg.CacheConfiguration = new List<CacheConfiguration>
-      {
-      };
+      cfg.CacheConfiguration = new List<CacheConfiguration>();
 
       Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
       Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
@@ -207,7 +205,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
       cfg.CacheMode = CacheMode.Partitioned;
 
-      // Configure the function that maps subgrid data into the affinity map for the nodes in the grid
+      // Configure the function that maps sub grid data into the affinity map for the nodes in the grid
       cfg.AffinityFunction = new MutableSpatialAffinityFunction();
     }
 
@@ -256,7 +254,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
     public void StartTRexGridCacheNode()
     {
-      IgniteConfiguration cfg = new IgniteConfiguration();
+      var cfg = new IgniteConfiguration();
       ConfigureTRexGrid(cfg);
 
       Log.LogInformation($"Creating new Ignite node for {cfg.IgniteInstanceName}");
