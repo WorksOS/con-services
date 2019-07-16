@@ -194,7 +194,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out var startPt, out var endPt,
         out var positionsAreGrid);
 
-      CompactionProfileResult<CompactionProfileDataResult> totalResult = null;
       if (request.IsAlignmentDesign)
       {
         var args

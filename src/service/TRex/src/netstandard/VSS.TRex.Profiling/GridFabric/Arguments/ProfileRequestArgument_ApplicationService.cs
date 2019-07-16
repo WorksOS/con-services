@@ -20,7 +20,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public WGS84Point StartPoint { get; set; } = new WGS84Point();
     public WGS84Point EndPoint { get; set; } = new WGS84Point();
     public bool PositionsAreGrid { get; set; }
-    public OverrideParameters Overrides { get; set; } = new OverrideParameters();
     public bool ReturnAllPassesAndLayers { get; set; }
 
     /// <summary>
@@ -61,9 +60,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       writer.WriteBoolean(ReturnAllPassesAndLayers);
 
       writer.WriteInt((int)VolumeType);
-
-      writer.WriteBoolean(Overrides != null);
-      Overrides?.ToBinary(writer);
     }
 
     /// <summary>
@@ -93,10 +89,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       ReturnAllPassesAndLayers = reader.ReadBoolean();
 
       VolumeType = (VolumeComputationType)reader.ReadInt();
-
-      Overrides = new OverrideParameters();
-      if (reader.ReadBoolean())
-        Overrides.FromBinary(reader);
     }
   }
 }
