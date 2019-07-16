@@ -7,11 +7,10 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
-using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Helpers;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers

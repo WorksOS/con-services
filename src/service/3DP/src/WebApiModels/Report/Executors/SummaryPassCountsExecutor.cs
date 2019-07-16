@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
@@ -33,15 +34,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns>a PassCountSummaryResult if successful</returns>      
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
         var request = CastRequestObjectTo<PassCounts>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PASSCOUNT"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_PASSCOUNT") ?? false)
         {
 #endif
           var pcSummaryRequest = new PassCountSummaryRequest(
@@ -49,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.Filter,
             request.liftBuildSettings.OverridingTargetPassCountRange);
 
-          return trexCompactionDataProxy.SendDataPostRequest<PassCountSummaryResult, PassCountSummaryRequest>(pcSummaryRequest, "/passcounts/summary", customHeaders).Result;
+          return await trexCompactionDataProxy.SendDataPostRequest<PassCountSummaryResult, PassCountSummaryRequest>(pcSummaryRequest, "/passcounts/summary", customHeaders);
 #if RAPTOR
         }
 
@@ -105,5 +104,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       };
     }
 #endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

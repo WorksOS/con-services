@@ -8,14 +8,13 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
@@ -52,30 +51,28 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation("GetCmvSummary: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetCmvSummary)}: " + Request.QueryString);
 
       var request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
 
-      var (isValidFilterForProjectExtents, _) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
-      if (!isValidFilterForProjectExtents)
-      {
-        return Ok(new CompactionCmvSummaryResult());
-      }
+      var validationResult = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
 
-      Log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
+      if (!validationResult.isValidFilterForProjectExtents)
+        return Ok(new CompactionCmvSummaryResult());
+      
+      Log.LogDebug($"{nameof(GetCmvSummary)} request for Raptor: " + JsonConvert.SerializeObject(request));
       try
       {
-        var result = RequestExecutorContainerFactory
-              .Build<SummaryCMVExecutor>(LoggerFactory,
+        var result = await RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-              .Process(request) as CMVSummaryResult;
+              .ProcessAsync(request) as CMVSummaryResult;
 
         var cmvSummaryResult = new CompactionCmvSummaryResult(result, request.CmvSettings);
-        Log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(cmvSummaryResult));
+        Log.LogInformation($"{nameof(GetCmvSummary)} result: " + JsonConvert.SerializeObject(cmvSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
@@ -94,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       finally
       {
-        Log.LogInformation("GetCmvSummary returned: " + Response.StatusCode);
+        Log.LogInformation($"{nameof(GetCmvSummary)} returned: " + Response.StatusCode);
       }
     }
 
@@ -109,36 +106,37 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation("GetMdpSummary: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetMdpSummary)}: " + Request.QueryString);
 
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var mdpSettings = SettingsManager.CompactionMdpSettings(projectSettings);
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var validationResult = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
 
-      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
-      if (!isValidFilterForProjectExtents)
-      {
+      if (!validationResult.isValidFilterForProjectExtents)
         return Ok(new CompactionMdpSummaryResult());
-      }
 
-      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
+      var filter = validationResult.filterResult == null ? GetCompactionFilter(projectUid, filterUid) : Task.FromResult(validationResult.filterResult);
 
-      var projectId = await GetLegacyProjectId(projectUid);
-      var request = new MDPRequest(projectId, projectUid, null, mdpSettings, liftSettings, filter, -1, null, null, null);
+      var projectId = GetLegacyProjectId(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+
+      await Task.WhenAll(filter, projectId, projectSettings);
+
+      var mdpSettings = SettingsManager.CompactionMdpSettings(projectSettings.Result);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
+
+      var request = new MDPRequest(projectId.Result, projectUid, null, mdpSettings, liftSettings, filter.Result, -1, null, null, null);
       request.Validate();
 
       try
       {
-        var result = RequestExecutorContainerFactory
-                     .Build<SummaryMDPExecutor>(LoggerFactory,
+        var result = await RequestExecutorContainerFactory.Build<SummaryMDPExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-                     .Process(request) as MDPSummaryResult;
+                     .ProcessAsync(request) as MDPSummaryResult;
 
         var mdpSummaryResult = new CompactionMdpSummaryResult(result, mdpSettings);
-        Log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(mdpSummaryResult));
+        Log.LogInformation($"{nameof(GetMdpSummary)} result: " + JsonConvert.SerializeObject(mdpSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
@@ -157,7 +155,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       finally
       {
-        Log.LogInformation("GetMdpSummary returned: " + Response.StatusCode);
+        Log.LogInformation($"{nameof(GetMdpSummary)} returned: " + Response.StatusCode);
       }
     }
 
@@ -171,30 +169,29 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation("GetPassCountSummary: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetPassCountSummary)}: " + Request.QueryString);
 
-      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
-      if (!isValidFilterForProjectExtents)
-      {
+      var validationResult = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+
+      if (!validationResult.isValidFilterForProjectExtents)
         return Ok(new CompactionPassCountSummaryResult());
-      }
 
-      var request = await GetPassCountRequest(projectUid, filterUid, filter, isSummary: true);
+      var request = await GetPassCountRequest(projectUid, filterUid, validationResult.filterResult, isSummary: true);
       request.Validate();
 
       try
       {
-        var result = RequestExecutorContainerFactory
+        var result = await RequestExecutorContainerFactory
                      .Build<SummaryPassCountsExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
         configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-                     .Process(request) as PassCountSummaryResult;
+                     .ProcessAsync(request) as PassCountSummaryResult;
 
         var passCountSummaryResult = new CompactionPassCountSummaryResult(result);
 
-        Log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(passCountSummaryResult));
+        Log.LogInformation($"{nameof(GetPassCountSummary)} result: " + JsonConvert.SerializeObject(passCountSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
@@ -213,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       finally
       {
-        Log.LogInformation("GetPassCountSummary returned: " + Response.StatusCode);
+        Log.LogInformation($"{nameof(GetPassCountSummary)} returned: " + Response.StatusCode);
       }
     }
 
@@ -227,37 +224,37 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetTemperatureSummary)}: " + Request.QueryString);
 
-      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
-      if (!isValidFilterForProjectExtents)
-      {
+      var validationResult = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!validationResult.isValidFilterForProjectExtents)
         return Ok(new CompactionTemperatureSummaryResult());
-      }
 
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var temperatureSettings = SettingsManager.CompactionTemperatureSettings(projectSettings, false);
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var projectId = GetLegacyProjectId(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
 
-      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
+      var filter = validationResult.filterResult == null ? GetCompactionFilter(projectUid, filterUid) : Task.FromResult(validationResult.filterResult);
 
-      var projectId = await GetLegacyProjectId(projectUid);
-      var request = new TemperatureRequest(projectId, projectUid, null, temperatureSettings, liftSettings, filter, -1, null, null, null);
+      await Task.WhenAll(projectId, projectSettings, filter);
 
+      var temperatureSettings = SettingsManager.CompactionTemperatureSettings(projectSettings.Result, false);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
+     
+      var request = new TemperatureRequest(projectId.Result, projectUid, null, temperatureSettings, liftSettings, filter.Result, -1, null, null, null);
       request.Validate();
 
       try
       {
-        var result = RequestExecutorContainerFactory
+        var result = await RequestExecutorContainerFactory
                      .Build<SummaryTemperatureExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-                     .Process(request) as TemperatureSummaryResult;
+                     .ProcessAsync(request) as TemperatureSummaryResult;
 
         var temperatureSummaryResult = new CompactionTemperatureSummaryResult(result);
-        Log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(temperatureSummaryResult));
+        Log.LogInformation($"{nameof(GetTemperatureSummary)} result: " + JsonConvert.SerializeObject(temperatureSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
@@ -276,7 +273,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       finally
       {
-        Log.LogInformation("GetTemperatureSummary returned: " + Response.StatusCode);
+        Log.LogInformation($"{nameof(GetTemperatureSummary)} returned: " + Response.StatusCode);
       }
     }
 
@@ -290,34 +287,36 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation("GetSpeedSummary: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetSpeedSummary)}: " + Request.QueryString);
 
-      var projectId = await GetLegacyProjectId(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
-
-      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
-      if (!isValidFilterForProjectExtents)
-      {
+      var validationResult = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!validationResult.isValidFilterForProjectExtents)
         return Ok(new CompactionSpeedSummaryResult());
-      }
 
-      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
+      var projectId = GetLegacyProjectId(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
 
-      SummarySpeedRequest request = new SummarySpeedRequest(projectId, projectUid, null, liftSettings, filter, -1);
+      var filter = validationResult.filterResult == null ? GetCompactionFilter(projectUid, filterUid) : Task.FromResult(validationResult.filterResult);
+
+      await Task.WhenAll(projectId, projectSettings, filter);
+
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
+      
+      var request = new SummarySpeedRequest(projectId.Result, projectUid, null, liftSettings, filter.Result, -1);
       request.Validate();
+
       try
       {
-        var result = RequestExecutorContainerFactory
+        var result = await RequestExecutorContainerFactory
                      .Build<SummarySpeedExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-                     .Process(request) as SpeedSummaryResult;
+                     .ProcessAsync(request) as SpeedSummaryResult;
 
         var speedSummaryResult = new CompactionSpeedSummaryResult(result, liftSettings.MachineSpeedTarget);
-        Log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(speedSummaryResult));
+        Log.LogInformation($"{nameof(GetSpeedSummary)} result: " + JsonConvert.SerializeObject(speedSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
@@ -336,7 +335,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       finally
       {
-        Log.LogInformation("GetSpeedSummary returned: " + Response.StatusCode);
+        Log.LogInformation($"{nameof(GetSpeedSummary)} returned: " + Response.StatusCode);
       }
     }
 
@@ -358,50 +357,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid topUid,
       [FromQuery] bool explicitFilters = false)
     {
-      Log.LogInformation("GetSummaryVolumes: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetSummaryVolumes)}: " + Request.QueryString);
 
       if (baseUid == Guid.Empty || topUid == Guid.Empty)
-      {
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid surface parameter(s)."));
-      }
 
       DesignDescriptor baseDesign = null;
       DesignDescriptor topDesign = null;
       FilterResult baseFilter = null;
       FilterResult topFilter = null;
 
+      // Base filter...
       var baseFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
-
       if (baseFilterDescriptor == null)
-      {
         baseDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
-      }
       else
-      {
         baseFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
-      }
 
+      // Top filter...
       var topFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
       if (topFilterDescriptor == null)
-      {
         topDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
-      }
       else
-      {
         topFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
-      }
 
       if (baseFilter == null && baseDesign == null || topFilter == null && topDesign == null)
-      {
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseSurface or topSurface"));
-      }
 
       var volumeCalcType = summaryDataHelper.GetVolumesType(baseFilter, topFilter);
 
       if (volumeCalcType == VolumesType.None)
-      {
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
-      }
+
       var projectId = await GetLegacyProjectId(projectUid);
       var request = SummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType, explicitFilters);
 
@@ -409,13 +396,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainerFactory
+        var result = await RequestExecutorContainerFactory
                      .Build<SummaryVolumesExecutorV2>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-                     .Process(request) as SummaryVolumesResult;
+                     .ProcessAsync(request) as SummaryVolumesResult;
 
         if (result == null) return Ok(new CompactionVolumesSummaryResult(0, "No production data found"));
 
@@ -434,11 +421,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       finally
       {
-        Log.LogInformation("GetSummaryVolumes returned: " + Response.StatusCode);
+        Log.LogInformation($"{nameof(GetSummaryVolumes)} returned: " + Response.StatusCode);
       }
 
       if (Log.IsTraceEnabled())
-        Log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(volumesSummaryResult));
+        Log.LogTrace($"{nameof(GetSummaryVolumes)} result: " + JsonConvert.SerializeObject(volumesSummaryResult));
 
       return Ok(volumesSummaryResult);
     }

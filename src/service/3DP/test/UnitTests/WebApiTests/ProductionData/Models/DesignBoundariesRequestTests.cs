@@ -14,12 +14,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     public void CanCreateDesignBoundariesRequestTest()
     {
       var validator = new DataAnnotationsValidator();
-      DesignBoundariesRequest request = DesignBoundariesRequest.CreateDesignBoundariesRequest(projectId, tolerance);
+      DesignBoundariesRequest request = new DesignBoundariesRequest(projectId, null, tolerance);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(request, out results));
 
       // Missing project id
-      request = DesignBoundariesRequest.CreateDesignBoundariesRequest(-1, tolerance);
+      request = new DesignBoundariesRequest(-1, null, tolerance);
       Assert.IsFalse(validator.TryValidate(request, out results));
     }
 

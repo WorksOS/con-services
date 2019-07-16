@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -15,6 +16,7 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -130,7 +132,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string fullFileName = filename;
       if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
         fullFileName =
-          ImportedFileUtils.IncludeSurveyedUtcInName(fullFileName, surveyedUtc.Value);
+          fullFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
       var request = new DesignRequest(projectUid, importedFileType, fullFileName, importedFileUid, surveyedUtc);
       try
       {
@@ -181,7 +183,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string fullFileName = filename;
       if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
         fullFileName =
-          ImportedFileUtils.IncludeSurveyedUtcInName(fullFileName, surveyedUtc.Value);
+          fullFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
       var request = new DesignRequest(projectUid, importedFileType, fullFileName, importedFileUid, surveyedUtc);
       try
       {
@@ -214,7 +216,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string fullFileName = filename;
       if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
         fullFileName =
-          ImportedFileUtils.IncludeSurveyedUtcInName(fullFileName, surveyedUtc.Value);
+          fullFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
       var request = new DesignRequest(projectUid, importedFileType, fullFileName, importedFileUid, surveyedUtc);
       try
       {

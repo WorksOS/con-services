@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 #endif
@@ -21,6 +22,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -71,7 +73,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
 
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns("false");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns(false);
 
       MemoryStream responseData;
 
@@ -105,11 +107,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       raptorClient.Setup(x => x.GetReportStationOffset(args, out responseData)).Returns(0); // icsrrUnknownError
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportStationOffsetExecutor>(_logger, raptorClient.Object, configStore: mockConfigStore.Object);
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
     }
 #endif
     [TestMethod]
-    public void CompactionReportStationOffsetExecutor_TRex_NoResult()
+    public async Task CompactionReportStationOffsetExecutor_TRex_NoResult()
     {
       var projectUid = Guid.NewGuid();
       var alignmentDesignUid = Guid.NewGuid();
@@ -122,7 +124,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var mockConfigStore = new Mock<IConfigurationStore>();
 #if RAPTOR
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns(true);
 #endif
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
@@ -131,7 +133,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<CompactionReportStationOffsetTRexRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).Throws(exception);
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportStationOffsetExecutor>(_logger, configStore: mockConfigStore.Object, trexCompactionDataProxy: tRexProxy.Object);
-      var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      var result = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
       Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
       Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
       Assert.AreEqual(exception.GetResult.Message, result.GetResult.Message);

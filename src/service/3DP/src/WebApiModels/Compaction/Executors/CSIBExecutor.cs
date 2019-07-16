@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 #endif
@@ -20,23 +21,20 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     public CSIBExecutor()
     { }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      return RequestCSIBForProject(CastRequestObjectTo<ProjectID>(item));
+      return await RequestCSIBForProject(CastRequestObjectTo<ProjectID>(item));
     }
 
-    private ContractExecutionResult RequestCSIBForProject(ProjectID request)
+    private async Task<ContractExecutionResult> RequestCSIBForProject(ProjectID request)
     {
 #if RAPTOR
-      if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CS"), out var useTrexGateway))
-        useTrexGateway = false;
-
-      if (useTrexGateway)
+      if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CS") ?? false)
       {
 #endif
         var siteModelId = request.ProjectUid.ToString();
 
-        var returnedResult = trexCompactionDataProxy.SendDataGetRequest<CSIBResult>(siteModelId, $"/projects/{siteModelId}/csib", customHeaders).Result;
+        var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<CSIBResult>(siteModelId, $"/projects/{siteModelId}/csib", customHeaders);
 
         return returnedResult.CSIB == string.Empty
           ? new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, $"{nameof(RequestCSIBForProject)}: result: {returnedResult}")
@@ -55,6 +53,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         ? new ContractExecutionResult((int) returnResult, $"{nameof(RequestCSIBForProject)}: result: {returnResult}")
         : new CSIBResult(Convert.ToBase64String(csibFileStream.ToArray()));
 #endif
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

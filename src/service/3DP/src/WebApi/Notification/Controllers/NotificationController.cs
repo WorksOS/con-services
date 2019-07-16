@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -20,7 +19,6 @@ using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -168,14 +166,14 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] DxfUnitsType dxfUnitsType,
       [FromServices] IEnqueueItem<ProjectFileDescriptor> fileQueue)
     {
-      log.LogDebug("GetAddFile: " + Request.QueryString);
+      log.LogDebug($"{nameof(GetAddFile)}: " + Request.QueryString);
       var customHeaders = Request.Headers.GetCustomHeaders();
 
       if (fileType != ImportedFileType.ReferenceSurface)
       {
-        ProjectData projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
+        var projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
         string coordSystem = projectDescr.CoordinateSystemFileName;
-        FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
+        var fileDes = GetFileDescriptor(fileDescriptor);
 
         if (fileType == ImportedFileType.Alignment)
         {
@@ -225,7 +223,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       await ClearFilesCaches(projectUid, customHeaders);
       dataCache.RemoveByTag(projectUid.ToString());
       cache.InvalidateReponseCacheForProject(projectUid);
-      log.LogInformation("GetAddFile returned: " + Response.StatusCode);
+      log.LogInformation($"{nameof(GetAddFile)} returned: " + Response.StatusCode);
       return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification successful");
     }
 
@@ -244,8 +242,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] long? legacyFileId
       )
     {
-      log.LogDebug("GetDeleteFile: " + Request.QueryString);
-      ProjectData projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
+      log.LogDebug($"{nameof(GetDeleteFile)}: " + Request.QueryString);
+      var projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
       var customHeaders = Request.Headers.GetCustomHeaders();
 
       //Cannot delete a design or alignment file that is used in a filter
@@ -265,11 +263,9 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         }
       }
 #if RAPTOR
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
       if (fileType == ImportedFileType.ReferenceSurface)
-      {
         result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Delete file notification successful");
-      }
       else
       {
         FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
@@ -286,7 +282,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       await ClearFilesCaches(projectUid, customHeaders);
       dataCache.RemoveByTag(projectUid.ToString());
       cache.InvalidateReponseCacheForProject(projectUid);
-      log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
+      log.LogInformation($"{nameof(GetDeleteFile)} returned: " + Response.StatusCode);
       return result;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
@@ -305,7 +301,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid[] fileUids)
     {
-      log.LogDebug("GetUpdateFiles: " + Request.QueryString);
+      log.LogDebug($"{nameof(GetUpdateFiles)}: " + Request.QueryString);
       if (projectUid == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -322,7 +318,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       await ClearFilesCaches(projectUid, customHeaders);
       dataCache.RemoveByTag(projectUid.ToString());
       cache.InvalidateReponseCacheForProject(projectUid);
-      log.LogInformation("GetUpdateFiles returned: " + Response.StatusCode);
+      log.LogInformation($"{nameof(GetUpdateFiles)} returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
     }
 
@@ -359,12 +355,12 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid fileUid)
     {
-      log.LogDebug("GetNotifyImportedFileChange: " + Request.QueryString);
+      log.LogDebug($"{nameof(GetNotifyImportedFileChange)}: " + Request.QueryString);
       var customHeaders = Request.Headers.GetCustomHeaders();
       await ClearFilesCaches(projectUid, customHeaders);
       cache.InvalidateReponseCacheForProject(projectUid);
       dataCache.RemoveByTag(projectUid.ToString());
-      log.LogInformation("GetNotifyImportedFileChange returned");
+      log.LogInformation($"{nameof(GetNotifyImportedFileChange)} returned");
       return new ContractExecutionResult();
     }
 
@@ -376,12 +372,12 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     public ContractExecutionResult GetNotifyFilterChange(
       [FromQuery] Guid filterUid, [FromQuery] Guid projectUid)
     {
-      log.LogDebug("GetNotifyFilterChange: " + Request.QueryString);
+      log.LogDebug($"{nameof(GetNotifyFilterChange)}: " + Request.QueryString);
       filterServiceProxy.ClearCacheItem(filterUid.ToString());
       filterServiceProxy.ClearCacheListItem(projectUid.ToString());
       dataCache.RemoveByTag(projectUid.ToString());
       dataCache.RemoveByTag(filterUid.ToString());
-      log.LogInformation("GetNotifyFilterChange returned");
+      log.LogInformation($"{nameof(GetNotifyFilterChange)} returned");
       return new ContractExecutionResult();
     }
 
@@ -429,9 +425,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
       if (filterDescriptors == null || filterDescriptors.Count == 0)
-      {
         return null;
-      }
 
       return filterDescriptors.Select(f => JsonConvert.DeserializeObject<Filter.Abstractions.Models.Filter>(f.FilterJson)).ToList();
     }
@@ -442,9 +436,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private string GetUserId()
     {
       if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
-      {
         return identity.Name;
-      }
 
       throw new ArgumentException("Incorrect UserId in request context principal.");
     }

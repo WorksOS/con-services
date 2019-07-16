@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using ASNodeRPC;
@@ -61,7 +62,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var raptorClient = new Mock<IASNodeClient>();
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL")).Returns("false");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_CUTFILL")).Returns(false);
 
       raptorClient
         .Setup(x => x.GetCutFillDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
@@ -71,18 +72,18 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
     }
 #endif
     [TestMethod]
-    public void CutFillExecutor_TRex_NoResult()
+    public async Task CutFillExecutor_TRex_NoResult()
     {
       var projectUid = Guid.NewGuid();
       var request = new CutFillDetailsRequest(0, projectUid, null, null, null, null);
 
       var configStore = new Mock<IConfigurationStore>();
 #if RAPTOR
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_CUTFILL")).Returns(true);
 #endif
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
@@ -97,7 +98,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Build<CompactionCutFillExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object);
 
-      var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      var result = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
       Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
       Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
@@ -105,7 +106,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 #if RAPTOR
     [TestMethod]
-    public void CutFillExecutorSuccess()
+    public async Task CutFillExecutorSuccess()
     {
       var request = new CutFillDetailsRequest(0, null, null, null, null, null);
 
@@ -122,7 +123,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
-      var result = executor.Process(request) as CompactionCutFillDetailedResult;
+      var result = await executor.ProcessAsync(request) as CompactionCutFillDetailedResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(details.Percents, result.Percents, "Wrong percents");
     }

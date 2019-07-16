@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using BoundingExtents;
 using VLPDDecls;
@@ -24,7 +25,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
   {
 #if RAPTOR
     [TestMethod]
-    public void PD_PostProjectExtentsSuccessful()
+    public async Task PD_PostProjectExtentsSuccessful()
     {
 
       // create the mock RaptorClient with successful result
@@ -35,8 +36,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var getExtentsResults = true;
       long[] excludedSsIds = new long[1]; // excluded surveyed surfaces
       excludedSsIds[0] = 1;
-      // Raptor exclusion list class
-      TSurveyedSurfaceID[] exclSSList = new TSurveyedSurfaceID[1];
+
       // return results
       var extents = new T3DBoundingWorldExtent();
       // mock return result
@@ -46,11 +46,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       // create submitter
       var submitter = RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
       // make request parameters
-      ExtentRequest request = new ExtentRequest(544, null, excludedSsIds);
+      var request = new ExtentRequest(544, null, excludedSsIds);
 
       // Act
       // Call controller
-      var result = submitter.Process(request);
+      var result = await submitter.ProcessAsync(request);
 
       // Assert
       Assert.IsNotNull(result);
@@ -66,33 +66,32 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var mockLogger = new Mock<ILoggerFactory>();
 
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TILES")).Returns("false");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_TILES")).Returns(false);
 
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
       var getExtentsResults = false;
       long[] excludedSsIds = new long[1]; // excluded surveyed surfaces
       excludedSsIds[0] = 1;
-      // Raptor exclusion list class
-      TSurveyedSurfaceID[] exclSSList = new TSurveyedSurfaceID[1];
+
       // return results
-      BoundingExtents.T3DBoundingWorldExtent extents = new T3DBoundingWorldExtent();
+      var extents = new T3DBoundingWorldExtent();
       // mock return result
       // this wont work as we need to mock higher level
       mockRaptorClient.Setup(prj => prj.GetDataModelExtents(544, It.IsAny<TSurveyedSurfaceID[]>(), out extents)).Returns(getExtentsResults);
 
       // create submitter
-      ProjectExtentsSubmitter submitter = RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
+      var submitter = RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
       // make request parameters
-      ExtentRequest request = new ExtentRequest(544, null, excludedSsIds);
+      var request = new ExtentRequest(544, null, excludedSsIds);
 
       // Act
       // Call controller
-      Assert.ThrowsException<ServiceException>(() => submitter.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await submitter.ProcessAsync(request));
     }
 #endif
     [TestMethod]
-    public void PD_PostProjectExtents_TRex_Fail()
+    public async Task PD_PostProjectExtents_TRex_Fail()
     {
       const short projectId = 544;
 
@@ -104,7 +103,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var mockConfigStore = new Mock<IConfigurationStore>();
 #if RAPTOR
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TILES")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_TILES")).Returns(true);
 #endif
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
@@ -112,13 +111,16 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           $"Get project extents has not been implemented in TRex yet. ProjectUid: {projectUid}"));
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
-      trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+      trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), 
+          It.IsAny<string>(), 
+          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<IDictionary<string, string>>()))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory
         .Build<ProjectExtentsSubmitter>(mockLogger.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
 
-      var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      var result = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
       Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
       Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);

@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
@@ -39,6 +40,7 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     /// <param name="PopulationControl"></param>
     /// <param name="CellPassFastEventLookerUpper"></param>
+    /// <param name="overrides"></param>
     /// <param name="VolumeType"></param>
     /// <param name="slicerToolUsed"></param>
     void Configure(ProfileStyle profileStyle,
@@ -51,6 +53,7 @@ namespace VSS.TRex.Profiling.Interfaces
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
       VolumeComputationType VolumeType,
+      IOverrideParameters overrides,
       bool slicerToolUsed = true);
   }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
@@ -30,20 +31,18 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <summary>
     /// Processes the summary CCA request by passing the request to Raptor and returning the result.
     /// </summary>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
         var request = CastRequestObjectTo<CCARequest>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CCA") ?? false)
         {
 #endif
           var ccaSummaryRequest = new CCASummaryRequest(request.ProjectUid, request.Filter);
 
-          return trexCompactionDataProxy.SendDataPostRequest<CCASummaryResult, CCASummaryRequest>(ccaSummaryRequest, "/cca/summary", customHeaders).Result;
+          return await trexCompactionDataProxy.SendDataPostRequest<CCASummaryResult, CCASummaryRequest>(ccaSummaryRequest, "/cca/summary", customHeaders);
 #if RAPTOR
         }
 
@@ -85,5 +84,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
                 summary.UnderCompactedPercent);
     }
 #endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

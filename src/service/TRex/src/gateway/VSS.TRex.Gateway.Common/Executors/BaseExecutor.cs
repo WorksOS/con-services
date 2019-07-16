@@ -5,15 +5,16 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Records;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Profiling;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
@@ -263,22 +264,22 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected ServiceException CreateServiceException<T>(RequestErrorStatus resultStatus = RequestErrorStatus.OK)
     {
-      var errorMessage = string.Format(ERROR_MESSAGE_PRODUCTION_DATA, typeof(T).Name);
+      var errorMessage = String.Format(ERROR_MESSAGE_PRODUCTION_DATA, typeof(T).Name);
 
       if (resultStatus != RequestErrorStatus.OK)
-        errorMessage = string.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset((int) resultStatus));
+        errorMessage = String.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset((int) resultStatus));
 
       return new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
     }
 
     protected ServiceException CreateServiceException<T>(HttpStatusCode statusCode, int contractExecutionStatesEnum, RequestErrorStatus resultStatus = RequestErrorStatus.OK, string detailedMessage = null)
     {
-      var errorMessage = string.Format(ERROR_MESSAGE, typeof(T).Name);
+      var errorMessage = String.Format(ERROR_MESSAGE, typeof(T).Name);
 
       if (resultStatus != RequestErrorStatus.OK)
-        errorMessage = string.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset((int)resultStatus));
+        errorMessage = String.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset((int)resultStatus));
       
-      if (!string.IsNullOrEmpty(detailedMessage))
+      if (!String.IsNullOrEmpty(detailedMessage))
         errorMessage += $" ({detailedMessage})";
 
       return new ServiceException(statusCode, new ContractExecutionResult(contractExecutionStatesEnum, errorMessage));

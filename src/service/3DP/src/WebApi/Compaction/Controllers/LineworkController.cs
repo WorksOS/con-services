@@ -85,11 +85,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogDebug($"{nameof(GetLineworkFromAlignment)}: projectUid={projectUid} alignmentUid={alignmentUid}");
 
 #if RAPTOR
-      var projectId = await GetLegacyProjectId(projectUid);
-      var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid, OperationType.GeneratingDxf);
+      var projectId = GetLegacyProjectId(projectUid);
+      var designDescriptor = GetAndValidateDesignDescriptor(projectUid, alignmentUid, OperationType.GeneratingDxf);
+      var userPreferences = prefProxy.GetUserPreferences(CustomHeaders);
+
+      await Task.WhenAll(projectId, designDescriptor, userPreferences);
+
       var dxfUnitsType = DxfUnitsType.Meters;
-      var userPreferences = await prefProxy.GetUserPreferences(CustomHeaders);
-      switch (userPreferences.Units.UnitsType())
+
+      switch (userPreferences.Result.Units.UnitsType())
       {
         case UnitsTypeEnum.Metric:
           dxfUnitsType = DxfUnitsType.Meters;
@@ -102,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           break;
       }
 
-      var request = AlignmentLineworkRequest.Create(projectUid, projectId, designDescriptor.File, dxfUnitsType);
+      var request = AlignmentLineworkRequest.Create(projectUid, projectId.Result, designDescriptor.Result.File, dxfUnitsType);
       var result = await RequestExecutorContainerFactory
         .Build<AlignmentLineworkExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
         .ProcessAsync(request) as AlignmentLineworkResult;
@@ -114,7 +118,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //service creates its own generated name. It doesn't use the one from the zip file.
         var suffix = FileUtils.GeneratedFileSuffix(ImportedFileType.Alignment);
         string generatedName =
-          FileUtils.GeneratedFileName(designDescriptor.File.FileName, suffix, FileUtils.DXF_FILE_EXTENSION);
+          FileUtils.GeneratedFileName(designDescriptor.Result.File.FileName, suffix, FileUtils.DXF_FILE_EXTENSION);
         var dxfZipEntry = zipArchive.CreateEntry(generatedName);
         using (var stream = dxfZipEntry.Open())
         {

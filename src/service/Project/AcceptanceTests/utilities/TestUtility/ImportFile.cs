@@ -87,6 +87,9 @@ namespace TestUtility
         case "ReferenceSurface":
           uri = $"{uri}&ParentUid={fileDescriptor.ParentUid}&Offset={fileDescriptor.Offset}";
           break;
+        case "GeoTiff":
+          uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
+          break;
       }
 
       if (importOptions.QueryParams != null)
@@ -101,6 +104,8 @@ namespace TestUtility
       {
         uri = $"{TestSupport.BaseUri}api/v4/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
+
+      Console.WriteLine($"Request URI is: {uri}");
 
       string response;
 

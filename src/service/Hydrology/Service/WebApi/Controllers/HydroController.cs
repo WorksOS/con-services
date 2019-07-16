@@ -21,8 +21,9 @@ namespace VSS.Hydrology.WebApi.Controllers
     /// <summary>
     /// Gets the service exception handler.
     /// </summary>
-    private IRaptorProxy _raptorProxy;
-    protected IRaptorProxy RaptorProxy => _raptorProxy ?? (_raptorProxy = HttpContext.RequestServices.GetService<IRaptorProxy>());
+    private IRaptorProxy raptorProxy;
+
+    private IRaptorProxy RaptorProxy => raptorProxy ?? (raptorProxy = HttpContext.RequestServices.GetService<IRaptorProxy>());
 
     /// <summary>
     /// Generates a zip containing hydrology images from the original ground from a design file (TIN).
@@ -37,7 +38,6 @@ namespace VSS.Hydrology.WebApi.Controllers
       var result = ( await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<HydroExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            //customerUid, userId, // todoJeannie
             null, null,
             null, CustomHeaders, LandLeveling, RaptorProxy)
           .ProcessAsync(hydroRequest)) as HydroResult

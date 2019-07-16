@@ -44,7 +44,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
-        crossSectionInterval, startStation, endStation, offsets);
+        crossSectionInterval, startStation, endStation, offsets, null);
       request.Validate();
 
       var executor = RequestExecutorContainer
@@ -86,7 +86,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         siteModel.ID, filterResult,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
-        crossSectionInterval, startStation, endStation, offsets);
+        crossSectionInterval, startStation, endStation, offsets, null);
       request.Validate();
 
       var executor = RequestExecutorContainer

@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -19,6 +18,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Notification.Controllers;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
@@ -48,12 +48,16 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     private readonly IConfigurationStore configStore;
-
-
+    
     /// <summary>
     /// For getting list of imported files for a project
     /// </summary>
     private readonly IFileImportProxy fileImportProxy;
+
+    /// <summary>
+    /// Gets the TRex CompactionData proxy interface.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
     #endregion
 
     /// <summary>
@@ -67,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, IFileImportProxy fileImportProxy)
+      ILoggerFactory logger, IConfigurationStore configStore, IFileImportProxy fileImportProxy, ITRexCompactionDataProxy tRexCompactionDataProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -76,6 +80,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       this.log = logger.CreateLogger<NotificationController>();
       this.configStore = configStore;
       this.fileImportProxy = fileImportProxy;
+      this.tRexCompactionDataProxy = tRexCompactionDataProxy;
     }
 
     /// <summary>
@@ -89,26 +94,26 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet]
     public async Task<ContractExecutionResult> GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] double? tolerance)
     {
-      log.LogInformation("GetDesignBoundaries: " + Request.QueryString);
+      log.LogInformation($"{nameof(GetDesignBoundaries)}: " + Request.QueryString);
 
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       tolerance = tolerance ?? DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL;
 
-      DesignBoundariesRequest request = DesignBoundariesRequest.CreateDesignBoundariesRequest(projectId, tolerance.Value);
+      var request = new DesignBoundariesRequest(projectId, projectUid, tolerance.Value);
 
       request.Validate();
-#if RAPTOR
+
       var fileList = await fileImportProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders());
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
-      return RequestExecutorContainerFactory.Build<DesignExecutor>(logger, raptorClient, configStore: configStore, fileList: fileList).Process(request);
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
-    }
+      return await RequestExecutorContainerFactory.Build<DesignExecutor>(logger,
 #if RAPTOR
+        raptorClient,
+#endif
+        configStore: configStore, fileList: fileList, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request);
+    }
+
     /// <summary>
     /// Gets the User uid/applicationID from the context.
     /// </summary>
@@ -123,6 +128,5 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       throw new ArgumentException("Incorrect UserId in request context principal.");
     }
-#endif
   }
 }

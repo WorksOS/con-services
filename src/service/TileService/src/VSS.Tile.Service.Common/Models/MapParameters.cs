@@ -1,6 +1,5 @@
 ﻿using VSS.MasterData.Models.Models;
 
-
 namespace VSS.Tile.Service.Common.Models
 {
   /// <summary>

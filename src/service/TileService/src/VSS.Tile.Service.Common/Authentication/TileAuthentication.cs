@@ -3,7 +3,6 @@ using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;

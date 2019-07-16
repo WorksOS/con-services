@@ -16,24 +16,14 @@ namespace VSS.TRex.Profiling.Models
     public static bool OverrideMachineThickness = false;
     public static LiftThicknessType LiftThicknessType = LiftThicknessType.Compacted;
     public static double OverridingLiftThickness = CellTargets.NullOverridingTargetLiftThicknessValue;
-    public static bool OverrideMachineCCV = false;
-    public static short OverridingMachineCCV = 0;
-    public static CCVRangePercentage CCVRange = new CCVRangePercentage();
     public static byte CCVSummaryTypes = 0;
     public static bool CCVSummarizeTopLayerOnly = false;
     public static float FirstPassThickness = 0.0f;
 
-    public static bool OverrideMachineMDP = false;
-    public static short OverridingMachineMDP = 0;
-    public static MDPRangePercentage MDPRange = new MDPRangePercentage();
     public static byte MDPSummaryTypes = 0;
     public static bool MDPSummarizeTopLayerOnly = false;
 
     public static LiftDetectionType LiftDetectionType = LiftDetectionType.None;
-    public static TargetPassCountRange OverridingTargetPassCountRange = new TargetPassCountRange();
-    public static bool OverrideTargetPassCount = false;
-    public static TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord();
-    public static bool OverrideTemperatureWarningLevels = false;
 
     public static bool IncludeSuperseded = false;
 
@@ -45,12 +35,6 @@ namespace VSS.TRex.Profiling.Models
     // Boundaries extending above/below a cell pass constituting the dead band
     public static double DeadBandLowerBoundary = 0.0;
     public static double DeadBandUpperBoundary = 0.0;
-
-    // Setup target speeds here for SpeedSummary request
-
-    [Obsolete("use MachineSpeedExtendedRecord")]
-    public static ushort TargetMaxMachineSpeed = 0;
-    public static ushort TargetMinMachineSpeed = 0;
 
     public static int CCATolerance = 0; // How many extra passes is OK before over-compaction is set
   }

@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
@@ -49,14 +50,18 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     /// <param name="referenceDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
+    /// <param name="volumeComputationType"></param>
+    /// <param name="overrides"></param>
     /// <returns></returns>
-    ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
+    ICellProfileAnalyzer<T> NewCellProfileAnalyzer(
+      ProfileStyle profileStyle,
       ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
-      VolumeComputationType volumeComputationType);
+      VolumeComputationType volumeComputationType,
+      IOverrideParameters overrides);
   }
 }

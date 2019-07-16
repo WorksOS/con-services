@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
-using VSS.TRex.Common.Records;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 using PassCountStatisticsResult = VSS.TRex.Analytics.PassCountStatistics.PassCountStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.PassCountSummaryResult;
@@ -45,19 +45,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      var targetPassCountRange = new PassCountRangeRecord();
-      var overridingTargetPassCountRange = request.Overrides.OverridingTargetPassCountRange;
-      if (overridingTargetPassCountRange != null)
-        targetPassCountRange.SetMinMax(overridingTargetPassCountRange.Min, overridingTargetPassCountRange.Max);
-
       var operation = new PassCountStatisticsOperation();
       var passCountSummaryResult = operation.Execute(
         new PassCountStatisticsArgument
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          OverridingTargetPassCountRange = targetPassCountRange,
-          OverrideTargetPassCount = overridingTargetPassCountRange != null
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
         }
       );
 

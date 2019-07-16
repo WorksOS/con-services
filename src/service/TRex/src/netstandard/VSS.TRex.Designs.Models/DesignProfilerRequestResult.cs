@@ -27,6 +27,8 @@
         FailedGetDataModelSpatialExtents,
         NoAlignmentsFound,
         InvalidResponseCode,
-        DesignDoesNotExist
-    }
+        DesignDoesNotExist,
+        FailedToCalculateBoundary,
+        FailedToCalculateAlignmentStationRange
+  }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 #endif
@@ -51,7 +52,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
 #if RAPTOR
     [TestMethod]
-    public void RequestCSIBForProject_no_result()
+    public async Task RequestCSIBForProject_no_result()
     {
       var request = new ProjectID
         {
@@ -70,7 +71,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var executor = RequestExecutorContainerFactory.Build<CSIBExecutor>(_logger, raptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: mockTrexCompactionDataProxy.Object);
 
-      var result = executor.Process(request);
+      var result = await executor.ProcessAsync(request);
 
       Assert.AreEqual(result.Code, (int)TASNodeErrorStatus.asneUnknown);
       Assert.AreEqual(result.Message, $"RequestCSIBForProject: result: {TASNodeErrorStatus.asneUnknown}");

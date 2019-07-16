@@ -1,4 +1,6 @@
 ﻿using System;
+using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
@@ -40,7 +42,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Arguments
         CrossSectionInterval = 100,
         StartStation = 3500,
         EndStation = 5500,
-        Offsets = new double[] {3,4,5}
+        Offsets = new double[] {3,4,5},
+        Overrides = new OverrideParameters { OverrideTargetPassCount = true, OverridingTargetPassCountRange = new PassCountRangeRecord(3,7)}
       };
 
       SimpleBinarizableInstanceTester.TestClass(request, "Empty StationOffsetReportRequestArgument_ApplicationService not same after round trip serialisation");

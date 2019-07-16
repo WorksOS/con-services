@@ -32,7 +32,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
     public TileRenderResponse Invoke(TileRenderRequestArgument arg)
     {
-            DateTime startTime = DateTime.UtcNow;
+      var startTime = DateTime.UtcNow;
 
       Log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
 
@@ -44,7 +44,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
-        RenderOverlayTile render = new RenderOverlayTile
+        var render = new RenderOverlayTile
             (arg.ProjectID,
              arg.Mode,
              new XYZ(arg.Extents.MinX, arg.Extents.MinY),
@@ -59,7 +59,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
         Log.LogInformation("Executing render.Execute()");
 
-        IBitmap bmp = render.Execute();
+        var bmp = render.Execute();
         Log.LogInformation($"Render status = {render.ResultStatus}");
 
         if (bmp == null)
@@ -68,16 +68,16 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
         }
 
         // Get the rendering factory from the DI context
-        IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
+        var RenderingFactory = DIContext.Obtain<IRenderingFactory>();
         var response = RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
         if (response != null)
-          response.ResultStatus = bmp == null ? render.ResultStatus : RequestErrorStatus.OK;
+          response.ResultStatus = render.ResultStatus;
 
         return response;
       }
       finally
       {
-                Log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
+         Log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
       }
     }
   }

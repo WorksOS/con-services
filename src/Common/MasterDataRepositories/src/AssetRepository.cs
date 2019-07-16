@@ -82,8 +82,7 @@ namespace VSS.MasterData.Repositories
         eventType = "DeleteAssetEvent";
       }
 
-      upsertedCount = await UpsertAssetDetail(asset, eventType);
-      return upsertedCount;
+      return await UpsertAssetDetail(asset, eventType);
     }
 
     /// <summary>

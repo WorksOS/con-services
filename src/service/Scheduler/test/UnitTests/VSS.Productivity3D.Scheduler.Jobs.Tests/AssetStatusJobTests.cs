@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -20,6 +21,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 {
@@ -44,16 +46,18 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     [TestInitialize]
     public void TestInitialize()
     {
-      var services = new ServiceCollection();
-      serviceProvider = services
-        .AddLogging()
-        .AddSingleton<IAssetStatusServerHubClient>(mockAssetStatusServerHubClient.Object)
-        .AddSingleton<IFleetAssetDetailsProxy>(mockFleetAssetDetails.Object)
-        .AddSingleton<IFleetAssetSummaryProxy>(mockAssetSummaryProxy.Object)
-        .AddSingleton<IRaptorProxy>(mockRaptorProxy.Object)
-        .AddSingleton<IAssetResolverProxy>(mockAssetResolverProxy.Object)
-        .AddTransient<IJob, AssetStatusJob>() // This is the class we are testing
-        .BuildServiceProvider();
+      var logger = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Scheduler.Jobs.UnitTests"));
+      var serviceCollection = new ServiceCollection();
+
+      serviceProvider = serviceCollection.AddLogging()
+                       .AddSingleton(logger)
+                       .AddSingleton(mockAssetStatusServerHubClient.Object)
+                       .AddSingleton(mockFleetAssetDetails.Object)
+                       .AddSingleton(mockAssetSummaryProxy.Object)
+                       .AddSingleton(mockRaptorProxy.Object)
+                       .AddSingleton(mockAssetResolverProxy.Object)
+                       .AddTransient<IJob, AssetStatusJob>() // This is the class we are testing
+                       .BuildServiceProvider();
 
       mockAssetStatusServerHubClient.Reset();
       mockFleetAssetDetails.Reset();

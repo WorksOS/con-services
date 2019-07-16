@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
@@ -51,7 +52,8 @@ namespace VSS.TRex.Profiling
     /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     /// <param name="PopulationControl"></param>
     /// <param name="CellPassFastEventLookerUpper"></param>
-    /// <param name="VolumeType"></param>
+    /// <param name="volumeType"></param>
+    /// <param name="overrides"></param>
     /// <param name="slicerToolUsed"></param>
     public void Configure(ProfileStyle profileStyle,
       ISiteModel siteModel,
@@ -62,7 +64,8 @@ namespace VSS.TRex.Profiling
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
-      VolumeComputationType volumeType,
+      VolumeComputationType volumeType, 
+      IOverrideParameters overrides,
       bool slicerToolUsed = true)    
     {
         CellLiftBuilder = factory.NewCellLiftBuilder(siteModel, gridDataType, PopulationControl, filterSet, CellPassFastEventLookerUpper);
@@ -70,7 +73,7 @@ namespace VSS.TRex.Profiling
         CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, filterSet, referenceDesignWrapper, slicerToolUsed);
 
         CellProfileAnalyzer = factory.NewCellProfileAnalyzer(
-          profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, CellLiftBuilder, volumeType);
+          profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, CellLiftBuilder, volumeType, overrides);
     }
   }
 }

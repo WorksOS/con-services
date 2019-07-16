@@ -24,7 +24,7 @@ namespace VSS.Hydrology.WebApi
     /// </summary>
     /// <param name="services">Collection of service descriptors provided by ASP.NET on configuration startup</param>
     /// <returns>IServiceCollection collection of services for controller DI.</returns>
-    public void ConfigureApplicationServices(IServiceCollection services)
+    private void ConfigureApplicationServices(IServiceCollection services)
     {
       //TODO We may switch over to IOptions as it is safer - proactive config validation vs lazy and strongly typed config values
       services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Apache.Ignite.Core;
-using VSS.Log4NetExtensions;
+using VSS.Serilog.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;

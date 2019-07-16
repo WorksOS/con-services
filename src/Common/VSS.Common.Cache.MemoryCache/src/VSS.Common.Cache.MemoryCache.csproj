@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
+    <ProjectReference Include="..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
   </ItemGroup>
 

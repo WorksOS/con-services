@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeRPC;
 using SVOICFilterSettings;
@@ -61,7 +62,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         0, null, null, -1, null, false, false, false, false, false, false, null, 0.0, GridReportOption.Automatic, 0.0, 0.0, 0.0, 0.0, 0.0);
 
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns("false");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns(false);
 
       MemoryStream responseData;
 
@@ -96,11 +97,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportGridExecutor>(_logger, raptorClient.Object, configStore: mockConfigStore.Object);
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
     }
 #endif
     [TestMethod]
-    public void CompactionReportGridExecutor_TRex_NoResult()
+    public async Task CompactionReportGridExecutor_TRex_NoResult()
     {
       var projectUid = Guid.NewGuid();
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(
@@ -110,7 +111,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var mockConfigStore = new Mock<IConfigurationStore>();
 #if RAPTOR
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_GRIDREPORT")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_GRIDREPORT")).Returns(true);
 #endif
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
@@ -124,7 +125,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportGridExecutor>(_logger, configStore: mockConfigStore.Object,
           trexCompactionDataProxy: tRexProxy.Object);
-      var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      var result = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
       Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
       Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
       Assert.AreEqual(exception.GetResult.Message, result.GetResult.Message);
@@ -132,7 +133,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 #if RAPTOR
     [Ignore]
     [TestMethod]
-    public void CompactionReportGridExecutorSuccess()
+    public async Task CompactionReportGridExecutorSuccess()
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(
         0, null, null, -1, null, false, false, false, false, false, false, null, 0.0, GridReportOption.Automatic, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -171,7 +172,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportGridExecutor>(_logger, raptorClient.Object);
 
-      var result = executor.Process(request) as CompactionReportResult;
+      var result = await executor.ProcessAsync(request) as CompactionReportResult;
 
       Assert.IsNotNull(result, "Result should not be null");
 

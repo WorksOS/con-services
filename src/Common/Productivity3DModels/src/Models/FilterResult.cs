@@ -10,6 +10,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Utilities;
 
 namespace VSS.Productivity3D.Models.Models
@@ -488,7 +489,7 @@ namespace VSS.Productivity3D.Models.Models
     public FilterResult
     (
       Guid? uid,
-      Productivity3D.Filter.Abstractions.Models.Filter filter,
+      Filter.Abstractions.Models.Filter filter,
       List<WGSPoint> polygonLL,
       DesignDescriptor alignmentFile,
       FilterLayerMethod? layerType,

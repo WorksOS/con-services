@@ -13,7 +13,7 @@ Scenario Outline: Get Heightmap with no design filter for all modes
   Then the resulting image should match "<ResultName>" from the response repository within <Difference> percent
   Examples: 
   | RequestName            | ResultName        | ProjectUID                           | BBox                                                                  | Width | Height | Mode | Type | Difference | HttpCode |
-  | Height Mode Request    | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 0    | 0    | 6          | 200      |
+  | Height Mode Request    | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 0    | 0    | 7          | 200      |
   | CMV Mode Request       | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 1    | 0    | 6          | 200      |
   | PassCount Mode Request | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 4    | 0    | 7          | 200      |
   | Amplitude Mode Request | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 7    | 0    | 6          | 200      |

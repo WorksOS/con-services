@@ -1,44 +1,40 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Common.Exceptions;
+﻿using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
+using Xunit;
 
 namespace VSS.MasterData.Models.UnitTests
 {
-  [TestClass]
   public class FileDescriptorTests
   {
-
-    [TestMethod]
+    [Fact]
     public void CanCreateFileDescriptor()
     {
       var desc = FileDescriptor.CreateFileDescriptor("1", "2.txt", "3");
-      Assert.IsNotNull(desc);
+      Assert.NotNull(desc);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanValidateFileDescriptor()
     {
       var desc = FileDescriptor.CreateFileDescriptor("1", "2.txt", "3");
       desc.Validate();
-      Assert.IsFalse(false);
+      Assert.False(false);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanValidateFileDescriptorWithCustomerAndProjectID()
     {
       var desc = FileDescriptor.CreateFileDescriptor("1", "132465", "55644", "FILE.FILE");
       desc.Validate();
-      Assert.AreEqual("/132465/55644", desc.Path);
-      Assert.AreEqual("FILE.FILE", desc.FileName);
-      Assert.AreEqual("1", desc.FilespaceId);
+      Assert.Equal("/132465/55644", desc.Path);
+      Assert.Equal("FILE.FILE", desc.FileName);
+      Assert.Equal("1", desc.FilespaceId);
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ServiceException))]
+    [Fact]
     public void CanValidateInvalidFileDescriptor()
     {
-      var desc = FileDescriptor.CreateFileDescriptor("1", null, "3");
-      desc.Validate();
+      Assert.Throws<ServiceException>(() => FileDescriptor.CreateFileDescriptor("1", null, "3").Validate());
     }
   }
 }

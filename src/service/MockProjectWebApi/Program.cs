@@ -14,12 +14,12 @@ namespace MockProjectWebApi
 {
   public class Program
   {
-    const string LIBUV_THREAD_COUNT = "LIBUV_THREAD_COUNT";
-    const string MAX_WORKER_THREADS = "MAX_WORKER_THREADS";
-    const string MAX_IO_THREADS = "MAX_IO_THREADS";
-    const string MIN_WORKER_THREADS = "MAX_WORKER_THREADS";
-    const string MIN_IO_THREADS = "MIN_IO_THREADS";
-    const string DEFAULT_CONNECTION_LIMIT = "DEFAULT_CONNECTION_LIMIT";
+    private const string LIBUV_THREAD_COUNT = "LIBUV_THREAD_COUNT";
+    private const string MAX_WORKER_THREADS = "MAX_WORKER_THREADS";
+    private const string MAX_IO_THREADS = "MAX_IO_THREADS";
+    private const string MIN_WORKER_THREADS = "MAX_WORKER_THREADS";
+    private const string MIN_IO_THREADS = "MIN_IO_THREADS";
+    private const string DEFAULT_CONNECTION_LIMIT = "DEFAULT_CONNECTION_LIMIT";
 
     public static void Main()
     {

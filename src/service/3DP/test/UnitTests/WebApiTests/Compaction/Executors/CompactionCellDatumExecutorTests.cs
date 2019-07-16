@@ -128,7 +128,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .ReturnsAsync(expectedResult);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCellDatumExecutor>(logger, configStore: configStore.Object, trexCompactionDataProxy: tRexProxy.Object);
@@ -146,7 +146,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void CompactionCellDatumExecutor_TRex_NoCoords()
+    public async Task CompactionCellDatumExecutor_TRex_NoCoords()
     {
       var expectedResult = new CompactionCellDatumResult(DisplayMode.Height, CellDatumReturnCode.ValueFound, 5.23,
         DateTime.UtcNow.AddHours(-4.5), 12345, 9876);
@@ -159,7 +159,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .ReturnsAsync(expectedResult);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCellDatumExecutor>(logger, configStore: configStore.Object, trexCompactionDataProxy: tRexProxy.Object);
@@ -167,7 +167,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var request =
         new CellDatumRequest(0, Guid.NewGuid(), expectedResult.displayMode, null, new Point(expectedResult.northing, expectedResult.easting), null, null, null);
 
-      var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).Result;
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
       Assert.AreEqual("No WGS84 coordinates provided", ex.GetResult.Message);
 

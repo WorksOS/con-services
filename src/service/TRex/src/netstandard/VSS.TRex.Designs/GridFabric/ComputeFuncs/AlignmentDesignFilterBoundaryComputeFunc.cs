@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
   public class AlignmentDesignFilterBoundaryComputeFunc : BaseComputeFunc, IComputeFunc<AlignmentDesignFilterBoundaryArgument, AlignmentDesignFilterBoundaryResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationPatchComputeFunc>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<AlignmentDesignFilterBoundaryComputeFunc>();
 
     public AlignmentDesignFilterBoundaryResponse Invoke(AlignmentDesignFilterBoundaryArgument args)
     {

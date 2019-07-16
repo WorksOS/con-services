@@ -7,6 +7,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models.Designs;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Models
 { 

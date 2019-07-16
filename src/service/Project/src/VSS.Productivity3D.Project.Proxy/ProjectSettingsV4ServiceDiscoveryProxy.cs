@@ -39,6 +39,7 @@ namespace VSS.Productivity3D.Project.Proxy
     public async Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders)
     {
       var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult> ($"/projectsettings/{projectUid}", projectUid, userId, customHeaders );
+
       if (result.Code == 0)
         return result.Settings;
 
@@ -62,6 +63,7 @@ namespace VSS.Productivity3D.Project.Proxy
       }
 
       var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult> (uri,projectUid + settingsType, userId, customHeaders );
+
       if (result.Code == 0)
         return result.Settings;
  

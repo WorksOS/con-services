@@ -9,6 +9,7 @@
     PVMRendering,
     GriddedReport,
     CSVExport,
-    PassCountExport
+    PassCountExport,
+    QuantizedMesh
   }
 }

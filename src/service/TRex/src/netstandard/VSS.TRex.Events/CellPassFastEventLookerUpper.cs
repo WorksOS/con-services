@@ -172,6 +172,8 @@ namespace VSS.TRex.Events
         }
         */
 
+        passes[I].TargetValues.Clear();
+
         if (populationControl.WantsTargetCCVValues)
         {
           TrackingState.TargetCCV = TrackingState.TargetCCV_Tracking.DetermineTrackingStateValue(Stamp, _Time, CellPassConsts.NullCCV);

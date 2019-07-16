@@ -93,4 +93,5 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: {{ .Values.mutableData.storageSize }}
+          storage: {{ .Values.mutableData.storage.size }}
+      storageClassName: {{ .Values.mutableData.storage.className }}

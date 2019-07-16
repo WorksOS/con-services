@@ -6,7 +6,7 @@ namespace VSS.TRex.Designs.Executors
 {
   public class CalculateAlignmentDesignFilterBoundary
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationPatch>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateAlignmentDesignFilterBoundary>();
 
     /// <summary>
     /// Performs execution business logic for this executor

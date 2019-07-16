@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
@@ -34,7 +33,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
-    public FileResult GetTile([FromBody] TileRequest request)
+    public FileResult GetTile([FromBody] TRexTileRequest request)
     {
       Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
 

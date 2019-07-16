@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
@@ -99,7 +100,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPost]
     [FlowUpload(Extensions = new[]
     {
-      "svl", "dxf", "ttm"
+      "svl", "dxf", "ttm", "tif"
     }, Size = 1000000000)]
     public async Task<ImportedFileDescriptorSingleResult> SyncUpload(
       [FromServices] ISchedulerProxy schedulerProxy,
@@ -152,7 +153,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPut]
     [FlowUpload(Extensions = new[]
     {
-      "svl", "dxf", "ttm"
+      "svl", "dxf", "ttm", "tif"
     }, Size = 1000000000)]
     public async Task<ScheduleJobResult> BackgroundUpload(
       FlowFile file,
@@ -288,7 +289,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]
     {
-      "svl", "dxf", "ttm"
+      "svl", "dxf", "ttm", "tif"
     }, Size = 1_000_000_000)]
 
     public Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
@@ -470,6 +471,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           ? $"{nameof(UpsertFileInternal)}. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
           : $"{nameof(UpsertFileInternal)}. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
+      if (importedFileType == ImportedFileType.GeoTiff)
+        uploadToTcc = false;
+
       ImportedFileDescriptorSingleResult importedFile;
 
       FileDescriptor fileDescriptor = null;
@@ -478,6 +482,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         //FileDescriptor not used for reference surface but validation requires values
         fileDescriptor = FileDescriptor.CreateFileDescriptor("Not applicable", "Not applicable", filename);
+      }
+      else if (importedFileType == ImportedFileType.GeoTiff)
+      {
+
+        //save copy to DataOcean      
+        await DataOceanHelper.WriteFileToDataOcean(
+            fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), filename,
+            importedFileType == ImportedFileType.GeoTiff,
+            surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn);
+        fileDescriptor = FileDescriptor.CreateFileDescriptor(
+          FileSpaceId,
+          $"/{customerUid}/{projectUid}",
+          filename);
       }
       else
       {
@@ -499,7 +516,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 surveyedUtc, FileSpaceId, logger, serviceExceptionHandler, fileRepo)
               .ConfigureAwait(false);
           }
-          // This whole uploadToTCC workflow is strictkly only for the TCC -> DataOcean migration.
+          // This whole uploadToTCC workflow is strictly only for the TCC -> DataOcean migration.
           else
           {
             logger.LogDebug($"{nameof(UpsertFileInternal)}. Opted out of uploading to TCC, constructing pseudo fileDescriptor.");
@@ -507,7 +524,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             var tccFileName = Path.GetFileName(filename);
             if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
             {
-              tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
+              tccFileName = tccFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
             }
 
             fileDescriptor = FileDescriptor.CreateFileDescriptor(
@@ -549,7 +566,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         var importedFileUpsertEvent = new UpdateImportedFile(
           projectUid, project.LegacyProjectID, importedFileType,
-          importedFileType == ImportedFileType.SurveyedSurface
+          (importedFileType == ImportedFileType.SurveyedSurface || importedFileType == ImportedFileType.GeoTiff)
             ? surveyedUtc
             : null,
           dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,

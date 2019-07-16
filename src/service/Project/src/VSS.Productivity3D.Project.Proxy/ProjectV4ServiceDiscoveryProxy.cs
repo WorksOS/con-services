@@ -35,15 +35,12 @@ namespace VSS.Productivity3D.Project.Proxy
     public async Task<List<ProjectData>> GetProjectsV4(string customerUid, IDictionary<string, string> customHeaders = null)
     {
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project", customerUid, null, customHeaders);
+      
       if (result.Code == 0)
-      {
         return result.ProjectDescriptors;
-      }
-      else
-      {
-        log.LogDebug($"Failed to get list of projects: {result.Code}, {result.Message}");
-        return null;
-      }
+
+      log.LogDebug($"Failed to get list of projects: {result.Code}, {result.Message}");
+      return null;
     }
 
     /// <summary>
@@ -68,14 +65,10 @@ namespace VSS.Productivity3D.Project.Proxy
         customHeaders);
 
       if (result.Code == 0)
-      {
         return result.ProjectDescriptor;
-      }
-      else
-      {
-        log.LogDebug($"Failed to get project with Uid {projectUid}: {result.Code}, {result.Message}");
-        return null;
-      }
+
+      log.LogDebug($"Failed to get project with Uid {projectUid}: {result.Code}, {result.Message}");
+      return null;
     }
 
     //To support 3dpm v1 end points which use legacy project id

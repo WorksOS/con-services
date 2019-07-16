@@ -118,18 +118,22 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
           var projectExtentsRequest = new ExtentRequest(projectId, projectUid,
             filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
-          var extents =
-            RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger,
+          var extents = await RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger,
 #if RAPTOR
                 raptorClient, 
 #endif
                 configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
-              .Process(projectExtentsRequest) as ProjectExtentsResult;
+              .ProcessAsync(projectExtentsRequest) as ProjectExtentsResult;
 
-          result = new ElevationStatisticsResult(
-            new BoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
-              extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
-              extents.ProjectExtents.MaxZ), extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxZ, 0);
+          if (extents != null)
+          {
+            result = new ElevationStatisticsResult(
+              new BoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
+                extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
+                extents.ProjectExtents.MaxZ), extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxZ, 0.0);
+          }
+          else
+            result = new ElevationStatisticsResult(null, 0.0, 0.0, 0.0);
         }
         else
         {

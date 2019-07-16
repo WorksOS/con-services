@@ -143,8 +143,7 @@ namespace VSS.MasterData.Repositories
           _isInTransaction = true;
           transaction = conn.BeginTransaction();
           _connection = conn;
-          var result = await body(conn);
-          return result;
+          return await body(conn);
         }
         finally
         {

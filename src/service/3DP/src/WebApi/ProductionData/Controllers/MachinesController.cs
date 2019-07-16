@@ -138,7 +138,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
 
-      result.FilterByMachineId(machineId);
+      result?.FilterByMachineId(machineId);
+
       return result;
     }
 
@@ -167,7 +168,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
-      result.FilterByMachineId(machineId);
+
+      result?.FilterByMachineId(machineId);
+
       return result;
     }
 
@@ -196,7 +199,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
-      result.FilterByMachineUid(machineUid);
+
+      result?.FilterByMachineUid(machineUid);
+
       return result;
     }
 
@@ -300,21 +305,26 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       ValidateDates(startUtc, endUtc, out var beginUtc, out var finishUtc);
 
-      var designsResult = await RequestExecutorContainerFactory.Build<GetAssetOnDesignPeriodsExecutor>(_logger,
+      var designsResultTask = RequestExecutorContainerFactory.Build<GetAssetOnDesignPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
-        .ProcessAsync(projectIds) as MachineDesignsExecutionResult;
+        .ProcessAsync(projectIds);
 
-      var machineResult = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+      var machineResultTask = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
-        .ProcessAsync(projectIds) as MachineExecutionResult;
+        .ProcessAsync(projectIds);
+
+      await Task.WhenAll(designsResultTask, machineResultTask);
+
+      var designsResult = await designsResultTask as MachineDesignsExecutionResult;
+      var machineResult = await machineResultTask as MachineExecutionResult;
 
       _log.LogDebug($"{nameof(GetMachineDesignByDateRangeDetails)} MachineDesignsExecutionResult: {JsonConvert.SerializeObject(designsResult)}");
       _log.LogDebug($"{nameof(GetMachineDesignByDateRangeDetails)} MachineExecutionResult: {JsonConvert.SerializeObject(machineResult)}");
@@ -461,34 +471,42 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       //and IsoDateTimeConverter but that didn't fix the problem.
       ValidateDates(startUtc, endUtc, out var beginUtc, out var finishUtc);
 
-      var layerIdsResult = await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
+      var layerIdsResultTask = RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
-        .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
+        .ProcessAsync(projectIds);
 
-      var machineResult = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+      var machineResultTask = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
-        .ProcessAsync(projectIds) as MachineExecutionResult;
+        .ProcessAsync(projectIds);
+
+      await Task.WhenAll(layerIdsResultTask, machineResultTask);
+
+      var layerIdsResult = await layerIdsResultTask as AssetOnDesignLayerPeriodsExecutionResult;
+      var machineResult = await machineResultTask as MachineExecutionResult;
 
       _log.LogDebug($"{nameof(GetMachineLiftsWith)} AssetOnDesignLayerPeriodsExecutionResult: {layerIdsResult} MachineExecutionResult: {machineResult}");
+
+      if (machineResult?.MachineStatuses == null)
+        return new MachineLayerIdsExecutionResult(new List<MachineLiftDetails>());
 
       var liftDetailsList = new List<MachineLiftDetails>();
       foreach (var machine in machineResult.MachineStatuses)
       {
         var filteredLayers =
-          layerIdsResult.AssetOnDesignLayerPeriods.Where(
+          layerIdsResult?.AssetOnDesignLayerPeriods.Where(
             layer => (layer.AssetUid.HasValue ? layer.AssetUid == machine.AssetUid : layer.AssetId == machine.AssetId
                      ) &&
                      IsDateRangeOverlapping(layer.StartDate, layer.EndDate, beginUtc, finishUtc)).ToList();
 
-        if (filteredLayers.Count > 0)
+        if (filteredLayers?.Count > 0)
         {
           liftDetailsList.Add(new MachineLiftDetails(
             machine.AssetId, machine.MachineName, machine.IsJohnDoe,

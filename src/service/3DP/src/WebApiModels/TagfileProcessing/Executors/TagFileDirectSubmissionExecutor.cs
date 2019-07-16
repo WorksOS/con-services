@@ -65,13 +65,9 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       // For nonDirect the harvester uses TCC (for now, soon to be s3)
       var data = new MemoryStream(request.Data);
       if (useRaptorGateway)
-      {
         await ArchiveFile((TAGProcServerProcessResultCode) result.Code, data, request.FileName, request.OrgId);
-      }
       else if (useTrexGateway)
-      {
         await ArchiveFile((TRexTagFileResultCode)result.Code, data, request.FileName, request.OrgId);
-      }
       else
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -110,10 +106,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
               ? RaptorConverters.ConvertWGS84Fence(tfRequest.Boundary)
               : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
 
-        log.LogInformation($"{nameof(CallRaptorEndpoint)} completed: filename '{tfRequest.FileName}' result {returnResult} {ContractExecutionStates.FirstNameWithOffset((int)returnResult)}");
-
         var convertedResult = TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(returnResult));
-        if (convertedResult.Code != 0)
+        if (convertedResult.Code == 0)
+          log.LogInformation($"{nameof(CallRaptorEndpoint)} completed: filename '{tfRequest.FileName}' result {returnResult} {convertedResult.Message}");
+        else
           log.LogDebug($"{nameof(CallRaptorEndpoint)}: Failed to process tagfile '{tfRequest.FileName}', {convertedResult.Message}");
 
         return convertedResult;

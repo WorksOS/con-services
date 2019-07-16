@@ -28,6 +28,8 @@ namespace VSS.Hydrology.WebApi.Abstractions.ResultsHandling
       DynamicAddwithOffset("MaxSlope must be greater than MinSlope.", 20);
       DynamicAddwithOffset("{0} must be a valid color.", 21);
       DynamicAddwithOffset("3dp design surface not returned.", 22);
+      DynamicAddwithOffset("3dp service exception.", 23);
+      DynamicAddwithOffset("3dp service returned no ttm zip.", 24);
     }
   }
 }

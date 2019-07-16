@@ -3,14 +3,11 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Morph.Services.Core.Interfaces;
 using Morph.Services.Core.Tools;
-using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.Hydrology.WebApi.Abstractions.Models;
 using VSS.Hydrology.WebApi.Abstractions.Models.ResultHandling;
@@ -18,7 +15,6 @@ using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
 using VSS.Hydrology.WebApi.Common.Helpers;
 using VSS.Hydrology.WebApi.Common.Utilities;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using System.Text;
 
 
 namespace VSS.Hydrology.WebApi.Common.Executors
@@ -28,7 +24,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
   /// </summary>
   public class HydroExecutor : RequestExecutorContainer
   {
-    protected static HydroErrorCodesProvider hydroErrorCodesProvider = new HydroErrorCodesProvider();
+    private static readonly HydroErrorCodesProvider HydroErrorCodesProvider = new HydroErrorCodesProvider();
 
     public HydroExecutor()
     {
@@ -43,8 +39,8 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     {
       var request = CastRequestObjectTo<HydroRequest>(item);
 
-      var currentGroundTTMStream = await GetCurrentGround3Dp(request);
-      //var currentGroundTTMStream = GetCurrentGroundTest(); 
+      //var currentGroundTTMStream = await GetCurrentGround3Dp(request);
+      var currentGroundTTMStream = GetCurrentGroundTest(); 
 
       var localTempProjectPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
 
@@ -53,7 +49,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       var triangleCount = ConvertTTMToDXF(currentGroundTTMStream, dxfLocalPathAndFileName);
       currentGroundTTMStream.Close();
       if (triangleCount < 3)
-        return new ContractExecutionResult(5, hydroErrorCodesProvider.FirstNameWithOffset(5));
+        return new ContractExecutionResult(5, HydroErrorCodesProvider.FirstNameWithOffset(5));
 
       // generate and zip images
       var zipLocalPath = Path.Combine(new[] { localTempProjectPath, (Path.GetFileNameWithoutExtension(request.FileName)) });
@@ -75,8 +71,31 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     private async Task<Stream> GetCurrentGround3Dp(HydroRequest request)
     {
       var currentGroundTTMStream = new MemoryStream();
-      var currentGroundTTMStreamCompressed =
-        await RaptorProxy.GetExportSurface(request.ProjectUid, request.FileName, request.FilterUid, CustomHeaders);
+      Stream currentGroundTTMStreamCompressed = null;
+
+      try
+      {
+        currentGroundTTMStreamCompressed =
+          await RaptorProxy.GetExportSurface(request.ProjectUid, request.FileName, request.FilterUid, CustomHeaders);
+      }
+      catch (ServiceException se)
+      {
+        Log.LogError(se, $"{nameof(GetCurrentGround3Dp)}: RaptorServices failed with service exception.");
+        //rethrow this to surface it
+        throw;
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, $"{nameof(GetCurrentGround3Dp)}: {HydroErrorCodesProvider.FirstNameWithOffset(23)}");
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 23, nameof(GetCurrentGround3Dp), e.Message);
+      }
+
+      if (currentGroundTTMStreamCompressed == null)
+      {
+        Log.LogError($"{nameof(GetCurrentGround3Dp)}: {HydroErrorCodesProvider.FirstNameWithOffset(24)}");
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 24, nameof(GetCurrentGround3Dp));
+        return null;
+      }
 
       //3dpm returns a zipped ttm we need to extract it.
       using (var temp = new ZipArchive(currentGroundTTMStreamCompressed))
@@ -184,14 +203,14 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       }
       catch (Exception e)
       {
-        var errorMessage = $"{nameof(GeneratePondingImage)} {hydroErrorCodesProvider.FirstNameWithOffset(11)}";
+        var errorMessage = $"{nameof(GeneratePondingImage)} {HydroErrorCodesProvider.FirstNameWithOffset(11)}";
         Log.LogError(e, errorMessage);
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 11, errorMessage1: e.Message);
       }
 
       if (bitmap == null)
       {
-        Log.LogError($"{nameof(GeneratePondingImage)} {hydroErrorCodesProvider.FirstNameWithOffset(12)}");
+        Log.LogError($"{nameof(GeneratePondingImage)} {HydroErrorCodesProvider.FirstNameWithOffset(12)}");
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 12);
       }
 
@@ -219,14 +238,14 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       }
       catch (Exception e)
       {
-        var errorMessage = $"{nameof(GeneratePondingImage)} {hydroErrorCodesProvider.FirstNameWithOffset(14)}";
+        var errorMessage = $"{nameof(GeneratePondingImage)} {HydroErrorCodesProvider.FirstNameWithOffset(14)}";
         Log.LogError(e, errorMessage);
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 14, errorMessage1: e.Message);
       }
 
       if (bitmap == null)
       {
-        Log.LogError($"{nameof(GeneratePondingImage)} {hydroErrorCodesProvider.FirstNameWithOffset(15)}");
+        Log.LogError($"{nameof(GeneratePondingImage)} {HydroErrorCodesProvider.FirstNameWithOffset(15)}");
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 15);
       }
 
@@ -248,7 +267,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
 
       if (!File.Exists(targetFilenameAndPath))
       {
-        Log.LogError($"{nameof(SaveBitmap)}  {hydroErrorCodesProvider.FirstNameWithOffset(13)} targetFileName: {targetFilenameAndPath} ");
+        Log.LogError($"{nameof(SaveBitmap)}  {HydroErrorCodesProvider.FirstNameWithOffset(13)} targetFileName: {targetFilenameAndPath} ");
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 13);
       }
       Log.LogInformation($"{nameof(SaveBitmap)} saved image: targetFileName: {targetFilenameAndPath}");

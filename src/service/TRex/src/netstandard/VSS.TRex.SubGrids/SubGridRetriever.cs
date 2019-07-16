@@ -635,7 +635,7 @@ namespace VSS.TRex.SubGrids
       _segmentIterator.Directory = _subGridAsLeaf.Directory;
     }
 
-    public ServerRequestResult RetrieveSubGrid(// liftBuildSettings          : TICLiftBuildSettings;
+    public ServerRequestResult RetrieveSubGrid(IOverrideParameters overrides,
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
@@ -676,7 +676,7 @@ namespace VSS.TRex.SubGrids
         _profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
         _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, new FilterSet(_filter),
-          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None);
+          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None, new OverrideParameters());
 
         _cellProfile = new ProfileCell();
 
@@ -765,6 +765,7 @@ namespace VSS.TRex.SubGrids
 
         // TODO Add when cell left build settings supported
         // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
+        _assignmentContext.Overrides = overrides;
 
         // Determine if a sieve filter is required for the sub grid where the sieve matches
         // the X and Y pixel world size (used for WMS tile computation)

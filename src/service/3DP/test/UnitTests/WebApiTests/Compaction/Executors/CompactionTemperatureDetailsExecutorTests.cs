@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var logger = new Mock<ILoggerFactory>();
 
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TEMPERATURE")).Returns("false");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_TEMPERATURE")).Returns(false);
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
@@ -49,11 +49,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DetailedTemperatureExecutor>(logger.Object, raptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
     }
 #endif
     [TestMethod]
-    public void TemperatureDetailsExecutor_TRex_NoResult()
+    public async Task TemperatureDetailsExecutor_TRex_NoResult()
     {
       var projectUid = Guid.NewGuid();
       var request = new TemperatureDetailsRequest(0, projectUid, new double[0], null, null);
@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var mockConfigStore = new Mock<IConfigurationStore>();
 #if RAPTOR
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TEMPERATURE")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_TEMPERATURE")).Returns(true);
 #endif
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Build<DetailedTemperatureExecutor>(logger.Object, configStore: mockConfigStore.Object,
           trexCompactionDataProxy: trexCompactionDataProxy.Object);
 
-      var result = executor.Process(request);
+      var result = await executor.ProcessAsync(request);
 
       Assert.AreEqual(0, result.Code);
       Assert.AreEqual(result.Message, "success");
@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 #if RAPTOR
     [TestMethod]
-    public void TemperatureDetailsExecutorSuccess()
+    public async Task TemperatureDetailsExecutorSuccess()
     {
       var request = new TemperatureDetailsRequest(0, null, new double[0], null, null);
 
@@ -102,7 +102,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DetailedTemperatureExecutor>(logger.Object, raptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
-      var result = executor.Process(request) as CompactionTemperatureDetailResult;
+      var result = await executor.ProcessAsync(request) as CompactionTemperatureDetailResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(details.Percents, result.Percents, "Wrong percents");
     }

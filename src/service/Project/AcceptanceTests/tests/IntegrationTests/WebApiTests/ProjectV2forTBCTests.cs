@@ -10,7 +10,7 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class ProjectV2ForTBCTests
+  public class ProjectV2ForTBCTests : WebApiTestsBase
   {
     private static List<TBCPoint> _boundaryLL;
 
