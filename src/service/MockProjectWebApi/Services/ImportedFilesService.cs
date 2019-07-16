@@ -145,6 +145,32 @@ namespace MockProjectWebApi.Services
             MaxZoomLevel = 19,
             ParentUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
             Offset = -0.75
+          },
+          new FileData
+          {
+            Name = "Test 1.tif",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "DxfTileAcceptanceTest",
+            ImportedFileType = ImportedFileType.GeoTiff,
+            ImportedFileUid = "2cd59629-de6a-48e8-acfd-bf4c71624e34",
+            LegacyFileId = 4,
+            IsActivated = true,
+            MinZoomLevel = 15,
+            MaxZoomLevel = 19,
+            SurveyedUtc = DateTime.Parse("2012-05-13T00:02:02")
+          },
+          new FileData
+          {
+            Name = "Test 1.tif",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "DxfTileAcceptanceTest",
+            ImportedFileType = ImportedFileType.GeoTiff,
+            ImportedFileUid = "83043e62-9177-46d7-acf0-26edd5281071",
+            LegacyFileId = 5,
+            IsActivated = true,
+            MinZoomLevel = 15,
+            MaxZoomLevel = 19,
+            SurveyedUtc = DateTime.Parse("2012-05-29T11:13:17")
           }
       };
 

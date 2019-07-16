@@ -21,21 +21,27 @@ using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Now3D
 {
+  /// <summary>
+  /// VSS.Productivity3D.Now3D application startup.
+  /// </summary>
   public class Startup : BaseStartup
   {
-    public const string LoggerRepoName = "3d-now";
-
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
-
-
+    /// <inheritdoc />
     public override string ServiceName => "3D Now Composite API";
 
+    /// <inheritdoc />
     public override string ServiceDescription => "A service to manage requests to multiple services for each of use for external customers";
 
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
+    
+    /// <summary>
+    /// Configures services and the application request pipeline.
+    /// </summary>
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    { }
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       services.AddMvc();
@@ -56,8 +62,7 @@ namespace VSS.Productivity3D.Now3D
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
-
-
+      
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>
@@ -67,6 +72,7 @@ namespace VSS.Productivity3D.Now3D
       });
     }
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<Now3DAuthentication>();

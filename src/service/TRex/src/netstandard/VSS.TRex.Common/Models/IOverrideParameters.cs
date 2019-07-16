@@ -1,8 +1,9 @@
-﻿using VSS.TRex.Common.Records;
+﻿using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Records;
 
-namespace VSS.TRex.Profiling.Interfaces
+namespace VSS.TRex.Common.Models
 {
-  public interface IOverrideParameters
+  public interface IOverrideParameters : IFromToBinary
   {
     bool OverrideMachineCCV { get; set; }
     short OverridingMachineCCV { get; set; }

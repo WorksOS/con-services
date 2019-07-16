@@ -78,7 +78,8 @@ namespace VSS.Productivity3D.Models.Models.Reports
       double startEasting,
       double endNorthing,
       double endEasting,
-      double azimuth)
+      double azimuth,
+      OverridingTargets overrides)
     {
       ProjectUid = projectUid;
       Filter = filter;
@@ -97,6 +98,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
       EndNorthing = endNorthing;
       EndEasting = endEasting;
       Azimuth = azimuth;
+      Overrides = overrides;
     }
 
     /// <summary>

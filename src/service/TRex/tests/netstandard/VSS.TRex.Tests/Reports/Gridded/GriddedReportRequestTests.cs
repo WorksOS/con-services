@@ -3,6 +3,7 @@ using FluentAssertions;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
@@ -42,7 +43,8 @@ namespace VSS.TRex.Tests.Reports.Gridded
         EndEasting = 500,
         Azimuth = 0,
         TRexNodeID = "Test_GriddedReportRequest_Execute_EmptySiteModel",
-        ProjectID = projectUid
+        ProjectID = projectUid,
+        Overrides = new OverrideParameters()
       };
     }
 

@@ -15,6 +15,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
@@ -66,7 +67,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         EndPoint = new WGS84Point(lon: request.EndX, lat: request.EndY),
         ReturnAllPassesAndLayers = false,
         VolumeType = ConvertVolumesType(request.VolumeCalcType),
-        Overrides = GetOverrideParameters(request.Overrides)
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 

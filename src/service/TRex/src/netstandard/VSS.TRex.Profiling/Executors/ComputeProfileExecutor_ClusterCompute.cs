@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -35,7 +36,7 @@ namespace VSS.TRex.Profiling.Executors
     private readonly IFilterSet Filters;
     private readonly ProfileStyle ProfileStyle;
     private readonly VolumeComputationType VolumeType;
-    private readonly OverrideParameters Overrides;
+    private readonly IOverrideParameters Overrides;
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
@@ -64,7 +65,7 @@ namespace VSS.TRex.Profiling.Executors
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, OverrideParameters overrides)
+      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, IOverrideParameters overrides)
     {
       ProfileStyle = profileStyle;
       ProjectID = projectID;

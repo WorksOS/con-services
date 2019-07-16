@@ -24,8 +24,8 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 			SiteModelID = argument.ProjectID,
 			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.CellSize,
-			OverrideTemperatureWarningLevels = argument.OverrideTemperatureWarningLevels,
-			OverridingTemperatureWarningLevels = argument.OverridingTemperatureWarningLevels,
+			OverrideTemperatureWarningLevels = argument.Overrides.OverrideTemperatureWarningLevels,
+			OverridingTemperatureWarningLevels = argument.Overrides.OverridingTemperatureWarningLevels,
 		  DetailsDataValues = argument.TemperatureDetailValues,
 		  Counts = argument.TemperatureDetailValues != null ? new long[argument.TemperatureDetailValues.Length] : null
     };

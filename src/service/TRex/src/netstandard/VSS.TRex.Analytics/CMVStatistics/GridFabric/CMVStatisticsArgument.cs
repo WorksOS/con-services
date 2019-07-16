@@ -1,8 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Records;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
 {
@@ -12,21 +10,6 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
   public class CMVStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
-
-    /// <summary>
-    /// The flag is to indicate whether or not the machine CMV target to be user overrides.
-    /// </summary>
-    public bool OverrideMachineCMV { get; set; }
-
-    /// <summary>
-    /// User overriding CMV target value.
-    /// </summary>
-    public short OverridingMachineCMV { get; set; }
-
-    /// <summary>
-    /// CMV percentage range.
-    /// </summary>
-   public CMVRangePercentageRecord CMVPercentageRange;
 
     /// <summary>
     /// CMV details values.
@@ -43,11 +26,6 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteBoolean(OverrideMachineCMV);
-      writer.WriteShort(OverridingMachineCMV);
-
-      CMVPercentageRange.ToBinary(writer);
-
       writer.WriteIntArray(CMVDetailValues);
     }
 
@@ -60,11 +38,6 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
       base.FromBinary(reader);
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
-      OverrideMachineCMV = reader.ReadBoolean();
-      OverridingMachineCMV = reader.ReadShort();
-
-      CMVPercentageRange.FromBinary(reader);
 
       CMVDetailValues = reader.ReadIntArray();
     }

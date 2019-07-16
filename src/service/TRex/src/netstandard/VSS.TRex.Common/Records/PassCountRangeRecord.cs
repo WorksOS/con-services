@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.CellPasses;
 
@@ -43,6 +44,8 @@ namespace VSS.TRex.Common.Records
     /// <param name="max"></param>
     public void SetMinMax(ushort min, ushort max)
     {
+      if (max < min)
+        throw new ArgumentException("Maximum value must be greater than or equal to minimum value.");
       Min = min;
       Max = max;
     }

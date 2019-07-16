@@ -112,14 +112,14 @@ node ('jenkinsslave-pod') {
 
     stage('Build Solution') {
         
-		//checkout([$class: 'GitSCM', 
-        //branches: [[name: fullBranchName]],
-        //extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true]]		
-        //])
+//	checkout([$class: 'GitSCM', 
+//        branches: [[name: fullBranchName]],
+//        extensions: [[$class: 'CloneOption', depth: 0, noTags: false, shallow: true,  reference: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/merge:refs/pull/*/merge', userRemoteConfigs: [[credentialsId: 'e49bcbce-3160-44cc-be4a-3abcd6f39848', url: 'https://visionlink.visualstudio.com/VSS/_git/VSS.Productivity3D.MonoRepo']]]]		
+//        ])
 		
-		checkout scm
-		
-		sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
+	checkout scm
+	
+	sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
 		
 	    def build_container = docker.build(container, "-f ./${servicePath}/build/Dockerfile.build . --build-arg SERVICE_PATH=${servicePath}")
 

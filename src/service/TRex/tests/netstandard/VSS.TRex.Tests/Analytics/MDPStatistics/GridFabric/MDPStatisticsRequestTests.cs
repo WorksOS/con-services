@@ -6,6 +6,7 @@ using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -30,9 +31,12 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
-        OverridingMachineMDP = target,
-        OverrideMachineMDP = target > 0,
-        MDPPercentageRange = new MDPRangePercentageRecord(minPercentage, maxPercentage)
+        Overrides = new OverrideParameters
+        { 
+          OverridingMachineMDP = target,
+          OverrideMachineMDP = target > 0,
+          MDPRange = new MDPRangePercentageRecord(minPercentage, maxPercentage)
+        }
       };
     }
 

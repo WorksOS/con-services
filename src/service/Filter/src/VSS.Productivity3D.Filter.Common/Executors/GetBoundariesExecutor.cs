@@ -78,21 +78,28 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         log.LogError(e, "Failed to retrieve all boundaries");
       }
 
-      if (boundariesTask != null && boundariesTask.IsCompleted && boundariesTask.Result != null)
-        boundaries.AddRange(boundariesTask.Result.GeofenceData);
-      if (associatedTask != null && associatedTask.IsCompleted && associatedTask.Result != null)
-        boundaries.AddRange(associatedTask.Result);
-      if (favoritesTask != null && favoritesTask.IsCompleted && favoritesTask.Result != null)
+      try
       {
-        //Find out which favorite geofences overlap project boundary
-        var overlappingGeofences =
-          (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT,
-            favoritesTask.Result.Select(g => g.GeometryWKT))).ToList();
-        for (var i = 0; i < favoritesTask.Result.Count; i++)
+        if (boundariesTask != null && !boundariesTask.IsFaulted && boundariesTask.Result != null)
+          boundaries.AddRange(boundariesTask.Result.GeofenceData);
+        if (associatedTask != null && !associatedTask.IsFaulted && associatedTask.Result != null)
+          boundaries.AddRange(associatedTask.Result);
+        if (favoritesTask != null && !favoritesTask.IsFaulted && favoritesTask.Result != null)
         {
-          if (overlappingGeofences[i])
-            boundaries.Add(favoritesTask.Result[i]);
+          //Find out which favorite geofences overlap project boundary
+          var overlappingGeofences =
+            (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT,
+              favoritesTask.Result.Select(g => g.GeometryWKT))).ToList();
+          for (var i = 0; i < favoritesTask.Result.Count; i++)
+          {
+            if (overlappingGeofences[i])
+              boundaries.Add(favoritesTask.Result[i]);
+          }
         }
+      }
+      catch (Exception ex)
+      {
+        log.LogError(ex, "Failed to aggregate all boundaries");
       }
 
       //Remove any duplicates
