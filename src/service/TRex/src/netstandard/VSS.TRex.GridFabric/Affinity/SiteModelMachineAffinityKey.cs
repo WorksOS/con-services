@@ -31,13 +31,13 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// TAG File Buffer Queue key constructor taking project, asset and filename
     /// </summary>
-    /// <param name="projectID"></param>
-    /// <param name="assetUid"></param>
+    /// <param name="projectUID"></param>
+    /// <param name="assetUID"></param>
     /// <param name="streamType"></param>
-    public SiteModelMachineAffinityKey(Guid projectID, Guid assetUid, FileSystemStreamType streamType)
+    public SiteModelMachineAffinityKey(Guid projectUID, Guid assetUID, FileSystemStreamType streamType)
     {
-      ProjectUID = projectID;
-      AssetUID = assetUid;
+      ProjectUID = projectUID;
+      AssetUID = assetUID;
       StreamType = streamType;
     }
 
