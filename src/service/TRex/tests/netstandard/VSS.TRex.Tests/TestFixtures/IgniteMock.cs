@@ -126,7 +126,7 @@ namespace VSS.TRex.Tests.TestFixtures
       mockIgnite.Setup(x => x.GetTransactions()).Returns(mockTransactions.Object);
     }
 
-    private static ICache<TK, TV> BuildMockForCache<TK, TV>(Dictionary<string, object> cacheDictionary, string cacheName)
+    private static ICache<TK, TV> BuildMockForCache<TK, TV>(string cacheName)
     {
       if (cacheDictionary.TryGetValue(cacheName, out var cache))
         return (ICache<TK, TV>)cache;
@@ -146,6 +146,17 @@ namespace VSS.TRex.Tests.TestFixtures
         mockCacheDictionary.Add(key, value);
       });
 
+      mockCache.Setup(x => x.PutIfAbsent(It.IsAny<TK>(), It.IsAny<TV>())).Returns((TK key, TV value) =>
+      {
+        if (!mockCacheDictionary.ContainsKey(key))
+        {
+          mockCacheDictionary.Add(key, value);
+          return true;
+        }
+
+        return false;
+      });
+
       cacheDictionary.Add(cacheName, mockCache.Object);
       return mockCache.Object;
     }
@@ -156,10 +167,10 @@ namespace VSS.TRex.Tests.TestFixtures
 
       mockIgnite
         .Setup(x => x.GetOrCreateCache<TK, TV>(It.IsAny<CacheConfiguration>()))
-        .Returns((CacheConfiguration cfg) => BuildMockForCache<TK, TV>(cacheDictionary, cfg.Name));
+        .Returns((CacheConfiguration cfg) => BuildMockForCache<TK, TV>(cfg.Name));
       mockIgnite
         .Setup(x => x.GetCache<TK, TV>(It.IsAny<string>()))
-        .Returns((string cacheName) => BuildMockForCache<TK, TV>(cacheDictionary, cacheName));
+        .Returns((string cacheName) => BuildMockForCache<TK, TV>(cacheName));
     }
 
     public static void RemoveMockedCacheFromIgniteMock<TK, TV>()
