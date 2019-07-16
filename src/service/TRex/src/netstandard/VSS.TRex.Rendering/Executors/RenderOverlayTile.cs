@@ -525,7 +525,7 @@ namespace VSS.TRex.Rendering.Executors
         processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
 
         // Prepare the processor
-        if (!processor.Build())
+        if (!await processor.BuildAsync())
         {
           Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
           return null;

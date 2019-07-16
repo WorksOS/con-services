@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
@@ -88,7 +89,7 @@ namespace VSS.TRex.Exports.Patches.Executors
     /// Executor that implements requesting and rendering sub grid information to create the rendered tile
     /// </summary>
     /// <returns></returns>
-    public bool Execute()
+    public async Task<bool> ExecuteAsync()
     {
       Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}, RequestingNodeID={RequestingTRexNodeID}");
 
@@ -115,7 +116,7 @@ namespace VSS.TRex.Exports.Patches.Executors
       processor.RequestAnalyser.SinglePageRequestSize = DataPatchPageSize;
       processor.RequestAnalyser.SubmitSinglePageOfRequests = true;
 
-      if (!processor.Build())
+      if (!await processor.BuildAsync())
       {
         Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
         return false;

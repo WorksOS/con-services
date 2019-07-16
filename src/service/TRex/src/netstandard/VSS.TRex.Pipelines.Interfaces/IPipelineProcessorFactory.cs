@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
@@ -27,7 +28,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <param name="requireSurveyedSurfaceInformation"></param>
     /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    IPipelineProcessor NewInstance(Guid requestDescriptor,
+    Task<IPipelineProcessor> NewInstance(Guid requestDescriptor,
       Guid dataModelID,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,

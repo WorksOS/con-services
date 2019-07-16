@@ -97,7 +97,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         _lastEventVibrationStateString = _lastPassValidTemperatureString = _csvExportFormatter.NullString;
     }
 
-    public List<string> ProcessSubGrid(ClientCellProfileLeafSubgrid lastPassSubGrid)
+    public async Task<List<string>> ProcessSubGrid(ClientCellProfileLeafSubgrid lastPassSubGrid)
     {
       var rows = new List<string>();
       if (RecordCountLimitReached())
@@ -105,7 +105,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       int runningIndexLLHCoords = 0;
       if (_requestArgument.CoordType == CoordType.LatLon)
-        _llhCoords = SetupLLPositions(_siteModel.CSIB(), lastPassSubGrid).Result;
+        _llhCoords = await SetupLLPositions(_siteModel.CSIB(), lastPassSubGrid);
 
       lastPassSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
@@ -128,7 +128,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       return rows;
     }
 
-    public List<string> ProcessSubGrid(ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
+    public async Task<List<string>> ProcessSubGrid(ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
     {
       var rows = new List<string>();
       if (RecordCountLimitReached())
@@ -137,7 +137,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       var runningIndexLLHCoords = 0;
       var halfPassCount = 0;
       if (_requestArgument.CoordType == CoordType.LatLon)
-        _llhCoords = SetupLLPositions(_siteModel.CSIB(), allPassesSubGrid).Result;
+        _llhCoords = await SetupLLPositions(_siteModel.CSIB(), allPassesSubGrid);
 
       allPassesSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 

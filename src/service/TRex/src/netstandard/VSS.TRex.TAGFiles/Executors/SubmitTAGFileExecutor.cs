@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Models.Enums;
@@ -40,7 +41,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <param name="tagFileContent">The content of the TAG file to be processed, expressed as a byte array</param>
     /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
     /// <returns></returns>
-    public SubmitTAGFileResponse Execute(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
+    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
     {
       if (OutputInformationalRequestLogging)
         Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}");
@@ -69,7 +70,7 @@ namespace VSS.TRex.TAGFiles.Executors
           };
 
           // Validate tag file submission
-          var result = TagfileValidator.ValidSubmission(td).Result;
+          var result = await TagfileValidator.ValidSubmission(td);
           response.Code = result.Code;
           response.Message = result.Message;
           
