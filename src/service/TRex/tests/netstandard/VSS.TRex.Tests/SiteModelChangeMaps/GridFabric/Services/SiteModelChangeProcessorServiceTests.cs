@@ -36,6 +36,8 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
     {
       var service = new SiteModelChangeProcessorService();
       service.Should().NotBeNull();
+      service.Aborted.Should().BeFalse();
+      service.InSteadyState.Should().BeFalse();
     }
 
     [Fact]
@@ -43,6 +45,8 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
     {
       var service = new SiteModelChangeProcessorService();
       service.Init(TestServiceContext());
+      service.Aborted.Should().BeFalse();
+      service.InSteadyState.Should().BeFalse();
     }
 
     [Fact]
@@ -50,6 +54,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
     {
       var service = new SiteModelChangeProcessorService();
       service.Cancel(TestServiceContext());
+      service.Aborted.Should().BeTrue();
     }
 
 
@@ -105,7 +110,11 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
 
       // Allow some time for the handler to complete processing the item provided to the service
       waitHandle.WaitOne(200);
+
+      service.InSteadyState.Should().BeTrue();
+
       service.Cancel(TestServiceContext());
+      service.Aborted.Should().BeTrue();
 
       var proxy = new SiteModelChangeMapProxy();
       var resultChangeMap = proxy.Get(projectGuid, siteModel.Machines.First().ID);
