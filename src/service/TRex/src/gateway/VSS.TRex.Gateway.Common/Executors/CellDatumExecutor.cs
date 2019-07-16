@@ -9,6 +9,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
@@ -55,7 +56,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           Mode = request.DisplayMode,
           CoordsAreGrid = request.CoordsAreGrid,
           Point = request.CoordsAreGrid  ? AutoMapperUtility.Automapper.Map<XYZ>(request.GridPoint) : AutoMapperUtility.Automapper.Map<XYZ>(request.LLPoint),
-          ReferenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, request.Offset ?? 0)
+        ReferenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, request.Offset ?? 0),
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
         });
 
         return new CompactionCellDatumResult(response.DisplayMode, response.ReturnCode, response.Value, response.TimeStampUTC, response.Northing, response.Easting);

@@ -195,7 +195,7 @@ namespace VSS.TRex.SubGrids
         /// // Note: There is an assumption you have already checked on a existence map that there is a sub grid for this address
         /// </summary>
         /// <returns></returns>
-        private ServerRequestResult PerformDataExtraction()
+        private ServerRequestResult PerformDataExtraction(IOverrideParameters overrides)
         {          
             // Determine if there is a suitable pre-calculated result present in the general sub grid result cache.
             // If there is, then apply the filter mask to the cached data and copy it to the client grid
@@ -221,7 +221,7 @@ namespace VSS.TRex.SubGrids
               return ServerRequestResult.FailedToComputeDesignFilterPatch;
             }
 
-            ServerRequestResult Result = retriever.RetrieveSubGrid(/* LiftBuildSettings, */ ClientGrid, CellOverrideMask);
+            ServerRequestResult Result = retriever.RetrieveSubGrid(/* LiftBuildSettings, */ overrides, ClientGrid, CellOverrideMask);
 
             // If a sub grid was retrieved and this is a supported data type in the cache then add it to the cache
             if (Result == ServerRequestResult.NoError && SubGridCacheContext != null)
@@ -413,12 +413,14 @@ namespace VSS.TRex.SubGrids
         /// surveyed surface information for requests involving height data.
         /// </summary>
         /// <param name="subGridAddress"></param>
+        /// <param name="overrides"></param>
         /// <param name="prodDataRequested"></param>
         /// <param name="surveyedSurfaceDataRequested"></param>
         /// <param name="clientGrid"></param>
         /// <returns></returns>
         public ServerRequestResult RequestSubGridInternal(SubGridCellAddress subGridAddress,
                                                           // LiftBuildSettings: TICLiftBuildSettings;
+                                                          IOverrideParameters overrides,
                                                           bool prodDataRequested,
                                                           bool surveyedSurfaceDataRequested,
                                                           out IClientLeafSubGrid clientGrid)
@@ -446,7 +448,7 @@ namespace VSS.TRex.SubGrids
 
             if (ProdDataRequested)
             {
-                if ((Result = PerformDataExtraction()) != ServerRequestResult.NoError)
+                if ((Result = PerformDataExtraction(overrides)) != ServerRequestResult.NoError)
                     return Result;
             }
 

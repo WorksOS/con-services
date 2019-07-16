@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Models;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
@@ -85,6 +86,11 @@ namespace VSS.TRex.SubGrids.Executors
     /// together with its offset for a reference surface
     /// </summary>
     private IDesignWrapper ReferenceDesignWrapper;
+
+    /// <summary>
+    /// Any overriding targets to be used instead of machine targets
+    /// </summary>
+    private IOverrideParameters Overrides;
 
     /// <summary>
     /// Cleans an array of client leaf sub grids by repatriating them to the client leaf sub grid factory
@@ -227,6 +233,8 @@ namespace VSS.TRex.SubGrids.Executors
       // Set up any required cut fill design
       if (arg.ReferenceDesign.DesignID != Guid.Empty)
         ReferenceDesignWrapper = new DesignWrapper(arg.ReferenceDesign, siteModel.Designs.Locate(arg.ReferenceDesign.DesignID));
+
+      Overrides = arg.Overrides;
     }
 
     /// <summary>
@@ -252,7 +260,7 @@ namespace VSS.TRex.SubGrids.Executors
       }
       
       // Reach into the sub grid request layer and retrieve an appropriate sub grid
-      ServerRequestResult result = requester.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, out clientGrid);
+      ServerRequestResult result = requester.RequestSubGridInternal(address, Overrides, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, out clientGrid);
 
       if (result != ServerRequestResult.NoError)
         Log.LogError($"Request for sub grid {address} request failed with code {result}");

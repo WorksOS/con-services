@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { HttpHeaders,  } from '@angular/common/http';
+import { HttpHeaders, } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
@@ -30,7 +30,7 @@ export class ProjectService {
     this.baseUrl = baseUrl;
   }
 
-  
+
   private executeRequest<T>(label: string, url: string): Observable<T> {
     url = `${this.baseUrl}api/${url}`;
     console.log(`${label}: url=${url}`);
@@ -47,11 +47,11 @@ export class ProjectService {
     url = `${this.baseUrl}api/${url}`;
     console.log(`${label}: url=${url}`);
 
-//    let headers = new HttpHeaders();
-//    headers.append('Content-Type', 'application/json');
+    //    let headers = new HttpHeaders();
+    //    headers.append('Content-Type', 'application/json');
     //post data missing(here you pass email and password)
 
-//    return this.http.post(url, body, headers);
+    //    return this.http.post(url, body, headers);
     return this.http.post<T>(url, body);
   }
 
@@ -83,14 +83,14 @@ export class ProjectService {
   }
 
   public testJSONParameter(param: any): Observable<any> {
-    var paramString : string = btoa(JSON.stringify(param));
+    var paramString: string = btoa(JSON.stringify(param));
 
     return this.executeRequest<CombinedFilter>('testJSONParameter', `sandbox/jsonparameter?param=${paramString}`);
   }
 
   public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-      ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface?fileNameAndLocalPath=${descriptor.fileName}&asAtDate=${asAtDate}`,null);
+      ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface?fileNameAndLocalPath=${descriptor.fileName}&asAtDate=${asAtDate}`, null);
   }
 
   public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
@@ -103,7 +103,7 @@ export class ProjectService {
 
   public addDesignSurface(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-        ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileNameAndLocalPath=${descriptor.fileName}&designUid=${descriptor.designId}`, null);
+      ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileNameAndLocalPath=${descriptor.fileName}&designUid=${descriptor.designId}`, null);
   }
 
   public getDesignSurfaces(projectUid: string): Observable<DesignSurface[]> {
@@ -169,7 +169,7 @@ export class ProjectService {
   }
 
   public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
-      return this.executeRequest<XYZS[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+    return this.executeRequest<XYZS[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
   }
 
   public drawProfileLineForCompositeElevations(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<any[]> {

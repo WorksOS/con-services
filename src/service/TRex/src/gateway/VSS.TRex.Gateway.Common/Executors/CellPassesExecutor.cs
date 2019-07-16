@@ -49,7 +49,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         ProjectID = siteModel.ID,
         Filters =  new FilterSet(filter),
         CoordsAreGrid = request.CoordsAreGrid,
-        Point = coords,
+        Point = coords
+        //NOTE: Currently cell passes is raw data so does not use overriding targets
       });
 
       if(response.ReturnCode != CellPassesReturnCode.DataFound)

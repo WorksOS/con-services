@@ -7,6 +7,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;

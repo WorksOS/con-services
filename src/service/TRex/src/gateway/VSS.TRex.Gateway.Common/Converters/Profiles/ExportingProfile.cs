@@ -36,6 +36,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         // MappedMachines are mapped separately using CSVExportHelper.MapRequestedMachines()
         .ForMember(x => x.MappedMachines,
+          opt => opt.Ignore())
+        .ForMember(x => x.Overrides,
           opt => opt.Ignore());
     }
   }

@@ -83,7 +83,7 @@ namespace VSS.Tile.Service.Common.Executors
       var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
 
       //For GeoTIFF files, use the latest version of a file
-      var geoTiffFiles = files.Where(x => x.ImportedFileType == ImportedFileType.GeoTiff);
+      var geoTiffFiles = files.Where(x => x.ImportedFileType == ImportedFileType.GeoTiff).ToList();
       if (geoTiffFiles.Any())
       {
         //Find any with multiple versions and remove old ones from the list

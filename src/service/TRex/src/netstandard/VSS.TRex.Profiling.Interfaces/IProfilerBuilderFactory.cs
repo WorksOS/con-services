@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;

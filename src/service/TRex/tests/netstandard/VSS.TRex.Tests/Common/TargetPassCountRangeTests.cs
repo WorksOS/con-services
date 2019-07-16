@@ -1,6 +1,6 @@
 ﻿using System;
 using FluentAssertions;
-using VSS.TRex.Types;
+using VSS.TRex.Common.Records;
 using Xunit;
 
 namespace VSS.TRex.Tests.Common
@@ -10,7 +10,7 @@ namespace VSS.TRex.Tests.Common
     [Fact]
     public void SetMinMax()
     {
-      var range = new TargetPassCountRange();
+      var range = new PassCountRangeRecord();
       range.SetMinMax(11, 22);
       range.Min.Should().Be(11);
       range.Max.Should().Be(22);
@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.Common
     [Fact]
     public void SetMinMax_InvalidArgument()
     {
-      var range = new TargetPassCountRange();
+      var range = new PassCountRangeRecord();
       Action act = () => range.SetMinMax(22, 11);
 
       act.Should().Throw<ArgumentException>()

@@ -125,7 +125,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         requestors[0].CellOverrideMask = cellOverrideMask;
 
         // using the cell address get the index of cell in clientGrid
-        ServerRequestResult request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true, out var clientGrid);
+        ServerRequestResult request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, requestArgument.Overrides, true, true, out var clientGrid);
         if (request != ServerRequestResult.NoError)
         {
           Log.LogError($"Request for sub grid {thisSubGridOrigin} request failed with code {result}");
