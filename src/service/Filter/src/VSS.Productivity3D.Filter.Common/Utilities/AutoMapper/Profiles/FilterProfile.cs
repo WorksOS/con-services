@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
