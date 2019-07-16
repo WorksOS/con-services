@@ -22,14 +22,12 @@ namespace VSS.TRex.SiteModelChangeMaps
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelChangeProcessorItemHandler>();
 
-    private bool _aborted;
-    public bool Aborted => _aborted;
+    public bool Aborted { get; private set; }
 
     /// <summary>
     /// The handler is initially inactive until all elements from the initial query scan are complete
     /// </summary>
-    private bool _active;
-    public bool Active => _active;
+    public bool Active { get; private set; }
 
     private readonly IStorageProxy _storageProxy;
     private readonly SiteModelChangeMapProxy _changeMapProxy;
@@ -64,13 +62,13 @@ namespace VSS.TRex.SiteModelChangeMaps
 
     public void Activate()
     {
-      _active = true;
+      Active = true;
       _waitHandle.Set();
     }
 
     public void Abort()
     {
-      _aborted = true;
+      Aborted = true;
     }
 
     public void Add(ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> item)
@@ -92,7 +90,7 @@ namespace VSS.TRex.SiteModelChangeMaps
         do
         {
           // Check to see if there is an item to be processed
-          if (_active && _queue.TryDequeue(out var item))
+          if (Active && _queue.TryDequeue(out var item))
           {
             Log.LogInformation($"Extracted item from queue, ProjectUID:{item.Value.ProjectUID}, added at {item.Value.InsertUTC} in thread {Thread.CurrentThread.ManagedThreadId}");
 
@@ -109,7 +107,7 @@ namespace VSS.TRex.SiteModelChangeMaps
           {
             _waitHandle.WaitOne();
           }
-        } while (!_aborted);
+        } while (!Aborted);
 
         Log.LogInformation($"#Out# {nameof(ProcessChangeMapUpdateItems)} completed executing");
       }
@@ -218,7 +216,7 @@ namespace VSS.TRex.SiteModelChangeMaps
 
     public void Dispose()
     {
-      _aborted = true;
+      Aborted = true;
     }
   }
 }

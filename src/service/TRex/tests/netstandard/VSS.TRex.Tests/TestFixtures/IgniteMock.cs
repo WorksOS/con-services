@@ -132,7 +132,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create the dictionary to contain all the mocked caches
       var cacheDictionary = new Dictionary<string, object>(); // object = ICache<TK, TV>
 
-      // Create he mocked cache for the existence maps cache and any other cache using this signature
+      // Create the mocked cache for the existence maps cache and any other cache using this signature
       var mockIgnite = DIContext.Obtain<Mock<IIgnite>>();
 
       mockIgnite.Setup(x => x.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(It.IsAny<CacheConfiguration>())).Returns((CacheConfiguration cfg) =>

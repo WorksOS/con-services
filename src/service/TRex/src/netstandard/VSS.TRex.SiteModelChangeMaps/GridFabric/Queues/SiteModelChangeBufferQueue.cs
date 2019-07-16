@@ -2,6 +2,7 @@
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
@@ -38,7 +39,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
       if (QueueCache == null)
       {
         Log.LogInformation($"Failed to get Ignite cache {TRexCaches.SiteModelChangeBufferQueueCacheName()}");
-        throw new ArgumentException("Ignite cache not available");
+        throw new TRexException("Ignite cache not available");
       }
     }
 

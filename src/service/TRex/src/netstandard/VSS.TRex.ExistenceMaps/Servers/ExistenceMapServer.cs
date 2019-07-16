@@ -30,7 +30,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// </summary>
         public ExistenceMapServer()
         {
-            IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
+            var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
             
             DesignTopologyExistenceMapsCache = ignite?.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistenceMapsCache());
 
