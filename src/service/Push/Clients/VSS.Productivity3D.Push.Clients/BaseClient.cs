@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.Push.Clients
         {
           Connected = false;
           // This is a known error, if there is an connection closed (due to pod restarting, or network issue)
-          Logger.LogError($"Failed to connect due to exception - Is the Server online? Message: {e.Message}");
+          Logger.LogError(e, "Failed to connect due to exception - Is the Server online?");
           await Task.Delay(RECONNECT_DELAY_MS);
         }
         catch (Exception e)
