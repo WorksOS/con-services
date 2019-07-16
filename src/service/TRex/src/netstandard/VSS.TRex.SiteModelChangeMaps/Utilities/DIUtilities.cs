@@ -17,8 +17,12 @@ namespace VSS.TRex.SiteModelChangeMaps.Utilities
     /// </summary>
     private static void AddDIEntries()
     {
-      var nonTransactedProxy = new StorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()));
-      var transactedProxy = new StorageProxyCacheTransacted<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer());
+      var nonTransactedProxy = new StorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(DIContext.Obtain<ITRexGridFactory>()
+        .Grid(StorageMutability.Immutable)?
+        .GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()));
+      var transactedProxy = new StorageProxyCacheTransacted<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(DIContext.Obtain<ITRexGridFactory>()
+        .Grid(StorageMutability.Immutable)?
+        .GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer());
 
       DIBuilder.Continue()
 
