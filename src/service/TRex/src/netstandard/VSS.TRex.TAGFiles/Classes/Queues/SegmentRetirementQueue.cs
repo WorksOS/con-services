@@ -48,7 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           // Replicate the maps across nodes
           CacheMode = CacheMode.Partitioned,
 
-          // No backups for now
+          // TODO: No backups for now
           Backups = 0,
           KeepBinaryInStore = true,
         });

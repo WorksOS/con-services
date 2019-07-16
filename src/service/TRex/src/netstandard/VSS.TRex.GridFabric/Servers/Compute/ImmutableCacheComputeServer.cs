@@ -207,7 +207,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         KeepBinaryInStore = true,
         CacheMode = CacheMode.Replicated,
 
-        // No backups for now
+        // TODO: No backups for now
         Backups = 0,
 
         DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION
@@ -227,7 +227,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         KeepBinaryInStore = true,
         CacheMode = CacheMode.Partitioned,
 
-        // No backups for now
+        // TODO: No backups for now
         Backups = 0,
 
         DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION,

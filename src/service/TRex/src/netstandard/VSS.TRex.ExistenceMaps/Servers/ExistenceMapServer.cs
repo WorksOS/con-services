@@ -53,7 +53,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
                 // Replicate the maps across nodes
                 CacheMode = CacheMode.Replicated,
 
-                // No backups for now
+                // TODO: No backups for now
                 Backups = 0,
 
                 DataRegionName = DataRegions.SPATIAL_EXISTENCEMAP_DATA_REGION
