@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
-using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
 using VSS.Hydrology.WebApi.DXF;
 using VSS.Hydrology.WebApi.DXF.Entities;
 using VSS.Hydrology.WebApi.TTM;

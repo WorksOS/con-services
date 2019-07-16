@@ -39,8 +39,8 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     {
       var request = CastRequestObjectTo<HydroRequest>(item);
 
-      //var currentGroundTTMStream = await GetCurrentGround3Dp(request);
-      var currentGroundTTMStream = GetCurrentGroundTest(); 
+      var currentGroundTTMStream = await GetCurrentGround3Dp(request);
+      //var currentGroundTTMStream = GetCurrentGroundTest(); 
 
       var localTempProjectPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
 

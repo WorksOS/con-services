@@ -38,8 +38,6 @@ namespace VSS.Hydrology.Tests.Hydro.FileConverter
       serviceCollection.AddSingleton(logFactory);
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>();
-        //.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>() // todoJeannie tests for exceptions
-        //.AddTransient<IErrorCodesProvider, RaptorResult>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 

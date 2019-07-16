@@ -2,6 +2,7 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
@@ -9,7 +10,7 @@ namespace VSS.Hydrology.WebApi.Abstractions.Models
 {
   public class HydroOptions
   {
-    private const int DEFAULT_RESOLUTION = 1;
+    private const double DEFAULT_RESOLUTION = 1.0;
     private const int DEFAULT_PONDING_LEVELS = 10;
     private const double DEFAULT_MINSLOPE = 0.05;
     private const double DEFAULT_MINSLOPE_GRANT = 0.02;
@@ -19,6 +20,8 @@ namespace VSS.Hydrology.WebApi.Abstractions.Models
     private const string DEFAULT_COLOR_MAX_SLOPE_VIOLATION = "IndianRed";
     private const string DEFAULT_COLOR_NO_VIOLATION_LIGHT = "LightGreen"; 
     private const string DEFAULT_COLOR_MIN_SLOPE_VIOLATION = "LightBlue";
+
+    private static readonly HydroErrorCodesProvider HydroErrorCodesProvider = new HydroErrorCodesProvider();
 
     /// <summary>
     /// PondMap & DrainageViolations: Resolution: the cell size to use for computation
@@ -64,8 +67,7 @@ namespace VSS.Hydrology.WebApi.Abstractions.Models
     public string MinSlopeViolationColor { get; set; } = DEFAULT_COLOR_MIN_SLOPE_VIOLATION;
 
     /// <summary>
-    /// DrainageViolations: NoViolationColor: the color to use when slope is within range: default green
-    ///       This comes in 3 shades todoJeannie what do these mean?
+    /// DrainageViolations: NoViolationColor: the color to use when slope is within range: default LightGreen
     /// </summary>
     [JsonProperty(PropertyName = "NoViolationColor", Required = Required.Default)]
     public string NoViolationColor { get; set; } = DEFAULT_COLOR_NO_VIOLATION_LIGHT; // DEFAULT_COLOR_NO_VIOLATION_DARK;
@@ -137,70 +139,70 @@ namespace VSS.Hydrology.WebApi.Abstractions.Models
 
     public void Validate()
     {
-      if (Resolution <= 0.005 || Resolution > 1000000) // todoJeannie what should these be?
+      if (Resolution <= 0.5 || Resolution > 20) 
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2004, "Resolution must be between 0.005 and < 1,000,000."));
+          new ContractExecutionResult(2004, HydroErrorCodesProvider.FirstNameWithOffset(4)));
       }
 
-      if (Levels < 2 || Levels > 240)
+      if (Levels < 2 || Levels > 20)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2008, "Levels must be between 2 and 240."));
+          new ContractExecutionResult(2008, HydroErrorCodesProvider.FirstNameWithOffset(8)));
       }
 
-      if (MinSlope < 0.005 || MinSlope > 100.0)
+      if (MinSlope < 0.005 || MinSlope > 99.0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2018, "MinSlope must be between 0.005 and 100.0.")); // todoJeannie
+          new ContractExecutionResult(2018, HydroErrorCodesProvider.FirstNameWithOffset(18))); 
       }
 
-      if (MaxSlope < 0.005 || MaxSlope > 100.0)
+      if (MaxSlope < 0.006 || MaxSlope > 100.0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2019, "MaxSlope must be between 0.005 and 100.0.")); // todoJeannie
+          new ContractExecutionResult(2019, HydroErrorCodesProvider.FirstNameWithOffset(19))); 
       }
 
       if (MaxSlope <= MinSlope)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2020, "MaxSlope must be greater than MinSlope."));
+          new ContractExecutionResult(2020, HydroErrorCodesProvider.FirstNameWithOffset(20)));
       }
 
-      if (string.IsNullOrEmpty(VortexViolationColor) /* todoJeannie validate color string content */)
+      if (string.IsNullOrEmpty(VortexViolationColor) || !System.Drawing.Color.FromName(VortexViolationColor).IsKnownColor)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2021, $"VortexViolationColor must be a valid color."));
+          new ContractExecutionResult(2021, string.Format(HydroErrorCodesProvider.FirstNameWithOffset(21), "VortexViolationColor")));
       }
 
-      if (string.IsNullOrEmpty(MaxSlopeViolationColor) /* todoJeannie validate color string content */)
+      if (string.IsNullOrEmpty(MaxSlopeViolationColor) || !System.Drawing.Color.FromName(MaxSlopeViolationColor).IsKnownColor)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2021, $"MaxSlopeViolationColor must be a valid color."));
+          new ContractExecutionResult(2021, string.Format(HydroErrorCodesProvider.FirstNameWithOffset(21), "MaxSlopeViolationColor")));
       }
 
-      if (string.IsNullOrEmpty(MinSlopeViolationColor) /* todoJeannie validate color string content */)
+      if (string.IsNullOrEmpty(MinSlopeViolationColor) || !System.Drawing.Color.FromName(MinSlopeViolationColor).IsKnownColor) 
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2021, $"MinSlopeViolationColor must be a valid color."));
+          new ContractExecutionResult(2021, string.Format(HydroErrorCodesProvider.FirstNameWithOffset(21), "MinSlopeViolationColor")));
       }
 
-      if (string.IsNullOrEmpty(NoViolationColorDark) /* todoJeannie validate color string content */)
+      if (string.IsNullOrEmpty(NoViolationColorDark) || !System.Drawing.Color.FromName(NoViolationColorDark).IsKnownColor)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2021, $"NoViolationColorDark must be a valid color."));
+          new ContractExecutionResult(2021, string.Format(HydroErrorCodesProvider.FirstNameWithOffset(21), "NoViolationColorDark")));
       }
 
-      if (string.IsNullOrEmpty(NoViolationColorMid) /* todoJeannie validate color string content */)
+      if (string.IsNullOrEmpty(NoViolationColorMid) || !System.Drawing.Color.FromName(NoViolationColorMid).IsKnownColor)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2021, $"NoViolationColorMid must be a valid color."));
+          new ContractExecutionResult(2021, string.Format(HydroErrorCodesProvider.FirstNameWithOffset(21), "NoViolationColorMid")));
       }
 
-      if (string.IsNullOrEmpty(NoViolationColorLight) /* todoJeannie validate color string content */)
+      if (string.IsNullOrEmpty(NoViolationColorLight) || !System.Drawing.Color.FromName(NoViolationColorLight).IsKnownColor)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2021, $"NoViolationColorLight must be a valid color."));
+          new ContractExecutionResult(2021, string.Format(HydroErrorCodesProvider.FirstNameWithOffset(21), "NoViolationColorLight")));
       }
 
     }

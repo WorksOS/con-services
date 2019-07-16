@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.Hydrology.WebApi.Abstractions.Models;
-using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
 
 namespace VSS.Hydrology.Tests.Hydro.Models
 {
@@ -15,7 +14,7 @@ namespace VSS.Hydrology.Tests.Hydro.Models
     [DataRow("33abf851-44c5-e311-aa77-00505688274d", "00000000-0000-0000-0000-000000000000", "resultantFileName.zip", 1.0, 2002, "Invalid FilterUid.")]
     [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "resultantFileName.png", 0.005, 2003, "Must have a valid resultant zip file name.")]
     [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "", 0.004, 2003, "Must have a valid resultant zip file name.")]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip", 0.004, 2004, "Resolution must be between 0.005 and < 1,000,000.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip", 0.004, 2004, "Resolution must be between 0.5 and 20.")]
     public void ValidateRequest(string projectUid, string filterUid, string fileName, double resolution, int expectedErrorCode, string expectedErrorMessage)
     {
       var options = new HydroOptions(resolution);
@@ -41,8 +40,8 @@ namespace VSS.Hydrology.Tests.Hydro.Models
     }
 
     [TestMethod]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip", 0.01, 1, 2008, "Levels must be between 2 and 240.")]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip", 0.01, 241, 2008, "Levels must be between 2 and 240.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip", 0.6, 1, 2008, "Levels must be between 2 and 20.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "resultantFileName.zip", 0.6, 241, 2008, "Levels must be between 2 and 20.")]
     public void ValidateRequestPonding(string projectUid, string filterUid, string fileName, double resolution, int levels, int expectedErrorCode, string expectedErrorMessage)
     {
       var options = new HydroOptions(resolution, levels);
@@ -55,14 +54,14 @@ namespace VSS.Hydrology.Tests.Hydro.Models
     }
 
     [TestMethod]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.0001, 1000, "", "", "", "", 2018, "MinSlope must be between 0.005 and 100.0.")]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 1000, "", "", "", "", 2019, "MaxSlope must be between 0.005 and 100.0.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.0001, 1000, "", "", "", "", 2018, "MinSlope must be between 0.005 and 99.0.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 1000, "", "", "", "", 2019, "MaxSlope must be between 0.006 and 100.0.")]
     [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 1.0, 0.2, "", "", "", "", 2020, "MaxSlope must be greater than MinSlope.")]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "", "", "", "", 2021, "VortexViolationColor must be a valid color.")]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "", "", "", 2021, "MaxSlopeViolationColor must be a valid color.")]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "bb", "", "", 2021, "MinSlopeViolationColor must be a valid color.")]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "bb", "bb", "", 2021, "NoViolationColorDark must be a valid color.")]
-    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "bb", "bb", "", 2021, "NoViolationColorDark must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "bb", "", "", "", 2021, "VortexViolationColor must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "Khaki", "", "", "", 2021, "MaxSlopeViolationColor must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "Khaki", "IndianRed", "aa", "", 2021, "MinSlopeViolationColor must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "Khaki", "IndianRed", "LightGreen", "", 2021, "NoViolationColorDark must be a valid color.")]
+    [DataRow("33abf851-44c5-e311-aa77-00505688274d", "44abf851-44c5-e311-aa77-00505688274d", "res.zip", 0.1, 0.2, "Khaki", "IndianRed", "LightGreen", "", 2021, "NoViolationColorDark must be a valid color.")]
     public void ValidateRequestDrainageViolation(string projectUid, string filterUid, string fileName, 
       double minSlope, double maxSlope,
       string vortexViolationColor, string maxSlopeViolationColor,
