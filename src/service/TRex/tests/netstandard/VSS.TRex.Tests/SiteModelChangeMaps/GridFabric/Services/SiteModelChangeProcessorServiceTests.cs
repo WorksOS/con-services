@@ -70,7 +70,6 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
         [SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset] = true
       };
 
-      var queryResult = new List<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
       var mockCacheEntry = new Mock<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
       var key = new SiteModelChangeBufferQueueKey(projectGuid, insertUTC);
       mockCacheEntry.Setup(x => x.Key).Returns(key);
@@ -83,7 +82,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
         Operation = SiteModelChangeMapOperation.AddSpatialChanges
       });
 
-      queryResult.Add(mockCacheEntry.Object);
+      var queryResult = new List<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> {mockCacheEntry.Object};
 
       var mockQueryCursor = new Mock<IQueryCursor<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>>();
       mockQueryCursor.Setup(x => x.GetAll()).Returns(queryResult);
@@ -103,13 +102,17 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
       thread.Start();
 
       var waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-      while (!service.InSteadyState)
+      using (waitHandle)
       {
-        waitHandle.WaitOne(100);
-      }
+        while (!service.InSteadyState)
+        {
+          waitHandle.WaitOne(100);
+        }
 
-      // Allow some time for the handler to complete processing the item provided to the service
-      waitHandle.WaitOne(200);
+        // Allow some time for the handler to complete processing the item provided to the service
+        // once steady state has been achieved.
+        waitHandle.WaitOne(200);
+      }
 
       service.InSteadyState.Should().BeTrue();
 
