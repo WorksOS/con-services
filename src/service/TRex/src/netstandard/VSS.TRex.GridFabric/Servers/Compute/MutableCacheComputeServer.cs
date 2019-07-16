@@ -188,7 +188,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //cfg.Backups = 0;
     }
 
-    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
     {
       return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(CacheCfg);
     }
@@ -227,7 +227,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
 
-      // No backups for now
+      // TODO: No backups for now
       cfg.Backups = 0;
 
       cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
@@ -247,7 +247,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         CacheMode = CacheMode.Partitioned,
         AffinityFunction = new MutableNonSpatialAffinityFunction(),
 
-        // No backups for now
+        // TODO: No backups for now
         Backups = 0,
 
         DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
@@ -278,7 +278,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //CacheConfiguration CacheCfg = new CacheConfiguration();
       //ConfigureNonSpatialMutableCache(CacheCfg);
       var nonSpatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
-      NonSpatialMutableCache = InstantiateTRexCacheReference(nonSpatialCacheConfiguration);
+      NonSpatialMutableCache = InstantiateNonSpatialTRexCacheReference(nonSpatialCacheConfiguration);
 
       //CacheCfg = new CacheConfiguration();
       //ConfigureMutableSpatialCache(CacheCfg);

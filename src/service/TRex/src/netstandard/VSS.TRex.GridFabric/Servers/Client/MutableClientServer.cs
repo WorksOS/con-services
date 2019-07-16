@@ -189,7 +189,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
     }
 
 
-    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
     {
       return mutableTRexGrid.GetCache<INonSpatialAffinityKey, byte[]>(CacheCfg.Name);
     }

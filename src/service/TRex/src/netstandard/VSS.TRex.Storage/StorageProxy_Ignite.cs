@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Apache.Ignite.Core;
+using Apache.Ignite.Core.Transactions;
 using VSS.Serilog.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -41,6 +43,7 @@ namespace VSS.TRex.Storage
       spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
       generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
       siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
+      siteModelMachineCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SiteModelMachineElevationChangeMap);
     }
 
     /// <summary>
@@ -74,7 +77,7 @@ namespace VSS.TRex.Storage
           // Create the immutable stream from the source data
           if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
           {
-            if (PerformNonSpatialImmutabilityConversion(mutableStream, ImmutableProxy.NonSpatialCache(streamType), cacheKey, streamType, source) == null)
+            if (!PerformNonSpatialImmutabilityConversion(mutableStream, ImmutableProxy.NonSpatialCache(streamType), cacheKey, streamType, source))
             {
               Log.LogError("Unable to project an immutable stream");
               return FileSystemErrorStatus.MutableToImmutableConversionError;
@@ -202,7 +205,8 @@ namespace VSS.TRex.Storage
     /// <param name="streamName"></param>
     /// <param name="subGridX"></param>
     /// <param name="subGridY"></param>
-    /// <param name="segmentIdentifier"></param>
+    /// <param name="segmentStartDateTicks"></param>
+    /// <param name="segmentEndDateTicks"></param>
     /// <param name="version"></param>
     /// <param name="streamType"></param>
     /// <param name="stream"></param>
@@ -327,12 +331,41 @@ namespace VSS.TRex.Storage
       return true;
     }
 
+
+    /// <summary>
+    /// Commits unsaved changes in the storage proxy in conjunction with an Ignite transaction mediating the activity
+    /// No implementation for non-transactional storage proxy
+    /// </summary>
+    public virtual bool Commit(ITransaction tx, out int numDeleted, out int numUpdated, out long numBytesWritten)
+    {
+      numDeleted = -1;
+      numUpdated = -1;
+      numBytesWritten = -1;
+
+      return true;
+    }
+
     /// <summary>
     /// Clears changes in the storage proxy.
     /// No implementation for non-transactional storage proxy
     /// </summary>
     public virtual void Clear()
     {
+    }
+
+    public bool Commit(ITransaction tx)
+    {
+      Commit();
+      tx.Commit();
+
+      return true;
+    }
+
+    public ITransaction StartTransaction(TransactionConcurrency concurrency, TransactionIsolation isolation)
+    { 
+      return (ignite ?? DIContext.Obtain<ITRexGridFactory>().Grid(Mutability))
+        .GetTransactions()
+        .TxStart(concurrency, isolation);
     }
   }
 }
