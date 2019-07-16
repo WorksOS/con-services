@@ -14,7 +14,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
-    /// The project to process that TAG file into.
+    /// The project to process that change map into.
     /// This field also provides the affinity key mapping to the nodes in the mutable data grid
     /// </summary>
     public Guid ProjectUID { get; set; }

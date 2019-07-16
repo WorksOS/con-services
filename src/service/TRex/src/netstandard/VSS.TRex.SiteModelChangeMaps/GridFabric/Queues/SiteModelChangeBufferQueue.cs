@@ -19,13 +19,13 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelChangeBufferQueue>();
 
     /// <summary>
-    /// The Ignite cache reference that holds the TAG files. This cache is keyed on the TAG file name and uses the
-    /// ProjectUID field in the queue item to control affinity placement of the TAG files themselves.
+    /// The Ignite cache reference that holds the change maps. This cache is keyed on the project and machine IDs and uses the
+    /// ProjectUID field in the queue item to control affinity placement of the change maps themselves.
     /// </summary>
     private ICache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> QueueCache;
 
     /// <summary>
-    /// Creates or obtains a reference to an already created TAG file buffer queue
+    /// Creates or obtains a reference to an already created change map file buffer queue
     /// </summary>
     private void InstantiateCache()
     {
@@ -51,7 +51,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     }
 
     /// <summary>
-    /// Adds a new TAG file to the buffer queue.
+    /// Adds a new change map to the buffer queue.
     /// </summary>
     /// <param name="key"></param>
     /// <param name="value"></param>

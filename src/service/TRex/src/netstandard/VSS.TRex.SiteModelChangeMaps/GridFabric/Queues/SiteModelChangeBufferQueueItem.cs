@@ -8,7 +8,7 @@ using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 {
   /// <summary>
-  /// Represents the state of a TAG file stored in the TAG file buffer queue awaiting processing.
+  /// Represents the state of a change map store in the change map buffer queue awaiting processing.
   /// </summary>
   public class SiteModelChangeBufferQueueItem : IBinarizable, IFromToBinary, ISiteModelChangeBufferQueueItem, IEquatable<SiteModelChangeBufferQueueItem>
   { 
@@ -27,8 +27,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 
     /// <summary>
     /// UID identifier of the project this change map relates to
-    /// This field is used as the affinity key map that determines which mutable server will
-    /// store this TAG file.
+    /// This field is used as the affinity key map that determines which mutable server will this change map
     /// </summary>
     public Guid ProjectUID { get; set; }
 
