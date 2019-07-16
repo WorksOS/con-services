@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core;
+﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
@@ -30,10 +29,10 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     /// </summary>
     private void InstantiateCache()
     {
-      var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ??
-                   Ignition.GetIgnite(TRexGrids.MutableGridName());
+      var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable) ??
+                   Ignition.GetIgnite(TRexGrids.ImmutableGridName());
 
-      QueueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(
+      QueueCache = ignite?.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(
           TRexCaches.SiteModelChangeBufferQueueCacheName());
 
       if (QueueCache == null)
