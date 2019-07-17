@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.645
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.FlowJSHandler", "FlowJSMVC\src\VSS.FlowJSHandler.csproj", "{C942F53D-01C3-40AF-B1AC-B7264C6AAD44}"
 EndProject
@@ -83,7 +83,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{097EC302-9BE1-4619-B57E-42CEA8085EF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Common.Abstractions.UnitTests", "test\VSS.Common.Abstractions.UnitTests\VSS.Common.Abstractions.UnitTests.csproj", "{A013C245-5AA3-4730-96B3-B9418D380B91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions.UnitTests", "test\VSS.Common.Abstractions.UnitTests\VSS.Common.Abstractions.UnitTests.csproj", "{A013C245-5AA3-4730-96B3-B9418D380B91}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions.UnitTests", "LoggingExtensions\Tests\VSS.Serilog.Extensions.UnitTests\VSS.Serilog.Extensions.UnitTests.csproj", "{9EDBE81B-96E6-4554-A443-E49CD4113B9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -231,6 +233,10 @@ Global
 		{A013C245-5AA3-4730-96B3-B9418D380B91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A013C245-5AA3-4730-96B3-B9418D380B91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A013C245-5AA3-4730-96B3-B9418D380B91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EDBE81B-96E6-4554-A443-E49CD4113B9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EDBE81B-96E6-4554-A443-E49CD4113B9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EDBE81B-96E6-4554-A443-E49CD4113B9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EDBE81B-96E6-4554-A443-E49CD4113B9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -272,6 +278,7 @@ Global
 		{03558ABB-DE65-441E-9DBA-E5B8C8A66F0D} = {097EC302-9BE1-4619-B57E-42CEA8085EF8}
 		{097EC302-9BE1-4619-B57E-42CEA8085EF8} = {E3D53CA2-8A78-4099-8C66-63B997FCC0D6}
 		{A013C245-5AA3-4730-96B3-B9418D380B91} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
+		{9EDBE81B-96E6-4554-A443-E49CD4113B9E} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61051E1C-44A2-4BB0-966A-5921ABAD87E8}
