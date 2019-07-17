@@ -11,5 +11,7 @@ start /D "src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/bin/Debug/ne
 timeout 4
 start /D "src/netstandard/services/VSS.TRex.Server.TileRendering/bin/Debug/netcoreapp2.1/" "TileRendering" cmd.exe /k "dotnet VSS.TRex.Server.TileRendering.dll"
 timeout 4
+start /D "src/netstandard/services/VSS.TRex.Server.QuantizedMesh/bin/Debug/netcoreapp2.1/" "QuantizedMesh" cmd.exe" cmd.exe /k "dotnet VSS.TRex.Server.QuantizedMesh.dll"
+timeout 4
 start /D "src/netstandard/services/VSS.TRex.Server.Reports/bin/Debug/netcoreapp2.1/" "Reports" cmd.exe /k "dotnet VSS.TRex.Server.Reports.dll"
 

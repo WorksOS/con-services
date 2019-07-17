@@ -12,7 +12,6 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Requests
   /// </summary>
   public class QuantizedMeshRequest : GenericASNodeRequest<QuantizedMeshRequestArgument, QuantizedMeshRequestComputeFunc, QuantizedMeshResponse>
   // Declare class like this to delegate the request to the cluster compute layer
-  //    public class TileRenderRequest : GenericPSNodeBroadcastRequest<TileRenderRequestArgument, TileRenderRequestComputeFunc, TileRenderResponse>
   {
     public QuantizedMeshRequest() : base(TRexGrids.ImmutableGridName(), ServerRoles.QNANTIZED_MESH_NODE)
     {

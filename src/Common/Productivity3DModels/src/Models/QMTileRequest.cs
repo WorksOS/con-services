@@ -10,15 +10,9 @@ namespace VSS.Productivity3D.Models.Models
   {
 
     /// <summary>
-    /// An identifying string from the caller
+    /// The base filter to be used.
     /// </summary>
-    [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? CallId { get; set; }
-
-    /// <summary>
-    /// The base or earliest filter to be used.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter1", Required = Required.Default)]
+    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
     public FilterResult Filter { get; set; }
 
     [JsonProperty(Required = Required.Always)]
@@ -40,21 +34,18 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     /// <param name="projectUId">Project ID</param>
-    /// <param name="callId">Caller ID</param>
-    /// <param name="filter">Filter 1</param>
+    /// <param name="filter">Filter</param>
     /// <param name="X">tile X coordinate</param>
     /// <param name="Y">tile Y coordinate</param>
     /// <param name="Z">tile Z coordinate</param>
     public QMTileRequest(
       Guid? projectUid,
-      Guid? callId,
       FilterResult filter,
       int x,
       int y,
       int z)
     {
       ProjectUid = projectUid;
-      CallId = callId;
       Filter = filter;
       X = x;
       Y = y;

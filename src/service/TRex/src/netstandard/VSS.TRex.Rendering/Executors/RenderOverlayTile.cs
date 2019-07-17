@@ -527,6 +527,7 @@ namespace VSS.TRex.Rendering.Executors
         if (!processor.Build())
         {
           Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
+          ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
           return null;
         }
 

@@ -11,8 +11,11 @@ using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
-using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
+using VSS.Productivity3D.WebApi.Compaction.Controllers;
+using VSS.Productivity3D.WebApi.Models.Interfaces;
+using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -21,13 +24,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// </summary>
   [Route("api/[controller]")]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class TerrainController : ControllerBase, ITerrainContract
+
+  // BaseTileController<CompactionTileController>
+  //   public class TerrainController : ControllerBase, ITerrainContract
+
+  public class TerrainController : BaseController<TerrainController>
   {
 
     /// <summary>
     /// LoggerFactory for logging
     /// </summary>
-    private readonly ILogger log;
+ //   private readonly ILogger log;
 
     /// <summary>
     /// LoggerFactory factory for use by executor
@@ -47,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// The TRex Gateway proxy for use by executor.
     /// </summary>
-    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+ //   private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
 
     /// <summary>
@@ -73,6 +80,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       }
     }
 
+
     /// <summary>
     /// Async call to make quantized mesh tile
     /// </summary>
@@ -84,20 +92,18 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <returns></returns>
     private async Task<byte[]> FetchTile(Guid projectUId, Guid filterUId, int x, int y, int z)
     {
+      var reqFilter = await GetCompactionFilter(projectUId, filterUId);
       var request = new QMTileRequest()
       {
         X = x,
         Y = y,
         Z = z,
-        CallId = new Guid(),
-
-        // Todo setup correct filterUId filter in part two
-        Filter = new FilterResult(),
+        Filter = reqFilter,
         ProjectUid = projectUId
       };
 
       request.Validate();
-      // Execute tile reuest
+      // Execute tile request
       var qmTileResult = await RequestExecutorContainerFactory.Build<QMTilesExecutor>(logger,
         configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as QMTileResult;
 
@@ -105,6 +111,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     }
 
+    /*
     /// <summary>
     /// Constructor with injection
     /// </summary>
@@ -117,6 +124,19 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       log = this.logger.CreateLogger<TerrainController>();
       ConfigStore = configStore;
       TRexCompactionDataProxy = trexCompactionDataProxy;
+    }
+    */
+
+    /// Default constructor.
+    /// </summary>
+    public TerrainController(
+      IConfigurationStore configStore,
+      IFileRepository fileRepo, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager, IProductionDataTileService tileService, IBoundingBoxHelper boundingBoxHelper) :
+      base(configStore, fileImportProxy, settingsManager)
+    {
+     // this.fileRepo = fileRepo;
+     // this.tileService = tileService;
+     // this.boundingBoxHelper = boundingBoxHelper;
     }
 
 
@@ -134,8 +154,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<IActionResult> Get(int x, int y, int z, string formatExtension, [FromQuery] Guid projectUid, [FromQuery] Guid filterUId)
     {
 
-      log.LogInformation("Get: " + Request.QueryString);
-      log.LogDebug($"QMesh tile request params. x:{x},y:{y},z:{z}, ProjectId:{projectUid}, FilterUId:{filterUId} *");
+      Log.LogInformation("Get: " + Request.QueryString);
+      //Log.LogDebug($"QMesh tile request params. x:{x},y:{y},z:{z}, ProjectId:{projectUid}, FilterUId:{filterUId} *");
 
       // var basicTile = await FetchTile(testDataPath, x, y, z);
       var basicTile = await FetchTile(projectUid, filterUId, x, y, z);
@@ -148,7 +168,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         return File(basicTile, ContentTypeConstants.ApplicationOctetStream);
       }
 
-      log.LogDebug($"Requested tile x:{x},y: {y},z:{z} for Project:{projectUid} was not found");
+      Log.LogDebug($"Requested tile x:{x},y: {y},z:{z} for Project:{projectUid} was not found");
       return NotFound();
     }
 
@@ -159,7 +179,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet("v1/qmesh/layer.json")]
     public string GetTRexLayerFile()
     {
-
+      Log.LogInformation("GetTRexLayerFile: " + Request.QueryString);
       // Its possible this layer file could be custom made to control tile requests to a certain area around 
       // a projects boundary only. Hence reducing overall tile requets
       return GetGenericLayerFile();

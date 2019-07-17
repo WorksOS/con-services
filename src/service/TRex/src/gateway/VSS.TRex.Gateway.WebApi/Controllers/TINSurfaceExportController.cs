@@ -105,15 +105,21 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       {
         ProjectUid = projectUid,
         Tolerance = tolerance,
+        FileName = "Bob",
         Filter = FilterResult.CreateFilter(null) // Todo: Get the actual filter from the filterUid
       };
+
+
+      CompactionSurfaceExportRequest request2 = new CompactionSurfaceExportRequest(projectUid, FilterResult.CreateFilter(null), "Sam", 1.0);
 
       request.Validate();
       ValidateFilterMachines(nameof(GetTINSurface2), request.ProjectUid, request.Filter);
 
       var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler);
 
-      var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
+
+
+      var tinResult = WithServiceExceptionTryExecute(() => container.Process(request2)) as TINSurfaceExportResult;
 
       if (Request.Headers["Accept"].Equals("application/ttm"))
         return new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm");

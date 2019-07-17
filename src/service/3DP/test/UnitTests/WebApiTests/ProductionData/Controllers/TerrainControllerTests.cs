@@ -64,7 +64,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         X = 0,
         Y = 0,
         Z = 0,
-        CallId = new Guid(),
         Filter = new FilterResult(),
         ProjectId = 1,
         ProjectUid = projectIds.ProjectUid
@@ -72,7 +71,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       // make bad call
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse<QMTileRequest>(
-        It.Is<QMTileRequest>(r => r.CallId == request.CallId),
+        It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrainNoValid"),
           It.IsAny<IDictionary<string, string>>()))
        .Returns(Task.FromResult<Stream>(resultStream));
@@ -88,7 +87,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.IsNull(result, "Result should be null");
 
       tRexProxy.Verify(m => m.SendDataPostRequestWithStreamResponse(
-        It.Is<QMTileRequest>(r => r.CallId == request.CallId),
+        It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
           It.IsAny<IDictionary<string, string>>())
       , Times.Once);
@@ -119,7 +118,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         X = 0,
         Y = 0,
         Z = 0,
-        CallId = new Guid(),
         Filter = new FilterResult(),
         ProjectId = 1,
         ProjectUid = projectIds.ProjectUid
@@ -127,7 +125,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
 
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse<QMTileRequest>(
-        It.Is<QMTileRequest>(r => r.CallId == request.CallId),
+        It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
           It.IsAny<IDictionary<string, string>>()))
        .Returns(Task.FromResult<Stream>(resultStream));
@@ -155,7 +153,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
 
       tRexProxy.Verify(m => m.SendDataPostRequestWithStreamResponse(
-        It.Is<QMTileRequest>(r => r.CallId == request.CallId),
+        It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
           It.IsAny<IDictionary<string, string>>())
       , Times.Once);

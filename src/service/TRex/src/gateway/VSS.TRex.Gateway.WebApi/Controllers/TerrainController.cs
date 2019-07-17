@@ -1,16 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Net;
+﻿using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
-
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -18,8 +14,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   [ApiController]
   public class TerrainController : BaseController
   {
-
-
     /// <summary>
     /// Constructor for production data image tile controller.
     /// </summary>
@@ -27,7 +21,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="exceptionHandler"></param>
     /// <param name="configStore"></param>
     public TerrainController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
-      IConfigurationStore configStore) : base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
+      IConfigurationStore configStore) : base(loggerFactory, loggerFactory.CreateLogger<TerrainController>(), exceptionHandler, configStore)
     {
     }
 
@@ -42,17 +36,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
 
       request.Validate();
- //     ValidateFilterMachines(nameof(GetTile), request.ProjectUid, request.Filter1);
 
       var tileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<QuantizedMeshTileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(request)) as QMTileResult;
 
-
-//      if (tileResult?.TileData == null)
-
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "application/octet-stream");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ApplicationOctetStream);
     }
 
 

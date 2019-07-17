@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -8,6 +6,10 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using System.IO;
 using System.IO.Compression;
+using VSS.TRex.QuantizedMesh.GridFabric.Requests;
+using VSS.TRex.QuantizedMesh.GridFabric.Arguments;
+using VSS.TRex.Filters;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -29,7 +31,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-
+    /*
     /// <summary>
     /// todo Temporary compression here. Part one
     /// </summary>
@@ -47,7 +49,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
     }
 
-
+    
     /// <summary>
     /// Temporary part one method to return dummy tiles
     /// </summary>
@@ -83,8 +85,10 @@ namespace VSS.TRex.Gateway.Common.Executors
       return null;
     }
 
+    */
+
     /// <summary>
-    /// Process QM tile request from WebAPI controller 
+    /// Process Quantized Mesh tile request from WebAPI controller 
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
@@ -96,42 +100,25 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
         ThrowRequestTypeCastException<QMTileRequest>();
 
+      var siteModel = GetSiteModel(request?.ProjectUid);
 
-      return new QMTileResult(GetTempDummyTile(request.X, request.Y,request.Z)); // for now return a dummy tile
+      var filter = ConvertFilter(request?.Filter, siteModel);
 
-      // todo Part Two. Follow surface export pattern
+      var qmRequest = new QuantizedMeshRequest();
+      // todo should this be asyncexec
+      var response = qmRequest.Execute(new QuantizedMeshRequestArgument
+      {
+        ProjectID = siteModel.ID,
+        Filters = new FilterSet(filter),
+        X = request.X,
+        Y = request.Y,
+        Z = request.Z
+      });
 
-      // var siteModel = GetSiteModel(request.ProjectUid);
-
-      /*  var tileRequest = new QuantizedMeshRequest();
-        var response = tileRequest.Execute(new QuantizedMeshRequestArgument
-          (siteModel.ID,
-          extents,
-          new FilterSet(ConvertFilter(request.Filter1, siteModel), null))
-          ) as DummyQMResponse;
-          */
-
-
-      //   return new QMTileResult(response.TileQMData);
-
-
-      // return new QMTileRequest(reponse);
-
-      /* todo make quantized mesh
-      var tileRequest = new TileRenderRequest();
-      var response = tileRequest.Execute(
-        new TileRenderRequestArgument
-        (siteModel.ID,
-          request.Mode,
-          ConvertColorPalettes(request, siteModel),
-          extents,
-          hasGridCoords,
-          request.Width, // PixelsX
-          request.Height, // PixelsY
-          new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
-          new DesignOffset(request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor.Offset)
-        )) as TileRenderResponse_Core2;
-        */
+     // if (response.ResultStatus != RequestErrorStatus.OK)
+       // Log
+       // should result status go back even further
+      return new QMTileResult(response.data); 
 
     }
 

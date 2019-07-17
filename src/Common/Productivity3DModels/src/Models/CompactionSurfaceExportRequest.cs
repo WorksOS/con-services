@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.Models.Models
     /// The value should be in meters.
     /// </remarks>
     [JsonProperty(PropertyName = "tolerance", Required = Required.Default)]
-    public double? Tolerance { get; private set; }
+    public double? Tolerance { get; set; }
 
     /// <summary>
     /// Overload constructor with parameters.
