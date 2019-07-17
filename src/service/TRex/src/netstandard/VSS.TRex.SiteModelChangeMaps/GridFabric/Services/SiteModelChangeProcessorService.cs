@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
+using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
 using Apache.Ignite.Core.Services;
@@ -38,7 +40,13 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// <summary>
     /// Flag set then Cancel() is called to instruct the service to finish operations
     /// </summary>
-    private bool aborted;
+    public bool Aborted { get; private set; }
+
+    /// <summary>
+    /// Notes that the service has completed processing of the queue content resent at the start of service
+    /// execution and is now processing items as they arrive in the queue
+    /// </summary>
+    public bool InSteadyState { get; private set; }
 
     /// <summary>
     /// The event wait handle used to mediate sleep periods between operation epochs of the service
@@ -71,7 +79,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
       {
         Log.LogInformation($"{nameof(SiteModelChangeProcessorService)} {context.Name} starting executing");
 
-        aborted = false;
+        Aborted = false;
         waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         // Get the ignite grid and cache references
@@ -85,23 +93,32 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
           return;
         }
 
-        var queueCache = _ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> (TRexCaches.SiteModelChangeBufferQueueCacheName());
+        var queueCache = _ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
 
         var handler = new SiteModelChangeProcessorItemHandler();
+        var listener = new LocalSiteModelChangeListener(handler);
+
+        // Obtain the query handle for the continuous query from the DI context, or if not available create it directly
+        var queryHandleFactory = DIContext.Obtain<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>>>();
+        IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> queryHandle = null;
+
+        if (queryHandleFactory != null)
+        {
+          queryHandle = queryHandleFactory(listener);
+        }
+
+        if (queryHandle == null)
+        {
+          queryHandle = queueCache.QueryContinuous
+          (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(listener) {Local = true},
+            initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> {Local = true});
+        }
 
         // Construct the continuous query machinery
         // Set the initial query to return all elements in the cache
         // Instantiate the queryHandle and start the continuous query on the remote nodes
         // Note: Only cache items held on this local node will be handled here
-        using (var queryHandle = queueCache.QueryContinuous
-        (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(new LocalSiteModelChangeListener(handler))
-          {
-            Local = true
-          },
-          initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>
-          {
-            Local = true
-          }))
+        using (queryHandle)
         {
           Log.LogInformation("Performing initial continuous query cursor scan of items to process");
 
@@ -113,11 +130,12 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
 
           // Activate the handler with the inject initial continuous query and move into steady state processing
 
+          InSteadyState = true;
           handler.Activate();
           do
           {
             waitHandle.WaitOne(serviceCheckIntervalMS);
-          } while (!aborted);
+          } while (!Aborted);
         }
       }
       finally
@@ -134,7 +152,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     {
       Log.LogInformation($"{nameof(SiteModelChangeProcessorService)} {context.Name} cancelling");
 
-      aborted = true;
+      Aborted = true;
       waitHandle?.Set();
     }
 
