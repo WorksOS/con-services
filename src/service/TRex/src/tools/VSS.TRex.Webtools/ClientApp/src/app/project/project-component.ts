@@ -885,7 +885,7 @@ export class ProjectComponent {
     }
   }
 
-  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
+  // Requests a computed profile and then transforms the resulting points into a SVG Path string
   // with a move instruction at the first vertex, and at any vertex indicating a gap and line instructions
   // between all others
   public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number,
@@ -912,7 +912,7 @@ export class ProjectComponent {
   public drawProfileLineFromStartToEndPointsForProdData(): void {
     this.ClearAllSVGProfilePolylines();
     this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY,
-      pt => pt.z,
+      pt => pt.elevation,
       theResult => {
         this.profilePath = theResult;
         this.numPointInProfile = theResult.length;
