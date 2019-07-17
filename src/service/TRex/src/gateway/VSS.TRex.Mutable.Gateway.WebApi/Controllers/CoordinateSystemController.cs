@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.TRex.Gateway.Common.Executors;
@@ -34,16 +35,16 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     /// </summary>
     [Route("api/v1/coordsystem")]
     [HttpPost]
-    public async Task<CoordinateSystemSettings> PostCoordinateSystem([FromBody] CoordinateSystemFile request)
+    public Task<ContractExecutionResult> PostCoordinateSystem([FromBody] CoordinateSystemFile request)
     {
       Log.LogInformation($"{nameof(PostCoordinateSystem)}: {Request.QueryString}");
 
       request.Validate();
 
-      return await WithServiceExceptionTryExecuteAsync(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CoordinateSystemPostExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .ProcessAsync(request)) as CoordinateSystemSettings;
+          .ProcessAsync(request));
     }
   }
 }

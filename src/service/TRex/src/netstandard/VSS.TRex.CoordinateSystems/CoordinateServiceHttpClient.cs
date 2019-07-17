@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Http;
 using VSS.Tpaas.Client.Constants;
 
 namespace VSS.TRex.CoordinateSystems
@@ -17,7 +18,7 @@ namespace VSS.TRex.CoordinateSystems
     public CoordinateServiceHttpClient(HttpClient httpClient)
     {
       this.httpClient = httpClient;
-      httpClient.DefaultRequestHeaders.Add("Accept", MediaTypes.JSON);
+      httpClient.DefaultRequestHeaders.Add(HeaderConstants.ACCEPT, MediaTypes.JSON);
     }
 
     /// <summary>

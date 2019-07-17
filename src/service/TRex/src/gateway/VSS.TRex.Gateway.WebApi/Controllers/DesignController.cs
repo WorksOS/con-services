@@ -105,7 +105,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
     /// <returns>Execution result with a list of design boundaries.</returns>
     [HttpGet("boundaries")]
-    public async Task<ContractExecutionResult> GetDesignBoundaries(
+    public Task<ContractExecutionResult> GetDesignBoundaries(
       [FromQuery] Guid projectUid, 
       [FromQuery] Guid designUid, 
       [FromQuery] string fileName, 
@@ -119,10 +119,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       designBoundariesRequest.Validate();
 
-      return await WithServiceExceptionTryExecuteAsync(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DesignBoundariesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .ProcessAsync(designBoundariesRequest)) as DesignBoundaryResult;
+          .ProcessAsync(designBoundariesRequest));
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="rightOffset"></param>
     /// <returns></returns>
     [HttpGet("filter/boundary")]
-    public async Task<ContractExecutionResult> GetDesignFilterBoundaries(
+    public Task<ContractExecutionResult> GetDesignFilterBoundaries(
       [FromQuery] Guid projectUid, 
       [FromQuery] Guid designUid, 
       [FromQuery] string fileName, 
@@ -160,10 +160,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       designFilterBoundaryRequest.Validate();
 
-      return await WithServiceExceptionTryExecuteAsync(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DesignFilterBoundaryExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .ProcessAsync(designFilterBoundaryRequest)) as DesignFilterBoundaryResult;
+          .ProcessAsync(designFilterBoundaryRequest));
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="designUid"></param>
     /// <returns></returns>
     [HttpGet("alignment/stationrange")]
-    public async Task<ContractExecutionResult> GetAlignmentStationRange([FromQuery] Guid projectUid, [FromQuery] Guid designUid)
+    public Task<ContractExecutionResult> GetAlignmentStationRange([FromQuery] Guid projectUid, [FromQuery] Guid designUid)
     {
       Log.LogInformation($"{nameof(GetAlignmentStationRange)}: projectUid:{projectUid}, designUid:{designUid}");
 
@@ -181,10 +181,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       alignmentStationRangeRequest.Validate();
 
-      return await WithServiceExceptionTryExecuteAsync(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<AlignmentStationRangeExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .ProcessAsync(alignmentStationRangeRequest)) as AlignmentStationRangeResult;
+          .ProcessAsync(alignmentStationRangeRequest));
     }
   }
 }

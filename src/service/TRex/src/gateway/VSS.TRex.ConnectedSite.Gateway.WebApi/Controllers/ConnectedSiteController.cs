@@ -9,7 +9,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.ConnectedSite.Gateway.Abstractions;
 using VSS.TRex.ConnectedSite.Gateway.Executors;
 using VSS.TRex.ConnectedSite.Gateway.Models;
-using VSS.TRex.ConnectedSite.Gateway.WebApi.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 
@@ -50,13 +49,13 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
     // [PostRequestVerifier]
     [Route("api/position")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostPosition([FromBody]CompactionTagFileRequest request)
+    public Task<ContractExecutionResult> PostPosition([FromBody]CompactionTagFileRequest request)
     {
       var connectedSiteRequest = new ConnectedSiteRequest(request, ConnectedSiteMessageType.L1PositionMessage);
 
       var serializedRequest = ConvertObjectForLogging.SerializeObjectIgnoringProperties(request, "Data");
       Log.LogInformation("Position request: " + serializedRequest);
-      return await ExecuteRequest(connectedSiteRequest);
+      return ExecuteRequest(connectedSiteRequest);
     }
 
     /// <summary>
@@ -66,21 +65,20 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
     // [PostRequestVerifier]
     [Route("api/status")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostStatus([FromBody]CompactionTagFileRequest request)
+    public Task<ContractExecutionResult> PostStatus([FromBody]CompactionTagFileRequest request)
     {
       var connectedSiteRequest = new ConnectedSiteRequest(request, ConnectedSiteMessageType.L2StatusMessage);
       var serializedRequest = ConvertObjectForLogging.SerializeObjectIgnoringProperties(request, "Data");
       Log.LogInformation("Position request: " + serializedRequest);
 
-      return await ExecuteRequest(connectedSiteRequest);
+      return ExecuteRequest(connectedSiteRequest);
     }
 
-    private async Task<ContractExecutionResult> ExecuteRequest(ConnectedSiteRequest request)
+    private Task<ContractExecutionResult> ExecuteRequest(ConnectedSiteRequest request)
     {
-      var tagfileResult = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
+      return WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
                                                      .Build<ConnectedSiteMessageSubmissionExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-                                                     .ProcessAsync(request)) as ConnectedSiteMessageResult;
-      return tagfileResult;
+                                                     .ProcessAsync(request));
     }
   }
 }

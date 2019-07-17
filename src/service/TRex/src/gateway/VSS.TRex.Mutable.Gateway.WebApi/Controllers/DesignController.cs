@@ -48,27 +48,25 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     /// <param name="designRequest"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ContractExecutionResult> CreateDesign([FromBody] DesignRequest designRequest)
+    public Task<ContractExecutionResult> CreateDesign([FromBody] DesignRequest designRequest)
     {
       Log.LogInformation($"{nameof(CreateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
       GatewayHelper.ValidateAndGetSiteModel(nameof(CreateDesign), designRequest.ProjectUid, true);
      
       if (DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
-      {
-        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
-      }
+        return Task.FromResult(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add."));
 
       if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
       {
-        return await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
+        return WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
             .Build<AddTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
             .ProcessAsync(designRequest));
       }
 
       if (designRequest.FileType == ImportedFileType.Alignment)
       {
-        return await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
+        return WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
             .Build<AddSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
             .ProcessAsync(designRequest));
       }
@@ -83,27 +81,25 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     /// <param name="designRequest"></param>
     /// <returns></returns>
     [HttpPut]
-    public async Task<ContractExecutionResult> UpdateDesign([FromBody] DesignRequest designRequest)
+    public Task<ContractExecutionResult> UpdateDesign([FromBody] DesignRequest designRequest)
     {
       Log.LogInformation($"{nameof(UpdateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
       GatewayHelper.ValidateAndGetSiteModel(nameof(UpdateDesign), designRequest.ProjectUid, true);
       
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
-      {
-        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
-      }
+        return Task.FromResult(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update."));
 
       if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
       {
-        return await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
+        return WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
             .Build<UpdateTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
             .ProcessAsync(designRequest));
       }
 
       if (designRequest.FileType == ImportedFileType.Alignment)
       {
-        return await WithServiceExceptionTryExecuteAsync(() => 
+        return WithServiceExceptionTryExecuteAsync(() => 
           RequestExecutorContainer
             .Build<UpdateSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
             .ProcessAsync(designRequest));

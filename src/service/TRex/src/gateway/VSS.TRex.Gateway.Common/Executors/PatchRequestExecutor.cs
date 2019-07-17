@@ -39,23 +39,18 @@ namespace VSS.TRex.Gateway.Common.Executors
       
       var req = new PatchRequest();
 
-      if (request != null)
+      var result = await req.ExecuteAndConvertToResult(new PatchRequestArgument
       {
-        var result = await req.ExecuteAndConvertToResult(new PatchRequestArgument
-        {
-          ProjectID = siteModel.ID,
-          Filters = new FilterSet(new[] { filter1, filter2 }),
-          Mode = request.Mode,
-          DataPatchNumber = request.PatchNumber,
-          DataPatchSize = request.PatchSize
-        });
+        ProjectID = siteModel.ID,
+        Filters = new FilterSet(new[] { filter1, filter2 }),
+        Mode = request.Mode,
+        DataPatchNumber = request.PatchNumber,
+        DataPatchSize = request.PatchSize
+      });
 
-        result.CellSize = siteModel.CellSize;
+      result.CellSize = siteModel.CellSize;
 
-        return new PatchDataResult(result.ConstructResultData());
-      }
-
-      return new PatchDataResult(null);
+      return new PatchDataResult(result.ConstructResultData());
     }
 
     /// <summary>

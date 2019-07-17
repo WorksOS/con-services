@@ -59,7 +59,7 @@ namespace VSS.TRex.TAGFiles.Executors
         try
         {
           // wrap up details into obj
-          TagFileDetail td = new TagFileDetail
+          var td = new TagFileDetail
           {
             assetId = assetId,
             projectId = projectId,

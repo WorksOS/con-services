@@ -29,7 +29,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
       try
       {
-        CellDatumComputeFuncExecutor_ApplicationService request = new CellDatumComputeFuncExecutor_ApplicationService();
+        var request = new CellDatumComputeFuncExecutor_ApplicationService();
 
         Log.LogInformation("Executing CellDatumRequestComputeFunc_ApplicationService.Execute()");
 

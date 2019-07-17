@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/volumes/summary")]
     [HttpPost]
-    public async Task<SummaryVolumesResult> PostSummaryVolumes([FromBody] SummaryVolumesDataRequest summaryVolumesRequest)
+    public Task<ContractExecutionResult> PostSummaryVolumes([FromBody] SummaryVolumesDataRequest summaryVolumesRequest)
     {
       Log.LogInformation($"{nameof(PostSummaryVolumes)}: {Request.QueryString}");
 
@@ -53,10 +53,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       ValidateFilterMachines(nameof(PostSummaryVolumes), summaryVolumesRequest.ProjectUid, summaryVolumesRequest.TopFilter);
       ValidateFilterMachines(nameof(PostSummaryVolumes), summaryVolumesRequest.ProjectUid, summaryVolumesRequest.AdditionalSpatialFilter);
 
-      return await WithServiceExceptionTryExecuteAsync(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<SummaryVolumesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .ProcessAsync(summaryVolumesRequest)) as SummaryVolumesResult;
+          .ProcessAsync(summaryVolumesRequest));
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/volumes/summary/profile")]
     [HttpPost]
-    public async Task<ProfileDataResult<SummaryVolumesProfileCell>> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
+    public Task<ContractExecutionResult> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
     { 
       Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {Request.QueryString}");
       
@@ -80,10 +80,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.BaseFilter);
       ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.TopFilter);
       
-      return await WithServiceExceptionTryExecuteAsync(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<SummaryVolumesProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .ProcessAsync(summaryVolumesProfileRequest)) as ProfileDataResult<SummaryVolumesProfileCell>;
+          .ProcessAsync(summaryVolumesProfileRequest));
     }
   }
 }

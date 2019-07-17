@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
@@ -42,12 +41,12 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/veta")]
-    public async Task<CompactionExportResult> GetVetaExport([FromBody] CompactionVetaExportRequest compactionVetaExportRequest)
+    public Task<ContractExecutionResult> GetVetaExport([FromBody] CompactionVetaExportRequest compactionVetaExportRequest)
     {
       Log.LogInformation($"{nameof(GetVetaExport)}: {Request.QueryString}");
 
       compactionVetaExportRequest.Validate();
-      return await ExecuteAsync(compactionVetaExportRequest);
+      return Execute(compactionVetaExportRequest);
     }
 
     /// <summary>
@@ -58,24 +57,23 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/passcount")]
-    public async Task<CompactionExportResult> GetPassCountExport([FromBody] CompactionPassCountExportRequest compactionPassCountExportRequest)
+    public Task<ContractExecutionResult> GetPassCountExport([FromBody] CompactionPassCountExportRequest compactionPassCountExportRequest)
     {
       Log.LogInformation($"{nameof(GetPassCountExport)}: {Request.QueryString}");
 
       compactionPassCountExportRequest.Validate();
-      return await ExecuteAsync(compactionPassCountExportRequest);
+      return Execute(compactionPassCountExportRequest);
     }
 
-    private async Task<CompactionExportResult> ExecuteAsync<T>(T request)
+    private Task<ContractExecutionResult> Execute<T>(T request)
     {
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
-      ValidateFilterMachines(nameof(ExecuteAsync), compactionCSVExportRequest.ProjectUid, compactionCSVExportRequest.Filter);
+      ValidateFilterMachines(nameof(Execute), compactionCSVExportRequest.ProjectUid, compactionCSVExportRequest.Filter);
 
-      return await WithServiceExceptionTryExecuteAsync(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CSVExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .ProcessAsync(compactionCSVExportRequest)) as CompactionExportResult;
-
+          .ProcessAsync(compactionCSVExportRequest));
     }
   }
 }

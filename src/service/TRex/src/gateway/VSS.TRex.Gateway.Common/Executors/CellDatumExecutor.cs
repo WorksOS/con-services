@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
@@ -47,23 +46,18 @@ namespace VSS.TRex.Gateway.Common.Executors
       var filter = ConvertFilter(request?.Filter, siteModel);
       var cellDatumRequest = new CellDatumRequest_ApplicationService();
 
-      if (request != null)
+      var response = await cellDatumRequest.ExecuteAsync(new CellDatumRequestArgument_ApplicationService
       {
-        var response = await cellDatumRequest.ExecuteAsync(new CellDatumRequestArgument_ApplicationService
-        {
-          ProjectID = siteModel.ID,
-          Filters =  new FilterSet(filter),
-          Mode = request.DisplayMode,
-          CoordsAreGrid = request.CoordsAreGrid,
-          Point = request.CoordsAreGrid  ? AutoMapperUtility.Automapper.Map<XYZ>(request.GridPoint) : AutoMapperUtility.Automapper.Map<XYZ>(request.LLPoint),
+        ProjectID = siteModel.ID,
+        Filters = new FilterSet(filter),
+        Mode = request.DisplayMode,
+        CoordsAreGrid = request.CoordsAreGrid,
+        Point = request.CoordsAreGrid ? AutoMapperUtility.Automapper.Map<XYZ>(request.GridPoint) : AutoMapperUtility.Automapper.Map<XYZ>(request.LLPoint),
         ReferenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, request.Offset ?? 0),
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
-        });
+      });
 
-        return new CompactionCellDatumResult(response.DisplayMode, response.ReturnCode, response.Value, response.TimeStampUTC, response.Northing, response.Easting);
-      }
-
-      return new CompactionCellDatumResult(DisplayMode.Height, CellDatumReturnCode.UnexpectedError, null, null, 0.0, 0.0);
+      return new CompactionCellDatumResult(response.DisplayMode, response.ReturnCode, response.Value, response.TimeStampUTC, response.Northing, response.Easting);
     }
 
     /// <summary>

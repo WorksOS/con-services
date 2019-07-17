@@ -57,7 +57,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(PostTINSurface)}: {Request.QueryString}");
 
-      Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
+      Log.LogDebug($"Accept header is {Request.Headers[HeaderConstants.ACCEPT]}");
 
       compactionSurfaceExportRequest.Validate();
       ValidateFilterMachines(nameof(PostTINSurface), compactionSurfaceExportRequest.ProjectUid, compactionSurfaceExportRequest.Filter);
@@ -102,7 +102,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       Log.LogInformation($"{nameof(GetTINSurface2)}: {Request.QueryString}");
 
-      Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
+      Log.LogDebug($"Accept header is {Request.Headers[HeaderConstants.ACCEPT]}");
 
       var request = new TINSurfaceExportRequest
       {
@@ -118,10 +118,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var tinResult = await WithServiceExceptionTryExecuteAsync(() => container.ProcessAsync(request)) as TINSurfaceExportResult;
 
-      if (Request.Headers["Accept"].Equals(ContentTypeConstants.ApplicationTTM))
+      if (Request.Headers[HeaderConstants.ACCEPT].Equals(ContentTypeConstants.ApplicationTTM))
         return new FileStreamResult(new MemoryStream(tinResult?.TINData), ContentTypeConstants.ApplicationTTM);
 
-      if (Request.Headers["Accept"].Equals(ContentTypeConstants.ApplicationTTMAndMetaData))
+      if (Request.Headers[HeaderConstants.ACCEPT].Equals(ContentTypeConstants.ApplicationTTMAndMetaData))
         return Ok(new TTMAndMetaDatActioNResult
         {
           a = tinResult?.TINData.Length ?? 0,

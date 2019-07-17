@@ -67,31 +67,31 @@ namespace VSS.TRex.Profiling.Executors
         }
 
         var request = new ProfileRequest_ClusterCompute<T>();
-        var ProfileResponse = request.Execute(arg2);
+        var profileResponse = await request.ExecuteAsync(arg2);
 
         //... and then sort them to get the final result, as well as removing initial and duplicate null values
         // Remove null cells in the profiles list. Null cells are defined by cells with null CellLastHeight.
         // All duplicate null cells will be replaced by a by single null cell entry
         int firstNonNullIndex = 0;
-        var _ProfileCells = ProfileResponse?.ProfileCells?.OrderBy(x => x.Station).ToList();
-        if (_ProfileCells != null)
+        var _profileCells = profileResponse?.ProfileCells?.OrderBy(x => x.Station).ToList();
+        if (_profileCells != null)
         {
-          ProfileResponse.ProfileCells = _ProfileCells.Where((x, i) =>
+          profileResponse.ProfileCells = _profileCells.Where((x, i) =>
           {
             // Remove all leading nulls
-            if (_ProfileCells[i].IsNull() && i == firstNonNullIndex)
+            if (_profileCells[i].IsNull() && i == firstNonNullIndex)
               {
                 firstNonNullIndex++;
                 return false;
               }
 
             // Collapse all interior nulls to single nulls, unless the null is at the end. Leave any single terminating null
-            return i == 0 || !_ProfileCells[i].IsNull() || (_ProfileCells[i].IsNull() && !_ProfileCells[i - 1].IsNull());
+            return i == 0 || !_profileCells[i].IsNull() || (_profileCells[i].IsNull() && !_profileCells[i - 1].IsNull());
           }).ToList();
         }
 
         // Return the care package to the caller
-        return ProfileResponse;
+        return profileResponse;
       }
       finally
       {

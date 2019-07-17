@@ -71,7 +71,7 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Takes a <see cref="LLH"/> and uses the Coordinate Service to convert it into <see cref="NEE"/> data.
     /// </summary>
-    public async Task<NEE> LLHToNEE(string id, LLH LLH, bool convertToRadians = true)
+    public Task<NEE> LLHToNEE(string id, LLH LLH, bool convertToRadians = true)
     {
       if (convertToRadians)
       {
@@ -79,15 +79,15 @@ namespace VSS.TRex.CoordinateSystems
         LLH.Latitude = MathUtilities.RadiansToDegrees(LLH.Latitude);
       }
 
-      return await serviceClient.GetNEEFromLLHAsync(id, LLH);
+      return serviceClient.GetNEEFromLLHAsync(id, LLH);
     }
 
     /// <summary>
     /// Takes an array of <see cref="LLH"/> and uses the Coordinate Service to convert it into <see cref="NEE"/> data.
     /// </summary>
-    public async Task<(RequestErrorStatus ErrorCode, NEE[] NEECoordinates)> LLHToNEE(string id, LLH[] LLH, bool convertToRadians = true)
+    public Task<(RequestErrorStatus ErrorCode, NEE[] NEECoordinates)> LLHToNEE(string id, LLH[] LLH, bool convertToRadians = true)
     {
-      return await serviceClient.GetNEEFromLLHAsync(id, LLH.ToRequestArray(convertToRadians));
+      return serviceClient.GetNEEFromLLHAsync(id, LLH.ToRequestArray(convertToRadians));
     }
 
     /// <summary>
@@ -171,12 +171,12 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Takes a <see cref="NEE"/> and uses the Coordinate Service to convert it into <see cref="LLH"/> data.
     /// </summary>
-    public async Task<LLH> NEEToLLH(string id, NEE NEE) => await serviceClient.GetLLHFromNEEAsync(id, NEE);
+    public Task<LLH> NEEToLLH(string id, NEE NEE) => serviceClient.GetLLHFromNEEAsync(id, NEE);
 
     /// <summary>
     /// Takes an array of <see cref="NEE"/> and uses the Coordinate Service to convert it into <see cref="LLH"/> data.
     /// </summary>
-    public async Task<(RequestErrorStatus ErrorCode, LLH[] LLHCoordinates)> NEEToLLH(string id, NEE[] NEE) => await serviceClient.GetLLHFromNEEAsync(id, NEE.ToRequestArray());
+    public Task<(RequestErrorStatus ErrorCode, LLH[] LLHCoordinates)> NEEToLLH(string id, NEE[] NEE) => serviceClient.GetLLHFromNEEAsync(id, NEE.ToRequestArray());
 
     /// <summary>
     /// Uses the Coordinate Service to convert WGS84 coordinates into the site calibration used by the project.
@@ -229,24 +229,24 @@ namespace VSS.TRex.CoordinateSystems
     /// Takes the full path and name of a DC file, reads it and uses the Trimble Coordinate service to convert it into a
     /// csib string
     /// </summary>
-    public async Task<string> DCFileToCSIB(string filePath) => await serviceClient.ImportFromDCAsync(filePath);
+    public Task<string> DCFileToCSIB(string filePath) => serviceClient.ImportFromDCAsync(filePath);
 
     /// <summary>
     /// Takes the content of a DC file as a byte array and uses the Trimble Coordinates Service to convert
     /// it into a CSIB string
     /// </summary>
-    public async Task<string> DCFileContentToCSIB(string filePath, byte[] fileContent) => await serviceClient.ImportFromDCContentAsync(filePath, fileContent);
+    public Task<string> DCFileContentToCSIB(string filePath, byte[] fileContent) => serviceClient.ImportFromDCContentAsync(filePath, fileContent);
 
     /// <summary>
     /// Takes the content of a DC file as a byte array and uses the Trimble Coordinates Service to convert
     /// it into a coordinate system definition response object.
     /// </summary>
-    public async Task<CoordinateSystemResponse> DCFileContentToCSD(string filePath, byte[] fileContent) => await serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent);
+    public Task<CoordinateSystemResponse> DCFileContentToCSD(string filePath, byte[] fileContent) => serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent);
 
     /// <summary>
     /// Takes the CSIB string and uses the Trimble Coordinates Service to convert
     /// it into a coordinate system definition response object.
     /// </summary>
-    public async Task<CoordinateSystemResponse> CSIBContentToCSD(string csib) => await serviceClient.ImportCSDFromCSIBAsync(csib);
+    public Task<CoordinateSystemResponse> CSIBContentToCSD(string csib) => serviceClient.ImportCSDFromCSIBAsync(csib);
   }
 }
