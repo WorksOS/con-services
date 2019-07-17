@@ -20,7 +20,7 @@ namespace VSS.Serilog.Extensions
     /// <param name="config">Optional configuration overrides.</param>
     /// <param name="httpContextAccessor">Used for the <see cref="HttpContextEnricher"/> to log the interservice RequestID.</param>
     /// <returns>Returns the Serilog.Core.Logger instance.</returns>
-    public static Logger Configure(string logFilename = "app.log", IConfigurationRoot config = null, IHttpContextAccessor httpContextAccessor = null)
+    public static Logger Configure(string logFilename = null, IConfigurationRoot config = null, IHttpContextAccessor httpContextAccessor = null)
     {
       const string outputTemplateConsole = "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message} {EscapedException}{NewLine}";
 
@@ -55,7 +55,7 @@ namespace VSS.Serilog.Extensions
 
       if (config == null)
       {
-        TryLoadAppSettingsJson(defaultConfig);
+        TryLoadAppSettingsJson(defaultConfig, logFilename);
       }
       else
       {
@@ -75,7 +75,7 @@ namespace VSS.Serilog.Extensions
     /// there is an appsettings.json present.
     /// </remarks>
     /// <param name="defaultConfig">The log configuration to add appsettings.json settings too.</param>
-    private static void TryLoadAppSettingsJson(IConfigurationBuilder defaultConfig)
+    private static void TryLoadAppSettingsJson(IConfigurationBuilder defaultConfig, string logFilename)
     {
       const string configFilename = "appsettings.json";
 
@@ -102,7 +102,10 @@ namespace VSS.Serilog.Extensions
       }
       catch (FileNotFoundException)
       {
-        throw new Exception($"Unable to resolve {configFilename} location; must provide either a valid logFilename or appsettings.json configuration file.");
+        if (string.IsNullOrEmpty(logFilename))
+        {
+          throw new Exception($"Unable to resolve {configFilename} location; must provide either a valid logFilename or appsettings.json configuration file.");
+        }
       }
     }
   }
