@@ -22,7 +22,6 @@ namespace VSS.Productivity3D.Filter.WebApi
                    .AddCommandLine(args)
                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                    .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
-                   .AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
                    .Build();
 
       new WebHostBuilder().BuildHostWithReflectionException(builder =>
@@ -38,7 +37,7 @@ namespace VSS.Productivity3D.Filter.WebApi
                       {
                         loggingBuilder.AddProvider(
                           p => new SerilogLoggerProvider(
-                            SerilogExtensions.Configure("VSS.TagFileAuth.WebAPI.log", config, p.GetService<IHttpContextAccessor>())));
+                            SerilogExtensions.Configure("VSS.Productivity3D.Filter.WebAPI.log", config, p.GetService<IHttpContextAccessor>())));
                       })
                       .Build();
       }).Run();

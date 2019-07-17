@@ -9,15 +9,19 @@ using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Messaging;
+using Apache.Ignite.Core.Transactions;
 using Moq;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Tests.BinarizableSerialization;
 
 namespace VSS.TRex.Tests.TestFixtures
@@ -35,6 +39,8 @@ namespace VSS.TRex.Tests.TestFixtures
     public Mock<IClusterGroup> mockClusterGroup { get; }
     public Mock<ICluster> mockCluster { get; }
     public Mock<IIgnite> mockIgnite { get; }
+    public Mock<ITransactions> mockTransactions { get; }
+    public Mock<ITransaction> mockTransaction { get; }
 
     /// <summary>
     /// Constructor that creates the collection of mocks that together mock the Ignite infrastructure layer in TRex
@@ -109,47 +115,102 @@ namespace VSS.TRex.Tests.TestFixtures
       mockCluster.Setup(x => x.IsActive()).Returns(() => clusterActiveState);
       mockCluster.Setup(x => x.SetActive(It.IsAny<bool>())).Callback((bool state) => { /* Never change state from true... clusterActiveState = state; */ });
 
+      mockTransaction = new Mock<ITransaction>();
+      mockTransactions = new Mock<ITransactions>();
+      mockTransactions.Setup(x => x.TxStart()).Returns(mockTransaction.Object);
+
       mockIgnite = new Mock<IIgnite>();
       mockIgnite.Setup(x => x.GetCluster()).Returns(mockCluster.Object);
       mockIgnite.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
       mockIgnite.Setup(x => x.Name).Returns(TRexGrids.ImmutableGridName);
+      mockIgnite.Setup(x => x.GetTransactions()).Returns(mockTransactions.Object);
     }
+
+    private static ICache<TK, TV> BuildMockForCache<TK, TV>(string cacheName)
+    {
+      if (cacheDictionary.TryGetValue(cacheName, out var cache))
+        return (ICache<TK, TV>)cache;
+
+      var mockCache = new Mock<ICache<TK, TV>>();
+      var mockCacheDictionary = new Dictionary<TK, TV>();
+
+      mockCache.Setup(x => x.Get(It.IsAny<TK>())).Returns((TK key) =>
+      {
+        if (mockCacheDictionary.TryGetValue(key, out var value))
+          return value;
+        throw new KeyNotFoundException($"Key {key} not found in mock cache");
+      });
+
+      mockCache.Setup(x => x.Put(It.IsAny<TK>(), It.IsAny<TV>())).Callback((TK key, TV value) =>
+      {
+        mockCacheDictionary.Add(key, value);
+      });
+
+      mockCache.Setup(x => x.PutIfAbsent(It.IsAny<TK>(), It.IsAny<TV>())).Returns((TK key, TV value) =>
+      {
+        if (!mockCacheDictionary.ContainsKey(key))
+        {
+          mockCacheDictionary.Add(key, value);
+          return true;
+        }
+
+        return false;
+      });
+
+      cacheDictionary.Add(cacheName, mockCache.Object);
+      return mockCache.Object;
+    }
+
+    public static void AddMockedCacheToIgniteMock<TK, TV>()
+    {
+      var mockIgnite = DIContext.Obtain<Mock<IIgnite>>();
+
+      mockIgnite
+        .Setup(x => x.GetOrCreateCache<TK, TV>(It.IsAny<CacheConfiguration>()))
+        .Returns((CacheConfiguration cfg) => BuildMockForCache<TK, TV>(cfg.Name));
+      mockIgnite
+        .Setup(x => x.GetCache<TK, TV>(It.IsAny<string>()))
+        .Returns((string cacheName) => BuildMockForCache<TK, TV>(cacheName));
+    }
+
+    public static void RemoveMockedCacheFromIgniteMock<TK, TV>()
+    {
+      var mockIgnite = DIContext.Obtain<Mock<IIgnite>>();
+
+      mockIgnite.Setup(x => x.GetOrCreateCache<TK, TV>(It.IsAny<CacheConfiguration>()));
+      mockIgnite.Setup(x => x.GetCache<TK, TV>(It.IsAny<string>()));
+    }
+
+    private static Dictionary<string, object> cacheDictionary; // object = ICache<TK, TV>
 
     /// <summary>
     /// Removes and recreates any dynamic content contained in the Ignite mock. References to the mocked Ignite context are accessed via the TRex
-    /// Depenedency Injection layer.
+    /// Dependency Injection layer.
     /// </summary>
     public static void ResetDynamicMockedIgniteContent()
     {
       // Create the dictionary to contain all the mocked caches
-      var cacheDictionary = new Dictionary<string, object>(); // object = ICache<TK, TV>
+      cacheDictionary = new Dictionary<string, object>(); 
 
-      // Create he mocked cache for the existence maps cache and any other cache using this signature
-      var mockIgnite = DIContext.Obtain<Mock<IIgnite>>();
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // Create the mocked cache for the existence maps cache and any other cache using this signature
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      AddMockedCacheToIgniteMock<INonSpatialAffinityKey, byte[]>();
 
-      mockIgnite.Setup(x => x.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(It.IsAny<CacheConfiguration>())).Returns((CacheConfiguration cfg) =>
-      {
-        if (cacheDictionary.TryGetValue(cfg.Name, out var cache))
-          return (ICache<INonSpatialAffinityKey, byte[]>)cache;
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Create the mocked cache for the site model change map queue cache and any other cache using this signature
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      AddMockedCacheToIgniteMock<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>();
 
-        var mockCache = new Mock<ICache<INonSpatialAffinityKey, byte[]>>();
-        var mockCacheDictionary = new Dictionary<INonSpatialAffinityKey, byte[]>();
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Create the mocked cache for the site model TAG file buffer queue cache and any other cache using this signature
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      AddMockedCacheToIgniteMock<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>();
 
-        mockCache.Setup(x => x.Get(It.IsAny<INonSpatialAffinityKey>())).Returns((INonSpatialAffinityKey key) =>
-        {
-          if (mockCacheDictionary.TryGetValue(key, out var value))
-            return value;
-          throw new KeyNotFoundException($"Key {key} not found in mock cache");
-        });
-
-        mockCache.Setup(x => x.Put(It.IsAny<INonSpatialAffinityKey>(), It.IsAny<byte[]>())).Callback((INonSpatialAffinityKey key, byte[] value) =>
-        {
-          mockCacheDictionary.Add(key, value);
-        });
-
-        cacheDictionary.Add(cfg.Name, mockCache.Object);
-        return mockCache.Object;
-      });
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Create the mocked cache for the site model segment retirement queue and any other cache using this signature
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      AddMockedCacheToIgniteMock<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>();
     }
 
     private static void TestIBinarizableSerializationForItem(object item)

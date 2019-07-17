@@ -20,6 +20,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Types;
 using GPSAccuracy = VSS.TRex.Types.GPSAccuracy;
 using VSS.TRex.Common.Models;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
@@ -202,7 +203,7 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var rows = subGridProcessor.ProcessSubGrid(clientGrid);
       rows.Count.Should().Be(1);
-      rows[0].Should().Be(@"2019-Mar-14 23:45:00.000,1277752770.730m,1277752770.730m,6509.000m,1,34,Full Site (Kettlewell Drive 171219) Earthworks,""The machine Name"",1,188.0km/h,Float,Coarse (0.300m),5,3,2,90.1,85.0,13.0,11.0,11.1,96.0Hz,45.60mm,45.000m,Forward_2,On,104.0°C");
+      rows[0].Should().Be(@"2019-Mar-14 23:45:00.000,0.170m,0.170m,6509.000m,1,34,Full Site (Kettlewell Drive 171219) Earthworks,""The machine Name"",1,188.0km/h,Float,Coarse (0.300m),5,3,2,90.1,85.0,13.0,11.0,11.1,96.0Hz,45.60mm,45.000m,Forward_2,On,104.0°C");
     }
 
 
@@ -220,15 +221,18 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var rows = subGridProcessor.ProcessSubGrid(clientGrid);
       rows.Count.Should().Be(3);
-      rows[0].Should().Be(@"2019/Apr/15 00:00:00.000,1277752770.730m,1277752770.730m,555.000m,1,0,?,""The machine Name"",23.9km/h,Old Position,Fine (0.000m),5,3,5,77.7,0.8,0.0,0.0,0.0,0.0Hz,0.00mm,0.000m,Neutral,Off,0.0°C");
-      rows[1].Should().Be(@"2019/May/16 00:00:00.000,1277752770.730m,1277752770.730m,20.000m,1,0,?,""Unknown"",1.6km/h,Old Position,Fine (0.000m),2,1,1,4.4,6.6,0.0,0.0,0.0,0.0Hz,0.00mm,0.000m,Neutral,Off,0.0°C");
-      rows[2].Should().Be(@"2019/Apr/15 00:00:00.000,1277752770.730m,1277752770.730m,565.000m,1,0,?,""The machine Name"",27.9km/h,Old Position,Fine (0.000m),5,3,5,33.3,8.8,0.0,0.0,0.0,0.0Hz,0.00mm,0.000m,Neutral,Off,0.0°C");
+      rows[0].Should().Be(@"2019/Apr/15 00:00:00.000,0.170m,0.170m,555.000m,1,0,?,""The machine Name"",23.9km/h,Old Position,Fine (0.000m),5,3,5,77.7,0.8,0.0,0.0,0.0,0.0Hz,0.00mm,0.000m,Neutral,Off,0.0°C");
+      rows[1].Should().Be(@"2019/May/16 00:00:00.000,0.170m,0.170m,20.000m,1,0,?,""Unknown"",1.6km/h,Old Position,Fine (0.000m),2,1,1,4.4,6.6,0.0,0.0,0.0,0.0Hz,0.00mm,0.000m,Neutral,Off,0.0°C");
+      rows[2].Should().Be(@"2019/Apr/15 00:00:00.000,0.170m,0.170m,565.000m,1,0,?,""The machine Name"",27.9km/h,Old Position,Fine (0.000m),5,3,5,33.3,8.8,0.0,0.0,0.0,0.0Hz,0.00mm,0.000m,Neutral,Off,0.0°C");
     }
 
     private ClientCellProfileLeafSubgrid SetupProfileSampleCell()
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellProfile) as ClientCellProfileLeafSubgrid;
       clientGrid.Should().NotBe(null);
+
+      clientGrid.SetAbsoluteOriginPosition(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
+
       clientGrid.Cells[0, 0] = new ClientCellProfileLeafSubgridRecord
       {
         LastPassTime = DateTime.SpecifyKind(new DateTime(2019, 3, 14, 23, 45, 00), DateTimeKind.Utc),
@@ -267,7 +271,10 @@ namespace VSS.TRex.Tests.Exports.CSV
       var fullPassTime = DateTime.SpecifyKind(new DateTime(2019, 5, 16), DateTimeKind.Utc);
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellPasses) as ClientCellProfileAllPassesLeafSubgrid;
       clientGrid.Should().NotBe(null);
-      clientGrid.Cells[0, 0] = new ClientCellProfileAllPassesLeafSubgridRecord()
+
+      clientGrid.SetAbsoluteOriginPosition(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
+
+      clientGrid.Cells[0, 0] = new ClientCellProfileAllPassesLeafSubgridRecord
       {
         TotalPasses = 5,
         CellPasses = new[]
