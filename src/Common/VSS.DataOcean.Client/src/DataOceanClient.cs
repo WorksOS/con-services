@@ -114,7 +114,7 @@ namespace VSS.DataOcean.Client
       if (newFile != null)
       {
         //2. Upload the file
-        HttpContent result = await gracefulClient.ExecuteRequestAsStreamContent(newFile.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents, null, 3, false);
+        _ = await gracefulClient.ExecuteRequestAsStreamContent(newFile.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents, null, 3, false);
 
         //3. Monitor status of upload until done
         var route = $"/api/files/{newFile.Id}";
@@ -493,9 +493,5 @@ namespace VSS.DataOcean.Client
     }
 
     #endregion
-
-
-
-
   }
 }
