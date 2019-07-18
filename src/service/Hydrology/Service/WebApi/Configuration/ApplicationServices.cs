@@ -10,6 +10,8 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Scheduler.Abstractions;
+using VSS.Productivity3D.Scheduler.Proxy;
 
 // ReSharper disable once CheckNamespace
 namespace VSS.Hydrology.WebApi
@@ -33,6 +35,7 @@ namespace VSS.Hydrology.WebApi
       services.AddScoped<IErrorCodesProvider, HydroErrorCodesProvider>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<ISchedulerProxy, SchedulerProxy>(); // framework net471 doesn't support service discovery
     }
   }
 }

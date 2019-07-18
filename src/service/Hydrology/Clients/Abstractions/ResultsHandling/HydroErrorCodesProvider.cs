@@ -30,6 +30,9 @@ namespace VSS.Hydrology.WebApi.Abstractions.ResultsHandling
       DynamicAddwithOffset("3dp design surface not returned.", 22);
       DynamicAddwithOffset("3dp service exception.", 23);
       DynamicAddwithOffset("3dp service returned no ttm zip.", 24);
+      DynamicAddwithOffset("Missing HydroRequest.", 25);
+      DynamicAddwithOffset("3dp service returned zip which doesn't contain 1 ttm file.", 26);
+      DynamicAddwithOffset("3dp service returned invalid zip.", 27);
     }
   }
 }

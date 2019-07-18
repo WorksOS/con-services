@@ -1,14 +1,12 @@
 ﻿#if NET_4_7 
 using System;
 using System.IO;
-using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using Morph.Services.Core.Interfaces;
 using Morph.Services.Core.Tools;
-using VSS.Common.Exceptions;
 using VSS.Hydrology.WebApi.Abstractions.Models;
 using VSS.Hydrology.WebApi.Abstractions.Models.ResultHandling;
 using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
@@ -39,8 +37,9 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     {
       var request = CastRequestObjectTo<HydroRequest>(item);
 
-      var currentGroundTTMStream = await GetCurrentGround3Dp(request);
-      //var currentGroundTTMStream = GetCurrentGroundTest(); 
+      var currentGroundTTMStream = await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request,
+        Log, ServiceExceptionHandler, CustomHeaders, RaptorProxy);
+      //var currentGroundTTMStream = HydroRequestHelperLatestGround.GetCurrentGroundTest(Log); 
 
       var localTempProjectPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
 
@@ -68,75 +67,6 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       return new HydroResult(finalZippedFile);
     }
 
-    private async Task<Stream> GetCurrentGround3Dp(HydroRequest request)
-    {
-      var currentGroundTTMStream = new MemoryStream();
-      Stream currentGroundTTMStreamCompressed = null;
-
-      try
-      {
-        currentGroundTTMStreamCompressed =
-          await RaptorProxy.GetExportSurface(request.ProjectUid, request.FileName, request.FilterUid, CustomHeaders);
-      }
-      catch (ServiceException se)
-      {
-        Log.LogError(se, $"{nameof(GetCurrentGround3Dp)}: RaptorServices failed with service exception.");
-        //rethrow this to surface it
-        throw;
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, $"{nameof(GetCurrentGround3Dp)}: {HydroErrorCodesProvider.FirstNameWithOffset(23)}");
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 23, nameof(GetCurrentGround3Dp), e.Message);
-      }
-
-      if (currentGroundTTMStreamCompressed == null)
-      {
-        Log.LogError($"{nameof(GetCurrentGround3Dp)}: {HydroErrorCodesProvider.FirstNameWithOffset(24)}");
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 24, nameof(GetCurrentGround3Dp));
-        return null;
-      }
-
-      //3dpm returns a zipped ttm we need to extract it.
-      using (var temp = new ZipArchive(currentGroundTTMStreamCompressed))
-      {
-        foreach (var entry in temp.Entries)
-        {
-          if (entry.FullName.EndsWith("ttm", StringComparison.InvariantCultureIgnoreCase))
-          {
-            await entry.Open().CopyToAsync(currentGroundTTMStream);
-            break;
-          }
-        }
-      }
-
-      //GracefulWebRequest should throw an exception if the web api call fails but just in case...
-      if (currentGroundTTMStream.Length == 0)
-      {
-        currentGroundTTMStream?.Close();
-        currentGroundTTMStreamCompressed.Close();
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 22);
-      }
-
-      Log.LogInformation($"{nameof(GetCurrentGround3Dp)} ttmFile length: {currentGroundTTMStream.Length} ");
-      return currentGroundTTMStream;
-    }
-
-    private Stream GetCurrentGroundTest()
-    {
-      var ttmLocalPathAndFileName = "..\\..\\test\\UnitTests\\TestData\\Large Sites Road - Trimble Road.ttm";
-      Log.LogDebug($"{Environment.CurrentDirectory}");
-      if (!File.Exists(ttmLocalPathAndFileName))
-        throw new InvalidOperationException("unable to find temp ttm");
-
-      var fileStream = new FileStream(ttmLocalPathAndFileName, FileMode.Open);
-      var stream = new MemoryStream();
-      fileStream.CopyTo(stream);
-      fileStream.Close();
-      return stream;
-    }
-
-
     private int ConvertTTMToDXF(Stream currentGroundTTMStream, string dxfLocalPathAndFileName)
     {
       Log.LogInformation($"{nameof(ConvertTTMToDXF)} dxfLocalPathAndFileName {dxfLocalPathAndFileName}");
@@ -155,7 +85,6 @@ namespace VSS.Hydrology.WebApi.Common.Executors
 
       return converter.DXFTriangleCount();
     }
-
 
     private void GenerateHydroImages(string dxfLocalPathAndFileName, string zipLocalPath, HydroOptions options)
     {
@@ -189,7 +118,6 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       GeneratePondingImage(surfaceInfo, zipLocalPath, options);
       GenerateDrainageViolationsImage(surfaceInfo, zipLocalPath, options);
     }
-
 
     private bool GeneratePondingImage(ISurfaceInfo surfaceInfo, string zipLocalPath, HydroOptions options)
     {

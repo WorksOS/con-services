@@ -18,7 +18,7 @@ namespace VSS.MasterData.Proxies.Interfaces
       IDictionary<string, string> customHeaders);
 
     Task<Stream> GetExportSurface(Guid projectUid, string fileName, Guid? filterUid,
-      IDictionary<string, string> customHeaders);
+      IDictionary<string, string> customHeaders, bool isInternal = false);
 
     Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent,
       string coordinateSystemFilename,

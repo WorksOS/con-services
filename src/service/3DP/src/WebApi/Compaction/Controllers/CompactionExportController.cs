@@ -354,6 +354,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
     /// <param name="filterUid">The filter uid to apply to the export results</param>
     [Route("api/v2/export/surface")]
+    [Route("internal/v2/export/surface")] // VSS.Hydrology calls this internally to avoid TPaas
     [HttpGet]
     public async Task<FileResult> GetExportReportSurface(
       [FromQuery] Guid projectUid,
