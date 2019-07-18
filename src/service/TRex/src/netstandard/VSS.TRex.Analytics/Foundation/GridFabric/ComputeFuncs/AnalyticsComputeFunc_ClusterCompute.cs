@@ -34,8 +34,8 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
             {
                 Log.LogInformation("Executing AnalyticsComputeFunc_ClusterCompute.Execute()");
 
-                TCoordinator coordinator = new TCoordinator();
-                return coordinator.Execute(arg);
+                var coordinator = new TCoordinator();
+                return coordinator.ExecuteAsync(arg).Result;
             }
             finally
             {

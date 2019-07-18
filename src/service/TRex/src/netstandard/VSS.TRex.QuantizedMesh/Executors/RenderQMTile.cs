@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -77,7 +78,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// <summary>
     /// Executor that implements requesting and rendering subgrid information to create the rendered tile
     /// </summary>
-    public IQuantizedMeshTile Execute()
+    public async Task<IQuantizedMeshTile> ExecuteAsync()
     {
 
       // todo . Most likely to change in part two to surface export pattern. Currently based on TileRender pattern
@@ -86,13 +87,13 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       ApplicationServiceRequestStatistics.Instance.NumQMTileRequests.Increment();
 
-      Guid RequestDescriptor = Guid.NewGuid();
+      var requestDescriptor = Guid.NewGuid();
 
       // Determine the grid (NEE) coordinates of the bottom/left, top/right WGS-84 positions
       // given the project's coordinate system. If there is no coordinate system then exit.
 
-      ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
-      Log.LogInformation($"Got Site model {DataModelID}, extents are {SiteModel.SiteModelExtent}");
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
+      Log.LogInformation($"Got Site model {DataModelID}, extents are {siteModel.SiteModelExtent}");
 
       // We now need to work in grid coordinates. QM tile requests will always be in LL coordinates. Keeping logic here though in case this changes one day
       LLHCoords = new[]
@@ -105,12 +106,10 @@ namespace VSS.TRex.QuantizedMesh.Executors
       Log.LogInformation($"LLHCoords for tile request {string.Concat(LLHCoords)}, CoordsAreGrid {CoordsAreGrid}");
 
       if (CoordsAreGrid)
-      {
         NEECoords = LLHCoords;
-      }
       else
       {
-        var conversionResult = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+        var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), LLHCoords);
 
         if (conversionResult.ErrorCode != RequestErrorStatus.OK)
         {
@@ -121,17 +120,18 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
         NEECoords = conversionResult.NEECoordinates;
       }
+
       Log.LogInformation($"After conversion NEECoords are {string.Concat(NEECoords)}");
 
       WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
       WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);
 
-      double dx = NEECoords[2].X - NEECoords[0].X;
-      double dy = NEECoords[2].Y - NEECoords[0].Y;
+      var dx = NEECoords[2].X - NEECoords[0].X;
+      var dy = NEECoords[2].Y - NEECoords[0].Y;
       TileRotation = (Math.PI / 2) - Math.Atan2(dy, dx);
 
       RotatedTileBoundingExtents.SetInverted();
-      foreach (XYZ xyz in NEECoords)
+      foreach (var xyz in NEECoords)
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
 
 
@@ -154,11 +154,11 @@ namespace VSS.TRex.QuantizedMesh.Executors
 //      PlanViewTileRenderer Renderer = new PlanViewTileRenderer();
       try
       {
-        if (SiteModel == null)
+        if (siteModel == null)
           return null;
 
         // Intersect the site model extents with the extents requested by the caller
-        Log.LogInformation($"Calculating intersection of bbox and site model {DataModelID}:{SiteModel.SiteModelExtent}");
+        Log.LogInformation($"Calculating intersection of bbox and site model {DataModelID}:{siteModel.SiteModelExtent}");
       }
       catch (Exception e)
       {

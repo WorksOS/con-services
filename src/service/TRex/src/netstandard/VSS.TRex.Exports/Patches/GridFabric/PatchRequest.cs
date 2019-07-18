@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Requests;
@@ -14,18 +15,18 @@ namespace VSS.TRex.Exports.Patches.GridFabric
     {
     }
 
-    public PatchResult ExecuteAndConvertToResult(PatchRequestArgument argument)
+    public async Task<PatchResult> ExecuteAndConvertToResult(PatchRequestArgument argument)
     {
-      PatchRequestResponse response = base.Execute(argument);
+      var response = await ExecuteAsync(argument);
 
-      PatchResult result = new PatchResult
+      var result = new PatchResult
       {
         TotalNumberOfPagesToCoverFilteredData = response.TotalNumberOfPagesToCoverFilteredData,
         MaxPatchSize = argument.DataPatchSize,
         PatchNumber = argument.DataPatchNumber,
         Patch = response?.SubGrids?.Select(x =>
         {
-          SubgridDataPatchRecord_ElevationAndTime s = new SubgridDataPatchRecord_ElevationAndTime();
+          var s = new SubgridDataPatchRecord_ElevationAndTime();
           s.Populate(x);
           return s;
         }).ToArray()

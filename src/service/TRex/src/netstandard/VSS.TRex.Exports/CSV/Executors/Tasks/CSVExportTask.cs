@@ -41,9 +41,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
             {
               List<string> rows;
               if (subGrid is ClientCellProfileLeafSubgrid grid)
-                rows = SubGridExportProcessor.ProcessSubGrid(grid);
+                rows = SubGridExportProcessor.ProcessSubGrid(grid).Result;
               else
-                rows = SubGridExportProcessor.ProcessSubGrid(subGrid as ClientCellProfileAllPassesLeafSubgrid);
+                rows = SubGridExportProcessor.ProcessSubGrid(subGrid as ClientCellProfileAllPassesLeafSubgrid).Result;
               DataRows.AddRange(rows);
 
               if (SubGridExportProcessor.RecordCountLimitReached())

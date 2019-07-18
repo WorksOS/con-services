@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Gateway.Common.Helpers;
@@ -31,7 +31,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as DesignBoundariesRequest;
 
@@ -52,10 +52,18 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (designBoundaryResponse != null && 
           designBoundaryResponse.RequestResult == DesignProfilerRequestResult.OK && 
           designBoundaryResponse.Boundary != null)
-        return DesignBoundaryHelper.ConvertBoundary(designBoundaryResponse.Boundary, request.Tolerance, siteModel.CellSize, csib, request.FileName);
+        return await DesignBoundaryHelper.ConvertBoundary(designBoundaryResponse.Boundary, request.Tolerance, siteModel.CellSize, csib, request.FileName);
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         "Failed to get requested Design Boundary data"));
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

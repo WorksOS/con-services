@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs;
@@ -179,7 +180,7 @@ namespace VSS.TRex.Pipelines
     /// Builds the pipeline configured per the supplied state ready to execute the request
     /// </summary>
     /// <returns></returns>
-    public bool Build()
+    public async Task<bool> BuildAsync()
     {
       // Introduce the task and the pipeline to each other
       Pipeline.PipelineTask = Task;
@@ -225,14 +226,14 @@ namespace VSS.TRex.Pipelines
       if (RequireSurveyedSurfaceInformation)
       {
         // Obtain local reference to surveyed surfaces (lock free access)
-        ISurveyedSurfaces LocalSurveyedSurfaces = SiteModel.SurveyedSurfaces;
+        var LocalSurveyedSurfaces = SiteModel.SurveyedSurfaces;
 
         if (LocalSurveyedSurfaces != null)
         {
           // Construct two filtered surveyed surface lists to act as a rolling pair used as arguments
           // to the ProcessSurveyedSurfacesForFilter method
-          ISurveyedSurfaces FilterSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-          ISurveyedSurfaces FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+          var FilterSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+          var FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
           foreach (var filter in Filters.Filters)
           {
@@ -262,7 +263,7 @@ namespace VSS.TRex.Pipelines
 
           if (filter.AttributeFilter.AnyFilterSelections)
           {
-            Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
+            Response.ResultStatus = await FilterUtilities.PrepareFilterForUse(filter, DataModelID);
             if (Response.ResultStatus != RequestErrorStatus.OK)
             {
               Log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");

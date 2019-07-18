@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -176,15 +177,15 @@ namespace VSS.TRex.Volumes.Executors
         /// Executes the simple volumes computation returning a SimpleVolumesResponse with the results
         /// </summary>
         /// <returns></returns>
-        public SimpleVolumesResponse Execute()
+        public async Task<SimpleVolumesResponse> ExecuteAsync()
         {
-            SimpleVolumesResponse VolumesResult = new SimpleVolumesResponse();
+            var volumesResult = new SimpleVolumesResponse();
 
-            BoundingWorldExtent3D ResultBoundingExtents = BoundingWorldExtent3D.Null();
+            var resultBoundingExtents = BoundingWorldExtent3D.Null();
 //            BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
 //            long[] SurveyedSurfaceExclusionList = new long[0];
 
-            Guid RequestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
+            var requestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
 
             Log.LogInformation($"#In# Performing {nameof(ComputeSimpleVolumes_Coordinator)}.Execute for DataModel:{SiteModelID}");
 
@@ -215,15 +216,15 @@ namespace VSS.TRex.Volumes.Executors
                     ApplicationServiceRequestStatistics.Instance.NumVolumeRequests.Increment();
 
                     // Prepare filters for use in the request
-                    RequestErrorStatus ResultStatus = FilterUtilities.PrepareFiltersForUse(new [] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
-                    if (ResultStatus != RequestErrorStatus.OK)
-                        return VolumesResult;
+                    var resultStatus = await FilterUtilities.PrepareFiltersForUse(new [] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
+                    if (resultStatus != RequestErrorStatus.OK)
+                        return volumesResult;
 
                     // Obtain the site model context for the request
                     siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(SiteModelID);
 
                     if (siteModel == null)
-                        return VolumesResult;
+                        return volumesResult;
 
                     // Create and configure the aggregator that contains the business logic for the 
                     // underlying volume calculation
@@ -239,9 +240,9 @@ namespace VSS.TRex.Volumes.Executors
                     };
 
                     // Create and configure the volumes calculation engine
-                    VolumesCalculator ComputeVolumes = new VolumesCalculator
+                    var computeVolumes = new VolumesCalculator
                     {
-                        RequestDescriptor = RequestDescriptor,
+                        RequestDescriptor = requestDescriptor,
                         SiteModel = siteModel,
                         Aggregator = Aggregator,
                         BaseFilter = BaseFilter,
@@ -249,23 +250,23 @@ namespace VSS.TRex.Volumes.Executors
                         VolumeType = VolumeType
                     };
 
-                    InitialiseVolumesCalculator(ComputeVolumes);
+                    InitialiseVolumesCalculator(computeVolumes);
 
                     // Perform the volume computation
-                    if (ComputeVolumes.ComputeVolumeInformation())
-                        ResultStatus = RequestErrorStatus.OK;
+                    if (computeVolumes.ComputeVolumeInformation())
+                        resultStatus = RequestErrorStatus.OK;
                     else
-                        if (ComputeVolumes.AbortedDueToTimeout)
-                        ResultStatus = RequestErrorStatus.AbortedDueToPipelineTimeout;
+                        if (computeVolumes.AbortedDueToTimeout)
+                        resultStatus = RequestErrorStatus.AbortedDueToPipelineTimeout;
                     else
-                        ResultStatus = RequestErrorStatus.Unknown;
+                        resultStatus = RequestErrorStatus.Unknown;
 
-                    if (ResultStatus != RequestErrorStatus.OK)
+                    if (resultStatus != RequestErrorStatus.OK)
                     {
-                      Log.LogInformation($"Summary volume result: Failure, error = {ResultStatus}");
+                      Log.LogInformation($"Summary volume result: Failure, error = {resultStatus}");
 
                       // Send the (empty) results back to the caller
-                      return VolumesResult;
+                      return volumesResult;
                     }
 
                     // Instruct the Aggregator to perform any finalization logic before reading out the results
@@ -276,37 +277,37 @@ namespace VSS.TRex.Volumes.Executors
                     if (!Aggregator.BoundingExtents.IsValidPlanExtent)
                     {
                         if (Aggregator.CoverageArea == 0 && Aggregator.CutFillVolume.CutVolume == 0 && Aggregator.CutFillVolume.FillVolume == 0)
-                            ResultStatus = RequestErrorStatus.NoProductionDataFound;
+                            resultStatus = RequestErrorStatus.NoProductionDataFound;
                         else
-                            ResultStatus = RequestErrorStatus.InvalidPlanExtents;
+                            resultStatus = RequestErrorStatus.InvalidPlanExtents;
 
-                        Log.LogInformation($"Summary volume invalid PlanExtents or no data found: {ResultStatus}");
+                        Log.LogInformation($"Summary volume invalid PlanExtents or no data found: {resultStatus}");
 
-                        return VolumesResult;
+                        return volumesResult;
                     }
 
                     // Fill in the result object to pass back to the caller
-                    VolumesResult.Cut = Aggregator.CutFillVolume.CutVolume;
-                    VolumesResult.Fill = Aggregator.CutFillVolume.FillVolume;
-                    VolumesResult.TotalCoverageArea = Aggregator.CoverageArea;
-                    VolumesResult.CutArea = Aggregator.CutArea;
-                    VolumesResult.FillArea = Aggregator.FillArea;
-                    VolumesResult.BoundingExtentGrid = Aggregator.BoundingExtents;
-                    VolumesResult.BoundingExtentLLH = ResultBoundingExtents;
+                    volumesResult.Cut = Aggregator.CutFillVolume.CutVolume;
+                    volumesResult.Fill = Aggregator.CutFillVolume.FillVolume;
+                    volumesResult.TotalCoverageArea = Aggregator.CoverageArea;
+                    volumesResult.CutArea = Aggregator.CutArea;
+                    volumesResult.FillArea = Aggregator.FillArea;
+                    volumesResult.BoundingExtentGrid = Aggregator.BoundingExtents;
+                    volumesResult.BoundingExtentLLH = resultBoundingExtents;
                 }
                 finally
                 {
                     ApplicationServiceRequestStatistics.Instance.NumVolumeRequestsCompleted.Increment();
-                    if (VolumesResult.ResponseCode != SubGridRequestsResponseResult.OK)
+                    if (volumesResult.ResponseCode != SubGridRequestsResponseResult.OK)
                         ApplicationServiceRequestStatistics.Instance.NumVolumeRequestsFailed.Increment();
                 }
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                Log.LogError(E, "Exception:");
+                Log.LogError(e, $"Failed to compute the simple volumes. Site Model ID: {SiteModelID}");
             }
 
-            return VolumesResult;
+            return volumesResult;
         }
     }
 }

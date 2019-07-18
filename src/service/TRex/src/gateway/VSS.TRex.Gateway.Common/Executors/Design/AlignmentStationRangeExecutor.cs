@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -30,7 +32,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as DesignDataRequest;
 
@@ -42,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       var alignmentDesignStationRangeRequest = new AlignmentDesignStationRangeRequest();
       var referenceDesign = new DesignOffset(request.DesignUid, 0.0);
 
-      var alignmentDesignStationRangeResponse = alignmentDesignStationRangeRequest.Execute(new DesignSubGridRequestArgumentBase()
+      var alignmentDesignStationRangeResponse = await alignmentDesignStationRangeRequest.ExecuteAsync(new DesignSubGridRequestArgumentBase()
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign
@@ -54,6 +56,14 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         "Failed to get requested Alignment Design station range data."));
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

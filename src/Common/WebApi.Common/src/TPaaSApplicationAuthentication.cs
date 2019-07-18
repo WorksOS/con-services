@@ -51,9 +51,9 @@ namespace VSS.WebApi.Common
         {
           var customHeaders = new Dictionary<string, string>
           {
-            {"Accept", ContentTypeConstants.ApplicationJson},
-            {"Content-Type", ContentTypeConstants.ApplicationFormUrlEncoded},
-            {"Authorization", string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
+            {HeaderConstants.ACCEPT, ContentTypeConstants.ApplicationJson},
+            {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationFormUrlEncoded},
+            {HeaderConstants.AUTHORIZATION, string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
           TPaasOauthResult tPaasOauthResult; 
 
@@ -114,8 +114,8 @@ namespace VSS.WebApi.Common
     {
       return new Dictionary<string, string>
       {
-        {"Content-Type", ContentTypeConstants.ApplicationJson},
-        {"Authorization", $"Bearer {GetApplicationBearerToken()}"}
+        {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson},
+        {HeaderConstants.AUTHORIZATION, $"Bearer {GetApplicationBearerToken()}"}
       };
     }
   }

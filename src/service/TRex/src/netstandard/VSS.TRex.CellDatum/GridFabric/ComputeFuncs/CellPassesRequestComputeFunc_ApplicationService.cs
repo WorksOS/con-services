@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System.Threading.Tasks;
+using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CellDatum.Executors;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
@@ -28,7 +29,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
         Log.LogInformation($"Executing {nameof(CellPassesRequestComputeFunc_ApplicationService)}.Execute()");
 
-        return request.Execute(arg);
+        return request.ExecuteAsync(arg).Result;
       }
       finally
       {

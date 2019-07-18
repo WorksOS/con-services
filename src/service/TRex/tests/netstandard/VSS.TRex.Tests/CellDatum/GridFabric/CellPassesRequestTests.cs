@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Castle.Core.Logging;
 using FluentAssertions;
 using FluentAssertions.Common;
@@ -138,7 +139,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     }
 
     [Fact]
-    public void Test_CellPassesRequest_ContractResponseMapping()
+    public async Task Test_CellPassesRequest_ContractResponseMapping()
     {
       const int expectedCount = 15;
       AddApplicationGridRouting();
@@ -152,11 +153,11 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
 
       var request = new CellPassesTRexRequest(siteModel.ID, coords, null);
 
-      var response = executor.Process(request) as CellPassesV2Result;
+      var response = await executor.ProcessAsync(request) as CellPassesV2Result;
       response.Should().NotBeNull();
-      response.Code.Should().Be((int) CellPassesReturnCode.DataFound);
-      response.Layers.Length.Should().Be(1);
-      response.Layers[0].PassData.Length.Should().Be(expectedCount);
+      response?.Code.Should().Be((int) CellPassesReturnCode.DataFound);
+      response?.Layers.Length.Should().Be(1);
+      response?.Layers[0].PassData.Length.Should().Be(expectedCount);
 
       for (var idx = 0; idx < expectedCount; idx++)
       {
