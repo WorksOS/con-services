@@ -11,7 +11,6 @@ using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
-using VSS.TRex.SiteModelChangeMaps.Utilities;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
@@ -29,7 +28,6 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// </summary>
     public bool Active { get; private set; }
 
-    private readonly IStorageProxy _storageProxy;
     private readonly SiteModelChangeMapProxy _changeMapProxy;
 
     private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> _itemQueueCache;
@@ -48,12 +46,9 @@ namespace VSS.TRex.SiteModelChangeMaps
       }
 
       _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-
       _queue = new ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
       _itemQueueCache = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
-
       _changeMapProxy = new SiteModelChangeMapProxy();
-      _storageProxy = DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage();
 
       var _ = Task.Factory.StartNew(ProcessChangeMapUpdateItems, TaskCreationOptions.LongRunning);
     }
@@ -153,56 +148,75 @@ namespace VSS.TRex.SiteModelChangeMaps
         // 3. Write record back to store
         // 4. Commit transaction
 
-        using (var tx = Transactions.StartTransaction(_storageProxy))
+        switch (item.Operation)
         {
-          switch (item.Operation)
+          case SiteModelChangeMapOperation.AddSpatialChanges: // Add the two of them together...
           {
-            case SiteModelChangeMapOperation.AddSpatialChanges: // Add the two of them together...
+            // Add the spatial change to every machine in the site model
+            foreach (var machine in siteModel.Machines)
             {
-              // Add the spatial change to every machine in the site model
-              foreach (var machine in siteModel.Machines)
+              using (var l = _changeMapProxy.Lock(item.ProjectUID, machine.ID))
               {
-                var currentMask = _changeMapProxy.Get(item.ProjectUID, machine.ID);
-                if (currentMask == null)
+                l.Enter();
+                try
                 {
-                  currentMask = new SubGridTreeSubGridExistenceBitMask();
-                  currentMask.SetOp_OR(siteModel.ExistenceMap);
+                  var currentMask = _changeMapProxy.Get(item.ProjectUID, machine.ID);
+                  if (currentMask == null)
+                  {
+                    currentMask = new SubGridTreeSubGridExistenceBitMask();
+                    currentMask.SetOp_OR(siteModel.ExistenceMap);
+                  }
+
+                  // Extract the change map from the item  
+                  //using (var updateMask = new SubGridTreeSubGridExistenceBitMask())
+                  var updateMask = new SubGridTreeSubGridExistenceBitMask();
+
+                  updateMask.FromBytes(item.Content);
+                  currentMask.SetOp_OR(updateMask);
+                  _changeMapProxy.Put(item.ProjectUID, machine.ID, currentMask);
                 }
-
-                // Extract the change map from the item  
-                //using (var updateMask = new SubGridTreeSubGridExistenceBitMask())
-                var updateMask = new SubGridTreeSubGridExistenceBitMask();
-
-                updateMask.FromBytes(item.Content);
-                currentMask.SetOp_OR(updateMask);
-                _changeMapProxy.Put(item.ProjectUID, machine.ID, currentMask);
+                finally
+                {
+                  l.Exit();
+                }
               }
-              break;
             }
 
-            case SiteModelChangeMapOperation.RemoveSpatialChanges: // Subtract from the change map...
-            {
-              // Remove the spatial change only from the machine the made the query
-              var currentMask = _changeMapProxy.Get(item.ProjectUID, item.MachineUid);
-
-              if (currentMask != null)
-              {
-                // Extract the change map from the item  
-                //using (var updateMask = new SubGridTreeSubGridExistenceBitMask())
-                var updateMask = new SubGridTreeSubGridExistenceBitMask();
-
-                currentMask.SetOp_ANDNOT(updateMask);
-                _changeMapProxy.Put(item.ProjectUID, item.MachineUid, currentMask);
-              }
-              break;
-            }
-
-            default:
-              Log.LogError($"Unknown operation encountered: {(int)item.Operation}");
-              return false;
+            break;
           }
 
-          _storageProxy.Commit(tx);
+          case SiteModelChangeMapOperation.RemoveSpatialChanges: // Subtract from the change map...
+          {
+            using (var l = _changeMapProxy.Lock(item.ProjectUID, item.MachineUid))
+            {
+              l.Enter();
+              try
+              {
+                // Remove the spatial change only from the machine the made the query
+                var currentMask = _changeMapProxy.Get(item.ProjectUID, item.MachineUid);
+
+                if (currentMask != null)
+                {
+                  // Extract the change map from the item  
+                  //using (var updateMask = new SubGridTreeSubGridExistenceBitMask())
+                  var updateMask = new SubGridTreeSubGridExistenceBitMask();
+
+                  currentMask.SetOp_ANDNOT(updateMask);
+                  _changeMapProxy.Put(item.ProjectUID, item.MachineUid, currentMask);
+                }
+              }
+              finally
+              {
+                l.Exit();
+              }
+            }
+
+            break;
+          }
+
+          default:
+            Log.LogError($"Unknown operation encountered: {(int) item.Operation}");
+            return false;
         }
 
         return true;

@@ -221,6 +221,10 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     /// </summary>
     private void InstantiateSiteModelMachinesChangeMapsCacheReference()
     {
+      // TODO (VSTS #85679): ######DEBUG ONLY###### Remove when change maps reactivated
+      return;
+
+      // ######DEBUG ONLY######
       immutableTRexGrid.GetOrCreateCache<ISiteModelMachineAffinityKey, byte[]>(new CacheConfiguration
       {
         Name = TRexCaches.SiteModelChangeMapsCacheName(),

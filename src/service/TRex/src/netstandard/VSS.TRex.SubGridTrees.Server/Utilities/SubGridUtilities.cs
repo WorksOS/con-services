@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -159,7 +160,11 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                         if (acceptSpeculativeReadFailure)
                         {
                             // Return the otherwise empty sub grid back to the caller and integrate it into the cache 
-                            Log.LogDebug($"Speculative read failure accepted for sub grid {leafSubGrid.Moniker()}. Blank sub grid returned to caller.");
+                            if (Log.IsTraceEnabled())
+                            {
+                              Log.LogTrace($"Speculative read failure accepted for sub grid {leafSubGrid.Moniker()}. Blank sub grid returned to caller.");
+                            }
+
                             result = leafSubGrid;
                         }
                         else
