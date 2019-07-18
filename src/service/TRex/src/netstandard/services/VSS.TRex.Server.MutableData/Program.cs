@@ -166,6 +166,7 @@ namespace VSS.TRex.Server.MutableData
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
+        DIContext.Obtain<ITRexGridFactory>().StopGrids();
         cancelTokenSource.Cancel();
       };
 
