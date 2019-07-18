@@ -25,60 +25,56 @@ namespace VSS.MasterData.Repositories
 
     public async Task<int> StoreEvent(IAssetEvent evt)
     {
-      var upsertedCount = 0;
       var asset = new Asset();
       var eventType = "Unknown";
       if (evt == null)
       {
-        Log.LogWarning($"Unsupported event type");
+        Log.LogWarning("Unsupported event type");
         return 0;
       }
 
-      Log.LogDebug($"Event type is {evt.GetType().ToString()}");
-      if (evt is CreateAssetEvent)
+      Log.LogDebug($"Event type is {evt.GetType()}");
+      if (evt is CreateAssetEvent createAssetEvent)
       {
-        var assetEvent = (CreateAssetEvent) evt;
-        asset.Name = assetEvent.AssetName;
-        asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? null : assetEvent.AssetType;
-        asset.AssetUID = assetEvent.AssetUID.ToString();
-        asset.EquipmentVIN = assetEvent.EquipmentVIN;
-        asset.LegacyAssetID = assetEvent.LegacyAssetId;
-        asset.SerialNumber = assetEvent.SerialNumber;
-        asset.MakeCode = assetEvent.MakeCode;
-        asset.Model = assetEvent.Model;
-        asset.ModelYear = assetEvent.ModelYear;
-        asset.IconKey = assetEvent.IconKey;
-        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue && assetEvent.OwningCustomerUID.Value != Guid.Empty
-          ? assetEvent.OwningCustomerUID.ToString()
+        asset.Name = createAssetEvent.AssetName;
+        asset.AssetType = string.IsNullOrEmpty(createAssetEvent.AssetType) ? null : createAssetEvent.AssetType;
+        asset.AssetUID = createAssetEvent.AssetUID.ToString();
+        asset.EquipmentVIN = createAssetEvent.EquipmentVIN;
+        asset.LegacyAssetID = createAssetEvent.LegacyAssetId;
+        asset.SerialNumber = createAssetEvent.SerialNumber;
+        asset.MakeCode = createAssetEvent.MakeCode;
+        asset.Model = createAssetEvent.Model;
+        asset.ModelYear = createAssetEvent.ModelYear;
+        asset.IconKey = createAssetEvent.IconKey;
+        asset.OwningCustomerUID = createAssetEvent.OwningCustomerUID.HasValue && createAssetEvent.OwningCustomerUID.Value != Guid.Empty
+          ? createAssetEvent.OwningCustomerUID.ToString()
           : null;
         asset.IsDeleted = false;
-        asset.LastActionedUtc = assetEvent.ActionUTC;
+        asset.LastActionedUtc = createAssetEvent.ActionUTC;
         eventType = "CreateAssetEvent";
       }
-      else if (evt is UpdateAssetEvent)
+      else if (evt is UpdateAssetEvent updateAssetEvent)
       {
-        var assetEvent = (UpdateAssetEvent) evt;
-        asset.AssetUID = assetEvent.AssetUID.ToString();
-        asset.Name = assetEvent.AssetName;
-        asset.LegacyAssetID = assetEvent.LegacyAssetId.HasValue ? assetEvent.LegacyAssetId.Value : -1;
-        asset.Model = assetEvent.Model;
-        asset.ModelYear = assetEvent.ModelYear;
-        asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? null : assetEvent.AssetType;
-        asset.IconKey = assetEvent.IconKey;
-        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue && assetEvent.OwningCustomerUID.Value != Guid.Empty
-          ? assetEvent.OwningCustomerUID.ToString()
+        asset.AssetUID = updateAssetEvent.AssetUID.ToString();
+        asset.Name = updateAssetEvent.AssetName;
+        asset.LegacyAssetID = updateAssetEvent.LegacyAssetId ?? -1;
+        asset.Model = updateAssetEvent.Model;
+        asset.ModelYear = updateAssetEvent.ModelYear;
+        asset.AssetType = string.IsNullOrEmpty(updateAssetEvent.AssetType) ? null : updateAssetEvent.AssetType;
+        asset.IconKey = updateAssetEvent.IconKey;
+        asset.OwningCustomerUID = updateAssetEvent.OwningCustomerUID.HasValue && updateAssetEvent.OwningCustomerUID.Value != Guid.Empty
+          ? updateAssetEvent.OwningCustomerUID.ToString()
           : null;
-        asset.EquipmentVIN = assetEvent.EquipmentVIN;
+        asset.EquipmentVIN = updateAssetEvent.EquipmentVIN;
         asset.IsDeleted = false;
-        asset.LastActionedUtc = assetEvent.ActionUTC;
+        asset.LastActionedUtc = updateAssetEvent.ActionUTC;
         eventType = "UpdateAssetEvent";
       }
-      else if (evt is DeleteAssetEvent)
+      else if (evt is DeleteAssetEvent deleteAssetEvent)
       {
-        var assetEvent = (DeleteAssetEvent) evt;
-        asset.AssetUID = assetEvent.AssetUID.ToString();
+        asset.AssetUID = deleteAssetEvent.AssetUID.ToString();
         asset.IsDeleted = true;
-        asset.LastActionedUtc = assetEvent.ActionUTC;
+        asset.LastActionedUtc = deleteAssetEvent.ActionUTC;
         eventType = "DeleteAssetEvent";
       }
 
@@ -102,7 +98,7 @@ namespace VSS.MasterData.Repositories
                               AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, 
                               LastActionedUTC AS LastActionedUtc
                             FROM Asset
-                            WHERE AssetUID = @AssetUID", new {AssetUID = asset.AssetUID})).FirstOrDefault();
+                            WHERE AssetUID = @AssetUID", new { asset.AssetUID })).FirstOrDefault();
 
       if (existing == null || existing.IsDeleted == false)
       {
@@ -273,7 +269,7 @@ namespace VSS.MasterData.Repositories
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE AssetUID = @AssetUID 
-                        AND IsDeleted = 0", new {AssetUID = assetUid})).FirstOrDefault();
+                        AND IsDeleted = 0", new { AssetUID = assetUid })).FirstOrDefault();
     }
 
     public async Task<Asset> GetAsset(long legacyAssetId)
@@ -284,7 +280,7 @@ namespace VSS.MasterData.Repositories
                       FROM Asset
                       WHERE LegacyAssetId = @LegacyAssetID 
                         AND IsDeleted = 0"
-        , new {LegacyAssetID = legacyAssetId}
+        , new { LegacyAssetID = legacyAssetId }
       )).FirstOrDefault();
     }
 
@@ -309,15 +305,15 @@ namespace VSS.MasterData.Repositories
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE IsDeleted = 0 AND AssetUID IN @assets"
-      , new { assets = assetsArray} )).ToList();
+      , new { assets = assetsArray })).ToList();
     }
 
 
 
     public async Task<MatchingAssets> GetMatching3D2DAssets(MatchingAssets asset)
     {
-      MatchingAssets result=null;
-      if (Guid.TryParse(asset.AssetUID3D, out var a))
+      MatchingAssets result = null;
+      if (Guid.TryParse(asset.AssetUID3D, out _))
       {
         result =
           (await QueryWithAsyncPolicy<MatchingAssets>
@@ -340,10 +336,10 @@ namespace VSS.MasterData.Repositories
                     left join Asset a2 on a2.SerialNumber = left(a.SerialNumber,locate('-',concat(replace(a.SerialNumber,' ','-'),'-'))-1)
                 where
 	                a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID"
-              , new {asset = asset.AssetUID3D})).FirstOrDefault();
+              , new { asset = asset.AssetUID3D })).FirstOrDefault();
       }
 
-      if (Guid.TryParse(asset.AssetUID2D, out var b))
+      if (Guid.TryParse(asset.AssetUID2D, out _))
       {
         result =
           (await QueryWithAsyncPolicy<MatchingAssets>
@@ -366,7 +362,7 @@ namespace VSS.MasterData.Repositories
                 left join Asset a2 on a.SerialNumber = left(a2.SerialNumber,locate('-',concat(replace(a2.SerialNumber,' ','-'),'-'))-1)
             where
 	            a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID"
-              , new {asset = asset.AssetUID2D})).FirstOrDefault();
+              , new { asset = asset.AssetUID2D })).FirstOrDefault();
       }
 
       if (result == null) return asset;
@@ -407,7 +403,7 @@ namespace VSS.MasterData.Repositories
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset 
                       WHERE AssetType IN @families
-                        AND IsDeleted = 0", new {families = productFamily})).ToList();
+                        AND IsDeleted = 0", new { families = productFamily })).ToList();
     }
 
     #endregion getters
