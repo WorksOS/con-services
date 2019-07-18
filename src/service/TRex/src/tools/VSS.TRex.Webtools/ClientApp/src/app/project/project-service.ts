@@ -12,7 +12,7 @@ import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter } from '../project/project-filter-model';
 import { CellDatumResult } from "./project-model";
-
+import { SummaryType } from './project-summarytype-model';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -71,6 +71,10 @@ export class ProjectService {
 
   public getDisplayModes(): Observable<DisplayMode[]> {
     return this.executeRequest<DisplayMode[]>('getDisplayModes', `tiles/modes`);
+  }
+
+  public getSummaryTypes(): Observable<SummaryType[]> {
+      return this.executeRequest<DisplayMode[]>('getSummaryTypes', `profiles/summarytypes`);
   }
 
   public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents, designUid: string, designOffset: number) {

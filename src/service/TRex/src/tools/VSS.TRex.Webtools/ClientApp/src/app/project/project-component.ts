@@ -5,6 +5,7 @@ import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint } from '../project/project-filter-model';
 import { CellDatumResult } from "./project-model";
+import { SummaryType } from './project-summarytype-model';
 
 @Component({
   selector: 'project',
@@ -26,6 +27,8 @@ export class ProjectComponent {
 
   public displayModes: DisplayMode[] = [];
   public displayMode: DisplayMode = new DisplayMode();
+
+  public summaryTypes: SummaryType[] = [];
 
   public eventTypes: MachineEventType[] = [];
   public eventType: MachineEventType = new MachineEventType();
@@ -189,6 +192,13 @@ export class ProjectComponent {
   public mouseProfilePixelLocation: string = '';
   public mouseProfileWorldLocation: string = '';
 
+  public profileValue: string = '';
+  public profileValue2: string = '';
+  private profilePoints: any[];
+  private profileCanvasHeight: number = 500.0;
+  private profileCanvasWidth: number = 1000.0;
+
+
   public cellDatum: string = "";
   private showCellDatum: boolean = false;
 
@@ -200,6 +210,10 @@ export class ProjectComponent {
     this.projectService.getDisplayModes().subscribe((modes) => {
       modes.forEach(mode => this.displayModes.push(mode));
       this.displayMode = this.displayModes[0];
+    });
+
+    this.projectService.getSummaryTypes().subscribe((summaryTypes) => {
+        summaryTypes.forEach(summaryType => this.summaryTypes.push(summaryType));
     });
 
     this.projectService.getMachineEventTypes().subscribe((types) => {
@@ -728,8 +742,6 @@ export class ProjectComponent {
   // with m move instruction at the first vertex, and at any vertex indicating a gap and line instructions
   // between all others
   public drawProfileLineForDesign(startX: number, startY: number, endX: number, endY: number) {
-    var profileCanvasHeight: number = 500.0;
-    var profileCanvasWidth: number = 1000.0;
 
     var result: string = "";
     var first: boolean = true;
@@ -737,7 +749,7 @@ export class ProjectComponent {
     return this.projectService.drawProfileLineForDesign(this.projectUid, this.designUid, this.designOffset, startX, startY, endX, endY)
       .subscribe(points => {
         var stationRange: number = points[points.length - 1].station - points[0].station;
-        var stationRatio: number = profileCanvasWidth / stationRange;
+        var stationRatio: number = this.profileCanvasWidth / stationRange;
 
         var minZ: number = this.kMaxTestElev;
         var maxZ: number = this.kMinTestElev;
@@ -747,7 +759,7 @@ export class ProjectComponent {
         });
 
         var zRange = maxZ - minZ;
-        var zRatio = profileCanvasHeight / zRange;
+        var zRatio = this.profileCanvasHeight / zRange;
 
         points.forEach(point => {
           if (point.z <= this.kMinTestElev) {
@@ -755,7 +767,7 @@ export class ProjectComponent {
             first = true;
           }
           else {
-            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
+            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((this.profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
             first = false;
           }
         });
@@ -842,17 +854,14 @@ export class ProjectComponent {
   }
 
   public ComputeSVGForProfileValueVector(points: any[], minZ: number, maxZ: number, getValue: (point: any) => number): string {
-    var profileCanvasHeight: number = 500.0;
-    var profileCanvasWidth: number = 1000.0;
-
     var result: string = "";
     var first: boolean = true;
 
     var stationRange: number = points[points.length - 1].station - points[0].station;
-    var stationRatio: number = profileCanvasWidth / stationRange;
+    var stationRatio: number = this.profileCanvasWidth / stationRange;
 
     var zRange = maxZ - minZ;
-    var zRatio = profileCanvasHeight / zRange;
+    var zRatio = this.profileCanvasHeight / zRange;
 
     points.forEach(point => {
       var value: number = getValue(point);
@@ -861,12 +870,13 @@ export class ProjectComponent {
         first = true;
       }
       else {
-        result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (value - minZ) * zRatio)).toFixed(3) + " ";
+        result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((this.profileCanvasHeight - (value - minZ) * zRatio)).toFixed(3) + " ";
         first = false;
       }
     });
 
     this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
+    this.profilePoints = points;
 
     return result;
   }
@@ -883,6 +893,7 @@ export class ProjectComponent {
       this.profileExtents.IncludeY(minZ);
       this.profileExtents.IncludeY(maxZ);
     }
+    this.profilePoints = points;
   }
 
   // Requests a computed profile and then transforms the resulting points into a SVG Path string
@@ -921,16 +932,13 @@ export class ProjectComponent {
 
 
   public drawProfileLineForSummaryVolumes(startX: number, startY: number, endX: number, endY: number) {
-    var profileCanvasHeight: number = 500.0;
-    var profileCanvasWidth: number = 1000.0;
-
     var result: string = "";
     var first: boolean = true;
 
     return this.projectService.drawProfileLineForSummaryVolumes(this.projectUid, startX, startY, endX, endY)
       .subscribe(points => {
         var stationRange: number = points[points.length - 1].station - points[0].station;
-        var stationRatio: number = profileCanvasWidth / stationRange;
+        var stationRatio: number = this.profileCanvasWidth / stationRange;
 
         var minZ: number = this.kMaxTestElev;
         var maxZ: number = this.kMinTestElev;
@@ -940,7 +948,7 @@ export class ProjectComponent {
         });
 
         var zRange = maxZ - minZ;
-        var zRatio = profileCanvasHeight / zRange;
+        var zRatio = this.profileCanvasHeight / zRange;
 
         points.forEach(point => {
           if (point.z <= this.kMinTestElev) {
@@ -948,7 +956,7 @@ export class ProjectComponent {
             first = true;
           }
           else {
-            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
+            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((this.profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
             first = false;
           }
         });
@@ -1046,11 +1054,32 @@ export class ProjectComponent {
     let localStation = offsetX;
     let localZ = this.pixelsY - offsetY;
 
-    this.mouseProfileWorldStation = this.profileExtents.minX + offsetX * (this.profileExtents.sizeX() / 1000);
-    this.mouseProfileWorldZ = this.profileExtents.minY + (this.pixelsY - offsetY) * (this.profileExtents.sizeY() / 500);
+    this.mouseProfileWorldStation = this.profileExtents.minX + offsetX * (this.profileExtents.sizeX() / this.profileCanvasWidth);
+    this.mouseProfileWorldZ = this.profileExtents.minY + (this.pixelsY - offsetY) * (this.profileExtents.sizeY() / this.profileCanvasHeight);
 
     this.mouseProfilePixelLocation = `${localStation}, ${localZ}`;
     this.mouseProfileWorldLocation = `${this.mouseProfileWorldStation.toFixed(3)}, ${this.mouseProfileWorldZ.toFixed(3)}`;
+
+    this.profileValue = "";
+    this.profileValue2 = "";
+    if (this.profilePoints.length > 0 && this.profilePoints[0].hasOwnProperty("value")) {
+      let ratio = (this.mouseProfileWorldStation - this.profileExtents.minX) / this.profileExtents.sizeX();
+      let index = Math.round(this.profilePoints.length * ratio) - 1;
+      this.profileValue = this.profilePoints[index].value.toFixed(this.mode === 4 || this.mode === 14 ? 0 : 3);
+      switch (this.mode) {
+        case 26: 
+          this.profileValue += ", " + this.profilePoints[index].value2.toFixed(3);
+          //fall through to set above/below/on target
+        case 13:
+        case 14:
+        case 20:
+        case 10:
+          this.profileValue2 = this.summaryTypes.find((item) => item.item1 === this.profilePoints[index].index).item2;
+          break;
+        default:
+            break;
+      }
+    }
   }
 
   public onMouseOverProfile(event: any): void {

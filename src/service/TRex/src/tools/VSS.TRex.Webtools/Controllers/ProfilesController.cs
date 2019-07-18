@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,10 @@ namespace VSS.TRex.Webtools.Controllers
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ProfilesController>();
     const double KM_HR_TO_CM_SEC = 27.77777778; //1.0 / 3600 * 100000;
+    const int ABOVE_TARGET = 0;
+    const int ON_TARGET = 1;
+    const int BELOW_TARGET = 2;
+    const int NO_INDEX = -1;
 
     /// <summary>
     /// Gets a profile between two points across a design in a project
@@ -186,11 +191,6 @@ namespace VSS.TRex.Webtools.Controllers
     /// </summary>
     private (int index, double value, double value2) ProfileValue(int mode, ProfileCell cell, OverrideParameters overrides)
     {
-      const int ABOVE_TARGET = 0;
-      const int ON_TARGET = 1;
-      const int BELOW_TARGET = 2;
-      const int NO_INDEX = -1;
-
       var NULL_VALUE = (NO_INDEX, double.NaN, double.NaN);
 
       double value;
@@ -337,6 +337,22 @@ namespace VSS.TRex.Webtools.Controllers
         return new JsonResult(@"Profile response contains no profile cells");
 
       return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
+    }
+
+    /// <summary>
+    /// Retrieves the list of available summary types
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("summarytypes")]
+    public JsonResult GetModes()
+    {
+      return new JsonResult(new List<(int Index, string Name)>
+      {
+        (NO_INDEX, string.Empty),
+        (ABOVE_TARGET, "Above target"),
+        (BELOW_TARGET, "Below target"),
+        (ON_TARGET, "On target")
+      });
     }
   }
 }
