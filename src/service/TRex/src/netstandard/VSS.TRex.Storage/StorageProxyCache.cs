@@ -61,5 +61,7 @@ namespace VSS.TRex.Storage
         public virtual void Put(TK key, TV value) => Cache.Put(key, value);
 
         public virtual void PutAll(IEnumerable<KeyValuePair<TK, TV>> values) => Cache.PutAll(values);
+
+        public ICacheLock Lock(TK key) => Cache.Lock(key);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Transactions;
 
 namespace VSS.TRex.Storage.Interfaces
@@ -33,5 +34,7 @@ namespace VSS.TRex.Storage.Interfaces
         void Clear();
 
         void IncrementBytesWritten(long bytesWritten);
+
+        ICacheLock Lock(TK key);
     }
 }
