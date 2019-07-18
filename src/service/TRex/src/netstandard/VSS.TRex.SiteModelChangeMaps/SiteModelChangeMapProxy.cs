@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Apache.Ignite.Core.Cache;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
@@ -51,5 +52,16 @@ namespace VSS.TRex.SiteModelChangeMaps
 
       _proxyStorageCache.Put(new SiteModelMachineAffinityKey(siteModelUid, assetUid, FileSystemStreamType.SiteModelMachineElevationChangeMap), changeMap.ToBytes());
     }
+
+    public ICacheLock Lock(Guid siteModelUid, Guid assetUid)
+    {
+      return _proxyStorageCache.Lock(new SiteModelMachineAffinityKey(siteModelUid, assetUid, FileSystemStreamType.SiteModelMachineElevationChangeMap));
+    }
+
+    public ICacheLock Lock(ISiteModelMachineAffinityKey key)
+    {
+      return _proxyStorageCache.Lock(key);
+    }
+
   }
 }
