@@ -35,7 +35,7 @@ namespace VSS.Hydrology.WebApi.Controllers
     /// Generates a zip containing hydrology images from the original ground from a design file (TIN).
     /// The images can include e.g. ponding and drainage pdfs, which are created using the hydro libraries
     /// </summary>
-    [Route("internal/api/v1")]
+    [Route("internal/v1")]
     [Route("api/v1")]
     [HttpPost]
     public async Task<FileResult> GetHydroImages([FromBody] HydroRequest hydroRequest)
@@ -70,7 +70,7 @@ namespace VSS.Hydrology.WebApi.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 25);
 
       var baseUrl = ConfigStore.GetValueString("HYDRO_INTERNAL_BASE_URL");
-      var callbackUrl = $"{baseUrl}/internal/api/v1";
+      var callbackUrl = $"{baseUrl}/internal/v1";
 
       var request = new ScheduleJobRequest
       {

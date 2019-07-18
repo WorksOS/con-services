@@ -31,7 +31,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public FileResult GetSurface([FromQuery] Guid projectUid, [FromQuery] string fileName, [FromQuery] Guid? filterUid)
     {
-      var zipStream = new FileStream("Resources/Large Sites Road - Trimble Road.ttm", FileMode.Open);
+      var zipStream = new FileStream("Resources/Large Sites Road - Trimble Road.zip", FileMode.Open);
       return new FileStreamResult(zipStream, ContentTypeConstants.ApplicationZip);
     }
 

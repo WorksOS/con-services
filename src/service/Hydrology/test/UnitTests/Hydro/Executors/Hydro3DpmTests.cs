@@ -15,11 +15,11 @@ using VSS.MasterData.Proxies.Interfaces;
 namespace VSS.Hydrology.Tests.Hydro.Executors
 {
   [TestClass]
-  public class HydroExecutorTests : UnitTestsDIFixture<HydroExecutorTests>
+  public class Hydro3DpmTests : UnitTestsDIFixture<Hydro3DpmTests>
   {
-    private const string ttmZippedFile = "..\\..\\..\\..\\TestData\\Large Sites Road - Trimble Road.zip";
-    private const string ttmUnzippedFile = "..\\..\\..\\..\\TestData\\Large Sites Road - Trimble Road.ttm";
-    private const string ttmNoTTMFile = "..\\..\\..\\..\\TestData\\Triangle.zip";
+    private const string TTMZippedFile = "..\\..\\..\\..\\TestData\\Large Sites Road - Trimble Road.zip";
+    private const string TTMUnzippedFile = "..\\..\\..\\..\\TestData\\Large Sites Road - Trimble Road.ttm";
+    private const string TTMnoTTMFile = "..\\..\\..\\..\\TestData\\Triangle.zip";
 
     [TestMethod]
     public async Task GetSurfaceFrom3dp_Success()
@@ -27,7 +27,7 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
       var request = new HydroRequest(Guid.NewGuid(), Guid.NewGuid(), new HydroOptions(resolution:1.0), "resultantFileName.zip");
       request.Validate();
 
-      var ttmZip = new FileStream(ttmZippedFile, FileMode.Open);
+      var ttmZip = new FileStream(TTMZippedFile, FileMode.Open);
       var fileResult = new FileStreamResult(ttmZip, ContentTypeConstants.ApplicationZip);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(),
@@ -37,7 +37,7 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
       var currentGroundTTMStream = await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request, Log,
         ServiceExceptionHandler, new Dictionary<string, string>(), raptorProxy.Object);
 
-      var ttmFile = new FileStream(ttmUnzippedFile, FileMode.Open);
+      var ttmFile = new FileStream(TTMUnzippedFile, FileMode.Open);
       
       Assert.IsNotNull(currentGroundTTMStream);
       Assert.AreEqual(ttmFile.Length, currentGroundTTMStream.Length, "TTM stream from raptorProxy invalid");
@@ -47,20 +47,20 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
     }
 
     [TestMethod]
-    public async Task GetSurfaceFrom3dp_InvalidZip()
+    public void GetSurfaceFrom3dp_InvalidZip()
     {
       var request = new HydroRequest(Guid.NewGuid(), Guid.NewGuid(), new HydroOptions(resolution: 1.0), "resultantFileName.zip");
       request.Validate();
 
-      var ttmUnZippedFile = new FileStream(ttmUnzippedFile, FileMode.Open);
+      var ttmUnZippedFile = new FileStream(TTMUnzippedFile, FileMode.Open);
       var fileResult = new FileStreamResult(ttmUnZippedFile, ContentTypeConstants.ApplicationZip);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(),
           It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>()))
         .ReturnsAsync(fileResult.FileStream);
 
-      var ex = Assert.ThrowsExceptionAsync<ServiceException >(async () => await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request, Log,
-        ServiceExceptionHandler, new Dictionary<string, string>(), raptorProxy.Object));
+      var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request, Log,
+       ServiceExceptionHandler, new Dictionary<string, string>(), raptorProxy.Object));
 
       Assert.AreEqual(HttpStatusCode.InternalServerError, ex.Result.Code);
       Assert.AreEqual(2027, ex.Result.GetResult.Code);
@@ -68,12 +68,12 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
     }
 
     [TestMethod]
-    public async Task GetSurfaceFrom3dp_MissingTTM()
+    public void GetSurfaceFrom3dp_MissingTTM()
     {
       var request = new HydroRequest(Guid.NewGuid(), Guid.NewGuid(), new HydroOptions(resolution: 1.0), "resultantFileName.zip");
       request.Validate();
 
-      var ttmNoTTMFileZipped = new FileStream(ttmNoTTMFile, FileMode.Open);
+      var ttmNoTTMFileZipped = new FileStream(TTMnoTTMFile, FileMode.Open);
       var fileResult = new FileStreamResult(ttmNoTTMFileZipped, ContentTypeConstants.ApplicationZip);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(),

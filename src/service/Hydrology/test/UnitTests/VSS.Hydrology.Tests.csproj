@@ -122,8 +122,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Hydro\Executors\" />
-  </ItemGroup>
-
 </Project>

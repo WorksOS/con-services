@@ -37,8 +37,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     {
       var request = CastRequestObjectTo<HydroRequest>(item);
 
-      var currentGroundTTMStream = await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request,
-        Log, ServiceExceptionHandler, CustomHeaders, RaptorProxy);
+      var currentGroundTTMStream = await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request, Log, ServiceExceptionHandler, CustomHeaders, RaptorProxy);
       //var currentGroundTTMStream = HydroRequestHelperLatestGround.GetCurrentGroundTest(Log); 
 
       var localTempProjectPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
@@ -52,8 +51,9 @@ namespace VSS.Hydrology.WebApi.Common.Executors
 
       // generate and zip images
       var zipLocalPath = Path.Combine(new[] { localTempProjectPath, (Path.GetFileNameWithoutExtension(request.FileName)) });
-      if (!Directory.Exists(zipLocalPath))
-        Directory.CreateDirectory(zipLocalPath);
+      if (Directory.Exists(zipLocalPath))
+        Directory.Delete(zipLocalPath);
+      Directory.CreateDirectory(zipLocalPath);
       GenerateHydroImages(dxfLocalPathAndFileName, zipLocalPath, request.Options);
 
       var finalZippedFile = HydroRequestHelper.ZipImages(localTempProjectPath, zipLocalPath, request.FileName, Log, ServiceExceptionHandler);
@@ -99,8 +99,8 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       catch (Exception e)
       {
         var errorMessage = $"{nameof(GenerateHydroImages)} Surface import failed.";
-        if (e.Source == "TD_SwigDbMgd")
-          errorMessage += " Failure is in reader 'TD_SwigDbMgd'. Container may be missing the RecomputeDimBlock_4.00_11.tx file in bin directory";
+        if (e.Source == "TD_SwigDbMgd" || e.Source == "TD_SwigCoreMgd")
+          errorMessage += $" Failure is in reader {e.Source}. 1/more morph components may be missing from bin dir e.g. RecomputeDimBlock_4.00_11.tx file";
 
         Log.LogError(e, errorMessage);
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 9, errorMessage1: e.Message);
