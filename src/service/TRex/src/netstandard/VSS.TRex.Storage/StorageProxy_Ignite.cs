@@ -44,7 +44,7 @@ namespace VSS.TRex.Storage
       generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
       siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
 
-      //TODO: Reinstate when site model change maps reinstated
+      //TODO (VSTS #85679): Reinstate when site model change maps reinstated
       //siteModelMachineCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SiteModelMachineElevationChangeMap);
     }
 
