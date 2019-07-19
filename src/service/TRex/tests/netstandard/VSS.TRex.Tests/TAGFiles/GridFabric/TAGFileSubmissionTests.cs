@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,36 +69,36 @@ namespace TAGFiles.Tests
     }
 
     [Fact]
-    public void Test_TAGFileSubmission_SubmitTAGFile_Success()
+    public async Task Test_TAGFileSubmission_SubmitTAGFile_Success()
     {
       InjectTAGFileBufferQueueMock(true);
 
-      SubmitTAGFileRequest submission = new SubmitTAGFileRequest();
+      var submission = new SubmitTAGFileRequest();
       Assert.True(null != submission, "Failed to create SubmitTAGFileRequest instance");
 
       string tagFileName = "TestTAGFile-TAGFile-Read-Stream.tag";
-      Guid assetID = Guid.NewGuid();
+      var assetID = Guid.NewGuid();
 
-      SubmitTAGFileResponse response = submission.Execute(RequestArgument(assetID, tagFileName));
+      var response = await submission.ExecuteAsync(RequestArgument(assetID, tagFileName));
 
       response.Success.Should().BeTrue($"Response is not successful. Filename={response.FileName}, exception={response.Message}");
       response.Code.Should().Be((int) TRexTagFileResultCode.Valid);
-      response.Message.Should().Be("");
+      response.Message.Should().BeEmpty();
     }
 
     [Fact]
-    public void Test_TAGFileSubmission_SubmitTAGFile_Failure()
+    public async Task Test_TAGFileSubmission_SubmitTAGFile_Failure()
     {
       InjectTAGFileBufferQueueMock(false);
 
-      SubmitTAGFileRequest submission = new SubmitTAGFileRequest();
+      var submission = new SubmitTAGFileRequest();
 
       Assert.True(null != submission, "Failed to create SubmitTAGFileRequest instance");
 
       string tagFileName = "TestTAGFile-TAGFile-Read-Stream.tag";
-      Guid assetID = Guid.NewGuid();
+      var assetID = Guid.NewGuid();
 
-      SubmitTAGFileResponse response = submission.Execute(RequestArgument(assetID, tagFileName));
+      var response = await submission.ExecuteAsync(RequestArgument(assetID, tagFileName));
 
       response.Success.Should().BeFalse($"Response is successful!!! [When it should not be]. Filename={response.FileName}, exception={response.Message}");
       response.Code.Should().Be((int)TRexTagFileResultCode.TRexQueueSubmissionError);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
@@ -73,7 +74,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryTemperatureStatistics_EmptySiteModel_FullExtents_NoTemperatureTargetOverride()
+    public async Task Test_SummaryTemperatureStatistics_EmptySiteModel_FullExtents_NoTemperatureTargetOverride()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -81,14 +82,14 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new TemperatureStatisticsOperation();
 
-      var temperatureSummaryResult = operation.Execute(SimpleTemperatureStatisticsArgument(siteModel, 0, 0));
+      var temperatureSummaryResult = await operation.ExecuteAsync(SimpleTemperatureStatisticsArgument(siteModel, 0, 0));
 
       temperatureSummaryResult.Should().NotBeNull();
       temperatureSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
     }
 
     [Fact]
-    public void Test_SummaryTemperatureStatistics_SiteModelWithSingleCell_FullExtents_NoTemperatureTargetOverride()
+    public async Task Test_SummaryTemperatureStatistics_SiteModelWithSingleCell_FullExtents_NoTemperatureTargetOverride()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -96,7 +97,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       var siteModel = BuildModelForSingleCellTemperature(TEMPERATURE_INCREMENT);
       var operation = new TemperatureStatisticsOperation();
 
-      var temperatureSummaryResult = operation.Execute(SimpleTemperatureStatisticsArgument(siteModel, 0, 0));
+      var temperatureSummaryResult = await operation.ExecuteAsync(SimpleTemperatureStatisticsArgument(siteModel, 0, 0));
 
       temperatureSummaryResult.Should().NotBeNull();
       temperatureSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -114,7 +115,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryTemperatureStatistics_SiteModelWithSingleCell_FullExtents_NoTemperatureTargetOverride_WithMachineTemperatureTarget()
+    public async Task Test_SummaryTemperatureStatistics_SiteModelWithSingleCell_FullExtents_NoTemperatureTargetOverride_WithMachineTemperatureTarget()
     {
       const ushort TARGET_TEMPERATURE_MIN = 25;
       const ushort TARGET_TEMPERATURE_MAX = 80;
@@ -128,7 +129,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
 
       var operation = new TemperatureStatisticsOperation();
 
-      var temperatureSummaryResult = operation.Execute(SimpleTemperatureStatisticsArgument(siteModel, 0, 0));
+      var temperatureSummaryResult = await operation.ExecuteAsync(SimpleTemperatureStatisticsArgument(siteModel, 0, 0));
 
       temperatureSummaryResult.Should().NotBeNull();
       temperatureSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -148,7 +149,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
     [InlineData(50, 80, 0.0, 0.0, 100.0)]
     [InlineData(80, 120, 0.0, 100.0, 0.0)]
     [InlineData(110, 150, 100.0, 0.0, 0.0)]
-    public void Test_SummaryTemperatureStatistics_SiteModelWithSingleCell_FullExtents_WithTemperatureTargetOverrides
+    public async Task Test_SummaryTemperatureStatistics_SiteModelWithSingleCell_FullExtents_WithTemperatureTargetOverrides
       (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -157,7 +158,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       var siteModel = BuildModelForSingleCellTemperature(TEMPERATURE_INCREMENT);
       var operation = new TemperatureStatisticsOperation();
 
-      var temperatureSummaryResult = operation.Execute(SimpleTemperatureStatisticsArgument(siteModel, minTarget, maxTarget));
+      var temperatureSummaryResult = await operation.ExecuteAsync(SimpleTemperatureStatisticsArgument(siteModel, minTarget, maxTarget));
 
       temperatureSummaryResult.Should().NotBeNull();
       temperatureSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -175,7 +176,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
 
     [Theory]
     [InlineData(0, 0, 0.0, 0.0, 0.0)]
-    public void Test_DetailedTemperatureStatistics_SiteModelWithSingleCell_FullExtents
+    public async Task Test_DetailedTemperatureStatistics_SiteModelWithSingleCell_FullExtents
       (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -186,7 +187,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
 
       var arg = SimpleTemperatureStatisticsArgument(siteModel, minTarget, maxTarget);
       arg.TemperatureDetailValues = new[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 };
-      var temperatureDetailResult = operation.Execute(arg);
+      var temperatureDetailResult = await operation.ExecuteAsync(arg);
 
       temperatureDetailResult.Should().NotBeNull();
 
@@ -213,7 +214,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
     [InlineData(500, 800, 7.8912901113294032, 0.49115913555992141, 91.617550753110677)]
     [InlineData(850, 950, 9.0700720366732153, 6.8107400130975773, 84.119187950229218)]
     [InlineData(1300, 1500, 100, 0.0, 0.0)]
-    public void Test_SummaryTemperatureStatistics_SiteModelWithSingleTAGFile_FullExtents_WithTemperatureTargetOverrides
+    public async Task Test_SummaryTemperatureStatistics_SiteModelWithSingleTAGFile_FullExtents_WithTemperatureTargetOverrides
       (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -227,7 +228,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       var operation = new TemperatureStatisticsOperation();
 
-      var temperatureSummaryResult = operation.Execute(SimpleTemperatureStatisticsArgument(siteModel, minTarget, maxTarget));
+      var temperatureSummaryResult = await operation.ExecuteAsync(SimpleTemperatureStatisticsArgument(siteModel, minTarget, maxTarget));
 
       temperatureSummaryResult.Should().NotBeNull();
       temperatureSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -246,7 +247,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
 
     [Theory]
     [InlineData(0, 0, 8.8081204977079253, 80.582842174197779, 10.609037328094303)]
-    public void Test_DetailedTemperatureStatistics_SiteModelWithSingleTAGFile_FullExtents
+    public async Task Test_DetailedTemperatureStatistics_SiteModelWithSingleTAGFile_FullExtents
       (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -262,7 +263,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
 
       var arg = SimpleTemperatureStatisticsArgument(siteModel, minTarget, maxTarget);
       arg.TemperatureDetailValues = new[] { 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500 };
-      var temperatureDetailResult = operation.Execute(arg);
+      var temperatureDetailResult = await operation.ExecuteAsync(arg);
 
       temperatureDetailResult.Should().NotBeNull();
 

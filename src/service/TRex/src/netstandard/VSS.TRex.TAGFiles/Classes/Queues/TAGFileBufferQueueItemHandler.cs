@@ -52,7 +52,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         private static readonly TAGFileNameComparer _tagFileNameComparer = new TAGFileNameComparer();
 
-        private void ProcessTAGFilesFromGrouper()
+        private async Task ProcessTAGFilesFromGrouper()
         {
             Log.LogInformation("ProcessTAGFilesFromGrouper starting executing");
 
@@ -118,7 +118,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         {
                             // -> Supply the package to the processor
                             var request = new ProcessTAGFileRequest();
-                            var response = request.Execute(new ProcessTAGFileRequestArgument
+                            var response = await request.ExecuteAsync(new ProcessTAGFileRequestArgument
                             {
                                 ProjectID = projectID,
                                 AssetUID = TAGQueueItems[0].AssetID,
@@ -189,7 +189,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The package of TAG files contains files for a single project [and currently a single machine]
         /// </summary>
         /// <param name="package"></param>
-        private void ProcessTAGFileBucketFromGrouper2(IReadOnlyList<ITAGFileBufferQueueKey> package)
+        private async Task ProcessTAGFileBucketFromGrouper2(IReadOnlyList<ITAGFileBufferQueueKey> package)
         {
             var projectID = package[0].ProjectUID;
 
@@ -239,7 +239,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     // -> Supply the package to the processor
                     var request = new ProcessTAGFileRequest();
-                    var response = request.Execute(new ProcessTAGFileRequestArgument
+                    var response = await request.ExecuteAsync(new ProcessTAGFileRequestArgument
                     {
                         ProjectID = projectID,
                         AssetUID = TAGQueueItems[0].AssetID,
@@ -293,7 +293,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// A version of ProcessTAGFilesFromGrouper2 that uses task parallelism
         /// </summary>
-        private void ProcessTAGFilesFromGrouper2()
+        private async Task ProcessTAGFilesFromGrouper2()
         {
             try
             {
@@ -319,7 +319,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         {
                             Log.LogInformation(
                                 $"#Progress# Start processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
-                            ProcessTAGFileBucketFromGrouper2(package);
+                            await ProcessTAGFileBucketFromGrouper2(package);
                             Log.LogInformation(
                                 $"#Progress# Completed processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
                         }

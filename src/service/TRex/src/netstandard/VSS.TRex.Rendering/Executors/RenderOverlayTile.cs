@@ -428,9 +428,7 @@ namespace VSS.TRex.Rendering.Executors
       Log.LogInformation($"LLHCoords for tile request {string.Concat(LLHCoords)}, CoordsAreGrid {CoordsAreGrid}");
 
       if (CoordsAreGrid)
-      {
         NEECoords = LLHCoords;
-      }
       else
       {
         var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
@@ -567,9 +565,7 @@ namespace VSS.TRex.Rendering.Executors
         ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters);
 
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
-        {
           return Renderer.Displayer.MapView.BitmapCanvas;
-        }
       }
       catch (Exception e)
       {

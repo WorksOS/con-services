@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -58,12 +59,8 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="offset"></param>
     /// <param name="spotX"></param>
     /// <param name="spotY"></param>
-    /// <param name="spotHeight"></param>
-    /// <param name="errorCode"></param>
-    void GetDesignSpotHeight(Guid siteModelID, double offset,
-      double spotX, double spotY,
-      out double spotHeight,
-      out DesignProfilerRequestResult errorCode);
+    /// <returns></returns>
+    Task<(double spotHeight, DesignProfilerRequestResult errorCode)> GetDesignSpotHeight(Guid siteModelID, double offset,double spotX, double spotY);
 
     /// <summary>
     /// Calculates an elevation sub grid for a design sub grid on this design
@@ -75,11 +72,7 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="designHeights"></param>
     /// <param name="errorCode"></param>
     /// <returns></returns>
-    void GetDesignHeights(Guid siteModelID, double offset,
-      SubGridCellAddress originCellAddress,
-      double cellSize,
-      out IClientHeightLeafSubGrid designHeights,
-      out DesignProfilerRequestResult errorCode);
+    Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeights(Guid siteModelID, double offset, SubGridCellAddress originCellAddress, double cellSize);
 
     /// <summary>
     /// Calculates a filter mask for a designated sub grid on this design
@@ -98,6 +91,6 @@ namespace VSS.TRex.Designs.Interfaces
 
     DesignDescriptor DesignDescriptor { get; }
 
-    List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset, out DesignProfilerRequestResult errorCode);
+    Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset);
   }
 }

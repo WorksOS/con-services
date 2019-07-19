@@ -25,9 +25,18 @@ namespace VSS.TRex.Tests.Pipelines
     }
 
     [Fact]
+    public void Test_RequestAnalyser_DefaultConstruction_Execute_Fails_Synchrous()
+    {
+      var analyser = new RequestAnalyser();
+
+      Action act = () => analyser.Execute();
+      act.Should().Throw<ArgumentException>().WithMessage("*No owning pipeline*");
+    }
+
+    [Fact]
     public void Test_RequestAnalyser_DefaultConstruction_Execute_Fails()
     {
-      RequestAnalyser analyser = new RequestAnalyser();
+      var analyser = new RequestAnalyser();
 
       Action act = () => analyser.Execute();
       act.Should().Throw<ArgumentException>().WithMessage("*No owning pipeline*");

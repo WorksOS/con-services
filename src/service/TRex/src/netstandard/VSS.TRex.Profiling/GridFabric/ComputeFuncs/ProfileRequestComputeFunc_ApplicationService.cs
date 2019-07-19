@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Profiling.Executors;
 using VSS.TRex.Profiling.GridFabric.Arguments;
@@ -27,8 +28,8 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
 
       try
       {
-        var Executor = new ComputeProfileExecutor_ApplicationService<T>();
-        return Executor.ExecuteAsync(arg).Result;
+        var executor = new ComputeProfileExecutor_ApplicationService<T>();
+        return executor.ExecuteAsync(arg).WaitAndUnwrapException();
       }
       finally
       {

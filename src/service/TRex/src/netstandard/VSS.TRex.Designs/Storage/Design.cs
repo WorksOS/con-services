@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Geometry;
@@ -83,26 +84,28 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="offset"></param>
     /// <param name="errorCode"></param>
     /// <returns></returns>
-    public List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset, out DesignProfilerRequestResult errorCode)
+    public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset)
     {
-      // Query the DesignProfiler service to get the patch of elevations calculated
-      errorCode = DesignProfilerRequestResult.OK;
+      (List<XYZS> profile, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
 
+      // Query the DesignProfiler service to get the patch of elevations calculated
       try
       {
         if (profileRequest == null)
           profileRequest = new DesignProfileRequest();
 
-        var profile = profileRequest.Execute(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor.DesignID, offset, profilePath));
+        var profile = await profileRequest.ExecuteAsync(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor.DesignID, offset, profilePath));
 
-        return profile.Profile;
+        result.profile = profile.Profile;
+
+        return result;
       }
       catch
       {
-        errorCode = DesignProfilerRequestResult.UnknownError;
+        result.errorCode = DesignProfilerRequestResult.UnknownError;
       }
 
-      return null;
+      return result;
     }
 
     /// <summary>
@@ -122,15 +125,7 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Returns the real world 3D enclosing extents for the surveyed surface topology, including any configured vertical offset
     /// </summary>
-    public BoundingWorldExtent3D Extents
-    {
-      get
-      {
-        BoundingWorldExtent3D result = new BoundingWorldExtent3D(extents);
-
-        return result;
-      }
-    }
+    public BoundingWorldExtent3D Extents => new BoundingWorldExtent3D(extents);
 
     /// <summary>
     /// Constructor accepting full design state
@@ -184,19 +179,18 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="spotY"></param>
     /// <param name="spotHeight"></param>
     /// <param name="errorCode"></param>
-    public void GetDesignSpotHeight(Guid siteModelID, double offset,
-      double spotX, double spotY,
-      out double spotHeight,
-      out DesignProfilerRequestResult errorCode)
+    public async Task<(double spotHeight, DesignProfilerRequestResult errorCode)> GetDesignSpotHeight(Guid siteModelID, double offset, double spotX, double spotY)
     {
-      // Query the DesignProfiler service to get the spot elevation calculated
-      errorCode = DesignProfilerRequestResult.OK;
+      (double spotHeight, DesignProfilerRequestResult errorCode) result = (0.0, DesignProfilerRequestResult.OK);
 
+      // Query the DesignProfiler service to get the spot elevation calculated
       if (elevSpotRequest == null)
         elevSpotRequest = new DesignElevationSpotRequest();
 
-      spotHeight = elevSpotRequest.Execute(new CalculateDesignElevationSpotArgument
+      result.spotHeight = await elevSpotRequest.ExecuteAsync(new CalculateDesignElevationSpotArgument
         (siteModelID, spotX, spotY, new DesignOffset(DesignDescriptor.DesignID, offset)));
+
+      return result;
     }
 
     /// <summary>
@@ -208,31 +202,31 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="cellSize"></param>
     /// <param name="designHeights"></param>
     /// <param name="errorCode"></param>
-    public void GetDesignHeights(Guid siteModelID, double offset,
+    public async Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeights(
+      Guid siteModelID, 
+      double offset, 
       SubGridCellAddress originCellAddress,
-      double cellSize,
-      out IClientHeightLeafSubGrid designHeights,
-      out DesignProfilerRequestResult errorCode)
+      double cellSize)
     {
       // Query the DesignProfiler service to get the patch of elevations calculated
-      errorCode = DesignProfilerRequestResult.OK;
-      designHeights = null;
+      (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
 
       if (elevPatchRequest == null)
         elevPatchRequest = new DesignElevationPatchRequest();
 
-      var response = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
+      var response = await elevPatchRequest.ExecuteAsync(new CalculateDesignElevationPatchArgument
       {
         CellSize = cellSize,
         ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, offset),
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
-        // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
         ProjectID = siteModelID
       });
 
-      designHeights = response.Heights;
-      errorCode = response.CalcResult;
+      result.designHeights = response.Heights;
+      result.errorCode = response.CalcResult;
+
+      return result;
     }
 
     /// <summary>

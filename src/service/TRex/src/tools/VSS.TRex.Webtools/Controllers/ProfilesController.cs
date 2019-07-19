@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
@@ -33,23 +35,23 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="offset"></param>
     /// <returns></returns>
     [HttpGet("design/{siteModelID}/{designID}")]
-    public JsonResult ComputeDesignProfile(string siteModelID, string designID,
+    public async Task<JsonResult> ComputeDesignProfile(string siteModelID, string designID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
       [FromQuery] double endY,
       [FromQuery] double? offset)
     {
-      Guid siteModelUid = Guid.Parse(siteModelID);
+      var siteModelUid = Guid.Parse(siteModelID);
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelUid);
       var design = siteModel?.Designs?.Locate(Guid.Parse(designID));
 
       if (design == null)
         return new JsonResult($"Unable to locate design {designID} in project {siteModelID}");
 
-      var result = design.ComputeProfile(siteModelUid, new[] { new XYZ(startX, startY, 0), new XYZ(endX, endY, 0) }, siteModel.CellSize, offset ?? 0, out DesignProfilerRequestResult errCode);
+      var result = await design.ComputeProfile(siteModelUid, new[] { new XYZ(startX, startY, 0), new XYZ(endX, endY, 0) }, siteModel.CellSize, offset ?? 0);
 
-      return new JsonResult(result);
+      return new JsonResult(result.profile);
     }
 
     /// <summary>

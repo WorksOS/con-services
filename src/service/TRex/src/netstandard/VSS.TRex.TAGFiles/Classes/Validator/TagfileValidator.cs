@@ -147,21 +147,15 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     {
       // Perform some Validation Checks
       if (tagDetail.tagFileContent.Length <= minTagFileLength)
-      {
         return new ContractExecutionResult((int) TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());
-      }
 
-      TAGFilePreScan tagFilePresScan = new TAGFilePreScan();
+      var tagFilePresScan = new TAGFilePreScan();
 
       using (var stream = new MemoryStream(tagDetail.tagFileContent))
-      {
         tagFilePresScan.Execute(stream);
-      }
 
       if (tagFilePresScan.ReadResult != TAGReadResult.NoError)
-      {
         return new ContractExecutionResult((int)TRexTagFileResultCode.TrexTagFileReaderError, tagFilePresScan.ReadResult.ToString());
-      }
 
       // TAG file contents are OK so proceed
       if (!tfaServiceEnabled) // allows us to bypass a TFA service

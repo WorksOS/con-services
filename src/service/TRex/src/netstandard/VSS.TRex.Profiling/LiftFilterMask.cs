@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -101,12 +102,11 @@ namespace VSS.TRex.Profiling
       return true;
     }
 
-    public static bool InitialiseFilterContext(ISiteModel siteModel, 
+    public static async Task<(bool executionResult, DesignProfilerRequestResult filterDesignErrorCode)> InitialiseFilterContext(ISiteModel siteModel, 
       ICellPassAttributeFilter passFilter, ICellPassAttributeFilterProcessingAnnex passFilterAnnex,
-      ProfileCell profileCell, IDesign design,
-      out DesignProfilerRequestResult FilterDesignErrorCode)
+      ProfileCell profileCell, IDesign design)
     {
-      FilterDesignErrorCode = DesignProfilerRequestResult.UnknownError;
+      (bool executionResult, DesignProfilerRequestResult filterDesignErrorCode) result = (false, DesignProfilerRequestResult.UnknownError);
 
       if (passFilter.HasElevationRangeFilter)
       {
@@ -115,24 +115,27 @@ namespace VSS.TRex.Profiling
 
         if ((passFilter.ElevationRangeDesign?.DesignID ?? Guid.Empty) != Guid.Empty)
         {
-          design.GetDesignHeights(siteModel.ID, passFilter.ElevationRangeDesign.Offset, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY),
-            siteModel.CellSize, out IClientHeightLeafSubGrid FilterDesignElevations, out FilterDesignErrorCode);
+          var getDesignHeightsResult = await design.GetDesignHeights(siteModel.ID, passFilter.ElevationRangeDesign.Offset, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY), siteModel.CellSize);
 
-          if (FilterDesignErrorCode != DesignProfilerRequestResult.OK || FilterDesignElevations == null)
+          result.filterDesignErrorCode = getDesignHeightsResult.errorCode;
+
+          if (result.filterDesignErrorCode != DesignProfilerRequestResult.OK || getDesignHeightsResult.designHeights == null)
           {
-            if (FilterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+            if (result.filterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
               Log.LogInformation(
                 "Lift filter by design. Call to RequestDesignElevationPatch failed due to no elevations in requested patch.");
             else
               Log.LogWarning(
-                $"Lift filter by design. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {FilterDesignErrorCode}.");
-            return false;
+                $"Lift filter by design. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {result.filterDesignErrorCode}.");
+            return result;
           }
 
-          passFilterAnnex.InitializeElevationRangeFilter(passFilter, FilterDesignElevations);
+          passFilterAnnex.InitializeElevationRangeFilter(passFilter, getDesignHeightsResult.designHeights);
         }
       }
-      return true;
+
+      result.executionResult = true;
+      return result;
     }
   }
 }

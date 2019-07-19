@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
@@ -73,7 +74,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryCMVStatistics_EmptySiteModel_FullExtents_NoCMVTargetOverride()
+    public async Task Test_SummaryCMVStatistics_EmptySiteModel_FullExtents_NoCMVTargetOverride()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -81,14 +82,14 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new CMVStatisticsOperation();
 
-      var cmvSummaryResult = operation.Execute(SimpleCMVStatisticsArgument(siteModel, 0, 0.0, 0.0));
+      var cmvSummaryResult = await operation.ExecuteAsync(SimpleCMVStatisticsArgument(siteModel, 0, 0.0, 0.0));
 
       cmvSummaryResult.Should().NotBeNull();
       cmvSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
     }
 
     [Fact]
-    public void Test_SummaryCMVStatistics_SiteModelWithSingleCell_FullExtents_NoCMVTargetOverride()
+    public async Task Test_SummaryCMVStatistics_SiteModelWithSingleCell_FullExtents_NoCMVTargetOverride()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -98,7 +99,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
       var operation = new CMVStatisticsOperation();
 
-      var cmvSummaryResult = operation.Execute(SimpleCMVStatisticsArgument(siteModel, 0, 0.0, 0.0));
+      var cmvSummaryResult = await operation.ExecuteAsync(SimpleCMVStatisticsArgument(siteModel, 0, 0.0, 0.0));
 
       cmvSummaryResult.Should().NotBeNull();
       cmvSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -114,7 +115,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryCMVStatistics_SiteModelWithSingleCell_FullExtents_NoCMVTargetOverride_WithMachineCMVTarget()
+    public async Task Test_SummaryCMVStatistics_SiteModelWithSingleCell_FullExtents_NoCMVTargetOverride_WithMachineCMVTarget()
     {
       const short TARGET_CMV = 50;
       AddClusterComputeGridRouting();
@@ -126,7 +127,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
       var operation = new CMVStatisticsOperation();
 
-      var cmvSummaryResult = operation.Execute(SimpleCMVStatisticsArgument(siteModel, 0, 0.0, 0.0));
+      var cmvSummaryResult = await operation.ExecuteAsync(SimpleCMVStatisticsArgument(siteModel, 0, 0.0, 0.0));
 
       cmvSummaryResult.Should().NotBeNull();
       cmvSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -145,7 +146,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     [InlineData(10, 50, 80.0, 120.0, 0.0, 0.0, 100.0)]
     [InlineData(10, 90, 80.0, 120.0, 0.0, 100.0, 0.0)]
     [InlineData(5, 90, 80.0, 120.0, 100.0, 0.0, 0.0)]
-    public void Test_SummaryCMVStatistics_SiteModelWithSingleCell_FullExtents_WithCMVTargetOverrides
+    public async Task Test_SummaryCMVStatistics_SiteModelWithSingleCell_FullExtents_WithCMVTargetOverrides
       (short cmvIncrement, short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -156,7 +157,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
       var operation = new CMVStatisticsOperation();
 
-      var cmvSummaryResult = operation.Execute(SimpleCMVStatisticsArgument(siteModel, target, minPercentage, maxPercentage));
+      var cmvSummaryResult = await operation.ExecuteAsync(SimpleCMVStatisticsArgument(siteModel, target, minPercentage, maxPercentage));
 
       cmvSummaryResult.Should().NotBeNull();
       cmvSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -173,7 +174,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
     [Theory]
     [InlineData(0, 0.0, 0.0, 0.0, 0.0, 0.0)]
-    public void Test_DetailedCMVStatistics_SiteModelWithSingleCell_FullExtents
+    public async Task Test_DetailedCMVStatistics_SiteModelWithSingleCell_FullExtents
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -186,7 +187,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
       var arg = SimpleCMVStatisticsArgument(siteModel, target, minPercentage, maxPercentage);
       arg.CMVDetailValues = new[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 };
-      var cmvDetailResult = operation.Execute(arg);
+      var cmvDetailResult = await operation.ExecuteAsync(arg);
 
       cmvDetailResult.Should().NotBeNull();
 
@@ -213,7 +214,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     [InlineData(400, 70.0, 130.0, 0.964630225080386, 90.353697749196144, 8.6816720257234739)]
     [InlineData(500, 80.0, 120.0, 17.684887459807076, 81.304547542489672, 1.0105649977032614)]
     [InlineData(600, 80.0, 120.0, 73.449701423977956, 26.366559485530544, 0.18373909049150206)]
-    public void Test_SummaryCMVStatistics_SiteModelWithSingleTAGFile_FullExtents_WithCMVTargetOverrides
+    public async Task Test_SummaryCMVStatistics_SiteModelWithSingleTAGFile_FullExtents_WithCMVTargetOverrides
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -227,7 +228,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       var operation = new CMVStatisticsOperation();
 
-      var cmvSummaryResult = operation.Execute(SimpleCMVStatisticsArgument(siteModel, target, minPercentage, maxPercentage));
+      var cmvSummaryResult = await operation.ExecuteAsync(SimpleCMVStatisticsArgument(siteModel, target, minPercentage, maxPercentage));
 
       cmvSummaryResult.Should().NotBeNull();
       cmvSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -244,7 +245,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
     [Theory]
     [InlineData(0, 0.0, 0.0, 0.0, 0.964630225080386, 99.035369774919616)]
-    public void Test_DetailedCMVStatistics_SiteModelWithSingleTAGFile_FullExtents
+    public async Task Test_DetailedCMVStatistics_SiteModelWithSingleTAGFile_FullExtents
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -260,7 +261,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
       var arg = SimpleCMVStatisticsArgument(siteModel, target, minPercentage, maxPercentage);
       arg.CMVDetailValues = new[] { 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500 };
-      var cmvDetailResult = operation.Execute(arg);
+      var cmvDetailResult = await operation.ExecuteAsync(arg);
 
       cmvDetailResult.Should().NotBeNull();
 

@@ -381,10 +381,11 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       // Request sub grids from the model
       var requestedSubGrids = new List<IClientLeafSubGrid>();
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
       {
-        if (requestors[0].RequestSubGridInternal(x, overrides, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
-          requestedSubGrids.Add(clientGrid);
+        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, overrides, true, false);
+        if (requestSubGridInternalResult.requestResult == ServerRequestResult.NoError)
+          requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });
       requestedSubGrids.Count.Should().Be(tagFileDirectory == "ElevationMappingMode-KettlewellDrive" ? 18 : 9);
       return requestedSubGrids;
