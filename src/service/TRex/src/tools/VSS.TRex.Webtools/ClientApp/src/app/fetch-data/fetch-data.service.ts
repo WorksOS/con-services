@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
-import { DataRequestType, DisplayModeType } from './fetch-data-model';
+import { DataRequestType, DisplayModeType, OverrideParameters, OverrideRange } from './fetch-data-model';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -31,7 +31,7 @@ export class FetchDataService {
     return this.executeRequest<DataRequestType[]>("getDataRequestTypes", `productiondata/requesttypes`);
   }
 
-  public getProductionData(projectUid: string, requestType: number, designUid: string, designOffset: number): Observable<string> {
+  public getProductionData(projectUid: string, requestType: number, designUid: string, designOffset: number, overrides:OverrideParameters): Observable<string> {
     let requestTypeString: string = ""; 
     switch (<DisplayModeType>requestType)
     {

@@ -5,7 +5,7 @@
 
   <div class="container-fluid" id="panel">
     <div class="row" id="fetchDataRow">
-      <div class="fetchDataButtonsPanel col-lg-3">
+      <div class="fetchDataPanel col-lg-3">
         <div class="panel-heading">Request Types</div>
         <div class="panel-default">
           <select id="dataRequestType" name="dataRequestType" [(ngModel)]="dataRequestType" (change)="dataRequestTypeChanged($event)">
@@ -16,14 +16,62 @@
           <div class="spacer"></div>
           <button class="requestButton" [disabled]="noProjectSelected()" (click)="getProductionData()">Execute</button>
         </div>
+
       </div>
 
-      <div class="fetchDataOutputPanel col-lg-9">
+      <div class="fetchDataPanel col-lg-9">
         <div class="panel-heading">Results</div>
         <div class="panel-default" [innerHTML]="dataResult" style="padding-left: 10px; padding-top: 10px; font-size: small"></div>
       </div>
     </div>
-
+      <div class="row">
+          <div class="fetchDataPanel col-lg-12">
+              <div class="panel-heading">Override Parameters</div>
+              <div class="panel-default overridePanel">
+                  <p>
+                      <input type="checkbox" [(ngModel)]="overrides.overrideMachineCCV">
+                      <label class="overrideInput">Override Machine CMV</label>
+                      <input type="number" [(ngModel)]="overrides.overridingMachineCCV" />
+                      <label class="overrideInput">CMV Range (%) Min:</label>
+                      <input type="number" [(ngModel)]="overrides.cmvRange.min" />
+                      <label class="overrideInput">Max:</label>
+                      <input type="number" [(ngModel)]="overrides.cmvRange.max" />
+                  </p>
+                  <p>
+                      <input type="checkbox" [(ngModel)]="overrides.overrideMachineMDP">
+                      <label class="overrideInput">Override Machine MDP</label>
+                      <input type="number" [(ngModel)]="overrides.overridingMachineMDP" />
+                      <label class="overrideInput">MDP Range (%) Min:</label>
+                      <input type="number" [(ngModel)]="overrides.mdpRange.min" />
+                      <label class="overrideInput">Max:</label>
+                      <input type="number" [(ngModel)]="overrides.mdpRange.max" />
+                  </p>
+                  <p>
+                      <input type="checkbox" [(ngModel)]="overrides.overrideTargetPassCount">
+                      <label class="overrideInput">Override Target Pass Count</label>
+                      <label class="overrideInput">Min:</label>
+                      <input type="number" [(ngModel)]="overrides.overridingTargetPassCountRange.min" />                     
+                      <label class="overrideInput">Max:</label>
+                      <input type="number" [(ngModel)]="overrides.overridingTargetPassCountRange.max" />
+                </p>
+                  <p>
+                      <input type="checkbox" [(ngModel)]="overrides.overrideTemperatureWarningLevels">
+                      <label class="overrideInput">Override Temperature Warning Levels</label>
+                      <label class="overrideInput">Min:</label>
+                      <input type="number" [(ngModel)]="overrides.overridingTemperatureWarningLevels.min" />
+                      <label class="overrideInput">Max:</label>
+                      <input type="number" [(ngModel)]="overrides.overridingTemperatureWarningLevels.max"/>
+                  </p>
+                  <p>
+                      <label class="overrideInput">Target Machine Speed (cm/sec)</label>
+                      <label class="overrideInput">Min:</label>
+                      <input type="number" [(ngModel)]="overrides.targetMachineSpeed.min" />                     
+                      <label class="overrideInput">Max:</label>
+                      <input type="number" [(ngModel)]="overrides.targetMachineSpeed.max" />
+                  </p>
+              </div>
+          </div>
+      </div>
   </div>
 </div>
 

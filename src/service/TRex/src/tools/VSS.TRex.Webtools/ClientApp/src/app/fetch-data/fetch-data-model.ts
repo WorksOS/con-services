@@ -112,3 +112,52 @@ export enum DisplayModeType {
   // Elevation Range
   ElevationRange
 }
+
+export class OverrideRange {
+  min: number;
+  max: number;
+
+  public constructor(min: number, max: number) {
+    this.min = min;
+    this.max = max;
+  }
+}
+
+export class OverrideParameters {
+  overrideMachineCCV: boolean = false;
+  overridingMachineCCV: number;
+  cmvRange: OverrideRange;
+  overrideMachineMDP: boolean = false;
+  overridingMachineMDP: number;
+  mdpRange: OverrideRange;
+  overrideTargetPassCount: boolean = false;
+  overridingTargetPassCountRange: OverrideRange;
+  overrideTemperatureWarningLevels: boolean = false;
+  overridingTemperatureWarningLevels: OverrideRange;
+  targetMachineSpeed: OverrideRange;
+
+  public constructor(
+      overrideMachineCCV: boolean,
+      overridingMachineCCV: number,
+      cmvRange: OverrideRange,
+      overrideMachineMDP: boolean,
+      overridingMachineMDP: number,
+      mdpRange: OverrideRange,
+      overrideTargetPassCount: boolean,
+      overridingTargetPassCountRange: OverrideRange,
+      overrideTemperatureWarningLevels: boolean,
+      overridingTemperatureWarningLevels: OverrideRange,
+      targetMachineSpeed: OverrideRange) {
+          this.overrideMachineCCV = overrideMachineCCV;
+          this.overridingMachineCCV = overridingMachineCCV;
+          this.cmvRange = cmvRange;
+          this.overrideMachineMDP = overrideMachineMDP;
+          this.overridingMachineMDP = overridingMachineMDP;
+          this.mdpRange = mdpRange;
+          this.overrideTargetPassCount = overrideTargetPassCount;
+          this.overridingTargetPassCountRange = overridingTargetPassCountRange;
+          this.overrideTemperatureWarningLevels = overrideTemperatureWarningLevels;
+          this.overridingTemperatureWarningLevels = overridingTemperatureWarningLevels;
+          this.targetMachineSpeed = targetMachineSpeed;
+  }
+}

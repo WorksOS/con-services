@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FetchDataService } from './fetch-data.service';
-import { DataRequestType } from './fetch-data-model';
+import { DataRequestType, OverrideParameters, OverrideRange } from './fetch-data-model';
 
 
 @Component({
@@ -11,6 +11,8 @@ import { DataRequestType } from './fetch-data-model';
 })
 export class FetchDataComponent {
 
+  private KM_HR_TO_CM_SEC: number = 27.77777778; //1.0 / 3600 * 100000;
+
   public allDataRequestTypes: DataRequestType[] = [];
   public dataRequestType: DataRequestType = new DataRequestType();
   public requestType: number = 1;
@@ -20,6 +22,12 @@ export class FetchDataComponent {
   private projectUid: string = localStorage.getItem("projectUid");
   private designUid: string = localStorage.getItem("designUid");
   private designOffset: number = parseFloat(localStorage.getItem("designOffset"));
+  private overrides: OverrideParameters = new OverrideParameters(
+      false, 70, new OverrideRange(80, 130),
+      false, 70, new OverrideRange(80, 130),
+      false, new OverrideRange(6, 6),
+      false, new OverrideRange(650, 1750),
+      new OverrideRange(5 * this.KM_HR_TO_CM_SEC, 10 * this.KM_HR_TO_CM_SEC));
   
   constructor(
     private fetchDataService: FetchDataService
@@ -45,7 +53,7 @@ export class FetchDataComponent {
   public getProductionData(): void {
     var self = this;
 
-    this.fetchDataService.getProductionData(this.projectUid, this.requestType, this.designUid, this.designOffset).subscribe(data => {
+    this.fetchDataService.getProductionData(this.projectUid, this.requestType, this.designUid, this.designOffset, this.overrides).subscribe(data => {
       self.dataResult = data;
     });
   }
