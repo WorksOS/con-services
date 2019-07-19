@@ -375,7 +375,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var dxfTileRequest = DxfTileWMTSRequest.CreateTileRequest(requiredFiles, x, y, z);
 
       dxfTileRequest.Validate();
-#if RAPTOR
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
@@ -383,6 +382,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         result = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
 
       return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
+
     }
 
     /// <summary>
