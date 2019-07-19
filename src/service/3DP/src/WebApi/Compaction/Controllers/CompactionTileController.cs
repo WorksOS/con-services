@@ -373,6 +373,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       var dxfTileRequest = DxfTileWMTSRequest.CreateTileRequest(requiredFiles, x, y, z);
+#if RAPTOR
 
       dxfTileRequest.Validate();
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
@@ -382,16 +383,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         result = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
 
       return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
-
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
-      /// Validates the file type for DXF tile request and gets the imported file data for it
-      /// </summary>
-      /// <param name="projectUid">The project UID where the files were imported</param>
-      /// <param name="fileType">The file type of the imported files</param>
-      /// <returns>The imported file data for the requested files</returns>
-      private async Task<List<FileData>> ValidateFileType(Guid projectUid, string fileType)
+    /// Validates the file type for DXF tile request and gets the imported file data for it
+    /// </summary>
+    /// <param name="projectUid">The project UID where the files were imported</param>
+    /// <param name="fileType">The file type of the imported files</param>
+    /// <returns>The imported file data for the requested files</returns>
+    private async Task<List<FileData>> ValidateFileType(Guid projectUid, string fileType)
     {
       //Check file type specified
       if (string.IsNullOrEmpty(fileType))
