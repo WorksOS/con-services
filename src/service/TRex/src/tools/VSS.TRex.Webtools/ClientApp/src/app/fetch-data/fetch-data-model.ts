@@ -114,27 +114,27 @@ export enum DisplayModeType {
 }
 
 export class OverrideRange {
-  min: number;
-  max: number;
+  Min: number;
+  Max: number;
 
   public constructor(min: number, max: number) {
-    this.min = min;
-    this.max = max;
+    this.Min = min;
+    this.Max = max;
   }
 }
 
 export class OverrideParameters {
-  overrideMachineCCV: boolean = false;
-  overridingMachineCCV: number;
-  cmvRange: OverrideRange;
-  overrideMachineMDP: boolean = false;
-  overridingMachineMDP: number;
-  mdpRange: OverrideRange;
-  overrideTargetPassCount: boolean = false;
-  overridingTargetPassCountRange: OverrideRange;
-  overrideTemperatureWarningLevels: boolean = false;
-  overridingTemperatureWarningLevels: OverrideRange;
-  targetMachineSpeed: OverrideRange;
+  OverrideMachineCCV: boolean = false;
+  OverridingMachineCCV: number;
+  CMVRange: OverrideRange;
+  OverrideMachineMDP: boolean = false;
+  OverridingMachineMDP: number;
+  MDPRange: OverrideRange;
+  OverrideTargetPassCount: boolean = false;
+  OverridingTargetPassCountRange: OverrideRange;
+  OverrideTemperatureWarningLevels: boolean = false;
+  OverridingTemperatureWarningLevels: OverrideRange;
+  TargetMachineSpeed: OverrideRange;
 
   public constructor(
       overrideMachineCCV: boolean,
@@ -148,16 +148,16 @@ export class OverrideParameters {
       overrideTemperatureWarningLevels: boolean,
       overridingTemperatureWarningLevels: OverrideRange,
       targetMachineSpeed: OverrideRange) {
-          this.overrideMachineCCV = overrideMachineCCV;
-          this.overridingMachineCCV = overridingMachineCCV;
-          this.cmvRange = cmvRange;
-          this.overrideMachineMDP = overrideMachineMDP;
-          this.overridingMachineMDP = overridingMachineMDP;
-          this.mdpRange = mdpRange;
-          this.overrideTargetPassCount = overrideTargetPassCount;
-          this.overridingTargetPassCountRange = overridingTargetPassCountRange;
-          this.overrideTemperatureWarningLevels = overrideTemperatureWarningLevels;
-          this.overridingTemperatureWarningLevels = overridingTemperatureWarningLevels;
-          this.targetMachineSpeed = targetMachineSpeed;
+          this.OverrideMachineCCV = overrideMachineCCV;
+          this.OverridingMachineCCV = overridingMachineCCV;
+          this.CMVRange = cmvRange;
+          this.OverrideMachineMDP = overrideMachineMDP;
+          this.OverridingMachineMDP = overridingMachineMDP;
+          this.MDPRange = mdpRange;
+          this.OverrideTargetPassCount = overrideTargetPassCount;
+          this.OverridingTargetPassCountRange = overridingTargetPassCountRange;
+          this.OverrideTemperatureWarningLevels = overrideTemperatureWarningLevels;
+          this.OverridingTemperatureWarningLevels = overridingTemperatureWarningLevels;
+          this.TargetMachineSpeed = targetMachineSpeed;
   }
 }

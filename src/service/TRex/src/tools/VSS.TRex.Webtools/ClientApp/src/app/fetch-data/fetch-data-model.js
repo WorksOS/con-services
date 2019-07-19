@@ -79,27 +79,27 @@ export var DisplayModeType;
 })(DisplayModeType || (DisplayModeType = {}));
 export class OverrideRange {
     constructor(min, max) {
-        this.min = min;
-        this.max = max;
+        this.Min = min;
+        this.Max = max;
     }
 }
 export class OverrideParameters {
     constructor(overrideMachineCCV, overridingMachineCCV, cmvRange, overrideMachineMDP, overridingMachineMDP, mdpRange, overrideTargetPassCount, overridingTargetPassCountRange, overrideTemperatureWarningLevels, overridingTemperatureWarningLevels, targetMachineSpeed) {
-        this.overrideMachineCCV = false;
-        this.overrideMachineMDP = false;
-        this.overrideTargetPassCount = false;
-        this.overrideTemperatureWarningLevels = false;
-        this.overrideMachineCCV = overrideMachineCCV;
-        this.overridingMachineCCV = overridingMachineCCV;
-        this.cmvRange = cmvRange;
-        this.overrideMachineMDP = overrideMachineMDP;
-        this.overridingMachineMDP = overridingMachineMDP;
-        this.mdpRange = mdpRange;
-        this.overrideTargetPassCount = overrideTargetPassCount;
-        this.overridingTargetPassCountRange = overridingTargetPassCountRange;
-        this.overrideTemperatureWarningLevels = overrideTemperatureWarningLevels;
-        this.overridingTemperatureWarningLevels = overridingTemperatureWarningLevels;
-        this.targetMachineSpeed = targetMachineSpeed;
+        this.OverrideMachineCCV = false;
+        this.OverrideMachineMDP = false;
+        this.OverrideTargetPassCount = false;
+        this.OverrideTemperatureWarningLevels = false;
+        this.OverrideMachineCCV = overrideMachineCCV;
+        this.OverridingMachineCCV = overridingMachineCCV;
+        this.CMVRange = cmvRange;
+        this.OverrideMachineMDP = overrideMachineMDP;
+        this.OverridingMachineMDP = overridingMachineMDP;
+        this.MDPRange = mdpRange;
+        this.OverrideTargetPassCount = overrideTargetPassCount;
+        this.OverridingTargetPassCountRange = overridingTargetPassCountRange;
+        this.OverrideTemperatureWarningLevels = overrideTemperatureWarningLevels;
+        this.OverridingTemperatureWarningLevels = overridingTemperatureWarningLevels;
+        this.TargetMachineSpeed = targetMachineSpeed;
     }
 }
 //# sourceMappingURL=fetch-data-model.js.map

@@ -27,6 +27,12 @@ export class FetchDataService {
     return this.http.get<T>(url);
   }
 
+  private executePostRequest<T>(label: string, url: string, body: any): Observable<T> {
+      url = `${this.baseUrl}api/${url}`;
+      console.log(`${label}: url=${url}`);
+      return this.http.post<T>(url, body);
+  }
+
   public getDataRequestTypes(): Observable<DataRequestType[]> {
     return this.executeRequest<DataRequestType[]>("getDataRequestTypes", `productiondata/requesttypes`);
   }
@@ -79,7 +85,7 @@ export class FetchDataService {
     if (<DisplayModeType>requestType == DisplayModeType.CutFill) {
         url += `?cutFillDesignUid=${designUid}&cutFillOffset=${designOffset}`;
     }
-    return this.executeRequest<string>("getProductionData", url);
+    return this.executePostRequest<string>("getProductionData", url, overrides);
   }
 
 }

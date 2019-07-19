@@ -23,8 +23,8 @@ export class FetchDataComponent {
   private designUid: string = localStorage.getItem("designUid");
   private designOffset: number = parseFloat(localStorage.getItem("designOffset"));
   private overrides: OverrideParameters = new OverrideParameters(
-      false, 70, new OverrideRange(80, 130),
-      false, 70, new OverrideRange(80, 130),
+      false, 700, new OverrideRange(80, 130),
+      false, 700, new OverrideRange(80, 130),
       false, new OverrideRange(6, 6),
       false, new OverrideRange(650, 1750),
       new OverrideRange(5 * this.KM_HR_TO_CM_SEC, 10 * this.KM_HR_TO_CM_SEC));
