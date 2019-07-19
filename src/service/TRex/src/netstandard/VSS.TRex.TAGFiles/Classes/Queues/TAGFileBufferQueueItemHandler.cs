@@ -28,7 +28,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// The interval between epochs where the service checks to see if there is anything to do
         /// </summary>
-        private const int kTAGFileBufferQueueServiceCheckIntervalMS = 1000;
+        private const int kQueueServiceCheckIntervalMS = 1000;
 
         private const int kDefaultNumConcurrentTAGFileProcessingTasks = 1;
 
@@ -175,9 +175,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 if (!hadWorkToDo)
                 {
                     if (Log.IsTraceEnabled())
-                      Log.LogInformation($"ProcessTAGFilesFromGrouper sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
+                      Log.LogInformation($"ProcessTAGFilesFromGrouper sleeping for {kQueueServiceCheckIntervalMS}ms");
 
-                    Thread.Sleep(kTAGFileBufferQueueServiceCheckIntervalMS);
+                    Thread.Sleep(kQueueServiceCheckIntervalMS);
                 }
             } while (!aborted);
 
@@ -335,7 +335,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
                     if (!hadWorkToDo)
                     {
-                        Thread.Sleep(kTAGFileBufferQueueServiceCheckIntervalMS);
+                        Thread.Sleep(kQueueServiceCheckIntervalMS);
                     }
                 } while (!aborted);
 

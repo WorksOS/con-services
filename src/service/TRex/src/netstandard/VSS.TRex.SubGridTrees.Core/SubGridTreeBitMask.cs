@@ -246,6 +246,28 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
+        /// Takes a source SubGridBitMask instance and performs a bitwise AND of the bitwise NOTed contents of source against the
+        /// contents of this instance, modifying the state of this sub grid bit mask tree to produce the result
+        /// </summary>
+        /// <param name="Source"></param>
+        public void SetOp_ANDNOT(ISubGridTreeBitMask Source)
+        {
+          ScanAllSubGrids(x =>
+          {
+            if (x != null)
+            {
+              var bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)Source?.LocateSubGridContaining(x.OriginX, x.OriginY);
+              if (bitMapSubGrid == null)
+                ((SubGridTreeLeafBitmapSubGrid)x).Bits.Clear(); // No sub grid in source, clear sub grid in 'this'
+              else
+                ((SubGridTreeLeafBitmapSubGrid)x).Bits.AndNotWith(bitMapSubGrid.Bits);
+            }
+      
+            return true; // Keep the scan going
+          });
+        }
+
+        /// <summary>
         ///  ClearCellIfSet will set the value of a cell to false if the current
         /// value of cell is True. The function returns true if the cell was set
         /// and has been cleared
@@ -255,22 +277,22 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool ClearCellIfSet(int CellX, int CellY)
         {
-            var SubGrid = LocateSubGridContaining(CellX, CellY, numLevels);
+          var SubGrid = LocateSubGridContaining(CellX, CellY, numLevels);
 
-            if (SubGrid == null)
-                return false;
+          if (SubGrid == null)
+              return false;
 
-            var bitmapSubGrid = (SubGridTreeLeafBitmapSubGrid)SubGrid;
+          var bitmapSubGrid = (SubGridTreeLeafBitmapSubGrid)SubGrid;
 
-            bitmapSubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
+          bitmapSubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
-            if (bitmapSubGrid.Bits.BitSet(SubGridX, SubGridY))
-            {
-                bitmapSubGrid.Bits.ClearBit(SubGridX, SubGridY);
-                return true;
-            }
+          if (bitmapSubGrid.Bits.BitSet(SubGridX, SubGridY))
+          {
+              bitmapSubGrid.Bits.ClearBit(SubGridX, SubGridY);
+              return true;
+          }
 
-            return false;
+          return false;
         }
 
         /// <summary>

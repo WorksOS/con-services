@@ -180,7 +180,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
     [Fact]
     public async Task Test_CMVChangeStatisticsRequest_SiteModelWithMultipleCells_FullExtents()
     {
-      const short NUMBER_OF_CELLS = 2177;
+      const short NUMBER_OF_CELLS = 2165;
 
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();

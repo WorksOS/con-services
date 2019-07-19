@@ -37,7 +37,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public TAGFileBufferQueueServiceProxy()
         {
-            IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+            var _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
 
             // Get an instance of IServices for the cluster group.
             services = _ignite.GetServices();

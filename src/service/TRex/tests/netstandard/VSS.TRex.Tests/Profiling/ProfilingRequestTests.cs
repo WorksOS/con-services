@@ -212,12 +212,12 @@ namespace VSS.TRex.Tests.Profiling
     }
 
     [Theory]
-    [InlineData(VolumeComputationType.BetweenFilterAndDesign, 0.0f, 0.0f, Consts.NullHeight)]
-    [InlineData(VolumeComputationType.BetweenDesignAndFilter, 0.0f, Consts.NullHeight, 9.0f)]
-    [InlineData(VolumeComputationType.BetweenFilterAndDesign, 10.0f, 0.0f, Consts.NullHeight)]
-    [InlineData(VolumeComputationType.BetweenDesignAndFilter, 10.0f, Consts.NullHeight, 9.0f)]
+    [InlineData(VolumeComputationType.BetweenFilterAndDesign, 0.0f, 0.0f, Consts.NullHeight, 3)]
+    [InlineData(VolumeComputationType.BetweenDesignAndFilter, 0.0f, Consts.NullHeight, 9.0f, 3)]
+    [InlineData(VolumeComputationType.BetweenFilterAndDesign, 10.0f, 0.0f, Consts.NullHeight, 3)]
+    [InlineData(VolumeComputationType.BetweenDesignAndFilter, 10.0f, Consts.NullHeight, 9.0f, 3)]
     public async Task SummaryVolumeProfileCell_SingleCell_FlatDesignAtOrigin_FilterToDesignOrDesignToFilter(VolumeComputationType volumeComputationType, float designElevation,
-      float lastPassElevation1, float lastPassElevation2)
+      float lastPassElevation1, float lastPassElevation2, int checkCellIndex)
     {
       AddRoutings();
 
@@ -249,13 +249,13 @@ namespace VSS.TRex.Tests.Profiling
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
-      response.ProfileCells.Count.Should().Be(3);
-      response.ProfileCells[0].DesignElev.Should().Be(designElevation);
-      response.ProfileCells[0].LastCellPassElevation1.Should().Be(lastPassElevation1);
-      response.ProfileCells[0].LastCellPassElevation2.Should().Be(lastPassElevation2);
-      response.ProfileCells[0].InterceptLength.Should().BeApproximately(sm.Grid.CellSize, 0.001);
-      response.ProfileCells[0].OTGCellX.Should().Be(SubGridTreeConsts.DefaultIndexOriginOffset);
-      response.ProfileCells[0].OTGCellY.Should().Be(SubGridTreeConsts.DefaultIndexOriginOffset);
+      response.ProfileCells.Count.Should().Be(6);
+      response.ProfileCells[checkCellIndex].DesignElev.Should().Be(designElevation);
+      response.ProfileCells[checkCellIndex].LastCellPassElevation1.Should().Be(lastPassElevation1);
+      response.ProfileCells[checkCellIndex].LastCellPassElevation2.Should().Be(lastPassElevation2);
+      response.ProfileCells[checkCellIndex].InterceptLength.Should().BeApproximately(sm.Grid.CellSize, 0.001);
+      response.ProfileCells[checkCellIndex].OTGCellX.Should().Be(SubGridTreeConsts.DefaultIndexOriginOffset);
+      response.ProfileCells[checkCellIndex].OTGCellY.Should().Be(SubGridTreeConsts.DefaultIndexOriginOffset);
     }
   }
 }

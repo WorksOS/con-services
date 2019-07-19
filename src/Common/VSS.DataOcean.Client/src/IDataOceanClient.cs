@@ -16,6 +16,5 @@ namespace VSS.DataOcean.Client
     Task<Guid?> GetFolderId(string path, IDictionary<string, string> customHeaders);
     Task<Guid?> GetFileId(string fullName, IDictionary<string, string> customHeaders);
     Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders);
-
   }
 }

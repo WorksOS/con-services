@@ -18,6 +18,12 @@
         MachineDesignNames,
         ProofingRuns,
         Alignments,
-        SubGridVersionMap
+        SubGridVersionMap,
+
+        /// <summary>
+        /// A map of the sub grids that have changed within a site model since the machine last
+        /// queried elevation data from the map
+        /// </summary>
+        SiteModelMachineElevationChangeMap
     }
 }

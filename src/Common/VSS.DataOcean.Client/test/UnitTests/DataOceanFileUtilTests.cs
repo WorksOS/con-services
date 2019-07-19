@@ -14,7 +14,7 @@ namespace VSS.DataOcean.Client.UnitTests
     public void CanCreateValidDataOceanFileUtil(string extension)
     {
       var fileName = $"/dev/folder-one/folder-two/dummy.{extension}";
-      var file = new DataOceanFileUtil(fileName);
+      _ = new DataOceanFileUtil(fileName);
     }
 
     [Fact]
