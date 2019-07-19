@@ -11,6 +11,12 @@ namespace VSS.TRex.Tests.TestFixtures
     }
 
     /// <summary>
+    /// Expose pending transacted writes in test context to provide simplified access to content in unit tests
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<TK, TV> GetPendingTransactedWrites() => PendingTransactedWrites;
+
+    /// <summary>
     /// Override the name property which extracts the cache name from the storage proxy. Test harnesses don;t have a valid cache
     /// reference so just return a dummy name for the cache.
     /// </summary>

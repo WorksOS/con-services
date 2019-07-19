@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Common.Interfaces;
+﻿using System.Threading.Tasks;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
@@ -71,7 +72,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// Builds the pipeline configured per the supplied state ready to execute the request
     /// </summary>
     /// <returns></returns>
-    bool Build();
+    Task<bool> BuildAsync();
 
     /// <summary>
     /// Performing all processing activities to retrieve sub grids

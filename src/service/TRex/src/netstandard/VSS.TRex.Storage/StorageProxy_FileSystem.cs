@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Apache.Ignite.Core.Transactions;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -68,6 +69,26 @@ namespace VSS.TRex.Storage
     }
 
     public void Clear()
+    {
+      throw new NotImplementedException();
+    }
+
+    public IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> ProjectMachineCache(FileSystemStreamType streamType)
+    {
+      throw new NotImplementedException();
+    }
+
+    public bool Commit(ITransaction tx, out int numDeleted, out int numUpdated, out long numBytesWritten)
+    {
+      throw new NotImplementedException();
+    }
+
+    public bool Commit(ITransaction tx)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ITransaction StartTransaction(TransactionConcurrency concurrency, TransactionIsolation isolation)
     {
       throw new NotImplementedException();
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
@@ -340,7 +341,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void Test_CellDatumRequest_ApplicationService_Execute_SingleCellSiteModel_LLH()
+    public async Task Test_CellDatumRequest_ApplicationService_Execute_SingleCellSiteModel_LLH()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -353,7 +354,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       siteModel.CSIB().Should().Be(DIMENSIONS_2012_DC_CSIB);
 
       var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height, new OverrideParameters());
-      arg.Point = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(siteModel.CSIB(), arg.Point);
+      arg.Point = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(siteModel.CSIB(), arg.Point);
       arg.CoordsAreGrid = false;
 
       var request = new CellDatumRequest_ApplicationService();

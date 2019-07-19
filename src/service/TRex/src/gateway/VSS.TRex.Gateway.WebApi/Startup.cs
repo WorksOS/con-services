@@ -48,6 +48,7 @@ namespace VSS.TRex.Gateway.WebApi
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+        .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
 
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))

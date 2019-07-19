@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -17,7 +18,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SimpleVolumesExecutor>();
 
-    private SimpleVolumesResponse ConvertBoundaryFromGridToWGS84(Guid projectUid, SimpleVolumesResponse response)
+    private async Task<SimpleVolumesResponse> ConvertBoundaryFromGridToWGS84(Guid projectUid, SimpleVolumesResponse response)
     {
       if (!response.BoundingExtentGrid.IsValidPlanExtent)
         return response; // No conversion possible
@@ -28,7 +29,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
         new XYZ(response.BoundingExtentGrid.MaxX, response.BoundingExtentGrid.MaxY)
       };
 
-      (var errorCode, XYZ[] LLHCoords) = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid).CSIB(), NEECoords);
+      (var errorCode, XYZ[] LLHCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid).CSIB(), NEECoords);
 
       if (errorCode == RequestErrorStatus.OK)
       {
@@ -49,9 +50,9 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
       return response;
     }
 
-    public SimpleVolumesResponse Execute(SimpleVolumesRequestArgument arg)
+    public Task<SimpleVolumesResponse> ExecuteAsync(SimpleVolumesRequestArgument arg)
     {
-      SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
+      var request = new SimpleVolumesRequest_ClusterCompute();
 
       Log.LogInformation("Executing SimpleVolumesRequestComputeFunc_ApplicationService.Execute()");
 

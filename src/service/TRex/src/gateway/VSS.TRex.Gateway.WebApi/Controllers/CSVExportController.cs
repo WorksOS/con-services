@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
@@ -41,7 +41,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/veta")]
-    public CompactionExportResult GetVetaExport([FromBody] CompactionVetaExportRequest compactionVetaExportRequest)
+    public Task<ContractExecutionResult> GetVetaExport([FromBody] CompactionVetaExportRequest compactionVetaExportRequest)
     {
       Log.LogInformation($"{nameof(GetVetaExport)}: {Request.QueryString}");
 
@@ -57,7 +57,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/passcount")]
-    public CompactionExportResult GetPassCountExport([FromBody] CompactionPassCountExportRequest compactionPassCountExportRequest)
+    public Task<ContractExecutionResult> GetPassCountExport([FromBody] CompactionPassCountExportRequest compactionPassCountExportRequest)
     {
       Log.LogInformation($"{nameof(GetPassCountExport)}: {Request.QueryString}");
 
@@ -65,16 +65,15 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return Execute(compactionPassCountExportRequest);
     }
 
-    private CompactionExportResult Execute<T>(T request)
+    private Task<ContractExecutionResult> Execute<T>(T request)
     {
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
       ValidateFilterMachines(nameof(Execute), compactionCSVExportRequest.ProjectUid, compactionCSVExportRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<CSVExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(compactionCSVExportRequest) as CompactionExportResult);
-
+          .ProcessAsync(compactionCSVExportRequest));
     }
   }
 }

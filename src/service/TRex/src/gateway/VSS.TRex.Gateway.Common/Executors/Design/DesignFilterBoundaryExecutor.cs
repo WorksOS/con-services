@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -34,7 +36,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as DesignFilterBoundaryRequest;
 
@@ -46,7 +48,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       var designFilterBoundaryRequest = new AlignmentDesignFilterBoundaryRequest();
       var referenceDesign = new DesignOffset(request.DesignUid, 0.0);
 
-      var designFilterBoundaryResponse = designFilterBoundaryRequest.Execute(new AlignmentDesignFilterBoundaryArgument()
+      var designFilterBoundaryResponse = await designFilterBoundaryRequest.ExecuteAsync(new AlignmentDesignFilterBoundaryArgument()
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,
@@ -69,6 +71,14 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
     private DesignFilterBoundaryResult ConvertResult(Fence boundary)
     {
       return new DesignFilterBoundaryResult(boundary.Points.Select(p => new WGSPoint(p.Y, p.X)).ToList());
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

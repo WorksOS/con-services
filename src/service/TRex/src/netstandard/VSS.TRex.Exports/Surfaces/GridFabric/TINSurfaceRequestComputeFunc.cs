@@ -42,7 +42,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
 
         Log.LogInformation("Executing request.Execute()");
 
-        if (!request.Execute())
+        if (!request.ExecuteAsync().Result)
           Log.LogError("Request execution failed");
 
         TINSurfaceResult result = new TINSurfaceResult();

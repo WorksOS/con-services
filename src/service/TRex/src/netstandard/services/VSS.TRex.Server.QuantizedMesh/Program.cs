@@ -70,6 +70,7 @@ namespace VSS.TRex.Server.QuantizedMesh
       .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
       .Add(TRexGridFactory.AddGridFactoriesToDI)
       .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+      .Build()
       .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
       .Build()
@@ -157,6 +158,7 @@ namespace VSS.TRex.Server.QuantizedMesh
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
+        DIContext.Obtain<ITRexGridFactory>().StopGrids();
         cancelTokenSource.Cancel();
       };
 

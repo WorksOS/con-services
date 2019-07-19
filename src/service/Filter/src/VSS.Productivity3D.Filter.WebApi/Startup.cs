@@ -35,14 +35,19 @@ namespace VSS.Productivity3D.Filter.WebApi
   /// </summary>
   public class Startup : BaseStartup
   {
+    /// <inheritdoc />
     public override string ServiceName => "Filter Service API";
+
+    /// <inheritdoc />
     public override string ServiceDescription => "A service to manage Filter related CRUD requests within the 3DP service architecture.";
+
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
     /// <summary>
     /// Gets the configuration.
     /// </summary>
-    public IConfigurationRoot Configuration { get; }
+    public new IConfigurationRoot Configuration { get; }
 
     /// <inheritdoc />
     public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)

@@ -94,9 +94,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
                 }
       };
 
-      cfg.CacheConfiguration = new List<CacheConfiguration>
-      {
-      };
+      cfg.CacheConfiguration = new List<CacheConfiguration>();
 
       Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
       Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
@@ -188,7 +186,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //cfg.Backups = 0;
     }
 
-    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
     {
       return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(CacheCfg);
     }
@@ -207,7 +205,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
       cfg.CacheMode = CacheMode.Partitioned;
 
-      // Configure the function that maps subgrid data into the affinity map for the nodes in the grid
+      // Configure the function that maps sub grid data into the affinity map for the nodes in the grid
       cfg.AffinityFunction = new MutableSpatialAffinityFunction();
     }
 
@@ -227,7 +225,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
 
-      // No backups for now
+      // TODO: No backups for now
       cfg.Backups = 0;
 
       cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
@@ -247,7 +245,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         CacheMode = CacheMode.Partitioned,
         AffinityFunction = new MutableNonSpatialAffinityFunction(),
 
-        // No backups for now
+        // TODO: No backups for now
         Backups = 0,
 
         DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
@@ -256,7 +254,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
     public void StartTRexGridCacheNode()
     {
-      IgniteConfiguration cfg = new IgniteConfiguration();
+      var cfg = new IgniteConfiguration();
       ConfigureTRexGrid(cfg);
 
       Log.LogInformation($"Creating new Ignite node for {cfg.IgniteInstanceName}");
@@ -278,7 +276,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //CacheConfiguration CacheCfg = new CacheConfiguration();
       //ConfigureNonSpatialMutableCache(CacheCfg);
       var nonSpatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
-      NonSpatialMutableCache = InstantiateTRexCacheReference(nonSpatialCacheConfiguration);
+      NonSpatialMutableCache = InstantiateNonSpatialTRexCacheReference(nonSpatialCacheConfiguration);
 
       //CacheCfg = new CacheConfiguration();
       //ConfigureMutableSpatialCache(CacheCfg);

@@ -33,8 +33,8 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
 
             try
             {
-                var Executor = new SimpleVolumesExecutor();
-                return Executor.Execute(arg);
+                var executor = new SimpleVolumesExecutor();
+                return executor.ExecuteAsync(arg).Result;
             }
             finally
             {

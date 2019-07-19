@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -104,7 +105,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
     /// <returns>Execution result with a list of design boundaries.</returns>
     [HttpGet("boundaries")]
-    public ContractExecutionResult GetDesignBoundaries(
+    public Task<ContractExecutionResult> GetDesignBoundaries(
       [FromQuery] Guid projectUid, 
       [FromQuery] Guid designUid, 
       [FromQuery] string fileName, 
@@ -118,10 +119,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       designBoundariesRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DesignBoundariesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(designBoundariesRequest) as DesignBoundaryResult);
+          .ProcessAsync(designBoundariesRequest));
     }
 
     /// <summary>
@@ -136,7 +137,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="rightOffset"></param>
     /// <returns></returns>
     [HttpGet("filter/boundary")]
-    public ContractExecutionResult GetDesignFilterBoundaries(
+    public Task<ContractExecutionResult> GetDesignFilterBoundaries(
       [FromQuery] Guid projectUid, 
       [FromQuery] Guid designUid, 
       [FromQuery] string fileName, 
@@ -159,14 +160,20 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       designFilterBoundaryRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DesignFilterBoundaryExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(designFilterBoundaryRequest) as DesignFilterBoundaryResult);
+          .ProcessAsync(designFilterBoundaryRequest));
     }
 
+    /// <summary>
+    ///  Gets an alignmend design station range from TRex database.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="designUid"></param>
+    /// <returns></returns>
     [HttpGet("alignment/stationrange")]
-    public ContractExecutionResult GetAlignmentStationRange([FromQuery] Guid projectUid, [FromQuery] Guid designUid)
+    public Task<ContractExecutionResult> GetAlignmentStationRange([FromQuery] Guid projectUid, [FromQuery] Guid designUid)
     {
       Log.LogInformation($"{nameof(GetAlignmentStationRange)}: projectUid:{projectUid}, designUid:{designUid}");
 
@@ -174,10 +181,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       alignmentStationRangeRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<AlignmentStationRangeExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(alignmentStationRangeRequest) as AlignmentStationRangeResult);
+          .ProcessAsync(alignmentStationRangeRequest));
     }
   }
 }

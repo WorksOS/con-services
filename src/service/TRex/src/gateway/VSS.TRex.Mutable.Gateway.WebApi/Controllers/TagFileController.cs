@@ -3,13 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.ResultHandling;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 {
@@ -60,21 +58,20 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
    // [PostRequestVerifier]
     [Route("api/v2/tagfiles/direct")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
+    public Task<ContractExecutionResult> PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
 
       var serializedRequest = ConvertObjectForLogging.SerializeObjectIgnoringProperties(request, "Data");
       Log.LogInformation("PostTagFile (Direct): " + serializedRequest);
-      return await ExecuteRequest(request);
+      return ExecuteRequest(request);
     }
 
-    private async Task<ContractExecutionResult> ExecuteRequest(CompactionTagFileRequest tfRequest)
+    private Task<ContractExecutionResult> ExecuteRequest(CompactionTagFileRequest tfRequest)
     {
 
-      var tagfileResult = WithServiceExceptionTryExecute(() => RequestExecutorContainer
+      return WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
                                                      .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-                                                     .Process(tfRequest)) as TagFileResult;
-      return tagfileResult;
+                                                     .ProcessAsync(tfRequest));
     }
   }
 }

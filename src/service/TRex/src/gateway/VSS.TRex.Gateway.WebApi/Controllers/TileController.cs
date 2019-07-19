@@ -1,7 +1,9 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
@@ -33,23 +35,22 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
-    public FileResult GetTile([FromBody] TRexTileRequest request)
+    public async Task<FileResult> GetTile([FromBody] TRexTileRequest request)
     {
       Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
 
       request.Validate();
       ValidateFilterMachines(nameof(GetTile), request.ProjectUid, request.Filter1);
 
-      var tileResult = WithServiceExceptionTryExecute(() =>
+      var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(request)) as TileResult;
-
+          .ProcessAsync(request)) as TileResult;
 
       if (tileResult?.TileData == null)
         tileResult = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
 
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
     }
   }
 }

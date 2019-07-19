@@ -357,7 +357,7 @@ namespace VSS.ConfigurationStore
         }
         catch (Exception e)
         {
-          log.LogError($"Invalid configuration for key {key}: {e.Message}");
+          log.LogError(e, $"Invalid configuration for key {key}");
         }
       }   
       if (log.IsTraceEnabled())

@@ -23,8 +23,10 @@ namespace VSS.TRex.Storage.Caches
         private const string kSiteModelsCacheImmutable = "SiteModelsCache-Immutable";
 
         private const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
+        private const string kSiteModelChangeMapsCacheName = "SiteModelChangeMapsCache";
 
         private const string kTAGFileBufferQueueCacheName = "TAGFileBufferQueue";
+        private const string kSiteModelChangeBufferQueueName = "SiteModelChangeBufferQueue";
 
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
@@ -61,6 +63,9 @@ namespace VSS.TRex.Storage.Caches
           if (streamType == FileSystemStreamType.ProductionDataXML)
             return SiteModelsCacheName(Mutability);
 
+          if (streamType == FileSystemStreamType.SiteModelMachineElevationChangeMap)
+            return SiteModelChangeMapsCacheName();
+
           return Mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
         }
 
@@ -71,7 +76,7 @@ namespace VSS.TRex.Storage.Caches
         public static string SiteModelMetadataCacheName() => kSiteModelMetadataCache;
    
         /// <summary>
-        /// Returns the name of of the design topology existence maps
+        /// Returns the name of of the site models cache
         /// </summary>
         /// <returns></returns>
         public static string SiteModelsCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Immutable ? kSiteModelsCacheImmutable : kSiteModelsCacheMutable;
@@ -81,6 +86,13 @@ namespace VSS.TRex.Storage.Caches
         /// </summary>
         /// <returns></returns>
         public static string DesignTopologyExistenceMapsCacheName() => kDesignTopologyExistenceMaps;
+
+        /// <summary>
+        /// Returns the name of the cache responsible for holding generic quantities where the site model and the machine are
+        /// the core identifier for that information. These
+        /// </summary>
+        /// <returns></returns>
+        public static string SiteModelChangeMapsCacheName() => kSiteModelChangeMapsCacheName;
 
         /// <summary>
         /// Name of the cache holding queued & buffered TAG files awaiting processing
@@ -93,5 +105,11 @@ namespace VSS.TRex.Storage.Caches
         /// replaced by small cloven segments as a result of TAG file processing
         /// </summary>
         public static string SegmentRetirementQueueCacheName() => "SegmentRetirementQueue";
-    }
+
+        /// <summary>
+        /// Name of the cache holding queued & buffered TAG files awaiting processing
+        /// </summary>
+        /// <returns></returns>
+        public static string SiteModelChangeBufferQueueCacheName() => kSiteModelChangeBufferQueueName;
+  }
 }

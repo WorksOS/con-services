@@ -52,7 +52,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
             TSubGridRequestsResponse taskResult = null;
 
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
             try
             {

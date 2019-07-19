@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -59,12 +60,12 @@ namespace VSS.TRex.Analytics.Foundation
         /// Primary method called to begin analytics computation
         /// </summary>
         /// <returns></returns>
-        public bool ComputeAnalytics(BaseAnalyticsResponse response)
+        public async Task<bool> ComputeAnalytics(BaseAnalyticsResponse response)
         {
           // TODO: add when lift build setting supported
           // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
 
-          IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
+          var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
           (requestDescriptor: RequestDescriptor,
             dataModelID: SiteModel.ID,
             gridDataType: RequestedGridDataType,
@@ -82,7 +83,7 @@ namespace VSS.TRex.Analytics.Foundation
           // Assign the provided aggregator into the pipelined sub grid task
           ((IAggregatedPipelinedSubGridTask) processor.Task).Aggregator = Aggregator;
 
-          if (!processor.Build())
+          if (!await processor.BuildAsync())
           {
             Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
             return false;

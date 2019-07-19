@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
@@ -41,7 +42,7 @@ namespace VSS.TRex.Exports.CSV.Executors
     /// Executor that implements requesting and rendering grid information to create the grid rows
     /// </summary>
     /// <returns></returns>
-    public bool Execute()
+    public async Task<bool> ExecuteAsync()
     {
       Log.LogInformation($"Performing Execute for DataModel:{_CSVExportRequestArgument.ProjectID}");
 
@@ -73,7 +74,7 @@ namespace VSS.TRex.Exports.CSV.Executors
 
         ((CSVExportTask) _processor.Task).SubGridExportProcessor = new CSVExportSubGridProcessor(_CSVExportRequestArgument);
 
-        if (!_processor.Build())
+        if (!await _processor.BuildAsync())
         {
           Log.LogError($"Failed to build CSV export pipeline processor for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}");
           CSVExportRequestResponse.ResultStatus = _processor.Response.ResultStatus;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
@@ -221,6 +222,9 @@ namespace VSS.TRex.SiteModels
 
         // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
         DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(message.SiteModelID, mask);
+
+        // Advise any registered site model change map notifier of the changes
+        DIContext.Obtain<ISiteModelChangeMapDeltaNotifier>()?.Notify(siteModel.ID, DateTime.UtcNow, mask, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);
       }
     }
 

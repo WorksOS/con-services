@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -32,7 +34,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CMVSummaryRequest;
 
@@ -44,7 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var filter = ConvertFilter(request.Filter, siteModel);
 
       var operation = new CMVStatisticsOperation();
-      var cmvSummaryResult = operation.Execute(
+      var cmvSummaryResult = await operation.ExecuteAsync(
         new CMVStatisticsArgument()
         {
           ProjectID = siteModel.ID,
@@ -74,6 +76,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         (short) summary.ReturnCode,
         summary.TotalAreaCoveredSqMeters,
         summary.BelowTargetPercent);
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }
