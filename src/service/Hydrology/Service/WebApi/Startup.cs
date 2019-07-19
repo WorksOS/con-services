@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Hydrology.WebApi.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
@@ -75,7 +76,7 @@ namespace VSS.Hydrology.WebApi
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env,
       ILoggerFactory factory)
     {
-      // too app.UseFilterMiddleware<HydrologyAuthentication>();
+      app.UseFilterMiddleware<HydrologyAuthentication>();
       app.UseResponseCompression();
       app.UseMvc();
     }

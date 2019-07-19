@@ -23,6 +23,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
   public class HydroExecutor : RequestExecutorContainer
   {
     private static readonly HydroErrorCodesProvider HydroErrorCodesProvider = new HydroErrorCodesProvider();
+    private int? getExportTimeoutMs = null;
 
     public HydroExecutor()
     {
@@ -37,8 +38,11 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     {
       var request = CastRequestObjectTo<HydroRequest>(item);
 
-      var currentGroundTTMStream = await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request, Log, ServiceExceptionHandler, CustomHeaders, RaptorProxy);
-      //var currentGroundTTMStream = HydroRequestHelperLatestGround.GetCurrentGroundTest(Log); 
+      // even though 3dp-raptor/trex call is internal, there is still a 60 second default timeout
+      if (int.TryParse(ConfigStore.GetValueString("HYDRO_GETEXPORTSURFACE_TIMEOUTMS"), out var timeoutMs))
+        getExportTimeoutMs = timeoutMs;
+      var currentGroundTTMStream = await HydroRequestHelperCurrentGround.GetCurrentGround3Dp(request, Log, ServiceExceptionHandler, CustomHeaders, RaptorProxy, getExportTimeoutMs);
+      //var currentGroundTTMStream = HydroRequestHelperCurrentGround.GetCurrentGroundTest(Log); 
 
       var localTempProjectPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
 

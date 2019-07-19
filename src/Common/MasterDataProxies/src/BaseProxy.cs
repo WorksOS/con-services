@@ -217,7 +217,7 @@ namespace VSS.MasterData.Proxies
     /// <returns>List of items</returns>
     protected async Task<Stream> GetMasterDataStreamContent(string urlKey,
       IDictionary<string, string> customHeaders, HttpMethod method = null, string payload = null,
-      string queryParams = null, string route = null)
+      string queryParams = null, string route = null, int? timeout = null)
     {
       Stream result = null;
       var url = ExtractUrl(urlKey, route, queryParams);
@@ -230,10 +230,10 @@ namespace VSS.MasterData.Proxies
         if (method != HttpMethod.Get)
         {
           var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
-          result = await (await request.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
+          result = await (await request.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload, timeout: timeout)).ReadAsStreamAsync();
         }
         else
-          result = await (await request.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders)).ReadAsStreamAsync();
+          result = await (await request.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders, timeout: timeout)).ReadAsStreamAsync();
         BaseProxyHealthCheck.SetStatus(true, this.GetType());
       }
       catch (Exception ex)

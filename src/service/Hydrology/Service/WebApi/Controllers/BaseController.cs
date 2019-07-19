@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,7 +14,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.Serilog.Extensions;
-using VSS.WebApi.Common;
 
 namespace VSS.Hydrology.WebApi.Controllers
 {
@@ -24,45 +22,37 @@ namespace VSS.Hydrology.WebApi.Controllers
   /// </summary>
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
-    protected readonly int customErrorMessageOffset = 4000; // how to set this?
 
+    private IServiceExceptionHandler serviceExceptionHandler;
     /// <summary>
     /// Gets the service exception handler.
     /// </summary>
-    private IServiceExceptionHandler _serviceExceptionHandler;
-    protected IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ?? (_serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
+    protected IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
 
+    private ILogger<T> logger;
     /// <summary>
     /// Gets the application logging interface.
     /// </summary>
-    private ILogger<T> _logger;
-    protected ILogger<T> Log => _logger ?? (_logger = HttpContext.RequestServices.GetService<ILogger<T>>());
+    protected ILogger<T> Log => logger ?? (logger = HttpContext.RequestServices.GetService<ILogger<T>>());
 
+    private ILoggerFactory loggerFactory;
     /// <summary>
     /// Gets the type used to configure the logging system and create instances of ILogger from the registered ILoggerProviders.
     /// </summary>
-    private ILoggerFactory _loggerFactory;
-    protected ILoggerFactory LoggerFactory => _loggerFactory ?? (_loggerFactory = HttpContext.RequestServices.GetService<ILoggerFactory>());
+    protected ILoggerFactory LoggerFactory => loggerFactory ?? (loggerFactory = HttpContext.RequestServices.GetService<ILoggerFactory>());
 
 
-    private IConfigurationStore _configStore;
-    protected IConfigurationStore ConfigStore => _configStore ?? (_configStore = HttpContext.RequestServices.GetService<IConfigurationStore>());
-
-    private ILandLeveling _landLeveling;
-    protected ILandLeveling LandLeveling => _landLeveling ?? (_landLeveling = HttpContext.RequestServices.GetService<ILandLeveling>());
-
+    private IConfigurationStore configStore;
     /// <summary>
-    /// Gets the customer uid from the current context
+    /// Gets access to environment variables from various sources
     /// </summary>
-    protected string customerUid => GetCustomerUid();
+    protected IConfigurationStore ConfigStore => configStore ?? (configStore = HttpContext.RequestServices.GetService<IConfigurationStore>());
 
+    private ILandLeveling landLeveling;
     /// <summary>
-    /// Gets the user id from the current context
+    /// Hydro engine to generate surface etc
     /// </summary>
-    /// <value>
-    /// The user uid or applicationID as a string.
-    /// </value>
-    protected string userId => GetUserId();
+    protected ILandLeveling LandLeveling => landLeveling ?? (landLeveling = HttpContext.RequestServices.GetService<ILandLeveling>());
 
     /// <summary>
     /// Gets the custom headers for the request.
@@ -74,14 +64,7 @@ namespace VSS.Hydrology.WebApi.Controllers
       SlidingExpiration = TimeSpan.FromDays(3)
     };
 
-    /// <summary>
-    /// Indicates whether to use the TRex Gateway instead of calling to the Raptor client.
-    /// </summary>
-    protected bool UseTRexGateway(string key) => bool.TryParse(ConfigStore.GetValueString(key), out var useTrexGateway) && useTrexGateway;
-
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <summary> </summary>
     protected BaseController() { }
 
     /// <summary>
@@ -89,7 +72,7 @@ namespace VSS.Hydrology.WebApi.Controllers
     /// </summary>
     protected TResult WithServiceExceptionTryExecute<TResult>(Func<TResult> action) where TResult : ContractExecutionResult
     {
-      TResult result = default(TResult);
+      var result = default(TResult);
       try
       {
         result = action.Invoke();
@@ -118,7 +101,7 @@ namespace VSS.Hydrology.WebApi.Controllers
     /// </summary>
     protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
     {
-      TResult result = default(TResult);
+      var result = default(TResult);
       try
       {
         result = await action.Invoke();
@@ -140,30 +123,6 @@ namespace VSS.Hydrology.WebApi.Controllers
         Log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
       }
       return result;
-    }
-
-    /// <summary> </summary>
-    private string GetCustomerUid()
-    {
-      if (User is TIDCustomPrincipal principal)
-      {
-        return principal.CustomerUid;
-      }
-
-      throw new ArgumentException("Incorrect customer in request context principal.");
-    }
-
-    /// <summary>
-    /// Gets the User uid/applicationID from the context.
-    /// </summary>
-    private string GetUserId()
-    {
-      if (User is TIDCustomPrincipal principal && (principal.Identity is GenericIdentity identity))
-      {
-        return identity.Name;
-      }
-
-      throw new ArgumentException("Incorrect UserId in request context principal.");
     }
   }
 }

@@ -7,6 +7,9 @@ using VSS.WebApi.Common;
 
 namespace VSS.Hydrology.WebApi.Middleware
 {
+  /// <summary>
+  /// Hydro Authentication middleware
+  /// </summary>
   public class HydrologyAuthentication : TIDAuthentication
   {
     /// <summary>
@@ -17,8 +20,7 @@ namespace VSS.Hydrology.WebApi.Middleware
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler) : base(next, customerProxy, store, logger, serviceExceptionHandler)
-    {
-    }    
+    { }    
   }
 }
 

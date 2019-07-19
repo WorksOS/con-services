@@ -13,13 +13,13 @@ using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.Hydrology.WebApi.Common.Helpers
 {
-  public class HydroRequestHelperLatestGround
+  public static class HydroRequestHelperCurrentGround
   {
     private static readonly HydroErrorCodesProvider HydroErrorCodesProvider = new HydroErrorCodesProvider();
 
     public static async Task<Stream> GetCurrentGround3Dp(HydroRequest request, 
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
-      IRaptorProxy raptorProxy)
+      IRaptorProxy raptorProxy, int? getExportTimeoutMs = null)
     {
       var currentGroundTTMStream = new MemoryStream();
       Stream currentGroundTTMStreamCompressed = null;
@@ -27,7 +27,7 @@ namespace VSS.Hydrology.WebApi.Common.Helpers
       try
       {
         currentGroundTTMStreamCompressed =
-          await raptorProxy.GetExportSurface(request.ProjectUid, request.FileName, request.FilterUid, customHeaders, true);
+          await raptorProxy.GetExportSurface(request.ProjectUid, request.FileName, request.FilterUid, customHeaders, true, getExportTimeoutMs);
       }
       catch (ServiceException se)
       {
@@ -37,7 +37,7 @@ namespace VSS.Hydrology.WebApi.Common.Helpers
       }
       catch (Exception e)
       {
-        log.LogError(e, $"{nameof(GetCurrentGround3Dp)}: {HydroErrorCodesProvider.FirstNameWithOffset(23)}");
+        log.LogError(e, $"{nameof(GetCurrentGround3Dp)}: {HydroErrorCodesProvider.FirstNameWithOffset(23)} error: {e.Message}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 23, nameof(GetCurrentGround3Dp), e.Message);
       }
 

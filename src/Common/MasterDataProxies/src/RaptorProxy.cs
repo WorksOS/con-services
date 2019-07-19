@@ -46,7 +46,7 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
-    public Task<Stream> GetExportSurface(Guid projectUid, string fileName, Guid? filterUid, IDictionary<string, string> customHeaders, bool isInternal = false)
+    public Task<Stream> GetExportSurface(Guid projectUid, string fileName, Guid? filterUid, IDictionary<string, string> customHeaders, bool isInternal = false, int? timeoutMs = null)
     {
       var parameters = new Dictionary<string, string>
       {
@@ -54,7 +54,7 @@ namespace VSS.MasterData.Proxies
       };
 
       var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
-      var result = GetMasterDataStreamContent((isInternal ? "RAPTOR_INTERNAL_3DPM_API_URL" : "RAPTOR_3DPM_API_URL"), customHeaders, HttpMethod.Get, null, queryParams, "/export/surface");
+      var result = GetMasterDataStreamContent((isInternal ? "RAPTOR_INTERNAL_3DPM_API_URL" : "RAPTOR_3DPM_API_URL"), customHeaders, HttpMethod.Get, null, queryParams, "/export/surface", timeout: timeoutMs);
       return result;
     }
 

@@ -31,10 +31,10 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
       var fileResult = new FileStreamResult(ttmZip, ContentTypeConstants.ApplicationZip);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(),
-          It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>()))
+          It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>(), null))
         .ReturnsAsync(fileResult.FileStream);
 
-      var currentGroundTTMStream = await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request, Log,
+      var currentGroundTTMStream = await HydroRequestHelperCurrentGround.GetCurrentGround3Dp(request, Log,
         ServiceExceptionHandler, new Dictionary<string, string>(), raptorProxy.Object);
 
       var ttmFile = new FileStream(TTMUnzippedFile, FileMode.Open);
@@ -56,10 +56,10 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
       var fileResult = new FileStreamResult(ttmUnZippedFile, ContentTypeConstants.ApplicationZip);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(),
-          It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>()))
+          It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>(), null))
         .ReturnsAsync(fileResult.FileStream);
 
-      var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request, Log,
+      var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await HydroRequestHelperCurrentGround.GetCurrentGround3Dp(request, Log,
        ServiceExceptionHandler, new Dictionary<string, string>(), raptorProxy.Object));
 
       Assert.AreEqual(HttpStatusCode.InternalServerError, ex.Result.Code);
@@ -77,10 +77,10 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
       var fileResult = new FileStreamResult(ttmNoTTMFileZipped, ContentTypeConstants.ApplicationZip);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(),
-          It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>()))
+          It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>(), null))
         .ReturnsAsync(fileResult.FileStream);
 
-      var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await HydroRequestHelperLatestGround.GetCurrentGround3Dp(request, Log,
+      var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await HydroRequestHelperCurrentGround.GetCurrentGround3Dp(request, Log,
         ServiceExceptionHandler, new Dictionary<string, string>(), raptorProxy.Object));
 
       Assert.AreEqual(HttpStatusCode.InternalServerError, ex.Result.Code);
