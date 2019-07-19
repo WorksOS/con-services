@@ -342,13 +342,56 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
     }
 
+
     /// <summary>
-    /// Validates the file type for DXF tile request and gets the imported file data for it
+    /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
+    /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
+    /// The tiles for the supplied list of files are overlaid and a single tile returned.
     /// </summary>
-    /// <param name="projectUid">The project UID where the files were imported</param>
-    /// <param name="fileType">The file type of the imported files</param>
-    /// <returns>The imported file data for the requested files</returns>
-    private async Task<List<FileData>> ValidateFileType(Guid projectUid, string fileType)
+    /// <param name="z">Zoom level</param>
+    /// <param name="y">y tile coordinate</param>
+    /// <param name="x">x tile coordinate</param>
+    /// <param name="width">The width of the tile in pixels</param>
+    /// <param name="height">The height of the tile in pixels</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
+    /// <executor>DxfTileExecutor</executor>
+    [ValidateWidthAndHeight]
+    [Route("api/v1/lineworktiles/png/{z}/{y}/{x}")]
+    [HttpGet]
+    public async Task<FileResult> GetLineworkTileWMTS(
+      [FromRoute] int z,
+      [FromRoute] int y,
+      [FromRoute] int x,
+      [FromQuery] int width,
+      [FromQuery] int height,
+      [FromQuery] Guid projectUid,
+      [FromQuery] string fileType)
+    {
+      Log.LogDebug($"{nameof(GetLineworkTileRaw)}: " + Request.QueryString);
+
+      var requiredFiles = await ValidateFileType(projectUid, fileType);
+      var dxfTileRequest = DxfTileWMTSRequest.CreateTileRequest(requiredFiles, x, y, z);
+
+      dxfTileRequest.Validate();
+#if RAPTOR
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
+      var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
+
+      if (result?.TileData == null)
+        result = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
+
+      return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
+    }
+
+    /// <summary>
+      /// Validates the file type for DXF tile request and gets the imported file data for it
+      /// </summary>
+      /// <param name="projectUid">The project UID where the files were imported</param>
+      /// <param name="fileType">The file type of the imported files</param>
+      /// <returns>The imported file data for the requested files</returns>
+      private async Task<List<FileData>> ValidateFileType(Guid projectUid, string fileType)
     {
       //Check file type specified
       if (string.IsNullOrEmpty(fileType))

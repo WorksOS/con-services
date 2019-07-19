@@ -33,27 +33,49 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as DxfTileRequest;
 
-      if (request == null)
+      if (item == null)
         ThrowRequestTypeCastException<DxfTileRequest>();
 
+      int zoomLevel;
+      Point topLeftTile;
+      int numTiles;
       string filespaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
-      //Calculate zoom level
-      int zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.TopRightLat - request.bbox.BottomLeftLat,
-        request.bbox.TopRightLon - request.bbox.BottomLeftLon);
-      log.LogDebug("DxfTileExecutor: BBOX differences {0} {1} {2}", request.bbox.TopRightLat - request.bbox.BottomLeftLat,
-        request.bbox.TopRightLon - request.bbox.BottomLeftLon,zoomLevel);
-      int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
-      Point topLeftLatLng = new Point(request.bbox.TopRightLat.LatRadiansToDegrees(),
-        request.bbox.BottomLeftLon.LonRadiansToDegrees());
-      Point topLeftTile = WebMercatorProjection.LatLngToTile(topLeftLatLng, numTiles);
-      log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, xtile={2}, ytile={3}", zoomLevel, numTiles,
-        topLeftTile.x, topLeftTile.y);
+      if (item is DxfTileRequest)
+      {
+        var trequest = item as DxfTileRequest;
 
-      log.LogDebug("DxfTileExecutor: {0} files", request.files.Count());
 
+        //Calculate zoom level
+        zoomLevel = TileServiceUtils.CalculateZoomLevel(trequest.bbox.TopRightLat - trequest.bbox.BottomLeftLat,
+          trequest.bbox.TopRightLon - trequest.bbox.BottomLeftLon);
+        log.LogDebug("DxfTileExecutor: BBOX differences {0} {1} {2}", trequest.bbox.TopRightLat - trequest.bbox.BottomLeftLat,
+          trequest.bbox.TopRightLon - trequest.bbox.BottomLeftLon, zoomLevel);
+        numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
+        Point topLeftLatLng = new Point(trequest.bbox.TopRightLat.LatRadiansToDegrees(),
+          trequest.bbox.BottomLeftLon.LonRadiansToDegrees());
+        topLeftTile = WebMercatorProjection.LatLngToTile(topLeftLatLng, numTiles);
+        log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, xtile={2}, ytile={3}", zoomLevel, numTiles,
+          topLeftTile.x, topLeftTile.y);
+
+        log.LogDebug("DxfTileExecutor: {0} files", trequest.files.Count());
+      }
+      else 
+      {
+        var trequest = item as DxfTileWMTSRequest;
+        log.LogDebug("Getting tile {} {} {}", trequest.X, trequest.Y, trequest.Z);
+        zoomLevel = trequest.Z;
+        topLeftTile = new Point
+        {
+          x = trequest.X,
+          y = trequest.Y
+        };
+        numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
+
+      }
+
+      var request = item as IDxfTileRequest;
       //Short circuit overlaying if there no files to overlay as ForAll is an expensive operation
       if (!request.files.Any())
       {

@@ -7,18 +7,10 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
-  public interface IDxfTileRequest
-  {
-    /// <summary>
-    /// The files for which to retrieve the tiles.
-    /// </summary>
-    IEnumerable<FileData> files { get; }
-  }
-
   /// <summary>
   /// The request representation for getting a DXF tile from TCC
   /// </summary>
-  public class DxfTileRequest : IValidatable, IDxfTileRequest
+  public class DxfTileWMTSRequest : IValidatable, IDxfTileRequest
   {
     /// <summary>
     /// The files for which to retrieve the tiles.
@@ -27,30 +19,46 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     public IEnumerable<FileData> files { get; private set; }
 
     /// <summary>
-    /// The bounding box of the tile
+    /// The x position the tile
     /// </summary>
     [Required]
-    public BoundingBox2DLatLon bbox { get; private set; }
+    public int X { get; private set; }
+
+    /// <summary>
+    /// The y  of the tile
+    /// </summary>
+    [Required]
+    public int Y { get; private set; }
+
+    /// <summary>
+    /// The zoom of the tile
+    /// </summary>
+    [Required]
+    public int Z { get; private set; }
 
     /// <summary>
     /// Private constructor
     /// </summary>
-    private DxfTileRequest()
+    private DxfTileWMTSRequest()
     {
     }
 
     /// <summary>
     /// Create instance of CompactionTileRequest
     /// </summary>
-    public static DxfTileRequest CreateTileRequest(
+    public static DxfTileWMTSRequest CreateTileRequest(
       IEnumerable<FileData> files,
-      BoundingBox2DLatLon boundingBoxLatLon
+      int x,
+      int y,
+      int z
     )
     {
-      return new DxfTileRequest
+      return new DxfTileWMTSRequest
       {
           files = files,
-          bbox = boundingBoxLatLon
+          X = x,
+          Y = y,
+          Z = z
       };
     }
 
