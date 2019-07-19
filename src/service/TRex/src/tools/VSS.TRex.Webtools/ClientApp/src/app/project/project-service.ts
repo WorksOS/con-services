@@ -77,9 +77,9 @@ export class ProjectService {
       return this.executeRequest<DisplayMode[]>('getSummaryTypes', `profiles/summarytypes`);
   }
 
-  public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents, designUid: string, designOffset: number) {
+  public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents, designUid: string, designOffset: number, overrides:any) {
     let url = `tiles/${projectUid}?mode=${mode}&pixelsX=${pixelsX}&pixelsY=${pixelsY}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}&cutFillDesignUid=${designUid}&offset=${designOffset}`;
-    return this.executeRequest<TileData>('getTile', url);
+    return this.executePostRequest<TileData>('getTile', url, overrides);
   }
 
   public getSimpleFullVolume(projectUid: string, filter: CombinedFilter): Observable<VolumeResult> {

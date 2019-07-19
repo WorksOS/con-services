@@ -172,7 +172,7 @@ namespace VSS.TRex.Tests.Rendering
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new TileRenderRequest();
 
-      var palette = PVMPaletteFactory.GetPallete(siteModel, displayMode, siteModel.SiteModelExtent);
+      var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
 
       var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode, palette));
 
@@ -231,7 +231,7 @@ namespace VSS.TRex.Tests.Rendering
 
       var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
 
-      var palette = PVMPaletteFactory.GetPallete(siteModel, displayMode, siteModel.SiteModelExtent);
+      var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
 
       var request = new TileRenderRequest();
       var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode, palette));
@@ -298,7 +298,7 @@ namespace VSS.TRex.Tests.Rendering
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
-      var palette = PVMPaletteFactory.GetPallete(siteModel, displayMode, siteModel.SiteModelExtent);
+      var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
 
       var request = new TileRenderRequest();
       var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode, palette));
@@ -330,7 +330,7 @@ namespace VSS.TRex.Tests.Rendering
       // Create the site model containing a single cell and add the design to it for the cut/fill
       var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, cellX, cellY);
 
-      var palette = usePalette ? PVMPaletteFactory.GetPallete(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent) : null;
+      var palette = usePalette ? PVMPaletteFactory.GetPalette(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent) : null;
 
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
       var referenceDesign = new DesignOffset(designUid, offset);

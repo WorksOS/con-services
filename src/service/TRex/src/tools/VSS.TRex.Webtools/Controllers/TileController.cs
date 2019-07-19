@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -16,8 +14,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
-using VSS.TRex.Rendering.Palettes;
-using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Webtools.Controllers
 {
@@ -29,19 +25,9 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Generates a tile.
     /// </summary>
-    /// <param name="siteModelID">Grid to return status for</param>
-    /// <param name="maxY"></param>
-    /// <param name="mode"></param>
-    /// <param name="pixelsX"></param>
-    /// <param name="pixelsY"></param>
-    /// <param name="minX"></param>
-    /// <param name="minY"></param>
-    /// <param name="maxX"></param>
-    /// <param name="cutFillDesignUid"></param>
-    /// <param name="offset"></param>
-    /// <returns></returns>
-    [HttpGet("{siteModelID}")]
-    public async Task<JsonResult> GetTile(string siteModelID,
+    [HttpPost("{siteModelID}")]
+    public async Task<JsonResult> GetTile(
+      [FromRoute]string siteModelID,
       [FromQuery] double minX,
       [FromQuery] double minY,
       [FromQuery] double maxX,
@@ -50,19 +36,24 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] ushort pixelsX,
       [FromQuery] ushort pixelsY,
       [FromQuery] Guid? cutFillDesignUid,
-      [FromQuery] double? offset)
+      [FromQuery] double? offset,
+      [FromBody] OverrideParameters overrides)
     {
       var request = new TileRenderRequest();
+
+      //TODO: use overrides to construct color palette
+      //(see TileExecutor in TRex Gateway)
+
       var response = await request.ExecuteAsync(new TileRenderRequestArgument(
-        siteModelID: Guid.Parse(siteModelID), 
-        palette: null,
-        coordsAreGrid: true,
-        pixelsX: pixelsX,
-        pixelsY: pixelsY,
-        extents: new BoundingWorldExtent3D(minX, minY, maxX, maxY),
-        mode: (DisplayMode) mode,
-        filters: new FilterSet(new CombinedFilter(), new CombinedFilter()),
-        referenceDesign: new DesignOffset(cutFillDesignUid ?? Guid.Empty, offset ?? 0.0)
+        Guid.Parse(siteModelID),
+        (DisplayMode)mode,
+        null,
+        new BoundingWorldExtent3D(minX, minY, maxX, maxY),
+        true,
+        pixelsX,
+        pixelsY,
+        new FilterSet(new CombinedFilter(), new CombinedFilter()),
+        new DesignOffset(cutFillDesignUid ?? Guid.Empty, offset ?? 0.0)
       )) as TileRenderResponse_Core2;
 
       return new JsonResult(new TileResult(response?.TileBitmapData));

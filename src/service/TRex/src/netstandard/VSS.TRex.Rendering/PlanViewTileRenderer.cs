@@ -158,7 +158,7 @@ namespace VSS.TRex.Rendering
           }
         }
         else
-          Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
+          Displayer.Palette = PVMPaletteFactory.GetPalette(processor.SiteModel, mode, processor.SpatialExtents);
       }
       else
         Displayer.Palette = colourPalette;
