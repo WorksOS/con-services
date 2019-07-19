@@ -53,7 +53,7 @@
                       <input type="number" [(ngModel)]="overrides.OverridingTargetPassCountRange.Min" />                     
                       <label class="overrideInput">Max:</label>
                       <input type="number" [(ngModel)]="overrides.OverridingTargetPassCountRange.Max" />
-                </p>
+                  </p>
                   <p>
                       <input type="checkbox" [(ngModel)]="overrides.OverrideTemperatureWarningLevels">
                       <label class="overrideInput">Override Temperature Warning Levels</label>
@@ -69,6 +69,8 @@
                       <label class="overrideInput">Max:</label>
                       <input type="number" [(ngModel)]="overrides.TargetMachineSpeed.Max" />
                   </p>
+                  <div class="spacer"></div>
+                  <button class="requestButton" [disabled]="noProjectSelected()" (click)="saveOverrides()">Save</button>
               </div>
           </div>
       </div>

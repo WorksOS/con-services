@@ -7,7 +7,6 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -34,14 +33,6 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets a profile between two points across a design in a project
     /// </summary>
-    /// <param name="siteModelID">Grid to return status for</param>
-    /// <param name="designID"></param>
-    /// <param name="startX"></param>
-    /// <param name="startY"></param>
-    /// <param name="endX"></param>
-    /// <param name="endY"></param>
-    /// <param name="offset"></param>
-    /// <returns></returns>
     [HttpGet("design/{siteModelID}/{designID}")]
     public JsonResult ComputeDesignProfile(string siteModelID, string designID,
       [FromQuery] double startX,
@@ -65,12 +56,6 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets a profile between two points across a design in a project
     /// </summary>
-    /// <param name="siteModelID">Grid to return status for</param>
-    /// <param name="startX"></param>
-    /// <param name="startY"></param>
-    /// <param name="endX"></param>
-    /// <param name="endY"></param>
-    /// <returns></returns>
     [HttpGet("compositeelevations/{siteModelID}")]
     public JsonResult ComputeCompositeElevationProfile(string siteModelID,
       [FromQuery] double startX,
@@ -121,15 +106,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets a profile between two points across a design in a project
     /// </summary>
-    /// <param name="siteModelID">Grid to return status for</param>
-    /// <param name="startX"></param>
-    /// <param name="startY"></param>
-    /// <param name="endX"></param>
-    /// <param name="endY"></param>
-    /// <param name="displayMode"></param>
-    /// <param name="cutFillDesignUid"></param>
-    /// <param name="offset"></param>    /// <returns></returns>
-    [HttpGet("productiondata/{siteModelID}")]
+    [HttpPost("productiondata/{siteModelID}")]
     public JsonResult ComputeProductionDataProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
@@ -137,10 +114,12 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double endY,
       [FromQuery] int displayMode,
       [FromQuery] Guid? cutFillDesignUid,
-      [FromQuery] double? offset)
+      [FromQuery] double? offset,
+      [FromBody] OverrideParameters overrides)
     {
       var siteModelUid = Guid.Parse(siteModelID);
 
+      /*
       //Use default values for now
       var overrides = new OverrideParameters
       {
@@ -148,6 +127,7 @@ namespace VSS.TRex.Webtools.Controllers
         MDPRange = new MDPRangePercentageRecord(80, 130),
         TargetMachineSpeed = new MachineSpeedExtendedRecord((ushort) (5 * KM_HR_TO_CM_SEC), (ushort) (10 * KM_HR_TO_CM_SEC))
       };
+      */
 
       var arg = new ProfileRequestArgument_ApplicationService
       {
@@ -342,7 +322,6 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Retrieves the list of available summary types
     /// </summary>
-    /// <returns></returns>
     [HttpGet("summarytypes")]
     public JsonResult GetModes()
     {

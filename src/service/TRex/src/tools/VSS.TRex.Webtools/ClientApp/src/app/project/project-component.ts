@@ -6,11 +6,13 @@ import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint } from '../project/project-filter-model';
 import { CellDatumResult } from "./project-model";
 import { SummaryType } from './project-summarytype-model';
+import { OverrideParameters, OverrideRange } from '../fetch-data/fetch-data-model';
+import { FetchDataService } from '../fetch-data/fetch-data.service';
 
 @Component({
   selector: 'project',
   templateUrl: './project-component.html',
-  providers: [ProjectService]
+  providers: [ProjectService, FetchDataService]
   //  styleUrls: ['./project.component.less']
 })
 export class ProjectComponent {
@@ -197,13 +199,14 @@ export class ProjectComponent {
   private profilePoints: any[];
   private profileCanvasHeight: number = 500.0;
   private profileCanvasWidth: number = 1000.0;
-
+  private overrides:OverrideParameters;
 
   public cellDatum: string = "";
   private showCellDatum: boolean = false;
 
   constructor(
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private fetchDataService: FetchDataService
   ) { }
 
   ngOnInit() {
@@ -220,6 +223,12 @@ export class ProjectComponent {
       types.forEach(type => this.eventTypes.push(type));
       this.eventType = this.eventTypes[0];
     });
+
+    if ("overrides" in localStorage) {
+        this.overrides = JSON.parse(localStorage.getItem("overrides"));
+    } else {
+        this.overrides = this.fetchDataService.getDefaultOverrides();
+    }
 
     this.getAllProjectMetadata();
 
@@ -245,7 +254,8 @@ export class ProjectComponent {
     localStorage.setItem("projectUid", undefined);
     localStorage.setItem("designUid", undefined);
     localStorage.setItem("designOffset", undefined);
-
+    this.overrides = this.fetchDataService.getDefaultOverrides();
+    localStorage.setItem("overrides", JSON.stringify(this.overrides));
   }
 
   public getProjectExtents(): void {
@@ -679,7 +689,8 @@ export class ProjectComponent {
     localStorage.setItem("projectUid", undefined);
     localStorage.setItem("designUid", undefined);
     localStorage.setItem("designOffset", undefined);
-
+    this.overrides = this.fetchDataService.getDefaultOverrides();
+    localStorage.setItem("overrides", JSON.stringify(this.overrides));
 
     return -1;
   }
@@ -852,7 +863,7 @@ export class ProjectComponent {
   // with a move instruction at the first vertex, and at any vertex indicating a gap and line instructions
   // between all others
   private drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number) {
-      return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY, this.mode, this.designUid, this.designOffset)
+      return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY, this.mode, this.designUid, this.designOffset, this.overrides)
         .subscribe(points => {
           this.calculateProfileLine(points, pt => pt.elevation);
           this.profilePoints = points;

@@ -2,16 +2,14 @@ import { Component } from '@angular/core';
 import { FetchDataService } from './fetch-data.service';
 import { DataRequestType, OverrideParameters, OverrideRange } from './fetch-data-model';
 
-
 @Component({
   selector: 'fetch-data',
   templateUrl: './fetch-data.component.html',
   providers: [FetchDataService],
   styleUrls: ['./fetch-data.component.css']
 })
-export class FetchDataComponent {
 
-  private KM_HR_TO_CM_SEC: number = 27.77777778; //1.0 / 3600 * 100000;
+export class FetchDataComponent {
 
   public allDataRequestTypes: DataRequestType[] = [];
   public dataRequestType: DataRequestType = new DataRequestType();
@@ -22,12 +20,7 @@ export class FetchDataComponent {
   private projectUid: string = localStorage.getItem("projectUid");
   private designUid: string = localStorage.getItem("designUid");
   private designOffset: number = parseFloat(localStorage.getItem("designOffset"));
-  private overrides: OverrideParameters = new OverrideParameters(
-      false, 700, new OverrideRange(80, 130),
-      false, 700, new OverrideRange(80, 130),
-      false, new OverrideRange(6, 6),
-      false, new OverrideRange(650, 1750),
-      new OverrideRange(5 * this.KM_HR_TO_CM_SEC, 10 * this.KM_HR_TO_CM_SEC));
+  private overrides: OverrideParameters;
   
   constructor(
     private fetchDataService: FetchDataService
@@ -40,6 +33,12 @@ export class FetchDataComponent {
       types.forEach(type => self.allDataRequestTypes.push(type));
       self.dataRequestType = self.allDataRequestTypes[0];
     });
+
+    if ("overrides" in localStorage) {
+        this.overrides = JSON.parse(localStorage.getItem("overrides"));
+    } else {
+        this.overrides = this.fetchDataService.getDefaultOverrides();
+    }
   }
 
   public noProjectSelected(): boolean {
@@ -56,5 +55,9 @@ export class FetchDataComponent {
     this.fetchDataService.getProductionData(this.projectUid, this.requestType, this.designUid, this.designOffset, this.overrides).subscribe(data => {
       self.dataResult = data;
     });
+  }
+
+  public saveOverrides(): void {
+      localStorage.setItem("overrides", JSON.stringify(this.overrides));
   }
 }
