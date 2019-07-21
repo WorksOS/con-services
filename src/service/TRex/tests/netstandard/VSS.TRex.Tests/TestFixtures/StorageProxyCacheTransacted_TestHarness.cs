@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Cache;
+using Moq;
 using VSS.TRex.Storage;
 
 namespace VSS.TRex.Tests.TestFixtures
@@ -66,5 +67,12 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       base.Clear();
     }
+
+    /// <summary>
+    /// Returns a mocked ICacheLock for the key
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public override ICacheLock Lock(TK key) => new Mock<ICacheLock>().Object;
   }
 }
