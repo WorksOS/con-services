@@ -27,7 +27,7 @@ using VSS.TRex.Tests.BinarizableSerialization;
 namespace VSS.TRex.Tests.TestFixtures
 {
   /// <summary>
-  /// Defines a collection of Mock objects that collectively mock and replumb the Ignite instructure layer into a form suitable for unit/integration testing
+  /// Defines a collection of Mock objects that collectively mock and re-plumb the Ignite infrastructure layer into a form suitable for unit/integration testing
   /// with frameworks like XUnit and NUnit with the TRex business logic not being aware it is not running on an actual Ignite grid.
   /// </summary>
   public class IgniteMock
@@ -96,7 +96,7 @@ namespace VSS.TRex.Tests.TestFixtures
           else if (listener is SiteModelAttributesChangedEventListener _listener2)
             _listener2.Invoke(Guid.Empty, message as SiteModelAttributesChangedEvent);
           else
-            throw new TRexException($"Type of listener not SubGridListener or SiteModelAttributesChangedEventListener as expected.");
+            throw new TRexException("Type of listener not SubGridListener or SiteModelAttributesChangedEventListener as expected.");
         });
 
       mockClusterGroup = new Mock<IClusterGroup>();
