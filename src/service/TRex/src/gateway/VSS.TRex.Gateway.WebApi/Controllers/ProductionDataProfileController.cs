@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Gateway.Common.Executors;
@@ -33,17 +35,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/productiondata/profile")]
     [HttpPost]
-    public ProfileDataResult<ProfileCellData> PostProductionDataProfile([FromBody] ProductionDataProfileDataRequest productionDataProfileRequest)
+    public Task<ContractExecutionResult> PostProductionDataProfile([FromBody] ProductionDataProfileDataRequest productionDataProfileRequest)
     {
       Log.LogInformation($"{nameof(PostProductionDataProfile)}: {Request.QueryString}");
 
       productionDataProfileRequest.Validate();
       ValidateFilterMachines(nameof(PostProductionDataProfile), productionDataProfileRequest.ProjectUid, productionDataProfileRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<ProductionDataProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(productionDataProfileRequest) as ProfileDataResult<ProfileCellData>);
+          .ProcessAsync(productionDataProfileRequest));
     }
   }
 }

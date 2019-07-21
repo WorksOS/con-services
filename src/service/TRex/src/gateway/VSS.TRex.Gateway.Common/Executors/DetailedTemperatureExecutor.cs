@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -8,7 +9,6 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 
 
@@ -34,9 +34,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      TemperatureDetailRequest request = item as TemperatureDetailRequest;
+      var request = item as TemperatureDetailRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<TemperatureDetailRequest>();
@@ -45,8 +45,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
-      TemperatureStatisticsResult temperatureDetailResult = operation.Execute(new TemperatureStatisticsArgument()
+      var operation = new TemperatureStatisticsOperation();
+      var temperatureDetailResult = await operation.ExecuteAsync(new TemperatureStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
@@ -70,7 +70,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       throw CreateServiceException<DetailedTemperatureExecutor>();
     }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
-
-
 }

@@ -169,6 +169,7 @@ namespace VSS.TRex.Server.TileRendering
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
+        DIContext.Obtain<ITRexGridFactory>().StopGrids();
         cancelTokenSource.Cancel();
       };
 

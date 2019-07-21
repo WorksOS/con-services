@@ -47,7 +47,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
 
                 Log.LogInformation("Executing simpleVolumes.Execute()");
 
-                return simpleVolumes.Execute();
+                return simpleVolumes.ExecuteAsync().Result;
             }
             finally
             {

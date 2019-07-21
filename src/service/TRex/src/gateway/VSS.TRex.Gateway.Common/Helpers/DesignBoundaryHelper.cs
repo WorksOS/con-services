@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -22,7 +23,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
     /// Converts DesignBoundaryResponse into DesignBoundaryResult data.
     /// </summary>
     /// <returns></returns>
-    public static DesignBoundaryResult ConvertBoundary(List<Fence> boundary, double tolerance, double cellSize, string csib, string fileName)
+    public static async Task<DesignBoundaryResult> ConvertBoundary(List<Fence> boundary, double tolerance, double cellSize, string csib, string fileName)
     {
       const int VERTICES_LIMIT = 10000;
 
@@ -86,7 +87,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
             neeCoords[i] = new XYZ(fence.Points[i].X, fence.Points[i].Y, 0.0);
         }
 
-        var coordConversionResult = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, neeCoords);
+        var coordConversionResult = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, neeCoords);
 
         if (coordConversionResult.ErrorCode == RequestErrorStatus.OK)
         {

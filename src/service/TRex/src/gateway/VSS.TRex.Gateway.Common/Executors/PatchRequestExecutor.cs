@@ -2,11 +2,9 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Exports.Patches;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.ResultHandling;
@@ -27,7 +25,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as PatchDataRequest;
 
@@ -39,9 +37,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       var filter1 = ConvertFilter(request?.Filter1, siteModel);
       var filter2 = ConvertFilter(request?.Filter2, siteModel);
       
-      PatchRequest req = new PatchRequest();
+      var req = new PatchRequest();
 
-      PatchResult result = req.ExecuteAndConvertToResult(new PatchRequestArgument
+      var result = await req.ExecuteAndConvertToResult(new PatchRequestArgument
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new[] { filter1, filter2 }),
@@ -56,11 +54,11 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
     /// <summary>
-    /// Processes the tile request asynchronously.
+    /// Processes the tile request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

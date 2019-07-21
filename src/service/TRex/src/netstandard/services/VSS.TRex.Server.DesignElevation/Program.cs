@@ -92,6 +92,7 @@ namespace VSS.TRex.Server.DesignElevation
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
+        DIContext.Obtain<ITRexGridFactory>().StopGrids();
         cancelTokenSource.Cancel();
       };
 

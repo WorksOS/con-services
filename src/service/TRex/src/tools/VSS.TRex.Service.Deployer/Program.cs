@@ -104,7 +104,7 @@ namespace VSS.TRex.Service.Deployer
         DeploySegmentRetirementQueueService();
 
         // Ensure the site model spatial data change tracking service is deployed.
-        //TODO: Reinstate when site model change maps reinstated
+        //TODO (VSTS #85679): Reinstate when site model change maps reinstated
         // DeploySiteModelChangeProcessorService();
       }
       finally

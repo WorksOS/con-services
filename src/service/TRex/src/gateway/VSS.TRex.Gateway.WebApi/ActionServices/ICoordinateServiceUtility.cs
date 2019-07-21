@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.TRex.Gateway.WebApi.ActionServices
@@ -8,6 +9,6 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
     /// <summary>
     /// Converts XYZ to LLH
     /// </summary>
-    int PatchLLH(string CSIB, List<MachineStatus> machines);
+    Task<int> PatchLLH(string CSIB, List<MachineStatus> machines);
   }
 }

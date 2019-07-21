@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Gateway.Common.Executors;
@@ -33,16 +35,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/profile/design")]
     [HttpPost]
-    public DesignProfileResult PostDesignProfile([FromBody] DesignProfileRequest designProfileRequest)
+    public Task<ContractExecutionResult> PostDesignProfile([FromBody] DesignProfileRequest designProfileRequest)
     {
       Log.LogInformation($"{nameof(PostDesignProfile)}: {Request.QueryString}");
 
       designProfileRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<DesignProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(designProfileRequest) as DesignProfileResult);
+          .ProcessAsync(designProfileRequest));
     }
 
     /// <summary>
@@ -58,7 +60,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/profile/design")]
     [HttpGet]
-    public DesignProfileResult GetDesignProfile(
+    public Task<ContractExecutionResult> GetDesignProfile(
       [FromQuery] Guid projectUID,
       [FromQuery] Guid designUID,
       [FromQuery] double offset,
@@ -67,8 +69,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       [FromQuery] double endX,
       [FromQuery] double endY)
     {
-      var designProfileRequest = new DesignProfileRequest(projectUID, designUID, offset, startX, startY, endX, endY);
-      return PostDesignProfile(designProfileRequest);
+      return PostDesignProfile(new DesignProfileRequest(projectUID, designUID, offset, startX, startY, endX, endY));
     }
   }
 }

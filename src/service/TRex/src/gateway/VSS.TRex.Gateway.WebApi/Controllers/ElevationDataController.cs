@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using ElevationDataResult = VSS.Productivity3D.Models.ResultHandling.ElevationStatisticsResult;
@@ -26,7 +25,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     [Route("api/v1/elevationstatistics")]
     [HttpPost]
-    public ElevationDataResult PostElevationStatistics([FromBody] ElevationDataRequest elevationStatisticsRequest)
+    public Task<ContractExecutionResult> PostElevationStatistics([FromBody] ElevationDataRequest elevationStatisticsRequest)
     {
       Log.LogInformation($"#In# {nameof(PostElevationStatistics)}: {Request.QueryString}");
 
@@ -34,10 +33,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       {
         elevationStatisticsRequest.Validate();
 
-        return WithServiceExceptionTryExecute(() =>
+        return WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainer
             .Build<ElevationStatisticsExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(elevationStatisticsRequest) as ElevationDataResult);
+            .ProcessAsync(elevationStatisticsRequest));
       }
       finally
       {

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
@@ -23,7 +24,7 @@ namespace VSS.TRex.CellDatum.Executors
     /// <summary>
     /// Executor that implements requesting and rendering sub grid information to create the cell datum
     /// </summary>
-    public CellDatumResponse_ApplicationService Execute(CellDatumRequestArgument_ApplicationService arg)
+    public async Task<CellDatumResponse_ApplicationService> ExecuteAsync(CellDatumRequestArgument_ApplicationService arg)
     {
       Log.LogInformation($"Performing Execute for DataModel:{arg.ProjectID}, Mode={arg.Mode}");
 
@@ -40,7 +41,7 @@ namespace VSS.TRex.CellDatum.Executors
       if (!arg.CoordsAreGrid)
       {
         //WGS84 coords need to be converted to NEE
-        arg.Point = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point);
+        arg.Point = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point);
         result.Northing = arg.Point.Y;
         result.Easting = arg.Point.X;
       }
@@ -60,7 +61,7 @@ namespace VSS.TRex.CellDatum.Executors
       var argClusterCompute = new CellDatumRequestArgument_ClusterCompute(
         arg.ProjectID, arg.Mode, arg.Point, OTGCellX, OTGCellY, arg.Filters, arg.ReferenceDesign, arg.Overrides);
       var request = new CellDatumRequest_ClusterCompute();
-      var response = request.Execute(argClusterCompute, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, OTGCellX, OTGCellY));
+      var response = await request.ExecuteAsync(argClusterCompute, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, OTGCellX, OTGCellY));
       result.ReturnCode = response.ReturnCode;
       result.Value = response.Value;
       result.TimeStampUTC = response.TimeStampUTC;

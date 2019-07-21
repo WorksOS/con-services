@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -35,7 +36,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as DesignProfileRequest;
       
@@ -47,7 +48,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       var designProfileRequest = new VSS.TRex.Designs.GridFabric.Requests.DesignProfileRequest();
       var referenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, request.Offset ?? 0);
 
-      var designProfileResponse = designProfileRequest.Execute(new CalculateDesignProfileArgument
+      var designProfileResponse = await designProfileRequest.ExecuteAsync(new CalculateDesignProfileArgument
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,
@@ -73,6 +74,14 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       {
         X = x.X, Y = x.Y, Z = x.Z, Station = x.Station
       }).ToList());
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

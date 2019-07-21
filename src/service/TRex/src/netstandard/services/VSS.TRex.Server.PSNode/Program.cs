@@ -214,6 +214,7 @@ namespace VSS.TRex.Server.PSNode
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
+        DIContext.Obtain<ITRexGridFactory>().StopGrids();
         cancelTokenSource.Cancel();
       };
 
