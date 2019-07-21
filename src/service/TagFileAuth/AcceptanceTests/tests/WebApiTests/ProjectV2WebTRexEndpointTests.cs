@@ -159,15 +159,15 @@ namespace WebApiTests
     /// <param name="deviceType"></param>
     /// <param name="radioSerial"></param>
     /// <param name="tccOrgUid"></param>
-    /// <param name="latitude">seed position latitude value from tagfile</param>
-    /// <param name="longitude">seed position longitude value from tagfile</param>
-    /// <param name="timeOfPosition">from tagfile-used to check against valid Project time range.</param>
+    /// <param name="latitude">seed position latitude value from tag file</param>
+    /// <param name="longitude">seed position longitude value from tag file</param>
+    /// <param name="timeOfPosition">from tag file - used to check against valid Project time range.</param>
     /// <param name="statusCode"></param>
     /// <returns>The project Uid result</returns>
     private GetProjectAndAssetUidsResult CallWebApiGetProjectAndAssetUids(TestSupport ts, string projectUid, int deviceType, string radioSerial, string ec520Serial, string tccOrgUid, double latitude, double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       Thread.Sleep(500);
-      var request = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, latitude, longitude, timeOfPosition);
+      var request = new GetProjectAndAssetUidsRequest(projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, latitude, longitude, timeOfPosition);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
       var uri = ts.GetBaseUri() + "api/v2/project/getUids";
@@ -180,4 +180,3 @@ namespace WebApiTests
 }
 
       
-  

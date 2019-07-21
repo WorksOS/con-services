@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtility", "utilities\TestUtility\TestUtility.csproj", "{A40EA7A5-55CA-47BE-AFD0-18140375F8D9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3494EA83-BE5B-410E-AFAB-DA33EB3F0435} = {3494EA83-BE5B-410E-AFAB-DA33EB3F0435}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{C5EC0189-63A3-417E-A36A-9DB0657A9AFD}"
 EndProject
@@ -74,6 +77,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{027BBA17-ABF1-46DD-9B79-0E54B5FE651C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{77597190-DA14-4866-8B52-F0333930D066}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TRexService", "TRexService", "{C7E4A4C6-745B-4AEE-8628-2D4CA4D4300A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Proxy", "..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj", "{B8255DE6-3445-4198-A635-AE1DCF442204}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -193,6 +200,10 @@ Global
 		{77597190-DA14-4866-8B52-F0333930D066}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77597190-DA14-4866-8B52-F0333930D066}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77597190-DA14-4866-8B52-F0333930D066}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8255DE6-3445-4198-A635-AE1DCF442204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8255DE6-3445-4198-A635-AE1DCF442204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8255DE6-3445-4198-A635-AE1DCF442204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8255DE6-3445-4198-A635-AE1DCF442204}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -228,6 +239,8 @@ Global
 		{1922A9AB-ACAD-49C1-9CD6-10685C08DED2} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{027BBA17-ABF1-46DD-9B79-0E54B5FE651C} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{77597190-DA14-4866-8B52-F0333930D066} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
+		{C7E4A4C6-745B-4AEE-8628-2D4CA4D4300A} = {4AFB470E-0189-497F-8F80-1A6D535E6CE8}
+		{B8255DE6-3445-4198-A635-AE1DCF442204} = {C7E4A4C6-745B-4AEE-8628-2D4CA4D4300A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C6AEAF3B-79E5-4717-B4BC-BDB9DB46CC53}

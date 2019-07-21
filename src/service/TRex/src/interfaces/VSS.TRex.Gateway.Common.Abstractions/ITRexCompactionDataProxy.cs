@@ -40,8 +40,10 @@ namespace VSS.TRex.Gateway.Common.Abstractions
     /// <param name="route"></param>
     /// <param name="customHeaders"></param>
     /// <param name="queryParameters"></param>
+    /// <param name="isCachingRequired"></param>
     /// <returns></returns>
     Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
-      IDictionary<string, string> customHeaders = null, IDictionary<string, string> queryParameters = null) where TResponse : class, IMasterDataModel;
+      IDictionary<string, string> customHeaders = null, IDictionary<string, string> queryParameters = null, 
+      bool isCachingRequired = false) where TResponse : class, IMasterDataModel;
   }
 }

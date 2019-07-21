@@ -27,6 +27,8 @@ namespace VSS.TRex.TAGFiles.Executors
 
     public DateTime? SeedTimeUTC { get; set; }
 
+    public byte UTMZone { get; set; }
+
     public int ProcessedEpochCount { get; set; }
 
     public string RadioType { get; set; } = string.Empty;
@@ -106,6 +108,16 @@ namespace VSS.TRex.TAGFiles.Executors
 
     /// <summary>
     /// Grid point from on-machine positions
+    /// Scenarios
+    /// a) Lat/long present
+    ///        TFA to use this as the seed location
+    /// b) No Lat/long, but UTM zone present
+    ///         Discussion with Grant and Raymond:
+    ///         Potential corner case where UTMZone may be different to the projects CSIB.
+    ///         safer to convert to lat/long using the UTMZone
+    ///         unable to find any samples
+    /// c) No Lat/long, no UTM zone, but has a NEE
+    ///       TFA to use project CSIBs and NEE to determine potential LLs
     /// </summary>
     /// <param name="processor"></param>
     private void SetSeedPosition(TAGProcessorPreScanState processor)
@@ -119,20 +131,8 @@ namespace VSS.TRex.TAGFiles.Executors
         SeedHeight = Math.Abs(processor.LLHHeight - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?) null : processor.LLHHeight;
         SeedTimeUTC = processor.LLHLatRecordedTime; //We arbitrarily choose LLHLat, in the majority of cases this will be same for any LLH.
       }
-      else
-      {
-        // todoJeannie Grant to determine if this is a real-world scenario (no LL but NE and UTMZone)
-        // Corner case where UTMZone may be different to the projects CSIB.
-        // safer to convert to lat/long using the UTMZone
-        // if no UTMZone, then lat/long can only be determined from the projects CSIB
-        if (processor.UTMZoneAtFirstPosition != CellPassConsts.NullUTMZone)
-        {
-          //convertNEEusing UTMZone
-          //SeedLatitude = Math.Abs(processor.LLHLat - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?)null : processor.LLHLat;
-          //SeedLongitude = Math.Abs(processor.LLHLon - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?)null : processor.LLHLon;
-          //SeedHeight = Math.Abs(processor.LLHHeight - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ? (double?)null : processor.LLHHeight;
-        }
-      }
+
+      UTMZone = processor.UTMZone;
     }
 
     private void PopulateNEE(TAGProcessorPreScanState processor)

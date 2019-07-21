@@ -25,6 +25,7 @@ namespace TAGFiles.Tests
       preScan.SeedEasting.Should().BeNull();
       preScan.SeedElevation.Should().BeNull();
       preScan.SeedTimeUTC.Should().BeNull();
+      preScan.UTMZone.Should().Be(CellPassConsts.NullUTMZone);
       preScan.RadioType.Should().Be(string.Empty);
       preScan.RadioSerial.Should().Be(string.Empty);
       preScan.MachineType.Should().Be(CellPassConsts.MachineTypeNull);
@@ -52,6 +53,7 @@ namespace TAGFiles.Tests
       preScan.SeedEasting.Should().Be(537671.61978842877);
       preScan.SeedElevation.Should().Be(41.549531624124079);
       preScan.SeedTimeUTC.Should().Be(System.DateTime.Parse("2014-08-26T17:40:39.3550000", System.Globalization.NumberFormatInfo.InvariantInfo));
+      preScan.UTMZone.Should().Be(10);
       preScan.RadioType.Should().Be("torch");
       preScan.RadioSerial.Should().Be("5411502448");
       preScan.MachineType.Should().Be(39);
@@ -78,6 +80,7 @@ namespace TAGFiles.Tests
       preScan.SeedEasting.Should().Be(63668.71188769384);
       preScan.SeedElevation.Should().Be(114.32995182440192);
       preScan.SeedTimeUTC.Should().Be(System.DateTime.Parse("2019-06-17T01:43:14.8640000", System.Globalization.NumberFormatInfo.InvariantInfo));
+      preScan.UTMZone.Should().Be(CellPassConsts.NullUTMZone);
       preScan.RadioType.Should().Be("torch");
       preScan.RadioSerial.Should().Be("5750F00368");
       preScan.MachineType.Should().Be(25);
@@ -104,6 +107,7 @@ namespace TAGFiles.Tests
       preScan.SeedEasting.Should().Be(564022.58097323333);
       preScan.SeedElevation.Should().Be(398.75510795260766);
       preScan.SeedTimeUTC.Should().Be(System.DateTime.Parse("2012-07-26T08:52:46.0350000", System.Globalization.NumberFormatInfo.InvariantInfo));
+      preScan.UTMZone.Should().Be(CellPassConsts.NullUTMZone);
       preScan.RadioType.Should().Be("torch");
       preScan.RadioSerial.Should().Be("5123545219");
       preScan.MachineType.Should().Be(25);

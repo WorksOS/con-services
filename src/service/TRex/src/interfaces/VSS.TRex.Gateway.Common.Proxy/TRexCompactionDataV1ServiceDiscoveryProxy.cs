@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     public override ApiType Type => ApiType.Public;
 
-    public override string CacheLifeKey => "TREX_COMPACTIONDATA_CACHE_LIFE"; // not used
+    public override string CacheLifeKey => "TREX_COMPACTIONDATA_CACHE_LIFE"; // optionally used by 1 endpoint only
 
 
     /// <summary>
@@ -77,13 +77,17 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     /// <summary>
     /// Sends a request to get site model data from the TRex immutable database.
+    ///    When this is used to retrieve CSIB, use caching (12 hours) as CSIB is immutable
     /// </summary>
-    public async Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
-      IDictionary<string, string> customHeaders = null, IDictionary<string, string> queryParameters = null)
+    public async Task<TResponse> SendDataGetRequest<TResponse>(string projectUid, string route,
+      IDictionary<string, string> customHeaders = null, IDictionary<string, string> queryParameters = null, 
+      bool isCachingRequired = false)
       where TResponse : class, IMasterDataModel
     {
       Gateway = GatewayType.Immutable;
-      log.LogDebug($"{nameof(SendDataGetRequest)}: Sending the get data request for site model ID: {siteModelId}");
+      log.LogDebug($"{nameof(SendDataGetRequest)}: Sending the get data request for projectUid: {projectUid} response type: {typeof(TResponse)} isCachingRequired: {isCachingRequired}");
+      if (isCachingRequired)
+        return await GetMasterDataItemServiceDiscovery<TResponse>(route, projectUid,null, customHeaders);
       return await GetMasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders);
     }
   }

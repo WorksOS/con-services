@@ -112,6 +112,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         Log.LogWarning(message);
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3051, message);
       }
+      Log.LogInformation($"#Progress# CheckFileIsProcessible. Location: Lat: {preScanState.SeedLatitude} Long: {preScanState.SeedLongitude} Northing: {preScanState.SeedNorthing} Easting: {preScanState.SeedEasting} UTMZone: {preScanState.UTMZone}");
 
       var tfaRequest = new GetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),

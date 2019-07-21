@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     private readonly IProjectRepository _projectRepository;
     private readonly ISubscriptionRepository _subscriptionsRepository;
 
-    private readonly ITRexCompactionDataProxy _rexCompactionDataProxy;
+    private readonly ITRexCompactionDataProxy _tRexCompactionDataProxy;
     private readonly IDictionary<string, string> _customHeaders;
 
 
@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       _customerRepository = customerRepository;
       _projectRepository = projectRepository;
       _subscriptionsRepository = subscriptionsRepository;
-      _rexCompactionDataProxy = tRexCompactionDataProxy;
+      _tRexCompactionDataProxy = tRexCompactionDataProxy;
       _customHeaders = customHeaders;
     }
 
@@ -161,63 +161,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return latLongDegrees; 
     }
 
-    /// <summary>
-    /// Get CSIB/s for a customers projects
-    ///   customer: if customer found a) via asset or b) TCCOrgId, then get that customers projects valid at that time, then get each projects CSIB
-    /// Note that this is only used by v2 endpoint, which is TRex only, so can call trex, not 3dp (which could get raptor csib)
-    /// </summary>
-    //public async Task<List<Tuple<string, WGSPoint>>> LoadCSIBs(string customerUid, DateTime validAtDate, double? northing, double? easting)
-    //{
-    //  if (northing == null || easting == null)
-    //    throw new ServiceException(HttpStatusCode.InternalServerError,
-    //      TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-    //        ContractExecutionStatesEnum.InternalProcessingError, 52));
-
-    //  var projectCSIBs = new List<Tuple<string, WGSPoint>>();
-
-    //    try
-    //    {
-    //      if (customerUid != null)
-    //      {
-    //        var projects = new List<ProjectDataModel>();
-    //        var p = await _projectRepository.GetProjectsForCustomer(customerUid);
-
-    //        if (p != null)
-    //        {
-    //          projects = p
-    //            .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsDeleted)
-    //            .ToList();
-    //        }
-
-    //        if (projects != null)
-    //        {
-    //          foreach (var project in projects)
-    //          {
-    //            projectCSIBs.Add(new Tuple<string, string>(project.ProjectUID, await GetCSIBFromTRex(project.ProjectUID))); // todoJeannie
-    //          }
-    //        }
-    //      }
-    //    }
-    //    catch (Exception e)
-    //    {
-    //      throw new ServiceException(HttpStatusCode.InternalServerError,
-    //        TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-    //          ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-    //    }
-
-    //  return projectCSIBs;
-    //}
 
     /// <summary>
     /// Get CSIB/s for a project
     ///    this is cached in proxy
-    /// Note: this comes from a v2 endpoint, which is TRex only, so can call trex directly, not 3dp (which would allow access to raptor csib)
+    /// Note: this comes from a v2 endpoint, which is TRex only, so can call tRex directly, not 3dp (which would allow access to raptor csib)
     /// </summary>
-    private async Task<string> GetCSIBFromTRex(string projectUid)
+    public async Task<string> GetCSIBFromTRex(string projectUid)
     {
       try
       {
-        var returnResult = await _rexCompactionDataProxy.SendDataGetRequest<CSIBResult>(projectUid, $"/projects/{projectUid}/csib", _customHeaders);
+        var returnResult = await _tRexCompactionDataProxy.SendDataGetRequest<CSIBResult>(projectUid, $"/projects/{projectUid}/csib", _customHeaders, isCachingRequired: true);
         return returnResult.CSIB;
       }
       catch (Exception e)

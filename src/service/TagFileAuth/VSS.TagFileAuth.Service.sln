@@ -22,7 +22,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.KafkaConsumer", "..\..\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20B4DB89-A1E2-4A91-9548-5A279CA4889F}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
 		..\..\..\.editorconfig = ..\..\..\.editorconfig
 	EndProjectSection
 EndProject

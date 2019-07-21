@@ -72,8 +72,11 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// <param name="route"></param>
     /// <param name="customHeaders"></param>
     /// <param name="queryParameters"></param>
+    /// <param name="isCachingRequired"></param>
     /// <returns></returns>
-    public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route, IDictionary<string, string> customHeaders = null, IDictionary<string, string> queryParameters = null)
+    public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route, 
+      IDictionary<string, string> customHeaders = null, IDictionary<string, string> queryParameters = null,
+      bool isCachingRequired = false)
       where TResponse : class, IMasterDataModel
     {
       log.LogDebug($"{nameof(TResponse)}: Sending the get data request for site model ID: {siteModelId}");
