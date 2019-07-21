@@ -5,7 +5,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 
-namespace VSS.Productivity3D.Common.Executors
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   public class QMTilesExecutor : RequestExecutorContainer
   {
