@@ -27,10 +27,16 @@ namespace VSS.Tile.Service.Common.Executors
   /// </summary>
   public class DxfTileExecutor : RequestExecutorContainer
   {
+    private bool useDataOcean;
+    private string tccFilespaceId;
+
     protected override ContractExecutionResult ProcessEx<T>(T item) => throw new NotImplementedException("Use the asynchronous form of this method");
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
+      tccFilespaceId = configStore.GetValueString("TCCFILESPACEID");
+      useDataOcean = configStore.GetValueBool("USE_DATA_OCEAN", false);
+
       List<FileData> files = null;
       int zoomLevel = 0;
       Point topLeftTile = null;
@@ -268,7 +274,12 @@ namespace VSS.Tile.Service.Common.Executors
     private async Task<byte[]> DownloadTile(string fullTileName, string what)
     {
       byte[] tileData = null;
-      var stream = await dataOceanClient.GetFile(fullTileName, authn.CustomHeaders());
+      Stream stream;
+      if (useDataOcean)
+        stream = await dataOceanClient.GetFile(fullTileName, authn.CustomHeaders());
+      else
+        stream = await tccFileRepo.GetFile(tccFilespaceId, fullTileName);
+
       if (stream != null)
       {
         log.LogDebug($"DxfTileExecutor: {what} tile downloaded with size of {stream.Length} bytes");

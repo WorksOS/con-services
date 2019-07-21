@@ -7,6 +7,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.Common.Executors
@@ -36,6 +37,8 @@ namespace VSS.Tile.Service.Common.Executors
     protected IDataOceanClient dataOceanClient;
 
     protected ITPaaSApplicationAuthentication authn;
+
+    protected IFileRepository tccFileRepo;
 
     /// <summary>
     /// Gets the available contract execution error states.
@@ -120,13 +123,14 @@ namespace VSS.Tile.Service.Common.Executors
 
     public void Initialise(ILogger logger,  IConfigurationStore configStore, 
       IDictionary<string, string> customHeaders, IDataOceanClient dataOceanClient, 
-      ITPaaSApplicationAuthentication authn)
+      ITPaaSApplicationAuthentication authn, IFileRepository tccFileRepo)
     {
       log = logger;
       this.configStore = configStore;
       this.customHeaders = customHeaders;
       this.dataOceanClient = dataOceanClient;
       this.authn = authn;
+      this.tccFileRepo = tccFileRepo;
     }
 
     protected void ThrowRequestTypeCastException<T>(string errorMessage = null)

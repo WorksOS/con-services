@@ -17,6 +17,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.TCCFileAccess;
 using VSS.Tile.Service.Common.Executors;
 using VSS.Tile.Service.Common.Filters;
 using VSS.Tile.Service.Common.Interfaces;
@@ -30,16 +31,19 @@ namespace VSS.Tile.Service.WebApi.Controllers
   public class LineworkTileController : BaseController<LineworkTileController>
   {
     private readonly IDataOceanClient dataOceanClient;
+    private readonly IFileRepository tccFileRepo;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     public LineworkTileController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
       IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore,
-      IBoundingBoxHelper boundingBoxHelper, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
+      IBoundingBoxHelper boundingBoxHelper, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
+      IFileRepository tccFileRepo)
       : base(raptorProxy, prefProxy, fileImportProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
     {
       this.dataOceanClient = dataOceanClient;
+      this.tccFileRepo = tccFileRepo;
     }
 
     /// <summary>
@@ -140,7 +144,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var dxfTile3dRequest = DxfTile3dRequest.Create(requiredFiles, z, y, x);
 
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor, LineworkTileController>(
-        Log, configStore, CustomHeaders, dataOceanClient, authn);
+        Log, configStore, CustomHeaders, dataOceanClient, authn, tccFileRepo);
       var result = await executor.ProcessAsync(dxfTile3dRequest) as TileResult;
 
       return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
@@ -152,7 +156,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
 
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor, LineworkTileController>(
-        Log, configStore, CustomHeaders, dataOceanClient, authn);
+        Log, configStore, CustomHeaders, dataOceanClient, authn, tccFileRepo);
 
       return await executor.ProcessAsync(dxfTileRequest) as TileResult;
     }
