@@ -154,7 +154,7 @@ namespace VSS.TRex.Webtools.Controllers
       if (response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
-      var results = (from x in Response.ProfileCells
+      var results = (from x in response.ProfileCells
         let v = ProfileValue(displayMode, x, overrides)
         select new
         {
@@ -280,7 +280,7 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     [HttpGet("volumes/{siteModelID}")]
-    public JsonResult ComputeSummaryVolumesProfile(string siteModelID,
+    public async Task<JsonResult> ComputeSummaryVolumesProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
@@ -317,7 +317,7 @@ namespace VSS.TRex.Webtools.Controllers
       if (response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
-      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
+      return new JsonResult(response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
     }
 
     /// <summary>
