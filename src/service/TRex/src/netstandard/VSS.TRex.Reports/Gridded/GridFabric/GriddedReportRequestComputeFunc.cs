@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Reports.Gridded.Executors;
 using VSS.TRex.Servers;
@@ -37,7 +38,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
 
         Log.LogInformation("Executing request.ExecuteAsync()");
 
-        if (!request.ExecuteAsync().Result)
+        if (!request.ExecuteAsync().WaitAndUnwrapException())
           Log.LogError($"Request execution failed");
         
         return request.GriddedReportRequestResponse;
