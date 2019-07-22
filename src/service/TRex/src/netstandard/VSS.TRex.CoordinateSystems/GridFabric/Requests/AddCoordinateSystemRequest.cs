@@ -11,7 +11,7 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Requests
     public override AddCoordinateSystemResponse Execute(AddCoordinateSystemArgument arg)
     {
       // Construct the function to be used
-      IComputeFunc<AddCoordinateSystemArgument, AddCoordinateSystemResponse> func = new AddCoordinateSystemComputeFunc();
+      var func = new AddCoordinateSystemComputeFunc();
 
       // Send the appropriate response to the caller
       return Compute.Apply(func, arg);
@@ -20,7 +20,7 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Requests
     public override Task<AddCoordinateSystemResponse> ExecuteAsync(AddCoordinateSystemArgument arg)
     {
       // Construct the function to be used
-      IComputeFunc<AddCoordinateSystemArgument, AddCoordinateSystemResponse> func = new AddCoordinateSystemComputeFunc();
+      var func = new AddCoordinateSystemComputeFunc();
 
       // Send the appropriate response to the caller
       return Compute.ApplyAsync(func, arg);
