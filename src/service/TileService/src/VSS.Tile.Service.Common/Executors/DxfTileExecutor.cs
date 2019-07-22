@@ -273,7 +273,7 @@ namespace VSS.Tile.Service.Common.Executors
     /// <returns>The downloaded tile if it exists</returns>
     private async Task<byte[]> DownloadTile(string fullTileName, string what)
     {
-      fullTileName = useDataOcean ? fullTileName : fullTileName.Replace("/tiles/xyz/", "/Z"); //Hack for POC make path work for tcc
+      fullTileName = useDataOcean ? fullTileName : fullTileName.Replace("_Tiles$/tiles/xyz/", ".DXF_Tiles$/Z"); //Hack for POC make path work for tcc
       byte[] tileData = null;
       Stream stream;
       if (useDataOcean)
