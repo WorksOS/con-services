@@ -61,7 +61,7 @@ namespace VSS.TRex.Logging
     {
       return (level > LogLevel.Debug) && (_logger?.IsEnabled(ConvertLogLevel2(level)) ?? false);
     }
-
+    
     /// <summary>
     /// Converts the Ignite LogLevel to the log4net log level.
     /// </summary>

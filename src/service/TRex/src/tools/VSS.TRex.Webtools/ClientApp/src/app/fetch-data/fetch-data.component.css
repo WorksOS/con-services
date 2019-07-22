@@ -46,6 +46,16 @@ header {
   font-size: 14px;
 }
 
+.overridePanel {
+    padding-left: 30px;
+    padding-top: 30px;
+}
+
+.overrideInput {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .spacer
 {
   width: 100%;
@@ -60,11 +70,7 @@ header {
   margin-top: 5px;
 }
 
-.fetchDataButtonsPanel {
-  margin-top: 10px;
-}
-
-.fetchDataOutputPanel {
+.fetchDataPanel {
   margin-top: 10px;
 }
 

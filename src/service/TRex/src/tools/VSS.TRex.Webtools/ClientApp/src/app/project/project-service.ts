@@ -12,7 +12,7 @@ import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter } from '../project/project-filter-model';
 import { CellDatumResult } from "./project-model";
-
+import { SummaryType } from './project-summarytype-model';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -73,9 +73,13 @@ export class ProjectService {
     return this.executeRequest<DisplayMode[]>('getDisplayModes', `tiles/modes`);
   }
 
-  public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents, designUid: string, designOffset: number) {
+  public getSummaryTypes(): Observable<SummaryType[]> {
+      return this.executeRequest<DisplayMode[]>('getSummaryTypes', `profiles/summarytypes`);
+  }
+
+  public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents, designUid: string, designOffset: number, overrides:any) {
     let url = `tiles/${projectUid}?mode=${mode}&pixelsX=${pixelsX}&pixelsY=${pixelsY}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}&cutFillDesignUid=${designUid}&offset=${designOffset}`;
-    return this.executeRequest<TileData>('getTile', url);
+    return this.executePostRequest<TileData>('getTile', url, overrides);
   }
 
   public getSimpleFullVolume(projectUid: string, filter: CombinedFilter): Observable<VolumeResult> {
@@ -168,8 +172,9 @@ export class ProjectService {
     return this.executeRequest<XYZS[]>('drawProfileLineForDesign', `profiles/design/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}&offset=${designOffset}`);
   }
 
-  public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
-    return this.executeRequest<XYZS[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number, displayMode: number, designUid: string, designOffset: number, overrides: any): Observable<any[]> {
+      var query: string = `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}&cutFillDesignUid=${designUid}&offset=${designOffset}&displayMode=${displayMode}`;
+      return this.executePostRequest<any[]>('drawProfileLineForProdData', query, overrides);
   }
 
   public drawProfileLineForCompositeElevations(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<any[]> {

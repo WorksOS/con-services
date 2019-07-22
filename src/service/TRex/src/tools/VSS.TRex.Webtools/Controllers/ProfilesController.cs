@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
+using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.Models;
@@ -20,18 +24,15 @@ namespace VSS.TRex.Webtools.Controllers
   public class ProfilesController : Controller
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ProfilesController>();
+    const double KM_HR_TO_CM_SEC = 27.77777778; //1.0 / 3600 * 100000;
+    const int ABOVE_TARGET = 0;
+    const int ON_TARGET = 1;
+    const int BELOW_TARGET = 2;
+    const int NO_INDEX = -1;
 
     /// <summary>
     /// Gets a profile between two points across a design in a project
     /// </summary>
-    /// <param name="siteModelID">Grid to return status for</param>
-    /// <param name="designID"></param>
-    /// <param name="startX"></param>
-    /// <param name="startY"></param>
-    /// <param name="endX"></param>
-    /// <param name="endY"></param>
-    /// <param name="offset"></param>
-    /// <returns></returns>
     [HttpGet("design/{siteModelID}/{designID}")]
     public JsonResult ComputeDesignProfile(string siteModelID, string designID,
       [FromQuery] double startX,
@@ -40,7 +41,7 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double endY,
       [FromQuery] double? offset)
     {
-      Guid siteModelUid = Guid.Parse(siteModelID);
+      var siteModelUid = Guid.Parse(siteModelID);
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelUid);
       var design = siteModel?.Designs?.Locate(Guid.Parse(designID));
 
@@ -55,12 +56,6 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets a profile between two points across a design in a project
     /// </summary>
-    /// <param name="siteModelID">Grid to return status for</param>
-    /// <param name="startX"></param>
-    /// <param name="startY"></param>
-    /// <param name="endX"></param>
-    /// <param name="endY"></param>
-    /// <returns></returns>
     [HttpGet("compositeelevations/{siteModelID}")]
     public JsonResult ComputeCompositeElevationProfile(string siteModelID,
       [FromQuery] double startX,
@@ -68,9 +63,9 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double endX,
       [FromQuery] double endY)
     {
-      Guid siteModelUid = Guid.Parse(siteModelID);
+      var siteModelUid = Guid.Parse(siteModelID);
 
-      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      var arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
@@ -111,32 +106,41 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets a profile between two points across a design in a project
     /// </summary>
-    /// <param name="siteModelID">Grid to return status for</param>
-    /// <param name="startX"></param>
-    /// <param name="startY"></param>
-    /// <param name="endX"></param>
-    /// <param name="endY"></param>
-    /// <returns></returns>
-    [HttpGet("productiondata/{siteModelID}")]
+    [HttpPost("productiondata/{siteModelID}")]
     public JsonResult ComputeProductionDataProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
-      [FromQuery] double endY)
+      [FromQuery] double endY,
+      [FromQuery] int displayMode,
+      [FromQuery] Guid? cutFillDesignUid,
+      [FromQuery] double? offset,
+      [FromBody] OverrideParameters overrides)
     {
-      Guid siteModelUid = Guid.Parse(siteModelID);
+      var siteModelUid = Guid.Parse(siteModelID);
 
-      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      /*
+      //Use default values for now
+      var overrides = new OverrideParameters
+      {
+        CMVRange = new CMVRangePercentageRecord(80, 130),
+        MDPRange = new MDPRangePercentageRecord(80, 130),
+        TargetMachineSpeed = new MachineSpeedExtendedRecord((ushort) (5 * KM_HR_TO_CM_SEC), (ushort) (10 * KM_HR_TO_CM_SEC))
+      };
+      */
+
+      var arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
         Filters = new FilterSet(new[] { new CombinedFilter() }),
-        ReferenceDesign = new DesignOffset(),
+        ReferenceDesign = new DesignOffset(cutFillDesignUid ?? Guid.Empty, offset ?? 0.0),
         StartPoint = new WGS84Point(lon: startX, lat: startY),
         EndPoint = new WGS84Point(lon: endX, lat: endY),
         ReturnAllPassesAndLayers = false,
+        Overrides = overrides
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
@@ -149,10 +153,130 @@ namespace VSS.TRex.Webtools.Controllers
       if (Response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
-      //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
-      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1)));
+      var results = (from x in Response.ProfileCells
+        let v = ProfileValue(displayMode, x, overrides)
+        select new
+        {
+          station = x.Station,
+          elevation = ProfileElevation(displayMode, x),
+          index = v.index,
+          value = v.value,
+          value2 = v.value2
+        });
+      return new JsonResult(results);
     }
 
+    /// <summary>
+    /// Get the profile value of this cell for the mode. 
+    /// </summary>
+    private (int index, double value, double value2) ProfileValue(int mode, ProfileCell cell, OverrideParameters overrides)
+    {
+      var NULL_VALUE = (NO_INDEX, double.NaN, double.NaN);
+
+      double value;
+      int index;
+
+      switch ((DisplayMode) mode)
+      {
+        case DisplayMode.CCV:
+          if (cell.CellTargetCCV == 0 || cell.CellTargetCCV == CellPassConsts.NullCCV ||
+              cell.CellCCV == CellPassConsts.NullCCV)
+            return NULL_VALUE;
+          return (NO_INDEX, cell.CellCCV / 10.0, 0);
+        case DisplayMode.CCVPercentSummary:
+          if (cell.CellTargetCCV == 0 || cell.CellTargetCCV == CellPassConsts.NullCCV ||
+              cell.CellCCV == CellPassConsts.NullCCV)
+            return NULL_VALUE;
+          value = (double) cell.CellCCV / (double) cell.CellTargetCCV * 100;
+          index = value < overrides.CMVRange.Min ? BELOW_TARGET : value > overrides.CMVRange.Max ? ABOVE_TARGET : ON_TARGET;
+          return (index, value, 0);
+        case DisplayMode.CMVChange:
+          if (cell.CellCCV == CellPassConsts.NullCCV)
+            return NULL_VALUE;
+          value = cell.CellPreviousMeasuredCCV == CellPassConsts.NullCCV ? 100 : 
+            (double)(cell.CellCCV - cell.CellPreviousMeasuredCCV) / (double)cell.CellPreviousMeasuredCCV * 100;
+          return (NO_INDEX, value, 0);
+        case DisplayMode.PassCount:
+          if (cell.TopLayerPassCount == CellPassConsts.NullPassCountValue)
+            return NULL_VALUE;
+          return (NO_INDEX, cell.TopLayerPassCount, 0);
+        case DisplayMode.PassCountSummary:
+          if (cell.TopLayerPassCount == CellPassConsts.NullPassCountValue || cell.CellLastElev == CellPassConsts.NullHeight)
+            return NULL_VALUE;
+          index = cell.TopLayerPassCount < cell.TopLayerPassCountTargetRangeMin ? BELOW_TARGET :
+            cell.TopLayerPassCount > cell.TopLayerPassCountTargetRangeMax ? ABOVE_TARGET : ON_TARGET;
+          return (index, 0, 0);
+        case DisplayMode.CutFill:
+          if (cell.CellLastCompositeElev == CellPassConsts.NullHeight || cell.DesignElev == CellPassConsts.NullHeight)
+            return NULL_VALUE;
+          value = cell.CellLastCompositeElev - cell.DesignElev;
+          return (NO_INDEX, value, 0);
+        case DisplayMode.TemperatureSummary:
+          if (cell.CellMaterialTemperature == CellPassConsts.NullMaterialTemperatureValue || cell.CellMaterialTemperatureElev == CellPassConsts.NullHeight)
+            return NULL_VALUE;
+          index = cell.CellMaterialTemperature < cell.CellMaterialTemperatureWarnMin ? BELOW_TARGET : 
+            cell.CellMaterialTemperature > cell.CellMaterialTemperatureWarnMax ? ABOVE_TARGET : ON_TARGET;
+          return (index, 0, 0);
+        case DisplayMode.TemperatureDetail:
+          if (cell.CellMaterialTemperature == CellPassConsts.NullMaterialTemperatureValue)
+            return NULL_VALUE;
+          return (NO_INDEX, cell.CellMaterialTemperature / 10.0, 0);
+        case DisplayMode.MDPPercentSummary:
+          if (cell.CellTargetMDP == 0 || cell.CellTargetMDP == CellPassConsts.NullMDP ||
+              cell.CellMDP == CellPassConsts.NullMDP)
+            return NULL_VALUE;
+          value = (double) cell.CellMDP / (double) cell.CellTargetMDP * 100;
+          index = value < overrides.MDPRange.Min ? BELOW_TARGET : value > overrides.MDPRange.Max ? ABOVE_TARGET : ON_TARGET;
+          return (index, value, 0);
+        case DisplayMode.TargetSpeedSummary:
+          if (cell.CellMaxSpeed == CellPassConsts.NullMachineSpeed || cell.CellLastElev == CellPassConsts.NullHeight)
+            return NULL_VALUE;
+          index = cell.CellMaxSpeed > overrides.TargetMachineSpeed.Max ? ABOVE_TARGET :
+            //cell.CellMinSpeed < overrides.TargetMachineSpeed.Min &&
+            cell.CellMaxSpeed < overrides.TargetMachineSpeed.Min ? BELOW_TARGET : ON_TARGET;
+          return (index, cell.CellMinSpeed/KM_HR_TO_CM_SEC, cell.CellMaxSpeed/KM_HR_TO_CM_SEC);
+        case DisplayMode.Height:
+        default:
+          if (cell.CellLastElev == CellPassConsts.NullHeight)
+            return NULL_VALUE;
+          return (NO_INDEX, cell.CellLastElev, 0);
+      }
+    }
+
+    /// <summary>
+    /// Get the profile elevation of the cell for the mode
+    /// </summary>
+    private double ProfileElevation(int mode, ProfileCell cell)
+    {
+      var elevation = 0.0;
+      switch ((DisplayMode)mode)
+      {
+        case DisplayMode.CCV:
+        case DisplayMode.CCVPercentSummary:
+        case DisplayMode.CMVChange:
+          elevation = cell.CellCCVElev;
+          break;
+        case DisplayMode.TemperatureSummary:
+        case DisplayMode.TemperatureDetail:
+          elevation = cell.CellMaterialTemperatureElev;
+          break;
+        case DisplayMode.MDPPercentSummary:
+          elevation = cell.CellMDPElev;
+          break;
+        case DisplayMode.CutFill:
+          elevation = cell.CellLastCompositeElev;
+          break;
+        case DisplayMode.PassCount:
+        case DisplayMode.PassCountSummary:
+        case DisplayMode.TargetSpeedSummary:
+        case DisplayMode.Height:
+        default:
+          elevation = cell.CellLastElev;
+          break;
+      }
+
+      return elevation;
+    }
 
     [HttpGet("volumes/{siteModelID}")]
     public JsonResult ComputeSummaryVolumesProfile(string siteModelID,
@@ -161,9 +285,11 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double endX,
       [FromQuery] double endY)
     {
-      Guid siteModelUid = Guid.Parse(siteModelID);
+      //TODO: can add design to ground and ground to design by passing the cutFillDesignUid
 
-      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      var siteModelUid = Guid.Parse(siteModelID);
+
+      var arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
@@ -191,6 +317,21 @@ namespace VSS.TRex.Webtools.Controllers
         return new JsonResult(@"Profile response contains no profile cells");
 
       return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
+    }
+
+    /// <summary>
+    /// Retrieves the list of available summary types
+    /// </summary>
+    [HttpGet("summarytypes")]
+    public JsonResult GetModes()
+    {
+      return new JsonResult(new List<(int Index, string Name)>
+      {
+        (NO_INDEX, string.Empty),
+        (ABOVE_TARGET, "Above target"),
+        (BELOW_TARGET, "Below target"),
+        (ON_TARGET, "On target")
+      });
     }
   }
 }
