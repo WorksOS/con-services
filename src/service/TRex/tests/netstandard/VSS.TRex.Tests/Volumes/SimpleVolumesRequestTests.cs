@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
@@ -79,26 +80,26 @@ namespace VSS.TRex.Tests.Volumes
     private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting<SimpleVolumesRequestComputeFunc_ClusterCompute, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
 
     [Fact]
-    public void Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_NoData()
+    public async Task Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_NoData()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = request.Execute(SimpleDefaultRequestArg(Guid.NewGuid()));
+      var response = await request.ExecuteAsync(SimpleDefaultRequestArg(Guid.NewGuid()));
 
       // This is a no data test, so the response will be null
       CheckResponseContainsNullValues(response);
     }
 
     [Fact]
-    public void Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_NoData()
+    public async Task Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_NoData()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
       var request = new SimpleVolumesRequest_ClusterCompute();
-      var response = request.Execute(SimpleDefaultRequestArg(Guid.NewGuid()));
+      var response = await request.ExecuteAsync(SimpleDefaultRequestArg(Guid.NewGuid()));
 
       // This is a no data test, so the response will be null
       CheckResponseContainsNullValues(response);
@@ -124,7 +125,7 @@ namespace VSS.TRex.Tests.Volumes
     }
 
     [Fact]
-    public void Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_SingleTAGFile()
+    public async Task Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_SingleTAGFile()
     {
       AddClusterComputeGridRouting();
 
@@ -136,13 +137,13 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       var request = new SimpleVolumesRequest_ClusterCompute();
-      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleDefaultRequestArg(siteModel.ID));
 
       CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }
 
     [Fact]
-    public void Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_SingleTAGFile()
+    public async Task Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_SingleTAGFile()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -155,7 +156,7 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleDefaultRequestArg(siteModel.ID));
 
       CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }
@@ -204,20 +205,20 @@ namespace VSS.TRex.Tests.Volumes
     }
 
     [Fact]
-    public void Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_SingleCell_WithFill()
+    public async Task Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_SingleCell_WithFill()
     {
       AddClusterComputeGridRouting();
 
       var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ClusterCompute();
-      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleDefaultRequestArg(siteModel.ID));
 
       CheckDefaultFilterToFilterSingleFillCellAtOriginResponse(response);
     }
 
     [Fact]
-    public void Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_SingleCell_WithFill()
+    public async Task Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_SingleCell_WithFill()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -225,7 +226,7 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleDefaultRequestArg(siteModel.ID));
 
       CheckDefaultFilterToFilterSingleFillCellAtOriginResponse(response);
     }
@@ -250,20 +251,20 @@ namespace VSS.TRex.Tests.Volumes
     }
 
     [Fact]
-    public void Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_SingleCell_WithCut()
+    public async Task Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_SingleCell_WithCut()
     {
       AddClusterComputeGridRouting();
 
       var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ClusterCompute();
-      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleDefaultRequestArg(siteModel.ID));
 
       CheckDefaultFilterToFilterSingleCutCellAtOriginResponse(response);
     }
 
     [Fact]
-    public void Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_SingleCell_WithCut()
+    public async Task Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_SingleCell_WithCut()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -271,7 +272,7 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleDefaultRequestArg(siteModel.ID));
 
       CheckDefaultFilterToFilterSingleCutCellAtOriginResponse(response);
     }

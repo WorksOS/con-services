@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Analytics.CMVChangeStatistics;
 using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
@@ -100,7 +101,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVChangeStatisticsRequest_EmptySiteModel_FullExtents()
+    public async Task Test_CMVChangeStatisticsRequest_EmptySiteModel_FullExtents()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -108,14 +109,14 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new CMVChangeStatisticsOperation();
 
-      var cmvChangeStatisticsResult = operation.Execute(SimpleCMVChangeStatisticsArgument(siteModel, new []{ -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));
+      var cmvChangeStatisticsResult = await operation.ExecuteAsync(SimpleCMVChangeStatisticsArgument(siteModel, new []{ -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));
 
       cmvChangeStatisticsResult.Should().NotBeNull();
       cmvChangeStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
     }
 
     [Fact]
-    public void Test_CMVChangeStatisticsRequest_SiteModelWithSingleCell_FullExtents_NoTarget()
+    public async Task Test_CMVChangeStatisticsRequest_SiteModelWithSingleCell_FullExtents_NoTarget()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -123,7 +124,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       var siteModel = BuildModelForSingleCellCMV(CMV_INCREMENT);
       var operation = new CMVChangeStatisticsOperation();
 
-      var cmvChangeStatisticsResult = operation.Execute(SimpleCMVChangeStatisticsArgument(siteModel, new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));
+      var cmvChangeStatisticsResult = await operation.ExecuteAsync(SimpleCMVChangeStatisticsArgument(siteModel, new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));
 
       cmvChangeStatisticsResult.Should().NotBeNull();
       cmvChangeStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -145,7 +146,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryCCAStatisticsRequest_SiteModelWithSingleCell_FullExtents()
+    public async Task Test_SummaryCCAStatisticsRequest_SiteModelWithSingleCell_FullExtents()
     {
       const byte TARGET_CMV = 50;
 
@@ -155,7 +156,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       var siteModel = BuildModelForSingleCellCMV(CMV_INCREMENT, TARGET_CMV);
       var operation = new CMVChangeStatisticsOperation();
 
-      var cmvChangeStatisticsResult = operation.Execute(SimpleCMVChangeStatisticsArgument(siteModel, new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));
+      var cmvChangeStatisticsResult = await operation.ExecuteAsync(SimpleCMVChangeStatisticsArgument(siteModel, new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));
 
       cmvChangeStatisticsResult.Should().NotBeNull();
       cmvChangeStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -177,7 +178,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVChangeStatisticsRequest_SiteModelWithMultipleCells_FullExtents()
+    public async Task Test_CMVChangeStatisticsRequest_SiteModelWithMultipleCells_FullExtents()
     {
       const short NUMBER_OF_CELLS = 2165;
 
@@ -192,7 +193,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       var operation = new CMVChangeStatisticsOperation();
 
-      var cmvChangeStatisticsResult = operation.Execute(SimpleCMVChangeStatisticsArgument(siteModel, new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));
+      var cmvChangeStatisticsResult = await operation.ExecuteAsync(SimpleCMVChangeStatisticsArgument(siteModel, new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }));
 
       cmvChangeStatisticsResult.Should().NotBeNull();
       cmvChangeStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);

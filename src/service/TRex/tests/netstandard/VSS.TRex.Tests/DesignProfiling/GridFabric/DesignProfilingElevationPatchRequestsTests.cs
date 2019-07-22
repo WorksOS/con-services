@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
@@ -35,7 +36,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
     [InlineData(247668.341, 193059.996, 31.500, -2.3, true)]
     [InlineData(247680.000, 193054.000, 30.168, 100.1, true)]
     [InlineData(247680.000 + 100, 193054.000, Consts.NullDouble, 100.1, false)]  // Outside of surface so returns NullDouble
-    public void Test_DesignElevationPatchRequest_WithOffset(double spotX, double spotY, double expectedHeight, double offset, bool patchExists)
+    public async Task Test_DesignElevationPatchRequest_WithOffset(double spotX, double spotY, double expectedHeight, double offset, bool patchExists)
     {
       AddDesignProfilerGridRouting();
 
@@ -59,7 +60,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
         OriginY = cellY
       };
 
-      var response = request.Execute(argument);
+      var response = await request.ExecuteAsync(argument);
 
       response.Should().NotBeNull();
       response.CalcResult.Should().Be(patchExists ? DesignProfilerRequestResult.OK : DesignProfilerRequestResult.NoElevationsInRequestedPatch);
@@ -85,7 +86,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
         // Check a request with an offset provides the expected answer
         argument.ReferenceDesign.Offset = offset;
 
-        var response2 = request.Execute(argument);
+        var response2 = await request.ExecuteAsync(argument);
 
         response2.Should().NotBeNull();
         response2.CalcResult.Should().Be(DesignProfilerRequestResult.OK);

@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Executors;
@@ -34,7 +35,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
             try
             {
                 var executor = new SimpleVolumesExecutor();
-                return executor.ExecuteAsync(arg).Result;
+                return executor.ExecuteAsync(arg).WaitAndUnwrapException();
             }
             finally
             {

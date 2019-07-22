@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Models.Reports;
@@ -64,7 +65,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     }
 
     [Fact]
-    public void StationOffsetReport_EmptySiteModel()
+    public async Task StationOffsetReport_EmptySiteModel()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -72,7 +73,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new StationOffsetReportRequest_ApplicationService();
 
-      var response = request.Execute(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, false));
+      var response = await request.ExecuteAsync(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, false));
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.NoProductionDataFound);
@@ -81,7 +82,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void StationOffsetReport_SiteModelWithSingleCell(bool withOverrides)
+    public async Task StationOffsetReport_SiteModelWithSingleCell(bool withOverrides)
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -89,7 +90,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       var siteModel = BuildModelForSingleCellElevationAndCmv(ELEVATION_INCREMENT_1_0);
 
       var request = new StationOffsetReportRequest_ApplicationService();
-      var response = request.Execute(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, withOverrides));
+      var response = await request.ExecuteAsync(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, withOverrides));
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);

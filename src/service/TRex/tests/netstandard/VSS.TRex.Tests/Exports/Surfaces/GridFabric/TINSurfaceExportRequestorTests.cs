@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+using FluentAssertions;
 using VSS.TRex.Exports.Surfaces;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Exports.Surfaces.Requestors;
@@ -26,11 +27,11 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
 
     // Test the executor does call in the the underlying request with a fail result from a empty/nonexistent model
     [Fact]
-    public void Execute()
+    public async Task Execute()
     {
       AddGridRouting();
       var req = new TINSurfaceExportRequestor();
-      var result = req.Execute(new TINSurfaceRequestArgument());
+      var result = await req.ExecuteAsync(new TINSurfaceRequestArgument());
       result.Should().NotBeNull();
       result.ResultStatus.Should().Be(RequestErrorStatus.Unknown);
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Enums;
@@ -44,7 +45,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpPost("cmvdetails/{siteModelID}")]
-    public JsonResult GetCMVDetails([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetCMVDetails([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       const int CMV_DENOMINATOR = 10;
       string resultToReturn;
@@ -64,7 +65,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new CMVStatisticsOperation();
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new CMVStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -106,7 +107,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data CMV Summary.
     /// </summary>
     [HttpPost("cmvsummary/{siteModelID}")]
-    public JsonResult GetCMVSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetCMVSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
@@ -125,7 +126,7 @@ namespace VSS.TRex.Webtools.Controllers
 
           var operation = new CMVStatisticsOperation();
 
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new CMVStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -157,7 +158,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data CMV Change.
     /// </summary>
     [HttpPost("cmvchange/{siteModelID}")]
-    public JsonResult GetCMVChange([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetCMVChange([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
@@ -176,7 +177,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new CMVChangeStatisticsOperation();
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new CMVChangeStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -218,7 +219,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data MDP Summary.
     /// </summary>
     [HttpPost("mdpsummary/{siteModelID}")]
-    public JsonResult GetMDPSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetMDPSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
@@ -236,7 +237,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new MDPStatisticsOperation();
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new MDPStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -268,7 +269,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data Pass Count Details.
     /// </summary>
     [HttpPost("passcountdetails/{siteModelID}")]
-    public JsonResult GetPassCountDetails([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetPassCountDetails([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
@@ -287,7 +288,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new PassCountStatisticsOperation();
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new PassCountStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -323,7 +324,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data Pass Count Summary.
     /// </summary>
     [HttpPost("passcountsummary/{siteModelID}")]
-    public JsonResult GetPassCountSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetPassCountSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
@@ -341,7 +342,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new PassCountStatisticsOperation();
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new PassCountStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -373,7 +374,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data CCA Summary.
     /// </summary>
     [HttpPost("ccasummary/{siteModelID}")]
-    public JsonResult GetCCASummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetCCASummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
@@ -391,7 +392,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new CCAStatisticsOperation();
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new CCAStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -422,7 +423,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data Temperature Details.
     /// </summary>
     [HttpPost("temeraturedetails/{siteModelID}")]
-    public JsonResult GetTemperatureDetails([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetTemperatureDetails([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       const int TEMP_DENOMINATOR = 10;
       string resultToReturn;
@@ -442,7 +443,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new TemperatureStatisticsOperation();
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new TemperatureStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -484,7 +485,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data Temperature Summary.
     /// </summary>
     [HttpPost("temeraturesummary/{siteModelID}")]
-    public JsonResult GetTemperatureSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetTemperatureSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
@@ -502,7 +503,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new TemperatureStatisticsOperation();
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new TemperatureStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -534,7 +535,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data Machine Speed Summary.
     /// </summary> 
     [HttpPost("machinespeedsummary/{siteModelID}")]
-    public JsonResult GetMachineSpeedSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetMachineSpeedSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
@@ -552,7 +553,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new SpeedStatisticsOperation();
-          var result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new SpeedStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -584,7 +585,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data Cut/Fill statistics.
     /// </summary>
     [HttpPost("cutfillstatistics/{siteModelID}")]
-    public JsonResult GetCutFillStatistics([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides,
+    public async Task<JsonResult> GetCutFillStatistics([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides,
       [FromQuery] Guid cutFillDesignUid,
       [FromQuery] double? cutFillOffset)
     {
@@ -603,11 +604,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          var sw = new Stopwatch();
+                    var sw = new Stopwatch();
           sw.Start();
 
           var operation = new CutFillStatisticsOperation();
-          var result = operation.Execute(new CutFillStatisticsArgument()
+          var result = await operation.ExecuteAsync(new CutFillStatisticsArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
@@ -648,7 +649,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets production data elevation statistics.
     /// </summary>
     [HttpPost("elevationrange/{siteModelID}")]
-    public JsonResult GetElevationRange([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
+    public async Task<JsonResult> GetElevationRange([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
@@ -666,7 +667,7 @@ namespace VSS.TRex.Webtools.Controllers
           sw.Start();
 
           var operation = new ElevationStatisticsOperation();
-          var result = operation.Execute(new ElevationStatisticsArgument()
+          var result = await operation.ExecuteAsync(new ElevationStatisticsArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },

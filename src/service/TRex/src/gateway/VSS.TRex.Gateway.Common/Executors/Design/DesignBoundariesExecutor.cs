@@ -47,7 +47,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
       var referenceDesign = new DesignOffset(request.DesignUid, 0.0);
-      var designBoundaryResponse = DesignBoundaryRequest.Execute(siteModel, referenceDesign);
+      var designBoundaryResponse = await DesignBoundaryRequest.ExecuteAsync(siteModel, referenceDesign);
 
       if (designBoundaryResponse != null && 
           designBoundaryResponse.RequestResult == DesignProfilerRequestResult.OK && 

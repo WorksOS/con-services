@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -23,7 +24,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="filter"></param>
     /// <returns></returns>
     [HttpGet("{siteModelID}")]
-    public JsonResult GetVolume(string siteModelID,
+    public async Task<JsonResult> GetVolume(string siteModelID,
     [FromQuery] string filter)
     {
       var filterJson = Encoding.ASCII.GetString(Convert.FromBase64String(filter));
@@ -36,7 +37,7 @@ namespace VSS.TRex.Webtools.Controllers
       topFilter.SpatialFilter.Fence?.UpdateExtents();
 
       var request = new SimpleVolumesRequest_ApplicationService();
-       var response = request.Execute(new SimpleVolumesRequestArgument
+       var response = await request.ExecuteAsync(new SimpleVolumesRequestArgument
        {
          ProjectID = Guid.Parse(siteModelID),
          VolumeType = VolumeComputationType.Between2Filters,

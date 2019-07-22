@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
@@ -107,7 +108,7 @@ namespace VSS.TRex.Profiling.Executors
     /// Executes the profiler logic in the cluster compute context where each cluster node processes its fraction of the work and returns the
     /// results to the application service context
     /// </summary>
-    public ProfileRequestResponse<T> Execute()
+    public async Task<ProfileRequestResponse<T>> ExecuteAsync()
     {
       // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
       // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
@@ -161,12 +162,12 @@ namespace VSS.TRex.Profiling.Executors
             /* todo elevation range design + offset: */null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides);
 
           Log.LogInformation("Building cell profile");
-          if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
+          if (await Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
           {
             SetupForCellPassStackExamination(Filters.Filters[0].AttributeFilter);
 
             Log.LogInformation("Building lift profile");
-            if (Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
+            if (await Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
             {
               Log.LogInformation("Lift profile building succeeded");
 

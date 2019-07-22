@@ -3,6 +3,7 @@ using System.Reflection;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.CellDatum.Executors;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Responses;
@@ -33,13 +34,16 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
       {
         var request = new CellDatumComputeFuncExecutor_ClusterCompute();
 
-        Log.LogInformation("Executing CellDatumRequestComputeFunc_ClusterCompute.Execute()");
+        Log.LogInformation("Executing CellDatumRequestComputeFunc_ClusterCompute.ExecuteAsync()");
 
         if (Argument == null)
-        {
           throw new ArgumentException("Argument for ComputeFunc must be provided");
-        }
-        return request.Execute(Argument, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, Argument.ProjectID, Argument.OTGCellX, Argument.OTGCellY));
+
+        return request.ExecuteAsync
+        (
+          Argument, 
+          new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, Argument.ProjectID, Argument.OTGCellX, Argument.OTGCellY)
+        ).WaitAndUnwrapException();
       }
       finally
       {

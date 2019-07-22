@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
@@ -134,7 +135,7 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
-    public void Test_TileRenderRequest_EmptySiteModel_FullExtents(DisplayMode displayMode)
+    public async Task Test_TileRenderRequest_EmptySiteModel_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -142,7 +143,7 @@ namespace VSS.TRex.Tests.Rendering
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new TileRenderRequest();
 
-      var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode));
+      var response = await request.ExecuteAsync(SimpleTileRequestArgument(siteModel, displayMode));
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
@@ -164,7 +165,7 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
-    public void Test_TileRenderRequest_EmptySiteModel_FullExtents_WithColourPalette(DisplayMode displayMode)
+    public async Task Test_TileRenderRequest_EmptySiteModel_FullExtents_WithColourPalette(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -174,7 +175,7 @@ namespace VSS.TRex.Tests.Rendering
 
       var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
 
-      var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode, palette));
+      var response = await request.ExecuteAsync(SimpleTileRequestArgument(siteModel, displayMode, palette));
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
@@ -196,7 +197,7 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
-    public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents(DisplayMode displayMode)
+    public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -205,7 +206,7 @@ namespace VSS.TRex.Tests.Rendering
       
       var request = new TileRenderRequest();
       var filter = new CellPassAttributeFilter() { MachinesList = new[] { siteModel.Machines[0].ID }, LayerID = 1 };
-      var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode, null, filter));
+      var response = await request.ExecuteAsync(SimpleTileRequestArgument(siteModel, displayMode, null, filter));
 
       CheckSimpleRenderTileResponse(response);
     }
@@ -224,7 +225,7 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
-    public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_WithColourPalette(DisplayMode displayMode)
+    public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_WithColourPalette(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -234,7 +235,7 @@ namespace VSS.TRex.Tests.Rendering
       var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
 
       var request = new TileRenderRequest();
-      var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode, palette));
+      var response = await request.ExecuteAsync(SimpleTileRequestArgument(siteModel, displayMode, palette));
 
       CheckSimpleRenderTileResponse(response);
     }
@@ -253,7 +254,7 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
-    public void Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents(DisplayMode displayMode)
+    public async Task Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -265,7 +266,7 @@ namespace VSS.TRex.Tests.Rendering
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       var request = new TileRenderRequest();
-      var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode));
+      var response = await request.ExecuteAsync(SimpleTileRequestArgument(siteModel, displayMode));
 
       CheckSimpleRenderTileResponse(response, displayMode);
 
@@ -286,7 +287,7 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
-    public void Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents_WithColourPalette(DisplayMode displayMode)
+    public async Task Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents_WithColourPalette(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -301,7 +302,7 @@ namespace VSS.TRex.Tests.Rendering
       var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
 
       var request = new TileRenderRequest();
-      var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode, palette));
+      var response = await request.ExecuteAsync(SimpleTileRequestArgument(siteModel, displayMode, palette));
 
       CheckSimpleRenderTileResponse(response);
 
@@ -313,7 +314,7 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(true, -25)]
     [InlineData(false, 0)]
     [InlineData(true, 0)]
-    public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_CutFill(bool usePalette, double offset)
+    public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_CutFill(bool usePalette, double offset)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -344,7 +345,7 @@ namespace VSS.TRex.Tests.Rendering
       arg.Extents = siteModel.Grid.GetCellExtents(cellX, cellY);
       arg.Extents.Expand(1.0, 1.0);
 
-      var response = request.Execute(arg);
+      var response = await request.ExecuteAsync(arg);
       CheckSimpleRenderTileResponse(response);
 
       //The tile for 0 offset is red, for -25 it is blue
