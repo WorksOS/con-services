@@ -19,13 +19,13 @@ namespace TestUtility
     public bool IsPublishToKafka { get; set; }
     public bool IsPublishToWebApi { get; set; }
 
-    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+    public readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
     {
       DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
       NullValueHandling = NullValueHandling.Ignore
     };
 
-    public readonly TestConfig tsCfg = new TestConfig();
+    public readonly TestConfig TestCfg = new TestConfig();
 
     public TestSupport()
     {
@@ -132,11 +132,11 @@ namespace TestUtility
 
     public string GetBaseUri()
     {
-      var baseUri = tsCfg.webApiUri;
+      var baseUri = TestCfg.webApiUri;
 
-      if (Debugger.IsAttached || tsCfg.operatingSystem == "Windows_NT")
+      if (Debugger.IsAttached || TestCfg.operatingSystem == "Windows_NT")
       {
-        baseUri = tsCfg.debugWebApiUri;
+        baseUri = TestCfg.debugWebApiUri;
       }
 
       return baseUri;
@@ -167,7 +167,7 @@ namespace TestUtility
             FilterJson = eventObject.FilterJson,
             FilterType = eventObject.FilterType
           };
-          jsonString = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent }, jsonSettings);
+          jsonString = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent }, JsonSettings);
           break;
         case "UpdateFilterEvent":
           var updateFilterEvent = new UpdateFilterEvent
@@ -180,7 +180,7 @@ namespace TestUtility
             FilterJson = eventObject.FilterJson,
             FilterType = eventObject.FilterType
           };
-          jsonString = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent }, jsonSettings);
+          jsonString = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent }, JsonSettings);
           break;
         case "DeleteFilterEvent":
           var deleteFilterEvent = new DeleteFilterEvent
@@ -191,7 +191,7 @@ namespace TestUtility
             ProjectUID = new Guid(eventObject.ProjectUID),
             UserID = eventObject.UserID,
           };
-          jsonString = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteFilterEvent }, jsonSettings);
+          jsonString = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteFilterEvent }, JsonSettings);
           break;
       }
       return jsonString;
@@ -205,7 +205,7 @@ namespace TestUtility
     {
       string dbTable = eventObject.TableName;
       var mysqlHelper = new MySqlHelper();
-      var sqlCmd = $@"INSERT INTO `{tsCfg.dbSchema}`.{dbTable} ";
+      var sqlCmd = $@"INSERT INTO `{TestCfg.dbSchema}`.{dbTable} ";
       switch (dbTable)
       {
         case "Filter":
@@ -223,24 +223,24 @@ namespace TestUtility
         default:
           throw new NotImplementedException($"Missing SQL code to insert row into table {dbTable}");
       }
-      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
+      mysqlHelper.ExecuteMySqlInsert(TestCfg.DbConnectionString, sqlCmd);
     }
 
 
     public void DeleteAllFiltersForProject(string projectUid)
     {
       var mysqlHelper = new MySqlHelper();
-      var sqlCmd = $@"DELETE FROM `{tsCfg.dbSchema}`.Filter WHERE fk_ProjectUID = '{projectUid}' ";
-      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
+      var sqlCmd = $@"DELETE FROM `{TestCfg.dbSchema}`.Filter WHERE fk_ProjectUID = '{projectUid}' ";
+      mysqlHelper.ExecuteMySqlInsert(TestCfg.DbConnectionString, sqlCmd);
     }
 
     public void DeleteAllBoundariesAndAssociations()
     {
       var mysqlHelper = new MySqlHelper();
-      var sqlCmd = $@"DELETE FROM `{tsCfg.dbSchema}`.ProjectGeofence";
-      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
-      sqlCmd = $@"DELETE FROM `{tsCfg.dbSchema}`.Geofence";
-      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
+      var sqlCmd = $@"DELETE FROM `{TestCfg.dbSchema}`.ProjectGeofence";
+      mysqlHelper.ExecuteMySqlInsert(TestCfg.DbConnectionString, sqlCmd);
+      sqlCmd = $@"DELETE FROM `{TestCfg.dbSchema}`.Geofence";
+      mysqlHelper.ExecuteMySqlInsert(TestCfg.DbConnectionString, sqlCmd);
     }
 
     /// <summary>

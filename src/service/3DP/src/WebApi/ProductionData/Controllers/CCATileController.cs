@@ -14,7 +14,6 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -23,6 +22,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
@@ -91,6 +91,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ConfigStore = configStore;
       TRexCompactionDataProxy = trexCompactionDataProxy;
     }
+
     /// <summary>
     /// Supplies tiles of rendered CCA data overlays.
     /// </summary>
@@ -100,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="isJohnDoe">IsJohnDoe flag.</param>
     /// <param name="startUtc">Start date of the requeted CCA data in UTC.</param>
     /// <param name="endUtc">End date of the requested CCA data in UTC.</param>
-    /// <param name="bbox">Bounding box, as a comma separated string, that represents a WGS84 latitude/longitude coordinate area.</param>    
+    /// <param name="bbox">Bounding box, as a comma separated string, that represents a WGS84 latitude/longitude coordinate area.</param>
     /// <param name="width">Width of the requested CCA data tile.</param>
     /// <param name="height">Height of the requested CCA data tile.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
@@ -110,9 +111,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/ccatiles/png")]
     [HttpGet]
-    public FileResult Get
-    (
-      [FromQuery] long projectId,
+    public async Task<FileResult> Get
+    ([FromQuery] long projectId,
       [FromQuery] long assetId,
       [FromQuery] string machineName,
       [FromQuery] bool isJohnDoe,
@@ -123,14 +123,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       [FromQuery] ushort height,
       [FromQuery] int? liftId = null,
       [FromQuery] Guid? geofenceUid = null,
-      [FromQuery] Guid? assetUid = null
-    )
+      [FromQuery] Guid? assetUid = null)
     {
       log.LogInformation("Get: " + Request.QueryString);
 
-      var request = CreateAndValidateRequest(projectId, null, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid, assetUid);
+      var request = await CreateAndValidateRequest(projectId, null, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid, assetUid);
 
-      return GetCCADataTile(request);
+      return await GetCCADataTile(request);
     }
 
 
@@ -171,9 +170,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       log.LogInformation("Get: " + Request.QueryString);
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var request = CreateAndValidateRequest(projectId, projectUid, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid, assetUid);
+      var request = await CreateAndValidateRequest(projectId, projectUid, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid, assetUid);
 
-      return GetCCADataTile(request);
+      return await GetCCADataTile(request);
     }
 
     /// <summary>
@@ -185,15 +184,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used 
     /// to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
-    private FileResult GetCCADataTile(TileRequest request)
+    private async Task<FileResult> GetCCADataTile(TileRequest request)
     {
-      var tileResult = RequestExecutorContainerFactory
-                         .Build<TilesExecutor>(this.logger,
+      var tileResult = await RequestExecutorContainerFactory.Build<TilesExecutor>(logger,
 #if RAPTOR
-          this.raptorClient, 
+          raptorClient, 
 #endif
           configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders:CustomHeaders)
-                         .Process(request) as TileResult;
+                         .ProcessAsync(request) as TileResult;
 
       if (tileResult?.TileData == null)
         tileResult = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
@@ -202,7 +200,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
     }
-    private TileRequest CreateAndValidateRequest(
+
+    private async Task<TileRequest> CreateAndValidateRequest(
       long projectId,
       Guid? projectUid,
       long assetId,
@@ -234,7 +233,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       List<WGSPoint> geometry = null;
       if (geofenceUid.HasValue)
       {
-        var geometryWKT = geofenceProxy.GetGeofenceBoundary(((RaptorPrincipal) User).CustomerUid, geofenceUid.ToString(), Request.Headers.GetCustomHeaders()).Result;
+        var geometryWKT = await geofenceProxy.GetGeofenceBoundary(((RaptorPrincipal) User).CustomerUid, geofenceUid.ToString(), Request.Headers.GetCustomHeaders());
 
         if (string.IsNullOrEmpty(geometryWKT))
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,

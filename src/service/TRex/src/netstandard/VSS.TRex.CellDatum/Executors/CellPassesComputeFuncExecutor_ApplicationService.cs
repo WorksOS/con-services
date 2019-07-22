@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -24,7 +25,7 @@ namespace VSS.TRex.CellDatum.Executors
     /// </summary>
     public CellPassesComputeFuncExecutor_ApplicationService() {}
 
-    public CellPassesResponse Execute(CellPassesRequestArgument_ApplicationService arg)
+    public async Task<CellPassesResponse> ExecuteAsync(CellPassesRequestArgument_ApplicationService arg)
     {
       var result = new CellPassesResponse() {ReturnCode = CellPassesReturnCode.Error};
 
@@ -38,7 +39,7 @@ namespace VSS.TRex.CellDatum.Executors
       if (!arg.CoordsAreGrid)
       {
         //WGS84 coords need to be converted to NEE
-        arg.Point = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point);
+        arg.Point = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point);
         result.Northing = arg.Point.Y;
         result.Easting = arg.Point.X;
       }
@@ -60,7 +61,7 @@ namespace VSS.TRex.CellDatum.Executors
       var computeArg = new CellPassesRequestArgument_ClusterCompute(arg.ProjectID, arg.Point, otgCellX, otgCellY, arg.Filters);
       var requestCompute = new CellPassesRequest_ClusterCompute();
       var affinityKey = new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, otgCellX, otgCellY);
-      var responseCompute = requestCompute.Execute(computeArg, affinityKey);
+      var responseCompute = await requestCompute.ExecuteAsync(computeArg, affinityKey);
 
       result.ReturnCode = responseCompute.ReturnCode;
       result.CellPasses = responseCompute.CellPasses;

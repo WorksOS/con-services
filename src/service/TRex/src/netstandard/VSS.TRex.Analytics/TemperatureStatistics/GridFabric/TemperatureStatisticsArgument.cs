@@ -1,8 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Records;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 {
@@ -13,17 +11,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
   {
     private const byte VERSION_NUMBER = 1;
 
-    /// <summary>
-    /// The flag is to indicate whether or not the temperature warning levels to be user overrides.
-    /// </summary>
-    public bool OverrideTemperatureWarningLevels { get; set; }
-
-    /// <summary>
-    /// User overriding temperature warning level values.
-    /// </summary>
-    public TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels;
-
-    /// <summary>
+  /// <summary>
     /// Temperature details values.
     /// </summary>
     public int[] TemperatureDetailValues { get; set; }
@@ -38,10 +26,6 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteBoolean(OverrideTemperatureWarningLevels);
-
-      OverridingTemperatureWarningLevels.ToBinary(writer);
-
       writer.WriteIntArray(TemperatureDetailValues);
     }
 
@@ -54,10 +38,6 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
       base.FromBinary(reader);
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
-      OverrideTemperatureWarningLevels = reader.ReadBoolean();
-
-      OverridingTemperatureWarningLevels.FromBinary(reader);
 
       TemperatureDetailValues = reader.ReadIntArray();
     }

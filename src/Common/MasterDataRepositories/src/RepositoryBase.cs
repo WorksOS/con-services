@@ -45,8 +45,7 @@ namespace VSS.MasterData.Repositories
           attempt => TimeSpan.FromMilliseconds(DbSyncMsDelay),
           (exception, calculatedWaitDuration) =>
           {
-            Log.LogError(
-              $"Repository PollySync: Failed attempt to query/update db. Exception: {exception.Message}. Retries: {DbSyncRetryCount}.");
+            Log.LogError(exception, $"Repository PollySync: Failed attempt to query/update db. Retries: {DbSyncRetryCount}.");
           })
         .ExecuteAndCapture(() =>
         {
@@ -86,8 +85,7 @@ namespace VSS.MasterData.Repositories
           attempt => TimeSpan.FromMilliseconds(DbAsyncMsDelay),
           (exception, calculatedWaitDuration) =>
           {
-            Log.LogError(
-              $"Repository PollyAsync: Failed attempt to query/update db. Exception: {exception.Message}. Retries: {DbAsyncRetryCount}.");
+            Log.LogError(exception, $"Repository PollyAsync: Failed attempt to query/update db. Retries: {DbAsyncRetryCount}.");
           })
         .ExecuteAndCaptureAsync(async () =>
         {
@@ -143,8 +141,7 @@ namespace VSS.MasterData.Repositories
           _isInTransaction = true;
           transaction = conn.BeginTransaction();
           _connection = conn;
-          var result = await body(conn);
-          return result;
+          return await body(conn);
         }
         finally
         {

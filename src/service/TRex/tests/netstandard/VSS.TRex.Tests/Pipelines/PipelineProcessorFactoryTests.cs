@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -46,11 +47,11 @@ namespace VSS.TRex.Tests.Pipelines
     }
 
     [Fact]
-    public void NewInstance()
+    public async Task NewInstance()
     {
       var factory = new PipelineProcessorFactory();
 
-      var processor = factory.NewInstance(requestDescriptor: Guid.NewGuid(),
+      var processor = await factory.NewInstance(requestDescriptor: Guid.NewGuid(),
         dataModelID: Guid.NewGuid(),
         gridDataType: GridDataType.Height,
         response: new PatchRequestResponse(),

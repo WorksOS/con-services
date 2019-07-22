@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -6,6 +7,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -52,33 +54,26 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
     }
 
     [Fact]
-    public void TileExecutor_EmptySiteModel()
+    public async Task TileExecutor_EmptySiteModel()
     {
       AddRoutings();
       AddRenderingFactoryToDI();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
-      var request = new TileRequest
+      var request = new TRexTileRequest
       (
-        1,
         siteModel.ID,
-        Guid.Empty,
         DisplayMode.Height,
         null, //List<ColorPalette> palettes,
-        new LiftBuildSettings(),
-        VolumesType.None,
-        0.0, //double computeVolNoChangeTolerance,
         null, //new DesignDescriptor(0, FileDescriptor.EmptyFileDescriptor, 0),
         new FilterResult(),
-        -1, //long filterId1,
         new FilterResult(),
-        -1, //long filterId2,
-        FilterLayerMethod.None,
         null, //new BoundingBox2DLatLon boundingBoxLatLon,
         new BoundingBox2DGrid(0, 0, 100, 100),
         256,
-        256);
+        256,
+        null);
 
       request.Validate();
 
@@ -86,11 +81,11 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
         .Build<TileExecutor>(DIContext.Obtain<IConfigurationStore>(),
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
-      var result = executor.Process(request) as TileResult;
+      var result = await executor.ProcessAsync(request) as TileResult;
 
       result.Should().NotBeNull();
-      result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
-      result.TileData.Should().NotBeNull();
+      result?.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
+      result?.TileData.Should().NotBeNull();
     }
   }
 }

@@ -39,7 +39,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns></returns>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionTagFileRequest;
 
@@ -60,7 +60,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           TCCOrgID = request.OrgId
         };
 
-        var res = submitRequest.Execute(arg);
+        var res = await submitRequest.ExecuteAsync(arg);
         result = res.Success 
           ? TagFileResult.Create(0, ContractExecutionResult.DefaultMessage) : TagFileResult.Create(res.Code, res.Message);
 
@@ -72,17 +72,15 @@ namespace VSS.TRex.Gateway.Common.Executors
           : "#Out# TagFileExecutor. Invalid request");
       }
       return result;
-
     }
 
 
     /// <summary>
-    /// Processes the tag file request asynchronously.
+    /// Processes the tile request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
-
   }
 }

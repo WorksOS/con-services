@@ -10,6 +10,7 @@ using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -63,7 +64,7 @@ namespace VSS.WebApi.Common
         {
           loggingBuilder.AddProvider(
             p => new SerilogLoggerProvider(
-              SerilogExtensions.Configure(config: kestrelConfig)));
+              SerilogExtensions.Configure(config: kestrelConfig, httpContextAccessor: p.GetService<IHttpContextAccessor>())));
         });
 
       ThreadPool.SetMaxThreads(1024, 2048);

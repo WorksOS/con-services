@@ -112,14 +112,14 @@ node ('jenkinsslave-pod') {
 
     stage('Build Solution') {
         
-		//checkout([$class: 'GitSCM', 
-        //branches: [[name: fullBranchName]],
-        //extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true]]		
-        //])
+//	checkout([$class: 'GitSCM', 
+//        branches: [[name: fullBranchName]],
+//        extensions: [[$class: 'CloneOption', depth: 0, noTags: false, shallow: true,  reference: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/merge:refs/pull/*/merge', userRemoteConfigs: [[credentialsId: 'e49bcbce-3160-44cc-be4a-3abcd6f39848', url: 'https://visionlink.visualstudio.com/VSS/_git/VSS.Productivity3D.MonoRepo']]]]		
+//        ])
 		
-		checkout scm
-		
-		sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
+	checkout scm
+	
+	sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
 		
 	    def build_container = docker.build(container, "-f ./${servicePath}/build/Dockerfile.build . --build-arg SERVICE_PATH=${servicePath}")
 
@@ -175,6 +175,11 @@ node ('jenkinsslave-pod') {
 			dbRuntimeImage.push()
 		}
 	}
+
+	//Do not run acceptance tests if ther eis no dockerfile - mockapi is an example
+	def dockerTestsFileExists = fileExists "./${servicePath}/build/Dockerfile.tests"
+	if (!dockerTestsFileExists)
+		runTests = false
 	
 	if (runTests)
 	{
@@ -200,7 +205,7 @@ node ('jenkinsslave-pod') {
 			def label = "testingpod-${UUID.randomUUID().toString()}"
 
 			// https://github.com/jenkinsci/kubernetes-plugin Pod and container template configuration documentation.
-			podTemplate(label: label, nodeSelector:"lifecycle=Ec2Spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: elbTestContainer, ttyEnabled: true,  envVars: vars)], activeDeadlineSeconds: 300, podRetention: onFailure())
+			podTemplate(label: label, nodeSelector:"lifecycle=Ec2Spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: elbTestContainer, ttyEnabled: true,  envVars: vars)], podRetention: never())
 			{
 				node (label) {
 					dir ("/app/${servicePath}") {

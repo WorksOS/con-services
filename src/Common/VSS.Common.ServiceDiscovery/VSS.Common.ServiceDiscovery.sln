@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "src\VSS.Common.ServiceDiscovery.csproj", "{95AFD2F2-1BE2-40C9-96FB-D7E85754DE8A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery.UnitTests", "tests\VSS.Common.ServiceDiscovery.UnitTests.csproj", "{30537809-B875-4CD9-B786-8E013C67FF6E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{1ED9F879-4CBC-401C-ADBF-269131F47D88}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{323EAFE0-822F-48B0-BC7B-CA78770B29D2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{B02D3E49-7D01-4203-A621-F5150855B109}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{19CC40C5-A1BD-455D-A0F3-2FB4EE3AFADA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{19258A9A-07E4-49FC-A5A4-D0803B064227}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{95AFD2F2-1BE2-40C9-96FB-D7E85754DE8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95AFD2F2-1BE2-40C9-96FB-D7E85754DE8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95AFD2F2-1BE2-40C9-96FB-D7E85754DE8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95AFD2F2-1BE2-40C9-96FB-D7E85754DE8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30537809-B875-4CD9-B786-8E013C67FF6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30537809-B875-4CD9-B786-8E013C67FF6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30537809-B875-4CD9-B786-8E013C67FF6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30537809-B875-4CD9-B786-8E013C67FF6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{323EAFE0-822F-48B0-BC7B-CA78770B29D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{323EAFE0-822F-48B0-BC7B-CA78770B29D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{323EAFE0-822F-48B0-BC7B-CA78770B29D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{323EAFE0-822F-48B0-BC7B-CA78770B29D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B02D3E49-7D01-4203-A621-F5150855B109}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B02D3E49-7D01-4203-A621-F5150855B109}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B02D3E49-7D01-4203-A621-F5150855B109}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B02D3E49-7D01-4203-A621-F5150855B109}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19CC40C5-A1BD-455D-A0F3-2FB4EE3AFADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19CC40C5-A1BD-455D-A0F3-2FB4EE3AFADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19CC40C5-A1BD-455D-A0F3-2FB4EE3AFADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19CC40C5-A1BD-455D-A0F3-2FB4EE3AFADA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19258A9A-07E4-49FC-A5A4-D0803B064227}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19258A9A-07E4-49FC-A5A4-D0803B064227}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19258A9A-07E4-49FC-A5A4-D0803B064227}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19258A9A-07E4-49FC-A5A4-D0803B064227}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21} = {1ED9F879-4CBC-401C-ADBF-269131F47D88}
+		{323EAFE0-822F-48B0-BC7B-CA78770B29D2} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
+		{B02D3E49-7D01-4203-A621-F5150855B109} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
+		{19CC40C5-A1BD-455D-A0F3-2FB4EE3AFADA} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
+		{19258A9A-07E4-49FC-A5A4-D0803B064227} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B83DCA93-4B23-4F6E-BDEC-2F0BA5D56633}
+	EndGlobalSection
+EndGlobal

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -28,10 +29,10 @@ namespace VSS.TRex.Filters
     /// <param name="Filter"></param>
     /// <param name="DataModelID"></param>
     /// <returns></returns>
-    public static RequestErrorStatus PrepareFilterForUse(ICombinedFilter Filter, Guid DataModelID)
+    public static async Task<RequestErrorStatus> PrepareFilterForUse(ICombinedFilter Filter, Guid DataModelID)
     {
       // Fence DesignBoundary = null;
-      RequestErrorStatus Result = RequestErrorStatus.OK;
+      var Result = RequestErrorStatus.OK;
 
       //RequestResult: TDesignProfilerRequestResult;
 
@@ -57,7 +58,7 @@ namespace VSS.TRex.Filters
               LLHCoords[FencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.Fence[FencePointIdx].X), MathUtilities.DegreesToRadians(Filter.SpatialFilter.Fence[FencePointIdx].Y));
             }
 
-            (var errorCode, XYZ[] NEECoords) = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+            (var errorCode, XYZ[] NEECoords) = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
             if (errorCode != RequestErrorStatus.OK)
             {
@@ -66,7 +67,7 @@ namespace VSS.TRex.Filters
               return RequestErrorStatus.FailedToConvertClientWGSCoords;
             }
 
-            for (int fencePointIdx = 0; fencePointIdx < Filter.SpatialFilter.Fence.NumVertices; fencePointIdx++)
+            for (var fencePointIdx = 0; fencePointIdx < Filter.SpatialFilter.Fence.NumVertices; fencePointIdx++)
             {
               Filter.SpatialFilter.Fence[fencePointIdx].X = NEECoords[fencePointIdx].X;
               Filter.SpatialFilter.Fence[fencePointIdx].Y = NEECoords[fencePointIdx].Y;
@@ -81,7 +82,7 @@ namespace VSS.TRex.Filters
             // Note: Lat/Lons in positions are supplied to us in decimal degrees, not radians
             LLHCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionY)) };
 
-            (var errorCode, XYZ[] NEECoords) = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+            (var errorCode, XYZ[] NEECoords) = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
             if (errorCode != RequestErrorStatus.OK)
             {
@@ -146,7 +147,7 @@ namespace VSS.TRex.Filters
     /// <param name="Filters"></param>
     /// <param name="DataModelID"></param>
     /// <returns></returns>
-    public static RequestErrorStatus PrepareFiltersForUse(ICombinedFilter[] Filters, Guid DataModelID)
+    public static async Task<RequestErrorStatus> PrepareFiltersForUse(ICombinedFilter[] Filters, Guid DataModelID)
     {
       var status = RequestErrorStatus.Unknown;
 
@@ -154,7 +155,7 @@ namespace VSS.TRex.Filters
       {
         if (filter != null)
         {
-          status = PrepareFilterForUse(filter, DataModelID);
+          status = await PrepareFilterForUse(filter, DataModelID);
 
           if (status != RequestErrorStatus.OK)
             break;

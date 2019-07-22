@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DITAGFileAndSubGridRequestsWithIgniteFixture : DITAGFileAndSubGridRequestsFixture, IDisposable
   {
-    public DITAGFileAndSubGridRequestsWithIgniteFixture() : base()
+    public DITAGFileAndSubGridRequestsWithIgniteFixture()
     {
       SetupFixture();
     }

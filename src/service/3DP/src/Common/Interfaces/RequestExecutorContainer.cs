@@ -235,5 +235,6 @@ namespace VSS.Productivity3D.Common.Interfaces
     {
       ContractExecutionStates?.ClearDynamic();
     }
+
   }
 }

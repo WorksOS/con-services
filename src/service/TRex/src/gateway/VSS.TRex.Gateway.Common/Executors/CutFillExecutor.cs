@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -11,7 +10,6 @@ using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -34,9 +32,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      CutFillDetailsRequest request = item as CutFillDetailsRequest;
+      var request = item as CutFillDetailsRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<CutFillDetailsRequest>();
@@ -48,8 +46,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      CutFillStatisticsOperation operation = new CutFillStatisticsOperation();
-      CutFillStatisticsResult cutFillResult = operation.Execute(new CutFillStatisticsArgument()
+      var operation = new CutFillStatisticsOperation();
+      var cutFillResult = await operation.ExecuteAsync(new CutFillStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
@@ -69,12 +67,11 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
     /// <summary>
-    /// Processes the cut/fill details request asynchronously.
+    /// Processes the tile request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
-
   }
 }

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.Tile.Service.Common.Models;
 
 namespace VSS.Tile.Service.Common.Services

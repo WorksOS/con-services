@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Common;
@@ -59,13 +60,13 @@ namespace VSS.TRex.Reports.Gridded.Executors
     /// Executor that implements requesting and rendering grid information to create the grid rows
     /// </summary>
     /// <returns></returns>
-    public bool Execute()
+    public async Task<bool> ExecuteAsync()
     {
       Log.LogInformation($"Performing Execute for DataModel:{_griddedReportRequestArgument.ProjectID}");
 
       ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
 
-      Guid requestDescriptor = Guid.NewGuid();
+      var requestDescriptor = Guid.NewGuid();
 
       var task = DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.GriddedReport) as GriddedReportTask;
 
@@ -119,7 +120,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
           _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,
           _griddedReportRequestArgument.Azimuth);
 
-      if (!processor.Build())
+      if (!await processor.BuildAsync())
       {
         Log.LogError($"Failed to build pipeline processor for request to model {_griddedReportRequestArgument.ProjectID}");
         return false;

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
@@ -34,7 +34,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CoordinateConversionRequest;
 
@@ -56,10 +56,10 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       switch (request.ConversionType)
       {
         case TwoDCoordinateConversionType.NorthEastToLatLon:
-          conversionResult = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates);
+          conversionResult = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates);
           break;
         case TwoDCoordinateConversionType.LatLonToNorthEast:
-          conversionResult = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(csib, coordinates);
+          conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(csib, coordinates);
           break;
         default:
           throw new ArgumentException($"Unknown TwoDCoordinateConversionType {Convert.ToInt16(request.ConversionType)}");
@@ -82,5 +82,12 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       return new CoordinateConversionResult(convertedPoints);
     }
 
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

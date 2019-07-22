@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.ConfigurationStore;
 using VSS.Productivity3D.Push.Abstractions;
 
 namespace VSS.Productivity3D.Push.Clients
@@ -122,7 +119,7 @@ namespace VSS.Productivity3D.Push.Clients
         {
           Connected = false;
           // This is a known error, if there is an connection closed (due to pod restarting, or network issue)
-          Logger.LogError($"Failed to connect due to exception - Is the Server online? Message: {e.Message}");
+          Logger.LogError(e, "Failed to connect due to exception - Is the Server online?");
           await Task.Delay(RECONNECT_DELAY_MS);
         }
         catch (Exception e)

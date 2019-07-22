@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,18 +32,18 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     /// </summary>
     /// 
     [TestMethod]
-    public void CS_CoordinateSystemControllerPostSuccessful()
+    public async Task CS_CoordinateSystemControllerPostSuccessful()
     {
-      byte[] csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+      byte[] csFileContent = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
-      CoordinateSystemFile request = new CoordinateSystemFile(PD_MODEL_ID, csFileContent, "dummy.dc");
+      var request = new CoordinateSystemFile(PD_MODEL_ID, csFileContent, "dummy.dc");
 
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
       var mockConfigStore = new Mock<IConfigurationStore>();
 
-      TASNodeErrorStatus raptorResult = TASNodeErrorStatus.asneOK;
+      var raptorResult = TASNodeErrorStatus.asneOK;
 
       TCoordinateSystemSettings csSettings;
 
@@ -52,9 +53,9 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
         request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateSystemExecutorPost executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      ContractExecutionResult result = executor.Process(request);
+      var result = await executor.ProcessAsync(request);
 
       // Assert
       Assert.IsNotNull(result);
@@ -68,16 +69,16 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     [TestMethod]
     public void CS_CoordinateSystemControllerPostFailed()
     {
-      byte[] csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+      byte[] csFileContent = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
-      CoordinateSystemFile request = new CoordinateSystemFile(PD_MODEL_ID, csFileContent, "dummy.dc");
+      var request = new CoordinateSystemFile(PD_MODEL_ID, csFileContent, "dummy.dc");
 
       // Create the mock PDSClient with unsuccessful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
       var mockConfigStore = new Mock<IConfigurationStore>();
 
-      TASNodeErrorStatus raptorResult = TASNodeErrorStatus.asneCouldNotConvertCSDFile;
+      var raptorResult = TASNodeErrorStatus.asneCouldNotConvertCSDFile;
 
       TCoordinateSystemSettings csSettings;
 
@@ -87,9 +88,9 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
         request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateSystemExecutorPost executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
     }
     #endregion
 
@@ -100,18 +101,18 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     /// </summary>
     /// 
     [TestMethod]
-    public void CS_CoordinateSystemControllerPostValidateSuccessful()
+    public async Task CS_CoordinateSystemControllerPostValidateSuccessful()
     {
-      byte[] csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+      byte[] csFileContent = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
-      CoordinateSystemFileValidationRequest request = new CoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
+      var request = new CoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
 
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
       var mockConfigStore = new Mock<IConfigurationStore>();
 
-      TASNodeErrorStatus raptorResult = TASNodeErrorStatus.asneOK;
+      var raptorResult = TASNodeErrorStatus.asneOK;
 
       TCoordinateSystemSettings csSettings;
 
@@ -121,9 +122,9 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
         -1, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateSystemExecutorPost executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      ContractExecutionResult result = executor.Process(request);
+      var result = await executor.ProcessAsync(request);
 
       // Assert
       Assert.IsNotNull(result);
@@ -137,16 +138,16 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     [TestMethod]
     public void CS_CoordinateSystemControllerPostValidationFailed()
     {
-      byte[] csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+      byte[] csFileContent = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
-      CoordinateSystemFileValidationRequest request = new CoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
+      var request = new CoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
 
       // Create the mock PDSClient with unsuccessful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
       var mockConfigStore = new Mock<IConfigurationStore>();
 
-      TASNodeErrorStatus raptorResult = TASNodeErrorStatus.asneCouldNotConvertCSDFile;
+      var raptorResult = TASNodeErrorStatus.asneCouldNotConvertCSDFile;
 
       TCoordinateSystemSettings csSettings;
 
@@ -156,9 +157,9 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
         -1, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateSystemExecutorPost executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
     }
 
     #endregion
@@ -170,25 +171,25 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     /// </summary>
     /// 
     [TestMethod]
-    public void CS_CoordinateSystemControllerGetSuccessful()
+    public async Task CS_CoordinateSystemControllerGetSuccessful()
     {
-      ProjectID request = new ProjectID(PD_MODEL_ID);
+      var request = new ProjectID(PD_MODEL_ID);
 
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
       var mockConfigStore = new Mock<IConfigurationStore>();
 
-      TASNodeErrorStatus raptorResult = TASNodeErrorStatus.asneOK;
+      var raptorResult = TASNodeErrorStatus.asneOK;
 
       TCoordinateSystemSettings csSettings;
 
       mockRaptorClient.Setup(prj => prj.RequestCoordinateSystemDetails(request.ProjectId.Value, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateSystemExecutorGet executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      ContractExecutionResult result = executor.Process(request);
+      var result = await executor.ProcessAsync(request);
 
       // Assert
       Assert.IsNotNull(result);
@@ -202,23 +203,23 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     [TestMethod]
     public void CS_CoordinateSystemControllerGettFailed()
     {
-      ProjectID request = new ProjectID(PD_MODEL_ID);
+      var request = new ProjectID(PD_MODEL_ID);
 
       // Create the mock PDSClient with unsuccessful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
       var mockConfigStore = new Mock<IConfigurationStore>();
 
-      TASNodeErrorStatus raptorResult = TASNodeErrorStatus.asneNoSuchDataModel;
+      var raptorResult = TASNodeErrorStatus.asneNoSuchDataModel;
 
       TCoordinateSystemSettings csSettings;
 
       mockRaptorClient.Setup(prj => prj.RequestCoordinateSystemDetails(request.ProjectId.Value, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateSystemExecutorGet executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
     }
     #endregion
@@ -230,7 +231,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     /// </summary>
     /// 
     [TestMethod]
-    public void CS_CoordinateConversionSuccessful()
+    public async Task CS_CoordinateConversionSuccessful()
     {
       var request = new CoordinateConversionRequest(1, TwoDCoordinateConversionType.NorthEastToLatLon,
           new[]
@@ -245,7 +246,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       var mockLogger = new Mock<ILoggerFactory>();
       var mockConfigStore = new Mock<IConfigurationStore>();
 
-      TCoordReturnCode raptorResult = TCoordReturnCode.nercNoError;
+      var raptorResult = TCoordReturnCode.nercNoError;
 
       TCoordPointList pointList;
 
@@ -256,9 +257,9 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
         out pointList)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateConversionExecutor executor = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      ContractExecutionResult result = executor.Process(request);
+      var result = await executor.ProcessAsync(request);
 
       // Assert
       Assert.IsNotNull(result);
@@ -285,7 +286,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       var mockLogger = new Mock<ILoggerFactory>();
       var mockConfigStore = new Mock<IConfigurationStore>();
 
-      TCoordReturnCode raptorResult = TCoordReturnCode.nercFailedToConvertCoords;
+      var raptorResult = TCoordReturnCode.nercFailedToConvertCoords;
 
       TCoordPointList pointList;
 
@@ -296,9 +297,9 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
         out pointList)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateConversionExecutor executor = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
     }
     #endregion
   }

@@ -64,7 +64,8 @@ namespace VSS.TRex.Profiling
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
-      VolumeComputationType volumeType) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
+      VolumeComputationType volumeType) 
+      : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
     {
       svDesignWrapper = referenceDesignWrapper;
       VolumeType = volumeType;
@@ -150,7 +151,7 @@ namespace VSS.TRex.Profiling
         x.CellOverrideMask = cellOverrideMask;
 
         // Reach into the sub grid request layer and retrieve an appropriate sub grid
-        var result = x.RequestSubGridInternal(address, prodDataAtAddress, true, out var clientGrid);
+        var result = x.RequestSubGridInternal(address, null, prodDataAtAddress, true, out var clientGrid);
         if (result != ServerRequestResult.NoError)
           Log.LogError($"Request for sub grid {address} request failed with code {result}");
 

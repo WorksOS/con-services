@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     }
 
     [TestMethod]
-    public void MachineIdsExecutor_TRex_NoProjectUid()
+    public async Task MachineIdsExecutor_TRex_NoProjectUid()
     {
       var projectIds = new ProjectID();
 
@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);
 
-      var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectIds)).Result;
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectIds));
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
       Assert.AreEqual("Failed to get/update data requested by GetMachineIdsExecutor", ex.GetResult.Message);
     }

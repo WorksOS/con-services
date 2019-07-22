@@ -35,15 +35,12 @@ namespace VSS.Productivity3D.Scheduler.Proxy
       //TODO: Use the new "SCHEDULER_INTERNAL_BASE_URL" and a route to reduce the number of env vars
       var payload = JsonConvert.SerializeObject(request);
       var result = await SendRequest<ScheduleJobResult>("SCHEDULER_INTERNAL_EXPORT_URL", payload, customHeaders, null, HttpMethod.Post, string.Empty);
+
       if (result != null)
-      {
         return result;
-      }
-      else
-      {
-        log.LogDebug("Failed to schedule a job");
-        return null;
-      }
+
+      log.LogDebug("Failed to schedule a job");
+      return null;
     }
 
     /// <summary>
@@ -57,15 +54,12 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     {
       var result = await GetMasterDataItem<JobStatusResult>("SCHEDULER_EXTERNAL_EXPORT_URL",
         customHeaders, string.Empty, $"/{jobId}");
+
       if (result != null)
-      {
         return result;
-      }
-      else
-      {
-        log.LogDebug("Failed to get job data");
-        return null;
-      }
+
+      log.LogDebug("Failed to get job data");
+      return null;
     }
 
     /// <inheritdoc />
@@ -112,6 +106,7 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     {
       var payload = JsonConvert.SerializeObject(request);
       var result = await SendRequest<ScheduleJobResult>("SCHEDULER_INTERNAL_BASE_URL", payload, customHeaders, "/runjob", HttpMethod.Post, string.Empty);
+
       if (result != null)
         return result;
 

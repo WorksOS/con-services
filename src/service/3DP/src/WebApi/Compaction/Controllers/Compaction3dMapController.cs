@@ -151,55 +151,59 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] ushort height,
       [FromQuery] string bbox)
     {
-      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
 
-      CompactionProjectSettingsColors projectSettingsColors;
-      DesignDescriptor design = null;
-      DesignDescriptor cutFillDesign = null;
+      Task<CompactionProjectSettingsColors> projectSettingsColors;
+      Task<DesignDescriptor> design = null;
+      Task<DesignDescriptor> cutFillDesign = null;
       if (type == MapDisplayType.DesignMap)
       {
+        design = GetAndValidateDesignDescriptor(projectUid, designUid);
+
         projectSettingsColors = GetGreyScaleHeightColors();
-        design = await GetAndValidateDesignDescriptor(projectUid, designUid);
+
+        await Task.WhenAll(projectId, projectSettings, filter, design, projectSettingsColors);
         mode = DisplayMode.Design3D;
       }
       else if (type == MapDisplayType.HeightMap)
       {
         projectSettingsColors = GetGreyScaleHeightColors();
+        
+        await Task.WhenAll(projectId, projectSettings, filter, projectSettingsColors);
         mode = DisplayMode.Height; // The height map must be of type height....
       }
       else if(type == MapDisplayType.Texture)
       {
         // Only used in texture mode
-        cutFillDesign = cutfillDesignUid.HasValue
-          ? await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid)
-          : null;
+        cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
 
-        projectSettingsColors = await GetProjectSettingsColors(projectUid);
+        projectSettingsColors = GetProjectSettingsColors(projectUid);
+
+        await Task.WhenAll(projectId, projectSettings, filter, cutFillDesign, projectSettingsColors);
       }
       else
-      {
         throw new NotImplementedException();
-      }
-
-      var filter = await GetCompactionFilter(projectUid, filterUid);
 
       var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
-        tileService.GetProductionDataTile(projectSettings,
-          projectSettingsColors,
-          filter,
-          projectId,
+        tileService.GetProductionDataTile(
+          projectSettings.Result,
+          projectSettingsColors.Result,
+          filter.Result,
+          projectId.Result,
           projectUid,
           mode,
           width,
           height,
           boundingBoxHelper.GetBoundingBox(bbox),
-          design ?? cutFillDesign, // If we have a design, it means we are asking for the design height map - otherwise we may have a cut fill design to determine the texture
+          design?.Result ?? cutFillDesign?.Result, // If we have a design, it means we are asking for the design height map - otherwise we may have a cut fill design to determine the texture
           null,
           null,
           null,
           null,
           CustomHeaders, false));
+
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
       return tileResult;
@@ -266,11 +270,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var tins = new List<TrimbleTINModel>();
 
-      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var userPreferences = await prefProxy.GetUserPreferences(CustomHeaders);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var design = await GetAndValidateDesignDescriptor(projectUid, designUid);
+      var projectTask = ((RaptorPrincipal) User).GetProject(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var userPreferences = prefProxy.GetUserPreferences(CustomHeaders);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var designTask = GetAndValidateDesignDescriptor(projectUid, designUid);
       if (userPreferences == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -278,14 +282,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             "Failed to retrieve preferences for current user"));
       }
 
+      await Task.WhenAll(projectTask, projectSettings, userPreferences, designTask);
+
+      var project = projectTask.Result;
+      var design = designTask.Result;
+
       // Get the terrain mesh
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter))
-        .SetUserPreferences(userPreferences)
+          .ProjectSettings(projectSettings.Result)
+          .Filter(filter.Result))
+        .SetUserPreferences(userPreferences.Result)
 #if RAPTOR
         .SetRaptorClient(raptorClient)
 #endif
@@ -306,46 +315,47 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // First get the export of production data from Raptor
       // comes in a zip file
-      var result = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionExportExecutor>(LoggerFactory,
+      var result = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory.Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
             raptorClient, 
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy,
             customHeaders: CustomHeaders)
-          .Process(exportRequest) as CompactionExportResult);
+          .ProcessAsync(exportRequest)) as CompactionExportResult;
 
-      var zipStream = new FileStream(result.FullFileName, FileMode.Open);
-
-      using (var archive = new ZipArchive(zipStream))
+      if (result != null)
       {
-        // The zip file will have exactly one file in it
-        if (archive.Entries.Count == 1)
+        var zipStream = new FileStream(result.FullFileName, FileMode.Open);
+
+        using (var archive = new ZipArchive(zipStream))
         {
-          try
+          // The zip file will have exactly one file in it
+          if (archive.Entries.Count == 1)
           {
-            var tin = new TrimbleTINModel();
-            using (var stream = archive.Entries[0].Open() as DeflateStream)
-            using (var ms = new MemoryStream())
+            try
             {
-              // Unzip the file, copy to memory as the TIN file needs the byte array, and stream
-              stream.CopyTo(ms);
-              ms.Seek(0, SeekOrigin.Begin);
+              var tin = new TrimbleTINModel();
+              using (var stream = archive.Entries[0].Open() as DeflateStream)
+              using (var ms = new MemoryStream())
+              {
+                // Unzip the file, copy to memory as the TIN file needs the byte array, and stream
+                stream.CopyTo(ms);
+                ms.Seek(0, SeekOrigin.Begin);
 
-              tin.LoadFromStream(ms, ms.GetBuffer());
+                tin.LoadFromStream(ms, ms.GetBuffer());
 
-              tins.Add(tin);
+                tins.Add(tin);
+              }
+            }
+            catch (TTMFileReadException e)
+            {
+              // Not valid, continue
+              Log.LogWarning(e, "Failed to parse ttm in zip file");
             }
           }
-          catch (TTMFileReadException e)
-          {
-            // Not valid, continue
-            Log.LogWarning(e, "Failed to parse ttm in zip file");
-          }
-        }
 
+        }
       }
 
       // If we didn't get a valid file, then we failed to read the ttm from raptor
@@ -396,7 +406,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         };
 
         var conversionRequest = new CoordinateConversionRequest(projectUid, TwoDCoordinateConversionType.NorthEastToLatLon, conversionCoordinates);
-        var conversionResult = trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(conversionRequest, "/coordinateconversion", CustomHeaders).Result;
+        var conversionResult = await trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(conversionRequest, "/coordinateconversion", CustomHeaders);
 
         if (conversionResult.Code != 0 || conversionResult.ConversionCoordinates.Length != COORDS_ARRAY_LENGTH)
           throw new ServiceException(HttpStatusCode.BadRequest,
@@ -447,7 +457,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         using (var stream = textureZipEntry.Open())
         {
           // Write the texture to the zip
-          var textureFileStream = await GetTexture(projectUid, designUid, projectSettings, filter, mode, bbox);
+          var textureFileStream = await GetTexture(projectUid, designUid, projectSettings.Result, filter.Result, mode, bbox);
           textureFileStream.FileStream.CopyTo(stream);
         }
 
@@ -500,29 +510,30 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       CompactionProjectSettings projectSettings, FilterResult filter, DisplayMode mode, string bbox)
     {
       
-      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
-      var cutFillDesign = cutfillDesignUid.HasValue
-        ? await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid)
-        : null;
+      var project = ((RaptorPrincipal) User).GetProject(projectUid);
+      var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
 
-      var projectSettingsColors = await GetProjectSettingsColors(projectUid);
-      
+      var projectSettingsColors = GetProjectSettingsColors(projectUid);
+
+      await Task.WhenAll(project, cutFillDesign, projectSettingsColors);
+
       var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
         tileService.GetProductionDataTile(projectSettings,
-          projectSettingsColors,
+          projectSettingsColors.Result,
           filter,
-          project.LegacyProjectId,
+          project.Result.LegacyProjectId,
           projectUid,
           mode,
           4096,
           4096,
           boundingBoxHelper.GetBoundingBox(bbox),
-          cutFillDesign, // If we have a design, it means we are asking for the design height map - otherwise we may have a cut fill design to determine the texture
+          cutFillDesign.Result, // If we have a design, it means we are asking for the design height map - otherwise we may have a cut fill design to determine the texture
           null,
           null,
           null,
           null,
           CustomHeaders, false));
+
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
       return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
@@ -627,7 +638,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
     }
 
-    private CompactionProjectSettingsColors GetGreyScaleHeightColors()
+    private Task<CompactionProjectSettingsColors> GetGreyScaleHeightColors()
     {
       var colors = new List<uint>();
       for (var i = 0; i <= 255; i++)
@@ -635,7 +646,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         colors.Add((uint)i << 16 | (uint)i << 8 | (uint)i << 0);
       }
 
-      return CompactionProjectSettingsColors.Create(false, colors);
+      return Task.FromResult(CompactionProjectSettingsColors.Create(false, colors));
     }
   }
 }

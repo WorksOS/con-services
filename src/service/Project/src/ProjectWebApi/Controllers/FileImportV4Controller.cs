@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
@@ -493,7 +494,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         fileDescriptor = FileDescriptor.CreateFileDescriptor(
           FileSpaceId,
           $"/{customerUid}/{projectUid}",
-          ImportedFileUtils.IncludeSurveyedUtcInName(Path.GetFileName(filename), surveyedUtc.Value));
+          filename);
       }
       else
       {
@@ -515,7 +516,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 surveyedUtc, FileSpaceId, logger, serviceExceptionHandler, fileRepo)
               .ConfigureAwait(false);
           }
-          // This whole uploadToTCC workflow is strictkly only for the TCC -> DataOcean migration.
+          // This whole uploadToTCC workflow is strictly only for the TCC -> DataOcean migration.
           else
           {
             logger.LogDebug($"{nameof(UpsertFileInternal)}. Opted out of uploading to TCC, constructing pseudo fileDescriptor.");
@@ -523,7 +524,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             var tccFileName = Path.GetFileName(filename);
             if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
             {
-              tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
+              tccFileName = tccFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
             }
 
             fileDescriptor = FileDescriptor.CreateFileDescriptor(

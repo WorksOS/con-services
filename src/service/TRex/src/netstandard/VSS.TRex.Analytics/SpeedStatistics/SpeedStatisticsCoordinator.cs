@@ -26,7 +26,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			SiteModelID = argument.ProjectID,
 			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.CellSize,
-			TargetMachineSpeed = argument.TargetMachineSpeed
+			TargetMachineSpeed = argument.Overrides.TargetMachineSpeed
 		};
 
 		/// <summary>

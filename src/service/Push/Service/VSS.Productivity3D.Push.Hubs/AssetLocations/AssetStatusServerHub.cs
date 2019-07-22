@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity.Push.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;

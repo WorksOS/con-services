@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
@@ -49,6 +52,7 @@ namespace VSS.TRex.Profiling
     private readonly ICellLiftBuilder CellLiftBuilder;
 
     private ProfileCell ProfileCell;
+    private IOverrideParameters Overrides;
 
     private CellProfileAnalyzer()
     {}
@@ -61,17 +65,21 @@ namespace VSS.TRex.Profiling
     /// <param name="filterSet"></param>
     /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
+    /// <param name="overrides"></param>
     public CellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
-      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
+      ICellLiftBuilder cellLiftBuilder,
+      IOverrideParameters overrides) 
+      : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
     {
       CellLiftBuilder = cellLiftBuilder;
 
       PassFilter = filterSet.Filters[0].AttributeFilter;
       PassFilterAnnex = new CellPassAttributeFilterProcessingAnnex();
       CellFilter = filterSet.Filters[0].SpatialFilter;
+      Overrides = overrides;
     }
 
     /// <summary>
@@ -87,7 +95,7 @@ namespace VSS.TRex.Profiling
       out ushort maxWarning)
     {
       minWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _, CellPassConsts.NullMaterialTemperatureValue);
-      maxWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _, CellPassConsts.NullMaterialTemperatureValue);
+      maxWarning = SiteModel.MachinesTargetValues[machineID].TargetMaxMaterialTemperature.GetValueAtDate(time, out int _, CellPassConsts.NullMaterialTemperatureValue);
     }
 
     /// <summary>
@@ -131,7 +139,7 @@ namespace VSS.TRex.Profiling
     /// </summary>
     private void CalculateSummaryCellAttributeData()
     {
-      TargetPassCountRange PassCountTargetRange = new TargetPassCountRange();
+      PassCountRangeRecord PassCountTargetRange = new PassCountRangeRecord();
 
       ProfileCell.CellCCV = CellPassConsts.NullCCV;
       ProfileCell.CellTargetCCV = CellPassConsts.NullCCV;
@@ -172,7 +180,7 @@ namespace VSS.TRex.Profiling
               continue;
 
             for (int PassIndex = ProfileCell.Layers[I].StartCellPassIdx;
-              PassIndex < ProfileCell.Layers[I].EndCellPassIdx;
+              PassIndex <= ProfileCell.Layers[I].EndCellPassIdx;
               PassIndex++)
             {
               if (ProfileCell.Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed < ProfileCell.CellMinSpeed)
@@ -194,10 +202,10 @@ namespace VSS.TRex.Profiling
 
             ProfileCell.TopLayerPassCount = (ushort) (ProfileCell.FilteredHalfPassCount / 2);
 
-            if (Dummy_LiftBuildSettings.OverrideTargetPassCount)
+            if (Overrides.OverrideTargetPassCount)
             {
-              ProfileCell.TopLayerPassCountTargetRangeMin = Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Min;
-              ProfileCell.TopLayerPassCountTargetRangeMax = Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Max;
+              ProfileCell.TopLayerPassCountTargetRangeMin = Overrides.OverridingTargetPassCountRange.Min;
+              ProfileCell.TopLayerPassCountTargetRangeMax = Overrides.OverridingTargetPassCountRange.Max;
             }
             else if (ProfileCell.Layers[I].TargetPassCount == 0)
             {
@@ -249,8 +257,8 @@ namespace VSS.TRex.Profiling
                   Dummy_LiftBuildSettings.IncludeSuperseded)
               {
                 ProfileCell.CellPreviousMeasuredCCV = ProfileCell.Passes.FilteredPassData[PassSearchIdx].FilteredPass.CCV;
-                ProfileCell.CellPreviousMeasuredTargetCCV = Dummy_LiftBuildSettings.OverrideMachineCCV 
-                  ? Dummy_LiftBuildSettings.OverridingMachineCCV 
+                ProfileCell.CellPreviousMeasuredTargetCCV = Overrides.OverrideMachineCCV 
+                  ? Overrides.OverridingMachineCCV 
                   : ProfileCell.Passes.FilteredPassData[PassSearchIdx].TargetValues.TargetCCV;
                 break;
               }
@@ -258,8 +266,8 @@ namespace VSS.TRex.Profiling
               PassSearchIdx--;
             }
 
-            if (Dummy_LiftBuildSettings.OverrideMachineCCV)
-              ProfileCell.CellTargetCCV = Dummy_LiftBuildSettings.OverridingMachineCCV;
+            if (Overrides.OverrideMachineCCV)
+              ProfileCell.CellTargetCCV = Overrides.OverridingMachineCCV;
             else if (ProfileCell.Layers[I].TargetCCV == CellPassConsts.NullCCV)
               ProfileCell.CellTargetCCV = GetTargetCCV(ProfileCell.Layers[I].CCV_MachineID, ProfileCell.Layers[I].CCV_Time);
             else
@@ -273,8 +281,8 @@ namespace VSS.TRex.Profiling
           {
             ProfileCell.CellMDP = ProfileCell.Layers[I].MDP;
             ProfileCell.CellMDPElev = ProfileCell.Layers[I].MDP_Elev;
-            if (Dummy_LiftBuildSettings.OverrideMachineMDP)
-              ProfileCell.CellTargetMDP = Dummy_LiftBuildSettings.OverridingMachineMDP;
+            if (Overrides.OverrideMachineMDP)
+              ProfileCell.CellTargetMDP = Overrides.OverridingMachineMDP;
             else if (ProfileCell.Layers[I].TargetMDP == CellPassConsts.NullMDP)
               ProfileCell.CellTargetMDP = GetTargetMDP(ProfileCell.Layers[I].MDP_MachineID, ProfileCell.Layers[I].MDP_Time);
             else
@@ -302,12 +310,12 @@ namespace VSS.TRex.Profiling
             ProfileCell.CellMaterialTemperature = ProfileCell.Layers[I].MaterialTemperature;
             ProfileCell.CellMaterialTemperatureElev = ProfileCell.Layers[I].MaterialTemperature_Elev;
 
-            if (Dummy_LiftBuildSettings.OverrideTemperatureWarningLevels)
+            if (Overrides.OverrideTemperatureWarningLevels)
             {
               ProfileCell.CellMaterialTemperatureWarnMin =
-                Dummy_LiftBuildSettings.OverridingTemperatureWarningLevels.Min;
+                Overrides.OverridingTemperatureWarningLevels.Min;
               ProfileCell.CellMaterialTemperatureWarnMax =
-                Dummy_LiftBuildSettings.OverridingTemperatureWarningLevels.Max;
+                Overrides.OverridingTemperatureWarningLevels.Max;
             }
             else if (ProfileCell.CellMaterialTemperatureWarnMin == CellPassConsts.NullMaterialTemperatureValue &&
                      ProfileCell.CellMaterialTemperatureWarnMax == CellPassConsts.NullMaterialTemperatureValue)

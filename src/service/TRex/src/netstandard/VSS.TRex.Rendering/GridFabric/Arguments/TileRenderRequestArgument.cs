@@ -65,7 +65,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       writer.WriteInt((int)Mode);
 
       writer.WriteBoolean(Palette != null);
-      ((PaletteBase)Palette)?.ToBinary(writer);
+      Palette?.ToBinary(writer);
 
       writer.WriteBoolean(Extents != null);
       Extents.ToBinary(writer);
@@ -90,7 +90,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       if (reader.ReadBoolean())
       {
         Palette = TileRenderRequestArgumentPaletteFactory.GetPalette(Mode);
-        ((PaletteBase)Palette).FromBinary(reader);
+        Palette.FromBinary(reader);
       }
 
       if (reader.ReadBoolean())

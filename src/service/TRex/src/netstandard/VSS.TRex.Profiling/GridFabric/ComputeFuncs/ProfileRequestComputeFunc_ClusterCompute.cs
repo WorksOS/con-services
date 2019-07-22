@@ -21,12 +21,12 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
 
       try
       {
-        var Executor = new ComputeProfileExecutor_ClusterCompute<T>(arg.ProfileStyle, arg.ProjectID, arg.ProfileTypeRequired, arg.NEECoords, arg.Filters,
-          arg.ReferenceDesign, arg.ReturnAllPassesAndLayers, arg.VolumeType);
+        var executor = new ComputeProfileExecutor_ClusterCompute<T>(arg.ProfileStyle, arg.ProjectID, arg.ProfileTypeRequired, arg.NEECoords, arg.Filters,
+          arg.ReferenceDesign, arg.ReturnAllPassesAndLayers, arg.VolumeType, arg.Overrides);
 
         Log.LogInformation("Executing profiler.Execute()");
 
-        return Executor.Execute();
+        return executor.Execute();
       }
       finally
       {

@@ -13,6 +13,7 @@ namespace VSS.TRex.Tests.Filters
       fva.Should().NotBeNull();
       fva.CellProfile.Should().BeNull();
       fva.ProbePositions.Should().NotBeNull();
+      fva.Overrides.Should().NotBeNull();
     }
 
     [Fact]

@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Designs.GridFabric.Arguments;
+﻿using System.Threading.Tasks;
+using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
@@ -16,6 +17,14 @@ namespace VSS.TRex.Designs.GridFabric.Requests
       return Compute.Apply(func, arg);
     }
 
+    public override Task<DesignBoundaryResponse> ExecuteAsync(DesignBoundaryArgument arg)
+    {
+      // Construct the function to be used
+      var func = new DesignBoundaryComputeFunc();
+
+      return Compute.ApplyAsync(func, arg);
+    }
+
     public static DesignBoundaryResponse Execute(ISiteModel siteModel, DesignOffset referenceDesign)
     {
       var request = new DesignBoundaryRequest();
@@ -27,5 +36,15 @@ namespace VSS.TRex.Designs.GridFabric.Requests
       });
     }
 
+    public static Task<DesignBoundaryResponse> ExecuteAsync(ISiteModel siteModel, DesignOffset referenceDesign)
+    {
+      var request = new DesignBoundaryRequest();
+
+      return request.ExecuteAsync(new DesignBoundaryArgument
+      {
+        ProjectID = siteModel.ID,
+        ReferenceDesign = referenceDesign
+      });
+    }
   }
 }

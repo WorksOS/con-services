@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/report/stationoffset")]
     [HttpPost]
-    public FileResult PostStationOffsetReport(
+    public async Task<FileResult> PostStationOffsetReport(
       [FromBody] CompactionReportStationOffsetTRexRequest reportStationOffsetRequest,
       [FromServices] IReportDataValidationUtility reportDataValidationUtility)
     {
@@ -48,10 +48,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       reportDataValidationUtility.ValidateData(nameof(PostStationOffsetReport), reportStationOffsetRequest.ProjectUid, (object)reportStationOffsetRequest);
       ValidateFilterMachines(nameof(PostStationOffsetReport), reportStationOffsetRequest.ProjectUid, reportStationOffsetRequest.Filter);
 
-      var stationOffsetReportDataResult = WithServiceExceptionTryExecute(() =>
+      var stationOffsetReportDataResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<StationOffsetReportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(reportStationOffsetRequest) as GriddedReportDataResult);
+          .ProcessAsync(reportStationOffsetRequest)) as GriddedReportDataResult;
 
       if (stationOffsetReportDataResult?.GriddedData == null)
       {
@@ -72,7 +72,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/report/grid")]
     [HttpPost]
-    public FileResult PostGriddedReport(
+    public async Task<FileResult> PostGriddedReport(
       [FromBody] CompactionReportGridTRexRequest reportGridRequest,
       [FromServices] IReportDataValidationUtility reportDataValidationUtility)
     {
@@ -82,10 +82,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       reportDataValidationUtility.ValidateData(nameof(PostGriddedReport), reportGridRequest.ProjectUid, (object)reportGridRequest);
       ValidateFilterMachines(nameof(PostGriddedReport), reportGridRequest.ProjectUid, reportGridRequest.Filter);
 
-      var griddedReportDataResult =  WithServiceExceptionTryExecute(() =>
+      var griddedReportDataResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<GriddedReportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(reportGridRequest) as GriddedReportDataResult);
+          .ProcessAsync(reportGridRequest)) as GriddedReportDataResult;
 
       if (griddedReportDataResult?.GriddedData == null)
       {
@@ -95,7 +95,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get gridded report data for projectUid: {reportGridRequest.ProjectUid}"));
       }
 
-      return new FileStreamResult(new MemoryStream(griddedReportDataResult?.GriddedData), "application/octet-stream");
+      return new FileStreamResult(new MemoryStream(griddedReportDataResult.GriddedData), "application/octet-stream");
     }
   }
 }

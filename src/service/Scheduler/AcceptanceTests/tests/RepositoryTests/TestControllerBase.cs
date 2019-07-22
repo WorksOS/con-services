@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
+using VSS.Serilog.Extensions;
+using Xunit;
 
 namespace RepositoryTests
 {
@@ -18,31 +19,24 @@ namespace RepositoryTests
     protected IConfigurationStore ConfigStore;
 
     private IServiceProvider _serviceProvider;
-    private ILogger _log;
-    private readonly string loggerRepoName = "UnitTestLogTest";
-
 
     public void SetupDI()
     {
+      var logger = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Scheduler.Respository.AcceptanceTests.log"));
       var serviceCollection = new ServiceCollection();
 
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>();
+      serviceCollection.AddLogging()
+                       .AddSingleton(logger)
+                       .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
       _serviceProvider = serviceCollection.BuildServiceProvider();
-      ConfigStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
-      this.LoggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-      _log = loggerFactory.CreateLogger<TestControllerBase>();
 
-      Assert.IsNotNull(_serviceProvider.GetService<IConfigurationStore>());
-      Assert.IsNotNull(_serviceProvider.GetService<ILoggerFactory>());
+      ConfigStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
+
+      LoggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
+
+      Assert.NotNull(_serviceProvider.GetService<IConfigurationStore>());
+      Assert.NotNull(_serviceProvider.GetService<ILoggerFactory>());
     }
 
 
@@ -53,7 +47,6 @@ namespace RepositoryTests
       string connectionString = ConfigStore.GetConnectionString("VSPDB");
       Console.WriteLine($"CheckSchema() connectionString: {connectionString}");
 
-
       using (var connection = new MySqlConnection(connectionString))
       {
         try
@@ -63,16 +56,15 @@ namespace RepositoryTests
           //Check table exists
           var table = connection.Query(GetQuery(tableName, true)).FirstOrDefault();
 
-          Assert.IsNotNull(table, $"Missing table schema: {tableName}, on connection: {connectionString}");
-          Assert.AreEqual(tableName, table.TABLE_NAME, "Wrong table name");
+          Assert.NotNull(table);
+          Assert.Equal(tableName, (string)table.TABLE_NAME);
 
           //Check table columns exist
           var columns = connection.Query(GetQuery(tableName, false)).ToList();
-          Assert.IsNotNull(columns, "Missing " + tableName + " table columns");
-          Assert.AreEqual(columnNames.Count, columns.Count, "Wrong number of " + tableName + " columns");
+          Assert.NotNull(columns);
+          Assert.Equal(columnNames.Count, columns.Count);
           foreach (var columnName in columnNames)
-            Assert.IsNotNull(columns.Find(c => c.COLUMN_NAME == columnName),
-              "Missing " + columnName + " column in " + tableName + " table");
+            Assert.NotNull(columns.Find(c => c.COLUMN_NAME == columnName));
         }
         finally
         {

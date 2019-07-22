@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -12,6 +12,7 @@ using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
@@ -24,7 +25,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   /// <summary>
   /// Processes the request to get production data profile.
   /// </summary>
-  public class ProductionDataProfileExecutor : ProfileBaseExecutor
+  public class ProductionDataProfileExecutor : BaseExecutor
   {
     public ProductionDataProfileExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)
@@ -39,7 +40,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as ProductionDataProfileDataRequest;
 
@@ -62,14 +63,13 @@ namespace VSS.TRex.Gateway.Common.Executors
         StartPoint = new WGS84Point(request.StartX, request.StartY),
         EndPoint = new WGS84Point(request.EndX, request.EndY),
         ReturnAllPassesAndLayers = true,
-        Overrides = GetOverrideParameters(request.Overrides)
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var svRequest = new ProfileRequest_ApplicationService_ProfileCell();
 
-      // var Response = svRequest.Execute(arg);
-      var response = svRequest.Execute(arg);
+      var response = await svRequest.ExecuteAsync(arg);
 
       if (response != null)
         return ConvertResult(response);
@@ -85,7 +85,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     private ProfileDataResult<ProfileCellData> ConvertResult(ProfileRequestResponse<ProfileCell> result)
     {
-      List<ProfileCellData> profileCells = result.ProfileCells.Select(pc =>
+      var profileCells = result.ProfileCells.Select(pc =>
           new ProfileCellData(
             pc.Station,
             pc.InterceptLength,
@@ -119,6 +119,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         .ToList();
 
       return new ProfileDataResult<ProfileCellData>(result.GridDistanceBetweenProfilePoints, profileCells);
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

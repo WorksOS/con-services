@@ -22,6 +22,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -107,7 +108,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .Build<DesignExecutor>(logger, configStore: configStore.Object, fileList: new List<FileData> { new FileData() },
           trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);
 
-      var result = executor.Process(request) as DesignResult;
+      var result = executor.ProcessAsync(request).Result as DesignResult;
       
       result.Should().NotBeNull();
       result.DesignBoundaries.Should().NotBeNull();
@@ -167,7 +168,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           .Build<DesignExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
             fileList: new List<FileData> { new FileData() }, customHeaders: _customHeaders);
 
-        var result = executor.Process(request) as DesignResult;
+        var result = executor.ProcessAsync(request).Result as DesignResult;
 
         result.Should().NotBeNull();
         result.DesignBoundaries.Should().NotBeNull();

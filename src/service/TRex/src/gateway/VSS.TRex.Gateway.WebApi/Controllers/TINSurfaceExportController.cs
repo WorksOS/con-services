@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -48,23 +49,23 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Web service end point controller for TIN surface export
     /// </summary>
-    /// <param name="compactionExportRequest"></param>
+    /// <param name="compactionSurfaceExportRequest"></param>
     /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/surface/ttm")]
-    public CompactionExportResult PostTINSurface([FromBody] CompactionSurfaceExportRequest compactionSurfaceExportRequest)
+    public async Task<CompactionExportResult> PostTINSurface([FromBody] CompactionSurfaceExportRequest compactionSurfaceExportRequest)
     {
       Log.LogInformation($"{nameof(PostTINSurface)}: {Request.QueryString}");
 
-      Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
+      Log.LogDebug($"Accept header is {Request.Headers[HeaderConstants.ACCEPT]}");
 
       compactionSurfaceExportRequest.Validate();
       ValidateFilterMachines(nameof(PostTINSurface), compactionSurfaceExportRequest.ProjectUid, compactionSurfaceExportRequest.Filter);
 
-      var tinResult = WithServiceExceptionTryExecute(() =>
+      var tinResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(compactionSurfaceExportRequest) as TINSurfaceExportResult);
+          .ProcessAsync(compactionSurfaceExportRequest)) as TINSurfaceExportResult;
 
       const string TTM_EXTENSION = ".ttm";
       const string ZIP_EXTENSION = ".zip";
@@ -93,15 +94,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [HttpGet]
     [Route("api/v2/export/surface/ttm")]
-    public IActionResult GetTINSurface2([FromQuery] Guid projectUid,
+    public async Task<IActionResult> GetTINSurface2([FromQuery] Guid projectUid,
       [FromQuery] double? tolerance,
       [FromQuery] Guid? filterUid)
     {
+      const string FILE_DOWNLOAD_NAME = "DecimatedTIN.ttm";
+
       Log.LogInformation($"{nameof(GetTINSurface2)}: {Request.QueryString}");
 
-      Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
+      Log.LogDebug($"Accept header is {Request.Headers[HeaderConstants.ACCEPT]}");
 
-      TINSurfaceExportRequest request = new TINSurfaceExportRequest
+      var request = new TINSurfaceExportRequest
       {
         ProjectUid = projectUid,
         Tolerance = tolerance,
@@ -113,22 +116,22 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler);
 
-      var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
+      var tinResult = await WithServiceExceptionTryExecuteAsync(() => container.ProcessAsync(request)) as TINSurfaceExportResult;
 
-      if (Request.Headers["Accept"].Equals("application/ttm"))
-        return new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm");
+      if (Request.Headers[HeaderConstants.ACCEPT].Equals(ContentTypeConstants.ApplicationTTM))
+        return new FileStreamResult(new MemoryStream(tinResult?.TINData), ContentTypeConstants.ApplicationTTM);
 
-      if (Request.Headers["Accept"].Equals("application/ttm-and-metadata"))
+      if (Request.Headers[HeaderConstants.ACCEPT].Equals(ContentTypeConstants.ApplicationTTMAndMetaData))
         return Ok(new TTMAndMetaDatActioNResult
         {
           a = tinResult?.TINData.Length ?? 0,
 
-          theFile = new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm")
+          theFile = new FileStreamResult(new MemoryStream(tinResult?.TINData), ContentTypeConstants.ApplicationTTM)
         });
 
-      return new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm")
+      return new FileStreamResult(new MemoryStream(tinResult?.TINData), ContentTypeConstants.ApplicationTTM)
       {
-        FileDownloadName = "DecimatedTIN.ttm"
+        FileDownloadName = FILE_DOWNLOAD_NAME
       };
     }
 

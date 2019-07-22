@@ -84,9 +84,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             customerUid, 
             updateImportedFile.ProjectUid.ToString(),
             existingImportedFile.ImportedFileUid, 
-            updateImportedFile.DataOceanRootFolder, dxfFileName,
+            updateImportedFile.DataOceanRootFolder, 
+            dxfFileName,
             projectTask.CoordinateSystemFileName, 
-            updateImportedFile.DxfUnitsTypeId);
+            updateImportedFile.DxfUnitsTypeId,
+            updateImportedFile.SurveyedUtc);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
       }
@@ -101,7 +103,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           updateImportedFile.ProjectUid.ToString(),
           existingImportedFile.ImportedFileUid,
           updateImportedFile.DataOceanRootFolder, 
-          updateImportedFile.FileDescriptor.FileName);
+          updateImportedFile.FileDescriptor.FileName,
+          null,
+          updateImportedFile.DxfUnitsTypeId,
+          updateImportedFile.SurveyedUtc);
         await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
       }
 

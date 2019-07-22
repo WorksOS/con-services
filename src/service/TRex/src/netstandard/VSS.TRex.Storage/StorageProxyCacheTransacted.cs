@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using Apache.Ignite.Core.Cache;
+using Apache.Ignite.Core.Transactions;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.Storage.Interfaces;
@@ -124,6 +125,8 @@ namespace VSS.TRex.Storage
         /// </summary>
         public override void Commit() => Commit(out _, out _, out _);
 
+        public override void Commit(ITransaction tx) => Commit(out _, out _, out _);
+
         public override void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
         {
             // The generic transactional cache cannot track the size of the elements being 'put' to the cache
@@ -142,6 +145,15 @@ namespace VSS.TRex.Storage
             numBytesWritten = BytesWritten;
 
             Clear();
+        }
+
+        public override void Commit(ITransaction tx, out int numDeleted, out int numUpdated, out long numBytesWritten)
+        {
+          Commit(out numDeleted, out numUpdated, out numBytesWritten);
+
+          tx?.Commit();
+
+          Clear();
         }
 
         /// <summary>

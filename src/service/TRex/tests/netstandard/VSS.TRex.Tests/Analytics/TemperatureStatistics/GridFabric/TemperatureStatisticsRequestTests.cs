@@ -6,6 +6,7 @@ using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -31,8 +32,11 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
-        OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(targetMin, targetMax),
-        OverrideTemperatureWarningLevels = targetMin > 0 && targetMax > 0
+        Overrides = new OverrideParameters
+        { 
+          OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(targetMin, targetMax),
+          OverrideTemperatureWarningLevels = targetMin > 0 && targetMax > 0
+        }
       };
     }
 

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -23,9 +23,9 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
   public class GriddedReportExecutorTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
-    public void GriddedReportExecutor_SiteModelNotFound()
+    public async Task GriddedReportExecutor_SiteModelNotFound()
     {
-      Guid projectUid = Guid.NewGuid(); 
+      var projectUid = Guid.NewGuid(); 
       FilterResult filter = null;
       bool reportElevation = true;
       bool reportCmv = true;
@@ -36,7 +36,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       Guid? cutFillDesignUid = null;
       double? cutFillDesignOffset = null;
       double? gridInterval = null;
-      GridReportOption gridReportOption = GridReportOption.Automatic;
+      var gridReportOption = GridReportOption.Automatic;
       double startNorthing = 800000;
       double startEasting = 400000;
       double endNorthing = 800010;
@@ -47,21 +47,21 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutFillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null);
       request.Validate();
 
       var executor = RequestExecutorContainer
         .Build<GriddedReportExecutor>(DIContext.Obtain<IConfigurationStore>(),
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain <IServiceExceptionHandler>());
-      var result = Assert.Throws<ServiceException>(() => executor.Process(request));
+      var result = await Assert.ThrowsAsync<ServiceException>(() => executor.ProcessAsync(request));
       Assert.Equal(HttpStatusCode.BadRequest, result.Code);
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
       Assert.Equal($"Site model {projectUid} is unavailable", result.GetResult.Message);
     }
 
     [Fact]
-    public void CSVExportExecutor_GotSiteAndFilter()
+    public async Task CSVExportExecutor_GotSiteAndFilter()
     {
       bool reportElevation = true;
       bool reportCmv = true;
@@ -72,7 +72,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       Guid? cutFillDesignUid = null;
       double? cutFillDesignOffset = null;
       double? gridInterval = null;
-      GridReportOption gridReportOption = GridReportOption.Automatic;
+      var gridReportOption = GridReportOption.Automatic;
       double startNorthing = 800000;
       double startEasting = 400000;
       double endNorthing = 800010;
@@ -91,17 +91,17 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         siteModel.ID, filterResult,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutFillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null);
       request.Validate();
 
       var executor = RequestExecutorContainer
         .Build<GriddedReportExecutor>(DIContext.Obtain<IConfigurationStore>(),
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
-      var result = executor.Process(request) as GriddedReportDataResult;
-      result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
-      result.GriddedData.Should().NotBeNull();
-      result.GriddedData.Should().NotBeEmpty();
+      var result = await executor.ProcessAsync(request) as GriddedReportDataResult;
+      result?.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
+      result?.GriddedData.Should().NotBeNull();
+      result?.GriddedData.Should().NotBeEmpty();
     }
   }
 }

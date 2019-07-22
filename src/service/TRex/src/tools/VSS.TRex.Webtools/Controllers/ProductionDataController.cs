@@ -22,6 +22,7 @@ using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -130,9 +131,12 @@ namespace VSS.TRex.Webtools.Controllers
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet(new CombinedFilter()),
-              CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
-              OverrideMachineCMV = false,
-              OverridingMachineCMV = 50
+              Overrides = new OverrideParameters
+              { 
+                CMVRange = new CMVRangePercentageRecord(80, 120),
+                OverrideMachineCCV = false,
+                OverridingMachineCCV = 50
+              }
             }
           );
 
@@ -246,9 +250,12 @@ namespace VSS.TRex.Webtools.Controllers
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
-              OverrideMachineMDP = false,
-              OverridingMachineMDP = 1000
+              Overrides = new OverrideParameters
+              { 
+                MDPRange = new MDPRangePercentageRecord(80, 120),
+                OverrideMachineMDP = false,
+                OverridingMachineMDP = 1000
+              }
             }
           );
 
@@ -356,8 +363,11 @@ namespace VSS.TRex.Webtools.Controllers
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
-              OverrideTargetPassCount = false
+              Overrides = new OverrideParameters
+              { 
+                OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
+                OverrideTargetPassCount = false
+              }
             }
           );
 
@@ -523,8 +533,11 @@ namespace VSS.TRex.Webtools.Controllers
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              OverrideTemperatureWarningLevels = true,
-              OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
+              Overrides = new OverrideParameters
+              { 
+                OverrideTemperatureWarningLevels = true,
+                OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
+              }
             }
           );
 
@@ -576,7 +589,7 @@ namespace VSS.TRex.Webtools.Controllers
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50)
+              Overrides = new OverrideParameters{ TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50) }
             }
           );
 

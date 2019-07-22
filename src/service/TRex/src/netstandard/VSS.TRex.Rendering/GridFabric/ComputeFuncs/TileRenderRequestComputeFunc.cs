@@ -59,7 +59,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
         Log.LogInformation("Executing render.Execute()");
 
-        var bmp = render.Execute();
+        var bmp = render.ExecuteAsync().Result;
         Log.LogInformation($"Render status = {render.ResultStatus}");
 
         if (bmp == null)

@@ -57,7 +57,7 @@ namespace VSS.TRex.CellDatum.Executors
       requestors[0].CellOverrideMask = cellOverrideMask;
 
       var thisSubGridOrigin = new SubGridCellAddress(arg.OTGCellX, arg.OTGCellY);
-      var request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true, out var clientGrid);
+      var request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, arg.Overrides, true, true, out var clientGrid);
       if (request != ServerRequestResult.NoError)
       {
         if (request == ServerRequestResult.SubGridNotFound)

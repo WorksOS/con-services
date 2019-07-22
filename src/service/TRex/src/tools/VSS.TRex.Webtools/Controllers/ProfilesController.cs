@@ -47,7 +47,7 @@ namespace VSS.TRex.Webtools.Controllers
       if (design == null)
         return new JsonResult($"Unable to locate design {designID} in project {siteModelID}");
 
-      var result = design.ComputeProfile(siteModelUid, new[] {new XYZ(startX, startY, 0), new XYZ(endX, endY, 0)}, siteModel.CellSize, offset ?? 0, out DesignProfilerRequestResult errCode);
+      var result = design.ComputeProfile(siteModelUid, new[] { new XYZ(startX, startY, 0), new XYZ(endX, endY, 0) }, siteModel.CellSize, offset ?? 0, out DesignProfilerRequestResult errCode);
 
       return new JsonResult(result);
     }
@@ -69,14 +69,14 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double endY)
     {
       Guid siteModelUid = Guid.Parse(siteModelID);
-   
+
       ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
-        Filters = new FilterSet(new[] {new CombinedFilter()}),
+        Filters = new FilterSet(new[] { new CombinedFilter() }),
         ReferenceDesign = new DesignOffset(),
         StartPoint = new WGS84Point(lon: startX, lat: startY),
         EndPoint = new WGS84Point(lon: endX, lat: endY),
@@ -132,7 +132,7 @@ namespace VSS.TRex.Webtools.Controllers
         ProfileTypeRequired = GridDataType.Height,
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
-        Filters = new FilterSet(new [] { new CombinedFilter() }),
+        Filters = new FilterSet(new[] { new CombinedFilter() }),
         ReferenceDesign = new DesignOffset(),
         StartPoint = new WGS84Point(lon: startX, lat: startY),
         EndPoint = new WGS84Point(lon: endX, lat: endY),
@@ -142,15 +142,15 @@ namespace VSS.TRex.Webtools.Controllers
       // Compute a profile from the bottom left of the screen extents to the top right 
       var request = new ProfileRequest_ApplicationService_ProfileCell();
       var Response = request.Execute(arg);
-      
+
       if (Response == null)
         return new JsonResult(@"Profile response is null");
-      
+
       if (Response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
       //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
-      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1) ));
+      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1)));
     }
 
 

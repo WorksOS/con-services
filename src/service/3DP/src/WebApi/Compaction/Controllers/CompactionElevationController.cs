@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -109,25 +106,30 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectVerifier]
     [Route("api/v2/alignmentstationrange")]
     [HttpGet]
-    public async Task<AlignmentStationResult> GetAlignmentStationRange(
+    public async Task<AlignmentStationRangeResult> GetAlignmentStationRange(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid alignmentFileUid,
       [FromServices] IBoundingBoxService boundingBoxService)
     {
       Log.LogInformation("GetAlignmentStationRange: " + Request.QueryString);
-      var projectId = await GetLegacyProjectId(projectUid);
 
-      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentFileUid);
+      var projectId = GetLegacyProjectId(projectUid);
+      var alignmentDescriptor = GetAndValidateDesignDescriptor(projectUid, alignmentFileUid);
+
+      await Task.WhenAll(projectId, alignmentDescriptor);
 
       var request = requestFactory.Create<AlignmentStationRangeRequestHelper>(r => r
-          .ProjectId(projectId)
+          .ProjectId(projectId.Result)
           .Headers(CustomHeaders))
-        .CreateAlignmentStationRangeRequest(alignmentDescriptor);
+        .CreateAlignmentStationRangeRequest(alignmentDescriptor.Result);
 
       request.Validate();
 
-      var result = WithServiceExceptionTryExecute(() =>
-        boundingBoxService.GetAlignmentStationRange(projectId, alignmentDescriptor));
+      var result = await WithServiceExceptionTryExecuteAsync(() =>
+        boundingBoxService.GetAlignmentStationRange(
+          new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId.Result },
+          alignmentDescriptor.Result,
+          CustomHeaders));
 
       return result;
     }
@@ -197,7 +199,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = boundingBoxService.GetProductionDataExtents(projectUid, projectId, excludedIds, GetUserId(), CustomHeaders);
+        var result = await boundingBoxService.GetProductionDataExtents(projectUid, projectId, excludedIds, GetUserId(), CustomHeaders);
         return await FormatProjectExtentsResult(projectUid, result);
       }
       catch (ServiceException se)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
@@ -18,7 +19,7 @@ namespace VSS.TRex.Tests.Analytics.Foundation
       var coordinator = new PassCountStatisticsCoordinator();
 
       // This will casue a null reference exception due to the absence of the ISiteModels resource in the DIContext
-      Action act = () => coordinator.Execute(new PassCountStatisticsArgument());
+      Func<Task<PassCountStatisticsResponse>> act = async () => await coordinator.ExecuteAsync(new PassCountStatisticsArgument());
       act.Should().Throw<NullReferenceException>();
     }
   }

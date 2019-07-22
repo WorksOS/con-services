@@ -43,7 +43,7 @@ namespace VSS.TRex.GridFabric.Requests
     public override Task<TResponse> ExecuteAsync(TArgument arg)
     {
       // Construct the function to be used
-      TComputeFunc func = new TComputeFunc();
+      var func = new TComputeFunc();
 
       // Send the request to the application service pool and retrieve the result
       return Compute.ApplyAsync(func, arg);

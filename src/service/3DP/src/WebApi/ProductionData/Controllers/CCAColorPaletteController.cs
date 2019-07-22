@@ -90,12 +90,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectUid = await((RaptorPrincipal)User).GetProjectUid(projectId);
       var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId, projectUid, assetUid);
       request.Validate();
-      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger,
 #if RAPTOR
         raptorClient,
 #endif
         configStore: configurationStore,
-        trexCompactionDataProxy: TRexCompactionDataProxy).Process(request) as CCAColorPaletteResult;
+        trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(request) as CCAColorPaletteResult;
     }
 
     /// <summary>
@@ -124,12 +124,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId, projectUid, assetUid);
       request.Validate();
-      return RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<CCAColorPaletteExecutor>(logger,
 #if RAPTOR
         raptorClient,
 #endif   
         configStore: configurationStore,
-        trexCompactionDataProxy: TRexCompactionDataProxy).Process(request) as CCAColorPaletteResult;
+        trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(request) as CCAColorPaletteResult;
     }
   }
 }

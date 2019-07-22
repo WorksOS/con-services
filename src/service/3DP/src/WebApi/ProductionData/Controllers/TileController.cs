@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
@@ -80,15 +81,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/tiles")]
     [HttpPost]
-    public TileResult Post([FromBody] TileRequest request)
+    public async Task<TileResult> Post([FromBody] TileRequest request)
     {
       request.Validate();
-      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger,
+
+      return await RequestExecutorContainerFactory.Build<TilesExecutor>(logger,
 #if RAPTOR
         raptorClient, 
 #endif
-        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as TileResult;
-      return tileResult;
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as TileResult;
     }
 
     /// <summary>
@@ -101,14 +102,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/tiles/png")]
     [HttpPost]
-    public FileResult PostRaw([FromBody] TileRequest request)
+    public async Task<FileResult> PostRaw([FromBody] TileRequest request)
     {
       request.Validate();
-      if (RequestExecutorContainerFactory.Build<TilesExecutor>(logger,
+      if (await RequestExecutorContainerFactory.Build<TilesExecutor>(logger,
 #if RAPTOR
         raptorClient, 
 #endif
-        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) is TileResult tileResult)
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) is TileResult tileResult)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 

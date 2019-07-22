@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
+using System.Linq;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.DataOcean.Client
@@ -10,7 +10,7 @@ namespace VSS.DataOcean.Client
     public const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
     public const string GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX = "_AlignmentCenterline$";
     public const string DXF_FILE_EXTENSION = ".dxf";
-    public const string GEOTIFF_FILE_EXTENSION = ".tiff";
+    public static readonly string[] SUPPORTED_FILE_EXTENSIONS = {".tif",".tiff", DXF_FILE_EXTENSION};
 
     public string FileName { get; private set; }
     public string FilePath { get; private set; }
@@ -25,8 +25,7 @@ namespace VSS.DataOcean.Client
       FilePath = path;
       FullFileName = $"{path}{Path.DirectorySeparatorChar}{fileName}";
       var extension = Path.GetExtension(fileName);
-      if (!DXF_FILE_EXTENSION.Equals(extension, StringComparison.OrdinalIgnoreCase) && 
-          !GEOTIFF_FILE_EXTENSION.Equals(extension, StringComparison.OrdinalIgnoreCase))
+      if (!SUPPORTED_FILE_EXTENSIONS.Contains(extension, StringComparer.OrdinalIgnoreCase)) 
       {
         throw new ArgumentException($"Only DXF and GeoTIFF files are supported. {fileName} is not a DXF or GeoTIFF file.");
       }
