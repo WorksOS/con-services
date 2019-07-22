@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
@@ -16,7 +16,6 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Volumes
 {
@@ -192,7 +191,7 @@ namespace VSS.TRex.Volumes
           {
             float topZ;
             float baseZ = BaseScanSubGrid.Cells[i, j];
-            
+
             /* TODO - removed for Ignite POC until LiftBuildSettings is available
             // If the user has configured a first pass thickness, then we need to subtract this height
             // difference from the BaseZ retrieved from the current cell if this measured height was
@@ -207,7 +206,7 @@ namespace VSS.TRex.Volumes
                 VolumeType == VolumeComputationType.BetweenDesignAndFilter)
             {
               topZ = getDesignHeightsResult.designHeights?.Cells[i, j] ?? Consts.NullHeight;
-              
+
               if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
                 MinMax.Swap(ref baseZ, ref topZ);
             }
@@ -374,7 +373,7 @@ namespace VSS.TRex.Volumes
 
       try
       {
-        var taskList = new List<Task>();
+        var taskList = new List<Task>(subGrids.Length);
 
         foreach (IClientLeafSubGrid[] subGridResult in subGrids)
         {

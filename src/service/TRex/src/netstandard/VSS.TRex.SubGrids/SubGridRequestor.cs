@@ -447,7 +447,7 @@ namespace VSS.TRex.SubGrids
 
       ClientGrid = result.clientGrid;
 
-      if (!await InitialiseFilterContext())
+      if ((Filter.AttributeFilter.HasElevationRangeFilter || Filter.AttributeFilter.HasDesignFilter) && !await InitialiseFilterContext())
       {
         result.requestResult = ServerRequestResult.FilterInitialisationFailure;
         return result;
