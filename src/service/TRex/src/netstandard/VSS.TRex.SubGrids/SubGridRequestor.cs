@@ -447,7 +447,7 @@ namespace VSS.TRex.SubGrids
 
       ClientGrid = result.clientGrid;
 
-      if ((Filter.AttributeFilter.HasElevationRangeFilter || Filter.AttributeFilter.HasDesignFilter) && !await InitialiseFilterContext())
+      if (ShouldInitialiseFilterContext() && !await InitialiseFilterContext())
       {
         result.requestResult = ServerRequestResult.FilterInitialisationFailure;
         return result;
@@ -468,6 +468,15 @@ namespace VSS.TRex.SubGrids
       }
 
       return result;
+    }
+
+    /// <summary>
+    /// Checks whether filter context should be initialised.
+    /// </summary>
+    /// <returns></returns>
+    private bool ShouldInitialiseFilterContext()
+    {
+      return (Filter != null) && (Filter.AttributeFilter.HasElevationRangeFilter || Filter.AttributeFilter.HasDesignFilter);
     }
   }
 }
