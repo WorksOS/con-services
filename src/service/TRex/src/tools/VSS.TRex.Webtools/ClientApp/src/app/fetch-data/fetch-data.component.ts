@@ -60,4 +60,9 @@ export class FetchDataComponent {
   public saveOverrides(): void {
       localStorage.setItem("overrides", JSON.stringify(this.overrides));
   }
+
+  public setDefaultOverrides() {
+      this.overrides = this.fetchDataService.getDefaultOverrides();
+      this.saveOverrides();
+  }
 }

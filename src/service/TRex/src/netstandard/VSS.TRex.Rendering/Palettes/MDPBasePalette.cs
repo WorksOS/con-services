@@ -16,8 +16,8 @@ namespace VSS.TRex.Rendering.Palettes
 
     private const short ABSOLUTE_TARGET_MDP = 50;
 
-    protected double _minTarget;
-    protected double _maxTarget;
+    protected double _minTarget => MDPPercentageRange.Min / 100;
+    protected double _maxTarget => MDPPercentageRange.Max / 100;
     
     public MDPRangePercentageRecord MDPPercentageRange = new MDPRangePercentageRecord(MDP_DEFAULT_PERCENTAGE_MIN, MDP_DEFAULT_PERCENTAGE_MAX);
 
@@ -33,8 +33,6 @@ namespace VSS.TRex.Rendering.Palettes
 
     public MDPBasePalette(Transition[] transitions) : base(transitions)
     {
-      _minTarget = MDPPercentageRange.Min / 100;
-      _maxTarget = MDPPercentageRange.Max / 100;
     }
 
     /// <summary>
