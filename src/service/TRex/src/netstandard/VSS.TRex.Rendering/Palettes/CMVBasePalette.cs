@@ -16,8 +16,8 @@ namespace VSS.TRex.Rendering.Palettes
 
     private const short ABSOLUTE_TARGET_CMV = 70;
 
-    protected double _minTarget;
-    protected double _maxTarget;
+    protected double _minTarget => CMVPercentageRange.Min / 100;
+    protected double _maxTarget => CMVPercentageRange.Max / 100;
 
     public CMVRangePercentageRecord CMVPercentageRange = new CMVRangePercentageRecord(CMV_DEFAULT_PERCENTAGE_MIN, CMV_DEFAULT_PERCENTAGE_MAX);
 
@@ -33,8 +33,6 @@ namespace VSS.TRex.Rendering.Palettes
 
     public CMVBasePalette(Transition[] transitions) : base(transitions)
     {
-      _minTarget = CMVPercentageRange.Min / 100;
-      _maxTarget = CMVPercentageRange.Max / 100;
     }
 
     /// <summary>

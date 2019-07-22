@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FetchDataService } from './fetch-data.service';
-import { DataRequestType } from './fetch-data-model';
-
+import { DataRequestType, OverrideParameters, OverrideRange } from './fetch-data-model';
 
 @Component({
   selector: 'fetch-data',
@@ -9,6 +8,7 @@ import { DataRequestType } from './fetch-data-model';
   providers: [FetchDataService],
   styleUrls: ['./fetch-data.component.css']
 })
+
 export class FetchDataComponent {
 
   public allDataRequestTypes: DataRequestType[] = [];
@@ -20,6 +20,7 @@ export class FetchDataComponent {
   private projectUid: string = localStorage.getItem("projectUid");
   private designUid: string = localStorage.getItem("designUid");
   private designOffset: number = parseFloat(localStorage.getItem("designOffset"));
+  public overrides: OverrideParameters;
   
   constructor(
     private fetchDataService: FetchDataService
@@ -32,6 +33,12 @@ export class FetchDataComponent {
       types.forEach(type => self.allDataRequestTypes.push(type));
       self.dataRequestType = self.allDataRequestTypes[0];
     });
+
+    if ("overrides" in localStorage) {
+        this.overrides = JSON.parse(localStorage.getItem("overrides"));
+    } else {
+        this.overrides = this.fetchDataService.getDefaultOverrides();
+    }
   }
 
   public noProjectSelected(): boolean {
@@ -45,8 +52,17 @@ export class FetchDataComponent {
   public getProductionData(): void {
     var self = this;
 
-    this.fetchDataService.getProductionData(this.projectUid, this.requestType, this.designUid, this.designOffset).subscribe(data => {
+    this.fetchDataService.getProductionData(this.projectUid, this.requestType, this.designUid, this.designOffset, this.overrides).subscribe(data => {
       self.dataResult = data;
     });
+  }
+
+  public saveOverrides(): void {
+      localStorage.setItem("overrides", JSON.stringify(this.overrides));
+  }
+
+  public setDefaultOverrides() {
+      this.overrides = this.fetchDataService.getDefaultOverrides();
+      this.saveOverrides();
   }
 }
