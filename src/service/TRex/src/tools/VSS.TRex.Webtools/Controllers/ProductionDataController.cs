@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Analytics.CCAStatistics;
@@ -44,7 +45,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("cmvdetails/{siteModelID}")]
-    public JsonResult GetCMVDetails(string siteModelID)
+    public async Task<JsonResult> GetCMVDetails(string siteModelID)
     {
       const int CMV_DENOMINATOR = 10;
       string resultToReturn;
@@ -60,11 +61,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          CMVStatisticsOperation operation = new CMVStatisticsOperation();
-          CMVStatisticsResult result = operation.Execute(
+          var operation = new CMVStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new CMVStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -107,7 +108,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("cmvsummary/{siteModelID}")]
-    public JsonResult GetCMVSummary(string siteModelID)
+    public async Task<JsonResult> GetCMVSummary(string siteModelID)
     {
       string resultToReturn;
 
@@ -121,12 +122,12 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          CMVStatisticsOperation operation = new CMVStatisticsOperation();
+          var operation = new CMVStatisticsOperation();
 
-          CMVStatisticsResult result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new CMVStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -165,7 +166,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("cmvchange/{siteModelID}")]
-    public JsonResult GetCMVChange(string siteModelID)
+    public async Task<JsonResult> GetCMVChange(string siteModelID)
     {
       string resultToReturn;
 
@@ -180,11 +181,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          CMVChangeStatisticsOperation operation = new CMVChangeStatisticsOperation();
-          CMVChangeStatisticsResult result = operation.Execute(
+          var operation = new CMVChangeStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new CMVChangeStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -227,7 +228,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("mdpsummary/{siteModelID}")]
-    public JsonResult GetMDPSummary(string siteModelID)
+    public async Task<JsonResult> GetMDPSummary(string siteModelID)
     {
       string resultToReturn;
 
@@ -241,11 +242,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          MDPStatisticsOperation operation = new MDPStatisticsOperation();
-          MDPStatisticsResult result = operation.Execute(
+          var operation = new MDPStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new MDPStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -284,7 +285,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("passcountdetails/{siteModelID}")]
-    public JsonResult GetPassCountDetails(string siteModelID)
+    public async Task<JsonResult> GetPassCountDetails(string siteModelID)
     {
       string resultToReturn;
 
@@ -299,11 +300,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
-          PassCountStatisticsResult result = operation.Execute(
+          var operation = new PassCountStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new PassCountStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -340,7 +341,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("passcountsummary/{siteModelID}")]
-    public JsonResult GetPassCountSummary(string siteModelID)
+    public async Task<JsonResult> GetPassCountSummary(string siteModelID)
     {
       string resultToReturn;
 
@@ -354,11 +355,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
-          PassCountStatisticsResult result = operation.Execute(
+          var operation = new PassCountStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new PassCountStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -396,7 +397,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("ccasummary/{siteModelID}")]
-    public JsonResult GetCCASummary(string siteModelID)
+    public async Task<JsonResult> GetCCASummary(string siteModelID)
     {
       string resultToReturn;
 
@@ -410,11 +411,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          CCAStatisticsOperation operation = new CCAStatisticsOperation();
-          CCAStatisticsResult result = operation.Execute(
+          var operation = new CCAStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new CCAStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -447,7 +448,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("temeraturedetails/{siteModelID}")]
-    public JsonResult GetTemperatureDetails(string siteModelID)
+    public async Task<JsonResult> GetTemperatureDetails(string siteModelID)
     {
       const int TEMP_DENOMINATOR = 10;
       string resultToReturn;
@@ -463,11 +464,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
-          TemperatureStatisticsResult result = operation.Execute(
+          var operation = new TemperatureStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new TemperatureStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -510,7 +511,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("temeraturesummary/{siteModelID}")]
-    public JsonResult GetTemperartureSummary(string siteModelID)
+    public async Task<JsonResult> GetTemperartureSummary(string siteModelID)
     {
       string resultToReturn;
 
@@ -524,11 +525,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
-          TemperatureStatisticsResult result = operation.Execute(
+          var operation = new TemperatureStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new TemperatureStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -566,7 +567,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("machinespeedsummary/{siteModelID}")]
-    public JsonResult GetMachineSpeedSummary(string siteModelID)
+    public async Task<JsonResult> GetMachineSpeedSummary(string siteModelID)
     {
       string resultToReturn;
 
@@ -580,11 +581,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          SpeedStatisticsOperation operation = new SpeedStatisticsOperation();
-          SpeedStatisticsResult result = operation.Execute(
+          var operation = new SpeedStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new SpeedStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -618,7 +619,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("cutfillstatistics/{siteModelID}")]
-    public JsonResult GetCutFillStatistics(string siteModelID,
+    public async Task<JsonResult> GetCutFillStatistics(string siteModelID,
       [FromQuery] Guid cutFillDesignUid,
       [FromQuery] double? cutFillOffset)
     {
@@ -637,11 +638,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+                    var sw = new Stopwatch();
           sw.Start();
 
-          CutFillStatisticsOperation operation = new CutFillStatisticsOperation();
-          CutFillStatisticsResult result = operation.Execute(new CutFillStatisticsArgument()
+          var operation = new CutFillStatisticsOperation();
+          var result = await operation.ExecuteAsync(new CutFillStatisticsArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
@@ -683,7 +684,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
     [HttpGet("elevationrange/{siteModelID}")]
-    public JsonResult GetElevationRange(string siteModelID)
+    public async Task<JsonResult> GetElevationRange(string siteModelID)
     {
       string resultToReturn;
 
@@ -697,11 +698,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
           var operation = new ElevationStatisticsOperation();
-          var result = operation.Execute(new ElevationStatisticsArgument()
+          var result = await operation.ExecuteAsync(new ElevationStatisticsArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet { Filters = new[] { new CombinedFilter() } }

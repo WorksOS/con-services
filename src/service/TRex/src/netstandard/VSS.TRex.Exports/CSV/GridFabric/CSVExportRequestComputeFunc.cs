@@ -35,7 +35,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
         var request = new CSVExportComputeFuncExecutor(arg);
 
-        Log.LogInformation("Executing request.Execute()");
+        Log.LogInformation("Executing request.ExecuteAsync()");
 
         if (!request.ExecuteAsync().Result)
           Log.LogError("Request execution failed");

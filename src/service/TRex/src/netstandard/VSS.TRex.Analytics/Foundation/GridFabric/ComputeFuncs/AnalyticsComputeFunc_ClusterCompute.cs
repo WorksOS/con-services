@@ -33,7 +33,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
 
             try
             {
-                Log.LogInformation("Executing AnalyticsComputeFunc_ClusterCompute.Execute()");
+                Log.LogInformation("Executing AnalyticsComputeFunc_ClusterCompute.ExecuteAsync()");
 
                 var coordinator = new TCoordinator();
                 return coordinator.ExecuteAsync(arg).WaitAndUnwrapException();

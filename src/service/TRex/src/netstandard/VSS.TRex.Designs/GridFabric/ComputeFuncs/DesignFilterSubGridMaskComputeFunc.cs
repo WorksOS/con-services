@@ -19,9 +19,9 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       {
         // Calculate an elevation patch for the requested location and convert it into a bitmask detailing which cells have non-null values
 
-        CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch();
+        var executor = new CalculateDesignElevationPatch();
 
-        var patch = Executor.Execute(args.ProjectID, args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
+        var patch = executor.Execute(args.ProjectID, args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
 
         var result = new DesignFilterSubGridMaskResponse();
 

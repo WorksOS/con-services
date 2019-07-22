@@ -83,11 +83,7 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="filterMask"></param>
     /// <param name="errorCode"></param>
     /// <returns></returns>
-    void GetFilterMask(Guid siteModelID,
-      SubGridCellAddress originCellAddress,
-      double cellSize,
-      out SubGridTreeBitmapSubGridBits filterMask,
-      out DesignProfilerRequestResult errorCode);
+    Task<(SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode)> GetFilterMask(Guid siteModelID, SubGridCellAddress originCellAddress, double cellSize);
 
     DesignDescriptor DesignDescriptor { get; }
 

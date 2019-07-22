@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -75,7 +76,7 @@ namespace VSS.TRex.Profiling
     /// <param name="tree"></param>
     /// <param name="surfaceDesignMaskDesign"></param>
     /// <returns></returns>
-    public static bool ConstructSubgridCellFilterMask(SubGridCellAddress currentSubGridOrigin,
+    public static async Task<bool> ConstructSubgridCellFilterMask(SubGridCellAddress currentSubGridOrigin,
       InterceptList intercepts,
       int fromProfileCellIndex,
       SubGridTreeBitmapSubGridBits mask,
@@ -109,13 +110,13 @@ namespace VSS.TRex.Profiling
 
       if (surfaceDesignMaskDesign != null)
       {
-        surfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize, out SubGridTreeBitmapSubGridBits filterMask, out DesignProfilerRequestResult requestResult);
+        var getFilterMaskResult = await surfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize);
 
-        if (requestResult == DesignProfilerRequestResult.OK)
-          mask.AndWith(filterMask);
+        if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
+          mask.AndWith(getFilterMaskResult.filterMask);
         else
         {
-          Log.LogError($"Call (A2) to {nameof(ConstructSubgridCellFilterMask)} returned error result {requestResult} for {cellFilter.SurfaceDesignMaskDesignUid}");
+          Log.LogError($"Call (A2) to {nameof(ConstructSubgridCellFilterMask)} returned error result {getFilterMaskResult.errorCode} for {cellFilter.SurfaceDesignMaskDesignUid}");
           return false;
         }
       }

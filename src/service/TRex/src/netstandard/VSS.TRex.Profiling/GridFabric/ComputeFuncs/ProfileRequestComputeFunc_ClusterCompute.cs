@@ -25,7 +25,7 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
         var executor = new ComputeProfileExecutor_ClusterCompute<T>(arg.ProfileStyle, arg.ProjectID, arg.ProfileTypeRequired, arg.NEECoords, arg.Filters,
           arg.ReferenceDesign, arg.ReturnAllPassesAndLayers, arg.VolumeType, arg.Overrides);
 
-        Log.LogInformation("Executing profiler.Execute()");
+        Log.LogInformation("Executing profiler.ExecuteAsync()");
 
         return executor.ExecuteAsync().WaitAndUnwrapException();
       }

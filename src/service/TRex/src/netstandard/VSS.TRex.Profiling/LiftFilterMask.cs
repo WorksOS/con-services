@@ -57,7 +57,7 @@ namespace VSS.TRex.Profiling
       }
     }
 
-    public static bool ConstructSubGridCellFilterMask(ISubGridTree tree, 
+    public static async Task<bool> ConstructSubGridCellFilterMask(ISubGridTree tree, 
       SubGridCellAddress currentSubGridOrigin, 
       List<T> profileCells,
       SubGridTreeBitmapSubGridBits mask,
@@ -88,13 +88,13 @@ namespace VSS.TRex.Profiling
 
       if (SurfaceDesignMaskDesign != null)
       {
-        SurfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize, out SubGridTreeBitmapSubGridBits filterMask, out DesignProfilerRequestResult requestResult);
+        var getFilterMaskResult = await SurfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize);
 
-        if (requestResult == DesignProfilerRequestResult.OK)
-          mask.AndWith(filterMask);
+        if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
+          mask.AndWith(getFilterMaskResult.filterMask);
         else
         {
-          Log.LogError($"Call (B2) to {nameof(ConstructSubGridCellFilterMask)} returned error result {requestResult} for {cellFilter.SurfaceDesignMaskDesignUid}");
+          Log.LogError($"Call (B2) to {nameof(ConstructSubGridCellFilterMask)} returned error result {getFilterMaskResult.errorCode} for {cellFilter.SurfaceDesignMaskDesignUid}");
           return false;
         }
       }

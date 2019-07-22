@@ -35,7 +35,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
 
         var request = new GriddedReportComputeFuncExecutor(arg);
 
-        Log.LogInformation("Executing request.Execute()");
+        Log.LogInformation("Executing request.ExecuteAsync()");
 
         if (!request.ExecuteAsync().Result)
           Log.LogError($"Request execution failed");

@@ -137,7 +137,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
               .ContinueWith(result => result.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)))
               .ContinueWith(x => 
               {
-                Log.LogInformation($"SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType}");
+                Log.LogInformation($"SubGridRequests.ExecuteAsync() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType}");
                 return x.WaitAndUnwrapException();
               });
         }

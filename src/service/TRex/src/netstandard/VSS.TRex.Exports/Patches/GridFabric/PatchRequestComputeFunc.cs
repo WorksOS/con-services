@@ -38,7 +38,7 @@ namespace VSS.TRex.Exports.Patches.GridFabric
         PatchExecutor request = new PatchExecutor(arg.ProjectID, arg.Mode, arg.Filters, arg.ReferenceDesign,
           arg.TRexNodeID, arg.DataPatchNumber, arg.DataPatchSize);
 
-        Log.LogInformation("Executing request.Execute()");
+        Log.LogInformation("Executing request.ExecuteAsync()");
 
         if (!request.ExecuteAsync().Result)
           Log.LogError($"Request execution failed");

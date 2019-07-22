@@ -235,21 +235,18 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="siteModelID"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
-    /// <param name="filterMask"></param>
-    /// <param name="errorCode"></param>
-    public void GetFilterMask(Guid siteModelID,
+    public async Task<(SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode)> GetFilterMask(
+      Guid siteModelID,
       SubGridCellAddress originCellAddress,
-      double cellSize,
-      out SubGridTreeBitmapSubGridBits filterMask,
-      out DesignProfilerRequestResult errorCode)
+      double cellSize)
     {
       // Query the DesignProfiler service to get the requested filter mask
-      errorCode = DesignProfilerRequestResult.OK;
+      (SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
 
       if (filterMaskRequest == null)
         filterMaskRequest = new DesignFilterSubGridMaskRequest(); 
 
-      var maskResponse = filterMaskRequest.Execute(new DesignSubGridFilterMaskArgument
+      var maskResponse = await filterMaskRequest.ExecuteAsync(new DesignSubGridFilterMaskArgument
       {
         CellSize = cellSize,
         ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, 0),
@@ -258,7 +255,9 @@ namespace VSS.TRex.Designs.Storage
         ProjectID = siteModelID
       });
 
-      filterMask = maskResponse?.Bits;
+      result.filterMask = maskResponse?.Bits;
+
+      return result;
     }
   }
 }

@@ -34,7 +34,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
       {
         var request = new CellDatumComputeFuncExecutor_ClusterCompute();
 
-        Log.LogInformation("Executing CellDatumRequestComputeFunc_ClusterCompute.Execute()");
+        Log.LogInformation("Executing CellDatumRequestComputeFunc_ClusterCompute.ExecuteAsync()");
 
         if (Argument == null)
           throw new ArgumentException("Argument for ComputeFunc must be provided");

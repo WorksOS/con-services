@@ -46,7 +46,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
                      arg.CutTolerance, 
                      arg.FillTolerance);
 
-                Log.LogInformation("Executing simpleVolumes.Execute()");
+                Log.LogInformation("Executing simpleVolumes.ExecuteAsync()");
 
                 return simpleVolumes.ExecuteAsync().WaitAndUnwrapException();
             }

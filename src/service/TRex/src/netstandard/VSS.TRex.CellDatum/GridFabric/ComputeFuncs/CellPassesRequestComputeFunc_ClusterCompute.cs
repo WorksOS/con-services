@@ -30,7 +30,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
       {
         var request = new CellPassesComputeFuncExecutor_ClusterCompute(); 
 
-        Log.LogInformation($"Executing {nameof(CellPassesRequestComputeFunc_ClusterCompute)}.Execute()");
+        Log.LogInformation($"Executing {nameof(CellPassesRequestComputeFunc_ClusterCompute)}.ExecuteAsync()");
 
         if (Argument == null)
         {

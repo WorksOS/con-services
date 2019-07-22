@@ -64,15 +64,15 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="endY"></param>
     /// <returns></returns>
     [HttpGet("compositeelevations/{siteModelID}")]
-    public JsonResult ComputeCompositeElevationProfile(string siteModelID,
+    public async Task<JsonResult> ComputeCompositeElevationProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
       [FromQuery] double endY)
     {
-      Guid siteModelUid = Guid.Parse(siteModelID);
+      var siteModelUid = Guid.Parse(siteModelID);
 
-      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      var arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
@@ -87,16 +87,16 @@ namespace VSS.TRex.Webtools.Controllers
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var request = new ProfileRequest_ApplicationService_ProfileCell();
-      var Response = request.Execute(arg);
+      var response = await request.ExecuteAsync(arg);
 
-      if (Response == null)
+      if (response == null)
         return new JsonResult(@"Profile response is null");
 
-      if (Response.ProfileCells == null)
+      if (response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
       //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
-      return new JsonResult(Response.ProfileCells.Select(x => new
+      return new JsonResult(response.ProfileCells.Select(x => new
       {
         station = x.Station,
         cellLowestElev = x.CellLowestElev,
@@ -120,15 +120,15 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="endY"></param>
     /// <returns></returns>
     [HttpGet("productiondata/{siteModelID}")]
-    public JsonResult ComputeProductionDataProfile(string siteModelID,
+    public async Task<JsonResult> ComputeProductionDataProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
       [FromQuery] double endY)
     {
-      Guid siteModelUid = Guid.Parse(siteModelID);
+      var siteModelUid = Guid.Parse(siteModelID);
 
-      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      var arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
@@ -143,21 +143,21 @@ namespace VSS.TRex.Webtools.Controllers
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var request = new ProfileRequest_ApplicationService_ProfileCell();
-      var Response = request.Execute(arg);
+      var response = await request.ExecuteAsync(arg);
 
-      if (Response == null)
+      if (response == null)
         return new JsonResult(@"Profile response is null");
 
-      if (Response.ProfileCells == null)
+      if (response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
       //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
-      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1)));
+      return new JsonResult(response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1)));
     }
 
 
     [HttpGet("volumes/{siteModelID}")]
-    public JsonResult ComputeSummaryVolumesProfile(string siteModelID,
+    public async Task<JsonResult> ComputeSummaryVolumesProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
@@ -185,14 +185,14 @@ namespace VSS.TRex.Webtools.Controllers
       // Compute a profile from the bottom left of the screen extents to the top right 
       var request = new ProfileRequest_ApplicationService_SummaryVolumeProfileCell();
 
-      var Response = request.Execute(arg);
-      if (Response == null)
+      var response = await request.ExecuteAsync(arg);
+      if (response == null)
         return new JsonResult(@"Profile response is null");
 
-      if (Response.ProfileCells == null)
+      if (response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
-      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
+      return new JsonResult(response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
     }
   }
 }

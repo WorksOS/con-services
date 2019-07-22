@@ -462,7 +462,7 @@ namespace VSS.TRex.Profiling
             CompositeHeightsGrid = null;
           }
 
-          if (!LiftFilterMask<ProfileCell>.ConstructSubGridCellFilterMask(SiteModel.Grid, currentSubGridOrigin,
+          if (!await LiftFilterMask<ProfileCell>.ConstructSubGridCellFilterMask(SiteModel.Grid, currentSubGridOrigin,
             profileCells, FilterMask, i, CellFilter, SurfaceDesignMaskDesign))
             continue;
 

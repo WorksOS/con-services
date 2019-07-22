@@ -221,7 +221,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     [InlineData(400, 70.0, 130.0, 0.27713625866050806, 91.131639722863738, 8.59122401847575)]
     [InlineData(500, 80.0, 120.0, 17.136258660508084, 81.986143187066972, 0.87759815242494221)]
     [InlineData(600, 80.0, 120.0, 73.441108545034638, 26.374133949191688, 0.18475750577367206)]
-    public void Test_SummaryCMVStatistics_SiteModelWithSingleTAGFile_FullExtents_WithCMVTargetOverrides
+    public async Task Test_SummaryCMVStatistics_SiteModelWithSingleTAGFile_FullExtents_WithCMVTargetOverrides
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -252,7 +252,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
     [Theory]
     [InlineData(0, 0.0, 0.0, 0.0, 0.27713625866050806, 99.7228637413395)]
-    public void Test_DetailedCMVStatistics_SiteModelWithSingleTAGFile_FullExtents
+    public async Task Test_DetailedCMVStatistics_SiteModelWithSingleTAGFile_FullExtents
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Common.Models;
@@ -33,7 +34,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     /// <summary>
     /// Executes the profiler
     /// </summary>
-    public StationOffsetReportRequestResponse_ApplicationService Execute(StationOffsetReportRequestArgument_ApplicationService arg)
+    public async Task<StationOffsetReportRequestResponse_ApplicationService> ExecuteAsync(StationOffsetReportRequestArgument_ApplicationService arg)
     {
       Log.LogInformation($"Start {nameof(ComputeStationOffsetReportExecutor_ApplicationService)}");
 
@@ -79,7 +80,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         }
 
         var request = new StationOffsetReportRequest_ClusterCompute();
-        var clusterComputeResponse = request.Execute(argClusterCompute);
+        var clusterComputeResponse = await request.ExecuteAsync(argClusterCompute);
 
         // Return the core package to the caller
         var applicationResponse = new StationOffsetReportRequestResponse_ApplicationService()

@@ -58,7 +58,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
              Color.Black,
              arg.TRexNodeID);
 
-        Log.LogInformation("Executing render.Execute()");
+        Log.LogInformation("Executing render.ExecuteAsync()");
 
         var bmp = render.ExecuteAsync().WaitAndUnwrapException();
         Log.LogInformation($"Render status = {render.ResultStatus}");

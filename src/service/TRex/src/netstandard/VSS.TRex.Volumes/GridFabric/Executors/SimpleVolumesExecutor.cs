@@ -50,14 +50,14 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
       return response;
     }
 
-    public Task<SimpleVolumesResponse> ExecuteAsync(SimpleVolumesRequestArgument arg)
+    public async Task<SimpleVolumesResponse> ExecuteAsync(SimpleVolumesRequestArgument arg)
     {
       var request = new SimpleVolumesRequest_ClusterCompute();
 
-      Log.LogInformation("Executing SimpleVolumesRequestComputeFunc_ApplicationService.Execute()");
+      Log.LogInformation("Executing SimpleVolumesRequestComputeFunc_ApplicationService.ExecuteAsync()");
 
       // Calculate the volumes and convert the grid bounding rectangle into WGS 84 lat/long to return to the caller.
-      return ConvertBoundaryFromGridToWGS84(arg.ProjectID, request.Execute(arg));
+      return await ConvertBoundaryFromGridToWGS84(arg.ProjectID, await request.ExecuteAsync(arg));
     }
   }
 }

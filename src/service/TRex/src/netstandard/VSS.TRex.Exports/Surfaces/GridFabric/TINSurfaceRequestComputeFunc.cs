@@ -40,7 +40,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
 
         var request = new TINSurfaceExportExecutor(arg.ProjectID, arg.Filters, arg.Tolerance, arg.TRexNodeID);
 
-        Log.LogInformation("Executing request.Execute()");
+        Log.LogInformation("Executing request.ExecuteAsync()");
 
         if (!request.ExecuteAsync().Result)
           Log.LogError("Request execution failed");

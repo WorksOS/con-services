@@ -54,7 +54,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
              arg.Filters,
              arg.TRexNodeID);
 
-        Log.LogInformation("Executing render.Execute()");
+        Log.LogInformation("Executing render.ExecuteAsync()");
 
         var qm = render.ExecuteAsync().WaitAndUnwrapException();
         
