@@ -20,7 +20,7 @@ export class FetchDataComponent {
   private projectUid: string = localStorage.getItem("projectUid");
   private designUid: string = localStorage.getItem("designUid");
   private designOffset: number = parseFloat(localStorage.getItem("designOffset"));
-  private overrides: OverrideParameters;
+  public overrides: OverrideParameters;
   
   constructor(
     private fetchDataService: FetchDataService

@@ -6,7 +6,7 @@ import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint } from '../project/project-filter-model';
 import { CellDatumResult } from "./project-model";
 import { SummaryType } from './project-summarytype-model';
-import { OverrideParameters, OverrideRange } from '../fetch-data/fetch-data-model';
+import { DisplayModeType, OverrideParameters, OverrideRange } from '../fetch-data/fetch-data-model';
 import { FetchDataService } from '../fetch-data/fetch-data.service';
 
 @Component({
@@ -1006,14 +1006,14 @@ export class ProjectComponent {
       let ratio = (this.mouseProfileWorldStation - this.profileExtents.minX) / this.profileExtents.sizeX();
       let index = Math.round(this.profilePoints.length * ratio) - 1;
       this.profileValue = this.profilePoints[index].value.toFixed(this.mode === 4 || this.mode === 14 ? 0 : 3);
-      switch (this.mode) {
-        case 26: 
+      switch (<DisplayModeType>this.mode) {
+        case DisplayModeType.TargetSpeedSummary: 
           this.profileValue += "-" + this.profilePoints[index].value2.toFixed(3);
           //fall through to set above/below/on target
-        case 13:
-        case 14:
-        case 20:
-        case 10:
+        case DisplayModeType.CCVPercentSummary:
+        case DisplayModeType.MDPPercentSummary:
+        case DisplayModeType.PassCountSummary:
+        case DisplayModeType.TemperatureSummary:
           this.profileValue2 = this.summaryTypes.find((item) => item.item1 === this.profilePoints[index].index).item2;
           break;
         default:
