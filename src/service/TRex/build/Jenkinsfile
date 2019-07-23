@@ -96,7 +96,7 @@ node ('jenkinsslave-pod') {
         //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
         stage('Publish Results'){
             step([$class: 'XUnitBuilder',
-                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
+                thresholds: [[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '10']],
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*/*/**/*']]])
 
         cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
