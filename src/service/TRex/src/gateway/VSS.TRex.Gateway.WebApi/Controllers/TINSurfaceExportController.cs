@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -9,42 +8,28 @@ using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using FileSystem = System.IO.File;
 
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
-  public class TTMAndMetaDatActioNResult // : IActionResult
-  {
-    public long a, b, c, d;
-
-    public FileStreamResult theFile;
-  }
-
   /// <summary>
   /// The controller for generating TIN surfaces decimated from elevation data
   /// </summary>
   public class TINSurfaceExportController : BaseController
   {
-    private readonly ITINSurfaceExportRequestor tINSurfaceExportRequestor;
-
     /// <summary>
     /// Constructor for TIN surface export controller
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="exceptionHandler"></param>
     /// <param name="configStore"></param>
-    /// <param name="tINSurfaceExportRequestor"></param>
     public TINSurfaceExportController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
-      IConfigurationStore configStore, ITINSurfaceExportRequestor tINSurfaceExportRequestor)
+      IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<TINSurfaceExportController>(), exceptionHandler, configStore)
-    {
-      this.tINSurfaceExportRequestor = tINSurfaceExportRequestor;
-    }
+    { }
 
     /// <summary>
     /// Web service end point controller for TIN surface export
@@ -85,56 +70,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return new CompactionExportResult(fullFileName);
     }
 
-    /// <summary>
-    /// Web service end point controller for TIN surface export
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="tolerance"></param>
-    /// <param name="filterUid"></param>
-    /// <returns></returns>
-    [HttpGet]
-    [Route("api/v2/export/surface/ttm")]
-    public async Task<IActionResult> GetTINSurface2([FromQuery] Guid projectUid,
-      [FromQuery] double? tolerance,
-      [FromQuery] Guid? filterUid)
-    {
-      const string FILE_DOWNLOAD_NAME = "DecimatedTIN.ttm";
-
-      Log.LogInformation($"{nameof(GetTINSurface2)}: {Request.QueryString}");
-
-      Log.LogDebug($"Accept header is {Request.Headers[HeaderConstants.ACCEPT]}");
-
-      var request = new TINSurfaceExportRequest
-      {
-        ProjectUid = projectUid,
-        Tolerance = tolerance,
-        Filter = FilterResult.CreateFilter(null) // Todo: Get the actual filter from the filterUid
-      };
-
-      request.Validate();
-      ValidateFilterMachines(nameof(GetTINSurface2), request.ProjectUid, request.Filter);
-
-      var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler);
-
-      var tinResult = await WithServiceExceptionTryExecuteAsync(() => container.ProcessAsync(request)) as TINSurfaceExportResult;
-
-      if (Request.Headers[HeaderConstants.ACCEPT].Equals(ContentTypeConstants.ApplicationTTM))
-        return new FileStreamResult(new MemoryStream(tinResult?.TINData), ContentTypeConstants.ApplicationTTM);
-
-      if (Request.Headers[HeaderConstants.ACCEPT].Equals(ContentTypeConstants.ApplicationTTMAndMetaData))
-        return Ok(new TTMAndMetaDatActioNResult
-        {
-          a = tinResult?.TINData.Length ?? 0,
-
-          theFile = new FileStreamResult(new MemoryStream(tinResult?.TINData), ContentTypeConstants.ApplicationTTM)
-        });
-
-      return new FileStreamResult(new MemoryStream(tinResult?.TINData), ContentTypeConstants.ApplicationTTM)
-      {
-        FileDownloadName = FILE_DOWNLOAD_NAME
-      };
-    }
-
+    
     private string BuildTINFilePath(string filename, string extension)
     {
       return Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(filename) + extension);

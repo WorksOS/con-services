@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
@@ -25,7 +26,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
     }
 
     [Fact]
-    public void SimpleSurface_EmptySiteModel_NoDesign_AtOrigin_DefaultCellSize_FullExtent()
+    public async Task SimpleSurface_EmptySiteModel_NoDesign_AtOrigin_DefaultCellSize_FullExtent()
     {
       AddDesignProfilerGridRouting();
 
@@ -33,7 +34,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var req = new DesignFilterSubGridMaskRequest();
 
       // Ask for a design that does not exist
-      var response = req.Execute(new DesignSubGridFilterMaskArgument(siteModel.ID, 0, 0, new DesignOffset(Guid.NewGuid(), -0.5), siteModel.CellSize));
+      var response = await req.ExecuteAsync(new DesignSubGridFilterMaskArgument(siteModel.ID, 0, 0, new DesignOffset(Guid.NewGuid(), -0.5), siteModel.CellSize));
 
       response.Should().NotBeNull();
       response.RequestResult.Should().Be(DesignProfilerRequestResult.DesignDoesNotExist);
@@ -41,7 +42,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
     }
 
     [Fact]
-    public void SimpleSurface_EmptySiteModel_AtOrigin_DefaultCellSize_FullExtent()
+    public async Task SimpleSurface_EmptySiteModel_AtOrigin_DefaultCellSize_FullExtent()
     {
       AddDesignProfilerGridRouting();
 
@@ -50,7 +51,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var referenceDesign = new DesignOffset(designUid, 0);
       var req = new DesignFilterSubGridMaskRequest();
 
-      var response = req.Execute(new DesignSubGridFilterMaskArgument
+      var response = await req.ExecuteAsync(new DesignSubGridFilterMaskArgument
         (siteModel.ID,
          SubGridTreeConsts.DefaultIndexOriginOffset, // Cell address of originX, 
          SubGridTreeConsts.DefaultIndexOriginOffset, // Cell address of originY
@@ -62,7 +63,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
     }
 
     [Fact]
-    public void SimpleSurface_EmptySiteModel_AwayFromDesignCoverage_DefaultCellSize_FullExtent()
+    public async Task SimpleSurface_EmptySiteModel_AwayFromDesignCoverage_DefaultCellSize_FullExtent()
     {
       AddDesignProfilerGridRouting();
 
@@ -71,7 +72,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var refeenceDesign = new DesignOffset(designUid, 0);
       var req = new DesignFilterSubGridMaskRequest();
 
-      var response = req.Execute(new DesignSubGridFilterMaskArgument
+      var response = await req.ExecuteAsync(new DesignSubGridFilterMaskArgument
       (siteModel.ID,
         SubGridTreeConsts.DefaultIndexOriginOffset + 10000, // Cell address of originX, about 3km from location of triangle at origin 
         SubGridTreeConsts.DefaultIndexOriginOffset + 10000, // Cell address of originY, about 3km from location of triangle at origin

@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
@@ -27,7 +28,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     [Fact]
-    public void Test_DesignBoundaryRequest()
+    public async Task Test_DesignBoundaryRequest()
     {
       const int EXPECTED_BOUNDARY_COUNT = 7;
       const int EXPECTED_BOUNDARY_POINTS_COUNT_0 = 1528;
@@ -41,7 +42,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       var referenceDesign = new DesignOffset(designUid, 0);
 
       var request = new DesignBoundaryRequest();
-      var response = request.Execute(new DesignBoundaryArgument()
+      var response = await request.ExecuteAsync(new DesignBoundaryArgument()
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,

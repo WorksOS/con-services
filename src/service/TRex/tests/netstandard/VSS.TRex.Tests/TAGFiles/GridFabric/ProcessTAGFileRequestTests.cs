@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using VSS.TRex.DI;
@@ -34,7 +35,7 @@ namespace VSS.TRex.Tests.TAGFiles.GridFabric
     }
 
     [Fact]
-    public void ProcessSingleTAGFile_FailWithInvalidTAGFile()
+    public async Task ProcessSingleTAGFile_FailWithInvalidTAGFile()
     {
       InjectTAGFileProcessorMock();
 
@@ -50,14 +51,14 @@ namespace VSS.TRex.Tests.TAGFiles.GridFabric
         }
       };
 
-      var response = req.Execute(arg);
+      var response = await req.ExecuteAsync(arg);
       response.Results.Count.Should().Be(1);
       response.Results[0].Success.Should().BeFalse();
       response.Results[0].Exception.Should().BeNull();
     }
 
     [Fact]
-    public void ProcessSingleTAGFile_Success()
+    public async Task ProcessSingleTAGFile_Success()
     {
       InjectTAGFileProcessorMock();
 
@@ -77,7 +78,7 @@ namespace VSS.TRex.Tests.TAGFiles.GridFabric
         }
       };
 
-      var response = req.Execute(arg);
+      var response = await req.ExecuteAsync(arg);
       response.Results.Count.Should().Be(1);
       response.Results[0].Success.Should().BeTrue();
       response.Results[0].Exception.Should().BeNull();

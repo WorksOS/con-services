@@ -48,7 +48,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
       var addCoordinateSystemRequest = new AddCoordinateSystemRequest();
 
-      var addCoordSystemResponse = addCoordinateSystemRequest.Execute(new AddCoordinateSystemArgument()
+      var addCoordSystemResponse = await addCoordinateSystemRequest.ExecuteAsync(new AddCoordinateSystemArgument()
       {
         ProjectID = projectUid,
         CSIB = csd.CoordinateSystem.Id

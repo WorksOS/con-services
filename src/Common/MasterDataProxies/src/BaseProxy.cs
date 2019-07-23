@@ -126,11 +126,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">Http method, defaults to POST</param>
     /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
-    protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
+    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
       string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null)
     {
       log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters.LogHeaders(_logMaxChar)} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders(_logMaxChar)}");
-      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
+      return await SendRequestInternal<T>(await ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
     }
 
     /// <summary>
@@ -142,10 +142,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <param name="method">Http method, defaults to POST</param>
     /// <returns>The item</returns>
-    protected Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
+    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
       string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null)
     {
-      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method,
+      return await SendRequestInternal<T>(await ExtractUrl(urlKey, route, queryParameters), customHeaders, method,
         streamPayload: payload);
     }
 
@@ -403,14 +403,13 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Any additional routing</param>
     /// <param name="queryParameters">Any query parameters</param>
     /// <returns></returns>
-    private string ExtractUrl(string urlKey, string route, IDictionary<string, string> queryParameters = null)
+    private async Task<string> ExtractUrl(string urlKey, string route, IDictionary<string, string> queryParameters = null)
     {
       var url = ExtractBaseUrl(urlKey, route);
       if (queryParameters != null)
       {
         url += "?";
-        url += new FormUrlEncodedContent(queryParameters)
-          .ReadAsStringAsync().Result;
+        url += await new FormUrlEncodedContent(queryParameters).ReadAsStringAsync();
       }
 
       return url;

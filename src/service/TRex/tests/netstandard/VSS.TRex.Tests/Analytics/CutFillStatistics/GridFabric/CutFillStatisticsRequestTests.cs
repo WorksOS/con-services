@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using VSS.TRex.Analytics.CutFillStatistics;
@@ -105,7 +106,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
     }
 
     [Fact]
-    public void EmptySiteModel_FullExtents_NoDesign()
+    public async Task EmptySiteModel_FullExtents_NoDesign()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -114,14 +115,14 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var operation = new CutFillStatisticsOperation();
 
       var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid(), 1.5);
-      var result = operation.Execute(argument);
+      var result = await operation.ExecuteAsync(argument);
 
       result.Should().NotBeNull();
       result.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
     }
 
     [Fact]
-    public void SiteModelWithSingleCell_FullExtents_NoDesign()
+    public async Task SiteModelWithSingleCell_FullExtents_NoDesign()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -130,14 +131,14 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid(), 1.5);
-      var result = operation.Execute(argument);
+      var result = await operation.ExecuteAsync(argument);
 
       result.Should().NotBeNull();
       result.ResultStatus.Should().Be(RequestErrorStatus.NoDesignProvided);
     }
 
     [Fact]
-    public void SiteModelWithSingleCell_FullExtents_WithSingleFlatTriangleDesignAboutOrigin()
+    public async Task SiteModelWithSingleCell_FullExtents_WithSingleFlatTriangleDesignAboutOrigin()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -150,7 +151,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid, 0);
       argument.Offsets = new[] {0.5, 0.2, 0.1, 0.0, -0.1, -0.2, -0.5};
 
-      var result = operation.Execute(argument);
+      var result = await operation.ExecuteAsync(argument);
 
       result.Should().NotBeNull();
       result.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -159,7 +160,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
     }
 
     [Fact]
-    public void SiteModelWithSingleSubGrid_FullExtents_WithSingleFlatTriangleDesignAboutOrigin()
+    public async Task SiteModelWithSingleSubGrid_FullExtents_WithSingleFlatTriangleDesignAboutOrigin()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -172,7 +173,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid, 0);
       argument.Offsets = new[] { 1.0, 0.4, 0.2, 0.0, -0.2, -0.4, -1.0 };
 
-      var result = operation.Execute(argument);
+      var result = await operation.ExecuteAsync(argument);
 
       result.Should().NotBeNull();
       result.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -195,7 +196,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
     [InlineData(0, 3)]//Difference between production data and design is 0.1
     [InlineData(-0.4, 2)]//Difference between production data and design is -0.3
     [InlineData(0.5, 5)]//Difference between production data and design is 0.6
-    public void SiteModelWithSingleFlatSubGrid_FullExtents_WithSingleFlatTriangleDesignAboutOrigin(double offset, int indexWithData)
+    public async Task SiteModelWithSingleFlatSubGrid_FullExtents_WithSingleFlatTriangleDesignAboutOrigin(double offset, int indexWithData)
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -208,7 +209,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid, offset);
       argument.Offsets = new[] { 1.0, 0.4, 0.2, 0.0, -0.2, -0.4, -1.0 };
 
-      var result = operation.Execute(argument);
+      var result = await operation.ExecuteAsync(argument);
 
       result.Should().NotBeNull();
       result.ResultStatus.Should().Be(RequestErrorStatus.OK);

@@ -1,14 +1,14 @@
 ﻿using System;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.QuantizedMesh.Executors;
 using VSS.TRex.QuantizedMesh.GridFabric.Arguments;
 using VSS.TRex.QuantizedMesh.GridFabric.Responses;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.QuantizedMesh.Abstractions;
-using VSS.TRex.GridFabric.ComputeFuncs;
 
 namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 {
@@ -54,9 +54,9 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
              arg.Filters,
              arg.TRexNodeID);
 
-        Log.LogInformation("Executing render.Execute()");
+        Log.LogInformation("Executing render.ExecuteAsync()");
 
-        var qm = render.ExecuteAsync().Result;
+        var qm = render.ExecuteAsync().WaitAndUnwrapException();
         
         Log.LogInformation($"Render status = {render.ResultStatus}");
 

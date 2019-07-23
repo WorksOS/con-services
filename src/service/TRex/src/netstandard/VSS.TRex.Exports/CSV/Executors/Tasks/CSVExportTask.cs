@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -41,9 +42,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
             {
               List<string> rows;
               if (subGrid is ClientCellProfileLeafSubgrid grid)
-                rows = SubGridExportProcessor.ProcessSubGrid(grid).Result;
+                rows = SubGridExportProcessor.ProcessSubGrid(grid).WaitAndUnwrapException();
               else
-                rows = SubGridExportProcessor.ProcessSubGrid(subGrid as ClientCellProfileAllPassesLeafSubgrid).Result;
+                rows = SubGridExportProcessor.ProcessSubGrid(subGrid as ClientCellProfileAllPassesLeafSubgrid).WaitAndUnwrapException();
               DataRows.AddRange(rows);
 
               if (SubGridExportProcessor.RecordCountLimitReached())

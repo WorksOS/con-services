@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -62,14 +63,14 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
     }
 
     [Fact]
-    public void Request_EmptyModel_ZeroTolerance()
+    public async Task Request_EmptyModel_ZeroTolerance()
     {
       AddGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new TINSurfaceRequest();
 
-      var result = request.Execute(new TINSurfaceRequestArgument
+      var result = await request.ExecuteAsync(new TINSurfaceRequestArgument
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
@@ -81,7 +82,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
     }
 
     [Fact]
-    public void Request_SingleTriangle_ZeroTolerance()
+    public async Task Request_SingleTriangle_ZeroTolerance()
     {
       AddGridRouting();
 
@@ -110,7 +111,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
 
       var request = new TINSurfaceRequest();
 
-      var result = request.Execute(new TINSurfaceRequestArgument
+      var result = await request.ExecuteAsync(new TINSurfaceRequestArgument
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
