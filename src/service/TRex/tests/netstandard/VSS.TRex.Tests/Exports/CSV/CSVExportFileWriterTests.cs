@@ -361,7 +361,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         Directory.Delete(projectDir, true);
     }
 
-    [Fact]
+    [Fact(Skip="See BUG#85914")]
     public void CreateHeaders_RestrictOutputSize_TwoFiles()
     {
       var projectUid = Guid.NewGuid();

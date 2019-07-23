@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       request.Should().NotBeNull();
     }
 
-    [Theory]
+    [Theory(Skip="See BUG#85914")]
     [InlineData(247645, 193072, 31.50, 0)]
     [InlineData(247668.341, 193059.996, 31.500, 0)]
     [InlineData(247680.000, 193054.000, 30.168, 0)]
