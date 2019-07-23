@@ -88,9 +88,9 @@ node ('jenkinsslave-pod') {
 			sh "ls ${env.WORKSPACE}/TestResults"
         }
 
-    } 	catch (Exception e) {
-		//force build to be success even with test failures as success/failure thresholds will be handled in finally below
-		currentBuild.result = 'SUCCESS'
+    } catch (Exception e) {
+		// if we want to force build to be success even with test failures, enable this line
+		// currentBuild.result = 'SUCCESS'
 	}
     finally {
         //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
