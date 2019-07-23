@@ -49,7 +49,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 
         Log.LogInformation("Executing request.Execute()");
 
-        if (!request.Execute())
+        if (!request.ExecuteAsync().WaitAndUnwrapException())
           Log.LogError("Request execution failed");
         /*
                 QuantizedMeshResponse result = new QuantizedMeshResponse();

@@ -23,6 +23,7 @@ using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.QuantizedMesh.Executors.Tasks;
 using VSS.TRex.SubGridTrees.Client;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.GridFabric.Models;
@@ -167,7 +168,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
 */
 
 
-    private bool ConvertGridToDEM(float minElev, float maxElev)
+    private async Task<bool> ConvertGridToDEM(float minElev, float maxElev)
     {
       ElevData = new ElevationData(TileGridSize); // elevation grid
       ElevData.MaximumHeight = maxElev;
@@ -175,7 +176,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       EcefPoints = new Vector3[TileGridSize * TileGridSize]; // ecef grid
       int k = 0;
 
-      (var errorCode, XYZ[] LLHCoords2) = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid).CSIB(), NEECoords2);
+      (var errorCode, XYZ[] LLHCoords2) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid).CSIB(), NEECoords2);
       if (errorCode == RequestErrorStatus.OK)
       {
         for (int y = 0; y < TileGridSize; y++)
@@ -205,7 +206,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// Executor that implements requesting and rendering grid information to create the grid rows
     /// </summary>
     /// <returns></returns>
-    public bool Execute()
+    public async Task<bool> ExecuteAsync()
     {
       Log.LogInformation($"QMTileExecutor performing Execute for DataModel:{DataModelUid} X:{TileX}, Y:{TileX}, Z:{TileX}");
 
@@ -233,7 +234,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       Log.LogDebug($"LLHCoords for tile request {string.Concat(LLHCoords)}");
       // Note coords are always supplied lat long
-      var conversionResult = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+      var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
       if (conversionResult.ErrorCode != RequestErrorStatus.OK)
       {
         Log.LogInformation("Tile render failure, could not convert bounding area from WGS to grid coordinates");
@@ -350,7 +351,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       processor.Pipeline.AreaControlSet =
         new AreaControlSet(false, GridIntervalX, GridIntervalY,StartEasting, StartNorthing,Azimuth);
 
-      if (!processor.Build())
+      if (!await processor.BuildAsync())
       {
         Log.LogError($"Failed to build pipeline processor for request to model {DataModelUid}");
         return false;
@@ -365,7 +366,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       // todo make ecef array and pass to builder
 
       // todo use new GriddedElevDataArray in tilebuilder
-      if (!ConvertGridToDEM(task.MinElevation,task.MaxElevation))
+      if (! await ConvertGridToDEM(task.MinElevation,task.MaxElevation))
       {
         // todo return code etc
         return false;

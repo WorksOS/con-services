@@ -29,7 +29,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public TINSurfaceExportController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
       IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<TINSurfaceExportController>(), exceptionHandler, configStore)
-    { }
+    {
+    }
 
     /// <summary>
     /// Web service end point controller for TIN surface export
@@ -70,15 +71,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return new CompactionExportResult(fullFileName);
     }
 
-    
-        FileName = "Bob",
 
-      CompactionSurfaceExportRequest request2 = new CompactionSurfaceExportRequest(projectUid, FilterResult.CreateFilter(null), "Sam", 1.0);
-
-
-
-      var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
-    private string BuildTINFilePath(string filename, string extension)
+  private string BuildTINFilePath(string filename, string extension)
     {
       return Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(filename) + extension);
     }
