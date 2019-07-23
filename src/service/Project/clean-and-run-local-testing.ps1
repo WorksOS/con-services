@@ -14,7 +14,7 @@ Write-Host "Connecting to image host" -ForegroundColor DarkGray
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 IF (-not $?) {
-    Write-Host "Error: Logging in to AWS, won't pull latest images for container dependancies." -ForegroundColor Red
+    Write-Host "Error: Logging in to AWS, won't pull latest images for container dependencies." -ForegroundColor Red
 }
 
 IF ($args -notcontains "--no-build") {
@@ -33,7 +33,6 @@ IF ($args -notcontains "--no-build") {
     Copy-Item ./appsettings.json $artifactsWorkingDir
     Copy-Item ./Dockerfile $artifactsWorkingDir
     Copy-Item ./web.config $artifactsWorkingDir
-    Copy-Item ./log4net.xml $artifactsWorkingDir
 
     & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
 }
