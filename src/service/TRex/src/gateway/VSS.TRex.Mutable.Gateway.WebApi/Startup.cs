@@ -49,6 +49,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)
+         .Build()
          .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
 
          .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))

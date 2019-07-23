@@ -10,8 +10,8 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.Productivity3D.Common.Executors;
 using System.IO;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {

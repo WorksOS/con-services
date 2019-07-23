@@ -1,70 +1,56 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using FileSystem = System.IO.File;
 
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
-  public class TTMAndMetaDatActioNResult // : IActionResult
-  {
-    public long a, b, c, d;
-
-    public FileStreamResult theFile;
-  }
-
   /// <summary>
   /// The controller for generating TIN surfaces decimated from elevation data
   /// </summary>
   public class TINSurfaceExportController : BaseController
   {
-    private readonly ITINSurfaceExportRequestor tINSurfaceExportRequestor;
-
     /// <summary>
     /// Constructor for TIN surface export controller
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="exceptionHandler"></param>
     /// <param name="configStore"></param>
-    /// <param name="tINSurfaceExportRequestor"></param>
     public TINSurfaceExportController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
-      IConfigurationStore configStore, ITINSurfaceExportRequestor tINSurfaceExportRequestor)
+      IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<TINSurfaceExportController>(), exceptionHandler, configStore)
-    {
-      this.tINSurfaceExportRequestor = tINSurfaceExportRequestor;
-    }
+    { }
 
     /// <summary>
     /// Web service end point controller for TIN surface export
     /// </summary>
-    /// <param name="compactionExportRequest"></param>
+    /// <param name="compactionSurfaceExportRequest"></param>
     /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/surface/ttm")]
-    public CompactionExportResult PostTINSurface([FromBody] CompactionSurfaceExportRequest compactionSurfaceExportRequest)
+    public async Task<CompactionExportResult> PostTINSurface([FromBody] CompactionSurfaceExportRequest compactionSurfaceExportRequest)
     {
       Log.LogInformation($"{nameof(PostTINSurface)}: {Request.QueryString}");
 
-      Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
+      Log.LogDebug($"Accept header is {Request.Headers[HeaderConstants.ACCEPT]}");
 
       compactionSurfaceExportRequest.Validate();
       ValidateFilterMachines(nameof(PostTINSurface), compactionSurfaceExportRequest.ProjectUid, compactionSurfaceExportRequest.Filter);
 
-      var tinResult = WithServiceExceptionTryExecute(() =>
+      var tinResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(compactionSurfaceExportRequest) as TINSurfaceExportResult);
+          .ProcessAsync(compactionSurfaceExportRequest)) as TINSurfaceExportResult;
 
       const string TTM_EXTENSION = ".ttm";
       const string ZIP_EXTENSION = ".zip";
@@ -84,60 +70,14 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return new CompactionExportResult(fullFileName);
     }
 
-    /// <summary>
-    /// Web service end point controller for TIN surface export
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="tolerance"></param>
-    /// <param name="filterUid"></param>
-    /// <returns></returns>
-    [HttpGet]
-    [Route("api/v2/export/surface/ttm")]
-    public IActionResult GetTINSurface2([FromQuery] Guid projectUid,
-      [FromQuery] double? tolerance,
-      [FromQuery] Guid? filterUid)
-    {
-      Log.LogInformation($"{nameof(GetTINSurface2)}: {Request.QueryString}");
-
-      Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
-
-      TINSurfaceExportRequest request = new TINSurfaceExportRequest
-      {
-        ProjectUid = projectUid,
-        Tolerance = tolerance,
+    
         FileName = "Bob",
-        Filter = FilterResult.CreateFilter(null) // Todo: Get the actual filter from the filterUid
-      };
-
 
       CompactionSurfaceExportRequest request2 = new CompactionSurfaceExportRequest(projectUid, FilterResult.CreateFilter(null), "Sam", 1.0);
 
-      request.Validate();
-      ValidateFilterMachines(nameof(GetTINSurface2), request.ProjectUid, request.Filter);
-
-      var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler);
 
 
-
-      var tinResult = WithServiceExceptionTryExecute(() => container.Process(request2)) as TINSurfaceExportResult;
-
-      if (Request.Headers["Accept"].Equals("application/ttm"))
-        return new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm");
-
-      if (Request.Headers["Accept"].Equals("application/ttm-and-metadata"))
-        return Ok(new TTMAndMetaDatActioNResult
-        {
-          a = tinResult?.TINData.Length ?? 0,
-
-          theFile = new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm")
-        });
-
-      return new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm")
-      {
-        FileDownloadName = "DecimatedTIN.ttm"
-      };
-    }
-
+      var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
     private string BuildTINFilePath(string filename, string extension)
     {
       return Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(filename) + extension);

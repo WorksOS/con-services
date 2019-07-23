@@ -224,6 +224,30 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
+        /// Provides a combined & operator semantic using the NOTed (~ operator) of the operand
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public void AndNotWith(SubGridTreeBitmapSubGridBits other)
+        {
+          for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            Bits[i] &= ~other.Bits[i];
+        }
+
+        /// <summary>
+        /// Provides a combined & operator semantic using the NOTed (~ operator) of the operand
+        /// and assign the result to this bitmask. This is faster than the &~ operator
+        /// in that no intermediate bitmask instance is created and then assigned to the target bitmask
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        public void SetAndNotOf(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
+        {
+          for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            Bits[i] = a.Bits[i] & ~b.Bits[i];
+        }
+
+        /// <summary>
         /// Defines an overloaded bitwise OR/| operator that ORs together the Bits from a and b and returns a 
         /// new SubGridTreeLeafBitmapSubGridBits instance with the result
         /// </summary>

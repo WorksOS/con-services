@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
-using VSS.TRex.Common;
-using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -38,9 +38,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      SummaryVolumesDataRequest request = item as SummaryVolumesDataRequest;
+      var request = item as SummaryVolumesDataRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<SummaryVolumesDataRequest>();
@@ -51,9 +51,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       var topFilter = ConvertFilter(request.TopFilter, siteModel);
       var additionalSpatialFilter = ConvertFilter(request.AdditionalSpatialFilter, siteModel);
 
-      SimpleVolumesRequest_ApplicationService summaryVolumesRequest = new SimpleVolumesRequest_ApplicationService();
+      var summaryVolumesRequest = new SimpleVolumesRequest_ApplicationService();
 
-      SimpleVolumesResponse simpleVolumesResponse = summaryVolumesRequest.Execute(new SimpleVolumesRequestArgument()
+      var simpleVolumesResponse = await summaryVolumesRequest.ExecuteAsync(new SimpleVolumesRequestArgument()
       {
         ProjectID = siteModel.ID,
         BaseFilter = baseFilter,
@@ -123,6 +123,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         extents.MaxX,
         extents.MaxY,
         extents.MaxZ);
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

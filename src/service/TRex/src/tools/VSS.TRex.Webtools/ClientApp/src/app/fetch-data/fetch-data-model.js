@@ -77,4 +77,29 @@ export var DisplayModeType;
     // Elevation Range
     DisplayModeType[DisplayModeType["ElevationRange"] = 33] = "ElevationRange";
 })(DisplayModeType || (DisplayModeType = {}));
+export class OverrideRange {
+    constructor(min, max) {
+        this.Min = min;
+        this.Max = max;
+    }
+}
+export class OverrideParameters {
+    constructor(overrideMachineCCV, overridingMachineCCV, cmvRange, overrideMachineMDP, overridingMachineMDP, mdpRange, overrideTargetPassCount, overridingTargetPassCountRange, overrideTemperatureWarningLevels, overridingTemperatureWarningLevels, targetMachineSpeed) {
+        this.OverrideMachineCCV = false;
+        this.OverrideMachineMDP = false;
+        this.OverrideTargetPassCount = false;
+        this.OverrideTemperatureWarningLevels = false;
+        this.OverrideMachineCCV = overrideMachineCCV;
+        this.OverridingMachineCCV = overridingMachineCCV;
+        this.CMVRange = cmvRange;
+        this.OverrideMachineMDP = overrideMachineMDP;
+        this.OverridingMachineMDP = overridingMachineMDP;
+        this.MDPRange = mdpRange;
+        this.OverrideTargetPassCount = overrideTargetPassCount;
+        this.OverridingTargetPassCountRange = overridingTargetPassCountRange;
+        this.OverrideTemperatureWarningLevels = overrideTemperatureWarningLevels;
+        this.OverridingTemperatureWarningLevels = overridingTemperatureWarningLevels;
+        this.TargetMachineSpeed = targetMachineSpeed;
+    }
+}
 //# sourceMappingURL=fetch-data-model.js.map

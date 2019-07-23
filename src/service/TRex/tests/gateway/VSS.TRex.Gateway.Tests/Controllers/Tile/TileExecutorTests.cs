@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -53,7 +54,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
     }
 
     [Fact]
-    public void TileExecutor_EmptySiteModel()
+    public async Task TileExecutor_EmptySiteModel()
     {
       AddRoutings();
       AddRenderingFactoryToDI();
@@ -80,11 +81,11 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
         .Build<TileExecutor>(DIContext.Obtain<IConfigurationStore>(),
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
-      var result = executor.Process(request) as TileResult;
+      var result = await executor.ProcessAsync(request) as TileResult;
 
       result.Should().NotBeNull();
-      result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
-      result.TileData.Should().NotBeNull();
+      result?.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
+      result?.TileData.Should().NotBeNull();
     }
   }
 }

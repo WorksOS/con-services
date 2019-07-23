@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Compute;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
@@ -42,7 +43,7 @@ namespace VSS.TRex.Tests
     }
 
     [Fact (Skip = "Not a real test. Use for debugging")]
-    public void DebugCutFillStatistics()
+    public async Task DebugCutFillStatistics()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -54,7 +55,7 @@ namespace VSS.TRex.Tests
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid, 0);
       argument.Offsets = new[] { 0.5, 0.2, 0.1, 0.0, -0.1, -0.2, -0.5 };
-      var result = operation.Execute(argument);
+      var result = await operation.ExecuteAsync(argument);
     }
   }
 }

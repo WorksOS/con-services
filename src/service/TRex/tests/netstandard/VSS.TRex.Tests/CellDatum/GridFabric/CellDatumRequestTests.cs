@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
@@ -10,6 +11,8 @@ using VSS.TRex.CellDatum.GridFabric.Requests;
 using VSS.TRex.CellDatum.GridFabric.Responses;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Records;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
@@ -82,7 +85,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     }
 
     #region Cluster Compute
-    private CellDatumRequestArgument_ClusterCompute CreateCellDatumRequestArgument_ClusterCompute(ISiteModel siteModel, DesignOffset referenceDesign, DisplayMode mode)
+    private CellDatumRequestArgument_ClusterCompute CreateCellDatumRequestArgument_ClusterCompute(ISiteModel siteModel, DesignOffset referenceDesign, DisplayMode mode, IOverrideParameters overrides)
     {
       //The single cell is at world origin
       var coords = new XYZ(0.1, 0.1);
@@ -96,7 +99,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
         NEECoords = coords,
         OTGCellX = OTGCellX,
         OTGCellY = OTGCellY,
-        ReferenceDesign = referenceDesign
+        ReferenceDesign = referenceDesign,
+        Overrides = overrides
       };
     }
 
@@ -108,7 +112,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     }
 
     [Fact]
-    public void Test_CellDatumRequest_ClusterCompute_Execute_EmptySiteModel()
+    public async Task Test_CellDatumRequest_ClusterCompute_Execute_EmptySiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -116,30 +120,39 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CellDatumRequest_ClusterCompute();
 
-      var response = request.Execute(CreateCellDatumRequestArgument_ClusterCompute(siteModel, new DesignOffset(), DisplayMode.Height), new SubGridSpatialAffinityKey());
+      var response = await request.ExecuteAsync(CreateCellDatumRequestArgument_ClusterCompute(siteModel, new DesignOffset(), DisplayMode.Height, new OverrideParameters()), new SubGridSpatialAffinityKey());
 
       response.Should().NotBeNull();
       Assert.Equal(CellDatumReturnCode.NoValueFound, response.ReturnCode);
     }
 
     [Theory]
-    [InlineData(DisplayMode.PassCount, 10)]
-    [InlineData(DisplayMode.PassCountSummary, 100.0)]
-    [InlineData(DisplayMode.CCV, 110)]
-    [InlineData(DisplayMode.CCVPercent, 50.0)]
-    [InlineData(DisplayMode.CCVSummary, 50.0)]
-    [InlineData(DisplayMode.CCVPercentSummary, 50.0)]
-    [InlineData(DisplayMode.CCVPercentChange, 10.0)]
-    [InlineData(DisplayMode.MDP, 220)]
-    [InlineData(DisplayMode.MDPPercent, 25.0)]
-    [InlineData(DisplayMode.MDPPercentSummary, 25.0)]
-    [InlineData(DisplayMode.MDPSummary, 25.0)]
-    [InlineData(DisplayMode.Height, 6.0)]
-    [InlineData(DisplayMode.TemperatureDetail, 101.0)]
-    [InlineData(DisplayMode.TemperatureSummary, 101.0)]
-    [InlineData(DisplayMode.MachineSpeed, 660)]
-    [InlineData(DisplayMode.CutFill, 3.5)]//1.5 offset from 5
-    public void Test_CellDatumRequest_ClusterCompute_Execute_SingleCellSiteModelLastPass(DisplayMode mode, double expectedValue)
+    [InlineData(DisplayMode.PassCount, 10, false)]
+    [InlineData(DisplayMode.PassCountSummary, 100.0, false)]
+    [InlineData(DisplayMode.PassCountSummary, 125.0, true)]
+    [InlineData(DisplayMode.CCV, 110, false)]
+    [InlineData(DisplayMode.CCV, 110, true)]
+    [InlineData(DisplayMode.CCVPercent, 50.0, false)]
+    [InlineData(DisplayMode.CCVPercent, 25.0, true)]
+    [InlineData(DisplayMode.CCVSummary, 50.0, false)]
+    [InlineData(DisplayMode.CCVSummary, 25.0, true)]
+    [InlineData(DisplayMode.CCVPercentSummary, 50.0, false)]
+    [InlineData(DisplayMode.CCVPercentSummary, 25.0, true)]
+    [InlineData(DisplayMode.CCVPercentChange, 10.0, false)]
+    [InlineData(DisplayMode.MDP, 220, false)]
+    [InlineData(DisplayMode.MDP, 220, true)]
+    [InlineData(DisplayMode.MDPPercent, 25.0, false)]
+    [InlineData(DisplayMode.MDPPercent, 50.0, true)]
+    [InlineData(DisplayMode.MDPPercentSummary, 25.0, false)]
+    [InlineData(DisplayMode.MDPPercentSummary, 50.0, true)]
+    [InlineData(DisplayMode.MDPSummary, 25.0, false)]
+    [InlineData(DisplayMode.MDPSummary, 50.0, true)]
+    [InlineData(DisplayMode.Height, 6.0, false)]
+    [InlineData(DisplayMode.TemperatureDetail, 101.0, false)]
+    [InlineData(DisplayMode.TemperatureSummary, 101.0, false)]
+    [InlineData(DisplayMode.MachineSpeed, 660, false)]
+    [InlineData(DisplayMode.CutFill, 3.5, false)]//1.5 offset from 5
+    public async Task Test_CellDatumRequest_ClusterCompute_Execute_SingleCellSiteModelLastPass(DisplayMode mode, double expectedValue, bool withOverrides)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -149,9 +162,21 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var siteModel = BuildModelForSingleCellDatum(baseTime);
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
       var referenceDesign = new DesignOffset(designUid, 1.5);
+      var overrides = withOverrides
+        ? new OverrideParameters
+        {
+          OverrideMachineCCV = true,
+          OverridingMachineCCV = 440,
+          OverrideMachineMDP = true,
+          OverridingMachineMDP = 440,
+          OverrideTargetPassCount = true,
+          OverridingTargetPassCountRange = new PassCountRangeRecord(4, 8)
+          //others not used in cell datum
+        }
+        : new OverrideParameters();
       var request = new CellDatumRequest_ClusterCompute();
-      var arg = CreateCellDatumRequestArgument_ClusterCompute(siteModel, referenceDesign, mode);
-      var response = request.Execute(arg, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
+      var arg = CreateCellDatumRequestArgument_ClusterCompute(siteModel, referenceDesign, mode, overrides);
+      var response = await request.ExecuteAsync(arg, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
 
       response.Should().NotBeNull();
       Assert.Equal(CellDatumReturnCode.ValueFound, response.ReturnCode);
@@ -175,7 +200,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.CutFill)] 
-    public void Test_CellDatumRequest_ClusterCompute_Execute_SingleCellSiteModelMinimalValues(DisplayMode mode)
+    public async Task Test_CellDatumRequest_ClusterCompute_Execute_SingleCellSiteModelMinimalValues(DisplayMode mode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -186,8 +211,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
       var referenceDesign = new DesignOffset(designUid, 0);
       var request = new CellDatumRequest_ClusterCompute();
-      var arg = CreateCellDatumRequestArgument_ClusterCompute(siteModel, referenceDesign, mode);
-      var response = request.Execute(arg, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
+      var arg = CreateCellDatumRequestArgument_ClusterCompute(siteModel, referenceDesign, mode, new OverrideParameters());
+      var response = await request.ExecuteAsync(arg, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
 
       response.Should().NotBeNull();
       //Only elevation and pass count
@@ -213,21 +238,21 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CellDatumRequest_ClusterCompute();
 
-      Assert.Throws<ArgumentException>(() => request.Execute(CreateCellDatumRequestArgument_ClusterCompute(siteModel, new DesignOffset(Guid.NewGuid(), -0.5), DisplayMode.Height), new SubGridSpatialAffinityKey()));
+      Assert.ThrowsAsync<ArgumentException>(async () => await request.ExecuteAsync(CreateCellDatumRequestArgument_ClusterCompute(siteModel, new DesignOffset(Guid.NewGuid(), -0.5), DisplayMode.Height, new OverrideParameters()), new SubGridSpatialAffinityKey()));
     }
 
     [Fact]
-    public void Test_CellDatumRequest_ClusterCompute_Execute_MissingSiteModel()
+    public async Task Test_CellDatumRequest_ClusterCompute_Execute_MissingSiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var arg = CreateCellDatumRequestArgument_ClusterCompute(siteModel, new DesignOffset(), DisplayMode.Height);
+      var arg = CreateCellDatumRequestArgument_ClusterCompute(siteModel, new DesignOffset(), DisplayMode.Height, new OverrideParameters());
       arg.ProjectID = Guid.NewGuid();
 
       var request = new CellDatumRequest_ClusterCompute();
-      var response = request.Execute(arg, new SubGridSpatialAffinityKey());
+      var response = await request.ExecuteAsync(arg, new SubGridSpatialAffinityKey());
 
       response.Should().NotBeNull();
       Assert.Equal(CellDatumReturnCode.UnexpectedError, response.ReturnCode);
@@ -235,7 +260,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     #endregion
 
     #region Application Service
-    private CellDatumRequestArgument_ApplicationService CreateCellDatumRequestArgument_ApplicationService(ISiteModel siteModel, DesignOffset referenceDesign, DisplayMode mode)
+    private CellDatumRequestArgument_ApplicationService CreateCellDatumRequestArgument_ApplicationService(ISiteModel siteModel, DesignOffset referenceDesign, DisplayMode mode, IOverrideParameters overrides)
     {
       //The single cell is at world origin
       var coords = new XYZ(0.1, 0.1, 0);
@@ -247,7 +272,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
         Mode = mode,
         Point = coords,
         ReferenceDesign = referenceDesign,
-        CoordsAreGrid = true
+        CoordsAreGrid = true,
+        Overrides = overrides
       };
     }
 
@@ -259,14 +285,14 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     }
 
     [Fact]
-    public void Test_CellDatumRequest_ApplicationService_Execute_EmptySiteModel()
+    public async Task Test_CellDatumRequest_ApplicationService_Execute_EmptySiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CellDatumRequest_ApplicationService();
-      var response = request.Execute(CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height));
+      var response = await request.ExecuteAsync(CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height, new OverrideParameters()));
 
       response.Should().NotBeNull();
       Assert.Equal(CellDatumReturnCode.NoValueFound, response.ReturnCode);
@@ -276,9 +302,9 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     [InlineData(DisplayMode.PassCount, 10)]
     [InlineData(DisplayMode.PassCountSummary, 100.0)]
     [InlineData(DisplayMode.CCV, 110)]
-    [InlineData(DisplayMode.CCVPercent, 50.0)]
-    [InlineData(DisplayMode.CCVSummary, 50.0)]
-    [InlineData(DisplayMode.CCVPercentSummary, 50.0)]
+    [InlineData(DisplayMode.CCVPercent, 25.0)]
+    [InlineData(DisplayMode.CCVSummary, 25.0)]
+    [InlineData(DisplayMode.CCVPercentSummary, 25.0)]
     [InlineData(DisplayMode.CCVPercentChange, 10.0)]
     [InlineData(DisplayMode.MDP, 220)]
     [InlineData(DisplayMode.MDPPercent, 25.0)]
@@ -289,7 +315,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     [InlineData(DisplayMode.TemperatureSummary, 101.0)]
     [InlineData(DisplayMode.MachineSpeed, 660)]
     [InlineData(DisplayMode.CutFill, 3.5)]//1.5 offset from 5
-    public void Test_CellDatumRequest_ApplicationService_Execute_SingleCellSiteModelLastPass(DisplayMode mode, double expectedValue)
+    public async Task Test_CellDatumRequest_ApplicationService_Execute_SingleCellSiteModelLastPass(DisplayMode mode, double expectedValue)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -299,9 +325,14 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var siteModel = BuildModelForSingleCellDatum(baseTime);
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
       var referenceDesign = new DesignOffset(designUid, 1.5);
-
+      //Just do one override to test it's hooked up. The rest are tested in the cluster compute tests
+      var overrides = new OverrideParameters
+      {
+        OverrideMachineCCV = true,
+        OverridingMachineCCV = 440
+      };
       var request = new CellDatumRequest_ApplicationService();
-      var response = request.Execute(CreateCellDatumRequestArgument_ApplicationService(siteModel, referenceDesign, mode));
+      var response = await request.ExecuteAsync(CreateCellDatumRequestArgument_ApplicationService(siteModel, referenceDesign, mode, overrides));
 
       response.Should().NotBeNull();
       Assert.Equal(CellDatumReturnCode.ValueFound, response.ReturnCode);
@@ -310,7 +341,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void Test_CellDatumRequest_ApplicationService_Execute_SingleCellSiteModel_LLH()
+    public async Task Test_CellDatumRequest_ApplicationService_Execute_SingleCellSiteModel_LLH()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -322,12 +353,12 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       DITAGFileAndSubGridRequestsWithIgniteFixture.AddCSIBToSiteModel(ref siteModel, DIMENSIONS_2012_DC_CSIB);
       siteModel.CSIB().Should().Be(DIMENSIONS_2012_DC_CSIB);
 
-      var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height);
-      arg.Point = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(siteModel.CSIB(), arg.Point);
+      var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height, new OverrideParameters());
+      arg.Point = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(siteModel.CSIB(), arg.Point);
       arg.CoordsAreGrid = false;
 
       var request = new CellDatumRequest_ApplicationService();
-      var response = request.Execute(arg);
+      var response = await request.ExecuteAsync(arg);
 
       response.Should().NotBeNull();
       Assert.Equal(CellDatumReturnCode.ValueFound, response.ReturnCode);
@@ -336,7 +367,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     }
 
     [Fact]
-    public void Test_CellDatumRequest_ApplicationService_Execute_SingleCellSiteModel_Outside()
+    public async Task Test_CellDatumRequest_ApplicationService_Execute_SingleCellSiteModel_Outside()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -345,28 +376,28 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var baseTime = DateTime.UtcNow;
       var siteModel = BuildModelForSingleCellDatum(baseTime);
 
-      var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height);
+      var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height, new OverrideParameters());
       arg.Point = new XYZ(123456, 123456);
 
       var request = new CellDatumRequest_ApplicationService();
-      var response = request.Execute(arg);
+      var response = await request.ExecuteAsync(arg);
 
       response.Should().NotBeNull();
       Assert.Equal(CellDatumReturnCode.NoValueFound, response.ReturnCode);
     }
 
     [Fact]
-    public void Test_CellDatumRequest_ApplicationService_Execute_MissingSiteModel()
+    public async Task Test_CellDatumRequest_ApplicationService_Execute_MissingSiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height);
+      var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height, new OverrideParameters());
       arg.ProjectID = Guid.NewGuid();
 
       var request = new CellDatumRequest_ApplicationService();
-      var response = request.Execute(arg);
+      var response = await request.ExecuteAsync(arg);
 
       response.Should().NotBeNull();
       Assert.Equal(CellDatumReturnCode.UnexpectedError, response.ReturnCode);

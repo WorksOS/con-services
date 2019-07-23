@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Designs.GridFabric.Arguments;
+﻿using System.Threading.Tasks;
+using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
 
@@ -15,6 +16,13 @@ namespace VSS.TRex.Designs.GridFabric.Requests
      var func = new DesignFilterSubGridMaskComputeFunc();
 
       return Compute.Apply(func, arg);
+    }
+
+    public override Task<DesignFilterSubGridMaskResponse> ExecuteAsync(DesignSubGridFilterMaskArgument arg)
+    {
+      var func = new DesignFilterSubGridMaskComputeFunc();
+
+      return Compute.ApplyAsync(func, arg);
     }
   }
 }

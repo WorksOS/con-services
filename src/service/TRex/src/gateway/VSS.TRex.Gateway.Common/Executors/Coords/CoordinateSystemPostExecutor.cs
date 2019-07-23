@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Coords;
@@ -31,14 +31,14 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CoordinateSystemFile;
 
       if (request == null)
         ThrowRequestTypeCastException<CoordinateSystemFile>();
 
-      var csd = DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
+      var csd = await DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 
       if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
@@ -48,7 +48,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
       var addCoordinateSystemRequest = new AddCoordinateSystemRequest();
 
-      var addCoordSystemResponse = addCoordinateSystemRequest.Execute(new AddCoordinateSystemArgument()
+      var addCoordSystemResponse = await addCoordinateSystemRequest.ExecuteAsync(new AddCoordinateSystemArgument()
       {
         ProjectID = projectUid,
         CSIB = csd.CoordinateSystem.Id
@@ -59,6 +59,14 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         $"Failed to post Coordinate System definition data. Project UID: {projectUid}"));
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

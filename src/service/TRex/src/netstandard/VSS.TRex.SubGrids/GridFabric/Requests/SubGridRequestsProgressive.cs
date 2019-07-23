@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Responses;
@@ -134,10 +135,10 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
             return Compute.BroadcastAsync(func, arg)
               .ContinueWith(result => result.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)))
-              .ContinueWith(x =>
+              .ContinueWith(x => 
               {
-                Log.LogInformation($"SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType}");
-                return x.Result;
+                Log.LogInformation($"SubGridRequests.ExecuteAsync() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType}");
+                return x.WaitAndUnwrapException();
               });
         }
 

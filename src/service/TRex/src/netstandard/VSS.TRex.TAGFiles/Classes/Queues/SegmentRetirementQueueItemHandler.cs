@@ -80,12 +80,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
               return false;
             }
 
-            if (storageProxy.ImmutableProxy == null)
-            {
-              Log.LogError("Immutable proxy not available in provided storage proxy. Aborting");
-              return false;
-            }
-
             if (!storageProxy.ImmutableProxy.SpatialCache.Remove(key))
             {
               Log.LogError($"Immutable segment retirement cache removal for {key} returned false, aborting");

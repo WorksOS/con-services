@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
@@ -31,7 +30,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionCSVExportRequest;
       if (request == null)
@@ -58,7 +57,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var csvExportRequestArgument = AutoMapperUtility.Automapper.Map<CSVExportRequestArgument>(request);
       csvExportRequestArgument.MappedMachines = CSVExportHelper.MapRequestedMachines(siteModel, request.MachineNames);
       csvExportRequestArgument.Filters = new FilterSet(filter);
-      var response = tRexRequest.Execute(csvExportRequestArgument);
+      var response = await tRexRequest.ExecuteAsync(csvExportRequestArgument);
 
       if (response == null || response.ResultStatus != RequestErrorStatus.OK)
       {
@@ -73,11 +72,11 @@ namespace VSS.TRex.Gateway.Common.Executors
 
 
     /// <summary>
-    /// Processes the request asynchronously.
+    /// Processes the tile request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

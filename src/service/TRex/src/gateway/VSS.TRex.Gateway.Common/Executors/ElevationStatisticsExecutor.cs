@@ -1,4 +1,6 @@
-﻿using VSS.MasterData.Models.Models;
+﻿using System;
+using System.Threading.Tasks;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.ElevationStatistics;
@@ -18,9 +20,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      ElevationDataRequest request = item as ElevationDataRequest;
+      var request = item as ElevationDataRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<ElevationStatisticsExecutor>();
@@ -28,7 +30,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var operation = new ElevationStatisticsOperation();
-      var elevationStatisticsResult = operation.Execute(new ElevationStatisticsArgument()
+      var elevationStatisticsResult = await operation.ExecuteAsync(new ElevationStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet { Filters = new[] { new CombinedFilter() } }
@@ -58,6 +60,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         result.MinElevation, 
         result.MaxElevation,
         result.CoverageArea);
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

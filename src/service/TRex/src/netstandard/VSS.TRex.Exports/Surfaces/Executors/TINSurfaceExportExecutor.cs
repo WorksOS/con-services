@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Designs.Models;
@@ -104,7 +105,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// Executor that implements creation of the TIN surface
     /// </summary>
     /// <returns></returns>
-    public bool Execute()
+    public async Task<bool> ExecuteAsync()
     {
       Log.LogInformation($"Performing Execute for DataModel:{DataModelID}");
 
@@ -133,7 +134,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
         processor.Task.TRexNodeID = RequestingTRexNodeID;
         processor.Task.GridDataType = GridDataFromModeConverter.Convert(DisplayMode.Height);
 
-        if (!processor.Build())
+        if (!await processor.BuildAsync())
         {
           Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
           return false;

@@ -11,6 +11,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters;
@@ -43,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       return siteModel.SurveyedSurfaces == null || includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as TRexTileRequest;
 
@@ -65,7 +66,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var siteModel = GetSiteModel(request.ProjectUid);
       
       var tileRequest = new TileRenderRequest();
-      var response = tileRequest.Execute(
+      var response = await tileRequest.ExecuteAsync(
         new TileRenderRequestArgument
         (siteModel.ID,
           request.Mode,
@@ -82,11 +83,11 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
     /// <summary>
-    /// Processes the tile request asynchronously.
+    /// Processes the tile request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
 
     private PaletteBase ConvertColorPalettes(TRexTileRequest request, ISiteModel siteModel)
@@ -98,7 +99,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       const ushort TEMPERATURE_LEVELS_MIN = 0;
       const ushort TEMPERATURE_LEVELS_MAX = 100;
 
-      var overrides = GetOverrideParameters(request.Overrides);
+      var overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides);
 
       PaletteBase convertedPalette;
 

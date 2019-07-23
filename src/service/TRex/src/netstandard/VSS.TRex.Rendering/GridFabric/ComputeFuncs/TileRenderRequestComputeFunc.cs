@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -57,9 +58,9 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
              Color.Black,
              arg.TRexNodeID);
 
-        Log.LogInformation("Executing render.Execute()");
+        Log.LogInformation("Executing render.ExecuteAsync()");
 
-        var bmp = render.Execute();
+        var bmp = render.ExecuteAsync().WaitAndUnwrapException();
         Log.LogInformation($"Render status = {render.ResultStatus}");
 
         if (bmp == null)

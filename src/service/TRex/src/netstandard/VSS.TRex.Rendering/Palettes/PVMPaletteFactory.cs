@@ -13,7 +13,7 @@ namespace VSS.TRex.Rendering.Palettes
   /// </summary>
   public static class PVMPaletteFactory
   {
-    public static IPlanViewPalette GetPallete(ISiteModel siteModel, DisplayMode mode, BoundingWorldExtent3D spatialExtents)
+    public static IPlanViewPalette GetPalette(ISiteModel siteModel, DisplayMode mode, BoundingWorldExtent3D spatialExtents)
     {
       switch (mode)
       {
@@ -36,7 +36,7 @@ namespace VSS.TRex.Rendering.Palettes
         case DisplayMode.CCASummary: return new CCASummaryPalette();
 
         default:
-          throw new TRexException($"Unknown display mode in {nameof(GetPallete)}");
+          throw new TRexException($"Unknown display mode in {nameof(GetPalette)}");
       }
 
       // TODO The additional logic in the commented out code below should be implemented as per the corresponding User Story...

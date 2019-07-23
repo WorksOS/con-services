@@ -16,7 +16,6 @@ using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
-using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.WebApi.ActionServices;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels;
@@ -45,13 +44,12 @@ namespace VSS.TRex.Gateway.WebApi
       DIBuilder.New(services)
         .Build()
         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
-        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
+        .Add(IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
-        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+        .Add(Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+        .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
-
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        .Add(x => x.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor()))
 
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))

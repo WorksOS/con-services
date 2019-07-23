@@ -164,8 +164,8 @@ namespace VSS.TRex.SubGridTrees.Client
                 if (!profileCell.Layers.IsCellPassInSupersededLayer(PassSearchIdx) || Dummy_LiftBuildSettings.IncludeSuperseded)
                 {
                   profileCell.CellPreviousMeasuredCCV = profileCell.Passes.FilteredPassData[PassSearchIdx].FilteredPass.CCV;
-                  if (Dummy_LiftBuildSettings.OverrideMachineCCV)
-                    profileCell.CellPreviousMeasuredTargetCCV = Dummy_LiftBuildSettings.OverridingMachineCCV;
+                  if (context.Overrides?.OverrideMachineCCV ?? false)
+                    profileCell.CellPreviousMeasuredTargetCCV = context.Overrides.OverridingMachineCCV;
                   else
                     profileCell.CellPreviousMeasuredTargetCCV = profileCell.Passes.FilteredPassData[PassSearchIdx].TargetValues.TargetCCV;
                   break;

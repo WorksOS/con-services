@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -25,7 +26,7 @@ namespace VSS.TRex.Profiling.Executors
     /// <summary>
     /// Executes the profiler
     /// </summary>
-    public ProfileRequestResponse<T> Execute(ProfileRequestArgument_ApplicationService arg)
+    public async Task<ProfileRequestResponse<T>> ExecuteAsync(ProfileRequestArgument_ApplicationService arg)
     {
       Log.LogInformation("Start execution");
 
@@ -34,7 +35,7 @@ namespace VSS.TRex.Profiling.Executors
         if (arg.Filters?.Filters != null && arg.Filters.Filters.Length > 0)
         {
           // Prepare the filters for use in profiling operations. Failure to prepare any filter results in this request terminating
-          if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK)))
+          if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x.Result == RequestErrorStatus.OK)))
           {
             return new ProfileRequestResponse<T>{ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
           }
@@ -62,35 +63,35 @@ namespace VSS.TRex.Profiling.Executors
         {
           var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
 
-          arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
+          arg2.NEECoords = await DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
         }
 
         var request = new ProfileRequest_ClusterCompute<T>();
-        var ProfileResponse = request.Execute(arg2);
+        var profileResponse = await request.ExecuteAsync(arg2);
 
         //... and then sort them to get the final result, as well as removing initial and duplicate null values
         // Remove null cells in the profiles list. Null cells are defined by cells with null CellLastHeight.
         // All duplicate null cells will be replaced by a by single null cell entry
         int firstNonNullIndex = 0;
-        var _ProfileCells = ProfileResponse?.ProfileCells?.OrderBy(x => x.Station).ToList();
-        if (_ProfileCells != null)
+        var _profileCells = profileResponse?.ProfileCells?.OrderBy(x => x.Station).ToList();
+        if (_profileCells != null)
         {
-          ProfileResponse.ProfileCells = _ProfileCells.Where((x, i) =>
+          profileResponse.ProfileCells = _profileCells.Where((x, i) =>
           {
             // Remove all leading nulls
-            if (_ProfileCells[i].IsNull() && i == firstNonNullIndex)
+            if (_profileCells[i].IsNull() && i == firstNonNullIndex)
               {
                 firstNonNullIndex++;
                 return false;
               }
 
             // Collapse all interior nulls to single nulls, unless the null is at the end. Leave any single terminating null
-            return i == 0 || !_ProfileCells[i].IsNull() || (_ProfileCells[i].IsNull() && !_ProfileCells[i - 1].IsNull());
+            return i == 0 || !_profileCells[i].IsNull() || (_profileCells[i].IsNull() && !_profileCells[i - 1].IsNull());
           }).ToList();
         }
 
         // Return the care package to the caller
-        return ProfileResponse;
+        return profileResponse;
       }
       finally
       {

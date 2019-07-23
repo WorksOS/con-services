@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -27,7 +29,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as ProjectID;
 
@@ -42,13 +44,21 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      var csd = DIContext.Obtain<IConvertCoordinates>().CSIBContentToCSD(csib);
+      var csd = await DIContext.Obtain<IConvertCoordinates>().CSIBContentToCSD(csib);
 
       if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           "Failed to convert CSIB content to Coordinate System definition data."));
 
       return ConvertResult("", csd.CoordinateSystem);
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
@@ -46,7 +44,7 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
 
-      ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
+      var ss = DIContext.Obtain<ISurveyedSurfaces>();
 
       if (ms != null)
       {
@@ -92,8 +90,8 @@ namespace VSS.TRex.SurveyedSurfaces
       if (asAtDate.Kind != DateTimeKind.Utc)
         throw new ArgumentException("AsAtDate must be a UTC date time");
 
-      ISurveyedSurfaces ss = Load(siteModelUid);
-      ISurveyedSurface newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);
+      var ss = Load(siteModelUid);
+      var newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);
       Store(siteModelUid, ss);
 
       return newSurveyedSurface;
@@ -117,7 +115,7 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <returns></returns>
     public bool Remove(Guid siteModelUid, Guid surveySurfaceUid)
     {
-      ISurveyedSurfaces ss = Load(siteModelUid);
+      var ss = Load(siteModelUid);
       bool result = ss.RemoveSurveyedSurface(surveySurfaceUid);
       Store(siteModelUid, ss);
 

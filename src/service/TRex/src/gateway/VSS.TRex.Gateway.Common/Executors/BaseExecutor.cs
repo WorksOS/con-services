@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
@@ -8,6 +7,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -24,10 +24,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     private const string ERROR_MESSAGE_PRODUCTION_DATA = "Failed to get/update data requested by {0}";
     private const string ERROR_MESSAGE = "Failed to complete TRex request: {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
-
-    private const ushort MIN_TEMPERATURE = 0;
-    private const ushort MAX_TEMPERATURE = 4095;
-    private const ushort TEMPERATURE_CONVERSION_FACTOR = 10;
 
     protected BaseExecutor()
     {
@@ -68,46 +64,6 @@ namespace VSS.TRex.Gateway.Common.Executors
       var excludedIds = siteModel.SurveyedSurfaces == null || !includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList = excludedIds;
       return combinedFilter;
-    }
-
-    protected OverrideParameters GetOverrideParameters(OverridingTargets overrides)
-    {
-      if (overrides == null)
-        return null;
-
-      var overridingTargetPassCountRange = overrides.OverridingTargetPassCountRange;
-      var overrideTargetPassCount = overridingTargetPassCountRange != null;
-      var targetPassCountRange = overrideTargetPassCount
-        ? new PassCountRangeRecord(overridingTargetPassCountRange.Min, overridingTargetPassCountRange.Max)
-        : new PassCountRangeRecord();
-
-      var temperatureSettings = overrides.TemperatureSettings;
-      var overrideTemperature = temperatureSettings != null && temperatureSettings.OverrideTemperatureRange;
-      var temperatureRange = overrideTemperature ? new TemperatureWarningLevelsRecord(
-          Convert.ToUInt16(temperatureSettings.MinTemperature * TEMPERATURE_CONVERSION_FACTOR),
-          Convert.ToUInt16(temperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR)) :
-        new TemperatureWarningLevelsRecord(MIN_TEMPERATURE, MAX_TEMPERATURE);
-
-      var targetSpeed = overrides.MachineSpeedTarget;
-      var targetMachineSpeed =
-        targetSpeed != null ?
-          new MachineSpeedExtendedRecord(targetSpeed.MinTargetMachineSpeed, targetSpeed.MaxTargetMachineSpeed) :
-          new MachineSpeedExtendedRecord();
-
-      return new OverrideParameters
-      {
-        CMVRange = new CMVRangePercentageRecord(overrides.MinCMVPercent, overrides.MaxCMVPercent),
-        MDPRange = new MDPRangePercentageRecord(overrides.MinMDPPercent, overrides.MaxMDPPercent),
-        OverrideMachineCCV = overrides.OverrideTargetCMV,
-        OverridingMachineCCV = overrides.CmvTarget,
-        OverrideMachineMDP = overrides.OverrideTargetMDP,
-        OverridingMachineMDP = overrides.MdpTarget,
-        OverrideTargetPassCount = overrideTargetPassCount,
-        OverridingTargetPassCountRange = targetPassCountRange,
-        OverrideTemperatureWarningLevels = overrideTemperature,
-        OverridingTemperatureWarningLevels = temperatureRange,
-        TargetMachineSpeed = targetMachineSpeed
-      };
     }
 
     protected void ThrowRequestTypeCastException<T>()

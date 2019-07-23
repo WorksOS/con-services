@@ -5,7 +5,7 @@
 
   <div class="container-fluid" id="panel">
     <div class="row" id="fetchDataRow">
-      <div class="fetchDataButtonsPanel col-lg-3">
+      <div class="fetchDataPanel col-lg-3">
         <div class="panel-heading">Request Types</div>
         <div class="panel-default">
           <select id="dataRequestType" name="dataRequestType" [(ngModel)]="dataRequestType" (change)="dataRequestTypeChanged($event)">
@@ -16,14 +16,65 @@
           <div class="spacer"></div>
           <button class="requestButton" [disabled]="noProjectSelected()" (click)="getProductionData()">Execute</button>
         </div>
+
       </div>
 
-      <div class="fetchDataOutputPanel col-lg-9">
+      <div class="fetchDataPanel col-lg-9">
         <div class="panel-heading">Results</div>
         <div class="panel-default" [innerHTML]="dataResult" style="padding-left: 10px; padding-top: 10px; font-size: small"></div>
       </div>
     </div>
-
+      <div class="row">
+          <div class="fetchDataPanel col-lg-12">
+              <div class="panel-heading">Override Parameters</div>
+              <div class="panel-default overridePanel">
+                <p>
+                  <input type="checkbox" [(ngModel)]="overrides.OverrideMachineCCV">
+                  <label class="overrideInput">Override Machine CMV</label>
+                  <input type="number" [(ngModel)]="overrides.OverridingMachineCCV" />
+                  <label class="overrideInput">CMV Range (%) Min:</label>
+                  <input type="number" [(ngModel)]="overrides.CMVRange.Min" />
+                  <label class="overrideInput">Max:</label>
+                  <input type="number" [(ngModel)]="overrides.CMVRange.Max" />
+                </p>
+                <p>
+                  <input type="checkbox" [(ngModel)]="overrides.OverrideMachineMDP">
+                  <label class="overrideInput">Override Machine MDP</label>
+                  <input type="number" [(ngModel)]="overrides.OverridingMachineMDP" />
+                  <label class="overrideInput">MDP Range (%) Min:</label>
+                  <input type="number" [(ngModel)]="overrides.MDPRange.Min" />
+                  <label class="overrideInput">Max:</label>
+                  <input type="number" [(ngModel)]="overrides.MDPRange.Max" />
+                </p>
+                <p>
+                  <input type="checkbox" [(ngModel)]="overrides.OverrideTargetPassCount">
+                  <label class="overrideInput">Override Target Pass Count</label>
+                  <label class="overrideInput">Min:</label>
+                  <input type="number" [(ngModel)]="overrides.OverridingTargetPassCountRange.Min" />
+                  <label class="overrideInput">Max:</label>
+                  <input type="number" [(ngModel)]="overrides.OverridingTargetPassCountRange.Max" />
+                </p>
+                <p>
+                  <input type="checkbox" [(ngModel)]="overrides.OverrideTemperatureWarningLevels">
+                  <label class="overrideInput">Override Temperature Warning Levels</label>
+                  <label class="overrideInput">Min:</label>
+                  <input type="number" [(ngModel)]="overrides.OverridingTemperatureWarningLevels.Min" />
+                  <label class="overrideInput">Max:</label>
+                  <input type="number" [(ngModel)]="overrides.OverridingTemperatureWarningLevels.Max" />
+                </p>
+                <p>
+                  <label class="overrideInput">Target Machine Speed (cm/sec)</label>
+                  <label class="overrideInput">Min:</label>
+                  <input type="number" [(ngModel)]="overrides.TargetMachineSpeed.Min" />
+                  <label class="overrideInput">Max:</label>
+                  <input type="number" [(ngModel)]="overrides.TargetMachineSpeed.Max" />
+                </p>
+                <div class="spacer"></div>
+                <button class="requestButton" [disabled]="noProjectSelected()" (click)="saveOverrides()">Save</button>
+                <button class="requestButton" [disabled]="noProjectSelected()" (click)="setDefaultOverrides()">Set Defaults</button>
+              </div>
+          </div>
+      </div>
   </div>
 </div>
 

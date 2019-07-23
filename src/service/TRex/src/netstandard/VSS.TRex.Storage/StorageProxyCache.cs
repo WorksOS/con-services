@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Cache;
+using Apache.Ignite.Core.Transactions;
 using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Storage
@@ -21,9 +22,19 @@ namespace VSS.TRex.Storage
             throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour");
         }
 
+        public virtual void Commit(ITransaction tx)
+        {
+          throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour");
+        }
+
         public virtual void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
         {
            throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour"); ;
+        }
+    
+        public virtual void Commit(ITransaction tx, out int numDeleted, out int numUpdated, out long numBytesWritten)
+        {
+          throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour"); ;
         }
 
         public virtual void Clear()
@@ -50,5 +61,7 @@ namespace VSS.TRex.Storage
         public virtual void Put(TK key, TV value) => Cache.Put(key, value);
 
         public virtual void PutAll(IEnumerable<KeyValuePair<TK, TV>> values) => Cache.PutAll(values);
+
+        public virtual ICacheLock Lock(TK key) => Cache.Lock(key);
     }
 }

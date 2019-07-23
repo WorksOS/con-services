@@ -18,6 +18,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 using System.Drawing;
+using System.Threading.Tasks;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
@@ -313,7 +314,7 @@ namespace VSS.TRex.Rendering.Executors
     /// <summary>
     /// Executor that implements requesting and rendering sub grid information to create the rendered tile
     /// </summary>
-    public IBitmap Execute()
+    public async Task<IBitmap> ExecuteAsync()
     {
       // WorkingColorPalette  : TICDisplayPaletteBase;
 
@@ -427,12 +428,10 @@ namespace VSS.TRex.Rendering.Executors
       Log.LogInformation($"LLHCoords for tile request {string.Concat(LLHCoords)}, CoordsAreGrid {CoordsAreGrid}");
 
       if (CoordsAreGrid)
-      {
         NEECoords = LLHCoords;
-      }
       else
       {
-        var conversionResult = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+        var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
         if (conversionResult.ErrorCode != RequestErrorStatus.OK)
         {
@@ -524,7 +523,7 @@ namespace VSS.TRex.Rendering.Executors
         processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
 
         // Prepare the processor
-        if (!processor.Build())
+        if (!await processor.BuildAsync())
         {
           Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
           ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
@@ -567,9 +566,7 @@ namespace VSS.TRex.Rendering.Executors
         ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters);
 
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
-        {
           return Renderer.Displayer.MapView.BitmapCanvas;
-        }
       }
       catch (Exception e)
       {

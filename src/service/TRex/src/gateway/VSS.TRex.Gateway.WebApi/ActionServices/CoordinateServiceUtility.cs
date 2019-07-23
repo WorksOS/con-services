@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
     /// <summary>
     /// Converts XYZ to LLH
     /// </summary>
-    public int PatchLLH(string CSIB, List<MachineStatus> machines)
+    public async Task<int> PatchLLH(string CSIB, List<MachineStatus> machines)
     {
       if (!machines.Any())
         return ContractExecutionStatesEnum.ExecutedSuccessfully;
@@ -38,7 +39,7 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
 
       if (NEECoords.Count > 0)
       {
-        (var errorCode, XYZ[] LLHCoords) = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(CSIB, NEECoords.ToArray());
+        (var errorCode, XYZ[] LLHCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(CSIB, NEECoords.ToArray());
      
         // if the count returned is different to that sent, then we can't match with the machines list
         if (errorCode == RequestErrorStatus.OK && NEECoords.Count == LLHCoords.Length)

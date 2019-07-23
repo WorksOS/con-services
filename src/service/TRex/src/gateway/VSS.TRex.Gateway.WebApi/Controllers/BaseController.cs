@@ -84,7 +84,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
     {
-      TResult result = default(TResult);
+      var result = default(TResult);
       try
       {
         result = await action.Invoke();

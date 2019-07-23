@@ -63,7 +63,7 @@ namespace VSS.TRex.GridFabric.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg);
 
         /// <summary>
         /// Base configuration for the mutable spatial cache

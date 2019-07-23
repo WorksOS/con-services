@@ -1,9 +1,9 @@
 ﻿using System;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
-using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
@@ -25,7 +25,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
         ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
-        TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50)
+        Overrides = new OverrideParameters
+        { TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50) }
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom SpeedStatisticsArgument not same after round trip serialisation");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,11 +10,11 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Helpers;
+using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
@@ -25,14 +26,14 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
   public class DesignBoundariesExecutorTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
-    public void DesignBoundariesExecutor_SiteModelNotFound()
+    public async Task DesignBoundariesExecutor_SiteModelNotFound()
     {
       const double TOLERANCE = 1.2;
       const string FILE_NAME = "Test.ttm";
 
       var projectUid = Guid.NewGuid();
 
-      var request = new TRexDesignBoundariesRequest(projectUid, Guid.NewGuid(), FILE_NAME, TOLERANCE);
+      var request = new DesignBoundariesRequest(projectUid, Guid.NewGuid(), FILE_NAME, TOLERANCE);
       request.Validate();
 
       var executor = RequestExecutorContainer
@@ -41,7 +42,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
 
-      var result = Assert.Throws<ServiceException>(() => executor.Process(request));
+      var result = await Assert.ThrowsAsync<ServiceException>(() => executor.ProcessAsync(request));
 
       Assert.Equal(HttpStatusCode.BadRequest, result.Code);
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
@@ -49,7 +50,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
     }
 
     [Fact]
-    public void DesignBoundariesExecutor_ConvertBoundary()
+    public async Task DesignBoundariesExecutor_ConvertBoundary()
     {
       const int DECIMALS = 6;
       const double TOLERANCE = 0.0;
@@ -87,10 +88,10 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
       var expectedCoordinateConversionResult = (RequestErrorStatus.OK, llhCoords);
 
       var convertCoordinatesMock = new Mock<IConvertCoordinates>();
-      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).Returns(expectedCoordinateConversionResult);
+      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).ReturnsAsync(expectedCoordinateConversionResult);
       DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();
 
-      var designBoundaryResult = DesignBoundaryHelper.ConvertBoundary(boundary, TOLERANCE, TestConsts.CELL_SIZE, DIMENSIONS_2012_DC_CSIB, FILE_NAME);
+      var designBoundaryResult = await DesignBoundaryHelper.ConvertBoundary(boundary, TOLERANCE, TestConsts.CELL_SIZE, DIMENSIONS_2012_DC_CSIB, FILE_NAME);
 
       designBoundaryResult.Should().NotBeNull();
       designBoundaryResult.GeoJSON.Should().NotBeNull();

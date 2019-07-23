@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Services;
+﻿using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using Apache.Ignite.Core;
@@ -7,11 +6,11 @@ using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Services;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
@@ -21,7 +20,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   /// <summary>
   /// Service metaphor providing access and management control over designs stored for site models
   /// </summary>
-  public class TAGFileBufferQueueService : IService, ITAGFileBufferQueueService, IBinarizable, IFromToBinary
+  public class TAGFileBufferQueueService : BaseService, IService, ITAGFileBufferQueueService
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueService>();
 
@@ -30,7 +29,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// The interval between epochs where the service checks to see if there is anything to do
     /// </summary>
-    private int TAGFileBufferQueueServiceCheckIntervalMS = 1000;
+    private int serviceCheckIntervalMS = 1000;
 
     /// <summary>
     /// Flag set then Cancel() is called to instruct the service to finish operations
@@ -110,7 +109,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
           do
           {
-            waitHandle.WaitOne(TAGFileBufferQueueServiceCheckIntervalMS);
+            waitHandle.WaitOne(serviceCheckIntervalMS);
             //Log.LogInformation("Continuous query scan of items to process in TAGFileBufferQueue still active");
           } while (!aborted);
         }
@@ -133,30 +132,26 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
       waitHandle?.Set();
     }
 
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
     /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt(TAGFileBufferQueueServiceCheckIntervalMS);
+      writer.WriteInt(serviceCheckIntervalMS);
     }
 
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
     /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      TAGFileBufferQueueServiceCheckIntervalMS = reader.ReadInt();
+      serviceCheckIntervalMS = reader.ReadInt();
     }
   }
 }

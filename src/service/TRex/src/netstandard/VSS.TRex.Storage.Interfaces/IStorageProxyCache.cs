@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Apache.Ignite.Core.Cache;
+using Apache.Ignite.Core.Transactions;
 
 namespace VSS.TRex.Storage.Interfaces
 {
@@ -23,10 +25,16 @@ namespace VSS.TRex.Storage.Interfaces
 
         void Commit();
 
+        void Commit(ITransaction tx);
+
         void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
+
+        void Commit(ITransaction tx, out int numDeleted, out int numUpdated, out long numBytesWritten);
 
         void Clear();
 
         void IncrementBytesWritten(long bytesWritten);
+
+        ICacheLock Lock(TK key);
     }
 }

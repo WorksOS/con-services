@@ -1,21 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Executors;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Helpers;
-using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Gateway.WebApi.ActionServices;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -89,7 +87,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="coordinateServiceUtility"></param>
     /// <returns></returns>
     [HttpGet("{siteModelID}/machines")]
-    public MachineExecutionResult GetMachines(string siteModelID,
+    public async Task<MachineExecutionResult> GetMachines(string siteModelID,
       [FromServices] ICoordinateServiceUtility coordinateServiceUtility)
     {
       Log.LogInformation($"{nameof(GetMachines)}: siteModelID: {siteModelID}");
@@ -108,7 +106,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       if (machines.Any())
       {
         var resultMachines = machines.Select(machine => AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
-        var response = coordinateServiceUtility.PatchLLH(siteModel.CSIB(), resultMachines);
+        var response = await coordinateServiceUtility.PatchLLH(siteModel.CSIB(), resultMachines);
         result.MachineStatuses = resultMachines;
 
         // todo once corex is implemented, we will have a better idea why patching fails

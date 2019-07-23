@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -10,7 +11,6 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
 
@@ -34,9 +34,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      PassCountDetailsRequest request = item as PassCountDetailsRequest;
+      var request = item as PassCountDetailsRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<PassCountDetailsRequest>();
@@ -45,8 +45,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
-      PassCountStatisticsResult passCountDetailsResult = operation.Execute(new PassCountStatisticsArgument()
+      var operation = new PassCountStatisticsOperation();
+      var passCountDetailsResult = await operation.ExecuteAsync(new PassCountStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
@@ -81,6 +81,14 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       return passCountList.ToArray();
 
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

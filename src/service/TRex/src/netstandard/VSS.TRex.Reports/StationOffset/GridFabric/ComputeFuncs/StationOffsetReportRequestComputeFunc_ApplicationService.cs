@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Reports.StationOffset.Executors;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
@@ -22,7 +23,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs
       try
       {
         var executor = new ComputeStationOffsetReportExecutor_ApplicationService();
-        return executor.Execute(arg);
+        return executor.ExecuteAsync(arg).WaitAndUnwrapException();
       }
       finally
       {

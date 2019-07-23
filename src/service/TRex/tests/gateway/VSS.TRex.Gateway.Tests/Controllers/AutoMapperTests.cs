@@ -4,6 +4,8 @@ using System.Linq;
 using Castle.Core.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
@@ -11,6 +13,7 @@ using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Types;
 using Xunit;
 using Point = VSS.MasterData.Models.Models.Point;
+using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
 
 namespace VSS.TRex.Gateway.Tests.Controllers
 {
@@ -163,6 +166,38 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         Assert.Equal(transitions[i].Value, palette[i].Value);
       }
       
+    }
+
+    [Theory]
+    [InlineData(0, false, 0, 0, 0, false, 0, 0, 0, 0, false, 0, 0, false, 0, 0, false)]
+    [InlineData(75, true, 70, 90, 82, true, 80, 110, 4, 10, true, 75, 95, true, 123, 671, true)]
+    public void MapOverrideTargetsToOverrideParameters(short ccv, bool overrideCCV, double minCCV, double maxCCV, 
+      short mdp, bool overrideMDP, double minMDP, double maxMDP, 
+      ushort minPassCount, ushort maxPassCount, bool overridePassCount, 
+      double minTemp, double maxTemp, bool overrideTemp,
+      ushort minSpeed, ushort maxSpeed, bool overrideSpeed)
+    {
+      var pc = overridePassCount ? new TargetPassCountRange(minPassCount, maxPassCount) : null;
+      var temp = overrideTemp ? new TemperatureSettings(maxTemp, minTemp, overrideTemp) : null;
+      var speed = overrideSpeed ? new MachineSpeedTarget(minSpeed, maxSpeed) : null;
+      var overrides = new OverridingTargets(ccv, overrideCCV, minCCV, maxCCV,
+        mdp, overrideMDP, minMDP, maxMDP, pc, temp, speed);
+      var result = AutoMapperUtility.Automapper.Map<IOverrideParameters>(overrides);
+      Assert.Equal(overrides.OverrideTargetCMV, result.OverrideMachineCCV);
+      Assert.Equal(overrides.CmvTarget, result.OverridingMachineCCV);
+      Assert.Equal(overrides.MaxCMVPercent, result.CMVRange.Max);
+      Assert.Equal(overrides.MinCMVPercent, result.CMVRange.Min);
+      Assert.Equal(overrides.OverrideTargetMDP, result.OverrideMachineMDP);
+      Assert.Equal(overrides.MdpTarget, result.OverridingMachineMDP);
+      Assert.Equal(overrides.MaxMDPPercent, result.MDPRange.Max);
+      Assert.Equal(overrides.MinMDPPercent, result.MDPRange.Min);
+      Assert.Equal(overridePassCount ? overrides.OverridingTargetPassCountRange.Min : 0, result.OverridingTargetPassCountRange.Min);
+      Assert.Equal(overridePassCount ? overrides.OverridingTargetPassCountRange.Max : 0, result.OverridingTargetPassCountRange.Max);
+      Assert.Equal(overrideTemp, result.OverrideTemperatureWarningLevels);
+      Assert.Equal(overrideTemp ? overrides.TemperatureSettings.MinTemperature*10 : 0, result.OverridingTemperatureWarningLevels.Min);
+      Assert.Equal(overrideTemp ? overrides.TemperatureSettings.MaxTemperature*10 : CellPassConsts.MaxMaterialTempValue, result.OverridingTemperatureWarningLevels.Max);
+      Assert.Equal(overrideSpeed ? overrides.MachineSpeedTarget.MinTargetMachineSpeed : 0, result.TargetMachineSpeed.Min);
+      Assert.Equal(overrideSpeed ? overrides.MachineSpeedTarget.MaxTargetMachineSpeed : 0, result.TargetMachineSpeed.Max);
     }
   }
 }

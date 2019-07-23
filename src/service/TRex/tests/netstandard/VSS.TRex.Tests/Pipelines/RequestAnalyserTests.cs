@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.Pipelines
     [Fact]
     public void Test_RequestAnalyser_Creation()
     {
-      RequestAnalyser analyser = new RequestAnalyser();
+      var analyser = new RequestAnalyser();
 
       Assert.NotNull(analyser);
       Assert.NotNull(analyser.ProdDataMask);
@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Pipelines
     [Fact]
     public void Test_RequestAnalyser_DefaultConstruction_Execute_Fails()
     {
-      RequestAnalyser analyser = new RequestAnalyser();
+      var analyser = new RequestAnalyser();
 
       Action act = () => analyser.Execute();
       act.Should().Throw<ArgumentException>().WithMessage("*No owning pipeline*");
@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.Pipelines
         FilterSet = null
       };
 
-      RequestAnalyser analyser = new RequestAnalyser
+      var analyser = new RequestAnalyser
       {
         Pipeline = pipeLine
       };
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.Pipelines
         ProdDataExistenceMap = null
       };
 
-      RequestAnalyser analyser = new RequestAnalyser
+      var analyser = new RequestAnalyser
       {
         Pipeline = pipeLine
       };
@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests.Pipelines
     [Fact]
     public void Test_RequestAnalyser_DefaultConstruction_CountOfSubgridsThatWillBeSubmitted_Fails()
     {
-      RequestAnalyser analyser = new RequestAnalyser();
+      var analyser = new RequestAnalyser();
 
       Assert.Throws<ArgumentException>(() => analyser.CountOfSubGridsThatWillBeSubmitted());
     }
@@ -87,7 +87,7 @@ namespace VSS.TRex.Tests.Pipelines
         OverallExistenceMap = prodDataExistenceMap
       };
 
-      RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Null());
+      var analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Null());
 
       Assert.Equal(0, analyser.CountOfSubGridsThatWillBeSubmitted());
 
@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.Pipelines
         OverallExistenceMap = prodDataExistenceMap
       };
 
-      RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Full());
+      var analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Full());
 
       Assert.Equal(0, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
@@ -124,7 +124,7 @@ namespace VSS.TRex.Tests.Pipelines
         OverallExistenceMap = prodDataExistenceMap
       };
 
-      RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Full());
+      var analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Full());
 
       Assert.Equal(1, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
@@ -143,7 +143,7 @@ namespace VSS.TRex.Tests.Pipelines
         OverallExistenceMap = prodDataExistenceMap
       };
 
-      RequestAnalyser analyser = new RequestAnalyser(PipeLine, new BoundingWorldExtent3D(0, 0, 1000, 1000));
+      var analyser = new RequestAnalyser(PipeLine, new BoundingWorldExtent3D(0, 0, 1000, 1000));
 
       Assert.Equal(1, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
@@ -162,7 +162,7 @@ namespace VSS.TRex.Tests.Pipelines
         OverallExistenceMap = prodDataExistenceMap
       };
 
-      RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Inverted());
+      var analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Inverted());
 
       Assert.Equal(0, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
@@ -183,7 +183,7 @@ namespace VSS.TRex.Tests.Pipelines
         OverallExistenceMap = prodDataExistenceMap
       };
 
-      RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Inverted());
+      var analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Inverted());
 
       Assert.Equal(10000, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
@@ -208,7 +208,7 @@ namespace VSS.TRex.Tests.Pipelines
         OverallExistenceMap = prodDataExistenceMap
       };
 
-      RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Inverted())
+      var analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Inverted())
       {
         SubmitSinglePageOfRequests = true,
         SinglePageRequestNumber = pageNumber,

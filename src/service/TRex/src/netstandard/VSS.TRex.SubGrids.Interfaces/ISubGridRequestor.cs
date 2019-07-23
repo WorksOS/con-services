@@ -1,6 +1,6 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System.Threading.Tasks;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
@@ -22,16 +22,16 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// surveyed surface information for requests involving height data.
     /// </summary>
     /// <param name="subGridAddress"></param>
+    /// <param name="overrides"></param>
     /// <param name="prodDataRequested"></param>
     /// <param name="surveyedSurfaceDataRequested"></param>
-    /// <param name="clientGrid"></param>
     /// <returns></returns>
-    ServerRequestResult RequestSubGridInternal(SubGridCellAddress subGridAddress,
+    Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)> RequestSubGridInternal(
+      SubGridCellAddress subGridAddress,
+      IOverrideParameters overrides,
       // LiftBuildSettings: TICLiftBuildSettings;
       bool prodDataRequested,
-      bool surveyedSurfaceDataRequested,
-      out IClientLeafSubGrid clientGrid
-    );
+      bool surveyedSurfaceDataRequested);
 
     /// <summary>
     /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process

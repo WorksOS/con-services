@@ -1,16 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
-using VSS.TRex.Common.Records;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
-using MDPSummaryResult = VSS.TRex.Analytics.MDPStatistics.MDPStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.MDPSummaryResult;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -33,7 +33,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as MDPSummaryRequest;
 
@@ -45,15 +45,12 @@ namespace VSS.TRex.Gateway.Common.Executors
       var filter = ConvertFilter(request.Filter, siteModel);
 
       var operation = new MDPStatisticsOperation();
-      var overrides = request.Overrides;
-      var mdpSummaryResult = operation.Execute(
+      var mdpSummaryResult = await operation.ExecuteAsync(
         new MDPStatisticsArgument()
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          MDPPercentageRange = new MDPRangePercentageRecord(overrides.MinMDPPercent, overrides.MaxMDPPercent),
-          OverrideMachineMDP = overrides.OverrideTargetMDP,
-          OverridingMachineMDP = overrides.MdpTarget
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
         }
       );
 
@@ -80,5 +77,12 @@ namespace VSS.TRex.Gateway.Common.Executors
         summary.BelowTargetPercent);
     }
 
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

@@ -14,14 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{5DFDF1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{0B6C6B9F-C41B-4FE7-9CD8-F599E5B297DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{F2F081AF-080C-4DB8-AE5E-1D30429F72BF}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{643864EC-8646-4282-BC01-7996D980D4C0}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\..\.editorconfig = ..\..\..\..\.editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{926CE40D-7F5D-4B91-A310-03E5A3B8F7D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{2C123378-080B-48EB-BB01-FA457D5B9380}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,14 +43,10 @@ Global
 		{0B6C6B9F-C41B-4FE7-9CD8-F599E5B297DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B6C6B9F-C41B-4FE7-9CD8-F599E5B297DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B6C6B9F-C41B-4FE7-9CD8-F599E5B297DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2F081AF-080C-4DB8-AE5E-1D30429F72BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2F081AF-080C-4DB8-AE5E-1D30429F72BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2F081AF-080C-4DB8-AE5E-1D30429F72BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2F081AF-080C-4DB8-AE5E-1D30429F72BF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{926CE40D-7F5D-4B91-A310-03E5A3B8F7D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{926CE40D-7F5D-4B91-A310-03E5A3B8F7D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{926CE40D-7F5D-4B91-A310-03E5A3B8F7D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{926CE40D-7F5D-4B91-A310-03E5A3B8F7D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C123378-080B-48EB-BB01-FA457D5B9380}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C123378-080B-48EB-BB01-FA457D5B9380}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C123378-080B-48EB-BB01-FA457D5B9380}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C123378-080B-48EB-BB01-FA457D5B9380}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,8 +55,7 @@ Global
 		{1C6FC224-0FDD-4209-8983-1CA146E66A0E} = {5DFDF10F-07E9-4B89-80C1-60E68A1A17F9}
 		{5DFDF10F-07E9-4B89-80C1-60E68A1A17F9} = {59331A57-35DE-4853-A751-0D6DAF7DC3EA}
 		{0B6C6B9F-C41B-4FE7-9CD8-F599E5B297DE} = {5DFDF10F-07E9-4B89-80C1-60E68A1A17F9}
-		{F2F081AF-080C-4DB8-AE5E-1D30429F72BF} = {5DFDF10F-07E9-4B89-80C1-60E68A1A17F9}
-		{926CE40D-7F5D-4B91-A310-03E5A3B8F7D9} = {5DFDF10F-07E9-4B89-80C1-60E68A1A17F9}
+		{2C123378-080B-48EB-BB01-FA457D5B9380} = {5DFDF10F-07E9-4B89-80C1-60E68A1A17F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD395AEA-7336-4042-AC9F-2AF857C2B204}
