@@ -136,7 +136,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       ValidateSurveyedSurfaceSuGridResult(siteModel, expectedGridType, patchType, result);
     }
 
-    [Theory]
+    [Theory(Skip="See BUG#85914")]
     [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.LatestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.CompositeElevations, GridDataType.CompositeHeights)]
@@ -195,7 +195,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       }
     }
 
-    [Theory]
+    [Theory(Skip="See BUG#85914")]
     [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation)]
     [InlineData(SurveyedSurfacePatchType.LatestSingleElevation)]
     [InlineData(SurveyedSurfacePatchType.CompositeElevations)]

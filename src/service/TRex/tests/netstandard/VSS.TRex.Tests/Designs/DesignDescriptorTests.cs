@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.Designs
       dd.IsNull.Should().BeTrue();
     }
 
-    [Fact]
+    [Fact(Skip="See BUG#85914")]
     public void Creation2()
     {
       Guid newGuid = Guid.NewGuid();

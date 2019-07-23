@@ -137,7 +137,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       result.ResultStatus.Should().Be(RequestErrorStatus.NoDesignProvided);
     }
 
-    [Fact]
+    [Fact(Skip="See BUG#85914")]
     public async Task SiteModelWithSingleCell_FullExtents_WithSingleFlatTriangleDesignAboutOrigin()
     {
       AddClusterComputeGridRouting();
@@ -159,7 +159,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       result.Percents[0].Should().Be(100);
     }
 
-    [Fact]
+    [Fact(Skip="See BUG#85914")]
     public async Task SiteModelWithSingleSubGrid_FullExtents_WithSingleFlatTriangleDesignAboutOrigin()
     {
       AddClusterComputeGridRouting();
