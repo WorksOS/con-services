@@ -13,6 +13,7 @@ using VSS.TRex.DI;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
@@ -23,12 +24,12 @@ namespace VSS.TRex.QuantizedMesh.Tests
   public class QMTileTests_NoIgniteDI : IClassFixture<DILoggingFixture>
   {
     [Fact]
-    public void Execute_FailWithNoSiteModel()
+    public async Task Execute_FailWithNoSiteModel()
     {
       var filter = new FilterSet(new CombinedFilter());
       var request = new QMTileExecutor(new Guid(), filter, 0, 0, 0, "1");
-
-      request.Execute().Should().BeFalse();
+      var result = await request.ExecuteAsync();
+      result.Should().BeFalse();
     }
   }
 
@@ -53,7 +54,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
       var filter = new FilterSet(new CombinedFilter());
       var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 0, "1");
 
-      request.Execute();
+      request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
       QMTileResponse.data.Should().BeNull();
@@ -127,8 +128,8 @@ namespace VSS.TRex.QuantizedMesh.Tests
 
       // LL to NEE
       var convertCoordinatesMock = new Mock<IConvertCoordinates>();
-      convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<XYZ[]>(),true)).Returns(expectedCoordinateConversionResult);
-      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).Returns(expectedCoordinateConversionResult2);
+      convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<XYZ[]>(),true)).ReturnsAsync(expectedCoordinateConversionResult);
+      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).ReturnsAsync(expectedCoordinateConversionResult2);
       DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();
 
       // NEE to LL
@@ -140,7 +141,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
       var filter = new FilterSet(new CombinedFilter());
       var request = new QMTileExecutor(siteModel.ID, filter, 32092, 12155, 14, "1");
       request.OverrideGridSize = 50;
-      request.Execute();
+      request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
       QMTileResponse.data.Should().NotBeNull();

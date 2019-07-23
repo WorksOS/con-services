@@ -72,7 +72,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
 
-  private string BuildTINFilePath(string filename, string extension)
+    private string BuildTINFilePath(string filename, string extension)
     {
       return Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(filename) + extension);
     }
