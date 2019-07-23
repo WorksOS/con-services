@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Analytics.ElevationStatistics;
@@ -93,7 +94,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryElevationStatistics_EmptySiteModel_FullExtents()
+    public async Task Test_SummaryElevationStatistics_EmptySiteModel_FullExtents()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -101,14 +102,14 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new ElevationStatisticsOperation();
 
-      var elevationStatisticsResult = operation.Execute(SimpleElevationStatisticsArgument(siteModel));
+      var elevationStatisticsResult = await operation.ExecuteAsync(SimpleElevationStatisticsArgument(siteModel));
 
       elevationStatisticsResult.Should().NotBeNull();
       elevationStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
     }
 
     [Fact]
-    public void Test_SummaryElevationStatistics_SiteModelWithSingleCell_FullExtents()
+    public async Task Test_SummaryElevationStatistics_SiteModelWithSingleCell_FullExtents()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -116,7 +117,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       var siteModel = BuildModelForSingleCellElevation(ELEVATION_INCREMENT_1_0);
       var operation = new ElevationStatisticsOperation();
 
-      var elevationStatisticsResult = operation.Execute(SimpleElevationStatisticsArgument(siteModel));
+      var elevationStatisticsResult = await operation.ExecuteAsync(SimpleElevationStatisticsArgument(siteModel));
 
       elevationStatisticsResult.Should().NotBeNull();
       elevationStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -127,7 +128,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryElevationStatistics_SiteModelWithMultipleCells_FullExtents()
+    public async Task Test_SummaryElevationStatistics_SiteModelWithMultipleCells_FullExtents()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -136,7 +137,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
 
       var operation = new ElevationStatisticsOperation();
 
-      var elevationStatisticsResult = operation.Execute(SimpleElevationStatisticsArgument(siteModel));
+      var elevationStatisticsResult = await operation.ExecuteAsync(SimpleElevationStatisticsArgument(siteModel));
 
       elevationStatisticsResult.Should().NotBeNull();
       elevationStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);

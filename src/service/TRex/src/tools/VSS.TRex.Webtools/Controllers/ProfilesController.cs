@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
@@ -34,7 +35,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets a profile between two points across a design in a project
     /// </summary>
     [HttpGet("design/{siteModelID}/{designID}")]
-    public JsonResult ComputeDesignProfile(string siteModelID, string designID,
+    public async Task<JsonResult> ComputeDesignProfile(string siteModelID, string designID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
@@ -48,16 +49,16 @@ namespace VSS.TRex.Webtools.Controllers
       if (design == null)
         return new JsonResult($"Unable to locate design {designID} in project {siteModelID}");
 
-      var result = design.ComputeProfile(siteModelUid, new[] { new XYZ(startX, startY, 0), new XYZ(endX, endY, 0) }, siteModel.CellSize, offset ?? 0, out DesignProfilerRequestResult errCode);
+      var result = await design.ComputeProfile(siteModelUid, new[] { new XYZ(startX, startY, 0), new XYZ(endX, endY, 0) }, siteModel.CellSize, offset ?? 0);
 
-      return new JsonResult(result);
+      return new JsonResult(result.profile);
     }
 
     /// <summary>
     /// Gets a profile between two points across a design in a project
     /// </summary>
     [HttpGet("compositeelevations/{siteModelID}")]
-    public JsonResult ComputeCompositeElevationProfile(string siteModelID,
+    public async Task<JsonResult> ComputeCompositeElevationProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
@@ -80,16 +81,16 @@ namespace VSS.TRex.Webtools.Controllers
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var request = new ProfileRequest_ApplicationService_ProfileCell();
-      var Response = request.Execute(arg);
+      var response = await request.ExecuteAsync(arg);
 
-      if (Response == null)
+      if (response == null)
         return new JsonResult(@"Profile response is null");
 
-      if (Response.ProfileCells == null)
+      if (response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
       //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
-      return new JsonResult(Response.ProfileCells.Select(x => new
+      return new JsonResult(response.ProfileCells.Select(x => new
       {
         station = x.Station,
         cellLowestElev = x.CellLowestElev,
@@ -107,7 +108,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Gets a profile between two points across a design in a project
     /// </summary>
     [HttpPost("productiondata/{siteModelID}")]
-    public JsonResult ComputeProductionDataProfile(string siteModelID,
+    public async Task<JsonResult> ComputeProductionDataProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
@@ -145,15 +146,15 @@ namespace VSS.TRex.Webtools.Controllers
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var request = new ProfileRequest_ApplicationService_ProfileCell();
-      var Response = request.Execute(arg);
+      var response = await request.ExecuteAsync(arg);
 
-      if (Response == null)
+      if (response == null)
         return new JsonResult(@"Profile response is null");
 
-      if (Response.ProfileCells == null)
+      if (response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
-      var results = (from x in Response.ProfileCells
+      var results = (from x in response.ProfileCells
         let v = ProfileValue(displayMode, x, overrides)
         select new
         {
@@ -279,7 +280,7 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     [HttpGet("volumes/{siteModelID}")]
-    public JsonResult ComputeSummaryVolumesProfile(string siteModelID,
+    public async Task<JsonResult> ComputeSummaryVolumesProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
@@ -309,14 +310,14 @@ namespace VSS.TRex.Webtools.Controllers
       // Compute a profile from the bottom left of the screen extents to the top right 
       var request = new ProfileRequest_ApplicationService_SummaryVolumeProfileCell();
 
-      var Response = request.Execute(arg);
-      if (Response == null)
+      var response = await request.ExecuteAsync(arg);
+      if (response == null)
         return new JsonResult(@"Profile response is null");
 
-      if (Response.ProfileCells == null)
+      if (response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
-      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
+      return new JsonResult(response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Profiling.Interfaces
@@ -9,6 +10,6 @@ namespace VSS.TRex.Profiling.Interfaces
 
     double GridDistanceBetweenProfilePoints { get; set; }
 
-    bool Build(XYZ[] nEECoords, List<T> profileCells);
+    Task<bool> Build(XYZ[] nEECoords, List<T> profileCells);
   }
 }

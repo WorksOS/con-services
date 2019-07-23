@@ -76,21 +76,21 @@ namespace VSS.TRex.Tests.Exports.Patches
     }
 
     [Fact]
-    public void Test_PatchRequest_Execute_EmptySiteModel()
+    public async Task Test_PatchRequest_Execute_EmptySiteModel()
     {
       AddApplicationGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new PatchRequest();
 
-      var response = request.Execute(SimplePatchRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimplePatchRequestArgument(siteModel.ID));
 
       response.Should().NotBeNull();
       response.SubGrids.Should().BeNull();
     }
 
     [Fact]
-    public void Test_PatchRequest_Execute_SingleTAGFileSiteModel()
+    public async Task Test_PatchRequest_Execute_SingleTAGFileSiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -102,7 +102,7 @@ namespace VSS.TRex.Tests.Exports.Patches
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       var request = new PatchRequest();
-      var response = request.Execute(SimplePatchRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimplePatchRequestArgument(siteModel.ID));
 
       response.Should().NotBeNull();
       response.SubGrids.Should().NotBeNull();
@@ -116,7 +116,7 @@ namespace VSS.TRex.Tests.Exports.Patches
     }
 
     [Fact]
-    public void Test_PatchRequest_Execute_SingleCellSiteModel()
+    public async Task Test_PatchRequest_Execute_SingleCellSiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -124,7 +124,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       var siteModel = BuildModelForSingleCellPatch(HEIGHT_INCREMENT_0_5);
 
       var request = new PatchRequest();
-      var response = request.Execute(SimplePatchRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimplePatchRequestArgument(siteModel.ID));
 
       response.Should().NotBeNull();
       response.SubGrids.Should().NotBeNull();

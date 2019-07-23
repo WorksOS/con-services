@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
@@ -49,12 +50,12 @@ namespace VSS.TRex.Tests.Reports.Gridded
     }
 
     [Fact]
-    public void Execute_EmptySiteModel()
+    public async Task Execute_EmptySiteModel()
     {
       AddApplicationGridRouting();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new GriddedReportRequest();
-      var response = request.Execute(SimpleGriddedReportRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleGriddedReportRequestArgument(siteModel.ID));
 
       response.Should().NotBeNull();
       //response.GriddedReportDataRowList.Should().Be(??)
@@ -64,7 +65,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
     [Theory]
     [InlineData(2.0, 36)]
     [InlineData(0.34, SubGridTreeConsts.CellsPerSubGrid)]
-    public void Execute_SingleSubGridSingleCell_ConstantElevation(double interval, int expectedRows)
+    public async Task Execute_SingleSubGridSingleCell_ConstantElevation(double interval, int expectedRows)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -93,7 +94,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
       var argument = SimpleGriddedReportRequestArgument(siteModel.ID);
       argument.GridInterval = interval;
 
-      var response = request.Execute(argument);
+      var response = await request.ExecuteAsync(argument);
 
       response.Should().NotBeNull();
       response.ReturnCode.Should().Be(ReportReturnCode.NoError);

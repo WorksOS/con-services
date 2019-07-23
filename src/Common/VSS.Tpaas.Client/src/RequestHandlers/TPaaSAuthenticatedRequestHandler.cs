@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Http;
 using VSS.Tpaas.Client.Abstractions;
 using VSS.Tpaas.Client.Models;
 
@@ -59,11 +60,11 @@ namespace VSS.Tpaas.Client.RequestHandlers
     {
       try
       {
-        if (!request.Headers.Contains("Authorization"))
+        if (!request.Headers.Contains(HeaderConstants.AUTHORIZATION))
         {
           string bearerToken = await TPaaSClient.GetBearerTokenAsync();
 
-          request.Headers.Add("Authorization", bearerToken);
+          request.Headers.Add(HeaderConstants.AUTHORIZATION, bearerToken);
         }
 
         return await base.SendAsync(request, cancellationToken);
