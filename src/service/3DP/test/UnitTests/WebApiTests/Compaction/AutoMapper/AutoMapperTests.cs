@@ -411,5 +411,54 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(lbs.MachineSpeedTarget.MinTargetMachineSpeed, overrides.MachineSpeedTarget.MinTargetMachineSpeed, "MachineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
       Assert.AreEqual(lbs.MachineSpeedTarget.MaxTargetMachineSpeed, overrides.MachineSpeedTarget.MaxTargetMachineSpeed, "MachineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
     }
+
+    [TestMethod]
+    public void MapLiftBuildSettingsToLiftSettingsDefaults()
+    {
+      var lbs = new LiftBuildSettings(null, false, 0, 0, 0, LiftDetectionType.None,
+        LiftThicknessType.Compacted, null, false, null, null, null, null,
+        null, null, null, null);
+
+      var settings = AutoMapperUtility.Automapper.Map<LiftSettings>(lbs);
+      Assert.AreEqual(lbs.CCVSummarizeTopLayerOnly, settings.CCVSummarizeTopLayerOnly);
+      Assert.AreEqual(lbs.MDPSummarizeTopLayerOnly, settings.MDPSummarizeTopLayerOnly);
+      Assert.AreEqual(lbs.CCvSummaryType, settings.CCVSummaryType);
+      Assert.AreEqual(SummaryType.Compaction, settings.MDPSummaryType);
+      Assert.AreEqual(lbs.FirstPassThickness, settings.FirstPassThickness);
+      Assert.AreEqual(lbs.LiftDetectionType, settings.LiftDetectionType);
+      Assert.AreEqual(lbs.LiftThicknessType, settings.LiftThicknessType);
+      Assert.AreEqual(lbs.LiftThicknessTarget, settings.LiftThicknessTarget);
+      Assert.AreEqual(false, settings.OverrideMachineThickness);
+      Assert.AreEqual(0, settings.OverridingLiftThickness);
+      Assert.AreEqual(false, settings.IncludeSupersededLifts);
+      Assert.AreEqual(lbs.DeadBandLowerBoundary, settings.DeadBandLowerBoundary);
+      Assert.AreEqual(lbs.DeadBandUpperBoundary, settings.DeadBandUpperBoundary);
+    }
+
+    [TestMethod]
+    public void MapLiftBuildSettingsToLiftSettingsCustom()
+    {
+      var lbs = new LiftBuildSettings(null, true, 0.7, 1.15, 0.2f, LiftDetectionType.Tagfile,
+        LiftThicknessType.Compacted, null, true, 1.5f, null, null, null,
+        null, true, new LiftThicknessTarget{TargetLiftThickness = 0.7f, AboveToleranceLiftThickness = 0.3f, BelowToleranceLiftThickness = 0.14f }, null);
+
+      var settings = AutoMapperUtility.Automapper.Map<LiftSettings>(lbs);
+      Assert.AreEqual(lbs.CCVSummarizeTopLayerOnly, settings.CCVSummarizeTopLayerOnly);
+      Assert.AreEqual(lbs.MDPSummarizeTopLayerOnly, settings.MDPSummarizeTopLayerOnly);
+      Assert.AreEqual(lbs.CCvSummaryType, settings.CCVSummaryType);
+      Assert.AreEqual(SummaryType.Compaction, settings.MDPSummaryType);
+      Assert.AreEqual(lbs.FirstPassThickness, settings.FirstPassThickness);
+      Assert.AreEqual(lbs.LiftDetectionType, settings.LiftDetectionType);
+      Assert.AreEqual(lbs.LiftThicknessType, settings.LiftThicknessType);
+      Assert.IsNotNull(settings.LiftThicknessTarget);
+      Assert.AreEqual(lbs.LiftThicknessTarget.TargetLiftThickness, settings.LiftThicknessTarget.TargetLiftThickness);
+      Assert.AreEqual(lbs.LiftThicknessTarget.AboveToleranceLiftThickness, settings.LiftThicknessTarget.AboveToleranceLiftThickness);
+      Assert.AreEqual(lbs.LiftThicknessTarget.BelowToleranceLiftThickness, settings.LiftThicknessTarget.BelowToleranceLiftThickness);
+      Assert.AreEqual(lbs.OverridingLiftThickness.HasValue, settings.OverrideMachineThickness);
+      Assert.AreEqual(lbs.OverridingLiftThickness, settings.OverridingLiftThickness);
+      Assert.AreEqual(lbs.IncludeSupersededLifts, settings.IncludeSupersededLifts);
+      Assert.AreEqual(lbs.DeadBandLowerBoundary, settings.DeadBandLowerBoundary);
+      Assert.AreEqual(lbs.DeadBandUpperBoundary, settings.DeadBandUpperBoundary);
+    }
   }
 }
