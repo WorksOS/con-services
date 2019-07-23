@@ -42,12 +42,14 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       VertexData vertices = new VertexData((uint)evlData.GridSize, (uint)evlData.GridSize);
       // data flows sw to se and up
       int m = 0;
-  //    bool firstRow = true;
-      for (int y = 0; y <= evlData.GridSize; y++)
+      //    bool firstRow = true;
+//      for (int y = 0; y <= evlData.GridSize; y++)
+      for (int y = 0; y <= evlData.GridSize-1; y++)
       {
-        for (int x = 0; x <= evlData.GridSize; x++)
+//        for (int x = 0; x <= evlData.GridSize; x++)
+        for (int x = 0; x <= evlData.GridSize-1; x++)
         {
-          vertices.AddVertex(m, (ushort)(x * ratio), (ushort)(y * ratio), QuantizeHeight(evlData.MinimumHeight, evlData.MaximumHeight, evlData.Elev[m]));
+            vertices.AddVertex(m, (ushort)(x * ratio), (ushort)(y * ratio), QuantizeHeight(evlData.MinimumHeight, evlData.MaximumHeight, evlData.Elev[m]));
           m++;
         }
       }
