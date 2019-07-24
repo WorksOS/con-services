@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
-using VSS.Productivity3D.Models.ResultHandling;
+using Newtonsoft.Json;
+using VSS.Productivity3D.Models.ResultHandling.Designs;
 
 namespace TestUtility
 {
