@@ -3,5 +3,5 @@ MYSQL_USERNAME: "vssProjectMDMUsr"
 MYSQL_ROOT_PASSWORD: "mRty94hER"
 JAEGER_SERVICE_NAME: Filter Service
 NEW_RELIC_APP_NAME: eks-filter-service
-newrelic: "true"
+newrelic: "false"
 ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "false"
