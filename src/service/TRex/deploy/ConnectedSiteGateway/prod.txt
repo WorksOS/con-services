@@ -1,3 +1,3 @@
 TPAAS_APP_TOKEN: "NUhDd0VIOXZGT2RDclRrSlRRWTF6SGlNZnFzYTpmTWd5bklJVWdfRHdyaWJfamZEWVd1VUY4Tm9h"
 TPAAS_AUTH_URL: "https://identity.trimble.com/i/oauth2/token"
-CONNECTED_SITE_URL: "https://api.trimble.com/t/trimble.com/cws/connectedsite/"
+CONNECTED_SITE_URL: "https://api.trimble.com/t/trimble.com/cws-devicegateway/2.0/"

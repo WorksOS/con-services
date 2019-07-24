@@ -43,7 +43,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
     }
 
     [InlineData(247645, 193072, 247680, 193054, 3, 0)] // Profile line between two adjacent triangles, one edge crossed.
-    [Theory]
+    [Theory(Skip="See BUG#85914")]
     public async Task Test_DesignProfileRequest_OverTTM_NoFilter(double startX, double startY, double endX, double endY, int expectedPointCount, int resultIndex)
     {
       const double EPSILON = 0.001;
