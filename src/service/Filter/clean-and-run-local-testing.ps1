@@ -25,8 +25,7 @@ Write-Host "Connecting to image host" -ForegroundColor DarkGray
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 IF (-not $?) {
-    Write-Host "Error: Logging in to AWS" -ForegroundColor Red
-    Exit 1
+    Write-Host "Error: Logging in to AWS, won't pull latest images for container dependancies." -ForegroundColor Red
 }
 
 Write-Host "Building solution" -ForegroundColor DarkGray
@@ -44,7 +43,6 @@ Set-Location ./src/VSS.Productivity3D.Filter.WebApi
 Copy-Item ./appsettings.json $artifactsWorkingDir
 Copy-Item ./Dockerfile $artifactsWorkingDir
 Copy-Item ./web.config $artifactsWorkingDir
-Copy-Item ./log4net.xml $artifactsWorkingDir
 
 & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
 
@@ -55,11 +53,7 @@ Invoke-Expression "docker-compose --file docker-compose-local.yml pull"
 
 Write-Host "Building Docker containers" -ForegroundColor DarkGray
 
-# This legacy setting suppresses logging to the console by piping it to a file on disk. If you're looking for the application logs from within the container see .artifacts/logs/.
-$logToFile = IF ($args -contains "--no-log") { "" } ELSE { "> C:\Temp\output.log" }
-$detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
-
-Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach $logToFile"
+Invoke-Expression "docker-compose --file docker-compose-local.yml up --build --detach > ${PSScriptRoot}/artifacts/logs/output.log"
 
 IF (-not $?) {
     Write-Host "Error: Environment failed to start" -ForegroundColor Red
