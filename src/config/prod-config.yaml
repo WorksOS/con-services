@@ -22,7 +22,7 @@ data:
   MYSQL_SERVER_NAME_ReadVSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
 #Kafka configuration
-  KAFKA_URI: 10.211.16.11
+  KAFKA_URI: kafka1.services.myvisionlink.com,kafka2.services.myvisionlink.com,kafka3.services.myvisionlink.com
   KAFKA_PORT: "9092"
   KAFKA_OFFSET: latest
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
