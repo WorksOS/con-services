@@ -22,5 +22,17 @@ namespace VSS.TRex.Designs.SVL
     // a null cross slope value. PCS900 will then interpolate cross slope values between
     // bracketing non-null cross slape values.
     public static float kNFFNullCrossSlopeValue = 1e38F;
+
+    // The following flags relate to guidance alignments
+    public static byte kNFFGuidanceIDHasStationing = 0x1;
+    public static byte kNFFGuidanceIDHasStationRange = 0x2;
+    public static byte kNFFGuidanceIDHasElevation = 0x4;
+    public static byte kNFFGuidanceIDHasCrossSlope = 0x8;
+
+    public const int kTNFFMagicNumberArraySize = 8;
+
+    public const string kNFFSurfaceFileMajicNumber = "TRMSRFCE";
+    public const string kNFFLineworkFileMajicNumber = "TRMLINES";
+    public const string kNFFIndexFileMajicNumber = "TRMINDEX";
   }
 }

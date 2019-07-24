@@ -81,6 +81,16 @@ namespace VSS.TRex.Designs.SVL
       RightCrossSlope = SingleRightSlope;
     }
 
+    public static string ReadWideStringFromStream(BinaryReader reader)
+    {
+      int len = reader.ReadUInt16();
+      if (len > 100000)
+        throw new Exception($"{len} length wide string encountered (want < 100000), bailing");
+
+      var bytes = reader.ReadBytes(len);
+      return System.Text.Encoding.Unicode.GetString(bytes);
+    }
+
     public static double NormalizeRadians(double Angle)
     {
       if (Angle != Consts.NullDouble && (Angle < 0 || Angle >= 2 * Math.PI))
@@ -422,6 +432,40 @@ Huzzah!
       end;
       {$ENDIF}
       */
+    }
+
+    public static string MagicNumberToANSIString(byte[] MagicNumber)
+    {
+      return System.Text.Encoding.ASCII.GetString(MagicNumber);
+    }
+
+    public static bool SetFileVersionFromMinorMajorVersionNumbers(byte MajorVer, byte MinorVer,
+      out TNFFFileVersion FileVersion)
+    {
+      bool Result = true;
+
+      // Convert the minor/major version numbering into the file version enum
+      if (MajorVer == 1 && MinorVer == 0)
+        FileVersion = TNFFFileVersion.nffVersion1_0;
+      else if (MajorVer == 1 && MinorVer == 1)
+        FileVersion = TNFFFileVersion.nffVersion1_1;
+      else if (MajorVer == 1 && MinorVer == 2)
+        FileVersion = TNFFFileVersion.nffVersion1_2;
+      else if (MajorVer == 1 && MinorVer == 3)
+        FileVersion = TNFFFileVersion.nffVersion1_3;
+      else if (MajorVer == 1 && MinorVer == 4)
+        FileVersion = TNFFFileVersion.nffVersion1_4;
+      else if (MajorVer == 1 && MinorVer == 5)
+        FileVersion = TNFFFileVersion.nffVersion1_5;
+      else if (MajorVer == 1 && MinorVer == 6)
+        FileVersion = TNFFFileVersion.nffVersion1_6;
+      else
+      {
+        FileVersion = TNFFFileVersion.nffVersion_Undefined;
+        Result = false;
+      }
+
+      return Result;
     }
   }
 }
