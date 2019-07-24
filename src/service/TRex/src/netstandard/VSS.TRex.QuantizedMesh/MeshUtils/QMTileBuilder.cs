@@ -1,7 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.QuantizedMesh.MeshUtils;
@@ -485,7 +483,13 @@ namespace VSS.TRex.QuantizedMesh.GridFabric
      
      */
 
+    private void SetupEmptydata()
+    {
+      Array.Resize(ref TileData.Elev, 4);
+      TileData.Clear();
 
+
+    }
 
 
     /// <summary>
@@ -541,6 +545,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric
     {
       try
       {
+
         ComputeHeaderInfo(); 
 
         // Turn grid into a quantized mesh

@@ -1,4 +1,7 @@
-﻿namespace VSS.TRex.QuantizedMesh.Models
+﻿using System;
+using VSS.TRex.QuantizedMesh.MeshUtils;
+
+namespace VSS.TRex.QuantizedMesh.Models
 {
   /// <summary>
   /// Elevation data supplied by a DEM source in single precision including header information
@@ -6,6 +9,7 @@
   public struct ElevationData
   {
     public float[] Elev;
+
     /// <summary>
     /// Set for a square tile size
     /// </summary>
@@ -38,6 +42,14 @@
     public double HorizonOcclusionPointY;
     public double HorizonOcclusionPointZ;
 
+    public double West; // minX
+    public double South;// minY
+    public double East; // maxX
+    public double North;// maxY
+
+    public bool HasData;
+
+
     public ElevationData(int gridSize)
     {
       Elev = new float[gridSize * gridSize];
@@ -54,6 +66,33 @@
       HorizonOcclusionPointY = 0;
       MaximumHeight = float.NegativeInfinity;
       MinimumHeight = float.PositiveInfinity;
+      HasData = false;
+      East = 0;
+      West = 0;
+      North = 0;
+      South = 0;
     }
+
+
+    public void Clear()
+    {
+      for (int i = 0; i < Elev.Length; i++)
+        Elev[i] = 0;
+    }
+
+    public void MakeEmptyTile(LLBoundingBox boundary)
+    {
+      Array.Resize(ref Elev, 4);
+      Clear();
+      GridSize = 2;
+      HasData = false;
+      East = boundary.East;
+      West = boundary.West;
+      North = boundary.North;
+      South = boundary.South;
+      MaximumHeight = 0;
+      MinimumHeight = 0;
+    }
+
   }
 }

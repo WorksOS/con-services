@@ -23,6 +23,7 @@ using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.QuantizedMesh.Executors.Tasks;
 using VSS.TRex.SubGridTrees.Client;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Threading.Tasks;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Utilities;
@@ -47,6 +48,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// The TRex application service node performing the request
     /// </summary>
     private const int NoGridSize = 0;
+    private const int EmptyTileSize = 2;
     private string RequestingTRexNodeID { get; set; }
     public RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
     private int TileGridSize;
@@ -60,12 +62,16 @@ namespace VSS.TRex.QuantizedMesh.Executors
   //  private readonly XYZ TRPoint;
     private XYZ[] NEECoords;
     private XYZ[] NEECoords2;
+    private XYZ[] NEECoords3;
+
     private XYZ[] LLHCoords;
+    private XYZ[] LLHCoords2;
     private BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
     private double GridIntervalX;
     private double GridIntervalY;
     private ElevationData ElevData;
     private Vector3[] EcefPoints;
+    private LLBoundingBox TileBoundaryLL;
 
     /// <summary>
     /// Grid report option. Whether it is defined automatically or by user specified parameters.
@@ -100,6 +106,8 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
     public int OverrideGridSize = 0;
 
+    // Temp for debugging
+    public static string DIMENSIONS_2012_DC_CSIB = "QM0G000ZHC4000000000800BY7SN2W0EYST640036P3P1SV09C1G61CZZKJC976CNB295K7W7G30DA30A1N74ZJH1831E5V0CHJ60W295GMWT3E95154T3A85H5CRK9D94PJM1P9Q6R30E1C1E4Q173W9XDE923XGGHN8JR37B6RESPQ3ZHWW6YV5PFDGCTZYPWDSJEFE1G2THV3VAZVN28ECXY7ZNBYANFEG452TZZ3X2Q1GCYM8EWCRVGKWD5KANKTXA1MV0YWKRBKBAZYVXXJRM70WKCN2X1CX96TVXKFRW92YJBT5ZCFSVM37ZD5HKVFYYYMJVS05KA6TXFY6ZE4H6NQX8J3VAX79TTF82VPSV1KVR8W9V7BM1N3MEY5QHACSFNCK7VWPNY52RXGC1G9BPBS1QWA7ZVM6T2E0WMDY7P6CXJ68RB4CHJCDSVR6000047S29YVT08000";
 
 
     /// <summary>
@@ -129,44 +137,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
       RequestingTRexNodeID = requestingTRexNodeId;
     }
 
-    /*
-    /// <summary>
-    /// Computes a tight bounding extent around the elevation values stored in the sub grid tree
-    /// </summary>
-    /// <param name="dataStore"></param>
-    /// <returns></returns>
-    private BoundingWorldExtent3D DataStoreExtents(GenericSubGridTree_Float dataStore)
-    {
-      BoundingWorldExtent3D ComputedGridExtent = BoundingWorldExtent3D.Inverted();
-
-      dataStore.ScanAllSubGrids(subGrid =>
-      {
-        SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-        {
-          var elev = ((GenericLeafSubGrid_Float)subGrid).Items[x, y];
-          if (elev != Common.Consts.NullHeight)
-            ComputedGridExtent.Include((int)(subGrid.OriginX + x), (int)(subGrid.OriginY + y), elev);
-        });
-
-        return true;
-      });
-
-      if (ComputedGridExtent.IsValidPlanExtent)
-        ComputedGridExtent.Offset(-(int)SubGridTreeConsts.DefaultIndexOriginOffset, -(int)SubGridTreeConsts.DefaultIndexOriginOffset);
-
-      // Convert the grid rectangle to a world rectangle, padding out the 3D bound by a small margin to avoid edge effects in calculations
-      BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D
-       ((ComputedGridExtent.MinX - 1.01) * dataStore.CellSize,
-        (ComputedGridExtent.MinY - 1.01) * dataStore.CellSize,
-        (ComputedGridExtent.MaxX + 1.01) * dataStore.CellSize,
-        (ComputedGridExtent.MaxY + 1.01) * dataStore.CellSize,
-        ComputedGridExtent.MinZ - 0.01, ComputedGridExtent.MaxZ + 0.01);
-
-      return ComputedWorldExtent;
-    }
-
-*/
-
 
     private async Task<bool> ConvertGridToDEM(float minElev, float maxElev)
     {
@@ -176,9 +146,30 @@ namespace VSS.TRex.QuantizedMesh.Executors
       EcefPoints = new Vector3[TileGridSize * TileGridSize]; // ecef grid
       int k = 0;
 
-      (var errorCode, XYZ[] LLHCoords2) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid).CSIB(), NEECoords2);
-      if (errorCode == RequestErrorStatus.OK)
+      // todo      (var errorCode, XYZ[] LLHCoords2) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid).CSIB(), NEECoords2);
+      //    (var errorCode, XYZ[] LLHCoords2) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIMENSIONS_2012_DC_CSIB, NEECoords2);
+
+      // var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(DIMENSIONS_2012_DC_CSIB, LLHCoords);
+
+      NEECoords3 = new XYZ[TileGridSize * TileGridSize];
+      int d = 0;
+      // build up a results grid from SW to NE
+      for (int y = 0; y < TileGridSize; y++)
+      for (int x = 0; x < TileGridSize; x++)
       {
+        NEECoords3[k] = new XYZ(d+1, d+1, 0);
+        d++;
+      }
+
+
+      var conversionResult = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIMENSIONS_2012_DC_CSIB, NEECoords3);
+      if (conversionResult.ErrorCode == RequestErrorStatus.OK)
+      {
+        LLHCoords2 = conversionResult.LLHCoordinates;
+      
+
+      //  if (errorCode == RequestErrorStatus.OK)
+      
         for (int y = 0; y < TileGridSize; y++)
           for (int x = 0; x < TileGridSize; x++)
           {
@@ -201,6 +192,30 @@ namespace VSS.TRex.QuantizedMesh.Executors
       return true;
     }
 
+    private bool BuildEmptyTile()
+    {
+      ElevData = new ElevationData(EmptyTileSize); // elevation grid
+      ElevData.MakeEmptyTile(TileBoundaryLL);
+      EcefPoints = new Vector3[TileGridSize * TileGridSize];
+      CoordinateUtils.geo_to_ecef(new Vector3() { X = ElevData.East, Y = ElevData.South, Z = 0 });
+      CoordinateUtils.geo_to_ecef(new Vector3() { X = ElevData.West, Y = ElevData.South, Z = 0 });
+      CoordinateUtils.geo_to_ecef(new Vector3() { X = ElevData.East, Y = ElevData.North, Z = 0 });
+      CoordinateUtils.geo_to_ecef(new Vector3() { X = ElevData.West, Y = ElevData.North, Z = 0 });
+      QMTileBuilder tileBuilder = new QMTileBuilder()
+      {
+        TileData = ElevData,
+        TileEcefPoints = EcefPoints,
+        GridSize = EmptyTileSize
+      };
+
+      if (!tileBuilder.BuildQuantizedMeshTile())
+      {
+        Log.LogError($"QMTileBuilder failed to build empty tile. Error code: {tileBuilder.BuildTileFaultCode}");
+        return false;
+      }
+      return true;
+    }
+
 
     /// <summary>
     /// Executor that implements requesting and rendering grid information to create the grid rows
@@ -210,7 +225,12 @@ namespace VSS.TRex.QuantizedMesh.Executors
     {
       Log.LogInformation($"QMTileExecutor performing Execute for DataModel:{DataModelUid} X:{TileX}, Y:{TileX}, Z:{TileX}");
 
-      ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
+      // Get the lat lon boundary from xyz tile
+      TileBoundaryLL = MapGeo.TileXYZToRectLL(TileX, TileY, TileZ);
+
+      if (TileZ < 10) // Not worth the effort. Too far out
+        return BuildEmptyTile();
+
       Guid requestDescriptor = Guid.NewGuid();
 
       var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid);
@@ -221,20 +241,32 @@ namespace VSS.TRex.QuantizedMesh.Executors
         return false;
       }
 
-      // Get the lat lon boundary from xyz tile
-      var rect = MapGeo.TileXYZToRectLL(TileX, TileY, TileZ);
-      Log.LogDebug($"Got Site model {DataModelUid}, extents are {SiteModel.SiteModelExtent}. TileBoundary:{rect.ToDisplay()}");
+
+      Log.LogDebug($"Got Site model {DataModelUid}, extents are {SiteModel.SiteModelExtent}. TileBoundary:{TileBoundaryLL.ToDisplay()}");
       LLHCoords = new[]
       {
-          new XYZ(rect.West,rect.South),
-          new XYZ(rect.East,rect.North),
-          new XYZ(rect.West,rect.North),
-          new XYZ(rect.East,rect.South)
+          new XYZ(TileBoundaryLL.West,TileBoundaryLL.South,0),
+          new XYZ(TileBoundaryLL.East,TileBoundaryLL.North,0),
+          new XYZ(TileBoundaryLL.West,TileBoundaryLL.North,0),
+          new XYZ(TileBoundaryLL.East,TileBoundaryLL.South,0)
         };
 
       Log.LogDebug($"LLHCoords for tile request {string.Concat(LLHCoords)}");
+
+
       // Note coords are always supplied lat long
-      var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+/*      if (SiteModel.CSIB() == string.Empty)
+      {
+        ResultStatus = RequestErrorStatus.EmptyCoordinateSystem;
+        Log.LogError($"Failed to obtain site model coordinate system CSIB file for Project:{DataModelUid}");
+        return false;
+      }
+
+       todo      var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+      */
+
+      var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(DIMENSIONS_2012_DC_CSIB, LLHCoords);
+
       if (conversionResult.ErrorCode != RequestErrorStatus.OK)
       {
         Log.LogInformation("Tile render failure, could not convert bounding area from WGS to grid coordinates");
@@ -329,7 +361,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
         GriddedElevDataArray[x, y].Easting   = NEECoords[0].X + (GridIntervalX * x);
         GriddedElevDataArray[x, y].Northing  = NEECoords[0].Y + (GridIntervalY * y);
         GriddedElevDataArray[x, y].Elevation = CellPassConsts.NullHeight;
-        NEECoords2[k] = new XYZ(GriddedElevDataArray[x, y].Easting, GriddedElevDataArray[x, y].Northing);
+        NEECoords2[k] = new XYZ(GriddedElevDataArray[x, y].Easting, GriddedElevDataArray[x, y].Northing,0);
         k++;
       }
 
@@ -356,6 +388,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
         Log.LogError($"Failed to build pipeline processor for request to model {DataModelUid}");
         return false;
       }
+
 
       processor.Process();
       if (GriddedElevationsResponse.ResultStatus != RequestErrorStatus.OK)
@@ -394,190 +427,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
       return true;
     }
 
-    /*
-    /// <summary>
-    /// Executor that implements creation of the QM Tile
-    /// </summary>
-    /// <returns></returns>
-    public bool ExecuteOld()
-    {
-      Log.LogInformation($"QMTileExecutor performing Execute for DataModel:{DataModelUid} X:{X}, Y:{Y}, Z:{Z}");
-
-      try
-      {
-        Guid RequestDescriptor = Guid.NewGuid();
-
-        var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid);
-        if (SiteModel == null)
-        {
-          ResultStatus = RequestErrorStatus.NoSuchDataModel;
-          Log.LogError($"Failed to obtain site model for {DataModelUid}");
-          return false;
-        }
-
-        Log.LogDebug($"Got Site model {DataModelUid}, extents are {SiteModel.SiteModelExtent}");
-
-        // Get the lat lon boundary from xyz tile
-        var rect = MapGeo.TileXYZToRectLL(X, Y, Z);
-        LLHCoords = new[]
-        {
-          new XYZ(rect.West,rect.South),
-          new XYZ(rect.East,rect.North),
-          new XYZ(rect.West,rect.North),
-          new XYZ(rect.East,rect.South)
-
-//          new XYZ(BLPoint.X, BLPoint.Y),
-//          new XYZ(TRPoint.X, TRPoint.Y),
-//          new XYZ(BLPoint.X, TRPoint.Y),
-//          new XYZ(TRPoint.X, BLPoint.Y)
-        };
-
-        Log.LogDebug($"LLHCoords for tile request {string.Concat(LLHCoords)}");
-        // Note coords are always lat long
-        var conversionResult = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
-
-        if (conversionResult.ErrorCode != RequestErrorStatus.OK)
-        {
-          Log.LogInformation("Tile render failure, could not convert bounding area from WGS to grid coordinates");
-          ResultStatus = RequestErrorStatus.FailedToConvertClientWGSCoords;
-
-          return false;
-        }
-
-        NEECoords = conversionResult.NEECoordinates;
-        Log.LogDebug($"After conversion NEECoords are {string.Concat(NEECoords)}");
-
-
-
-
-
-    //    WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
-     //   WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);
-
-        double dx = NEECoords[2].X - NEECoords[0].X;
-        double dy = NEECoords[2].Y - NEECoords[0].Y;
-       // TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
-
-        RotatedTileBoundingExtents.SetInverted();
-        foreach (var xyz in NEECoords)
-          RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
-        // Todo check with Raymond 
-
-        // Intersect the site model extents with the extents requested by the caller
-        Log.LogInformation($"Calculating intersection of bounding box and site model {DataModelUid}:{SiteModel.SiteModelExtent}");
-        RotatedTileBoundingExtents.Intersect(SiteModel.SiteModelExtent);
-        if (!RotatedTileBoundingExtents.IsValidPlanExtent)
-        {
-          ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
-          Log.LogInformation($"Site model extents {SiteModel.SiteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
-          return false;
-        }
-
-        // Compute the override cell boundary to be used when processing cells in the sub grids
-        // selected as a part of this pipeline
-        // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
-
-        SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
-          RotatedTileBoundingExtents.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
-          out var CellExtents_MinX, out var CellExtents_MinY);
-        SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
-          RotatedTileBoundingExtents.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
-          out var CellExtents_MaxX, out var CellExtents_MaxY);
-
-        var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
-        CellExtents.Expand(1);
-
-
-
-        // Provide the processor with a customised request analyser configured to return a set of sub grids. These sub grids
-        // are the feed stock for the generated TIN surface
-        processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
-          requestDescriptor: RequestDescriptor,
-          dataModelID: DataModelUid,
-          gridDataType: GridDataFromModeConverter.Convert(DisplayMode.Height),
-          response: QMTileResponse, // todo
-          filters: Filters,
-          cutFillDesign: new DesignOffset(),
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.QuantizedMesh),
-          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistenceMap: false, 
-          overrideSpatialCellRestriction: CellExtents);
-
-        // Set the surface TRexTask parameters for progressive processing
-        processor.Task.RequestDescriptor = RequestDescriptor;
-        processor.Task.TRexNodeID = RequestingTRexNodeID;
-        processor.Task.GridDataType = GridDataFromModeConverter.Convert(DisplayMode.Height);
-
-        // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
-        // a final restriction of the spatial extent used to govern data requests
-        processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
-
-        if (!processor.Build())
-        {
-          ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
-          Log.LogError($"Failed to build pipeline processor for request to model {DataModelUid}");
-          return false;
-        }
-
-        processor.Process();
-
-        if (QMTileResponse.ResultStatus != RequestErrorStatus.OK)
-        {
-          Log.LogError($"Sub grids response status not OK: {QMTileResponse.ResultStatus}");
-          return false;
-        }
-
-     //   ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
-
-
-        // Create the TIN decimator and populate it with the retrieve sub grids
-        GenericSubGridTree_Float datastore = new GenericSubGridTree_Float(SiteModel.Grid.NumLevels, SiteModel.CellSize);
-        foreach (var subGrid in ((SurfaceTask)processor.Task).SurfaceSubgrids)
-        {
-          INodeSubGrid newGridNode = datastore.ConstructPathToCell(subGrid.OriginX, subGrid.OriginY, SubGridPathConstructionType.CreatePathToLeaf) as INodeSubGrid;
-
-          if (newGridNode == null)
-          {
-            Log.LogError($"Result from data store ConstructPathToCell({subGrid.OriginX}, {subGrid.OriginY}) was null. Aborting...");
-            return false;
-          }
-
-          subGrid.Owner = datastore;
-          newGridNode.GetSubGridCellIndex(subGrid.OriginX, subGrid.OriginY, out byte subGridIndexX, out byte subGridIndexY);
-          newGridNode.SetSubGrid(subGridIndexX, subGridIndexY, subGrid);
-        }
-
-        // Decimate the elevations into a quantized tile
-        QMTileBuilder tileGen = new QMTileBuilder(datastore)
-        {
-          Tolerance = Tolerance, // todo may not need this property
-          GridSize = 10 // // todo
-        };
-
-        tileGen.SetDecimationExtents(DataStoreExtents(datastore));
-
-        if (!tileGen.BuildQMTile(rect))
-        {
-          Log.LogError($"QMTileBuilder returned false with error code: {tileGen.BuildTileFaultCode}");
-          return false;
-        }
-
-        QMTileResponse.ResultStatus = RequestErrorStatus.OK;
-        QMTileResponse.data = tileGen.QMTile; // return QM tile in response
-
-      }
-      catch (Exception E)
-      {
-        QMTileResponse.ResultStatus = RequestErrorStatus.Unknown;
-        Log.LogError(E, "QMTileExecutor raised Exception:");
-        return false;
-      }
-
-      return true;
-    }
-    */
 
 
   }

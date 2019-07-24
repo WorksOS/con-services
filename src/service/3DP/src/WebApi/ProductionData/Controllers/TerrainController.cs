@@ -161,7 +161,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var basicTile = await FetchTile(projectUid, filterUId, x, y, z);
       if (basicTile != null)
       {
-        HttpContext.Response.Headers.Add(ContentTypeConstants.ContentEncoding, ContentTypeConstants.ContentEncodingGzip); // already compressed on disk
+     // todo   HttpContext.Response.Headers.Add(ContentTypeConstants.ContentEncoding, ContentTypeConstants.ContentEncodingGzip); // already compressed on disk
         HttpContext.Response.Headers.Add(ContentTypeConstants.ContentLength, basicTile.Length.ToString());
         HttpContext.Response.Headers.Add(ContentTypeConstants.ContentType, ContentTypeConstants.ApplicationOctetStream);
         HttpContext.Response.Headers.Add(ContentTypeConstants.ContentDisposition, $"attachment;filename={y}.terrain");
