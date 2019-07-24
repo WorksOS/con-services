@@ -5,13 +5,13 @@ namespace VSS.TRex.ConnectedSite.Gateway.Abstractions
 {
   public interface IConnectedSiteMessage
   {
-    [JsonProperty("lat")]
-    double? Lattitude { get; set; }
-    [JsonProperty("lon")]
+    [JsonProperty("lat", NullValueHandling = NullValueHandling.Ignore)]
+    double? Latitude { get; set; }
+    [JsonProperty("lon", NullValueHandling = NullValueHandling.Ignore)]
     double? Longitude { get; set; }
     [JsonIgnore]
     string HardwareID { get; set; }
-    [JsonProperty("h")]
+    [JsonProperty("h", NullValueHandling = NullValueHandling.Ignore)]
     double? Height { get; set; }
     [JsonIgnore]
     string Route { get; }
