@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       response.Bits.Should().BeNull();
     }
 
-    [Fact]
+    [Fact(Skip="See BUG#85914")]
     public async Task SimpleSurface_EmptySiteModel_AtOrigin_DefaultCellSize_FullExtent()
     {
       AddDesignProfilerGridRouting();
@@ -62,7 +62,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       response.Bits.CountBits().Should().Be(903);
     }
 
-    [Fact]
+    [Fact(Skip="See BUG#85914")]
     public async Task SimpleSurface_EmptySiteModel_AwayFromDesignCoverage_DefaultCellSize_FullExtent()
     {
       AddDesignProfilerGridRouting();

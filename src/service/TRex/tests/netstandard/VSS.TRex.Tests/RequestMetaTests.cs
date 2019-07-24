@@ -43,7 +43,7 @@ namespace VSS.TRex.Tests
       x.Count().Should().BeGreaterOrEqualTo(1);
     }
 
-    [Theory]
+    [Theory(Skip="See BUG#85914")]
     [MemberData(nameof(GetTypes))]
     public void CheckRequest(Type type)
     {

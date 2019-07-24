@@ -211,7 +211,7 @@ namespace VSS.TRex.Tests.Profiling
       response.ProfileCells[1].CellMaterialTemperatureElev.Should().Be(CellPassConsts.NullHeight);
     }
 
-    [Theory]
+    [Theory(Skip="See BUG#85914")]
     [InlineData(VolumeComputationType.BetweenFilterAndDesign, 0.0f, 0.0f, Consts.NullHeight, 3)]
     [InlineData(VolumeComputationType.BetweenDesignAndFilter, 0.0f, Consts.NullHeight, 9.0f, 3)]
     [InlineData(VolumeComputationType.BetweenFilterAndDesign, 10.0f, 0.0f, Consts.NullHeight, 3)]

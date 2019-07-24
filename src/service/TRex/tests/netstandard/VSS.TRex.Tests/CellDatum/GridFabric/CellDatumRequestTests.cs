@@ -126,7 +126,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(CellDatumReturnCode.NoValueFound, response.ReturnCode);
     }
 
-    [Theory]
+    [Theory(Skip="See BUG#85914")]
     [InlineData(DisplayMode.PassCount, 10, false)]
     [InlineData(DisplayMode.PassCountSummary, 100.0, false)]
     [InlineData(DisplayMode.PassCountSummary, 125.0, true)]
@@ -184,7 +184,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(baseTime.AddMinutes(10), response.TimeStampUTC);
     }
 
-    [Theory]
+    [Theory(Skip="See BUG#85914")]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
     [InlineData(DisplayMode.CCV)]
@@ -298,7 +298,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(CellDatumReturnCode.NoValueFound, response.ReturnCode);
     }
 
-    [Theory]
+    [Theory(Skip="See BUG#85914")]
     [InlineData(DisplayMode.PassCount, 10)]
     [InlineData(DisplayMode.PassCountSummary, 100.0)]
     [InlineData(DisplayMode.CCV, 110)]
