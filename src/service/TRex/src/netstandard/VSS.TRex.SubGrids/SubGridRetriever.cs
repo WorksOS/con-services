@@ -389,7 +389,7 @@ namespace VSS.TRex.SubGrids
     /// Retrieves cell values for a sub grid stripe at a time.
     /// </summary>
     /// <returns></returns>
-    private void RetrieveSubGridStripe(byte StripeIndex)
+    private void RetrieveSubGridStripe(byte StripeIndex, ILiftParameters liftParams)
     {
       //  int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
@@ -500,7 +500,7 @@ namespace VSS.TRex.SubGrids
 
               // if (Debug_ExtremeLogSwitchD)  Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Calling BuildLiftsForCell");
 
-              if (_profiler.CellLiftBuilder.Build(_cellProfile, _clientGrid,
+              if (_profiler.CellLiftBuilder.Build(_cellProfile, liftParams, _clientGrid,
                 _assignmentContext, // Place a filtered value into this assignment context
                 _cellPassIterator, // Iterate over the cells using this cell pass iterator
                 true)) // Return an individual filtered value
@@ -636,6 +636,7 @@ namespace VSS.TRex.SubGrids
     }
 
     public ServerRequestResult RetrieveSubGrid(IOverrideParameters overrides,
+      ILiftParameters liftParams,
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
@@ -676,7 +677,7 @@ namespace VSS.TRex.SubGrids
         _profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
         _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, new FilterSet(_filter),
-          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None, new OverrideParameters());
+          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None, overrides, liftParams);
 
         _cellProfile = new ProfileCell();
 
@@ -796,7 +797,7 @@ namespace VSS.TRex.SubGrids
 
         // Iterate over the stripes in the sub grid processing each one in turn.
         for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
-          RetrieveSubGridStripe(I);
+          RetrieveSubGridStripe(I, liftParams);
 
         //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {clientGrid.OriginX}x{clientGrid.OriginY}");
 

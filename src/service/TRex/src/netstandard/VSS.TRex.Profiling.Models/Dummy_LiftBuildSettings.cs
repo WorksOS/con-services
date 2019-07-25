@@ -13,7 +13,7 @@ namespace VSS.TRex.Profiling.Models
   /// </summary>
   public static class Dummy_LiftBuildSettings
   {
-    public static bool OverrideMachineThickness = false;
+    //public static bool OverrideMachineThickness = false;
     public static LiftThicknessType LiftThicknessType = LiftThicknessType.Compacted;
     public static double OverridingLiftThickness = CellTargets.NullOverridingTargetLiftThicknessValue;
     public static byte CCVSummaryTypes = 0;

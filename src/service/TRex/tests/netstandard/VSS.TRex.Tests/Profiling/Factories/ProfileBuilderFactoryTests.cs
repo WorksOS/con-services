@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
                                                    null, 
                                                    new FilterSet(new CombinedFilter()), 
                                                    null, null, null, 
-                                                   VolumeComputationType.None, null) != null, "Failed to construct new profile lift builder");
+                                                   VolumeComputationType.None, null, null) != null, "Failed to construct new profile lift builder");
       }
 
       [Fact]
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
             null,
             new FilterSet(new CombinedFilter()),
             null, null, null, 
-            VolumeComputationType.None, null);
+            VolumeComputationType.None, null, null);
 
         act.Should().Throw<ArgumentOutOfRangeException>();
       }
@@ -76,7 +76,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
                       null,
                       new FilterSet(new CombinedFilter()),
                       null, null, null, 
-                      VolumeComputationType.Between2Filters, null) != null, "Failed to construct new profile lift builder");
+                      VolumeComputationType.Between2Filters, null, null) != null, "Failed to construct new profile lift builder");
       }
   }
 }

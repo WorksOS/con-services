@@ -50,7 +50,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+          LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
         }
       );
 
