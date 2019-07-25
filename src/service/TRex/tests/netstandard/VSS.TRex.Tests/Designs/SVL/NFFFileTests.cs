@@ -41,6 +41,21 @@ namespace VSS.TRex.Tests.Designs.SVL
       f.GridSize.Should().Be(100);
     }
 
+    [Theory]
+    [InlineData("CERA.SVL")]
+    [InlineData("Large Sites Road - Trimble Road.svl")]
+    [InlineData("Topcon Road - Topcon Phil.svl")]
+    [InlineData("Milling - Milling.svl")]
+    public void Load_Files(string fileName)
+    {
+      var f = new TNFFFile(TNFFFileType.nffSVLFile);
+      f.LoadFromFile(Path.Combine("TestData", "Common", fileName)).Should().Be(true);
+
+      f.ErrorStatus.Should().Be(TNFFErrorStatus.nffe_OK);
+      f.GuidanceAlignments.Should().NotBeNull();
+      f.GuidanceAlignments.Count.Should().BeGreaterThan(0);
+    }
+
     [Fact]
     public void Load_CERA()
     {
@@ -67,6 +82,20 @@ namespace VSS.TRex.Tests.Designs.SVL
     {
       var f = new TNFFFile(TNFFFileType.nffSVLFile);
       f.LoadFromFile(Path.Combine("TestData", "Common", "Milling - Milling.svl")).Should().Be(true);
+    }
+
+    [Theory]
+    [InlineData("CERA.SVL", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
+    [InlineData("Large Sites Road - Trimble Road.svl", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
+    [InlineData("Topcon Road - Topcon Phil.svl", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
+    [InlineData("Milling - Milling.svl", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
+    public void CreateFromFile(string fileName, TNFFFileType fileType, TNFFFileVersion fileVersion)
+    {
+      var f = TNFFFile.CreateFromFile(Path.Combine("TestData", "Common", fileName));
+      f.ErrorStatus.Should().Be(TNFFErrorStatus.nffe_OK);
+
+      f.NFFFileType.Should().Be(fileType);
+      f.FileVersion.Should().Be(fileVersion);
     }
   }
 }

@@ -217,7 +217,6 @@ private void ProcessGuidanceAlignments()
       {
         if (NamedGuidanceIDs[I].GuidanceAlignment == null)
           NamedGuidanceIDs[I] = null;
-
         else if (NamedGuidanceIDs[I].GuidanceAlignment.Entities.Count == 0)
         {
           GuidanceAlignments[GuidanceAlignments.IndexOf(NamedGuidanceIDs[I].GuidanceAlignment)] = null;
@@ -227,10 +226,12 @@ private void ProcessGuidanceAlignments()
 
       // Remove the Nil items in the lists
       for (int I = NamedGuidanceIDs.Count - 1; I >= 0; I--)
-        NamedGuidanceIDs.RemoveAt(I);
+        if (NamedGuidanceIDs[I] == null)
+          NamedGuidanceIDs.RemoveAt(I);
 
       for (int I = GuidanceAlignments.Count - 1; I >= 0; I--)
-        GuidanceAlignments.RemoveAt(I);
+        if (GuidanceAlignments[I] == null)
+          GuidanceAlignments.RemoveAt(I);
 
       // Perform initial sort of the guidance alignments into order based on the
       // offset of the first element in the list. This is so SiteVision can display
@@ -276,7 +277,41 @@ private void ProcessGuidanceAlignments()
     //    property AvoidanceZoneType : TNFFAvoidanceZoneType read FAvoidanceZoneType write FAvoidanceZoneType;
     //    Property AvoidanceZoneUndergroundServicesRadius : Double read FAvoidanceZoneUndergroundServicesRadius write FAvoidanceZoneUndergroundServicesRadius;
 
-    //    class function CreateFromFile(AFileName : TFileName) : TNFFFile;
+    public static TNFFFile CreateFromFile(string AFileName)
+    {
+      TNFFFile Result;
+
+      // Create a TNFFFile instance based on the extension of <AFileName>
+      var NFFFileExtension = Path.GetExtension(AFileName);
+
+      if (string.Compare(NFFFileExtension, ".svd", StringComparison.InvariantCultureIgnoreCase) == 0)
+      {
+        Result = new TNFFFile(TNFFFileType.nffSVDFile);
+      }
+      else
+      if (string.Compare(NFFFileExtension, ".svl", StringComparison.InvariantCultureIgnoreCase) == 0)
+      {
+        //TODO - oR Lang - cEnhancement :
+        //  Could do a bit extra here to detect whether the svl file is a Site Background
+        //   or Avoidance Zone design and instantiate TNFFFile descendants as appropriate.
+        //  Doesn't matter at present as the descendants only differ in the way a new NFF
+        //  file is populated from a DXF
+
+        Result = new TNFFFile(TNFFFileType.nffSVLFile);
+      }
+      else
+      {
+        // Invalid file name or unrecognised extension
+        throw new IOException("TNFFFile.CreateFromFile. Invalid file name or unrecognised extension");
+      }
+
+      if (!Result.LoadFromFile(AFileName))
+      {
+        throw new IOException("NFFFile.CreateFromFile. Cannot load file");
+      }
+
+      return Result;
+    }
 
     public virtual bool LoadFromCompoundDoc(MemoryStream ms)
     {
@@ -298,7 +333,7 @@ private void ProcessGuidanceAlignments()
         if (GuidanceAlignmentsSupported())
         {
           // Load the list of guidance alignments from the file
-          for (int I = 0; I < NamedGuidanceIDs.Count - 1; I++)
+          for (int I = 0; I < NamedGuidanceIDs.Count; I++)
           {
             GuidanceAlignments.Add(new TNFFGuidableAlignmentEntity());
             string AlignmentStreamName = $"Alignment-{NamedGuidanceIDs[I].ID}.lwk";
