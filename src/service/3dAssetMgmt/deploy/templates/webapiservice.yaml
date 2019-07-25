@@ -9,7 +9,7 @@ metadata:
     prometheus.io/scrape: "true"
 spec:
   selector:
-    app: {{ $serviceName }}
+    component: {{ template "component.webapi" . }}
   ports:
   - protocol: TCP
     port: 80
