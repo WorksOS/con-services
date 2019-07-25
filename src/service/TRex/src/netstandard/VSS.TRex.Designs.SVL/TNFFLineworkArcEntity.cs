@@ -44,12 +44,6 @@ namespace VSS.TRex.Designs.SVL
  {
    double result = Consts.NullDouble;
 
-   //  Radius : Double;
-   //  relX, relY: Double;
-   //  endX, endY: Double;
-   //  start_angle,
-   //  end_angle: Double;
-
    if (StartStation != Consts.NullDouble)
    {
      // Work out the bits of geometry we need for the NFF arc
@@ -133,7 +127,6 @@ namespace VSS.TRex.Designs.SVL
        const Value: Double); Override;
    */
 
-    //  public
     public TNFFLineworkArcEntity()
     {
       ElementType = TNFFLineWorkElementType.kNFFLineWorkArcElement;
@@ -239,7 +232,6 @@ namespace VSS.TRex.Designs.SVL
       EndLeftCrossSlope = reader.ReadDouble();
       StartRightCrossSlope = reader.ReadDouble();
       EndRightCrossSlope = reader.ReadDouble();
-
     }
 
     // procedure DumpToText(Stream: TTextDumpStream; const OriginX, OriginY : Double); override;
@@ -252,12 +244,6 @@ namespace VSS.TRex.Designs.SVL
       bool HasGuidanceID,
       TNFFFileVersion FileVersion)
     {
-//        MinX, MinY, MaxX, MaxY : Double; // Arc bounding rect extents
-//      start_angle, end_angle: Double;
-//    Radius: Double;
-      //  LineWidth : Byte; // Currently ignored
-//    TempEndStation: Double;
-//      begin
       // There is no need to read the entity type as this will have already been
       // read in order to determine we should be reading this type of entity!
 
@@ -614,10 +600,6 @@ namespace VSS.TRex.Designs.SVL
 //    procedure SetDefaultStationing(const AStartStation : Double;
 //  AIndex : Integer); Override;
 
-
-
 //    Function IsSameAs(const Other : TNFFLineworkEntity) : Boolean; Override;
-//  end;
-
   }
 }

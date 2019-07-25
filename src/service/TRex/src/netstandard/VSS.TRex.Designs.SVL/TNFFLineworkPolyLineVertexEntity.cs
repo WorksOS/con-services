@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
@@ -77,8 +76,6 @@ namespace VSS.TRex.Designs.SVL
 //  Procedure SaveToStream(Stream : TStream);
     public void LoadFromStream(BinaryReader reader)
     {
-      //base.LoadFromStream(reader);
-
       NFFUtils.ReadXYZFromStream(reader, out X, out Y, out Z);
       Chainage = reader.ReadDouble();
 

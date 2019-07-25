@@ -6,7 +6,7 @@ namespace VSS.TRex.Designs.SVL
   public struct TNFFLineworkGridFileHeader
   {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = NFFConsts.kTNFFMagicNumberArraySize)]
-    public byte[] MajicNumber; // TNFFMagicNumberType
+    public byte[] MajicNumber;
 
     public byte MajorVer;
     public byte MinorVer;

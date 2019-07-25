@@ -63,6 +63,5 @@ namespace VSS.TRex.Designs.SVL
     //  procedure SwapCoefficients;
 
     // Function IsSameAs(const Other : TNFFLineworkSmoothedPolyLineVertexEntity) : Boolean;
-
   }
 }

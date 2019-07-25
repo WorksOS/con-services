@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using FluentAssertions;
 using VSS.TRex.Designs.SVL;
 using Xunit;
@@ -45,10 +42,31 @@ namespace VSS.TRex.Tests.Designs.SVL
     }
 
     [Fact]
-    public void Load()
+    public void Load_CERA()
     {
       var f = new TNFFFile(TNFFFileType.nffSVLFile);
       f.LoadFromFile(Path.Combine("TestData", "CERA.SVL")).Should().Be(true);
+    }
+
+    [Fact]
+    public void Load_Dimensions2012_LargeSiteRoad()
+    {
+      var f = new TNFFFile(TNFFFileType.nffSVLFile);
+      f.LoadFromFile(Path.Combine("TestData", "Dimensions 2012", "BC Data", "Sites", "BootCamp 2012", "Designs(linework in USFt)", "Large Sites Road", "Large Sites Road - Trimble Road.svl")).Should().Be(true);
+    }
+
+    [Fact]
+    public void Load_Dimensions2012_TopConRoad()
+    {
+      var f = new TNFFFile(TNFFFileType.nffSVLFile);
+      f.LoadFromFile(Path.Combine("TestData", "Dimensions 2012", "BC Data", "Sites", "BootCamp 2012", "Designs(linework in USFt)", "Large Sites Road", "Topcon Road - Topcon Phil.svl")).Should().Be(true);
+    }
+
+    [Fact]
+    public void Load_Dimensions2012_Milling()
+    {
+      var f = new TNFFFile(TNFFFileType.nffSVLFile);
+      f.LoadFromFile(Path.Combine("TestData", "Dimensions 2012", "BC Data", "Sites", "BootCamp 2012", "Designs(linework in USFt)", "Large Sites Road", "Milling - Milling.svl")).Should().Be(true);
     }
   }
 }

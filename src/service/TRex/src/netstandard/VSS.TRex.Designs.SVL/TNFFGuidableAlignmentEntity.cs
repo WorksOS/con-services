@@ -28,7 +28,6 @@ namespace VSS.TRex.Designs.SVL
    kNFFElementHasStationing flag is NOT set.
   ---------------------------------------------------------------------------*/
 
-
     public TNFFGuidableAlignmentOwnedEntitiesList Entities;
 
     public TNFFGuidableAlignmentEntity()

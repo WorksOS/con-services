@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace VSS.TRex.Designs.SVL
+namespace VSS.TRex.Designs.SVL.Comparers
 {
   public class NFFStreamListComparer : IComparer<TNFFStreamInfo>
   {

@@ -11,13 +11,12 @@ namespace VSS.TRex.Designs.SVL
 {
   public class TNFFLineworkPolyLineEntity : TNFFStationedLineworkEntity
   { 
-    public List<TNFFLineworkPolyLineVertexEntity> Vertices; // TNFFLineworkPolyLineVertexEntityList;
+    public List<TNFFLineworkPolyLineVertexEntity> Vertices; 
 
     public TNFFLineworkPolyLineEntity()
     {
       ElementType = TNFFLineWorkElementType.kNFFLineWorkPolyLineElement;
       Vertices = new List<TNFFLineworkPolyLineVertexEntity>();
-      //Vertices.Parent = this;
     }
 
     protected override double GetStartStation()
@@ -160,7 +159,6 @@ namespace VSS.TRex.Designs.SVL
         Vertices.Last().RightCrossSlope = FRightCrossSlope;
         Vertices.Last().Parent = this;
       }
-
     }
 
     //    Procedure SaveToStream(Stream : TStream); override;
@@ -370,8 +368,5 @@ namespace VSS.TRex.Designs.SVL
 //    function InsertVertexAtStation(const Chainage : Double): Integer;
 
   //  Function CreateNewVertex : TNFFLineworkPolyLineVertexEntity; Override;
-
-//    Function InMemorySize : Longint; Override;
-
   }
 }

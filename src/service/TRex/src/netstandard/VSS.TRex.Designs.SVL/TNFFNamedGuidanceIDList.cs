@@ -47,7 +47,6 @@ namespace VSS.TRex.Designs.SVL
       Sort(new NamedGuidanceIDComparer());
     }
 
-
     public double MinStartStation()
     {
       double Result = 1.0e308; // Very big positive

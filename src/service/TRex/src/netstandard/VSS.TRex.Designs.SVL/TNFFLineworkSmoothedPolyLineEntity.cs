@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Geometry;
@@ -14,7 +13,7 @@ namespace VSS.TRex.Designs.SVL
   public class TNFFLineworkSmoothedPolyLineEntity : TNFFStationedLineworkEntity
   {
 
-    public List<TNFFLineworkSmoothedPolyLineVertexEntity> Vertices;// TNFFLineworkSmoothedPolyLineVertexEntityList
+    public List<TNFFLineworkSmoothedPolyLineVertexEntity> Vertices;
 
     //   fPolylineProcessed: Boolean;
     //   fCreatedFromStream: Boolean;
@@ -110,14 +109,6 @@ namespace VSS.TRex.Designs.SVL
       bool HasGuidanceID,
       TNFFFileVersion FileVersion)
     {
-      // I : integer;
-      //     X, Y, Z, Chainage: Double;
-      //   VertexCount: Integer;
-      //     FLeftCrossSlope, FRightCrossSlope: Double;
-
-      //  fCreatedFromStream = True;
-      //fPolylineProcessed= True;
-
       double Alpha = Consts.NullDouble; // Keep compiler quite
       double Beta = Consts.NullDouble; // Keep compiler quite
 
@@ -148,7 +139,7 @@ namespace VSS.TRex.Designs.SVL
         int VertexCount = reader.ReadInt16();
 
         // Read in the list vertices from the stream
-        for (int I = 1; I < VertexCount + 1; I++)
+        for (int I = 0; I < VertexCount; I++)
         {
           NFFUtils.ReadCoordFromStream(reader, out double X, out double Y, OriginX, OriginY);
 
@@ -168,7 +159,7 @@ namespace VSS.TRex.Designs.SVL
             RightCrossSlope = Consts.NullDouble;
           }
 
-          if (I > 1)
+          if (I > 0)
           {
             Alpha = reader.ReadSingle();
             Beta = reader.ReadSingle();
@@ -181,7 +172,7 @@ namespace VSS.TRex.Designs.SVL
             Chainage = Consts.NullDouble;
 
           Vertices.Add(new TNFFLineworkSmoothedPolyLineVertexEntity(this, X, Y, Z, Chainage, Consts.NullDouble));
-          if (I > 1)
+          if (I > 0)
           {
             Vertices.Last().Alpha = Alpha;
             Vertices.Last().Beta = Beta;
@@ -202,8 +193,6 @@ namespace VSS.TRex.Designs.SVL
     //   Procedure SaveToStream(Stream : TStream); Overload; override;
     //   Procedure LoadFromStream(Stream : TStream); Overload; override;
 
-
-
     public override BoundingWorldExtent3D BoundingBox()
     {
       if (Vertices.Count == 0)
@@ -222,8 +211,7 @@ namespace VSS.TRex.Designs.SVL
 
       return Result;
     }
-
-
+    
     public override bool HasValidHeight()
     {
       if (ControlFlag_NullHeightAllowed)
@@ -301,15 +289,6 @@ namespace VSS.TRex.Designs.SVL
 
     public override void ComputeXY(double Stn, double Ofs, out double X, out double Y)
     {
-   //   var
- //     I : integer;
-   //   Index: Integer;
- //     t: Extended;
- //     SegmentChainageLength: Extended;
- //     VertexAtIndex: TNFFLineworkSmoothedPolyLineVertexEntity;
-//      VertexAtIndexPlus1: TNFFLineworkSmoothedPolyLineVertexEntity;
- //     begin
-
       int Index = -1;
       X= Consts.NullDouble;
       Y= Consts.NullDouble;
@@ -415,6 +394,5 @@ namespace VSS.TRex.Designs.SVL
     // ComputeGeometricStationing calculates the chainage of each vertex as as geometric
     // distance along the curve from the start of the element
    // public override void ComputeGeometricStationing()
-  //   Function InMemorySize : Longint; Override;
   }
 }

@@ -96,14 +96,6 @@ namespace VSS.TRex.Designs.SVL
       //fSuppressAssertions = False;
     }
 
-    // public TNFFLineworkEntity(int colour)
-    //  {
-    //    InitObject();
-
-    //     Colour = colour;
-    //   }
-
-
     public XYZ ClosestEndPointTo(double AX, double AY,
       out bool AStartPoint,
       bool InTransitDirection)
@@ -133,15 +125,12 @@ namespace VSS.TRex.Designs.SVL
       return AStartPoint ? StartPoint : EndPoint;
     }
 
-    public virtual void ComputeGeometricStationing()
-    {
-
-    }
+   // public virtual void ComputeGeometricStationing()
+   // {
+   // }
 
     public virtual void Assign(TNFFLineworkEntity source)
     {
-      //Assert(Entity is ClassType);
-
       Colour = source.Colour;
       HeaderFlags = source.HeaderFlags;
       EntityFlags = source.EntityFlags;
@@ -158,7 +147,6 @@ namespace VSS.TRex.Designs.SVL
     }
     */
 
-
     private void SetControlFlag(int Index,
       bool Value)
     {
@@ -168,17 +156,19 @@ namespace VSS.TRex.Designs.SVL
         ControlFlags &= (byte) ~(1 << Index);
     }
 
-
     public virtual void SetDefaultStationing(double AStartStation, int AIndex)
     {
+      // Null behaviour in base class
     }
 
     public virtual void SetEndCrossSlope(double Value)
     {
+      // Null behaviour in base class
     }
 
     public virtual void SetEndPoint(XYZ Value)
     {
+      // Null behaviour in base class
     }
 
     public virtual void SetEndTransitPoint(XYZ Value) => SetEndPoint(Value);
@@ -215,7 +205,6 @@ namespace VSS.TRex.Designs.SVL
       return 0;
     }
 
-
     public virtual double ElementLength(int Index)
     {
       Debug.Assert(false);
@@ -227,7 +216,6 @@ namespace VSS.TRex.Designs.SVL
       Debug.Assert(false);
       return 0;
     }
-
 
     public virtual byte ElementTypeInFile(TNFFFileVersion FileVersion)
     {
@@ -337,10 +325,12 @@ namespace VSS.TRex.Designs.SVL
 
     public virtual void SetStartCrossSlope(double Value)
     {
+      // Null behaviour in base class
     }
 
     public virtual void SetStartPoint(XYZ Value)
     {
+      // Null behaviour in base class
     }
 
     public virtual void SetStartTransitPoint(XYZ Value) => SetEndPoint(Value);
@@ -369,6 +359,4 @@ end;
 */
 
   }
-
-
 }

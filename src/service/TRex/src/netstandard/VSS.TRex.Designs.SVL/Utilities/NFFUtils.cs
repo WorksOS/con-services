@@ -3,7 +3,7 @@ using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 
-namespace VSS.TRex.Designs.SVL
+namespace VSS.TRex.Designs.SVL.Utilities
 {
   public static class NFFUtils
   {
@@ -51,8 +51,6 @@ namespace VSS.TRex.Designs.SVL
       out double X, out double Y,
       double OriginX, double OriginY)
     {
-      X = reader.ReadInt32();
-      Y = reader.ReadInt32();
       X = OriginX + ConvertIntegerOrdinateToRealOrdinate(reader.ReadInt32());
       Y = OriginY + ConvertIntegerOrdinateToRealOrdinate(reader.ReadInt32());
     }
@@ -198,13 +196,6 @@ namespace VSS.TRex.Designs.SVL
         //
         // d = px;
 
-        //    {$IFDEF SVO_EMIT_TEST_OUTPUT_TO_OUTPUTDEBUGSTRING}
-        //  a = 0;
-        //   b = 0;
-        //  c = 0;
-        //  disc = 0;
-        //  {$ENDIF}
-
         double a, b, c, d, disc;
 
         if (Math.Abs(Py) < Epsylon)
@@ -279,16 +270,8 @@ namespace VSS.TRex.Designs.SVL
       }
       catch
       {
-        //  on E : EAssertionFailed do
-        //    Raise;
-        //  on E : Exception do
-        //   begin
-        //     {$IFDEF SVODEBUG}
-        //     Raise;
-        //     {$ELSE}
         Offset = Consts.NullDouble;
         T = 2;
-        //    {$ENDIF}
       }
     }
 

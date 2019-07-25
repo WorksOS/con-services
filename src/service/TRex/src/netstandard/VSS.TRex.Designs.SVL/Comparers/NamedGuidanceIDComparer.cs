@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using VSS.TRex.Common;
 
-namespace VSS.TRex.Designs.SVL
+namespace VSS.TRex.Designs.SVL.Comparers
 {
   public class NamedGuidanceIDComparer : IComparer<TNFFNamedGuidanceID>
   {

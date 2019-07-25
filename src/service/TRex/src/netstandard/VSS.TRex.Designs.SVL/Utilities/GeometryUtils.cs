@@ -1,8 +1,7 @@
 ﻿using System;
-using NodaTime;
 using VSS.TRex.Common.Utilities;
 
-namespace VSS.TRex.Designs.SVL
+namespace VSS.TRex.Designs.SVL.Utilities
 {
   public static class GeometryUtils
   {

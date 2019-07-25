@@ -83,6 +83,7 @@ namespace VSS.TRex.Designs.SVL
     }
 
     //Procedure SaveToStream(Stream : TStream);Override;
+
     public override void LoadFromStream(BinaryReader reader)
     {
       base.LoadFromStream(reader);

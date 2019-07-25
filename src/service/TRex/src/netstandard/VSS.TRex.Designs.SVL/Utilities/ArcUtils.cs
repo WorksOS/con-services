@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.Designs.SVL
+namespace VSS.TRex.Designs.SVL.Utilities
 {
   public static class ArcUtils
   {
@@ -34,20 +34,9 @@ namespace VSS.TRex.Designs.SVL
       bool ClockwiseCoordSystem,
       double int_x, double int_y)
     {
-
       // Assumes(x1, y1), (x2, y2) and(int_x, int_y) are all on the circle with centre(cx, cy) 
 
-//type
-//  hemisphere_type = 0..1;
-//    { Hemisphere_type :          y
-//        ³
-//      1 ³ 0
-//      ÄÄÄÅÄÄÄx
-//      1 ³ 0
-//        ³        }
-//    var
-      int h1, h2, hi; // : hemisphere_type;
-
+      int h1, h2, hi; 
 
       bool greater(int h, double a, double b)
         //{ Assumes a & b are in the same(X) hemisphere and are Y values.

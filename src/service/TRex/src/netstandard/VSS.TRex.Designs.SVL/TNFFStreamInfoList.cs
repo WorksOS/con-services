@@ -8,19 +8,11 @@ namespace VSS.TRex.Designs.SVL
 {
   public class TNFFStreamInfoList : List<TNFFStreamInfo>
   {
-//    protected
-//      Function Get(Index : Integer) : TNFFStreamInfo;
-//    procedure Put(Index: Integer; const Value: TNFFStreamInfo);
-
     //   Procedure SaveToStream(NFFFileVersion : TNFFFileVersion; Stream : TStream);
+
     public void LoadFromStream(TNFFFileVersion NFFFileVersion, BinaryReader reader)
     {
-    //I : Integer;
-    TNFFDirectoryStreamHeader DirectoryHeader = new TNFFDirectoryStreamHeader();
-//      Number: Integer;
-//      Name: String;
-//      Offset: Integer;
-//      Length: Integer;
+      var DirectoryHeader = new TNFFDirectoryStreamHeader();
 
       var b = reader.ReadBytes(Marshal.SizeOf(DirectoryHeader));
 
@@ -67,12 +59,6 @@ namespace VSS.TRex.Designs.SVL
       Remove(master);
       Insert(0, master);
     }
-
-    //  public
-    //     property Items[Index : Integer] : TNFFStreamInfo read Get write Put; default;
-
-    //   Function First : TNFFStreamInfo;
-    //   Function Last : TNFFStreamInfo;
 
     public TNFFStreamInfo Locate(string Filename)
     {

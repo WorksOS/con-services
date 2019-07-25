@@ -23,7 +23,7 @@ to/from file if the kNFFElementHeaderHasStationing flag is set in their<headeerF
   {
     private double _startStation;
 
-    public TNFFStationedLineworkEntity() : base()
+    public TNFFStationedLineworkEntity()
     {
       _startStation = Consts.NullDouble;
     }

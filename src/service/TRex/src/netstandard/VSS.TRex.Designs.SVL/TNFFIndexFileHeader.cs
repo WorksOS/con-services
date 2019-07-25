@@ -6,10 +6,10 @@ namespace VSS.TRex.Designs.SVL
   public struct TNFFIndexFileHeader
   {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = NFFConsts.kTNFFMagicNumberArraySize)]
-    public byte[] MajicNumber; // : TNFFMagicNumberType;
+    public byte[] MajicNumber;
     public byte MajorVer;
     public byte MinorVer;
-    public TNFFAbsolute2dIntegerCoordinate GridOrigin; // : TNFFAbsolute2dIntegerCoordinate;
+    public TNFFAbsolute2dIntegerCoordinate GridOrigin;
     public ushort GridSquareSize;
   }
 }
