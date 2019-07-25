@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Designs.SVL.Utilities;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL

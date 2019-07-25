@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using VSS.TRex.Designs.SVL.Comparers;
+using VSS.TRex.Designs.SVL.Utilities;
 
 namespace VSS.TRex.Designs.SVL
 {

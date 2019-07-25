@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.SVL.Comparers;
+using VSS.TRex.Designs.SVL.Utilities;
 
 namespace VSS.TRex.Designs.SVL
 {
