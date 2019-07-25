@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       request.Should().NotBeNull();
     }
 
-    [Fact]
+    [Fact(Skip="See BUG#85914")]
     public async Task Test_DesignBoundaryRequest()
     {
       const int EXPECTED_BOUNDARY_COUNT = 7;

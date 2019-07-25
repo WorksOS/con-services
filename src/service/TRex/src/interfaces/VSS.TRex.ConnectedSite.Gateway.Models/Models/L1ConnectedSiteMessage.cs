@@ -8,8 +8,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.Models
   /// </summary>
   public class L1ConnectedSiteMessage : AbstractConnectedSiteMessage, IL1ConnectedSiteMessage
   {
-    private const string API_ROUTE = "positions/in/v1/";
-    public override string Route { get => $"{API_ROUTE}{PlatformType}-{HardwareID}"; }
+    protected override string ApiRoute => "devicegateway/positions/";
     public override DateTime? Timestamp { get; set; }
 
     public L1ConnectedSiteMessage() { }
