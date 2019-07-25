@@ -88,7 +88,6 @@ namespace VSS.TRex.Designs
 
       for (int I = 0; I < Corners.Length; I++)
       {
-        //    with kCorners[I] do
         Data.ComputeStnOfs(OriginXPlusHalfCellSize + Corners[I].X * CellSize, OriginYPlusHalfCellSize + Corners[I].Y * CellSize, out double Stn, out double Ofs);
 
         if (!((Stn != Consts.NullDouble && Ofs != Consts.NullDouble) && Range.InRange(Stn, StartStn, EndStn)))

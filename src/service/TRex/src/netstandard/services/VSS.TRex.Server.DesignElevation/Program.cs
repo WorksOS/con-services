@@ -48,6 +48,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
+        .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
         .Complete();
     }
 

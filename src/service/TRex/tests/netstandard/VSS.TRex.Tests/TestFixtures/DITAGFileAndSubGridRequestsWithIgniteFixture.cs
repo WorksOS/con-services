@@ -101,6 +101,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
+        .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
         .Add(x => x.AddSingleton(igniteMock.mockCompute))
         .Add(x => x.AddSingleton(igniteMock.mockIgnite))

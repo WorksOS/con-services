@@ -88,11 +88,9 @@ end;
           }
 
           // Add a design in the 'IsLoading state' to control multiple access to this design until it is fully loaded
-          design = new TTMDesign(cellSize)
-          {
-            IsLoading = true,
-            FileName = Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelID), descriptor.FileName)
-          };
+          design = DIContext.Obtain<IDesignClassFactory>().NewInstance(Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelID), descriptor.FileName), cellSize, dataModelID);
+          design.IsLoading = true;
+
           designs.Add(designUid, design);
         }
       }
