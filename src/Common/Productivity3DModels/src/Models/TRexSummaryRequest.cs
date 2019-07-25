@@ -1,12 +1,25 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Linq;
+using System.Net;
+using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Models.Models
 {
   /// <summary>
   /// Base class for TRex summary requests
   /// </summary>
-  public abstract class TRexSummaryRequest : ProjectID
+  public abstract class TRexSummaryRequest 
   {
+    /// <summary>
+    /// A project unique identifier.
+    /// </summary>
+    [JsonProperty(Required = Required.Always)]
+    [ValidProjectUID]
+    public Guid ProjectUid { get; set; }
+
     /// <summary>
     /// The filter instance to use in the request.
     /// Value may be null.
@@ -15,7 +28,7 @@ namespace VSS.Productivity3D.Models.Models
     public FilterResult Filter { get; set; }
 
     /// <summary>
-    /// Only TargetPassCountRange used.
+    /// Overriding targets for the type of summary request
     /// </summary>
     [JsonProperty(Required = Required.Default)]
     public OverridingTargets Overrides { get; set; }
@@ -29,9 +42,14 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public override void Validate()
+    public void Validate()
     {
-      base.Validate();
+      new DataAnnotationsValidator().TryValidate(this, out var results);
+
+      if (results.Any())
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, results.FirstOrDefault()?.ErrorMessage));
+      }
 
       Filter?.Validate();
       Overrides?.Validate();

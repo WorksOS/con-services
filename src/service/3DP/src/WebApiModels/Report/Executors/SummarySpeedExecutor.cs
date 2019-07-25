@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var speedSummaryRequest = new SpeedSummaryRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Filter,
             request.LiftBuildSettings.MachineSpeedTarget,
             AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));

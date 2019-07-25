@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var pcSummaryRequest = new PassCountSummaryRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Filter,
             request.liftBuildSettings.OverridingTargetPassCountRange,
             AutoMapperUtility.Automapper.Map<LiftSettings>(request.liftBuildSettings));
