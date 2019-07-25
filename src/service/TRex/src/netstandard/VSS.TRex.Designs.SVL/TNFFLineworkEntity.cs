@@ -273,6 +273,7 @@ namespace VSS.TRex.Designs.SVL
 //      return false;
 //    }
 
+/*
     public virtual void LoadFromStream(BinaryReader reader)
     {
 // Note: The EntityTypeInFile written out in SaveToStream will have already
@@ -283,10 +284,11 @@ namespace VSS.TRex.Designs.SVL
 
       reader.ReadByte();
 
-      HeaderFlags = reader.ReadByte();
-      EntityFlags = reader.ReadByte();
+      _headerFlags = reader.ReadByte();
+      _entityFlags = reader.ReadByte();
       Colour = reader.ReadInt16();
     }
+    */
 
     public virtual BoundingWorldExtent3D BoundingBox() => new BoundingWorldExtent3D();
 

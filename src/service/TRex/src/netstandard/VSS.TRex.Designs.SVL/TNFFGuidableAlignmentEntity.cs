@@ -90,12 +90,8 @@ namespace VSS.TRex.Designs.SVL
     // used to define it.
    // procedure NormaliseArcs;
 
-   // public
-      //      property Owner : TObject read FOwner write SetOwner;
       //      procedure Assign(Entity: TNFFLineworkEntity); override;
       //      property Entities : TNFFGuidableAlignmentOwnedEntitiesList read FEntities;
-
-      //      Destructor Destroy; override;
 
       //      procedure DumpToText(Stream: TTextDumpStream; const OriginX, OriginY : Double); override;
       //      Procedure SaveToNFFStream(Stream : TStream;
@@ -154,7 +150,7 @@ namespace VSS.TRex.Designs.SVL
           // that were in the most significant 4 bits were being thrown away in favour
           // or a separate flags byte stored in each entity. So we will preserve this
           // behaviour for post v1.4 too
-          byte _ = reader.ReadByte();
+          FlagsByte = reader.ReadByte();
         }
         else
         {

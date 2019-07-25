@@ -131,7 +131,7 @@ namespace VSS.TRex.Designs.SVL
         Colour = NFFUtils.ReadColourFromStream(reader);
 
         // Read the flags...
-        EntityFlags = reader.ReadByte();
+        _entityFlags = reader.ReadByte();
 
         // Read the bounding box of the smoothed polyline
         NFFUtils.ReadRectFromStream(reader, out double MinX, out double MinY, out double MaxX, out double MaxY, OriginX, OriginY);
@@ -207,7 +207,7 @@ namespace VSS.TRex.Designs.SVL
         Math.Max(Vertices[0].X, Vertices[1].X),
         Math.Max(Vertices[0].Y, Vertices[1].Y));
 
-      for (int I = 2; I < Vertices.Count; I++)
+      for (int I = 1; I < Vertices.Count; I++)
         Result.Include(Vertices[I].X, Vertices[I].Y);
 
       return Result;

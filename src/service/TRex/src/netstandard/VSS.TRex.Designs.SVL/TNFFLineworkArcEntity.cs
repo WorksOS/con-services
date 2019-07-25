@@ -211,6 +211,7 @@ namespace VSS.TRex.Designs.SVL
 
     // Procedure SaveToStream(Stream : TStream); Override;
 
+    /*
     public override void LoadFromStream(BinaryReader reader)
     {
       base.LoadFromStream(reader);
@@ -234,6 +235,7 @@ namespace VSS.TRex.Designs.SVL
       StartRightCrossSlope = reader.ReadDouble();
       EndRightCrossSlope = reader.ReadDouble();
     }
+    */
 
     // procedure DumpToText(Stream: TTextDumpStream; const OriginX, OriginY : Double); override;
     //Procedure SaveToNFFStream(Stream : TStream;
@@ -254,7 +256,7 @@ namespace VSS.TRex.Designs.SVL
       byte _ = reader.ReadByte(); //{ LineWidth= }
 
       Colour = NFFUtils.ReadColourFromStream(reader);
-      EntityFlags = reader.ReadByte();
+      _entityFlags = reader.ReadByte();
 
       NFFUtils.ReadRectFromStream(reader, out double MinX, out double MinY, out double MaxX, out double MaxY, OriginX, OriginY);
 
@@ -305,13 +307,12 @@ namespace VSS.TRex.Designs.SVL
         // Read and discard EndStation value (it can be re-calculated any time it is needed)
         var TempEndStation = reader.ReadDouble();
 
-        /*
-          Within SVD/ SVL no record is kept of whether arc was initially described as
-           CW or CCW, Stationing is stored with convention that arc is CW.When
-           creating / reading a arc entity from stream, we need to figure out and restore
-             <WasClockWise> value in order for any subsequent write to stream to write
+        // Within SVD/ SVL no record is kept of whether arc was initially described as
+        //   CW or CCW, Stationing is stored with convention that arc is CW.When
+        //   creating / reading a arc entity from stream, we need to figure out and restore
+       //      <WasClockWise> value in order for any subsequent write to stream to write
        
-             Stationing around the right way */
+        //     Stationing around the right way 
         if (StartStation > TempEndStation)
         {
           // Arc was initially defined CCW

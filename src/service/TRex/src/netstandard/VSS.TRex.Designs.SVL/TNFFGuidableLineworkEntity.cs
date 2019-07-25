@@ -84,6 +84,7 @@ namespace VSS.TRex.Designs.SVL
 
     //Procedure SaveToStream(Stream : TStream);Override;
 
+    /*
     public override void LoadFromStream(BinaryReader reader)
     {
       base.LoadFromStream(reader);
@@ -91,5 +92,6 @@ namespace VSS.TRex.Designs.SVL
       if (IsGuidable)
         _guidanceID = reader.ReadInt32();
     }
+    */
   }
 }

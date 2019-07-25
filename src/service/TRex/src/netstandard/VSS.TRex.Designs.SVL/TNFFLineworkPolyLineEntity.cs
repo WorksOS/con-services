@@ -88,6 +88,7 @@ namespace VSS.TRex.Designs.SVL
     const Value: Double); Override;
     */
 
+    /*
     public override void Assign(TNFFLineworkEntity Entity)
     {
       base.Assign(Entity);
@@ -100,6 +101,7 @@ namespace VSS.TRex.Designs.SVL
       for (int I = 0; I < Vertices.Count; I++)
         Vertices[I].Parent = this;
     }
+    */
 
     //    procedure DumpToText(Stream: TTextDumpStream; const OriginX, OriginY : Double); override;
     //    Procedure SaveToNFFStream(Stream : TStream;
@@ -115,13 +117,13 @@ namespace VSS.TRex.Designs.SVL
       // read in order to determine we should be reading this type of entity!
 
       if (HasGuidanceID)
-        GuidanceID = reader.ReadInt16();
+        GuidanceID = reader.ReadUInt16();
 
       // Linewidth is always 1
       byte _ = reader.ReadByte(); // LineWidth:= 
 
       Colour = NFFUtils.ReadColourFromStream(reader);
-      EntityFlags = reader.ReadByte();
+      _entityFlags = reader.ReadByte();
 
       //Read the bounding box
       NFFUtils.ReadRectFromStream(reader, out double MinX, out double MinY, out double MaxX, out double MaxY, OriginX, OriginY);
@@ -130,7 +132,7 @@ namespace VSS.TRex.Designs.SVL
       var EntCount = reader.ReadUInt16();
 
       // Read the vertices constructing line elements in the polygon entity
-      for (int I = 1; I < EntCount; I++)
+      for (int I = 0; I < EntCount; I++)
       {
         NFFUtils.ReadCoordFromStream(reader, out double X1, out double Y1, OriginX, OriginY);
         double Z1;

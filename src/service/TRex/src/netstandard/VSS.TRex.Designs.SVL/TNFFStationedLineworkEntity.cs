@@ -94,6 +94,7 @@ const Value: Double); Virtual;
       */
 
     // Procedure SaveToStream(Stream : TStream); Override;
+    /*
     public override void LoadFromStream(BinaryReader reader)
     {
       base.LoadFromStream(reader);
@@ -101,6 +102,7 @@ const Value: Double); Virtual;
       if ((HeaderFlags & NFFConsts.kNFFElementHeaderHasStationing) != 0)
         _startStation = reader.ReadDouble();
     }
+    */
 
     public virtual void ComputeStnOfs(double X, double Y, out double Stn, out double Ofs)
     {

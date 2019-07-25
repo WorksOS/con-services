@@ -31,7 +31,7 @@ namespace VSS.TRex.Designs.SVL
       int Offset= 0;
       int Length= 0;
       int Number = reader.ReadInt32();
-      for (int I = 1; I < Number; I++)
+      for (int I = 0; I < Number; I++)
       {
         string Name = NFFUtils.ReadWideStringFromStream(reader);
         if (NFFFileVersion >= TNFFFileVersion.nffVersion1_2)
