@@ -34,5 +34,7 @@ namespace VSS.TRex.Designs.SVL
     public const string kNFFSurfaceFileMajicNumber = "TRMSRFCE";
     public const string kNFFLineworkFileMajicNumber = "TRMLINES";
     public const string kNFFIndexFileMajicNumber = "TRMINDEX";
+
+    public const string kNFFIndexStorageName = "Header";
   }
 }

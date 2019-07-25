@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Designs.SVL
 {
@@ -34,7 +35,17 @@ namespace VSS.TRex.Designs.SVL
     //   procedure DumpToText(Stream: TTextDumpStream);
 
     // Used by owner TNFFFile.ProcessGuidanceAlignments only
-    // public void SortByOffset();
+    public void SortByOffset()
+    {
+      // TNFFNamedGuidanceID.StartOffset values are maintained solely to perform initial
+      // sort and are NOT streamed to file, thus when this function is called in context
+      // of file load all StartOffset values will be initialised to NullReal.  In this
+      // case the sort should be skipped
+      if (Count < 2 || this[0].StartOffset == Consts.NullDouble)
+        return;
+
+      Sort(new NamedGuidanceIDComparer());
+    }
 
 
     public double MinStartStation()

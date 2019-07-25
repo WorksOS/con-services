@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace VSS.TRex.Designs.SVL
 {
   public class TNFFFile
   {
-    //private
     public TNFFFileType NFFFileType;
     public TNFFFileVersion FileVersion;
 
@@ -25,7 +26,7 @@ namespace VSS.TRex.Designs.SVL
     //FSurfaces : TNFFSurfaceList;
     //FReferenceSurfaces : TNFFVerticalOffsetList;
 
-    public TNFFNamedGuidanceIDList NamedGuidanceIDs; 
+    public TNFFNamedGuidanceIDList NamedGuidanceIDs;
     public TNFFGuidableAlignmentEntityList GuidanceAlignments;
 
     /* TNFFFile makes use of a compound document format to store it's contents.
@@ -99,22 +100,20 @@ namespace VSS.TRex.Designs.SVL
       GridSize = AGridSize;
     }
 
+    //FAvoidanceZoneType : TNFFAvoidanceZoneType;
+    //FAvoidanceZoneUndergroundServicesRadius : Double;
 
-      // protected
-      //FAvoidanceZoneType : TNFFAvoidanceZoneType;
-      //FAvoidanceZoneUndergroundServicesRadius : Double;
+    //procedure SetGridSize(const Value: Integer);
+    //Function LocateGrid(X, Y : Double) : TNFFGrid;
+    //Procedure ComputeGridIndex(X, Y : Double; var IndexX, IndexY : Integer);
+    // Procedure CalculateGridCoverage(MinimumEasting, MinimumNorthing, MaximumEasting, MaximumNorthing : Double; var I_MinX, I_MinY, I_MaxX, I_MaxY : Integer);
+    // procedure Resize;
 
-      //procedure SetGridSize(const Value: Integer);
-      //Function LocateGrid(X, Y : Double) : TNFFGrid;
-      //Procedure ComputeGridIndex(X, Y : Double; var IndexX, IndexY : Integer);
-      // Procedure CalculateGridCoverage(MinimumEasting, MinimumNorthing, MaximumEasting, MaximumNorthing : Double; var I_MinX, I_MinY, I_MaxX, I_MaxY : Integer);
-      // procedure Resize;
+    //Function OpenCompoundDocumentReadOnly(FileName : TFileName) : Boolean;
+    // Function OpenCompoundDocumentRW(FileName : TFileName) : Boolean;
 
-      //Function OpenCompoundDocumentReadOnly(FileName : TFileName) : Boolean;
-      // Function OpenCompoundDocumentRW(FileName : TFileName) : Boolean;
-
-      //Procedure SaveHeaderToStream(Stream : TStream);
-      public bool LoadHeaderFromStream(BinaryReader reader)
+    //Procedure SaveHeaderToStream(Stream : TStream);
+    public bool LoadHeaderFromStream(BinaryReader reader)
     {
       var Header = new TNFFIndexFileHeader();
 
@@ -188,19 +187,59 @@ namespace VSS.TRex.Designs.SVL
     }
 
     // Procedure SaveHeaderToCompoundDoc;
-// Function LoadHeaderFromCompoundDoc : Boolean;
-//    procedure SaveVersionToCompoundDoc;
+    // Function LoadHeaderFromCompoundDoc : Boolean;
+    //    procedure SaveVersionToCompoundDoc;
 
-//Procedure EnsurePolygonsClockwise;
+    //Procedure EnsurePolygonsClockwise;
 
-//function ValidateFileName(Filename : TFileName): Boolean; virtual;
+    //function ValidateFileName(Filename : TFileName): Boolean; virtual;
 
-// Protected interface used exclusively by TNFFFileBuilder
-//function AddDXFEntity(DXFEntity: TDXFEntity): Boolean;
+    // Protected interface used exclusively by TNFFFileBuilder
+    //function AddDXFEntity(DXFEntity: TDXFEntity): Boolean;
     //function AddGuidanceAlignment(NamedGuidanceID: TNFFNamedGuidanceID;
     //                              GuidableAlignment: TNFFGuidableAlignmentEntity): Boolean;
-  //  procedure SetGridOrigin(AOriginX, AOriginY : Double; RoundTo : Integer);
-    //procedure ProcessGuidanceAlignments;
+    //  procedure SetGridOrigin(AOriginX, AOriginY : Double; RoundTo : Integer);
+
+private void ProcessGuidanceAlignments()
+    {
+// Patch up references for any NamedGuidanceIDs that reference a Guidance alignment
+// by ID but not via. <GuidanceAlignment>
+      for (int I = 0; I < NamedGuidanceIDs.Count; I++)
+      {
+        if (NamedGuidanceIDs[I].GuidanceAlignment == null)
+          NamedGuidanceIDs[I].GuidanceAlignment = GuidanceAlignments.Locate(NamedGuidanceIDs[I].ID);
+      }
+
+      // Remove any named guidance IDs that don't reference a Guidable Alignment or refer to one
+      // that contains no guidance geometry
+      for (int I = 0; I < NamedGuidanceIDs.Count; I++)
+      {
+        if (NamedGuidanceIDs[I].GuidanceAlignment == null)
+          NamedGuidanceIDs[I] = null;
+
+        else if (NamedGuidanceIDs[I].GuidanceAlignment.Entities.Count == 0)
+        {
+          GuidanceAlignments[GuidanceAlignments.IndexOf(NamedGuidanceIDs[I].GuidanceAlignment)] = null;
+          NamedGuidanceIDs[I] = null;
+        }
+      }
+
+      // Remove the Nil items in the lists
+      for (int I = NamedGuidanceIDs.Count - 1; I >= 0; I--)
+        NamedGuidanceIDs.RemoveAt(I);
+
+      for (int I = GuidanceAlignments.Count - 1; I >= 0; I--)
+        GuidanceAlignments.RemoveAt(I);
+
+      // Perform initial sort of the guidance alignments into order based on the
+      // offset of the first element in the list. This is so SiteVision can display
+      // nice ordered lists of alignments without having to sort them...
+      NamedGuidanceIDs.SortByOffset();
+
+      // Now renumber all the guidance IDs to fill in the gaps and make them consistent
+      for (int I = 0; I < NamedGuidanceIDs.Count; I++)
+        NamedGuidanceIDs[I].ID = I;
+    }
 
 //    Procedure SaveXMLDataIslandsToCompoundDoc;
 //Procedure LoadXMLDataIslandsFromCompoundDoc;
@@ -214,43 +253,124 @@ namespace VSS.TRex.Designs.SVL
       return FileVersion >= TNFFFileVersion.nffVersion1_2 && NFFFileType == TNFFFileType.nffSVLFile;
     }
 
-  //  procedure OnGuidanceAlignmentAdded(Sender: TEnhancedObjectList; Item: TObject); virtual;
+    //  procedure OnGuidanceAlignmentAdded(Sender: TEnhancedObjectList; Item: TObject); virtual;
 
- // public
-//    property Grids : TNFFGridList read FGrids;
-//    property ThreeDLineDesignGridFile : TNFF3DGridLineworkFile read F3DLineDesignGridFile;
+    // public
+    //    property Grids : TNFFGridList read FGrids;
+    //    property ThreeDLineDesignGridFile : TNFF3DGridLineworkFile read F3DLineDesignGridFile;
 
-//    property GridSize : Integer read FGridSize write SetGridSize;
+    //    property GridSize : Integer read FGridSize write SetGridSize;
 
-//    property GridOriginX : Integer read FGridOriginX;
-//    property GridOriginY : Integer read FGridOriginY;
+    //    property GridOriginX : Integer read FGridOriginX;
+    //    property GridOriginY : Integer read FGridOriginY;
 
-//    property Surfaces : TNFFSurfaceList read FSurfaces;
-//    property ReferenceSurfaces : TNFFVerticalOffsetList read FReferenceSurfaces;
+    //    property Surfaces : TNFFSurfaceList read FSurfaces;
+    //    property ReferenceSurfaces : TNFFVerticalOffsetList read FReferenceSurfaces;
 
-    // **FIX ME** Only used by NFFLinework.pas but globally visible
- //   property CompoundStorage : IStorage read FCompoundStorage;
-//    property FileStorage : TFileStream read FFileStorage;
+    //    Property XMLDataIslands : TNFFXMLDataIslandList read FXMLDataIslands;
+    //    Property Gestalt : TNFFGestaltDataIsland read FGestalt write FGestalt;
 
+    //    Property RelatedStreams : TNFFRelatedStreamList read FRelatedStreams;
 
-//    Property XMLDataIslands : TNFFXMLDataIslandList read FXMLDataIslands;
-//    Property Gestalt : TNFFGestaltDataIsland read FGestalt write FGestalt;
+    //    property AvoidanceZoneType : TNFFAvoidanceZoneType read FAvoidanceZoneType write FAvoidanceZoneType;
+    //    Property AvoidanceZoneUndergroundServicesRadius : Double read FAvoidanceZoneUndergroundServicesRadius write FAvoidanceZoneUndergroundServicesRadius;
 
-//    Property RelatedStreams : TNFFRelatedStreamList read FRelatedStreams;
+    //    class function CreateFromFile(AFileName : TFileName) : TNFFFile;
 
-//    property AvoidanceZoneType : TNFFAvoidanceZoneType read FAvoidanceZoneType write FAvoidanceZoneType;
-//    Property AvoidanceZoneUndergroundServicesRadius : Double read FAvoidanceZoneUndergroundServicesRadius write FAvoidanceZoneUndergroundServicesRadius;
+    public virtual bool LoadFromCompoundDoc(MemoryStream ms)
+    {
+      using (var reader = new BinaryReader(ms, Encoding.Default, true))
+      {
+        if (!LoadHeaderFromCompoundDoc(ms))
+          return false;
 
-//    class function CreateFromFile(AFileName : TFileName) : TNFFFile;
+        /*
+          // Load the grids in the location
+          FGrids.LoadFromCompoundDoc('');
+    
+          if (FFileVersion >= nffVersion1_3) then
+            // Load the 3DGridLines grid from the location
+            if FStreamInfoList.Locate(F3DLineDesignGridFile.GridCellFileName) <> nil then
+              F3DLineDesignGridFile.LoadFromCompoundDoc(F3DLineDesignGridFile.GridCellFileName);
+        */
+
+        if (GuidanceAlignmentsSupported())
+        {
+          // Load the list of guidance alignments from the file
+          for (int I = 0; I < NamedGuidanceIDs.Count - 1; I++)
+          {
+            GuidanceAlignments.Add(new TNFFGuidableAlignmentEntity());
+            string AlignmentStreamName = $"Alignment-{NamedGuidanceIDs[I].ID}.lwk";
+            GuidanceAlignments.Last().LoadFromCompoundDoc(this, reader, AlignmentStreamName);
+          }
+
+          // Call ProcessGuidanceAlignments() to patch up references between NamedGuidanceIDs
+          // and associated GuidableAlignments
+          ProcessGuidanceAlignments();
+        }
+
+        /*
+        // Load any related streams
+          if (FFileVersion >= nffVersion1_5) then
+            begin
+              LoadRelatedStreamsFromCompoundDoc;
+          end;
+    
+          if (FFileVersion >= nffVersion1_4) then
+          begin
+            // Load in any XML data islands that have been placed into the file
+            LoadXMLDataIslandsFromCompoundDoc;
+    
+        // Locate and reference the Gestalt data island if present
+        FGestalt:= FXMLDataIslands.Locate(kXMLDataIslandGestalt) as TNFFGestaltDataIsland;
+        end;
+        */
+
+        //fGridOriginSpecificationAllowed:= False;
+
+        // FFilenameLoadedFrom:= Filename;
+      }
+
+      return true;
+    }
 
     public virtual bool LoadFromFile(string Filename)
     {
-      return false;
+      using (var ms = new MemoryStream(File.ReadAllBytes(Filename)))
+      {
+        return LoadFromCompoundDoc(ms);
+      }
+    }
+
+    public virtual bool LoadHeaderFromCompoundDoc(MemoryStream ms)
+    {
+      using (var reader = new BinaryReader(ms, Encoding.Default, true))
+      {
+        // Position the FFileStorage at the start of stream list stream and read it
+        reader.BaseStream.Position = 0; // Move to the start of the stream
+        reader.BaseStream.Position = reader.ReadInt32(); // Move to the start of the stream list
+
+        // Read in the stream list
+        StreamInfoList.LoadFromStream(TNFFFileVersion.nffVersion1_2, reader);
+
+        // Locate the Header stream
+        var HeaderStreamInfo = StreamInfoList.Locate(NFFConsts.kNFFIndexStorageName);
+        if (HeaderStreamInfo != null)
+          reader.BaseStream.Position = HeaderStreamInfo.Offset;
+        else
+          return false;
+
+        // Load the header index stream...
+        return LoadHeaderFromStream(reader);
+      }
     }
 
     public virtual bool LoadHeaderFromFile(string Filename)
     {
-      return false;
+      using (var ms = new MemoryStream(File.ReadAllBytes(Filename)))
+      {
+        return LoadHeaderFromCompoundDoc(ms);
+      }
     }
 
   //  Function LoadGestaltFromFile(const Filename : TFilename) : Boolean; virtual;

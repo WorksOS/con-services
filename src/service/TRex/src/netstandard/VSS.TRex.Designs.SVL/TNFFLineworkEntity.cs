@@ -12,8 +12,22 @@ namespace VSS.TRex.Designs.SVL
 
     public int ElementIndex { get; set; }
     public int Colour { get; set; }
-    public byte HeaderFlags { get; set; }
-    public byte EntityFlags { get; set; }
+
+    protected byte _headerFlags;
+
+    public byte HeaderFlags
+    {
+      get => _headerFlags;
+      set => SetHeaderFlags(value);
+    }
+
+    protected byte _entityFlags;
+
+    public byte EntityFlags
+    {
+      get => _entityFlags;
+      set => SetEntityFlags(value);
+    }
     public byte ControlFlags { get; set; }
 
     public bool Is3D
@@ -52,15 +66,6 @@ namespace VSS.TRex.Designs.SVL
       set => SetControlFlag(1, value);
     }
 
-    private void InitObject()
-    {
-      Colour = 1;
-      HeaderFlags = 0;
-      EntityFlags = 0;
-      ControlFlags = 0;
-      //fSuppressAssertions = False;
-    }
-
     //Procedure SaveToNFFStream(Stream : TStream;
     //const OriginX, OriginY : Double;
     //FileVersion : TNFFFileVersion); Overload; Virtual; Abstract;
@@ -84,7 +89,11 @@ namespace VSS.TRex.Designs.SVL
 
     public TNFFLineworkEntity()
     {
-      InitObject();
+      Colour = 1;
+      _headerFlags = 0;
+      _entityFlags = 0;
+      ControlFlags = 0;
+      //fSuppressAssertions = False;
     }
 
     // public TNFFLineworkEntity(int colour)
@@ -173,29 +182,29 @@ namespace VSS.TRex.Designs.SVL
     }
 
     public virtual void SetEndTransitPoint(XYZ Value) => SetEndPoint(Value);
-    public virtual void SetEntityFlags(byte Value) => EntityFlags = Value;
+    public virtual void SetEntityFlags(byte Value) => _entityFlags = Value;
 
     protected virtual void SetHeaderFlags(byte Value)
     {
       // Base class cannot be Stationed or have GuidanceID
       Debug.Assert((Value & (NFFConsts.kNFFElementHeaderHasStationing | NFFConsts.kNFFElementHeaderHasGuidanceID)) == 0x0);
-      HeaderFlags = Value;
+      _headerFlags = Value;
     }
 
     public void SetHasCrossSlopes(bool Value)
     {
       if (Value)
-        HeaderFlags |= NFFConsts.kNFFElementHeaderHasCrossSlope;
+        _headerFlags |= NFFConsts.kNFFElementHeaderHasCrossSlope;
       else
-        HeaderFlags = (byte) (HeaderFlags & ~NFFConsts.kNFFElementHeaderHasCrossSlope);
+        _headerFlags &= (byte)~NFFConsts.kNFFElementHeaderHasCrossSlope;
     }
 
     public void SetHasStations(bool Value)
     {
       if (Value)
-        HeaderFlags |= NFFConsts.kNFFElementHeaderHasStationing;
+        _headerFlags |= NFFConsts.kNFFElementHeaderHasStationing;
       else
-        HeaderFlags = (byte) (HeaderFlags & ~NFFConsts.kNFFElementHeaderHasStationing);
+        _headerFlags &= (byte)~NFFConsts.kNFFElementHeaderHasStationing;
     }
 
     public virtual byte ElementFlagsInFile(TNFFFileVersion FileVersion)
@@ -313,17 +322,17 @@ namespace VSS.TRex.Designs.SVL
     public void SetIs3D(bool Value)
     {
       if (Value)
-        HeaderFlags |= NFFConsts.kNFFElementHeaderHasElevation;
+        _headerFlags |= NFFConsts.kNFFElementHeaderHasElevation;
       else
-        HeaderFlags &= (byte) (~NFFConsts.kNFFElementHeaderHasElevation);
+        _headerFlags &= (byte) (~NFFConsts.kNFFElementHeaderHasElevation);
     }
 
     public void SetIsGuidable(bool Value)
     {
       if (Value)
-        HeaderFlags |= NFFConsts.kNFFElementHeaderHasGuidanceID;
+        _headerFlags |= NFFConsts.kNFFElementHeaderHasGuidanceID;
       else
-        HeaderFlags &= (byte) ~NFFConsts.kNFFElementHeaderHasGuidanceID;
+        _headerFlags &= (byte) ~NFFConsts.kNFFElementHeaderHasGuidanceID;
     }
 
     public virtual void SetStartCrossSlope(double Value)

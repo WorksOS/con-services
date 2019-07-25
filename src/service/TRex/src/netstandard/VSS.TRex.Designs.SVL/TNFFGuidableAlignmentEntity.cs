@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
@@ -28,26 +29,21 @@ namespace VSS.TRex.Designs.SVL
   ---------------------------------------------------------------------------*/
 
 
-    //      FOwner : TObject; // Actually a TNFFFile, but have usual circular reference problem
     public TNFFGuidableAlignmentOwnedEntitiesList Entities;
 
     public TNFFGuidableAlignmentEntity()
     {
-      HeaderFlags = NFFConsts.kNFFElementHeaderHasGuidanceID;
+      _headerFlags = NFFConsts.kNFFElementHeaderHasGuidanceID;
 
-      //FOwner= Nil;
       Entities = new TNFFGuidableAlignmentOwnedEntitiesList();
     }
-
-    //protected
-    //    procedure SetOwner(value: TObject);
 
     protected override void SetHeaderFlags(byte Value)
     {
       // TNFFGuidableAlignmentEntity class MUST have GuidanceID
       Debug.Assert((Value & NFFConsts.kNFFElementHeaderHasGuidanceID) != 0x00, "TNFFGuidableAlignmentEntity class MUST have GuidanceID");
 
-      HeaderFlags = Value;
+      _headerFlags = Value;
 
       // Map through to contained entities
       for (int I = 0; I < Entities.Count; I++)
@@ -237,7 +233,17 @@ namespace VSS.TRex.Designs.SVL
     //      Procedure SaveToCompoundDoc(const FileName : TFileName;
     //  const OriginX, OriginY : Integer);
 
-    //  Procedure LoadFromCompoundDoc(Filename : TFileName);
+    public void LoadFromCompoundDoc(TNFFFile owner, BinaryReader reader, string Filename)
+    {
+      reader.BaseStream.Position = owner.StreamInfoList.Locate(Filename).Offset;
+
+      //try
+      //fSuppressAssertions:= True;
+      LoadFromNFFStream(reader, Consts.NullDouble, Consts.NullDouble, true, TNFFFileVersion.nffVersion_Undefined);
+      //  finally
+      //fSuppressAssertions:= False;
+      //end;
+      }
 
     //  Procedure Sort;
 
@@ -246,8 +252,8 @@ namespace VSS.TRex.Designs.SVL
     if (ControlFlag_NullHeightAllowed)
       return true;
 
-    for (int I = 0; I < Entities.Count; I++)
-      if (!Entities[I].HasValidHeight())
+    foreach (var entity in Entities)
+      if (!entity.HasValidHeight())
         return false;
 
     return true;
@@ -262,12 +268,43 @@ namespace VSS.TRex.Designs.SVL
     // that element is then returned to the caller.
     public override void ComputeStnOfs(double X, double Y, out double Stn, out double Ofs)
     {
-      throw new NotImplementedException();
+      TNFFStationedLineworkEntity element = null;
+      ComputeStnOfs(X, Y, out Stn, out Ofs, ref element);
     }
 
-    public void ComputeStnOfs(double X, double Y, out double Stn, out double Ofs, out TNFFStationedLineworkEntity Element)
+    public void ComputeStnOfs(double X, double Y, out double Stn, out double Ofs, ref TNFFStationedLineworkEntity Element)
     {
-      throw new NotImplementedException();
+      double TestStn, TestOfs;
+
+      Stn = Consts.NullDouble;
+      Ofs = Consts.NullDouble;
+
+      // Check the given element to see if it matches. If so then return the answer
+      if (Element != null)
+      {
+        Element.ComputeStnOfs(X, Y, out TestStn, out TestOfs);
+
+        if (TestStn != Consts.NullDouble && TestOfs != Consts.NullDouble)
+        {
+          Ofs = TestOfs;
+          Stn = TestStn;
+          return;
+        }
+      }
+
+      Element = null;
+      for (int I = 0; I < Entities.Count; I++)
+      {
+        Entities[I].ComputeStnOfs(X, Y, out TestStn, out TestOfs);
+
+        if (TestStn != Consts.NullDouble && TestOfs != Consts.NullDouble &&
+            (Ofs == Consts.NullDouble || Math.Abs(TestOfs) < Math.Abs(Ofs)))
+        {
+          Ofs = TestOfs;
+          Stn = TestStn;
+          Element = Entities[I];
+        }
+      }
     }
 
     // ComputeXY takes a station/offset position and finds the element in the
@@ -277,17 +314,45 @@ namespace VSS.TRex.Designs.SVL
     // is then returned to the caller.
     public override void ComputeXY(double Stn, double Ofs, out double X, out double Y)
     {
-      throw new NotImplementedException();
+      X = Consts.NullDouble;
+      Y = Consts.NullDouble;
+
+      LocateEntityAtStation(Stn, out var Entity);
+      Entity?.ComputeXY(Stn, Ofs, out X, out Y);
     }
 
-//      Procedure Reverse; Overload; Override;
-//      procedure Reverse(const StartIdx, EndIdx : Integer); Overload; Override;
+    //      Procedure Reverse; Overload; Override;
+    //      procedure Reverse(const StartIdx, EndIdx : Integer); Overload; Override;
 
     // LocateEntityAtStation takes a station value and locates the element
     // within which the station value lies.
     public void LocateEntityAtStation(double Stn, out TNFFStationedLineworkEntity Element)
     {
-      throw new NotImplementedException();
+      Element = null;
+
+      for (int I = 0; I < Entities.Count; I++)
+      {
+        double Eps1;
+        if (I == 0)
+          Eps1 = 1E-4;
+        else if (Entities[I - 1].EndStation < Entities[I].StartStation)
+          Eps1 = 1E-4;
+        else
+          Eps1 = 0;
+
+        double Eps2;
+        if (I == Entities.Count - 1)
+          Eps2 = 1E-4;
+        else if (Entities[I + 1].StartStation > Entities[I].EndStation)
+          Eps2 = 1E-4;
+        else
+          Eps2 = 0;
+
+        if (Range.InRange(Stn, Entities[I].StartStation - Eps1, Entities[I].EndStation + Eps2))
+        {
+          Element = Entities[I];
+        }
+      }
     }
 
     // NumberElements assigns the ordinal index of each entity in the list to

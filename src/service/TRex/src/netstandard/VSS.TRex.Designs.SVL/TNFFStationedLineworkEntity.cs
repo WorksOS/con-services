@@ -33,7 +33,7 @@ to/from file if the kNFFElementHeaderHasStationing flag is set in their<headeerF
 
     protected abstract double GetEndStation();
 
-    protected override void SetHeaderFlags(byte Value) => HeaderFlags = Value;
+    protected override void SetHeaderFlags(byte Value) => _headerFlags = Value;
 
     protected virtual double GetVertexElevation(int VertexNum)
     {

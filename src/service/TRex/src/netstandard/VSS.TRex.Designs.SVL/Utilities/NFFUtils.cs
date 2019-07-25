@@ -34,6 +34,7 @@ namespace VSS.TRex.Designs.SVL
 
     public static int ReadColourFromStream(BinaryReader reader)
     {
+      byte _ = reader.ReadByte();
       return 0; // We do not care about colours for this implementation
 
       // Raptor implementation
@@ -84,10 +85,10 @@ namespace VSS.TRex.Designs.SVL
     public static string ReadWideStringFromStream(BinaryReader reader)
     {
       int len = reader.ReadUInt16();
-      if (len > 100000)
-        throw new Exception($"{len} length wide string encountered (want < 100000), bailing");
+      if (len > 10000)
+        throw new Exception($"{len} length wide string encountered (want < 10000), bailing");
 
-      var bytes = reader.ReadBytes(len);
+      var bytes = reader.ReadBytes(2 * len);
       return System.Text.Encoding.Unicode.GetString(bytes);
     }
 

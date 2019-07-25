@@ -5,7 +5,7 @@ namespace VSS.TRex.Designs.SVL
 {
   public class TNFFGuidableLineworkEntity : TNFFLineworkEntity
   {
-    private int _guidanceID;
+    protected int _guidanceID;
     
     public TNFFGuidableLineworkEntity()
     {
@@ -17,14 +17,10 @@ namespace VSS.TRex.Designs.SVL
       // TNFFGuidableLineworkEntity class MAY have GuidanceID but cannot be Stationed
       Debug.Assert((Value & NFFConsts.kNFFElementHeaderHasStationing) == 0x0);
 
-      HeaderFlags = Value;
+      _headerFlags = Value;
     }
 
-    protected virtual void SetGuidanceID(int Value)
-    {
-      _guidanceID = Value;
-    }
-
+    protected virtual void SetGuidanceID(int Value) => _guidanceID = Value;
 
     public override void Assign(TNFFLineworkEntity Entity)
     {
@@ -48,7 +44,7 @@ namespace VSS.TRex.Designs.SVL
 
       if (FileVersion < TNFFFileVersion.nffVersion1_5)
       {
-        if (_guidanceID != -1)
+        if (GuidanceID != -1)
           Result |= NFFConsts.kNFFHasGuidanceID;
 
         if ((HeaderFlags & NFFConsts.kNFFElementHeaderHasStationing) != 0)

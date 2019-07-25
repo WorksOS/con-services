@@ -262,7 +262,7 @@ namespace VSS.TRex.Designs.SVL
       // read in order to determine we should be reading this type of entity!
 
       if (HasGuidanceID)
-        GuidanceID = reader.ReadUInt16();
+        _guidanceID = reader.ReadUInt16();
 
       byte _ = reader.ReadByte(); //{ LineWidth= }
 
@@ -310,7 +310,7 @@ namespace VSS.TRex.Designs.SVL
       double end_angle = reader.ReadSingle();
       double radius = reader.ReadSingle();
 
-      if ((HeaderFlags & NFFConsts.kNFFElementHeaderHasStationing) != 0)
+      if ((_headerFlags & NFFConsts.kNFFElementHeaderHasStationing) != 0)
       {
         // Read the Start Station
         StartStation = reader.ReadDouble();
