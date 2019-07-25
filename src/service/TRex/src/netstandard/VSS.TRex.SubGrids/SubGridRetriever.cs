@@ -561,8 +561,8 @@ namespace VSS.TRex.SubGrids
             _clientGrid.AssignFilteredValue(StripeIndex, J, _assignmentContext);
           else
           {
-            if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) && (Dummy_LiftBuildSettings.CCVSummaryTypes == 0 || !Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
-                ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) && (Dummy_LiftBuildSettings.MDPSummaryTypes == 0 || !Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
+            if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) && (liftParams.CCVSummaryTypes == 0 || !liftParams.CCVSummarizeTopLayerOnly)) ||
+                ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) && (liftParams.MDPSummaryTypes == 0 || !liftParams.MDPSummarizeTopLayerOnly)) ||
                 // ReSharper disable once UseMethodAny.0
                 _cellProfile.Layers.Count() > 0 ||
                 _gridDataType == GridDataType.CCA || _gridDataType == GridDataType.CCAPercent) // no CCA settings
@@ -767,6 +767,7 @@ namespace VSS.TRex.SubGrids
         // TODO Add when cell left build settings supported
         // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
         _assignmentContext.Overrides = overrides;
+        _assignmentContext.LiftParams = liftParams;
 
         // Determine if a sieve filter is required for the sub grid where the sieve matches
         // the X and Y pixel world size (used for WMS tile computation)

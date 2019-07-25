@@ -120,7 +120,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       IProfileLayers layers = ((IProfileCell) context.CellProfile).Layers;
 
-      if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
+      if (context.LiftParams.CCVSummarizeTopLayerOnly)
       {
         for (var i = layers.Count() - 1; i >= 0; i--)
         {
