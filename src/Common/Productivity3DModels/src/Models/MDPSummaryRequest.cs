@@ -31,6 +31,12 @@ namespace VSS.Productivity3D.Models.Models
     public OverridingTargets Overrides { get; private set; }
 
     /// <summary>
+    /// Settings for lift analysis
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public LiftSettings LiftSettings { get; private set; }
+
+    /// <summary>
     /// Default private constructor.
     /// </summary>
     private MDPSummaryRequest()
@@ -46,23 +52,14 @@ namespace VSS.Productivity3D.Models.Models
       short mdpTarget,
       bool overrideTargetMDP,
       double maxMDPPercent,
-      double minMDPPercent
+      double minMDPPercent,
+      LiftSettings liftSettings
     )
     {
       ProjectUid = projectUid;
       Filter = filter;
       Overrides = new OverridingTargets(mdpTarget: mdpTarget, overrideTargetMDP: overrideTargetMDP, maxMDPPercent: maxMDPPercent, minMDPPercent: minMDPPercent);
-    }
-
-    /// <summary>
-    /// Validates all properties
-    /// </summary>
-    public override void Validate()
-    {
-      base.Validate();
-
-      Filter?.Validate();
-      Overrides?.Validate();
+      LiftSettings = liftSettings;
     }
   }
 }

@@ -422,7 +422,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       var settings = AutoMapperUtility.Automapper.Map<LiftSettings>(lbs);
       Assert.AreEqual(lbs.CCVSummarizeTopLayerOnly, settings.CCVSummarizeTopLayerOnly);
       Assert.AreEqual(lbs.MDPSummarizeTopLayerOnly, settings.MDPSummarizeTopLayerOnly);
-      Assert.AreEqual(lbs.CCvSummaryType, settings.CCVSummaryType);
+      Assert.AreEqual(SummaryType.Compaction, settings.CCVSummaryType);
       Assert.AreEqual(SummaryType.Compaction, settings.MDPSummaryType);
       Assert.AreEqual(lbs.FirstPassThickness, settings.FirstPassThickness);
       Assert.AreEqual(lbs.LiftDetectionType, settings.LiftDetectionType);
@@ -441,11 +441,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       var lbs = new LiftBuildSettings(null, true, 0.7, 1.15, 0.2f, LiftDetectionType.Tagfile,
         LiftThicknessType.Compacted, null, true, 1.5f, null, null, null,
         null, true, new LiftThicknessTarget{TargetLiftThickness = 0.7f, AboveToleranceLiftThickness = 0.3f, BelowToleranceLiftThickness = 0.14f }, null);
+      lbs.CCvSummaryType = CCVSummaryType.WorkInProgress;//this property is not in the constructor
 
       var settings = AutoMapperUtility.Automapper.Map<LiftSettings>(lbs);
       Assert.AreEqual(lbs.CCVSummarizeTopLayerOnly, settings.CCVSummarizeTopLayerOnly);
       Assert.AreEqual(lbs.MDPSummarizeTopLayerOnly, settings.MDPSummarizeTopLayerOnly);
-      Assert.AreEqual(lbs.CCvSummaryType, settings.CCVSummaryType);
+      Assert.AreEqual((SummaryType)lbs.CCvSummaryType, settings.CCVSummaryType);
       Assert.AreEqual(SummaryType.Compaction, settings.MDPSummaryType);
       Assert.AreEqual(lbs.FirstPassThickness, settings.FirstPassThickness);
       Assert.AreEqual(lbs.LiftDetectionType, settings.LiftDetectionType);

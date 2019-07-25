@@ -100,8 +100,13 @@ namespace VSS.Productivity3D.Models.Models
     /// The value is expressed in meters.
     /// </summary>
     [Range(MIN_THICKNESS, MAX_THICKNESS_ABOVE_TOLERANCE)]
-    [JsonProperty(PropertyName = "deadBandUpperBoundary", Required = Required.Default)]
+    [JsonProperty(Required = Required.Default)]
     public double DeadBandUpperBoundary { get; private set; }
+
+    /// <summary>
+    /// Default public constructor.
+    /// </summary>
+    public LiftSettings() {}
 
     /// <summary>
     /// Overload constructor with parameters.

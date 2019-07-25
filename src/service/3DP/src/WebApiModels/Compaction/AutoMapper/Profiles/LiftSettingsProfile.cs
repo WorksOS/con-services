@@ -35,7 +35,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
           opt => opt.MapFrom(lbs => lbs.DeadBandLowerBoundary))
         .ForMember(x => x.DeadBandUpperBoundary,
           opt => opt.MapFrom(lbs => lbs.DeadBandUpperBoundary));
-
     }
   }
 }

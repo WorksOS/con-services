@@ -61,6 +61,12 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     public OverridingTargets Overrides { get; private set; }
 
     /// <summary>
+    /// Settings for lift analysis
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public LiftSettings LiftSettings { get; private set; }
+
+    /// <summary>
     /// Default public constructor.
     /// </summary>
     public BaseProfileDataRequest()
@@ -78,7 +84,8 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       double startY,
       double endX,
       double endY,
-      OverridingTargets overrides)
+      OverridingTargets overrides,
+      LiftSettings liftSettings)
     {
       ProjectUid = projectUid;
       ReferenceDesignUid = referenceDesignUid;
@@ -89,6 +96,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       EndX = endX;
       EndY = endY;
       Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
     /// <summary>
@@ -98,6 +106,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     {
       base.Validate();
       Overrides?.Validate();
+      LiftSettings?.Validate();
     }
   }
 }

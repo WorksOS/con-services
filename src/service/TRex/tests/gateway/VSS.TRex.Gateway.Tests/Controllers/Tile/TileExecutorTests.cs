@@ -73,6 +73,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
         new BoundingBox2DGrid(0, 0, 100, 100),
         256,
         256,
+        null,
         null);
 
       request.Validate();

@@ -53,7 +53,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             request.BoundBoxGrid,
             request.Width,
             request.Height,
-            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings)
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings)
           );
           var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(trexRequest, "/tile", customHeaders);
 
