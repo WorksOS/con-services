@@ -4,16 +4,19 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}
+    component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}
+      component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}
+        component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
     spec:
       initContainers:
       - name: init-db

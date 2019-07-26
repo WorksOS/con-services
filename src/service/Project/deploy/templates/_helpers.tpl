@@ -30,3 +30,11 @@ Create chart name and version as used by the chart label.
 {{- define "projectservice.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Create name for webapi component.
+*/}}
+{{- define "component.webapi" -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s-%s-%s" "webapi" $name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
