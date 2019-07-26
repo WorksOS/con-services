@@ -392,22 +392,22 @@ Huzzah!
 
       // Convert the minor/major version numbering into the file version enum
       if (MajorVer == 1 && MinorVer == 0)
-        FileVersion = NFFFileVersion.nffVersion1_0;
+        FileVersion = NFFFileVersion.Version1_0;
       else if (MajorVer == 1 && MinorVer == 1)
-        FileVersion = NFFFileVersion.nffVersion1_1;
+        FileVersion = NFFFileVersion.Version1_1;
       else if (MajorVer == 1 && MinorVer == 2)
-        FileVersion = NFFFileVersion.nffVersion1_2;
+        FileVersion = NFFFileVersion.Version1_2;
       else if (MajorVer == 1 && MinorVer == 3)
-        FileVersion = NFFFileVersion.nffVersion1_3;
+        FileVersion = NFFFileVersion.Version1_3;
       else if (MajorVer == 1 && MinorVer == 4)
-        FileVersion = NFFFileVersion.nffVersion1_4;
+        FileVersion = NFFFileVersion.Version1_4;
       else if (MajorVer == 1 && MinorVer == 5)
-        FileVersion = NFFFileVersion.nffVersion1_5;
+        FileVersion = NFFFileVersion.Version1_5;
       else if (MajorVer == 1 && MinorVer == 6)
-        FileVersion = NFFFileVersion.nffVersion1_6;
+        FileVersion = NFFFileVersion.Version1_6;
       else
       {
-        FileVersion = NFFFileVersion.nffVersion_Undefined;
+        FileVersion = NFFFileVersion.Version_Undefined;
         Result = false;
       }
 

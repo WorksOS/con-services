@@ -107,7 +107,7 @@ namespace VSS.TRex.Designs.SVL
 
       // The file version passed into here is ignored in favour of the file version contained in the header information
 
-      Debug.Assert(FileVersion ==NFFFileVersion.nffVersion_Undefined,
+      Debug.Assert(FileVersion ==NFFFileVersion.Version_Undefined,
          "Specific file version sent to NFFGuidableAlignmentEntity.LoadFromNFFStream");
 
       var Header = new NFFLineworkGridFileHeader();
@@ -123,7 +123,7 @@ namespace VSS.TRex.Designs.SVL
       if (!NFFUtils.SetFileVersionFromMinorMajorVersionNumbers(Header.MajorVer, Header.MinorVer, out FileVersion))
         throw new IOException($"Unexpected file version, Major = {Header.MajorVer}, Minor - {Header.MinorVer}");
 
-      if (FileVersion < NFFFileVersion.nffVersion1_2)
+      if (FileVersion < NFFFileVersion.Version1_2)
         throw new IOException("File version less than 1.2 - unsupported");
 
       var factory = new NFFElementFactory();
@@ -135,7 +135,7 @@ namespace VSS.TRex.Designs.SVL
 
         // The flags moved into a following byte after the element type in v1.5
 
-        if (FileVersion >= NFFFileVersion.nffVersion1_5)
+        if (FileVersion >= NFFFileVersion.Version1_5)
           EntityType = (NFFLineWorkElementType) EntityTypeVal;
         else
           EntityType = (NFFLineWorkElementType) (EntityTypeVal & 0x0f);
@@ -144,7 +144,7 @@ namespace VSS.TRex.Designs.SVL
           return;
 
         byte FlagsByte = 0;
-        if (FileVersion >= NFFFileVersion.nffVersion1_5)
+        if (FileVersion >= NFFFileVersion.Version1_5)
         {
           // v1.5 and later store the flags as a separate byte. However, the flags
           // that were in the most significant 4 bits were being thrown away in favour
@@ -235,7 +235,7 @@ namespace VSS.TRex.Designs.SVL
 
       //try
       //fSuppressAssertions:= True;
-      LoadFromNFFStream(reader, Consts.NullDouble, Consts.NullDouble, true, NFFFileVersion.nffVersion_Undefined);
+      LoadFromNFFStream(reader, Consts.NullDouble, Consts.NullDouble, true, NFFFileVersion.Version_Undefined);
       //  finally
       //fSuppressAssertions:= False;
       //end;

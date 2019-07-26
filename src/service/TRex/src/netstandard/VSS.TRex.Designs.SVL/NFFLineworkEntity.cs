@@ -199,7 +199,7 @@ namespace VSS.TRex.Designs.SVL
 
     public virtual byte ElementFlagsInFile(NFFFileVersion FileVersion)
     {
-      Debug.Assert(FileVersion >= NFFFileVersion.nffVersion1_5,
+      Debug.Assert(FileVersion >= NFFFileVersion.Version1_5,
         "Separate element flags byte not valid for pre v1.5 NFF files");
 
       return 0;
@@ -355,7 +355,7 @@ begin
   // Write the entity type to the stream
   WriteByteToStream(Stream, ElementTypeInFile(FileVersion));
 
-If FileVersion >= nffVersion1_5 then
+If FileVersion >= Version1_5 then
     WriteByteToStream(Stream, ElementFlagsInFile(FileVersion));
 end;
 */

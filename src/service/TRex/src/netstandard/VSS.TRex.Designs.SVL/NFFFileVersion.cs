@@ -2,13 +2,13 @@
 {
   public enum NFFFileVersion
   {
-    nffVersion1_0,
-    nffVersion1_1,
-    nffVersion1_2,
-    nffVersion1_3,
-    nffVersion1_4,
-    nffVersion1_5,
-    nffVersion1_6,
-    nffVersion_Undefined = 255
+    Version1_0,
+    Version1_1,
+    Version1_2,
+    Version1_3,
+    Version1_4,
+    Version1_5,
+    Version1_6,
+    Version_Undefined = 255
   }
 }

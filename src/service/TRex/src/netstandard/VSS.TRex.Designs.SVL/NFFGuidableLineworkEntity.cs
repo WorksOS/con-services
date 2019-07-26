@@ -41,7 +41,7 @@ namespace VSS.TRex.Designs.SVL
 
       var Result = base.ElementTypeInFile(FileVersion);
 
-      if (FileVersion < NFFFileVersion.nffVersion1_5)
+      if (FileVersion < NFFFileVersion.Version1_5)
       {
         if (GuidanceID != -1)
           Result |= NFFConsts.kNFFHasGuidanceID;
@@ -60,10 +60,10 @@ namespace VSS.TRex.Designs.SVL
     {
       byte Result = 0;
 
-      Debug.Assert(FileVersion >= NFFFileVersion.nffVersion1_5,
+      Debug.Assert(FileVersion >= NFFFileVersion.Version1_5,
         "Separate element flags byte not valid for pre v1.5 NFF files");
 
-      if (FileVersion >= NFFFileVersion.nffVersion1_5)
+      if (FileVersion >= NFFFileVersion.Version1_5)
       {
         if (_guidanceID != -1)
           Result |= NFFConsts.kNFFElementHeaderHasGuidanceID;

@@ -2,7 +2,7 @@
 {
   public enum NFFFileType 
   {
-    nffSVDFile,
-    nffSVLFile
+    SVDFile,
+    SVLFile
   }
 }

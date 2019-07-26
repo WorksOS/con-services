@@ -25,7 +25,7 @@ namespace VSS.TRex.Designs.SVL
         return;
 
       // No stream lists are read from pre version 1.2 format files.
-      if (NFFFileVersion < NFFFileVersion.nffVersion1_2)
+      if (NFFFileVersion < NFFFileVersion.Version1_2)
         return;
 
       int Offset= 0;
@@ -34,7 +34,7 @@ namespace VSS.TRex.Designs.SVL
       for (int I = 0; I < Number; I++)
       {
         string Name = NFFUtils.ReadWideStringFromStream(reader);
-        if (NFFFileVersion >= NFFFileVersion.nffVersion1_2)
+        if (NFFFileVersion >= NFFFileVersion.Version1_2)
         {
           Offset = reader.ReadInt32();
           Length = reader.ReadInt32();

@@ -15,8 +15,8 @@ namespace VSS.TRex.Tests.Designs.SVL
     }
 
     [Theory]
-    [InlineData(NFFFileType.nffSVDFile)]
-    [InlineData(NFFFileType.nffSVLFile)]
+    [InlineData(NFFFileType.SVDFile)]
+    [InlineData(NFFFileType.SVLFile)]
     public void Creation2(NFFFileType fileType)
     {
       var f = new NFFFile(fileType);
@@ -27,17 +27,17 @@ namespace VSS.TRex.Tests.Designs.SVL
     [Fact]
     public void Creation3()
     {
-      var f = new NFFFile(NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6);
-      f.NFFFileType.Should().Be(NFFFileType.nffSVLFile);
-      f.FileVersion.Should().Be(NFFFileVersion.nffVersion1_6);
+      var f = new NFFFile(NFFFileType.SVLFile, NFFFileVersion.Version1_6);
+      f.NFFFileType.Should().Be(NFFFileType.SVLFile);
+      f.FileVersion.Should().Be(NFFFileVersion.Version1_6);
     }
 
     [Fact]
     public void Creation4()
     {
-      var f = new NFFFile(NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6, 100);
-      f.NFFFileType.Should().Be(NFFFileType.nffSVLFile);
-      f.FileVersion.Should().Be(NFFFileVersion.nffVersion1_6);
+      var f = new NFFFile(NFFFileType.SVLFile, NFFFileVersion.Version1_6, 100);
+      f.NFFFileType.Should().Be(NFFFileType.SVLFile);
+      f.FileVersion.Should().Be(NFFFileVersion.Version1_6);
       f.GridSize.Should().Be(100);
     }
 
@@ -48,10 +48,10 @@ namespace VSS.TRex.Tests.Designs.SVL
     [InlineData("Milling - Milling.svl")]
     public void Load_Files(string fileName)
     {
-      var f = new NFFFile(NFFFileType.nffSVLFile);
+      var f = new NFFFile(NFFFileType.SVLFile);
       f.LoadFromFile(Path.Combine("TestData", "Common", fileName)).Should().Be(true);
 
-      f.ErrorStatus.Should().Be(NFFErrorStatus.nffe_OK);
+      f.ErrorStatus.Should().Be(NFFErrorStatus.OK);
       f.GuidanceAlignments.Should().NotBeNull();
       f.GuidanceAlignments.Count.Should().BeGreaterThan(0);
     }
@@ -59,40 +59,40 @@ namespace VSS.TRex.Tests.Designs.SVL
     [Fact]
     public void Load_CERA()
     {
-      var f = new NFFFile(NFFFileType.nffSVLFile);
+      var f = new NFFFile(NFFFileType.SVLFile);
       f.LoadFromFile(Path.Combine("TestData", "Common", "CERA.SVL")).Should().Be(true);
     }
 
     [Fact]
     public void Load_Dimensions2012_LargeSiteRoad()
     {
-      var f = new NFFFile(NFFFileType.nffSVLFile);
+      var f = new NFFFile(NFFFileType.SVLFile);
       f.LoadFromFile(Path.Combine("TestData", "Common", "Large Sites Road - Trimble Road.svl")).Should().Be(true);
     }
 
     [Fact]
     public void Load_Dimensions2012_TopConRoad()
     {
-      var f = new NFFFile(NFFFileType.nffSVLFile);
+      var f = new NFFFile(NFFFileType.SVLFile);
       f.LoadFromFile(Path.Combine("TestData", "Common", "Topcon Road - Topcon Phil.svl")).Should().Be(true);
     }
 
     [Fact]
     public void Load_Dimensions2012_Milling()
     {
-      var f = new NFFFile(NFFFileType.nffSVLFile);
+      var f = new NFFFile(NFFFileType.SVLFile);
       f.LoadFromFile(Path.Combine("TestData", "Common", "Milling - Milling.svl")).Should().Be(true);
     }
 
     [Theory]
-    [InlineData("CERA.SVL", NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6)]
-    [InlineData("Large Sites Road - Trimble Road.svl", NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6)]
-    [InlineData("Topcon Road - Topcon Phil.svl", NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6)]
-    [InlineData("Milling - Milling.svl", NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6)]
+    [InlineData("CERA.SVL", NFFFileType.SVLFile, NFFFileVersion.Version1_6)]
+    [InlineData("Large Sites Road - Trimble Road.svl", NFFFileType.SVLFile, NFFFileVersion.Version1_6)]
+    [InlineData("Topcon Road - Topcon Phil.svl", NFFFileType.SVLFile, NFFFileVersion.Version1_6)]
+    [InlineData("Milling - Milling.svl", NFFFileType.SVLFile, NFFFileVersion.Version1_6)]
     public void CreateFromFile(string fileName, NFFFileType fileType, NFFFileVersion fileVersion)
     {
       var f = NFFFile.CreateFromFile(Path.Combine("TestData", "Common", fileName));
-      f.ErrorStatus.Should().Be(NFFErrorStatus.nffe_OK);
+      f.ErrorStatus.Should().Be(NFFErrorStatus.OK);
 
       f.NFFFileType.Should().Be(fileType);
       f.FileVersion.Should().Be(fileVersion);

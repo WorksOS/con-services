@@ -137,7 +137,7 @@ namespace VSS.TRex.Designs.SVL
       // numerous precision issues. Version 1.1 and later files do not use quantised
       // vertex coordinates, but use full double precision coordinates instead.
 
-      if (FileVersion == NFFFileVersion.nffVersion1_0)
+      if (FileVersion == NFFFileVersion.Version1_0)
       {
         UnsupportedFileVersion = true;
         return false;
@@ -148,7 +148,7 @@ namespace VSS.TRex.Designs.SVL
       // If we see one of these files, flag it as an unsupported version.
       // Note: This is hard to check in .Net, so we will ignore it...
 
-//      if (FileVersion == nffVersion1_2) && Assigned(FCompoundStorage) then
+//      if (FileVersion == Version1_2) && Assigned(FCompoundStorage) then
 //          begin
 //            FUnsupportedFileVersion= True;
 //      Exit;
@@ -158,24 +158,24 @@ namespace VSS.TRex.Designs.SVL
       GridOriginY = Header.GridOrigin.Y;
       GridSize = Header.GridSquareSize;
 
-      if (FileVersion > NFFFileVersion.nffVersion1_2 && NFFFileType == NFFFileType.nffSVLFile) // There is a flags byte following the header
+      if (FileVersion > NFFFileVersion.Version1_2 && NFFFileType == NFFFileType.SVLFile) // There is a flags byte following the header
         Flags = reader.ReadByte();
 
-      if (FileVersion >= NFFFileVersion.nffVersion1_6 && NFFFileType == NFFFileType.nffSVLFile) // There is a double containing the exclusion radius to be used for underground services avoidance zones
+      if (FileVersion >= NFFFileVersion.Version1_6 && NFFFileType == NFFFileType.SVLFile) // There is a double containing the exclusion radius to be used for underground services avoidance zones
       {
         byte AZType = reader.ReadByte(); //Stream.Read(AZType, SizeOf(FAvoidanceZoneType));
         //FAvoidanceZoneType= TNFFAvoidanceZoneType(AZType);
         double AvoidanceZoneUndergroundServicesRadiusStream = reader.ReadDouble(); //.Read(FAvoidanceZoneUndergroundServicesRadius, Sizeof(FAvoidanceZoneUndergroundServicesRadius));
       }
 
-      if (NFFFileType == NFFFileType.nffSVDFile)
+      if (NFFFileType == NFFFileType.SVDFile)
       {
         throw new NotImplementedException("SVD files are not supported");
         //FSurfaces.LoadFromStream(Stream);
         //FReferenceSurfaces.LoadFromStream(Stream);
       }
 
-      if (NFFFileType == NFFFileType.nffSVLFile || FileVersion >= NFFFileVersion.nffVersion1_4)
+      if (NFFFileType == NFFFileType.SVLFile || FileVersion >= NFFFileVersion.Version1_4)
       {
         // NOTE: In the header, it is assumed there is always an entry (if nothing more than
         // a zero count of guidance IDs). This is due to an unfortunate bug in SiteVision versions
@@ -252,7 +252,7 @@ private void ProcessGuidanceAlignments()
     public bool GuidanceAlignmentsSupported()
     {
       // Guidance Alignments added at NFF version 1.2 at which point they were stored in the SVL file.
-      return FileVersion >= NFFFileVersion.nffVersion1_2 && NFFFileType == NFFFileType.nffSVLFile;
+      return FileVersion >= NFFFileVersion.Version1_2 && NFFFileType == NFFFileType.SVLFile;
     }
 
     //  procedure OnGuidanceAlignmentAdded(Sender: TEnhancedObjectList; Item: TObject); virtual;
@@ -286,7 +286,7 @@ private void ProcessGuidanceAlignments()
 
       if (string.Compare(NFFFileExtension, ".svd", StringComparison.InvariantCultureIgnoreCase) == 0)
       {
-        Result = new NFFFile(NFFFileType.nffSVDFile);
+        Result = new NFFFile(NFFFileType.SVDFile);
       }
       else
       if (string.Compare(NFFFileExtension, ".svl", StringComparison.InvariantCultureIgnoreCase) == 0)
@@ -297,7 +297,7 @@ private void ProcessGuidanceAlignments()
         //  Doesn't matter at present as the descendants only differ in the way a new NFF
         //  file is populated from a DXF
 
-        Result = new NFFFile(NFFFileType.nffSVLFile);
+        Result = new NFFFile(NFFFileType.SVLFile);
       }
       else
       {
@@ -324,7 +324,7 @@ private void ProcessGuidanceAlignments()
           // Load the grids in the location
           FGrids.LoadFromCompoundDoc('');
     
-          if (FFileVersion >= nffVersion1_3) then
+          if (FFileVersion >= Version1_3) then
             // Load the 3DGridLines grid from the location
             if FStreamInfoList.Locate(F3DLineDesignGridFile.GridCellFileName) <> nil then
               F3DLineDesignGridFile.LoadFromCompoundDoc(F3DLineDesignGridFile.GridCellFileName);
@@ -347,12 +347,12 @@ private void ProcessGuidanceAlignments()
 
         /*
         // Load any related streams
-          if (FFileVersion >= nffVersion1_5) then
+          if (FFileVersion >= Version1_5) then
             begin
               LoadRelatedStreamsFromCompoundDoc;
           end;
     
-          if (FFileVersion >= nffVersion1_4) then
+          if (FFileVersion >= Version1_4) then
           begin
             // Load in any XML data islands that have been placed into the file
             LoadXMLDataIslandsFromCompoundDoc;
@@ -387,7 +387,7 @@ private void ProcessGuidanceAlignments()
         reader.BaseStream.Position = reader.ReadInt32(); // Move to the start of the stream list
 
         // Read in the stream list
-        StreamInfoList.LoadFromStream(NFFFileVersion.nffVersion1_2, reader);
+        StreamInfoList.LoadFromStream(NFFFileVersion.Version1_2, reader);
 
         // Locate the Header stream
         var HeaderStreamInfo = StreamInfoList.Locate(NFFConsts.kNFFIndexStorageName);

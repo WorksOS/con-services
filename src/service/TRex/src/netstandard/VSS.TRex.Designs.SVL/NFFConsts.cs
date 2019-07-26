@@ -18,7 +18,7 @@
 
     // kNFFNullCrossSlopeValue is the value defined by the machine control system to mean
     // a null cross slope value. PCS900 will then interpolate cross slope values between
-    // bracketing non-null cross slape values.
+    // bracketing non-null cross slope values.
     public static float kNFFNullCrossSlopeValue = 1e38F;
 
     // The following flags relate to guidance alignments
