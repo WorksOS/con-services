@@ -7,9 +7,9 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFLineworkPolyLineVertexEntity
+  public class NFFLineworkPolyLineVertexEntity
   {
-    public TNFFLineworkEntity Parent;
+    public NFFLineworkEntity Parent;
 
     public double X, Y, Z, Chainage;
     public double LeftCrossSlope;
@@ -26,7 +26,7 @@ namespace VSS.TRex.Designs.SVL
     }
 
     // Assign could be public, but only used by Clone method at this point, so hide.
-    public virtual void Assign(TNFFLineworkPolyLineVertexEntity VertexEntity)
+    public virtual void Assign(NFFLineworkPolyLineVertexEntity VertexEntity)
     {
       X = VertexEntity.X;
       Y = VertexEntity.Y;
@@ -38,7 +38,7 @@ namespace VSS.TRex.Designs.SVL
       Parent = VertexEntity.Parent;
     }
 
-    public TNFFLineworkPolyLineVertexEntity()
+    public NFFLineworkPolyLineVertexEntity()
     {
       Parent = null;
 
@@ -51,12 +51,12 @@ namespace VSS.TRex.Designs.SVL
       RightCrossSlope = Consts.NullDouble;
     }
 
-    public TNFFLineworkPolyLineVertexEntity(TNFFLineworkEntity parent) : this()
+    public NFFLineworkPolyLineVertexEntity(NFFLineworkEntity parent) : this()
     {
       Parent = parent;
     }
 
-    public TNFFLineworkPolyLineVertexEntity(TNFFLineworkEntity parent,
+    public NFFLineworkPolyLineVertexEntity(NFFLineworkEntity parent,
       double x, double y, double z, double chainage) : this(parent)
     {
       X = x;
@@ -65,9 +65,9 @@ namespace VSS.TRex.Designs.SVL
       Chainage = chainage;
     }
 
-    public TNFFLineworkPolyLineVertexEntity Clone()
+    public NFFLineworkPolyLineVertexEntity Clone()
     {
-      var Result = new TNFFLineworkPolyLineVertexEntity(Parent);
+      var Result = new NFFLineworkPolyLineVertexEntity(Parent);
       Result.Assign(this);
       return Result;
     }
@@ -103,7 +103,7 @@ namespace VSS.TRex.Designs.SVL
       Z = Value.Z;
     }
 
- //   public bool IsSameAs(TNFFLineworkPolyLineVertexEntity Other)
+ //   public bool IsSameAs(NFFLineworkPolyLineVertexEntity Other)
  //   {
  //     return Math.Abs(X - Other.X) < 1E-12 && Math.Abs(Y - Other.Y) < 1E-12;
  //   }

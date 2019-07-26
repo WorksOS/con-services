@@ -2,7 +2,7 @@
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFNamedGuidanceID
+  public class NFFNamedGuidanceID
   {
     public string Name;
     public string Description;
@@ -27,9 +27,9 @@ namespace VSS.TRex.Designs.SVL
     public double EndStation;
     public double StartOffset;
 
-    private TNFFGuidableAlignmentEntity _guidanceAlignment;
+    private NFFGuidableAlignmentEntity _guidanceAlignment;
 
-    public TNFFGuidableAlignmentEntity GuidanceAlignment
+    public NFFGuidableAlignmentEntity GuidanceAlignment
     {
       get => _guidanceAlignment;
       set => SetGuidanceAlignment(value);
@@ -40,11 +40,11 @@ namespace VSS.TRex.Designs.SVL
     // identified by tags in their Name strings, that need to appear in a fixed
     // order in the sorted listed.  This field keeps track of whether the the
     // alignment is a "special" one for the benefit of the
-    // TNFFNamedGuidanceIDList.SortByOffset method but is not otherwise used
+    // NFFNamedGuidanceIDList.SortByOffset method but is not otherwise used
     // (and is not streamed to/from file)
     public NFFGuidanceAlignmentType GuidanceAlignmentType;
 
-    // A temporary reference to the object that TNFFNamedGuidanceID is being
+    // A temporary reference to the object that NFFNamedGuidanceID is being
     // created from
     // FTag : TObject;
 
@@ -56,7 +56,7 @@ namespace VSS.TRex.Designs.SVL
         _guidanceAlignment.GuidanceID = Value;
     }
 
-    private void SetGuidanceAlignment(TNFFGuidableAlignmentEntity Value)
+    private void SetGuidanceAlignment(NFFGuidableAlignmentEntity Value)
     {
       _guidanceAlignment = Value;
 
@@ -75,7 +75,7 @@ namespace VSS.TRex.Designs.SVL
         GuidanceAlignmentType = NFFGuidanceAlignmentType.gtSubAlignment;
     }
 
-    public TNFFNamedGuidanceID()
+    public NFFNamedGuidanceID()
     {
       Name = string.Empty;
       Description = string.Empty;
@@ -89,16 +89,16 @@ namespace VSS.TRex.Designs.SVL
       //Tag= Nil;
     }
 
-    public TNFFNamedGuidanceID(string AName) : this()
+    public NFFNamedGuidanceID(string AName) : this()
     {
       Name = AName;
     }
 
-    //  procedure Assign(NamedGuidanceID: TNFFNamedGuidanceID);
+    //  procedure Assign(NamedGuidanceID: NFFNamedGuidanceID);
 
     //      property Tag : TObject read FTag write FTag;
 
-    //      function Clone: TNFFNamedGuidanceID;
+    //      function Clone: NFFNamedGuidanceID;
 //      procedure DumpToText(Stream: TTextDumpStream);
   }
 }

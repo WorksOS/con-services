@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.Designs.SVL
 {
-  public enum TNFFFileVersion
+  public enum NFFFileVersion
   {
     nffVersion1_0,
     nffVersion1_1,

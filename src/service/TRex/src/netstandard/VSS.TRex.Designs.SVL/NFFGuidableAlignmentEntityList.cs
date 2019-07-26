@@ -2,9 +2,9 @@
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFGuidableAlignmentEntityList : List<TNFFGuidableAlignmentEntity>
+  public class NFFGuidableAlignmentEntityList : List<NFFGuidableAlignmentEntity>
   {
-    public TNFFGuidableAlignmentEntity Locate(int AnID)
+    public NFFGuidableAlignmentEntity Locate(int AnID)
     {
       for (int I = 0; I < Count; I++)
         if (this[I].GuidanceID == AnID)
@@ -25,7 +25,7 @@ namespace VSS.TRex.Designs.SVL
 
       for (int I = 0; I < ItemCount; I++)
       {
-        Add(new TNFFGuidableAlignmentEntity());
+        Add(new NFFGuidableAlignmentEntity());
         this.Last().LoadFromStream(reader);
       }
     }

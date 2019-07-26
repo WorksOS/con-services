@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.Designs.SVL
 {
-  public enum TNFFFileType 
+  public enum NFFFileType 
   {
     nffSVDFile,
     nffSVLFile

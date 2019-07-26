@@ -7,10 +7,10 @@ using VSS.TRex.Designs.SVL.Utilities;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFFile
+  public class NFFFile
   {
-    public TNFFFileType NFFFileType;
-    public TNFFFileVersion FileVersion;
+    public NFFFileType NFFFileType;
+    public NFFFileVersion FileVersion;
 
     //FGrids : TNFFGridList;
     //F3DLineDesignGridFile : TNFF3DGridLineworkFile;
@@ -27,10 +27,10 @@ namespace VSS.TRex.Designs.SVL
     //FSurfaces : TNFFSurfaceList;
     //FReferenceSurfaces : TNFFVerticalOffsetList;
 
-    public TNFFNamedGuidanceIDList NamedGuidanceIDs;
-    public TNFFGuidableAlignmentEntityList GuidanceAlignments;
+    public NFFNamedGuidanceIDList NamedGuidanceIDs;
+    public NFFGuidableAlignmentEntityList GuidanceAlignments;
 
-    /* TNFFFile makes use of a compound document format to store it's contents.
+    /* NFFFile makes use of a compound document format to store it's contents.
       Depending upon version either the Microsoft IStorage compound document
       format or our own custom format is used
     */
@@ -41,12 +41,12 @@ namespace VSS.TRex.Designs.SVL
     // Collection of name tags(and in case of our own custom format offsets
     //  and sizes) for logical streams within compound document
 
-    public TNFFStreamInfoList StreamInfoList;
+    public NFFStreamInfoList StreamInfoList;
 
     public bool UnsupportedFileVersion;
 
 
-    public TNFFErrorStatus ErrorStatus;
+    public NFFErrorStatus ErrorStatus;
 
     //FXMLDataIslands : TNFFXMLDataIslandList;
     //FGestalt : TNFFGestaltDataIsland;
@@ -55,7 +55,7 @@ namespace VSS.TRex.Designs.SVL
 
     //FFilenameLoadedFrom: TFilename;
 
-    public TNFFFile()
+    public NFFFile()
     {
       //FGrids:= TNFFGridList.Create(Self);
       //GridSize := kNFFDefaultDefaultGridSize;
@@ -67,13 +67,13 @@ namespace VSS.TRex.Designs.SVL
       //F3DLineDesignGridFile:= TNFF3DGridLineworkFile.Create(Self);
 
       //FSurfaces:= TNFFSurfaceList.Create(Self);
-      NamedGuidanceIDs = new TNFFNamedGuidanceIDList();
+      NamedGuidanceIDs = new NFFNamedGuidanceIDList();
       //FReferenceSurfaces:= TNFFVerticalOffsetList.Create;
-      StreamInfoList = new TNFFStreamInfoList();
+      StreamInfoList = new NFFStreamInfoList();
 
       UnsupportedFileVersion = false;
 
-      GuidanceAlignments = new TNFFGuidableAlignmentEntityList();
+      GuidanceAlignments = new NFFGuidableAlignmentEntityList();
       //FGuidanceAlignments.OnItemAdded := OnGuidanceAlignmentAdded;
 
       //FXMLDataIslands:= TNFFXMLDataIslandList.Create;
@@ -86,17 +86,17 @@ namespace VSS.TRex.Designs.SVL
       //FAvoidanceZoneType:= nff_aztNone;
     }
 
-    public TNFFFile(TNFFFileType ANFFFileType) : this()
+    public NFFFile(NFFFileType ANFFFileType) : this()
     {
       NFFFileType = ANFFFileType;
     }
 
-    public TNFFFile(TNFFFileType ANFFFileType, TNFFFileVersion ANFFFileVersion) : this(ANFFFileType)
+    public NFFFile(NFFFileType ANFFFileType, NFFFileVersion ANFFFileVersion) : this(ANFFFileType)
     {
       FileVersion = ANFFFileVersion;
     }
 
-    public TNFFFile(TNFFFileType ANFFFileType, TNFFFileVersion ANFFFileVersion, int AGridSize) : this(ANFFFileType, ANFFFileVersion)
+    public NFFFile(NFFFileType ANFFFileType, NFFFileVersion ANFFFileVersion, int AGridSize) : this(ANFFFileType, ANFFFileVersion)
     {
       GridSize = AGridSize;
     }
@@ -116,12 +116,12 @@ namespace VSS.TRex.Designs.SVL
     //Procedure SaveHeaderToStream(Stream : TStream);
     public bool LoadHeaderFromStream(BinaryReader reader)
     {
-      var Header = new TNFFIndexFileHeader();
+      var Header = new NFFIndexFileHeader();
 
       var b = reader.ReadBytes(Marshal.SizeOf(Header));
 
       var handle = GCHandle.Alloc(b, GCHandleType.Pinned);
-      Header = (TNFFIndexFileHeader) Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(TNFFIndexFileHeader));
+      Header = (NFFIndexFileHeader) Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(NFFIndexFileHeader));
 
       if (NFFUtils.MagicNumberToANSIString(Header.MajicNumber) != NFFConsts.kNFFIndexFileMajicNumber)
         return false;
@@ -137,7 +137,7 @@ namespace VSS.TRex.Designs.SVL
       // numerous precision issues. Version 1.1 and later files do not use quantised
       // vertex coordinates, but use full double precision coordinates instead.
 
-      if (FileVersion == TNFFFileVersion.nffVersion1_0)
+      if (FileVersion == NFFFileVersion.nffVersion1_0)
       {
         UnsupportedFileVersion = true;
         return false;
@@ -158,24 +158,24 @@ namespace VSS.TRex.Designs.SVL
       GridOriginY = Header.GridOrigin.Y;
       GridSize = Header.GridSquareSize;
 
-      if (FileVersion > TNFFFileVersion.nffVersion1_2 && NFFFileType == TNFFFileType.nffSVLFile) // There is a flags byte following the header
+      if (FileVersion > NFFFileVersion.nffVersion1_2 && NFFFileType == NFFFileType.nffSVLFile) // There is a flags byte following the header
         Flags = reader.ReadByte();
 
-      if (FileVersion >= TNFFFileVersion.nffVersion1_6 && NFFFileType == TNFFFileType.nffSVLFile) // There is a double containing the exclusion radius to be used for underground services avoidance zones
+      if (FileVersion >= NFFFileVersion.nffVersion1_6 && NFFFileType == NFFFileType.nffSVLFile) // There is a double containing the exclusion radius to be used for underground services avoidance zones
       {
         byte AZType = reader.ReadByte(); //Stream.Read(AZType, SizeOf(FAvoidanceZoneType));
         //FAvoidanceZoneType= TNFFAvoidanceZoneType(AZType);
         double AvoidanceZoneUndergroundServicesRadiusStream = reader.ReadDouble(); //.Read(FAvoidanceZoneUndergroundServicesRadius, Sizeof(FAvoidanceZoneUndergroundServicesRadius));
       }
 
-      if (NFFFileType == TNFFFileType.nffSVDFile)
+      if (NFFFileType == NFFFileType.nffSVDFile)
       {
         throw new NotImplementedException("SVD files are not supported");
         //FSurfaces.LoadFromStream(Stream);
         //FReferenceSurfaces.LoadFromStream(Stream);
       }
 
-      if (NFFFileType == TNFFFileType.nffSVLFile || FileVersion >= TNFFFileVersion.nffVersion1_4)
+      if (NFFFileType == NFFFileType.nffSVLFile || FileVersion >= NFFFileVersion.nffVersion1_4)
       {
         // NOTE: In the header, it is assumed there is always an entry (if nothing more than
         // a zero count of guidance IDs). This is due to an unfortunate bug in SiteVision versions
@@ -197,8 +197,8 @@ namespace VSS.TRex.Designs.SVL
 
     // Protected interface used exclusively by TNFFFileBuilder
     //function AddDXFEntity(DXFEntity: TDXFEntity): Boolean;
-    //function AddGuidanceAlignment(NamedGuidanceID: TNFFNamedGuidanceID;
-    //                              GuidableAlignment: TNFFGuidableAlignmentEntity): Boolean;
+    //function AddGuidanceAlignment(NamedGuidanceID: NFFNamedGuidanceID;
+    //                              GuidableAlignment: NFFGuidableAlignmentEntity): Boolean;
     //  procedure SetGridOrigin(AOriginX, AOriginY : Double; RoundTo : Integer);
 
 private void ProcessGuidanceAlignments()
@@ -252,7 +252,7 @@ private void ProcessGuidanceAlignments()
     public bool GuidanceAlignmentsSupported()
     {
       // Guidance Alignments added at NFF version 1.2 at which point they were stored in the SVL file.
-      return FileVersion >= TNFFFileVersion.nffVersion1_2 && NFFFileType == TNFFFileType.nffSVLFile;
+      return FileVersion >= NFFFileVersion.nffVersion1_2 && NFFFileType == NFFFileType.nffSVLFile;
     }
 
     //  procedure OnGuidanceAlignmentAdded(Sender: TEnhancedObjectList; Item: TObject); virtual;
@@ -277,32 +277,32 @@ private void ProcessGuidanceAlignments()
     //    property AvoidanceZoneType : TNFFAvoidanceZoneType read FAvoidanceZoneType write FAvoidanceZoneType;
     //    Property AvoidanceZoneUndergroundServicesRadius : Double read FAvoidanceZoneUndergroundServicesRadius write FAvoidanceZoneUndergroundServicesRadius;
 
-    public static TNFFFile CreateFromFile(string AFileName)
+    public static NFFFile CreateFromFile(string AFileName)
     {
-      TNFFFile Result;
+      NFFFile Result;
 
-      // Create a TNFFFile instance based on the extension of <AFileName>
+      // Create a NFFFile instance based on the extension of <AFileName>
       var NFFFileExtension = Path.GetExtension(AFileName);
 
       if (string.Compare(NFFFileExtension, ".svd", StringComparison.InvariantCultureIgnoreCase) == 0)
       {
-        Result = new TNFFFile(TNFFFileType.nffSVDFile);
+        Result = new NFFFile(NFFFileType.nffSVDFile);
       }
       else
       if (string.Compare(NFFFileExtension, ".svl", StringComparison.InvariantCultureIgnoreCase) == 0)
       {
         //TODO - oR Lang - cEnhancement :
         //  Could do a bit extra here to detect whether the svl file is a Site Background
-        //   or Avoidance Zone design and instantiate TNFFFile descendants as appropriate.
+        //   or Avoidance Zone design and instantiate NFFFile descendants as appropriate.
         //  Doesn't matter at present as the descendants only differ in the way a new NFF
         //  file is populated from a DXF
 
-        Result = new TNFFFile(TNFFFileType.nffSVLFile);
+        Result = new NFFFile(NFFFileType.nffSVLFile);
       }
       else
       {
         // Invalid file name or unrecognised extension
-        throw new IOException("TNFFFile.CreateFromFile. Invalid file name or unrecognised extension");
+        throw new IOException("NFFFile.CreateFromFile. Invalid file name or unrecognised extension");
       }
 
       if (!Result.LoadFromFile(AFileName))
@@ -335,7 +335,7 @@ private void ProcessGuidanceAlignments()
           // Load the list of guidance alignments from the file
           for (int I = 0; I < NamedGuidanceIDs.Count; I++)
           {
-            GuidanceAlignments.Add(new TNFFGuidableAlignmentEntity());
+            GuidanceAlignments.Add(new NFFGuidableAlignmentEntity());
             string AlignmentStreamName = $"Alignment-{NamedGuidanceIDs[I].ID}.lwk";
             GuidanceAlignments.Last().LoadFromCompoundDoc(this, reader, AlignmentStreamName);
           }
@@ -387,7 +387,7 @@ private void ProcessGuidanceAlignments()
         reader.BaseStream.Position = reader.ReadInt32(); // Move to the start of the stream list
 
         // Read in the stream list
-        StreamInfoList.LoadFromStream(TNFFFileVersion.nffVersion1_2, reader);
+        StreamInfoList.LoadFromStream(NFFFileVersion.nffVersion1_2, reader);
 
         // Locate the Header stream
         var HeaderStreamInfo = StreamInfoList.Locate(NFFConsts.kNFFIndexStorageName);
@@ -410,8 +410,8 @@ private void ProcessGuidanceAlignments()
     }
 
   //  Function LoadGestaltFromFile(const Filename : TFilename) : Boolean; virtual;
- //   procedure DumpToText(TextFilename : TFileName;var ErrorStatus : TNFFErrorStatus;const DataOnly: Boolean = False);
-  //  Procedure SaveToFile(Filename : TFileName; var ErrorStatus : TNFFErrorStatus); virtual;
+ //   procedure DumpToText(TextFilename : TFileName;var ErrorStatus : NFFErrorStatus;const DataOnly: Boolean = False);
+  //  Procedure SaveToFile(Filename : TFileName; var ErrorStatus : NFFErrorStatus); virtual;
 
    // Procedure SaveSurfacesAsTTMFiles(Location : TFileName; GroupName : String; CreatedFiles : TStringList = Nil);
    // Procedure ConvertSurfaceToTTM(Grids : TNFFGridList; Surface : TNFFSurface; TTM : TTrimbleTINModel);
@@ -424,7 +424,7 @@ private void ProcessGuidanceAlignments()
 
    // function AddDXF(NewDXF: TDXFOutputFile ImportOption: TNFFImportDXFOption): Boolean; virtual;
 
-   // function AddGuidanceAlignment(NamedGuidanceID: TNFFNamedGuidanceID; GuidableAlignment: TNFFGuidableAlignmentEntity): Boolean;
+   // function AddGuidanceAlignment(NamedGuidanceID: NFFNamedGuidanceID; GuidableAlignment: NFFGuidableAlignmentEntity): Boolean;
    // procedure ProcessGuidanceAlignments;
 
 //Function CalcGridOrigin(MinX, MinY, MaxX, MaxY : Double) : Boolean; virtual;

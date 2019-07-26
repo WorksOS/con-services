@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VSS.TRex.Designs.SVL
+﻿namespace VSS.TRex.Designs.SVL
 {
   public static class NFFConsts
   {
@@ -29,7 +27,7 @@ namespace VSS.TRex.Designs.SVL
     public static byte kNFFGuidanceIDHasElevation = 0x4;
     public static byte kNFFGuidanceIDHasCrossSlope = 0x8;
 
-    public const int kTNFFMagicNumberArraySize = 8;
+    public const int kNFFMagicNumberArraySize = 8;
 
     public const string kNFFSurfaceFileMajicNumber = "TRMSRFCE";
     public const string kNFFLineworkFileMajicNumber = "TRMLINES";

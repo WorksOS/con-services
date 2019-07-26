@@ -7,26 +7,26 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFGuidableAlignmentOwnedEntitiesList : List<TNFFStationedLineworkEntity>
+  public class NFFGuidableAlignmentOwnedEntitiesList : List<NFFStationedLineworkEntity>
   {
-    public TNFFGuidableAlignmentOwnedEntitiesList()
+    public NFFGuidableAlignmentOwnedEntitiesList()
     {
     }
 
-    public TNFFGuidableAlignmentOwnedEntitiesList(TNFFGuidableAlignmentEntity owner) : this()
+    public NFFGuidableAlignmentOwnedEntitiesList(NFFGuidableAlignmentEntity owner) : this()
     {
       Owner = owner;
     }
 
-    public TNFFGuidableAlignmentEntity Owner;
+    public NFFGuidableAlignmentEntity Owner;
 
     //    procedure DumpToText(Stream: TTextDumpStream;    const OriginX, OriginY : Double);
-    //    Procedure SaveToNFFStream(Stream : TStream;     const OriginX, OriginY : Double;    FileVersion : TNFFFileVersion);
+    //    Procedure SaveToNFFStream(Stream : TStream;     const OriginX, OriginY : Double;    FileVersion : NFFFileVersion);
 
     public void LoadFromNFFStream(BinaryReader reader,
       double OriginX, double OriginY,
       bool HasGuidanceID,
-      TNFFFileVersion FileVersion)
+      NFFFileVersion FileVersion)
     {
       throw new NotImplementedException();
     }

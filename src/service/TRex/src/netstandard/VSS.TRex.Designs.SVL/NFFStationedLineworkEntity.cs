@@ -7,7 +7,7 @@ using VSS.TRex.Common.Utilities;
 namespace VSS.TRex.Designs.SVL
 {
   /*---------------------------------------------------------------------------
-Name: TNFFStationedLineworkEntity
+Name: NFFStationedLineworkEntity
 
 Comments: Abstract base class for linework entities that MAY have stationing
 information associated with them.
@@ -19,11 +19,11 @@ to be streamed to/from file.
 NOTE: Stationed linework entities will only stream their<StartStation> value
 to/from file if the kNFFElementHeaderHasStationing flag is set in their<headeerFlags> byte.
 ---------------------------------------------------------------------------*/
-  public abstract class TNFFStationedLineworkEntity : TNFFGuidableLineworkEntity
+  public abstract class NFFStationedLineworkEntity : NFFGuidableLineworkEntity
   {
     private double _startStation;
 
-    public TNFFStationedLineworkEntity()
+    public NFFStationedLineworkEntity()
     {
       _startStation = Consts.NullDouble;
     }
@@ -70,11 +70,11 @@ const Value: Double); Virtual;
       */
 
     // public
-    public override void Assign(TNFFLineworkEntity Entity)
+    public override void Assign(NFFLineworkEntity Entity)
     {
       base.Assign(Entity);
 
-      StartStation = (Entity as TNFFStationedLineworkEntity).StartStation;
+      StartStation = (Entity as NFFStationedLineworkEntity).StartStation;
     }
 
     public double StartStation
@@ -109,7 +109,7 @@ const Value: Double); Virtual;
       Stn = Consts.NullDouble;
       Ofs = Consts.NullDouble;
 
-      Debug.Assert(false, "TNFFStationedLineworkEntity.ComputeStnOfs has null implementation");
+      Debug.Assert(false, "NFFStationedLineworkEntity.ComputeStnOfs has null implementation");
     }
 
     public virtual void ComputeXY(double Stn, double Ofs, out double X, out double Y)
@@ -117,7 +117,7 @@ const Value: Double); Virtual;
       X = Consts.NullDouble;
       Y = Consts.NullDouble;
 
-      Debug.Assert(false, "TNFFStationedLineworkEntity.ComputeXY has null implementation");
+      Debug.Assert(false, "NFFStationedLineworkEntity.ComputeXY has null implementation");
     }
 
     // ResetStartStation sets a new start station for this element, including
@@ -151,15 +151,15 @@ const Value: Double); Virtual;
     // CreateVertexAtStation creates a new vertex at the requested station. The station value must
     // lie between the station values of two surrounding vertices. The other values for the vertex are
     // calculated from those of the surrounding vertices.
-    public virtual TNFFLineworkPolyLineVertexEntity CreateVertexAtStation(double Chainage)
+    public virtual NFFLineworkPolyLineVertexEntity CreateVertexAtStation(double Chainage)
     {
-      Debug.Assert(false, "TNFFStationedLineworkEntity.CreateVertexAtStation should be considered abstract");
+      Debug.Assert(false, "NFFStationedLineworkEntity.CreateVertexAtStation should be considered abstract");
       return null;
     }
 
-    public virtual TNFFLineworkPolyLineVertexEntity CreateNewVertex()
+    public virtual NFFLineworkPolyLineVertexEntity CreateNewVertex()
     {
-      Debug.Assert(false, "TNFFStationedLineworkEntity.CreateNewVertex should be considered abstract");
+      Debug.Assert(false, "NFFStationedLineworkEntity.CreateNewVertex should be considered abstract");
       return null;
     }
   }

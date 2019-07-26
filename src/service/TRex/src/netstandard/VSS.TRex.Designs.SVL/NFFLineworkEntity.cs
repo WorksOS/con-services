@@ -6,9 +6,9 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public abstract class TNFFLineworkEntity
+  public abstract class NFFLineworkEntity
   {
-    public TNFFLineWorkElementType ElementType { get; set; }
+    public NFFLineWorkElementType ElementType { get; set; }
 
     public int ElementIndex { get; set; }
     public int Colour { get; set; }
@@ -68,12 +68,12 @@ namespace VSS.TRex.Designs.SVL
 
     //Procedure SaveToNFFStream(Stream : TStream;
     //const OriginX, OriginY : Double;
-    //FileVersion : TNFFFileVersion); Overload; Virtual; Abstract;
+    //FileVersion : NFFFileVersion); Overload; Virtual; Abstract;
 
     public virtual void LoadFromNFFStream(BinaryReader reader,
       double OriginX, double OriginY,
       bool HasGuidanceID,
-      TNFFFileVersion FileVersion)
+      NFFFileVersion FileVersion)
     {
     }
 
@@ -87,7 +87,7 @@ namespace VSS.TRex.Designs.SVL
 
     public virtual XYZ GetEndTransitPoint() => GetEndPoint();
 
-    public TNFFLineworkEntity()
+    public NFFLineworkEntity()
     {
       Colour = 1;
       _headerFlags = 0;
@@ -129,7 +129,7 @@ namespace VSS.TRex.Designs.SVL
    // {
    // }
 
-    public virtual void Assign(TNFFLineworkEntity source)
+    public virtual void Assign(NFFLineworkEntity source)
     {
       Colour = source.Colour;
       HeaderFlags = source.HeaderFlags;
@@ -140,7 +140,7 @@ namespace VSS.TRex.Designs.SVL
     /*
     public virtual void SaveToStream(Stream stream)
     {
-      WriteByteToStream(stream, ElementTypeInFile(TNFFLastRealFileVersion));
+      WriteByteToStream(stream, ElementTypeInFile(NFFLastRealFileVersion));
       WriteByteToStream(stream, FHeaderFlags);
       WriteByteToStream(stream, FEntityFlags);
       WriteIntegerToStream(stream, FColour);
@@ -197,9 +197,9 @@ namespace VSS.TRex.Designs.SVL
         _headerFlags &= (byte)~NFFConsts.kNFFElementHeaderHasStationing;
     }
 
-    public virtual byte ElementFlagsInFile(TNFFFileVersion FileVersion)
+    public virtual byte ElementFlagsInFile(NFFFileVersion FileVersion)
     {
-      Debug.Assert(FileVersion >= TNFFFileVersion.nffVersion1_5,
+      Debug.Assert(FileVersion >= NFFFileVersion.nffVersion1_5,
         "Separate element flags byte not valid for pre v1.5 NFF files");
 
       return 0;
@@ -217,7 +217,7 @@ namespace VSS.TRex.Designs.SVL
       return 0;
     }
 
-    public virtual byte ElementTypeInFile(TNFFFileVersion FileVersion)
+    public virtual byte ElementTypeInFile(NFFFileVersion FileVersion)
     {
       // The element type in the file has two parts: The actual ordinal element type
       // value is the low order nibble, and flags in the high order nibble
@@ -253,21 +253,21 @@ namespace VSS.TRex.Designs.SVL
 
     public virtual double GetStartCrossSlope() => Consts.NullDouble;
 
-    public virtual TNFFLineworkPolyLineVertexEntity GetVertex(int VertexNum)
+    public virtual NFFLineworkPolyLineVertexEntity GetVertex(int VertexNum)
     {
-      Debug.Assert(false, "TNFFLineworkEntity.GetVertex not implemented for this entity type");
+      Debug.Assert(false, "NFFLineworkEntity.GetVertex not implemented for this entity type");
       return null;
       // Base class does nothing
     }
 
     public virtual bool HasInternalStructure() => false;
 
-    public virtual void InsertVertex(TNFFLineworkPolyLineVertexEntity Vertex, int InsertAt)
+    public virtual void InsertVertex(NFFLineworkPolyLineVertexEntity Vertex, int InsertAt)
     {
       Vertex.Parent = this;
     }
 
-//    public virtual bool IsSameAs(TNFFLineworkEntity Other)
+//    public virtual bool IsSameAs(NFFLineworkEntity Other)
 //    {
 //      Debug.Assert(false, $"IsSameAs() is not implemented for {this.GetType().Name}");
 //      return false;
@@ -301,7 +301,7 @@ namespace VSS.TRex.Designs.SVL
 
     public virtual void Reverse(int StartIdx, int EndIdx)
     {
-      Debug.Assert(false, "TNFFLineworkEntity.Reverse(const StartIdx, EndIdx: Integer) must never be called");
+      Debug.Assert(false, "NFFLineworkEntity.Reverse(const StartIdx, EndIdx: Integer) must never be called");
     }
 
     public virtual void Reverse()
@@ -342,7 +342,7 @@ namespace VSS.TRex.Designs.SVL
       double Station,
       int Index)
     {
-      Debug.Assert(false, "No UpdateHeight implementation in TNFFLineWorkEntity");
+      Debug.Assert(false, "No UpdateHeight implementation in NFFLineWorkEntity");
       return false;
     }
 
@@ -350,7 +350,7 @@ namespace VSS.TRex.Designs.SVL
 
     /*
 public void WriteEntityTypeAndFlagsToNFFStream(Stream: TStream;
-FileVersion: TNFFFileVersion);
+FileVersion: NFFFileVersion);
 begin
   // Write the entity type to the stream
   WriteByteToStream(Stream, ElementTypeInFile(FileVersion));

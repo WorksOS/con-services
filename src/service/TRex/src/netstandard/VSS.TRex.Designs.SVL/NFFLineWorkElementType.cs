@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.Designs.SVL
 {
-  public enum TNFFLineWorkElementType
+  public enum NFFLineWorkElementType
   {
     kNFFLineWorkLineElement,
     kNFFLineWorkPolyLineElement,

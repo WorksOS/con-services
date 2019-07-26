@@ -5,11 +5,11 @@ using VSS.TRex.Common;
 
 namespace VSS.TRex.Designs.SVL.Comparers
 {
-  public class NamedGuidanceIDComparer : IComparer<TNFFNamedGuidanceID>
+  public class NamedGuidanceIDComparer : IComparer<NFFNamedGuidanceID>
   {
-    public int Compare(TNFFNamedGuidanceID x, TNFFNamedGuidanceID y)
+    public int Compare(NFFNamedGuidanceID x, NFFNamedGuidanceID y)
     {
-      double CalcNamedGuidanceIDCompareOffset(TNFFNamedGuidanceID NamedGuidanceID)
+      double CalcNamedGuidanceIDCompareOffset(NFFNamedGuidanceID NamedGuidanceID)
       {
         const double BatterAlignmentOffset  = 1E10;
         const double DitchAlignmentOffset = 1E9;

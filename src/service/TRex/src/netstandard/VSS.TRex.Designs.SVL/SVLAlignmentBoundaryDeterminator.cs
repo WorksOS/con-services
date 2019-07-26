@@ -29,7 +29,7 @@ namespace VSS.TRex.Designs.SVL
     private double DesignFilterBoundaryPolylineCompressionTolerance = 
       DIContext.Obtain<IConfigurationStore>().GetValueDouble("DESIGN_FILTER_BOUNDARY_POLYLINE_COMPRESSION_TOERANCE", DEFAULT_DESIGN_FILTER_BOUNDARY_POLYLINE_COMPRESSION_TOERANCE);
 
-    public TNFFGuidableAlignmentEntity Alignment { get; set; }
+    public NFFGuidableAlignmentEntity Alignment { get; set; }
     public double StartStation { get; set; }
     public double EndStation { get; set; }
     public double OffsetLeft { get; set; }
@@ -39,7 +39,7 @@ namespace VSS.TRex.Designs.SVL
     {
     }
 
-    public SVLAlignmentBoundaryDeterminator(TNFFGuidableAlignmentEntity alignment,
+    public SVLAlignmentBoundaryDeterminator(NFFGuidableAlignmentEntity alignment,
       double startStation, double endStation, double offsetLeft, double offsetRight)
     {
       if (alignment == null)
@@ -115,7 +115,7 @@ namespace VSS.TRex.Designs.SVL
       double PtBrng1 = 0;
       double PtBrng2 = 0;
 
-      Alignment.LocateEntityAtStation(currentPos, out TNFFStationedLineworkEntity Element);
+      Alignment.LocateEntityAtStation(currentPos, out NFFStationedLineworkEntity Element);
 
       if (Element == null)
         return;
@@ -137,7 +137,7 @@ namespace VSS.TRex.Designs.SVL
       if (!force && fence.NumVertices > 1 && SubtendedAngle(PtBrng1, PtBrng2) > Math.PI / 4)
       {
         // Check arc radii 
-        if (Element is TNFFLineworkArcEntity element)
+        if (Element is NffLineworkArcEntity element)
           if (element.Radius() < (OffsetLeft + 0.001))
             fence.Points.RemoveAt(fence.NumVertices - 1);
           else if (element.Radius() > (OffsetRight - 0.001))

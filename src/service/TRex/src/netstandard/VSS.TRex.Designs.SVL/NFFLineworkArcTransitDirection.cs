@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.Designs.SVL
 {
-  public enum TNFFLineworkArcTransitDirection
+  public enum NFFLineworkArcTransitDirection
   {
     atdUnknown,
     atdStartToEnd,

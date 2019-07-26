@@ -3,7 +3,7 @@ using VSS.TRex.Common;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFLineworkSmoothedPolyLineVertexEntity : TNFFLineworkPolyLineVertexEntity
+  public class NffLineworkSmoothedPolyLineVertexEntity : NFFLineworkPolyLineVertexEntity
   {
     public double TrailingAzimuth;
 
@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.SVL
     public double Alpha;
     public double Beta;
 
-    public TNFFLineworkSmoothedPolyLineVertexEntity()
+    public NffLineworkSmoothedPolyLineVertexEntity()
     {
       //fVertexRedundant = False;
 
@@ -22,26 +22,26 @@ namespace VSS.TRex.Designs.SVL
 
     //  private fVertexRedundant: Boolean;
 
-    public TNFFLineworkSmoothedPolyLineVertexEntity(TNFFLineworkEntity AParent,
+    public NffLineworkSmoothedPolyLineVertexEntity(NFFLineworkEntity AParent,
     double AX, double AY, double AZ, double AChainage, double ATrailingAzimuth) : base(AParent, AX, AY, AZ, AChainage)
     {
       TrailingAzimuth = ATrailingAzimuth;
     }
 
-    public TNFFLineworkSmoothedPolyLineVertexEntity Clone() 
+    public NffLineworkSmoothedPolyLineVertexEntity Clone() 
     {
-      var Result = new TNFFLineworkSmoothedPolyLineVertexEntity();
+      var Result = new NffLineworkSmoothedPolyLineVertexEntity();
       Result.Assign(this);
       return Result;
     }
 
-    public override void Assign(TNFFLineworkPolyLineVertexEntity VertexEntity)
+    public override void Assign(NFFLineworkPolyLineVertexEntity VertexEntity)
     {
       base.Assign(VertexEntity);
 
-      TrailingAzimuth = (VertexEntity as TNFFLineworkSmoothedPolyLineVertexEntity).TrailingAzimuth;
-      Alpha = (VertexEntity as TNFFLineworkSmoothedPolyLineVertexEntity).Alpha;
-      Beta = (VertexEntity as TNFFLineworkSmoothedPolyLineVertexEntity).Beta;
+      TrailingAzimuth = (VertexEntity as NffLineworkSmoothedPolyLineVertexEntity).TrailingAzimuth;
+      Alpha = (VertexEntity as NffLineworkSmoothedPolyLineVertexEntity).Alpha;
+      Beta = (VertexEntity as NffLineworkSmoothedPolyLineVertexEntity).Beta;
     }
 
     // SaveToNFFStream/LoadFromNFFStream implement GENERIC save/load functionality
@@ -62,6 +62,6 @@ namespace VSS.TRex.Designs.SVL
   // SwapCoefficients swaps the sens of direction through this vertex
     //  procedure SwapCoefficients;
 
-    // Function IsSameAs(const Other : TNFFLineworkSmoothedPolyLineVertexEntity) : Boolean;
+    // Function IsSameAs(const Other : NffLineworkSmoothedPolyLineVertexEntity) : Boolean;
   }
 }

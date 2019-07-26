@@ -21,7 +21,7 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Represents the master guidance alignment selected from the NFFFile.
     /// </summary>
-    private TNFFGuidableAlignmentEntity Data;
+    private NFFGuidableAlignmentEntity Data;
 
     private BoundingWorldExtent3D BoundingBox = BoundingWorldExtent3D.Inverted();
 
@@ -33,7 +33,7 @@ namespace VSS.TRex.Designs
     {
       _cellSize = cellSize;
 
-      Data = new TNFFGuidableAlignmentEntity();
+      Data = new NFFGuidableAlignmentEntity();
     }
 
     private struct Corner
@@ -74,7 +74,7 @@ namespace VSS.TRex.Designs
         return false;
       }
 
-      TNFFStationedLineworkEntity Element;
+      NFFStationedLineworkEntity Element;
       Patch.Clear();
 
       // Check the corners of the sub grid. If all are out of the offset range then assume
@@ -202,7 +202,7 @@ namespace VSS.TRex.Designs
     public override DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true)
     {
       DesignLoadResult Result;
-      var NFFFile = TNFFFile.CreateFromFile(fileName);
+      var NFFFile = SVL.NFFFile.CreateFromFile(fileName);
 
       try
       {

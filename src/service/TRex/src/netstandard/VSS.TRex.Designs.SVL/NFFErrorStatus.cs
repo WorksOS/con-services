@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.Designs.SVL
 {
-  public enum TNFFErrorStatus
+  public enum NFFErrorStatus
   {
     nffe_OK,
     nffe_TIN_Too_Dense,

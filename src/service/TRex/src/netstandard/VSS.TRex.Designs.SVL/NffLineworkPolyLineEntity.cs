@@ -10,14 +10,14 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFLineworkPolyLineEntity : TNFFStationedLineworkEntity
+  public class NffLineworkPolyLineEntity : NFFStationedLineworkEntity
   { 
-    public List<TNFFLineworkPolyLineVertexEntity> Vertices; 
+    public List<NFFLineworkPolyLineVertexEntity> Vertices; 
 
-    public TNFFLineworkPolyLineEntity()
+    public NffLineworkPolyLineEntity()
     {
-      ElementType = TNFFLineWorkElementType.kNFFLineWorkPolyLineElement;
-      Vertices = new List<TNFFLineworkPolyLineVertexEntity>();
+      ElementType = NFFLineWorkElementType.kNFFLineWorkPolyLineElement;
+      Vertices = new List<NFFLineworkPolyLineVertexEntity>();
     }
 
     protected override double GetStartStation()
@@ -49,7 +49,7 @@ namespace VSS.TRex.Designs.SVL
     protected override double GetVertexElevation(int VertexNum)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in TNFFLineworkPolyLineEntity.GetVertexElevation");
+        "VertexNum out of range in NffLineworkPolyLineEntity.GetVertexElevation");
 
       return Vertices[VertexNum].Z;
     }
@@ -57,7 +57,7 @@ namespace VSS.TRex.Designs.SVL
     protected override void SetVertexElevation(int VertexNum, double Value)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in TNFFLineworkPolyLineEntity.SetVertexElevation");
+        "VertexNum out of range in NffLineworkPolyLineEntity.SetVertexElevation");
 
       Vertices[VertexNum].Z = Value;
     }
@@ -65,7 +65,7 @@ namespace VSS.TRex.Designs.SVL
     protected override double GetVertexStation(int VertexNum)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in TNFFLineworkPolyLineEntity.GetVertexStation");
+        "VertexNum out of range in NffLineworkPolyLineEntity.GetVertexStation");
 
       return Vertices[VertexNum].Chainage;
     }
@@ -73,7 +73,7 @@ namespace VSS.TRex.Designs.SVL
     protected override void SetVertexStation(int VertexNum, double Value)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in TNFFLineworkPolyLineEntity.SetVertexStation");
+        "VertexNum out of range in NffLineworkPolyLineEntity.SetVertexStation");
 
       Vertices[VertexNum].Chainage = Value;
     }
@@ -89,14 +89,14 @@ namespace VSS.TRex.Designs.SVL
     */
 
     /*
-    public override void Assign(TNFFLineworkEntity Entity)
+    public override void Assign(NFFLineworkEntity Entity)
     {
       base.Assign(Entity);
 
       Vertices.Clear();
 
-      for (int I = 0; I < (Entity as TNFFLineworkPolyLineEntity).Vertices.Count; I++)
-        Vertices.Add((Entity as TNFFLineworkPolyLineEntity).Vertices[I].Clone());
+      for (int I = 0; I < (Entity as NffLineworkPolyLineEntity).Vertices.Count; I++)
+        Vertices.Add((Entity as NffLineworkPolyLineEntity).Vertices[I].Clone());
 
       for (int I = 0; I < Vertices.Count; I++)
         Vertices[I].Parent = this;
@@ -106,12 +106,12 @@ namespace VSS.TRex.Designs.SVL
     //    procedure DumpToText(Stream: TTextDumpStream; const OriginX, OriginY : Double); override;
     //    Procedure SaveToNFFStream(Stream : TStream;
     //    const OriginX, OriginY : Double;
-    //                              FileVersion : TNFFFileVersion); Override;
+    //                              FileVersion : NFFFileVersion); Override;
 
     public override void LoadFromNFFStream(BinaryReader reader,
       double OriginX, double OriginY,
       bool HasGuidanceID,
-      TNFFFileVersion FileVersion)
+      NFFFileVersion FileVersion)
     {
       // There is no need to read the entity type as this will have already been
       // read in order to determine we should be reading this type of entity!
@@ -157,7 +157,7 @@ namespace VSS.TRex.Designs.SVL
         else
           Chainage = Consts.NullDouble;
 
-        Vertices.Add(new TNFFLineworkPolyLineVertexEntity(this, X1, Y1, Z1, Chainage));
+        Vertices.Add(new NFFLineworkPolyLineVertexEntity(this, X1, Y1, Z1, Chainage));
         Vertices.Last().LeftCrossSlope = FLeftCrossSlope;
         Vertices.Last().RightCrossSlope = FRightCrossSlope;
         Vertices.Last().Parent = this;
@@ -323,7 +323,7 @@ namespace VSS.TRex.Designs.SVL
     {
       if (!Range.InRange(Index, 0, Vertices.Count - 1))
       {
-        Debug.Assert(false, "Out of range vertex index in TNFFLineworkPolyLineEntity.ElementLength");
+        Debug.Assert(false, "Out of range vertex index in NffLineworkPolyLineEntity.ElementLength");
         return 0;
       }
 
@@ -350,26 +350,26 @@ namespace VSS.TRex.Designs.SVL
       return false;
     }
 
-    //    Function IsSameAs(const Other : TNFFLineworkEntity) : Boolean; Override;
+    //    Function IsSameAs(const Other : NFFLineworkEntity) : Boolean; Override;
 
     public override int VertexCount() => Vertices.Count;
 
-    public override TNFFLineworkPolyLineVertexEntity GetVertex(int VertexNum)
+    public override NFFLineworkPolyLineVertexEntity GetVertex(int VertexNum)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1), "Vertex index out of range"); 
 
       return Vertices[VertexNum];
     }
 
-//Procedure InsertVertex(Vertex : TNFFLineworkPolyLineVertexEntity;
+//Procedure InsertVertex(Vertex : NFFLineworkPolyLineVertexEntity;
 //    InsertAt : Integer); Override;
 
     // CreateVertexAtStation creates a new vertex at the requested station. The station value must
     // lie between the station values of two surrounding vertices. The other values for the vertex are
     // calculated from those of the surrounding vertices.
-//    Function CreateVertexAtStation(const Chainage : Double) : TNFFLineworkPolyLineVertexEntity; Override;
+//    Function CreateVertexAtStation(const Chainage : Double) : NFFLineworkPolyLineVertexEntity; Override;
 //    function InsertVertexAtStation(const Chainage : Double): Integer;
 
-  //  Function CreateNewVertex : TNFFLineworkPolyLineVertexEntity; Override;
+  //  Function CreateNewVertex : NFFLineworkPolyLineVertexEntity; Override;
   }
 }

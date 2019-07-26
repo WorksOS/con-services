@@ -19,14 +19,14 @@ namespace VSS.TRex.Designs.SVL.Tests
     }
 
     [Theory]
-    [InlineData("CERA.SVL", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
-    [InlineData("Large Sites Road - Trimble Road.svl", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
-    [InlineData("Topcon Road - Topcon Phil.svl", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
-    [InlineData("Milling - Milling.svl", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
-    public void DetermineBoundary(string fileName, TNFFFileType fileType, TNFFFileVersion fileVersion)
+    [InlineData("CERA.SVL", NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6)]
+    [InlineData("Large Sites Road - Trimble Road.svl", NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6)]
+    [InlineData("Topcon Road - Topcon Phil.svl", NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6)]
+    [InlineData("Milling - Milling.svl", NFFFileType.nffSVLFile, NFFFileVersion.nffVersion1_6)]
+    public void DetermineBoundary(string fileName, NFFFileType fileType, NFFFileVersion fileVersion)
     {
-      var f = TNFFFile.CreateFromFile(Path.Combine("TestData", "Common", fileName));
-      f.ErrorStatus.Should().Be(TNFFErrorStatus.nffe_OK);
+      var f = NFFFile.CreateFromFile(Path.Combine("TestData", "Common", fileName));
+      f.ErrorStatus.Should().Be(NFFErrorStatus.nffe_OK);
 
       f.NFFFileType.Should().Be(fileType);
       f.FileVersion.Should().Be(fileVersion);

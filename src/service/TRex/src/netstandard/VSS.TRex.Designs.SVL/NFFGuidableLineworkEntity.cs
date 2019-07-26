@@ -1,20 +1,19 @@
 ﻿using System.Diagnostics;
-using System.IO;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFGuidableLineworkEntity : TNFFLineworkEntity
+  public class NFFGuidableLineworkEntity : NFFLineworkEntity
   {
     protected int _guidanceID;
     
-    public TNFFGuidableLineworkEntity()
+    public NFFGuidableLineworkEntity()
     {
       _guidanceID = -1;
     }
 
     protected override void SetHeaderFlags(byte Value)
     {
-      // TNFFGuidableLineworkEntity class MAY have GuidanceID but cannot be Stationed
+      // NFFGuidableLineworkEntity class MAY have GuidanceID but cannot be Stationed
       Debug.Assert((Value & NFFConsts.kNFFElementHeaderHasStationing) == 0x0);
 
       _headerFlags = Value;
@@ -22,11 +21,11 @@ namespace VSS.TRex.Designs.SVL
 
     protected virtual void SetGuidanceID(int Value) => _guidanceID = Value;
 
-    public override void Assign(TNFFLineworkEntity Entity)
+    public override void Assign(NFFLineworkEntity Entity)
     {
       base.Assign(Entity);
 
-      _guidanceID = (Entity as TNFFGuidableLineworkEntity).GuidanceID;
+      _guidanceID = (Entity as NFFGuidableLineworkEntity).GuidanceID;
     }
 
     public int GuidanceID
@@ -35,14 +34,14 @@ namespace VSS.TRex.Designs.SVL
       set => SetGuidanceID(value);
     }
 
-    public override byte ElementTypeInFile(TNFFFileVersion FileVersion)
+    public override byte ElementTypeInFile(NFFFileVersion FileVersion)
     {
       // The element type in the file has two parts: The actual ordinal element type
       // value is the low order nibble, and flags in the high order nibble
 
       var Result = base.ElementTypeInFile(FileVersion);
 
-      if (FileVersion < TNFFFileVersion.nffVersion1_5)
+      if (FileVersion < NFFFileVersion.nffVersion1_5)
       {
         if (GuidanceID != -1)
           Result |= NFFConsts.kNFFHasGuidanceID;
@@ -57,14 +56,14 @@ namespace VSS.TRex.Designs.SVL
       return Result;
     }
 
-    public override byte ElementFlagsInFile(TNFFFileVersion FileVersion)
+    public override byte ElementFlagsInFile(NFFFileVersion FileVersion)
     {
       byte Result = 0;
 
-      Debug.Assert(FileVersion >= TNFFFileVersion.nffVersion1_5,
+      Debug.Assert(FileVersion >= NFFFileVersion.nffVersion1_5,
         "Separate element flags byte not valid for pre v1.5 NFF files");
 
-      if (FileVersion >= TNFFFileVersion.nffVersion1_5)
+      if (FileVersion >= NFFFileVersion.nffVersion1_5)
       {
         if (_guidanceID != -1)
           Result |= NFFConsts.kNFFElementHeaderHasGuidanceID;

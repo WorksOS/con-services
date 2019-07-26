@@ -3,13 +3,13 @@
 namespace VSS.TRex.Designs.SVL
 {
   [StructLayout(LayoutKind.Sequential, Pack = 1)]
-  public struct TNFFLineworkGridFileHeader
+  public struct NFFLineworkGridFileHeader
   {
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = NFFConsts.kTNFFMagicNumberArraySize)]
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = NFFConsts.kNFFMagicNumberArraySize)]
     public byte[] MajicNumber;
 
     public byte MajorVer;
     public byte MinorVer;
-    public TNFFAbsolute2dIntegerCoordinate Origin;
+    public NFFAbsolute2dIntegerCoordinate Origin;
   }
 }

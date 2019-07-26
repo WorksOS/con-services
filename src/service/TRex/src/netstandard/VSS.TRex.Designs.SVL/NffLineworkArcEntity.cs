@@ -8,7 +8,7 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFLineworkArcEntity : TNFFStationedLineworkEntity
+  public class NffLineworkArcEntity : NFFStationedLineworkEntity
   {
     public double X1, Y1, Z1;
     public double X2, Y2, Z2;
@@ -21,7 +21,7 @@ namespace VSS.TRex.Designs.SVL
     public double EndLeftCrossSlope;
     public double EndRightCrossSlope;
 
-    public TNFFLineworkArcTransitDirection TransitDirection;
+    public NFFLineworkArcTransitDirection TransitDirection;
 
     // private
     // FTransitDirection is a property used to indicate a concrete direction of
@@ -34,7 +34,7 @@ namespace VSS.TRex.Designs.SVL
     // adjusted order of the start and end point geometry (ie: it honours the
     // order of the start and end points of the originating arc used to create this
     // arc entity)
-    private TNFFLineworkArcTransitDirection _transitDirection;
+    private NFFLineworkArcTransitDirection _transitDirection;
 
     // Hash value identifying the original end points of the arc.
     // Used in IsSameAs
@@ -69,7 +69,7 @@ namespace VSS.TRex.Designs.SVL
    if (VertexNum == 1)
      return GetEndTransitPoint().Z;
 
-   Debug.Assert(false, "Invalid vertex index in TNFFLineworkArcEntity.GetVertexElevation");
+   Debug.Assert(false, "Invalid vertex index in NffLineworkArcEntity.GetVertexElevation");
      return Consts.NullDouble;
  }
 
@@ -91,7 +91,7 @@ namespace VSS.TRex.Designs.SVL
    }
    else
    {
-     Debug.Assert(false, "Invalid vertex index in TNFFLineworkArcEntity.SetVertexElevation");
+     Debug.Assert(false, "Invalid vertex index in NffLineworkArcEntity.SetVertexElevation");
    }
  }
 
@@ -102,7 +102,7 @@ namespace VSS.TRex.Designs.SVL
    if (VertexNum == 1)
      return GetEndStation();
 
-   Debug.Assert(false, "Invalid vertex index in TNFFLineworkArcEntity.GetVertexStation");
+   Debug.Assert(false, "Invalid vertex index in NffLineworkArcEntity.GetVertexStation");
    return Consts.NullDouble;
  }
 
@@ -114,7 +114,7 @@ namespace VSS.TRex.Designs.SVL
       { } // Ignore it - end stationing controlled by element geometry
       else
       {
-        Debug.Assert(false, "Invalid vertex index in TNFFLineworkArcEntity.setVertexStation");
+        Debug.Assert(false, "Invalid vertex index in NffLineworkArcEntity.setVertexStation");
       }
  }
 
@@ -128,9 +128,9 @@ namespace VSS.TRex.Designs.SVL
        const Value: Double); Override;
    */
 
-    public TNFFLineworkArcEntity()
+    public NffLineworkArcEntity()
     {
-      ElementType = TNFFLineWorkElementType.kNFFLineWorkArcElement;
+      ElementType = NFFLineWorkElementType.kNFFLineWorkArcElement;
 
       StartLeftCrossSlope = Consts.NullDouble;
       StartRightCrossSlope = Consts.NullDouble;
@@ -143,12 +143,12 @@ namespace VSS.TRex.Designs.SVL
       // orientation
       WasClockWise = true;
 
-      TransitDirection = TNFFLineworkArcTransitDirection.atdStartToEnd;
+      TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
 
       OriginalEndPointsHash = Consts.NullDouble;
     }
 
-    public TNFFLineworkArcEntity(int AColour,
+    public NffLineworkArcEntity(int AColour,
       double AX1, double AY1, double AZ1, double AX2, double AY2, double AZ2,
       double ACX, double ACY, double ACZ,
       bool AClockwise,
@@ -177,18 +177,18 @@ namespace VSS.TRex.Designs.SVL
       SingleArcEdgePoint= ASingleArcEdgePoint;
 
       if (AClockwise)
-      TransitDirection = TNFFLineworkArcTransitDirection.atdStartToEnd;
+      TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
       else
-      TransitDirection = TNFFLineworkArcTransitDirection.atdEndToStart;
+      TransitDirection = NFFLineworkArcTransitDirection.atdEndToStart;
 
       OriginalEndPointsHash = X1 + (Y1 * 2) + (X2 * 4) + (Y2 * 8) + (CX * 16) + (CY * 32);
     }
 
-    public override void Assign(TNFFLineworkEntity Entity)
+    public override void Assign(NFFLineworkEntity Entity)
     {
       base.Assign(Entity);
 
-      var ArcEty = Entity as TNFFLineworkArcEntity;
+      var ArcEty = Entity as NffLineworkArcEntity;
 
       X1= ArcEty.X1;
       Y1= ArcEty.Y1;
@@ -223,10 +223,10 @@ namespace VSS.TRex.Designs.SVL
       WasClockWise = reader.ReadBoolean();
 
       byte ReadByte = reader.ReadByte();
-      if (Range.InRange(ReadByte, (byte)TNFFLineworkArcTransitDirection.atdUnknown, (byte)TNFFLineworkArcTransitDirection.atdEndToStart))
-      TransitDirection = (TNFFLineworkArcTransitDirection)ReadByte;
+      if (Range.InRange(ReadByte, (byte)NFFLineworkArcTransitDirection.atdUnknown, (byte)NFFLineworkArcTransitDirection.atdEndToStart))
+      TransitDirection = (NFFLineworkArcTransitDirection)ReadByte;
       else
-      TransitDirection = TNFFLineworkArcTransitDirection.atdUnknown;
+      TransitDirection = NFFLineworkArcTransitDirection.atdUnknown;
 
       OriginalEndPointsHash = reader.ReadDouble();
 
@@ -240,12 +240,12 @@ namespace VSS.TRex.Designs.SVL
     // procedure DumpToText(Stream: TTextDumpStream; const OriginX, OriginY : Double); override;
     //Procedure SaveToNFFStream(Stream : TStream;
     //const OriginX, OriginY : Double;
-    //                          FileVersion : TNFFFileVersion); Override;
+    //                          FileVersion : NFFFileVersion); Override;
 
     public override void LoadFromNFFStream(BinaryReader reader,
       double OriginX, double OriginY,
       bool HasGuidanceID,
-      TNFFFileVersion FileVersion)
+      NFFFileVersion FileVersion)
     {
       // There is no need to read the entity type as this will have already been
       // read in order to determine we should be reading this type of entity!
@@ -318,12 +318,12 @@ namespace VSS.TRex.Designs.SVL
           // Arc was initially defined CCW
           WasClockWise = false;
           StartStation = TempEndStation;
-          TransitDirection = TNFFLineworkArcTransitDirection.atdEndToStart;
+          TransitDirection = NFFLineworkArcTransitDirection.atdEndToStart;
         }
         else
         {
           WasClockWise = true;
-          TransitDirection = TNFFLineworkArcTransitDirection.atdStartToEnd;
+          TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
         }
       }
 
@@ -379,11 +379,11 @@ namespace VSS.TRex.Designs.SVL
     {
       switch (TransitDirection)
       {
-        case TNFFLineworkArcTransitDirection.atdUnknown:
+        case NFFLineworkArcTransitDirection.atdUnknown:
           return GetStartPoint();
-        case TNFFLineworkArcTransitDirection.atdStartToEnd:
+        case NFFLineworkArcTransitDirection.atdStartToEnd:
           return GetStartPoint();
-        case TNFFLineworkArcTransitDirection.atdEndToStart:
+        case NFFLineworkArcTransitDirection.atdEndToStart:
           return GetEndPoint();
         default:
           return new XYZ();
@@ -394,11 +394,11 @@ namespace VSS.TRex.Designs.SVL
     {
       switch (TransitDirection)
       {
-        case TNFFLineworkArcTransitDirection.atdUnknown:
+        case NFFLineworkArcTransitDirection.atdUnknown:
           return GetEndPoint();
-        case TNFFLineworkArcTransitDirection.atdStartToEnd:
+        case NFFLineworkArcTransitDirection.atdStartToEnd:
           return GetEndPoint();
-        case TNFFLineworkArcTransitDirection.atdEndToStart:
+        case NFFLineworkArcTransitDirection.atdEndToStart:
           return GetStartPoint();
         default:
           return new XYZ();
@@ -409,13 +409,13 @@ namespace VSS.TRex.Designs.SVL
     {
       switch (TransitDirection)
       {
-        case TNFFLineworkArcTransitDirection.atdUnknown:
+        case NFFLineworkArcTransitDirection.atdUnknown:
           SetStartPoint(Value);
           break;
-        case TNFFLineworkArcTransitDirection.atdStartToEnd:
+        case NFFLineworkArcTransitDirection.atdStartToEnd:
           SetStartPoint(Value);
           break;
-        case TNFFLineworkArcTransitDirection.atdEndToStart:
+        case NFFLineworkArcTransitDirection.atdEndToStart:
           SetEndPoint(Value);
           break;
       }
@@ -425,13 +425,13 @@ namespace VSS.TRex.Designs.SVL
     {
       switch (TransitDirection)
       {
-        case TNFFLineworkArcTransitDirection.atdUnknown:
+        case NFFLineworkArcTransitDirection.atdUnknown:
           SetEndPoint(Value);
           break;
-        case TNFFLineworkArcTransitDirection.atdStartToEnd:
+        case NFFLineworkArcTransitDirection.atdStartToEnd:
           SetEndPoint(Value);
           break;
-        case TNFFLineworkArcTransitDirection.atdEndToStart:
+        case NFFLineworkArcTransitDirection.atdEndToStart:
           SetStartPoint(Value);
           break;
       }
@@ -450,13 +450,13 @@ namespace VSS.TRex.Designs.SVL
 
       switch (TransitDirection)
       {
-        case TNFFLineworkArcTransitDirection.atdUnknown: // do nothing
+        case NFFLineworkArcTransitDirection.atdUnknown: // do nothing
           break;
-        case TNFFLineworkArcTransitDirection.atdStartToEnd:
-          TransitDirection = TNFFLineworkArcTransitDirection.atdEndToStart;
+        case NFFLineworkArcTransitDirection.atdStartToEnd:
+          TransitDirection = NFFLineworkArcTransitDirection.atdEndToStart;
           break;
-        case TNFFLineworkArcTransitDirection.atdEndToStart:
-          TransitDirection = TNFFLineworkArcTransitDirection.atdStartToEnd;
+        case NFFLineworkArcTransitDirection.atdEndToStart:
+          TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
           break;
       }
     }
@@ -467,12 +467,12 @@ namespace VSS.TRex.Designs.SVL
 
       switch (TransitDirection)
       {
-        case TNFFLineworkArcTransitDirection.atdUnknown: 
-        case TNFFLineworkArcTransitDirection.atdStartToEnd:
+        case NFFLineworkArcTransitDirection.atdUnknown: 
+        case NFFLineworkArcTransitDirection.atdStartToEnd:
           // It's a clockwise turning arc
           break;
-        case TNFFLineworkArcTransitDirection.atdEndToStart:
-          Result = -Result;TransitDirection = TNFFLineworkArcTransitDirection.atdStartToEnd;
+        case NFFLineworkArcTransitDirection.atdEndToStart:
+          Result = -Result;TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
           break;
       }
 
@@ -485,11 +485,11 @@ namespace VSS.TRex.Designs.SVL
     {
       switch (TransitDirection)
       {
-        case TNFFLineworkArcTransitDirection.atdUnknown: // do nothing
+        case NFFLineworkArcTransitDirection.atdUnknown: // do nothing
           return true;
-        case TNFFLineworkArcTransitDirection.atdStartToEnd:
+        case NFFLineworkArcTransitDirection.atdStartToEnd:
           return true;
-        case TNFFLineworkArcTransitDirection.atdEndToStart:
+        case NFFLineworkArcTransitDirection.atdEndToStart:
           return false;
         default:
           Debug.Assert(false, "Unknown transit direction");
@@ -525,7 +525,7 @@ namespace VSS.TRex.Designs.SVL
 
         if (Angle < 0)
         {
-          Debug.Assert(Angle > -0.001, "Probable arc element transit angle calculation error in TNFFLineworkArcEntity.ComputeStnOfs");
+          Debug.Assert(Angle > -0.001, "Probable arc element transit angle calculation error in NffLineworkArcEntity.ComputeStnOfs");
           Angle = 0;
         }
 
@@ -581,10 +581,10 @@ namespace VSS.TRex.Designs.SVL
     {
       switch (TransitDirection)
       {
-        case TNFFLineworkArcTransitDirection.atdUnknown:
-        case TNFFLineworkArcTransitDirection.atdStartToEnd:
+        case NFFLineworkArcTransitDirection.atdUnknown:
+        case NFFLineworkArcTransitDirection.atdStartToEnd:
           return ArcUtils.CalcIncludedAngle(X1, Y1, X2, Y2, CX, CY, true);
-        case TNFFLineworkArcTransitDirection.atdEndToStart:
+        case NFFLineworkArcTransitDirection.atdEndToStart:
           return ArcUtils.CalcIncludedAngle(X2, Y2, X1, Y1, CX, CY, false);
         default:
           Debug.Assert(false, "Unknown transit direction");
@@ -602,6 +602,6 @@ namespace VSS.TRex.Designs.SVL
 //    procedure SetDefaultStationing(const AStartStation : Double;
 //  AIndex : Integer); Override;
 
-//    Function IsSameAs(const Other : TNFFLineworkEntity) : Boolean; Override;
+//    Function IsSameAs(const Other : NFFLineworkEntity) : Boolean; Override;
   }
 }

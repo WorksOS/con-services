@@ -3,7 +3,7 @@
 namespace VSS.TRex.Designs.SVL
 {
   [StructLayout(LayoutKind.Sequential, Pack = 1)]
-  public struct TNFFAbsolute2dIntegerCoordinate
+  public struct NFFAbsolute2dIntegerCoordinate
   {
     public int X;
     public int Y;

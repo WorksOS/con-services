@@ -7,7 +7,7 @@ using VSS.TRex.Designs.SVL.Utilities;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFNamedGuidanceIDList : List<TNFFNamedGuidanceID>
+  public class NFFNamedGuidanceIDList : List<NFFNamedGuidanceID>
   {
 // TODO Might need -->    procedure DoItemAdded(AObject: TObject); override;
 
@@ -17,9 +17,9 @@ namespace VSS.TRex.Designs.SVL
       int Num = reader.ReadUInt16();
       for (int I = 0; I < Num; I++)
       {
-        var item = new TNFFNamedGuidanceID();
+        var item = new NFFNamedGuidanceID();
 
-        //this.Add(new TNFFNamedGuidanceID);
+        //this.Add(new NFFNamedGuidanceID);
         item.ID = reader.ReadInt16();
         item.Flags = reader.ReadByte();
         item.Name = NFFUtils.ReadWideStringFromStream(reader);
@@ -36,10 +36,10 @@ namespace VSS.TRex.Designs.SVL
 
     //   procedure DumpToText(Stream: TTextDumpStream);
 
-    // Used by owner TNFFFile.ProcessGuidanceAlignments only
+    // Used by owner NFFFile.ProcessGuidanceAlignments only
     public void SortByOffset()
     {
-      // TNFFNamedGuidanceID.StartOffset values are maintained solely to perform initial
+      // NFFNamedGuidanceID.StartOffset values are maintained solely to perform initial
       // sort and are NOT streamed to file, thus when this function is called in context
       // of file load all StartOffset values will be initialised to NullReal.  In this
       // case the sort should be skipped
@@ -69,7 +69,7 @@ namespace VSS.TRex.Designs.SVL
       return Result;
     }
 
-    public TNFFNamedGuidanceID Locate(string AName)
+    public NFFNamedGuidanceID Locate(string AName)
     {
       for (int I = 0; I < Count; I++)
         if (string.Compare(this[I].Name, AName, StringComparison.OrdinalIgnoreCase) == 0)
@@ -80,7 +80,7 @@ namespace VSS.TRex.Designs.SVL
       return null;
     }
 
-    public TNFFNamedGuidanceID Locate(int AnID)
+    public NFFNamedGuidanceID Locate(int AnID)
     {
       for (int I = 0; I < Count; I++)
         if (this[I].ID == AnID)

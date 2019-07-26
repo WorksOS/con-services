@@ -8,24 +8,24 @@ using VSS.TRex.Designs.SVL.Utilities;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFStreamInfoList : List<TNFFStreamInfo>
+  public class NFFStreamInfoList : List<NFFStreamInfo>
   {
-    //   Procedure SaveToStream(NFFFileVersion : TNFFFileVersion; Stream : TStream);
+    //   Procedure SaveToStream(NFFFileVersion : NFFFileVersion; Stream : TStream);
 
-    public void LoadFromStream(TNFFFileVersion NFFFileVersion, BinaryReader reader)
+    public void LoadFromStream(NFFFileVersion NFFFileVersion, BinaryReader reader)
     {
-      var DirectoryHeader = new TNFFDirectoryStreamHeader();
+      var DirectoryHeader = new NFFDirectoryStreamHeader();
 
       var b = reader.ReadBytes(Marshal.SizeOf(DirectoryHeader));
 
       var handle = GCHandle.Alloc(b, GCHandleType.Pinned);
-      DirectoryHeader = (TNFFDirectoryStreamHeader)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(TNFFDirectoryStreamHeader));
+      DirectoryHeader = (NFFDirectoryStreamHeader)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(NFFDirectoryStreamHeader));
 
       if (NFFUtils.MagicNumberToANSIString(DirectoryHeader.MajicNumber) != NFFConsts.kNFFIndexFileMajicNumber)
         return;
 
       // No stream lists are read from pre version 1.2 format files.
-      if (NFFFileVersion < TNFFFileVersion.nffVersion1_2)
+      if (NFFFileVersion < NFFFileVersion.nffVersion1_2)
         return;
 
       int Offset= 0;
@@ -34,13 +34,13 @@ namespace VSS.TRex.Designs.SVL
       for (int I = 0; I < Number; I++)
       {
         string Name = NFFUtils.ReadWideStringFromStream(reader);
-        if (NFFFileVersion >= TNFFFileVersion.nffVersion1_2)
+        if (NFFFileVersion >= NFFFileVersion.nffVersion1_2)
         {
           Offset = reader.ReadInt32();
           Length = reader.ReadInt32();
         }
 
-        Add(new TNFFStreamInfo(Name, Offset, Length));
+        Add(new NFFStreamInfo(Name, Offset, Length));
       }
 
       // Be paranoid and resort the stream list
@@ -62,7 +62,7 @@ namespace VSS.TRex.Designs.SVL
       Insert(0, master);
     }
 
-    public TNFFStreamInfo Locate(string Filename)
+    public NFFStreamInfo Locate(string Filename)
     {
       return this.FirstOrDefault(x => string.Compare(x.Name, Filename, StringComparison.OrdinalIgnoreCase) == 0);
     }

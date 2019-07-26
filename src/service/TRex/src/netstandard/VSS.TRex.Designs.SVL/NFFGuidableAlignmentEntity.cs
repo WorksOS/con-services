@@ -10,38 +10,38 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class TNFFGuidableAlignmentEntity : TNFFStationedLineworkEntity
+  public class NFFGuidableAlignmentEntity : NFFStationedLineworkEntity
   {
     /*---------------------------------------------------------------------------
-   Name: TNFFGuidableAlignmentEntity
+   Name: NFFGuidableAlignmentEntity
 
-   Comments: A compound entity containing a collection of TNFFStationedLineworkEntity
+   Comments: A compound entity containing a collection of NFFStationedLineworkEntity
    objects forming a Guidance Alignment.
 
-   Within TNFFFile object each Guidance Alignment instance is associated with a
-   TNFFNamedGuidanceID instance.
+   Within NFFFile object each Guidance Alignment instance is associated with a
+   NFFNamedGuidanceID instance.
 
    NOTE: In case of Guidance Alignment in NFF file being written for Site Vision
    guidance platform, only the Master guidance alignment should have it's (and
    contained entities) kNFFElementHeaderHasStationing flag set and and Station values
    written to file.However within SVO Station values are written to
-   TNFFStationedLineworkEntity instances and subsequently refered to even when the
+   NFFStationedLineworkEntity instances and subsequently refered to even when the
    kNFFElementHasStationing flag is NOT set.
   ---------------------------------------------------------------------------*/
 
-    public TNFFGuidableAlignmentOwnedEntitiesList Entities;
+    public NFFGuidableAlignmentOwnedEntitiesList Entities;
 
-    public TNFFGuidableAlignmentEntity()
+    public NFFGuidableAlignmentEntity()
     {
       _headerFlags = NFFConsts.kNFFElementHeaderHasGuidanceID;
 
-      Entities = new TNFFGuidableAlignmentOwnedEntitiesList();
+      Entities = new NFFGuidableAlignmentOwnedEntitiesList();
     }
 
     protected override void SetHeaderFlags(byte Value)
     {
-      // TNFFGuidableAlignmentEntity class MUST have GuidanceID
-      Debug.Assert((Value & NFFConsts.kNFFElementHeaderHasGuidanceID) != 0x00, "TNFFGuidableAlignmentEntity class MUST have GuidanceID");
+      // NFFGuidableAlignmentEntity class MUST have GuidanceID
+      Debug.Assert((Value & NFFConsts.kNFFElementHeaderHasGuidanceID) != 0x00, "NFFGuidableAlignmentEntity class MUST have GuidanceID");
 
       _headerFlags = Value;
 
@@ -90,32 +90,32 @@ namespace VSS.TRex.Designs.SVL
     // used to define it.
    // procedure NormaliseArcs;
 
-      //      procedure Assign(Entity: TNFFLineworkEntity); override;
-      //      property Entities : TNFFGuidableAlignmentOwnedEntitiesList read FEntities;
+      //      procedure Assign(Entity: NFFLineworkEntity); override;
+      //      property Entities : NFFGuidableAlignmentOwnedEntitiesList read FEntities;
 
       //      procedure DumpToText(Stream: TTextDumpStream; const OriginX, OriginY : Double); override;
       //      Procedure SaveToNFFStream(Stream : TStream;
       //  const OriginX, OriginY : Double;
-      //                                FileVersion : TNFFFileVersion); override;
+      //                                FileVersion : NFFFileVersion); override;
 
       public override void LoadFromNFFStream(BinaryReader reader,
         double OriginX, double OriginY,
         bool HasGuidanceID,
-        TNFFFileVersion FileVersion)
+        NFFFileVersion FileVersion)
     {
-      TNFFLineWorkElementType EntityType;
+      NFFLineWorkElementType EntityType;
 
       // The file version passed into here is ignored in favour of the file version contained in the header information
 
-      Debug.Assert(FileVersion ==TNFFFileVersion.nffVersion_Undefined,
-         "Specific file version sent to TNFFGuidableAlignmentEntity.LoadFromNFFStream");
+      Debug.Assert(FileVersion ==NFFFileVersion.nffVersion_Undefined,
+         "Specific file version sent to NFFGuidableAlignmentEntity.LoadFromNFFStream");
 
-      var Header = new TNFFLineworkGridFileHeader();
+      var Header = new NFFLineworkGridFileHeader();
 
       var b = reader.ReadBytes(Marshal.SizeOf(Header));
 
       var handle = GCHandle.Alloc(b, GCHandleType.Pinned);
-      Header = (TNFFLineworkGridFileHeader)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(TNFFLineworkGridFileHeader));
+      Header = (NFFLineworkGridFileHeader)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(NFFLineworkGridFileHeader));
 
       if (NFFUtils.MagicNumberToANSIString(Header.MajicNumber) != NFFConsts.kNFFLineworkFileMajicNumber)
         throw new IOException($"Expected {NFFConsts.kNFFLineworkFileMajicNumber} as the magic number, not: {Header.MajicNumber}");
@@ -123,10 +123,10 @@ namespace VSS.TRex.Designs.SVL
       if (!NFFUtils.SetFileVersionFromMinorMajorVersionNumbers(Header.MajorVer, Header.MinorVer, out FileVersion))
         throw new IOException($"Unexpected file version, Major = {Header.MajorVer}, Minor - {Header.MinorVer}");
 
-      if (FileVersion < TNFFFileVersion.nffVersion1_2)
+      if (FileVersion < NFFFileVersion.nffVersion1_2)
         throw new IOException("File version less than 1.2 - unsupported");
 
-      var factory = new TNFFElementFactory();
+      var factory = new NFFElementFactory();
 
       // Read the list of items from the stream...
       while (reader.BaseStream.Position < reader.BaseStream.Length)
@@ -135,16 +135,16 @@ namespace VSS.TRex.Designs.SVL
 
         // The flags moved into a following byte after the element type in v1.5
 
-        if (FileVersion >= TNFFFileVersion.nffVersion1_5)
-          EntityType = (TNFFLineWorkElementType) EntityTypeVal;
+        if (FileVersion >= NFFFileVersion.nffVersion1_5)
+          EntityType = (NFFLineWorkElementType) EntityTypeVal;
         else
-          EntityType = (TNFFLineWorkElementType) (EntityTypeVal & 0x0f);
+          EntityType = (NFFLineWorkElementType) (EntityTypeVal & 0x0f);
 
-        if (EntityType == TNFFLineWorkElementType.kNFFLineWorkLineElement)
+        if (EntityType == NFFLineWorkElementType.kNFFLineWorkLineElement)
           return;
 
         byte FlagsByte = 0;
-        if (FileVersion >= TNFFFileVersion.nffVersion1_5)
+        if (FileVersion >= NFFFileVersion.nffVersion1_5)
         {
           // v1.5 and later store the flags as a separate byte. However, the flags
           // that were in the most significant 4 bits were being thrown away in favour
@@ -164,12 +164,12 @@ namespace VSS.TRex.Designs.SVL
             FlagsByte |= NFFConsts.kNFFElementHeaderHasElevation;
         }
 
-        if (EntityType == TNFFLineWorkElementType.kNFFLineworkEndElement)
+        if (EntityType == NFFLineWorkElementType.kNFFLineworkEndElement)
           return;
 
         var Entity = factory.NewElement(EntityType);
 
-        if (!(Entity is TNFFStationedLineworkEntity))
+        if (!(Entity is NFFStationedLineworkEntity))
         {
           // Inappropriate entity type in file
           throw new Exception("Non stationed element created from guidable alignment geometry");
@@ -184,11 +184,11 @@ namespace VSS.TRex.Designs.SVL
         {
           // Loading first contained entity, write entities <Flags> and <GuidanceID>
           // to self BEFORE adding it
-          GuidanceID = (Entity as TNFFStationedLineworkEntity).GuidanceID;
+          GuidanceID = (Entity as NFFStationedLineworkEntity).GuidanceID;
           HeaderFlags = Entity.HeaderFlags;
         }
 
-        Entities.Add(Entity as TNFFStationedLineworkEntity);
+        Entities.Add(Entity as NFFStationedLineworkEntity);
       }
     }
 
@@ -229,13 +229,13 @@ namespace VSS.TRex.Designs.SVL
     //      Procedure SaveToCompoundDoc(const FileName : TFileName;
     //  const OriginX, OriginY : Integer);
 
-    public void LoadFromCompoundDoc(TNFFFile owner, BinaryReader reader, string Filename)
+    public void LoadFromCompoundDoc(NFFFile owner, BinaryReader reader, string Filename)
     {
       reader.BaseStream.Position = owner.StreamInfoList.Locate(Filename).Offset;
 
       //try
       //fSuppressAssertions:= True;
-      LoadFromNFFStream(reader, Consts.NullDouble, Consts.NullDouble, true, TNFFFileVersion.nffVersion_Undefined);
+      LoadFromNFFStream(reader, Consts.NullDouble, Consts.NullDouble, true, NFFFileVersion.nffVersion_Undefined);
       //  finally
       //fSuppressAssertions:= False;
       //end;
@@ -264,11 +264,11 @@ namespace VSS.TRex.Designs.SVL
     // that element is then returned to the caller.
     public override void ComputeStnOfs(double X, double Y, out double Stn, out double Ofs)
     {
-      TNFFStationedLineworkEntity element = null;
+      NFFStationedLineworkEntity element = null;
       ComputeStnOfs(X, Y, out Stn, out Ofs, ref element);
     }
 
-    public void ComputeStnOfs(double X, double Y, out double Stn, out double Ofs, ref TNFFStationedLineworkEntity Element)
+    public void ComputeStnOfs(double X, double Y, out double Stn, out double Ofs, ref NFFStationedLineworkEntity Element)
     {
       double TestStn, TestOfs;
 
@@ -322,7 +322,7 @@ namespace VSS.TRex.Designs.SVL
 
     // LocateEntityAtStation takes a station value and locates the element
     // within which the station value lies.
-    public void LocateEntityAtStation(double Stn, out TNFFStationedLineworkEntity Element)
+    public void LocateEntityAtStation(double Stn, out NFFStationedLineworkEntity Element)
     {
       Element = null;
 

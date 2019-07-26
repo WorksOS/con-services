@@ -386,28 +386,28 @@ Huzzah!
     }
 
     public static bool SetFileVersionFromMinorMajorVersionNumbers(byte MajorVer, byte MinorVer,
-      out TNFFFileVersion FileVersion)
+      out NFFFileVersion FileVersion)
     {
       bool Result = true;
 
       // Convert the minor/major version numbering into the file version enum
       if (MajorVer == 1 && MinorVer == 0)
-        FileVersion = TNFFFileVersion.nffVersion1_0;
+        FileVersion = NFFFileVersion.nffVersion1_0;
       else if (MajorVer == 1 && MinorVer == 1)
-        FileVersion = TNFFFileVersion.nffVersion1_1;
+        FileVersion = NFFFileVersion.nffVersion1_1;
       else if (MajorVer == 1 && MinorVer == 2)
-        FileVersion = TNFFFileVersion.nffVersion1_2;
+        FileVersion = NFFFileVersion.nffVersion1_2;
       else if (MajorVer == 1 && MinorVer == 3)
-        FileVersion = TNFFFileVersion.nffVersion1_3;
+        FileVersion = NFFFileVersion.nffVersion1_3;
       else if (MajorVer == 1 && MinorVer == 4)
-        FileVersion = TNFFFileVersion.nffVersion1_4;
+        FileVersion = NFFFileVersion.nffVersion1_4;
       else if (MajorVer == 1 && MinorVer == 5)
-        FileVersion = TNFFFileVersion.nffVersion1_5;
+        FileVersion = NFFFileVersion.nffVersion1_5;
       else if (MajorVer == 1 && MinorVer == 6)
-        FileVersion = TNFFFileVersion.nffVersion1_6;
+        FileVersion = NFFFileVersion.nffVersion1_6;
       else
       {
-        FileVersion = TNFFFileVersion.nffVersion_Undefined;
+        FileVersion = NFFFileVersion.nffVersion_Undefined;
         Result = false;
       }
 
