@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var temperatureSummaryRequest = new TemperatureSummaryRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Filter,
             request.TemperatureSettings,
             AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));

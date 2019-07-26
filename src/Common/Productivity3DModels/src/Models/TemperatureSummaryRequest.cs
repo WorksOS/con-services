@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.Models.Models
 {
@@ -19,7 +17,11 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    public TemperatureSummaryRequest(Guid? projectUid, FilterResult filter, TemperatureSettings temperatureSettings, LiftSettings liftSettings)
+    public TemperatureSummaryRequest(
+      Guid projectUid, 
+      FilterResult filter, 
+      TemperatureSettings temperatureSettings, 
+      LiftSettings liftSettings)
     {
       ProjectUid = projectUid;
       Filter = filter;
