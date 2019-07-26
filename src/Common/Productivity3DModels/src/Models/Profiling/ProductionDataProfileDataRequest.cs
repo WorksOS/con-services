@@ -36,10 +36,11 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       double startY,
       double endX,
       double endY,
-      OverridingTargets overrides)  
+      OverridingTargets overrides,
+      LiftSettings liftSettings)  
 
       : base (projectUid, referenceDesignUid, referenceDesignOffset, positionsAreGrid, 
-              startX, startY, endX, endY, overrides)
+              startX, startY, endX, endY, overrides, liftSettings)
     {
       Filter = filter;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;

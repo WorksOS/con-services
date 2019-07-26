@@ -50,7 +50,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         true, true, true, true, true, true,
         cutFillDesignUid, cutFillDesignOffset,
         null, GridReportOption.Automatic,
-        800000, 400000, 800001, 400001, 2, null);
+        800000, 400000, 800001, 400001, 2, null, null);
 
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(ValidateReportData_GriddedSuccess), projectUid);
       var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_GriddedSuccess), projectUid, request);
@@ -89,7 +89,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         projectUid, null,
         true, true, true, true, true, true,
         cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
-        2.0, 100, 200, new[] { -1.0, 0, 1.3 }, null);
+        2.0, 100, 200, new[] { -1.0, 0, 1.3 }, null, null);
 
       var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_AlignmentSuccess), projectUid, request);
       Assert.True(isOk);
@@ -128,7 +128,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         projectUid, null,
         true, true, true, true, true, true,
         cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
-        2.0, 100, 200, new[] { -1.0, 0, 1.3 }, null);
+        2.0, 100, 200, new[] { -1.0, 0, 1.3 }, null, null);
 
       var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_AlignmentIncludingCutFill_Success), request.ProjectUid, request);
       Assert.True(isOk);
@@ -166,7 +166,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         true, true, true, true, true, true,
         cutFillDesignUid, cutFillDesignOffset,
         null, GridReportOption.Automatic,
-        800000, 400000, 800001, 400001, 2, null);
+        800000, 400000, 800001, 400001, 2, null, null);
 
       var ex = Assert.Throws<ServiceException>(() => DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_GriddedNoDesign_Fail), request.ProjectUid, request));
       Assert.Equal(System.Net.HttpStatusCode.BadRequest, ex.Code);
@@ -205,7 +205,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         projectUid, null,
         true, true, true, true, true, true,
         cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
-        2.0, 100, 200, new[] { -1.0, 0, 1.3 }, null);
+        2.0, 100, 200, new[] { -1.0, 0, 1.3 }, null, null);
 
       var ex = Assert.Throws<ServiceException>(() => DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_AlignmentFailed), request.ProjectUid, request));
       Assert.Equal(System.Net.HttpStatusCode.BadRequest, ex.Code);
