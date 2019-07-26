@@ -129,7 +129,7 @@ namespace VSS.TRex.Designs.SVL
       Element.ComputeXY(currentPos, OffsetRight, out ptX, out ptY);
 
       if (RHSProfile.NumVertices > 0)
-        PtBrng2 = BearingOf(RHSProfile.Points[fence.NumVertices - 1].X, RHSProfile.Points[fence.NumVertices - 1].Y, ptX, ptY);
+        PtBrng2 = BearingOf(RHSProfile.Points[RHSProfile.NumVertices - 1].X, RHSProfile.Points[RHSProfile.NumVertices - 1].Y, ptX, ptY);
       RHSProfile.Points.Add(new FencePoint(ptX, ptY));
 
       // Prune points on the inside on curves where the offset is greater than the radius and

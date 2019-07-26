@@ -260,21 +260,21 @@ namespace VSS.TRex.Designs.SVL
 
       NFFUtils.ReadRectFromStream(reader, out double MinX, out double MinY, out double MaxX, out double MaxY, OriginX, OriginY);
 
-      NFFUtils.ReadCoordFromStream(reader, out double CX, out double CY, OriginX, OriginY);
+      NFFUtils.ReadCoordFromStream(reader, out CX, out CY, OriginX, OriginY);
 
       //  CZ = NullReal;
       //SPR 8763: Remove height field from arcs in SVL files
       //  if (FFlags and kNFFElementHeaderHasElevation) <> 0 then
       //    ReadFixedPoint32FromStream(Stream);
 
-      NFFUtils.ReadCoordFromStream(reader, out double X1, out double Y1, OriginX, OriginY);
+      NFFUtils.ReadCoordFromStream(reader, out X1, out Y1, OriginX, OriginY);
       if ((HeaderFlags & NFFConsts.kNFFElementHeaderHasElevation) != 0)
         Z1 = NFFUtils.ReadFixedPoint32FromStream(reader);
       else
         Z1 = Consts.NullDouble;
 
       if ((HeaderFlags & NFFConsts.kNFFElementHeaderHasCrossSlope) != 0)
-        NFFUtils.ReadCrossSlopeInformationFromStream(reader, out double StartLeftCrossSlope, out double StartRightCrossSlope);
+        NFFUtils.ReadCrossSlopeInformationFromStream(reader, out StartLeftCrossSlope, out StartRightCrossSlope);
       else
       {
         StartLeftCrossSlope = Consts.NullDouble;

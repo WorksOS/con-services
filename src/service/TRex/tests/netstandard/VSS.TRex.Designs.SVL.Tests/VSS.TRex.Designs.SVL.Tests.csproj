@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.SVL\VSS.TRex.Designs.SVL.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Tests\VSS.TRex.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

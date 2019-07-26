@@ -2,11 +2,14 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.Geometry;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Designs.SVL.Tests
 {
-  public class SVLAlignmentBoundaryDeterminatorTests
+  public class SVLAlignmentBoundaryDeterminatorTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
     public void Creation_FailWithNullAlignment()
@@ -20,7 +23,7 @@ namespace VSS.TRex.Designs.SVL.Tests
     [InlineData("Large Sites Road - Trimble Road.svl", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
     [InlineData("Topcon Road - Topcon Phil.svl", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
     [InlineData("Milling - Milling.svl", TNFFFileType.nffSVLFile, TNFFFileVersion.nffVersion1_6)]
-    public void Creation(string fileName, TNFFFileType fileType, TNFFFileVersion fileVersion)
+    public void DetermineBoundary(string fileName, TNFFFileType fileType, TNFFFileVersion fileVersion)
     {
       var f = TNFFFile.CreateFromFile(Path.Combine("TestData", "Common", fileName));
       f.ErrorStatus.Should().Be(TNFFErrorStatus.nffe_OK);
@@ -29,9 +32,14 @@ namespace VSS.TRex.Designs.SVL.Tests
       f.FileVersion.Should().Be(fileVersion);
 
       var master = f.GuidanceAlignments?.Where(x => x.IsMasterAlignment()).FirstOrDefault();
-      var determinator = new SVLAlignmentBoundaryDeterminator(master, master.StartStation, master.StartStation, -1, 1);
+      var determinator = new SVLAlignmentBoundaryDeterminator(master, master.StartStation, master.EndStation, -1, 1);
 
       determinator.Should().NotBeNull();
+
+      determinator.DetermineBoundary(out DesignProfilerRequestResult calcResult, out Fence fence);
+
+      calcResult.Should().Be(DesignProfilerRequestResult.OK);
+      fence.Should().NotBeNull();
     }
   }
 }
