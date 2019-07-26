@@ -118,5 +118,43 @@ namespace VSS.TRex.Designs.SVL.Utilities
       if (((y1 - y0) * (ptx - x0) + (x0 - x1) * (pty - y0)) < 0)
         Offset = -Offset;
     }
+
+    public static void polar_to_rect(double N1, double E1,
+        out double N2, out double E2,
+        double brng, double dist)
+      // Expects PLAN coords and a GROUND distance and a bearing in RADIANS. Returns PLAN coords. 
+    {
+      //NorthSouthFactor,
+      //EastWestFactor : Integer;
+
+      // Brng is oriented from 0° North
+      // Coordinates are in GridOrientation system so convert to NE system
+
+      // TODO: This may be an issue if we have Danish or South African projections in coordinate system
+      //SetEWNSFactors(EastWestFactor, NorthSouthFactor);
+
+      var sinBrng = Math.Sin(brng);
+      var cosBrng = Math.Cos(brng);
+
+      E2 = E1 + dist * sinBrng; // * EastWestFactor;
+      N2 = N1 + dist * cosBrng; // * NorthSouthFactor;
+    }
+
+    public static void rect_to_polar(double n1, double e1, double n2, double e2,
+        out double brng, out double dist)
+      // Expects PLAN coords and returns GROUND distance and a bearing in RADIANS.
+    {
+      // Brng is oriented from 0° North
+      // Coordinates are in GridOrientation system so convert to NE system
+
+      // TODO: This may be an issue if we have Danish or South African projections in coordinate system
+      //SetEWNSFactors(EastWestFactor, NorthSouthFactor);
+
+      double de = e2 - e1;
+      double dn = n2 - n1;
+      dist = Math.Sqrt(de * de + dn * dn);
+      brng = Math.Atan2(de /* * EastWestFactor*/, dn /* * NorthSouthFactor*/); // In radians
+    }
+
   }
 }

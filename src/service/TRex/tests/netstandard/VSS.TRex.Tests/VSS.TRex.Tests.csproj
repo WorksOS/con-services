@@ -132,19 +132,10 @@
     <None Update="TestData\Common\Bug36372.ttm.%24DesignSubgridIndex%24">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\CERA.SVL">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.svl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.%24DesignBoundary%24">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Milling - Milling.svl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\TestTAGFile-MDP.tag">
@@ -160,9 +151,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\Bug36372.ttm">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Topcon Road - Topcon Phil.svl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\TAGFiles\Dimensions-Machine 4250986182719752\2642J041SW--VOLVO G946B--121101145955.tag">

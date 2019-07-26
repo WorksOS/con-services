@@ -332,10 +332,10 @@ namespace VSS.TRex.Designs.SVL
       // into the NFF file
       // Angles are mathematical angles, polar_to_rect wants azimuth angles
 
-      NFFUtils.polar_to_rect(CY, CX, out Y1, out X1,
+      GeometryUtils.polar_to_rect(CY, CX, out Y1, out X1,
         Math.PI / 2 - start_angle,
         radius);
-      NFFUtils.polar_to_rect(CY, CX, out Y2, out X2,
+      GeometryUtils.polar_to_rect(CY, CX, out Y2, out X2,
         Math.PI / 2 - end_angle,
         radius);
     }
@@ -558,16 +558,16 @@ namespace VSS.TRex.Designs.SVL
       // Calculate the deflection angle to the point on the curve
       var Deflection = (Stn - StartStation) / Math.Abs(Radius());
 
-      NFFUtils.rect_to_polar(CY, CX, GetStartTransitPoint().Y, GetStartTransitPoint().X, out double InitialBrng, out double Dist);
+      GeometryUtils.rect_to_polar(CY, CX, GetStartTransitPoint().Y, GetStartTransitPoint().X, out double InitialBrng, out double Dist);
 
       double Bearing = TransitDirectionIsCW() ? InitialBrng + Deflection : InitialBrng - Deflection;
 
       GeometryUtils.clean_angle(ref Bearing);
 
       if (TransitDirectionIsCW())
-        NFFUtils.polar_to_rect(CY, CX, out Y, out X, Bearing, Math.Abs(Radius()) - Ofs);
+        GeometryUtils.polar_to_rect(CY, CX, out Y, out X, Bearing, Math.Abs(Radius()) - Ofs);
       else
-        NFFUtils.polar_to_rect(CY, CX, out Y, out X, Bearing, Math.Abs(Radius()) + Ofs);
+        GeometryUtils.polar_to_rect(CY, CX, out Y, out X, Bearing, Math.Abs(Radius()) + Ofs);
 
 //  writeln(LogFile, Format('[Arc] Calcing XY from %.4f/%.4f, [Result: X=%.4f, Y=%.4f]', {SKIP}
 //                          [stn, ofs, X, Y]));
