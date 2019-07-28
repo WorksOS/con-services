@@ -16,7 +16,7 @@ namespace VSS.TRex.Designs.SVL.DXF
 
     public abstract DXFEntityTypes EntityType();
 
-    public virtual void SaveToFile(StreamWriter writer, distance_units_type OutputUnits)
+    public virtual void SaveToFile(StreamWriter writer, DistanceUnitsType OutputUnits)
     {
       DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFLayerNameID, DXFUtils.DXFiseLayerName(Layer));
       DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFColourID, Colour.ToString());

@@ -7,7 +7,7 @@ namespace VSS.TRex.Designs.SVL.DXF
 {
   public static class DXFUtils
   {
-    public static string FormatDXFRecNum(int RecNum) => $"{RecNum:3D}";
+    public static string FormatDXFRecNum(int RecNum) => $"{RecNum,3}";
 
     public static void WriteDXFRecord(StreamWriter writer,
       int RecNum,
@@ -20,7 +20,7 @@ namespace VSS.TRex.Designs.SVL.DXF
     public static void WriteXYZToDXF(StreamWriter writer,
       int Offset,
       double X, double Y, double Z,
-      distance_units_type OutputUnits)
+      DistanceUnitsType OutputUnits)
     {
       WriteDXFRecord(writer, 10 + Offset, NoLocaleFloatToStrF(DXFDistance(X, OutputUnits), 6));
       WriteDXFRecord(writer, 20 + Offset, NoLocaleFloatToStrF(DXFDistance(Y, OutputUnits), 6));
@@ -38,7 +38,7 @@ namespace VSS.TRex.Designs.SVL.DXF
       const int MaxDXFNameLength = 31;
       const string DXFNameCharSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-$";
 
-      var Result = LayerName.Substring(0, MaxDXFNameLength).ToCharArray();
+      var Result = (LayerName.Length < MaxDXFNameLength ? LayerName : LayerName.Substring(0, MaxDXFNameLength)).ToCharArray();
 
       for (int index = 0; index < Result.Length; index++)
         if (!DXFNameCharSet.Contains(Result[index]))
@@ -54,7 +54,7 @@ namespace VSS.TRex.Designs.SVL.DXF
 
     public static double FeetToMetres => 0.3048; // Todo: International feet only
 
-    public static double DistToMetres(distance_units_type dist_units)
+    public static double DistToMetres(DistanceUnitsType dist_units)
       // Returns the conversion factor required to convert a distance value in the
       //    specified units to meters
       //  NOTE: Meters is the internal distance value unit used in SVO
@@ -66,24 +66,24 @@ namespace VSS.TRex.Designs.SVL.DXF
 
       switch (dist_units)
       {
-        case distance_units_type.feet: return ImperialFeetToMetres;
-        case distance_units_type.US_feet: return USFeetToMetres;
-        case distance_units_type.metres: return 1.0;
-        case distance_units_type.chains: return FeetToMetres * 66;
-        case distance_units_type.links: return FeetToMetres * 66 / 100;
-        case distance_units_type.yards: return FeetToMetres * 3;
-        case distance_units_type.millimetres: return 0.001;
-        case distance_units_type.inches: return FeetToMetres / 12;
-        case distance_units_type.kilometres: return 1000;
-        case distance_units_type.miles: return FeetToMetres * 5280;
-        case distance_units_type.centimetres: return 0.01;
+        case DistanceUnitsType.feet: return ImperialFeetToMetres;
+        case DistanceUnitsType.US_feet: return USFeetToMetres;
+        case DistanceUnitsType.metres: return 1.0;
+        case DistanceUnitsType.chains: return FeetToMetres * 66;
+        case DistanceUnitsType.links: return FeetToMetres * 66 / 100;
+        case DistanceUnitsType.yards: return FeetToMetres * 3;
+        case DistanceUnitsType.millimetres: return 0.001;
+        case DistanceUnitsType.inches: return FeetToMetres / 12;
+        case DistanceUnitsType.kilometres: return 1000;
+        case DistanceUnitsType.miles: return FeetToMetres * 5280;
+        case DistanceUnitsType.centimetres: return 0.01;
         default:
           Debug.Assert(false);
           return Consts.NullDouble;
       }
     }
 
-    public static double DXFDistance(double value, distance_units_type OutputUnits)
+    public static double DXFDistance(double value, DistanceUnitsType OutputUnits)
     {
       // Takes a value in SI units (ie: meters) and converts it to the project units for
 // writing out to a DXF file

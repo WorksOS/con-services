@@ -283,7 +283,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.QuantizedMesh", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.SVL", "src\netstandard\VSS.TRex.Designs.SVL\VSS.TRex.Designs.SVL.csproj", "{B08626A4-8DCA-46AC-B9F5-5EBC496DF654}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.Designs.SVL.Tests", "tests\netstandard\VSS.TRex.Designs.SVL.Tests\VSS.TRex.Designs.SVL.Tests.csproj", "{CC68139A-333D-49B7-BB9D-D8E35609B27B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.SVL.Tests", "tests\netstandard\VSS.TRex.Designs.SVL.Tests\VSS.TRex.Designs.SVL.Tests.csproj", "{CC68139A-333D-49B7-BB9D-D8E35609B27B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

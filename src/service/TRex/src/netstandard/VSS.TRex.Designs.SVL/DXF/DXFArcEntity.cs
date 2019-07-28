@@ -33,7 +33,7 @@ namespace VSS.TRex.Designs.SVL.DXF
       SingleArcEdgePoint = ASingleArcEdgePoint;
     }
 
-    public override void SaveToFile(StreamWriter writer, distance_units_type OutputUnits)
+    public override void SaveToFile(StreamWriter writer, DistanceUnitsType OutputUnits)
     {
 //      var
 //      Radius : Double;

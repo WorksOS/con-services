@@ -51,7 +51,7 @@ namespace VSS.TRex.Designs.SVL.DXF
       extMaxZ= Nullreal;*/
     }
 
-    public override void SaveToFile(StreamWriter writer, distance_units_type OutputUnits)
+    public override void SaveToFile(StreamWriter writer, DistanceUnitsType OutputUnits)
     {
 //  text_format : text_format_rec;
 //      XJust, YJust: Word;

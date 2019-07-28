@@ -4,17 +4,12 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL.DXF
 {
-  public class AddVertexCallbackClass
+  public class AddVertexCallback
   {
-    public AddVertexCallbackClass()
-    {
-      Vertices = new List<XYZ>();
-    }
-
-    public List<XYZ> Vertices { get; private set; }
+    public List<XYZ> Vertices { get; } = new List<XYZ>();
     public int VertexCount { get; set; }
 
-    public void AddVertex(double vx, double vy, DecompositionVertexLocation VertexLocation)
+    public void AddVertex(double vx, double vy, DecompositionVertexLocation vertexLocation)
     {
       VertexCount++;
       if (VertexCount > Vertices.Count)

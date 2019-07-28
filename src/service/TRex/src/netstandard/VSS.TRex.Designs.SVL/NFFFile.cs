@@ -416,7 +416,7 @@ private void ProcessGuidanceAlignments()
    // Procedure SaveSurfacesAsTTMFiles(Location : TFileName; GroupName : String; CreatedFiles : TStringList = Nil);
    // Procedure ConvertSurfaceToTTM(Grids : TNFFGridList; Surface : TNFFSurface; TTM : TTrimbleTINModel);
 
-   // function SaveLineWorkAsDXFFile(FileName : TFileName; OutputUnits : distance_units_type) : Boolean;
+   // function SaveLineWorkAsDXFFile(FileName : TFileName; OutputUnits : DistanceUnitsType) : Boolean;
 
    public bool HasData() => false; // This implementation does not support line work or surface grids
 

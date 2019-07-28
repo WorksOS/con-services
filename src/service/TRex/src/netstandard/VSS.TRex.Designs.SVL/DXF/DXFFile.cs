@@ -11,11 +11,10 @@ namespace VSS.TRex.Designs.SVL.DXF
     public List<DXFEntity> Entities = new List<DXFEntity>();
     public List<string> Layers = new List<string>();
 
-    public distance_units_type OutputUnits = distance_units_type.metres; // Default to metres
+    public DistanceUnitsType OutputUnits = DistanceUnitsType.metres; // Default to meters
 
     public DXFFile()
     {
-
     }
 
     public void WriteHeaderSection(StreamWriter writer)
@@ -68,8 +67,8 @@ namespace VSS.TRex.Designs.SVL.DXF
       DXFUtils.WriteDXFRecord(writer, 0, "SECTION");
       DXFUtils.WriteDXFRecord(writer, 2, "ENTITIES");
 
-      for (int I = 0; I < Entities.Count; I++)
-        (Entities[I] as DXFEntity).SaveToFile(writer, OutputUnits);
+      foreach (var entity in Entities)
+        entity.SaveToFile(writer, OutputUnits);
 
       DXFUtils.WriteDXFRecord(writer, 0, "ENDSEC");
     }
@@ -77,7 +76,7 @@ namespace VSS.TRex.Designs.SVL.DXF
     public void SaveToFile(StreamWriter writer)
     {
       // Construct the styles list from the text entities we are to write out
-      //ProcessStyles;
+      // ProcessStyles;
 
       WriteHeaderSection(writer);
       WriteTablesSection(writer);

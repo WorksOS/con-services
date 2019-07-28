@@ -20,7 +20,7 @@ namespace VSS.TRex.Designs.SVL.DXF
       Z2 = AZ2;
     }
 
-    public override void SaveToFile(StreamWriter writer, distance_units_type OutputUnits)
+    public override void SaveToFile(StreamWriter writer, DistanceUnitsType OutputUnits)
     {
       DXFUtils.WriteDXFRecord(writer, 0, "LINE");
 

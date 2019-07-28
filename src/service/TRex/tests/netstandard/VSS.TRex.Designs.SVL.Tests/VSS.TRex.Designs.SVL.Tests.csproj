@@ -29,16 +29,37 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\Common\CERA.MasterAlignment.DXF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Common\CERA.SVL">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.MasterAlignment.DXF">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\Large Sites Road - Trimble Road.svl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.svl.MasterAlignment.DXF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Common\Milling - Milling.MasterAlignment.DXF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Common\Milling - Milling.svl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Common\Milling - Milling.svl.MasterAlignment.DXF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Common\Topcon Road - Topcon Phil.MasterAlignment.DXF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Common\Topcon Road - Topcon Phil.svl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Common\Topcon Road - Topcon Phil.svl.MasterAlignment.DXF">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

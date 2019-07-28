@@ -9,12 +9,10 @@ namespace VSS.TRex.Designs.SVL.DXF
   public class DXFPolyLineEntity : DXFEntity
   {
     public bool Closed { get; set; }
-    public int Thickness { get; set; }
-    public List<DXFEntity> Entities { get; private set; }
 
-    public DXFPolyLineEntity(string layer, byte colour) : base(layer, colour)
-    {
-    }
+    // public bool IsDXFSolid { get; set; }
+    public int Thickness { get; set; }
+    public List<DXFEntity> Entities { get; private set; } = new List<DXFEntity>();
 
     public DXFPolyLineEntity(string layer, byte colour, int thickness) : base(layer, colour)
     {
@@ -23,21 +21,18 @@ namespace VSS.TRex.Designs.SVL.DXF
 
     public override bool Is3D()
     {
-      bool Result = false;
-
       if (Entities.Count == 0)
         // If polyline doesn't have any entities default to 2-D
         return false;
 
-      for (int I = 0; I < Entities.Count; I++)
-        if (!Entities[I].Is3D())
+      foreach (var entity in Entities)
+        if (!entity.Is3D())
           return false;
 
       return true;
     }
 
-
-    protected void SaveAsPolyLine(StreamWriter writer, distance_units_type OutputUnits)
+    protected void SaveAsPolyLine(StreamWriter writer, DistanceUnitsType OutputUnits)
     {
       if (Entities.Count == 0)
         return;
@@ -61,9 +56,9 @@ namespace VSS.TRex.Designs.SVL.DXF
 
       // Determine if the polyline contains any arc entities (ie: intervals with 'bulges')
       var HasArcs = false;
-      for (int I = 0; I < Entities.Count; I++)
+      foreach (var entity in Entities)
       {
-        if (Entities[I] is DXFArcEntity)
+        if (entity is DXFArcEntity)
         {
           HasArcs = true;
           break;
@@ -125,22 +120,23 @@ namespace VSS.TRex.Designs.SVL.DXF
     }
 
     //    Procedure SaveAsSolid(var F : MediaTypeNames.Text;
-    //    OutputUnits : distance_units_type);
+    //    OutputUnits : DistanceUnitsType);
 
-    //property IsDXFSolid : Boolean index 1 read GetFlag write SetFlag;
-
-
-    public override void SaveToFile(StreamWriter writer, distance_units_type OutputUnits)
+    public override void SaveToFile(StreamWriter writer, DistanceUnitsType OutputUnits)
     {
-      throw new NotImplementedException();
+      if (Entities.Count == 0)
+        return;
+
+//      if (IsDXFSolid)
+//      SaveAsSolid(writer, OutputUnits)
+//      else
+      SaveAsPolyLine(writer, OutputUnits);
     }
 //procedure CalculateExtents(var EMinX, EMinY, EMinZ, EMaxX, EMaxY, EMaxZ : Double); Override;
 
     public override DXFEntityTypes EntityType() => DXFEntityTypes.detPolyLine;
 
 //Procedure ConvertTo2D; Override;
-//function Is3D: Boolean; Override;
-
 //function EndpointsAreCoincident: Boolean;
   }
 }

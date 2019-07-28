@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.Designs.SVL.DXF
 {
-  public enum distance_units_type
+  public enum DistanceUnitsType
 
   {
     feet,
