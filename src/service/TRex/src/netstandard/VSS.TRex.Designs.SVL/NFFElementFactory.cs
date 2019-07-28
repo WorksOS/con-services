@@ -9,13 +9,13 @@
         case NFFLineWorkElementType.kNFFLineWorkLineElement:
           return null; // NFFLineworkLineEntity
         case NFFLineWorkElementType.kNFFLineWorkPolyLineElement:
-          return new NffLineworkPolyLineEntity();
+          return new NFFLineworkPolyLineEntity();
         case NFFLineWorkElementType.kNFFLineWorkPolygonElement:
           return null; // NFFLineworkPolygonEntity
         case NFFLineWorkElementType.kNFFLineWorkSmoothedPolyLineElement:
-          return new NffLineworkSmoothedPolyLineEntity();
+          return new NFFLineworkSmoothedPolyLineEntity();
         case NFFLineWorkElementType.kNFFLineWorkArcElement:
-          return new NffLineworkArcEntity();
+          return new NFFLineworkArcEntity();
         case NFFLineWorkElementType.kNFFLineWorkPointElement:
           return null; // NFFLineworkPointEntity
         case NFFLineWorkElementType.kNFFLineWorkTextElement:

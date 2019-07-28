@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL.Utilities
 {
@@ -77,7 +79,7 @@ namespace VSS.TRex.Designs.SVL.Utilities
       if (SingleRightSlope == NFFConsts.kNFFNullCrossSlopeValue)
         RightCrossSlope = Consts.NullDouble;
       else
-      RightCrossSlope = SingleRightSlope;
+        RightCrossSlope = SingleRightSlope;
     }
 
     public static string ReadWideStringFromStream(BinaryReader reader)
@@ -294,23 +296,23 @@ Huzzah!
 =dave
 */
 
-  /*    var
-        c, g : Extended;
-      X_x, X_y :
-      Extended;
-      Y_x, Y_y :
-      Extended;
-      T_x, T_y :
-      Extended;
-      Q_x, Q_y :
-      Extended;
-      Mag_T :
-      Extended;
-      CoefficientsSum :
-      Extended;
-      _Offset :
-      Extended;
-      begin*/
+      /*    var
+            c, g : Extended;
+          X_x, X_y :
+          Extended;
+          Y_x, Y_y :
+          Extended;
+          T_x, T_y :
+          Extended;
+          Q_x, Q_y :
+          Extended;
+          Mag_T :
+          Extended;
+          CoefficientsSum :
+          Extended;
+          _Offset :
+          Extended;
+          begin*/
 
       //For a given curved segment constructed on the line segment X (X would then be the
       //vector from the start of the curve to the end) from a start point P:
@@ -412,6 +414,172 @@ Huzzah!
       }
 
       return Result;
+    }
+
+    public static void DecomposeSmoothPolylineSegmentToPolyLine(NFFLineworkSmoothedPolyLineVertexEntity StartPt, NFFLineworkSmoothedPolyLineVertexEntity EndPt,
+      double Minimumlength,
+      double MaxSegmentLength,
+      int MaxNumSegments,
+      Action<double, double, DecompositionVertexLocation> DecompCallback)
+    {
+      // How long is this element?
+      double lx = EndPt.X - StartPt.X;
+      double ly = EndPt.Y - StartPt.Y;
+      double Len = MathUtilities.Hypot(lx, ly);
+
+      if (Len > Minimumlength)
+      {
+        // Cache these, for speed.
+        double Alpha = EndPt.Alpha;
+        double Beta = EndPt.Beta;
+
+        // Add the start point of the segment to the polyline vertices
+        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.dvlFirst);
+
+        // zero co-efficients means a straight line
+        if (Alpha != 0 && Beta != 0)
+        {
+          double AlphaPlusBeta = Alpha + Beta;
+          double TwoAlphaPlusBeta = AlphaPlusBeta + Alpha;
+
+          // so we want to keep each segment no more than MaxSegmentLength in distance
+          int SegmentCount = (int) Math.Truncate(Len / MaxSegmentLength) + 1;
+
+          // unless that means millions of segments...
+          if (SegmentCount > MaxNumSegments)
+            SegmentCount = MaxNumSegments;
+
+          double Step = 1.0 / SegmentCount;
+          double Ordinate = Step; // not starting at zero, of course.
+
+          // Now calc each segment.
+          for (int SegmentIdx = 1; SegmentIdx < SegmentCount; SegmentIdx++)
+          {
+            double o2 = Ordinate * Ordinate;
+            double Cubic = AlphaPlusBeta * o2 * Ordinate - TwoAlphaPlusBeta * o2 + Alpha * Ordinate;
+
+            XYZ pt;
+            pt.X = StartPt.X + lx * Ordinate;
+            pt.Y = StartPt.Y + ly * Ordinate;
+
+            if (Cubic != 0.0)
+            {
+              pt.X -= ly * Cubic;
+              pt.Y += lx * Cubic;
+            }
+
+            // Add the vertex to the polyline
+            DecompCallback(pt.X, pt.Y, DecompositionVertexLocation.dvlIntermediate);
+
+            Ordinate = Ordinate + Step;
+          }
+        }
+
+        // Add the end point of the segment to the polyline vertices
+        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.dvlLast);
+      }
+      else
+      {
+        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.dvlFirst);
+        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.dvlLast);
+      }
+    }
+
+    public static void VectoriseSmoothPolylineTolerance(NFFLineworkSmoothedPolyLineEntity SmoothPolyline,
+      double ATolerance,
+      Action<double, double, DecompositionVertexLocation> DecompCallback)
+    {
+// ATolerance is defined as a maximum deviation from the point being inserted to a line
+//  between the two points at each end of the interval being inserted into. 
+      double Alpha, Beta;
+      double AlphaPlusBeta;
+      double TwoAlphaPlusBeta;
+      double lx, ly;
+      NFFLineworkSmoothedPolyLineVertexEntity StartPt, EndPt;
+      XYZ StartPos, EndPos;
+
+      //  I : Integer;
+
+      XYZ GetPosition(double Ordinate)
+      {
+        //  o2 : Double;
+        //  Cubic : Double;
+
+        double o2 = Ordinate * Ordinate;
+        double Cubic = AlphaPlusBeta * o2 * Ordinate - TwoAlphaPlusBeta * o2 + Alpha * Ordinate;
+
+        var Result = new XYZ(StartPt.X + lx * Ordinate, StartPt.Y + ly * Ordinate, Consts.NullDouble);
+
+        if (Cubic != 0.0)
+        {
+          Result.X -= ly * Cubic;
+          Result.Y += lx * Cubic;
+        }
+
+        return Result;
+      }
+
+      void InsertIntoInterval(double IntStart, double IntEnd, XYZ startPos, XYZ endPos)
+      {
+        double HalfInterval = (IntStart + IntEnd) / 2;
+        var pos = GetPosition(HalfInterval);
+
+        if (Math.Abs(XYZ.GetPointOffset(startPos, endPos, pos)) > ATolerance)
+        {
+          // Process the interval before the point to insert
+          InsertIntoInterval(IntStart, HalfInterval, startPos, pos);
+
+          // Insert the point that divides this interval
+          DecompCallback(pos.X, pos.Y, DecompositionVertexLocation.dvlIntermediate);
+
+          // Process the interval after before the point to insert
+          InsertIntoInterval(HalfInterval, IntEnd, pos, endPos);
+        }
+      }
+
+      //  if SmoothPolyline.Vertices.Count < 2 then
+      //    Exit;
+
+      StartPt = SmoothPolyline.Vertices.First();
+      EndPt = SmoothPolyline.Vertices.Last();
+
+//  lx = EndPt.X - StartPt.X;
+//  ly = EndPt.Y - StartPt.Y;
+
+      // Add the start point of the smooth polyline
+      DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.dvlFirst);
+
+      for (int I = 0; I < SmoothPolyline.Vertices.Count - 1; I++)
+      {
+        EndPt = SmoothPolyline.Vertices[I + 1];
+
+        lx = EndPt.X - StartPt.X;
+        ly = EndPt.Y - StartPt.Y;
+
+        // Cache these, for speed.
+        Alpha = EndPt.Alpha;
+        Beta = EndPt.Beta;
+
+        // zero co-efficients means a straight line
+        if (Alpha != 0 && Beta != 0)
+        {
+          AlphaPlusBeta = Alpha + Beta;
+          TwoAlphaPlusBeta = AlphaPlusBeta + Alpha;
+
+          StartPos = new XYZ(StartPt.X, StartPt.Y, StartPt.Z);
+          EndPos = new XYZ(EndPt.X, EndPt.Y, EndPt.Z);
+
+          InsertIntoInterval(0, 1, StartPos, EndPos);
+        }
+
+        if (I < SmoothPolyline.Vertices.Count - 1)
+          DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.dvlIntermediate);
+
+        StartPt = EndPt;
+      }
+
+      // Add the end point of the segment to the polyline vertices
+      DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.dvlLast);
     }
   }
 }

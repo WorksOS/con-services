@@ -10,11 +10,11 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class NffLineworkPolyLineEntity : NFFStationedLineworkEntity
+  public class NFFLineworkPolyLineEntity : NFFStationedLineworkEntity
   { 
     public List<NFFLineworkPolyLineVertexEntity> Vertices; 
 
-    public NffLineworkPolyLineEntity()
+    public NFFLineworkPolyLineEntity()
     {
       ElementType = NFFLineWorkElementType.kNFFLineWorkPolyLineElement;
       Vertices = new List<NFFLineworkPolyLineVertexEntity>();
@@ -49,7 +49,7 @@ namespace VSS.TRex.Designs.SVL
     protected override double GetVertexElevation(int VertexNum)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in NffLineworkPolyLineEntity.GetVertexElevation");
+        "VertexNum out of range in NFFLineworkPolyLineEntity.GetVertexElevation");
 
       return Vertices[VertexNum].Z;
     }
@@ -57,7 +57,7 @@ namespace VSS.TRex.Designs.SVL
     protected override void SetVertexElevation(int VertexNum, double Value)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in NffLineworkPolyLineEntity.SetVertexElevation");
+        "VertexNum out of range in NFFLineworkPolyLineEntity.SetVertexElevation");
 
       Vertices[VertexNum].Z = Value;
     }
@@ -65,7 +65,7 @@ namespace VSS.TRex.Designs.SVL
     protected override double GetVertexStation(int VertexNum)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in NffLineworkPolyLineEntity.GetVertexStation");
+        "VertexNum out of range in NFFLineworkPolyLineEntity.GetVertexStation");
 
       return Vertices[VertexNum].Chainage;
     }
@@ -73,7 +73,7 @@ namespace VSS.TRex.Designs.SVL
     protected override void SetVertexStation(int VertexNum, double Value)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in NffLineworkPolyLineEntity.SetVertexStation");
+        "VertexNum out of range in NFFLineworkPolyLineEntity.SetVertexStation");
 
       Vertices[VertexNum].Chainage = Value;
     }
@@ -95,8 +95,8 @@ namespace VSS.TRex.Designs.SVL
 
       Vertices.Clear();
 
-      for (int I = 0; I < (Entity as NffLineworkPolyLineEntity).Vertices.Count; I++)
-        Vertices.Add((Entity as NffLineworkPolyLineEntity).Vertices[I].Clone());
+      for (int I = 0; I < (Entity as NFFLineworkPolyLineEntity).Vertices.Count; I++)
+        Vertices.Add((Entity as NFFLineworkPolyLineEntity).Vertices[I].Clone());
 
       for (int I = 0; I < Vertices.Count; I++)
         Vertices[I].Parent = this;
@@ -323,7 +323,7 @@ namespace VSS.TRex.Designs.SVL
     {
       if (!Range.InRange(Index, 0, Vertices.Count - 1))
       {
-        Debug.Assert(false, "Out of range vertex index in NffLineworkPolyLineEntity.ElementLength");
+        Debug.Assert(false, "Out of range vertex index in NFFLineworkPolyLineEntity.ElementLength");
         return 0;
       }
 

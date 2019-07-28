@@ -11,18 +11,18 @@ using VSS.TRex.Geometry;
 namespace VSS.TRex.Designs.SVL
 {
 
-  public class NffLineworkSmoothedPolyLineEntity : NFFStationedLineworkEntity
+  public class NFFLineworkSmoothedPolyLineEntity : NFFStationedLineworkEntity
   {
 
-    public List<NffLineworkSmoothedPolyLineVertexEntity> Vertices;
+    public List<NFFLineworkSmoothedPolyLineVertexEntity> Vertices;
 
     //   fPolylineProcessed: Boolean;
     //   fCreatedFromStream: Boolean;
 
-    public NffLineworkSmoothedPolyLineEntity()
+    public NFFLineworkSmoothedPolyLineEntity()
     {
       ElementType = NFFLineWorkElementType.kNFFLineWorkSmoothedPolyLineElement;
-      Vertices=  new List<NffLineworkSmoothedPolyLineVertexEntity>();
+      Vertices=  new List<NFFLineworkSmoothedPolyLineVertexEntity>();
 
     //  fCreatedFromStream= False;
     //  fPolylineProcessed= False;
@@ -57,7 +57,7 @@ namespace VSS.TRex.Designs.SVL
     protected override double GetVertexElevation(int VertexNum)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in NffLineworkSmoothedPolyLineEntity.GetVertexElevation");
+        "VertexNum out of range in NFFLineworkSmoothedPolyLineEntity.GetVertexElevation");
 
       return Vertices[VertexNum].Z;
     }
@@ -65,7 +65,7 @@ namespace VSS.TRex.Designs.SVL
     protected override void SetVertexElevation(int VertexNum, double Value)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in NffLineworkSmoothedPolyLineEntity.SetVertexElevation");
+        "VertexNum out of range in NFFLineworkSmoothedPolyLineEntity.SetVertexElevation");
 
       Vertices[VertexNum].Z = Value;
     }
@@ -73,7 +73,7 @@ namespace VSS.TRex.Designs.SVL
     protected override double GetVertexStation(int VertexNum)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in NffLineworkSmoothedPolyLineEntity.GetVertexStation");
+        "VertexNum out of range in NFFLineworkSmoothedPolyLineEntity.GetVertexStation");
 
       return Vertices[VertexNum].Chainage;
     }
@@ -81,7 +81,7 @@ namespace VSS.TRex.Designs.SVL
     protected override void SetVertexStation(int VertexNum, double Value)
     {
       Debug.Assert(Range.InRange(VertexNum, 0, Vertices.Count - 1),
-        "VertexNum out of range in NffLineworkSmoothedPolyLineEntity.SetVertexStation");
+        "VertexNum out of range in NFFLineworkSmoothedPolyLineEntity.SetVertexStation");
 
       Vertices[VertexNum].Chainage = Value;
     }
@@ -172,7 +172,7 @@ namespace VSS.TRex.Designs.SVL
           else
             Chainage = Consts.NullDouble;
 
-          Vertices.Add(new NffLineworkSmoothedPolyLineVertexEntity(this, X, Y, Z, Chainage, Consts.NullDouble));
+          Vertices.Add(new NFFLineworkSmoothedPolyLineVertexEntity(this, X, Y, Z, Chainage, Consts.NullDouble));
           if (I > 0)
           {
             Vertices.Last().Alpha = Alpha;
@@ -243,7 +243,7 @@ namespace VSS.TRex.Designs.SVL
 
     //   procedure ProcessPolyLine;
 
-    //   function Concatenate(SmoothedPolyline: NffLineworkSmoothedPolyLineEntity): Boolean;
+    //   function Concatenate(SmoothedPolyline: NFFLineworkSmoothedPolyLineEntity): Boolean;
 
     //   Procedure Reverse; Override;
 
@@ -329,7 +329,7 @@ namespace VSS.TRex.Designs.SVL
 
       //  if Length < (Distance - 0.0001) then
       //    begin
-      //      Assert(False, 'Length < Distance in NffLineworkSmoothedPolyLineEntity.ComputeXY'); {SKIP}
+      //      Assert(False, 'Length < Distance in NFFLineworkSmoothedPolyLineEntity.ComputeXY'); {SKIP}
       //      Exit;
       //    end;
     }

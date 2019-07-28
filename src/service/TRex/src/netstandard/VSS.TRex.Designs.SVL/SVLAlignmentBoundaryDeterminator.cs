@@ -137,7 +137,7 @@ namespace VSS.TRex.Designs.SVL
       if (!force && fence.NumVertices > 1 && SubtendedAngle(PtBrng1, PtBrng2) > Math.PI / 4)
       {
         // Check arc radii 
-        if (Element is NffLineworkArcEntity element)
+        if (Element is NFFLineworkArcEntity element)
           if (element.Radius() < (OffsetLeft + 0.001))
             fence.Points.RemoveAt(fence.NumVertices - 1);
           else if (element.Radius() > (OffsetRight - 0.001))

@@ -8,7 +8,7 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class NffLineworkArcEntity : NFFStationedLineworkEntity
+  public class NFFLineworkArcEntity : NFFStationedLineworkEntity
   {
     public double X1, Y1, Z1;
     public double X2, Y2, Z2;
@@ -69,7 +69,7 @@ namespace VSS.TRex.Designs.SVL
    if (VertexNum == 1)
      return GetEndTransitPoint().Z;
 
-   Debug.Assert(false, "Invalid vertex index in NffLineworkArcEntity.GetVertexElevation");
+   Debug.Assert(false, "Invalid vertex index in NFFLineworkArcEntity.GetVertexElevation");
      return Consts.NullDouble;
  }
 
@@ -91,7 +91,7 @@ namespace VSS.TRex.Designs.SVL
    }
    else
    {
-     Debug.Assert(false, "Invalid vertex index in NffLineworkArcEntity.SetVertexElevation");
+     Debug.Assert(false, "Invalid vertex index in NFFLineworkArcEntity.SetVertexElevation");
    }
  }
 
@@ -102,7 +102,7 @@ namespace VSS.TRex.Designs.SVL
    if (VertexNum == 1)
      return GetEndStation();
 
-   Debug.Assert(false, "Invalid vertex index in NffLineworkArcEntity.GetVertexStation");
+   Debug.Assert(false, "Invalid vertex index in NFFLineworkArcEntity.GetVertexStation");
    return Consts.NullDouble;
  }
 
@@ -114,7 +114,7 @@ namespace VSS.TRex.Designs.SVL
       { } // Ignore it - end stationing controlled by element geometry
       else
       {
-        Debug.Assert(false, "Invalid vertex index in NffLineworkArcEntity.setVertexStation");
+        Debug.Assert(false, "Invalid vertex index in NFFLineworkArcEntity.setVertexStation");
       }
  }
 
@@ -128,7 +128,7 @@ namespace VSS.TRex.Designs.SVL
        const Value: Double); Override;
    */
 
-    public NffLineworkArcEntity()
+    public NFFLineworkArcEntity()
     {
       ElementType = NFFLineWorkElementType.kNFFLineWorkArcElement;
 
@@ -148,7 +148,7 @@ namespace VSS.TRex.Designs.SVL
       OriginalEndPointsHash = Consts.NullDouble;
     }
 
-    public NffLineworkArcEntity(int AColour,
+    public NFFLineworkArcEntity(int AColour,
       double AX1, double AY1, double AZ1, double AX2, double AY2, double AZ2,
       double ACX, double ACY, double ACZ,
       bool AClockwise,
@@ -188,7 +188,7 @@ namespace VSS.TRex.Designs.SVL
     {
       base.Assign(Entity);
 
-      var ArcEty = Entity as NffLineworkArcEntity;
+      var ArcEty = Entity as NFFLineworkArcEntity;
 
       X1= ArcEty.X1;
       Y1= ArcEty.Y1;
@@ -525,7 +525,7 @@ namespace VSS.TRex.Designs.SVL
 
         if (Angle < 0)
         {
-          Debug.Assert(Angle > -0.001, "Probable arc element transit angle calculation error in NffLineworkArcEntity.ComputeStnOfs");
+          Debug.Assert(Angle > -0.001, "Probable arc element transit angle calculation error in NFFLineworkArcEntity.ComputeStnOfs");
           Angle = 0;
         }
 

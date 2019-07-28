@@ -3,7 +3,7 @@ using VSS.TRex.Common;
 
 namespace VSS.TRex.Designs.SVL
 {
-  public class NffLineworkSmoothedPolyLineVertexEntity : NFFLineworkPolyLineVertexEntity
+  public class NFFLineworkSmoothedPolyLineVertexEntity : NFFLineworkPolyLineVertexEntity
   {
     public double TrailingAzimuth;
 
@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.SVL
     public double Alpha;
     public double Beta;
 
-    public NffLineworkSmoothedPolyLineVertexEntity()
+    public NFFLineworkSmoothedPolyLineVertexEntity()
     {
       //fVertexRedundant = False;
 
@@ -22,15 +22,15 @@ namespace VSS.TRex.Designs.SVL
 
     //  private fVertexRedundant: Boolean;
 
-    public NffLineworkSmoothedPolyLineVertexEntity(NFFLineworkEntity AParent,
+    public NFFLineworkSmoothedPolyLineVertexEntity(NFFLineworkEntity AParent,
     double AX, double AY, double AZ, double AChainage, double ATrailingAzimuth) : base(AParent, AX, AY, AZ, AChainage)
     {
       TrailingAzimuth = ATrailingAzimuth;
     }
 
-    public NffLineworkSmoothedPolyLineVertexEntity Clone() 
+    public NFFLineworkSmoothedPolyLineVertexEntity Clone() 
     {
-      var Result = new NffLineworkSmoothedPolyLineVertexEntity();
+      var Result = new NFFLineworkSmoothedPolyLineVertexEntity();
       Result.Assign(this);
       return Result;
     }
@@ -39,9 +39,9 @@ namespace VSS.TRex.Designs.SVL
     {
       base.Assign(VertexEntity);
 
-      TrailingAzimuth = (VertexEntity as NffLineworkSmoothedPolyLineVertexEntity).TrailingAzimuth;
-      Alpha = (VertexEntity as NffLineworkSmoothedPolyLineVertexEntity).Alpha;
-      Beta = (VertexEntity as NffLineworkSmoothedPolyLineVertexEntity).Beta;
+      TrailingAzimuth = (VertexEntity as NFFLineworkSmoothedPolyLineVertexEntity).TrailingAzimuth;
+      Alpha = (VertexEntity as NFFLineworkSmoothedPolyLineVertexEntity).Alpha;
+      Beta = (VertexEntity as NFFLineworkSmoothedPolyLineVertexEntity).Beta;
     }
 
     // SaveToNFFStream/LoadFromNFFStream implement GENERIC save/load functionality
@@ -62,6 +62,6 @@ namespace VSS.TRex.Designs.SVL
   // SwapCoefficients swaps the sens of direction through this vertex
     //  procedure SwapCoefficients;
 
-    // Function IsSameAs(const Other : NffLineworkSmoothedPolyLineVertexEntity) : Boolean;
+    // Function IsSameAs(const Other : NFFLineworkSmoothedPolyLineVertexEntity) : Boolean;
   }
 }
