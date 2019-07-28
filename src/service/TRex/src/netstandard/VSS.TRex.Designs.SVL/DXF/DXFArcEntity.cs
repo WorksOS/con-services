@@ -35,18 +35,7 @@ namespace VSS.TRex.Designs.SVL.DXF
 
     public override void SaveToFile(StreamWriter writer, DistanceUnitsType OutputUnits)
     {
-//      var
-//      Radius : Double;
-      //    start_angle,
-      //  end_angle: Double;
-      //IncAngle: Double;
-      //  ItsACircle: Boolean;
-
       GetStartEndAnglesRadius(out double start_angle, out double end_angle, out double radius);
-
-      //  if (fClockwise and not fReversed) or (not fClockwise and fReversed) then
-      //  if fClockwise then
-      //    swap_f(start_angle, end_angle);
 
       double IncAngle = ArcUtils.CalcIncludedAngle(X1, Y1, X2, Y2, CX, CY, Clockwise);
       bool ItsACircle = (start_angle == end_angle) && SingleArcEdgePoint;
