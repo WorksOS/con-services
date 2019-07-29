@@ -45,7 +45,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       int otgCellY,
       IFilterSet filters,
       DesignOffset referenceDesign,
-      IOverrideParameters overrides)
+      IOverrideParameters overrides,
+      ILiftParameters liftParams)
     {
       ProjectID = siteModelID;
       Mode = mode;
@@ -55,6 +56,7 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       Filters = filters;
       ReferenceDesign = referenceDesign;
       Overrides = overrides;
+      LiftParams = liftParams;
     }
 
     /// <summary>

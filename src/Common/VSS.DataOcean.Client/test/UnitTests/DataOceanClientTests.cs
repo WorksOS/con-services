@@ -580,17 +580,31 @@ namespace VSS.DataOcean.Client.UnitTests
         new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedFolderResult } };
 
       const string multiFileName = "dummy.dxf_Tiles$";
+      var fileUid = Guid.NewGuid();
+      var updatedAt = DateTime.UtcNow.AddHours(-2);
       var expectedFileResult = new DataOceanFile
       {
-        Id = Guid.NewGuid(),
+        Id = fileUid,
         Name = multiFileName,
         ParentId = expectedFolderResult.Id,
         Multifile = true,
         RegionPreferences = new List<string> { "us1" },
         Status = "AVAILABLE",
-        DataOceanDownload = new DataOceanTransfer { Url = downloadUrl }
+        DataOceanDownload = new DataOceanTransfer { Url = downloadUrl },
+        UpdatedAt = updatedAt
       };
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult } };
+      var otherFileResult = new DataOceanFile
+      {
+        Id = fileUid,
+        Name = multiFileName,
+        ParentId = expectedFolderResult.Id,
+        Multifile = true,
+        RegionPreferences = new List<string> { "us1" },
+        Status = "AVAILABLE",
+        DataOceanDownload = new DataOceanTransfer { Url = downloadUrl },
+        UpdatedAt = updatedAt.AddHours(-5)
+      };
+      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult, otherFileResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");

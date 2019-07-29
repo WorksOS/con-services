@@ -148,7 +148,7 @@ namespace VSS.TRex.Profiling
         x.CellOverrideMask = cellOverrideMask;
 
         // Reach into the sub grid request layer and retrieve an appropriate sub grid
-        var requestSubGridInternalResult = await x.RequestSubGridInternal(address, null, prodDataAtAddress, true);
+        var requestSubGridInternalResult = await x.RequestSubGridInternal(address, null, null, prodDataAtAddress, true);
         if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
           Log.LogError($"Request for sub grid {address} request failed with code {requestSubGridInternalResult.requestResult}");
 
