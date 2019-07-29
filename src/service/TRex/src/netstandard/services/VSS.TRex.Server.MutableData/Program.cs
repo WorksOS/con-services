@@ -11,6 +11,7 @@ using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
@@ -150,6 +151,8 @@ namespace VSS.TRex.Server.MutableData
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new RecycledMemoryStreamHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelsHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new TAGFileProcessingHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
+
       IO.DIUtilities.AddHeartBeatLoggers();
     }
 

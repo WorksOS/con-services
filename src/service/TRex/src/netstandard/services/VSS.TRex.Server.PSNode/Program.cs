@@ -7,6 +7,7 @@ using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems;
@@ -202,7 +203,8 @@ namespace VSS.TRex.Server.PSNode
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
-      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SpatialMemoryCacheHeartBeatLogger());      
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SpatialMemoryCacheHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
 
     static async Task<int> Main(string[] args)
