@@ -106,9 +106,15 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       Assert.Equal(request.ReportTemperature, result.ReportTemperature);
       //Overrides mapping tested separately in AutoMapperTests
       if (useOverrides)
+      {
         Assert.NotNull(result.Overrides);
+        Assert.NotNull(result.LiftParams);
+      }
       else
+      {
         Assert.Null(result.Overrides);
+        Assert.Null(result.LiftParams);
+      }
     }
 
     [Theory]

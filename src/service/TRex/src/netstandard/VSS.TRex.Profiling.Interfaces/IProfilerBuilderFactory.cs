@@ -62,6 +62,7 @@ namespace VSS.TRex.Profiling.Interfaces
       IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
       VolumeComputationType volumeComputationType,
-      IOverrideParameters overrides);
+      IOverrideParameters overrides,
+      ILiftParameters liftParams);
   }
 }

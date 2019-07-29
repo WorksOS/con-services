@@ -39,6 +39,8 @@ namespace VSS.TRex.Filters.Models
 
         public IOverrideParameters Overrides { get; set; }
 
+        public ILiftParameters LiftParams { get; set; }
+
         // TODO     LiftBuildSettings: TICLiftBuildSettings;
 
         /// <summary>
@@ -60,6 +62,7 @@ namespace VSS.TRex.Filters.Models
             CellProfile = null;
             LowestPassIdx = Common.Consts.NullLowestPassIdx;
             Overrides = new OverrideParameters();
+            LiftParams = new LiftParameters();
 //          todo  LiftBuildSettings = Nil;
         }
     }

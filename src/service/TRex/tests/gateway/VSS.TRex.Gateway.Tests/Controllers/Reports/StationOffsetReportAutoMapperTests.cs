@@ -100,10 +100,16 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       Assert.Equal(request.Offsets.Length, result.Offsets.Length);
       Assert.Equal(request.Offsets[2], result.Offsets[2]);
       //Overrides mapping tested separately in AutoMapperTests
-     if (useOverrides)
-       Assert.NotNull(result.Overrides);
-     else
-       Assert.Null(result.Overrides);
+      if (useOverrides)
+      {
+        Assert.NotNull(result.Overrides);
+        Assert.NotNull(result.LiftParams);
+      }
+      else
+      {
+        Assert.Null(result.Overrides);
+        Assert.Null(result.LiftParams);
+      }
     }
 
     [Theory]
