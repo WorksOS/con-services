@@ -193,7 +193,10 @@ namespace VSS.TRex.Profiling
               Log.LogError($"Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {getDesignHeightsResult.errorCode}.");
           }
           else
+          {
+            designHeights = getDesignHeightsResult.designHeights;
             okToProceed = true;
+          }
         }
         else
           Log.LogError("Missing design reference. Call to request Summary Volumes Profile using design failed due to no reference design");
