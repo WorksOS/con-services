@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       request.Should().NotBeNull();
     }
 
-    [Fact(Skip="See BUG#85914")]
+    [Fact(Skip="BUG#85914")]
     public async Task Test_AlignmentDesignStationRangeRequest()
     {
       AddDesignProfilerGridRouting();
@@ -35,7 +35,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       var referenceDesign = new DesignOffset(designUid, 0);
 
       var request = new AlignmentDesignStationRangeRequest();
-      var response = await request.ExecuteAsync(new DesignSubGridRequestArgumentBase()
+      var response = await request.ExecuteAsync(new DesignSubGridRequestArgumentBase
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,

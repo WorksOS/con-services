@@ -841,7 +841,6 @@ namespace VSS.TRex.Designs
         }
         else
           Log.LogError($"Unable to create and save boundary file {fileName}");
-
       }
 
       return result;
