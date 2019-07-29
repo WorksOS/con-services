@@ -21,9 +21,9 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Represents the master guidance alignment selected from the NFFFile.
     /// </summary>
-    private NFFGuidableAlignmentEntity Data;
+    private NFFGuidableAlignmentEntity data;
 
-    private BoundingWorldExtent3D BoundingBox = BoundingWorldExtent3D.Inverted();
+    private BoundingWorldExtent3D boundingBox = BoundingWorldExtent3D.Inverted();
 
     /// <summary>
     /// Constructs a guidance alignment design with a cell size used for computing filter patches
@@ -33,7 +33,7 @@ namespace VSS.TRex.Designs
     {
       _cellSize = cellSize;
 
-      Data = new NFFGuidableAlignmentEntity();
+      data = new NFFGuidableAlignmentEntity();
     }
 
     private struct Corner
@@ -55,55 +55,58 @@ namespace VSS.TRex.Designs
       new Corner(SubGridTreeConsts.SubGridTreeDimension - 1, SubGridTreeConsts.SubGridTreeDimension - 1)
     };
 
-    public override bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset, SubGridTreeBitmapSubGridBits Mask, SubGridTreeBitmapSubGridBits Patch, double OriginX, double OriginY, double CellSize, double Offset)
+    public override bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset, 
+      SubGridTreeBitmapSubGridBits mask, SubGridTreeBitmapSubGridBits patch, 
+      double originX, double originY, double cellSize, double offset)
     {
-      double LeftOffsetValue = -LeftOffset;
-      double RightOffsetValue = RightOffset;
+      double leftOffsetValue = -leftOffset;
+      double rightOffsetValue = rightOffset;
 
-      if (LeftOffsetValue > RightOffsetValue)
-        MinMax.Swap(ref LeftOffsetValue, ref RightOffsetValue);
+      if (leftOffsetValue > rightOffsetValue)
+        MinMax.Swap(ref leftOffsetValue, ref rightOffsetValue);
 
       //  {$IFDEF DEBUG}
-      //   SIGLogMessage.PublishNoODS(Self, Format('Constructing filter patch for Stn:%.3f-%.3f, Ofs:%.3f-%.3f, OriginX:%.3f, OriginY:%.3f',
-      //   [StartStn, EndStn, LeftOffsetValue, RightOffsetValue, OriginX, OriginY]), slmcDebug);
+      //   SIGLogMessage.PublishNoODS(Self, Format('Constructing filter patch for Stn:%.3f-%.3f, Ofs:%.3f-%.3f, originX:%.3f, originY:%.3f',
+      //   [startStn, endStn, LeftOffsetValue, RightOffsetValue, originX, originY]), slmcDebug);
       //   {$ENDIF}
 
-      if (Data == null)
+      if (data == null)
       {
-        Log.LogError("No Data element provided to SVL filter patch calculation");
+        Log.LogError("No data element provided to SVL filter patch calculation");
         return false;
       }
 
-      NFFStationedLineworkEntity Element;
-      Patch.Clear();
+      patch.Clear();
 
       // Check the corners of the sub grid. If all are out of the offset range then assume
       // none of the cells are applicable. All four corners need to be on the same side of the
       // alignment in terms of offset to fail the sub grid.
-      int CornersOutOfOffsetRange = 0;
-      int CornersOutOfOffsetRangeSign = 0;
+      int cornersOutOfOffsetRange = 0;
+      int cornersOutOfOffsetRangeSign = 0;
 
-      double OriginXPlusHalfCellSize = OriginX + CellSize / 2;
-      double OriginYPlusHalfCellSize = OriginY + CellSize / 2;
+      double originXPlusHalfCellSize = originX + cellSize / 2;
+      double originYPlusHalfCellSize = originY + cellSize / 2;
 
-      for (int I = 0; I < Corners.Length; I++)
+      for (int i = 0; i < Corners.Length; i++)
       {
-        Data.ComputeStnOfs(OriginXPlusHalfCellSize + Corners[I].X * CellSize, OriginYPlusHalfCellSize + Corners[I].Y * CellSize, out double Stn, out double Ofs);
+        data.ComputeStnOfs(originXPlusHalfCellSize + Corners[i].X * cellSize, originYPlusHalfCellSize + Corners[i].Y * cellSize, out double stn, out double ofs);
 
-        if (!((Stn != Consts.NullDouble && Ofs != Consts.NullDouble) && Range.InRange(Stn, StartStn, EndStn)))
-          if (!Range.InRange(Ofs, LeftOffsetValue, RightOffsetValue))
+        if (!(stn != Consts.NullDouble && ofs != Consts.NullDouble && Range.InRange(stn, startStn, endStn)))
+        {
+          if (!Range.InRange(ofs, leftOffsetValue, rightOffsetValue))
           {
-            if (I == 0)
-              CornersOutOfOffsetRangeSign = Math.Sign(Ofs);
+            if (i == 0)
+              cornersOutOfOffsetRangeSign = Math.Sign(ofs);
 
-            if (CornersOutOfOffsetRangeSign == Math.Sign(Ofs))
-              CornersOutOfOffsetRange++;
+            if (cornersOutOfOffsetRangeSign == Math.Sign(ofs))
+              cornersOutOfOffsetRange++;
             else
               break;
           }
+        }
       }
 
-      if (CornersOutOfOffsetRange == Corners.Length)
+      if (cornersOutOfOffsetRange == Corners.Length)
       {
         // Return success with the empty patch
         //{$IFDEF DEBUG}
@@ -115,30 +118,30 @@ namespace VSS.TRex.Designs
       // Iterate across the cells in the mask computing and checking the stn:ofs of
       // each point using the previously successful element as a hint for the next
       // computation
-      for (int I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
+      for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
       {
-        for (int J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
+        for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
         {
-          if (Mask.BitSet(I, J))
+          if (mask.BitSet(i, j))
           {
             // Force element to be nil for all calculation until we resolve the issue
             // of an in appropriate element 'capturing' the focus and then being used to
             // calculate inappropriate offsets due to it's station range covering the
             // points being computed.
 
-            Element = null;
+            NFFStationedLineworkEntity element = null;
 
-            Data.ComputeStnOfs(OriginXPlusHalfCellSize + I * CellSize, OriginYPlusHalfCellSize + J * CellSize,
-              out double Stn, out double Ofs, ref Element);
+            data.ComputeStnOfs(originXPlusHalfCellSize + i * cellSize, originYPlusHalfCellSize + j * cellSize,
+              out double stn, out double ofs, ref element);
 
-            if (Stn != Consts.NullDouble && Ofs != Consts.NullDouble)
-              Patch.SetBitValue(I, J, Range.InRange(Stn, StartStn, EndStn) && Range.InRange(Ofs, LeftOffsetValue, RightOffsetValue));
+            if (stn != Consts.NullDouble && ofs != Consts.NullDouble)
+              patch.SetBitValue(i, j, Range.InRange(stn, startStn, endStn) && Range.InRange(ofs, leftOffsetValue, rightOffsetValue));
           }
         }
       }
 
       //  {$IFDEF DEBUG}
-      //  SIGLogMessage.PublishNoODS(Self, Format('Filter patch construction successful with %d bits', [Patch.CountBits]), slmcDebug);
+      //  SIGLogMessage.PublishNoODS(Self, Format('Filter patch construction successful with %d bits', [patch.CountBits]), slmcDebug);
       //  {$ENDIF}
 
       return true;
@@ -156,10 +159,10 @@ namespace VSS.TRex.Designs
 
     public override void GetExtents(out double x1, out double y1, out double x2, out double y2)
     {
-      x1 = BoundingBox.MinX;
-      y1 = BoundingBox.MinY;
-      x2 = BoundingBox.MaxX;
-      y2 = BoundingBox.MaxY;
+      x1 = boundingBox.MinX;
+      y1 = boundingBox.MinY;
+      x2 = boundingBox.MaxX;
+      y2 = boundingBox.MaxY;
     }
 
     public override void GetHeightRange(out double z1, out double z2)
@@ -201,25 +204,25 @@ namespace VSS.TRex.Designs
 
     public override DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true)
     {
-      DesignLoadResult Result;
+      DesignLoadResult result;
       var NFFFile = SVL.NFFFile.CreateFromFile(fileName);
 
       try
       {
-        Result = DesignLoadResult.NoAlignmentsFound;
+        result = DesignLoadResult.NoAlignmentsFound;
 
-        for (int I = 0; I < NFFFile.GuidanceAlignments.Count; I++)
+        for (int i = 0; i < NFFFile.GuidanceAlignments.Count; i++)
         {
-          if (NFFFile.GuidanceAlignments[I].IsMasterAlignment())
+          if (NFFFile.GuidanceAlignments[i].IsMasterAlignment())
           {
-            Data = NFFFile.GuidanceAlignments[I];
+            data = NFFFile.GuidanceAlignments[i];
 
-            NFFFile.GuidanceAlignments.RemoveAt(I);
+            NFFFile.GuidanceAlignments.RemoveAt(i);
 
-            if (Data != null)
+            if (data != null)
             {
-              BoundingBox = Data.BoundingBox();
-              Result = DesignLoadResult.Success;
+              boundingBox = data.BoundingBox();
+              result = DesignLoadResult.Success;
             }
 
             break;
@@ -229,15 +232,27 @@ namespace VSS.TRex.Designs
       catch (Exception e)
       {
         Log.LogError(e, $"Exception in {nameof(LoadFromFile)}");
-        Result = DesignLoadResult.UnknownFailure;
+        result = DesignLoadResult.UnknownFailure;
       }
 
-      return Result;
+      return result;
     }
 
-    public override Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
+    /// <summary>
+    /// Loads the SVL design file/s, from storage
+    /// </summary>
+    /// <param name="siteModelUid"></param>
+    /// <param name="fileName"></param>
+    /// <param name="localPath"></param>
+    /// <param name="loadIndices"></param>
+    /// <returns></returns>
+    public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
-      throw new NotImplementedException();
+      var isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
+      if (!isDownloaded)
+        return DesignLoadResult.UnknownFailure;
+
+      return DesignLoadResult.Success;
     }
   }
 }

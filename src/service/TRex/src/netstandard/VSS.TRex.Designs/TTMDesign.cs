@@ -275,24 +275,24 @@ namespace VSS.TRex.Designs
       } while ((NumCellRowsToProcess > 0) && !SingleRowOnly); // or not InRange(ProcessingCellYIndex, 0, kSubGridTreeDimension - 1);
     }
   
-    public override bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
-      SubGridTreeBitmapSubGridBits Mask,
-      SubGridTreeBitmapSubGridBits Patch,
-      double OriginX, double OriginY,
-      double CellSize,
-      double Offset)
+    public override bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset,
+      SubGridTreeBitmapSubGridBits mask,
+      SubGridTreeBitmapSubGridBits patch,
+      double originX, double originY,
+      double cellSize,
+      double offset)
     {
       var Heights = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
-      if (InterpolateHeights(Heights, OriginX, OriginY, CellSize, Offset))
+      if (InterpolateHeights(Heights, originX, originY, cellSize, offset))
       {
-        Mask.ForEachSetBit((x, y) =>
+        mask.ForEachSetBit((x, y) =>
         {
-          if (Heights[x, y] == Common.Consts.NullHeight) Mask.ClearBit(x, y);
+          if (Heights[x, y] == Common.Consts.NullHeight) mask.ClearBit(x, y);
         });
-        Patch.Assign(Mask);
+        patch.Assign(mask);
 
-        //SIGLogMessage.PublishNoODS(Self, Format('Filter patch construction successful with %d bits', [Patch.CountBits]), ...);
+        //SIGLogMessage.PublishNoODS(Self, Format('Filter patch construction successful with %d bits', [patch.CountBits]), ...);
 
         return true;
       }
@@ -557,7 +557,7 @@ namespace VSS.TRex.Designs
           triangleCellExtents[i] = triangleCellExtent;
         }
 
-        // Initialise Patch to null height values
+        // Initialise patch to null height values
         Array.Copy(kNullPatch, 0, Patch, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
 
         // Iterate over all the cells in the grid using the triangle sub grid cell extents to filter
