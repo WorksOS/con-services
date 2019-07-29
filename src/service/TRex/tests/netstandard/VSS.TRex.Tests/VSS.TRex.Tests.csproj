@@ -118,28 +118,28 @@
     <None Update="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Bug36372.ttm.%24DesignBoundary%24">
+    <None Update="TestData\Common\Bug36372.ttm.DesignBoundary">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Bug36372.ttm.%24DesignSpatialIndex%24">
+    <None Update="TestData\Common\Bug36372.ttm.DesignSpatialIndex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Bug36372.ttm.%24DesignSubgridIndex%24">
+    <None Update="TestData\Common\Bug36372.ttm.DesignSubgridIndex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.%24DesignBoundary%24">
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.DesignBoundary">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\TestTAGFile-MDP.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.%24DesignSpatialIndex%24">
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.DesignSpatialIndex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.%24DesignSubgridIndex%24">
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.DesignSubgridIndex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\TestTAGFile.tag">
