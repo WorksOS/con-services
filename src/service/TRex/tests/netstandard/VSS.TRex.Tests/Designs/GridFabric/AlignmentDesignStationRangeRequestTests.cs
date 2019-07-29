@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       request.Should().NotBeNull();
     }
 
-    [Fact(Skip="See BUG#85914")]
+    [Fact]
     public async Task Test_AlignmentDesignStationRangeRequest()
     {
       AddDesignProfilerGridRouting();
