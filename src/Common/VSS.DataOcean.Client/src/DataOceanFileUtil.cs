@@ -146,13 +146,11 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the generated DXF file name
     /// </summary>
-    public static string GeneratedFileName(string fileName, ImportedFileType fileType, Guid importedFileUid)
+    public static string GeneratedFileName(string fileName, ImportedFileType fileType)
     {
       if (fileType == ImportedFileType.Alignment)
       {
-        //DataOcean does not support Japanese file names therefore we now store the file with a name of the file Uid
-        //return $"{Path.GetFileNameWithoutExtension(fileName)}{GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX}{DXF_FILE_EXTENSION}";
-        return $"{importedFileUid}{GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX}{DXF_FILE_EXTENSION}";
+        return $"{Path.GetFileNameWithoutExtension(fileName)}{GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX}{DXF_FILE_EXTENSION}";
       }
 
       if (fileType == ImportedFileType.Linework || fileType == ImportedFileType.GeoTiff)

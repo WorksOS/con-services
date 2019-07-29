@@ -126,6 +126,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           : $"UpsertImportedFileV2. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
       var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
+      var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(importedFileTbc.Name,
+        importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface || importedFileTbc.ImportedFileTypeId == ImportedFileType.GeoTiff,
+        importedFileUid, importedFileTbc.SurfaceFile.SurveyedUtc);
+
 
       ImportedFileDescriptorSingleResult importedFile;
       if (creating)
@@ -140,7 +144,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
-          DataOceanRootFolder, null, 0, importedFileUid);
+          DataOceanRootFolder, null, 0, importedFileUid, dataOceanFileName);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -168,7 +172,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
           fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolder, 0
+          DataOceanRootFolder, 0, dataOceanFileName
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>

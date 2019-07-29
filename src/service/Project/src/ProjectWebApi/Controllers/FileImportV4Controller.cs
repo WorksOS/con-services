@@ -550,7 +550,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         var createImportedFile = new CreateImportedFile(
           projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, 
-          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset, importedFileUid);
+          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset, importedFileUid, dataOceanFileName);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -576,7 +576,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             : null,
           dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
           Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolder, offset
+          DataOceanRootFolder, offset, dataOceanFileName
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>

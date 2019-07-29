@@ -104,19 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             {
               var tasks = new List<Task>();
               //delete generated DXF tiles
-              string dxfFileName = deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ?
-                DataOceanFileUtil.GeneratedFileName(deleteImportedFile.FileDescriptor.FileName,
-                  ImportedFileType.Alignment, deleteImportedFile.ImportedFileUid) : dataOceanFileName;
-              switch (deleteImportedFile.ImportedFileType)
-              {
-                case ImportedFileType.GeoTiff:
-                case ImportedFileType.Linework:
-                  break;
-                case ImportedFileType.Alignment:
-                  dxfFileName = DataOceanFileUtil.GeneratedFileName(deleteImportedFile.FileDescriptor.FileName,
-                    ImportedFileType.Alignment, deleteImportedFile.ImportedFileUid);
-                  break;
-              }
+              string dxfFileName = DataOceanFileUtil.GeneratedFileName(dataOceanFileName, deleteImportedFile.ImportedFileType);
               tasks.Add(pegasusClient.DeleteTiles(dxfFileName, DataOceanHelper.CustomHeaders(authn)));
 
               if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)

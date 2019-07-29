@@ -125,7 +125,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
       var project = new ProjectDatabaseModel { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
@@ -197,7 +197,7 @@ namespace VSS.MasterData.ProjectTests.Executors
        Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.DesignSurface,
        null, DxfUnitsType.Meters,
        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44),
-       fileDescriptor, importedFileUid, importedFileId, "some folder", 0
+       fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -355,7 +355,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, surveyedUtc, DxfUnitsType.Meters,
-        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0, importedFileUid);
+        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -440,7 +440,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -496,7 +496,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
        Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
-       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", 0
+       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -655,7 +655,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -741,7 +741,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -799,7 +799,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
        Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
-       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", newOffset
+       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", newOffset, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
