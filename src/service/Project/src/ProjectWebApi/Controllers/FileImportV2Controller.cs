@@ -128,7 +128,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
       var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(importedFileTbc.Name,
         importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface || importedFileTbc.ImportedFileTypeId == ImportedFileType.GeoTiff,
-        importedFileUid, importedFileTbc.SurfaceFile.SurveyedUtc);
+        importedFileUid, importedFileTbc.SurfaceFile?.SurveyedUtc);
 
 
       ImportedFileDescriptorSingleResult importedFile;
@@ -137,9 +137,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         var createImportedFile = new CreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
           fileDescriptor,
           importedFileTbc.ImportedFileTypeId,
-          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
-            ? importedFileTbc.SurfaceFile.SurveyedUtc
-            : (DateTime?)null,
+          importedFileTbc.SurfaceFile?.SurveyedUtc,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
