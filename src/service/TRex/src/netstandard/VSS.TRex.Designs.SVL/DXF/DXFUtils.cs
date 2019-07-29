@@ -7,44 +7,44 @@ namespace VSS.TRex.Designs.SVL.DXF
 {
   public static class DXFUtils
   {
-    public static string FormatDXFRecNum(int RecNum) => $"{RecNum,3}";
+    public static string FormatDXFRecNum(int recNum) => $"{recNum,3}";
 
     public static void WriteDXFRecord(StreamWriter writer,
-      int RecNum,
-      string RecValue)
+      int recNum,
+      string recValue)
     {
-      writer.WriteLine(FormatDXFRecNum(RecNum));
-      writer.WriteLine(RecValue);
+      writer.WriteLine(FormatDXFRecNum(recNum));
+      writer.WriteLine(recValue);
     }
 
     public static void WriteXYZToDXF(StreamWriter writer,
-      int Offset,
-      double X, double Y, double Z,
+      int offset,
+      double x, double y, double z,
       DistanceUnitsType OutputUnits)
     {
-      WriteDXFRecord(writer, 10 + Offset, NoLocaleFloatToStrF(DXFDistance(X, OutputUnits), 6));
-      WriteDXFRecord(writer, 20 + Offset, NoLocaleFloatToStrF(DXFDistance(Y, OutputUnits), 6));
-      if (Z != Consts.NullDouble)
-        WriteDXFRecord(writer, 30 + Offset, NoLocaleFloatToStrF(DXFDistance(Z, OutputUnits), 6));
+      WriteDXFRecord(writer, 10 + offset, NoLocaleFloatToStrF(DXFDistance(x, OutputUnits), 6));
+      WriteDXFRecord(writer, 20 + offset, NoLocaleFloatToStrF(DXFDistance(y, OutputUnits), 6));
+      if (z != Consts.NullDouble)
+        WriteDXFRecord(writer, 30 + offset, NoLocaleFloatToStrF(DXFDistance(z, OutputUnits), 6));
     }
 
-    public static void WriteDXFAngle(StreamWriter writer, int RecNum, double Angle) // Angle is a mathematical angle in degrees
+    public static void WriteDXFAngle(StreamWriter writer, int recNum, double angle) // angle is a mathematical angle in degrees
     {
-      WriteDXFRecord(writer, RecNum, NoLocaleFloatToStrF(Angle, 9));
+      WriteDXFRecord(writer, recNum, NoLocaleFloatToStrF(angle, 9));
     }
 
-    public static string DXFiseLayerName(string LayerName)
+    public static string DXFiseLayerName(string layerName)
     {
       const int MaxDXFNameLength = 31;
       const string DXFNameCharSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-$";
 
-      var Result = (LayerName.Length < MaxDXFNameLength ? LayerName : LayerName.Substring(0, MaxDXFNameLength)).ToCharArray();
+      var result = (layerName.Length < MaxDXFNameLength ? layerName : layerName.Substring(0, MaxDXFNameLength)).ToCharArray();
 
-      for (int index = 0; index < Result.Length; index++)
-        if (!DXFNameCharSet.Contains(Result[index]))
-          Result[index] = '_';
+      for (int index = 0; index < result.Length; index++)
+        if (!DXFNameCharSet.Contains(result[index]))
+          result[index] = '_';
 
-      return new string(Result);
+      return new string(result);
     }
 
     public static string NoLocaleFloatToStrF(double value, int dp)
@@ -83,11 +83,11 @@ namespace VSS.TRex.Designs.SVL.DXF
       }
     }
 
-    public static double DXFDistance(double value, DistanceUnitsType OutputUnits)
+    public static double DXFDistance(double value, DistanceUnitsType outputUnits)
     {
       // Takes a value in SI units (ie: meters) and converts it to the project units for
 // writing out to a DXF file
-      return value / DistToMetres(OutputUnits);
+      return value / DistToMetres(outputUnits);
     }
   }
 }
