@@ -73,9 +73,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<MachineExecutionResult> GetMachinesOnProject([FromRoute] long projectId)
     {
       _log.LogInformation($"{nameof(GetMachinesOnProject)} Request. projectId: {projectId}");
-      
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
       return await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
@@ -98,8 +97,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachinesOnProject)} Request. projectUid: {projectUid}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       return await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
