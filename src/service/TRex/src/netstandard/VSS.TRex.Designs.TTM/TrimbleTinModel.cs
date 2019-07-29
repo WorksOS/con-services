@@ -210,16 +210,16 @@ namespace VSS.TRex.Designs.TTM
       }
     }
 
-    public void LoadFromFile(string FileName)
+    public void LoadFromFile(string fileName)
     {
-      using (var ms = new MemoryStream(File.ReadAllBytes(FileName)))
+      using (var ms = new MemoryStream(File.ReadAllBytes(fileName)))
       {
         LoadFromStream(ms);
       }
 
       if (ModelName.Length == 0)
       {
-        ModelName = Path.ChangeExtension(Path.GetFileName(FileName), "");
+        ModelName = Path.GetFileNameWithoutExtension(fileName);
       }
     }
 
