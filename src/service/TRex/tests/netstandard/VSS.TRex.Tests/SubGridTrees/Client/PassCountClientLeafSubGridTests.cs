@@ -31,7 +31,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       Assert.False(clientGrid.CellHasValue(0, 0), "Cell not set to correct null value");
     }
 
-    [Fact(Skip="See BUG#85914")]
+    [Fact]
     public void DumpToLog()
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
