@@ -125,6 +125,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           ? $"UpsertImportedFileV2. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
           : $"UpsertImportedFileV2. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
+      var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
+
       ImportedFileDescriptorSingleResult importedFile;
       if (creating)
       {
@@ -138,7 +140,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
-          DataOceanRootFolder, null, 0);
+          DataOceanRootFolder, null, 0, importedFileUid);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -187,7 +189,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         : ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.InternalServerError, -1);
 
       logger.LogInformation(
-        $"UpsertImportedFileV2. Completed succesfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
+        $"UpsertImportedFileV2. Completed successfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
 
       return response;
     }

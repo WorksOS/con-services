@@ -16,9 +16,12 @@ namespace VSS.MasterData.ProjectTests.Models
     [InlineData(ImportedFileType.ReferenceSurface, true)]
     [InlineData(ImportedFileType.SiteBoundary, false)]
     [InlineData(ImportedFileType.SurveyedSurface, true)]
+    [InlineData(ImportedFileType.GeoTiff, false)]
     public void IsDesignFileType_returns_correct_value_For_ImportedFileType(ImportedFileType importedFileType, bool expectedResult)
     {
-      var obj = new DeleteImportedFile(Guid.NewGuid(), importedFileType, null, Guid.NewGuid(), 0, 0, null);
+      var obj = new DeleteImportedFile(Guid.NewGuid(), importedFileType, null, 
+        Guid.NewGuid(), 0, 0, null, 
+        importedFileType == ImportedFileType.SurveyedSurface || importedFileType == ImportedFileType.GeoTiff ? DateTime.UtcNow : (DateTime?)null);
 
       Assert.Equal(expectedResult, obj.IsDesignFileType);
     }

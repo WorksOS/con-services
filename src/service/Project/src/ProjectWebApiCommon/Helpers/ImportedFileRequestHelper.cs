@@ -245,10 +245,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       IDictionary<string, string> headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, 
       IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName, string rootFolder)
     {
-      var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);
+      var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment, alignmentUid);
       //Get generated DXF file from Raptor
       var dxfContents = await raptorProxy.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
-      //GradefulWebRequest should throw an exception if the web api call fails but just in case...
+      //GracefulWebRequest should throw an exception if the web api call fails but just in case...
       if (dxfContents != null && dxfContents.Length > 0)
       {
         //Unzip it and save to DataOcean 

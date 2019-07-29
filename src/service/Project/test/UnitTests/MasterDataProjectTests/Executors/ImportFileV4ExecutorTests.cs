@@ -125,7 +125,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid);
 
       var project = new ProjectDatabaseModel { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
@@ -258,7 +258,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var deleteImportedFile = new DeleteImportedFile(
        Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
-       importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
+       importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -355,7 +355,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, surveyedUtc, DxfUnitsType.Meters,
-        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0);
+        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0, importedFileUid);
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -440,7 +440,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid);
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -558,7 +558,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var deleteImportedFile = new DeleteImportedFile(
         Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
-        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
+        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
 
@@ -655,7 +655,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid);
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -741,7 +741,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid);
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -864,7 +864,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var deleteImportedFile = new DeleteImportedFile(
         Guid.Parse(_projectUid), ImportedFileType.ReferenceSurface, fileDescriptor,
-        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
+        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
 
@@ -951,7 +951,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var deleteImportedFile = new DeleteImportedFile(
         Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
-        importedFileUid, importedFileId, parentImportedFile.LegacyImportedFileId, "some folder"
+        importedFileUid, importedFileId, parentImportedFile.LegacyImportedFileId, "some folder", null
       );
 
       var referenceList = new List<ImportedFile> { referenceImportedFile };

@@ -397,7 +397,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var deleteImportedFile = new DeleteImportedFile(
         projectUid, existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor),
-        Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId, DataOceanRootFolder);
+        Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId, 
+        DataOceanRootFolder, existing.SurveyedUtc);
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
@@ -478,6 +479,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       FileDescriptor fileDescriptor = null;
 
+      var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
+      var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(filename, 
+        importedFileType == ImportedFileType.SurveyedSurface || importedFileType == ImportedFileType.GeoTiff, 
+        importedFileUid, surveyedUtc);
+
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
         //FileDescriptor not used for reference surface but validation requires values
@@ -485,12 +491,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       else if (importedFileType == ImportedFileType.GeoTiff)
       {
-
         //save copy to DataOcean      
         await DataOceanHelper.WriteFileToDataOcean(
-            fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), filename,
-            importedFileType == ImportedFileType.GeoTiff,
-            surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn);
+            fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), dataOceanFileName,
+            true, surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn);
         fileDescriptor = FileDescriptor.CreateFileDescriptor(
           FileSpaceId,
           $"/{customerUid}/{projectUid}",
@@ -535,7 +539,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
           //save copy to DataOcean      
           await DataOceanHelper.WriteFileToDataOcean(
-              fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), filename,
+              fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), dataOceanFileName,
               importedFileType == ImportedFileType.SurveyedSurface,
               surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn)
             .ConfigureAwait(false);
@@ -545,7 +549,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (creating)
       {
         var createImportedFile = new CreateImportedFile(
-          projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset);
+          projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, 
+          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset, importedFileUid);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory

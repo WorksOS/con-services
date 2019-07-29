@@ -8,9 +8,6 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
-using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
-using VSS.Productivity3D.Scheduler.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -57,7 +54,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileName,
           createimportedfile.SurveyedUtc, JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
           createimportedfile.FileCreatedUtc, createimportedfile.FileUpdatedUtc, userEmailAddress,
-          log, serviceExceptionHandler, projectRepo, createimportedfile.ParentUid, createimportedfile.Offset)
+          log, serviceExceptionHandler, projectRepo, createimportedfile.ParentUid, createimportedfile.Offset,
+          createimportedfile.ImportedFileUid)
         .ConfigureAwait(false);
 
       if (useTrexGatewayDesignImport && createimportedfile.IsDesignFileType)
