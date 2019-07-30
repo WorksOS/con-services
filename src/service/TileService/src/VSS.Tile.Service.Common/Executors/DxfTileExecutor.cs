@@ -106,9 +106,10 @@ namespace VSS.Tile.Service.Common.Executors
             file.ImportedFileType == ImportedFileType.GeoTiff)
         {
           var fullPath = DataOceanFileUtil.DataOceanPath(rootFolder, file.CustomerUid, file.ProjectUid);
-          var fileName = DataOceanFileUtil.GeneratedFileName(file.Name, file.ImportedFileType);
-          if (file.ImportedFileType == ImportedFileType.GeoTiff)
-            fileName = fileName.IncludeSurveyedUtcInName(file.SurveyedUtc.Value);
+          var fileName = DataOceanFileUtil.DataOceanFileName(file.Name,
+            file.ImportedFileType == ImportedFileType.SurveyedSurface || file.ImportedFileType == ImportedFileType.GeoTiff,
+            Guid.Parse(file.ImportedFileUid), file.SurveyedUtc);
+          fileName = DataOceanFileUtil.GeneratedFileName(fileName, file.ImportedFileType);
 
           if (zoomLevel >= file.MinZoomLevel)
           {

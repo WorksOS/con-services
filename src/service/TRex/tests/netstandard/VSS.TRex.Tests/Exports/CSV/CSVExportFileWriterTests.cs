@@ -423,6 +423,5 @@ namespace VSS.TRex.Tests.Exports.CSV
       if (Directory.Exists(projectDir))
         Directory.Delete(projectDir, true);
     }
-
   }
 }

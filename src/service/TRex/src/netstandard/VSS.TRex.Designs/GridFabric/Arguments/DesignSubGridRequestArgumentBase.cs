@@ -32,6 +32,5 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       return base.ToString() + $" -> SiteModel:{ProjectID}, Design:{ReferenceDesign?.DesignID}, Offset:{ReferenceDesign?.Offset}";
     }
-
   }
 }

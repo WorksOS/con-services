@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Tests.Common;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
@@ -19,6 +18,11 @@ Arguments for building project #6, Christchurch Southern Motorway:
 
 namespace VSS.TRex.Tools.TagfileSubmitter
 {
+  public static class TestCommonConsts
+  {
+    public static string TestDataFilePath() => "C:\\Dev\\VSS.TRex\\TAGFiles.Tests\\TestData\\";
+  }
+
   public class Processor
   {
     private static ILogger Log = Logging.Logger.CreateLogger<Program>();

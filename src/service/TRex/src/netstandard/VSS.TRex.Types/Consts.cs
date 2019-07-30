@@ -40,6 +40,8 @@ namespace VSS.TRex.Common
 
     public const int NullLowestPassIdx = -1;
 
+    public const int NumberCellPassesToBeFetched= 1000;
+
     // Value representing a null machine speed encoded as an IEEE ushort
     public const ushort NullMachineSpeed = ushort.MaxValue;
 

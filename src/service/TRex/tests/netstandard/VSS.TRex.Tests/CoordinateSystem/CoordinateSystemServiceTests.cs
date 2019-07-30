@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Tests.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Models;

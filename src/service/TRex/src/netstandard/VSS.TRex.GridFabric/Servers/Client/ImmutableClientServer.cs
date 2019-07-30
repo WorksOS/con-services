@@ -1,4 +1,4 @@
-﻿using Apache.Ignite.Core;
+﻿ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
@@ -73,7 +73,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
               "-XX:+UseG1GC"
             },
 
-            JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
+            JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_HEAP_SIZE_MB),
 
             UserAttributes = new Dictionary<string, object>()
                         {

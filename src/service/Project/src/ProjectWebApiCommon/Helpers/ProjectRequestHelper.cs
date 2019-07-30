@@ -217,10 +217,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             await DataOceanHelper.WriteFileToDataOcean(
-              ms, rootFolder, customerUid, projectUid.ToString(), coordinateSystemFileName,
-              false, null, log, serviceExceptionHandler, dataOceanClient, authn);
+              ms, rootFolder, customerUid, projectUid.ToString(), 
+              DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
+              false, null, log, serviceExceptionHandler, dataOceanClient, authn, projectUid);
           }
-
         }
         catch (Exception e)
         {

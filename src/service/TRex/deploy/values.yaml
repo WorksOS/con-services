@@ -25,13 +25,15 @@ service:
 
 applicationServer:
   replicaCount: 1
+  javaHeapSizeMb: 512
   resources: 
     requests:
       cpu: 300m
-      memory: 1.6Gi
+      memory: 1Gi
 
 designElevation:
   replicaCount: 1
+  javaHeapSizeMb: 512
   resources: 
     requests:
       cpu: 300m
@@ -39,6 +41,7 @@ designElevation:
 
 gateway:
   replicaCount: 1
+  javaHeapSizeMb: 256
   resources: 
     requests:
       cpu: 300m
@@ -46,17 +49,19 @@ gateway:
 
 immutableData:
   replicaCount: 1
+  javaHeapSizeMb: 512
   resources: 
     requests:
       cpu: 300m
-      memory: 1.6Gi
+      memory: 1Gi
 
 mutableData:
   replicaCount: 2
+  javaHeapSizeMb: 512
   resources: 
     requests:
       cpu: 300m
-      memory: 1.6Gi
+      memory: 1Gi
   storage:
     size: 10Gi
     className: efs
@@ -70,6 +75,7 @@ mutableData:
 
 mutableGateway:
   replicaCount: 1
+  javaHeapSizeMb: 256
   resources: 
     requests:
       cpu: 300m
@@ -77,10 +83,11 @@ mutableGateway:
 
 psnode:
   replicaCount: 2
+  javaHeapSizeMb: 4096
   resources: 
     requests:
       cpu: 500m
-      memory: 2.0Gi
+      memory: 6.0Gi
   storage:
     size: 10Gi
     className: efs
@@ -88,6 +95,7 @@ psnode:
 
 reportServer:
   replicaCount: 1
+  javaHeapSizeMb: 512
   resources:
     requests:
       cpu: 300m
@@ -95,6 +103,7 @@ reportServer:
 
 tileServer:
   replicaCount: 1
+  javaHeapSizeMb: 512
   resources: 
     requests:
       cpu: 300m
@@ -102,6 +111,7 @@ tileServer:
 
 tinExportServer:
   replicaCount: 1
+  javaHeapSizeMb: 512
   resources: 
     requests:
       cpu: 300m
@@ -109,6 +119,7 @@ tinExportServer:
 
 utilities:
   replicaCount: 0
+  javaHeapSizeMb: 128
   resources: 
     requests:
       cpu: 200m
@@ -116,6 +127,7 @@ utilities:
 
 webtools:
   replicaCount: 1
+  javaHeapSizeMb: 512
   resources: 
     requests:
       cpu: 300m

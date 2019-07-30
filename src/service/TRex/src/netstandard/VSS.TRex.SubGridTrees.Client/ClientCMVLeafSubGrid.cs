@@ -106,7 +106,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].MeasuredCMV = context.FilteredValue.FilteredPassData.FilteredPass.CCV;
       Cells[cellX, cellY].TargetCMV = context.FilteredValue.FilteredPassData.TargetValues.TargetCCV;
       Cells[cellX, cellY].PreviousMeasuredCMV = context.PreviousFilteredValue.FilteredPassData.FilteredPass.CCV;
-      Cells[cellX, cellY].PreviousMeasuredCMV = context.PreviousFilteredValue.FilteredPassData.TargetValues.TargetCCV;
+      Cells[cellX, cellY].PreviousTargetCMV = context.PreviousFilteredValue.FilteredPassData.TargetValues.TargetCCV;
 
       Cells[cellX, cellY].IsDecoupled = context.PreviousFilteredValue.FilteredPassData.FilteredPass.RMV > context.FilteredValue.FilteredPassData.EventValues.EventMachineRMVThreshold;
       Cells[cellX, cellY].IsUndercompacted = false;
