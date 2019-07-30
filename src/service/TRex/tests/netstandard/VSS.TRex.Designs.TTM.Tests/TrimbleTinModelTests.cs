@@ -149,7 +149,7 @@ namespace VSS.TRex.Designs.TTM.Tests
 
             var TTM2 = new TrimbleTINModel();
             TTM2.LoadFromFile(fileName);
-            TTM2.ModelName.Should().Be(Path.ChangeExtension(Path.GetFileName(fileName), ""));
+            TTM2.ModelName.Should().Be(Path.GetFileNameWithoutExtension(fileName));
 
             File.Delete(fileName);
         }

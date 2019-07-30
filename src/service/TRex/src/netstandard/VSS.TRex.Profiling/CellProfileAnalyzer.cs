@@ -54,6 +54,7 @@ namespace VSS.TRex.Profiling
 
     private ProfileCell ProfileCell;
     private IOverrideParameters Overrides;
+    private ILiftParameters LiftParams;
 
     private CellProfileAnalyzer()
     {}
@@ -72,7 +73,8 @@ namespace VSS.TRex.Profiling
       IFilterSet filterSet,
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
-      IOverrideParameters overrides) 
+      IOverrideParameters overrides,
+      ILiftParameters liftParams) 
       : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
     {
       CellLiftBuilder = cellLiftBuilder;
@@ -81,6 +83,7 @@ namespace VSS.TRex.Profiling
       PassFilterAnnex = new CellPassAttributeFilterProcessingAnnex();
       CellFilter = filterSet.Filters[0].SpatialFilter;
       Overrides = overrides;
+      LiftParams = liftParams;
     }
 
     /// <summary>
@@ -237,7 +240,7 @@ namespace VSS.TRex.Profiling
         if (ProfileCell.FilteredPassCount > 0)
         {
           if ((LayerStatus.Superseded & ProfileCell.Layers[I].Status) != 0 &&
-              !Dummy_LiftBuildSettings.IncludeSuperseded)
+              !LiftParams.IncludeSuperseded)
             continue;
 
           if (DataStillRequiredForCCV && ProfileCell.CellCCV == CellPassConsts.NullCCV &&
@@ -249,13 +252,13 @@ namespace VSS.TRex.Profiling
             int PassSearchIdx = ProfileCell.Layers[I].CCV_CellPassIdx - 1;
             while (PassSearchIdx >= 0)
             {
-              if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly &&
+              if (LiftParams.CCVSummarizeTopLayerOnly &&
                   PassSearchIdx < ProfileCell.Layers[I].StartCellPassIdx ||
                   PassSearchIdx > ProfileCell.Layers[I].EndCellPassIdx)
                 break;
 
               if (!ProfileCell.Layers.IsCellPassInSupersededLayer(PassSearchIdx) ||
-                  Dummy_LiftBuildSettings.IncludeSuperseded)
+                  LiftParams.IncludeSuperseded)
               {
                 ProfileCell.CellPreviousMeasuredCCV = ProfileCell.Passes.FilteredPassData[PassSearchIdx].FilteredPass.CCV;
                 ProfileCell.CellPreviousMeasuredTargetCCV = Overrides.OverrideMachineCCV 
@@ -336,9 +339,9 @@ namespace VSS.TRex.Profiling
             break;
 
 // CCA not part of legacy setup as yet
-          if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
+          if (LiftParams.CCVSummarizeTopLayerOnly)
             DataStillRequiredForCCV = false;
-          if (Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)
+          if (LiftParams.MDPSummarizeTopLayerOnly)
             DataStillRequiredForMDP = false;
 
           DataStillRequiredForTMP = false; // last pass only
@@ -516,7 +519,7 @@ namespace VSS.TRex.Profiling
             (byte) (profileCells[i].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
           PassFilterAnnex.InitializeFilteringForCell(PassFilter, cellPassIterator.CellX, cellPassIterator.CellY);
 
-          if (CellLiftBuilder.Build(ProfileCell, /*todo Dummy_LiftBuildSettings, */ null, null, cellPassIterator, false))
+          if (CellLiftBuilder.Build(ProfileCell, LiftParams,/*todo liftParams, */ null, null, cellPassIterator, false))
           {
             TopMostLayerPassCount = CellLiftBuilder.FilteredPassCountOfTopMostLayer;
             TopMostLayerCompactionHalfPassCount = CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;

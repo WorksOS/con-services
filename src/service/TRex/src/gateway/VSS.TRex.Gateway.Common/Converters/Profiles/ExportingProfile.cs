@@ -38,7 +38,10 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.MappedMachines,
           opt => opt.Ignore())
         .ForMember(x => x.Overrides,
-          opt => opt.Ignore());
+          opt => opt.Ignore())
+        .ForMember(x => x.LiftParams,
+        opt => opt.Ignore());
+
     }
   }
 }

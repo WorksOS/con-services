@@ -95,7 +95,6 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj" />
-    <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -123,28 +122,28 @@
     <None Update="TestData\CERA.SVL">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Bug36372.ttm.%24DesignBoundary%24">
+    <None Update="TestData\Common\Bug36372.ttm.DesignBoundary">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Bug36372.ttm.%24DesignSpatialIndex%24">
+    <None Update="TestData\Common\Bug36372.ttm.DesignSpatialIndex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Bug36372.ttm.%24DesignSubgridIndex%24">
+    <None Update="TestData\Common\Bug36372.ttm.DesignSubgridIndex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.%24DesignBoundary%24">
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.DesignBoundary">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\TestTAGFile-MDP.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.%24DesignSpatialIndex%24">
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.DesignSpatialIndex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.%24DesignSubgridIndex%24">
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm.DesignSubgridIndex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\TestTAGFile.tag">

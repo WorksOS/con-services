@@ -309,7 +309,7 @@ namespace VSS.TRex.Tests.Rendering
       //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }
 
-    [Theory(Skip="See BUG#85914")]
+    [Theory]
     [InlineData(false, -25)]
     [InlineData(true, -25)]
     [InlineData(false, 0)]

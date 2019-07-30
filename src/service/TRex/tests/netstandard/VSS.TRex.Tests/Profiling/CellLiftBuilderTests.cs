@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
@@ -64,7 +65,7 @@ namespace VSS.TRex.Tests.Profiling
       var segmentIterator = new SubGridSegmentIterator(serverGrid, serverGrid.Directory, siteModel.PrimaryStorageProxy);
       var cellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(segmentIterator);
 
-      builder.Build(cell, clientGrid, new FilteredValueAssignmentContext(), cellPassIterator, false).Should().BeTrue();
+      builder.Build(cell, new LiftParameters(), clientGrid, new FilteredValueAssignmentContext(), cellPassIterator, false).Should().BeTrue();
 
       cell.Layers.Count().Should().Be(1);
       cell.Layers[0].PassCount.Should().Be(1);
@@ -119,7 +120,7 @@ namespace VSS.TRex.Tests.Profiling
       var segmentIterator = new SubGridSegmentIterator(serverGrid, serverGrid.Directory, siteModel.PrimaryStorageProxy);
       var cellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(segmentIterator);
 
-      builder.Build(cell, clientGrid, new FilteredValueAssignmentContext(), cellPassIterator, false).Should().BeTrue();
+      builder.Build(cell, new LiftParameters(), clientGrid, new FilteredValueAssignmentContext(), cellPassIterator, false).Should().BeTrue();
 
       cell.Layers.Count().Should().Be(1);
       cell.Layers[0].PassCount.Should().Be(3);

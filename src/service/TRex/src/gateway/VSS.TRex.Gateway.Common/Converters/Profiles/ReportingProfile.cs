@@ -30,7 +30,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.ReferenceDesign,
           opt => opt.ResolveUsing<CustomStationOffsetReferenceDesignResolver>())
-        .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides));
+        .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides))
+        .ForMember(x => x.LiftParams, opt => opt.MapFrom(o => o.LiftSettings));
 
       CreateMap<CompactionReportGridTRexRequest, GriddedReportData>()
         .ForMember(x => x.NumberOfRows,
@@ -49,10 +50,11 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.ReferenceDesign,
           opt => opt.ResolveUsing<CustomGridReferenceDesignResolver>())
-        .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides));
+        .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides))
+        .ForMember(x => x.LiftParams, opt => opt.MapFrom(o => o.LiftSettings));
     }
 
-    
+
     public class CustomGridReferenceDesignResolver : IValueResolver<CompactionReportTRexRequest, GriddedReportRequestArgument, DesignOffset>
     {
       public DesignOffset Resolve(CompactionReportTRexRequest src, GriddedReportRequestArgument dst, DesignOffset member, ResolutionContext context)
