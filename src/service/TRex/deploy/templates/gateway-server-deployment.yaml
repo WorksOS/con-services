@@ -63,4 +63,4 @@ spec:
           - name: AWS_PRESIGNED_URL_EXPIRY
             value: "7.00:00:00"        
           - name: TREX_IGNITE_JVM_HEAP_SIZE_MB
-            value: {{ .Values.gateway.javaHeapSizeMb }}  
+            value: {{ .Values.gateway.javaHeapSizeMb | quote }}  
