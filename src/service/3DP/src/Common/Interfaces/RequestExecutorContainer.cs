@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.Common.Interfaces
   {
     protected bool UseTRexGateway(string key) => configStore.GetValueBool(key) ?? false;
     protected bool UseRaptorGateway(string key) => configStore.GetValueBool(key) ?? false;
-    protected bool TRexIsAvailable(string key) => configStore.GetValueBool(key) ?? false;
+    protected bool IsTRexAvailable(string key) => configStore.GetValueBool(key) ?? false;
 
     private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";

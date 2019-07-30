@@ -28,7 +28,7 @@ namespace VSS.MasterData.Proxies
     protected readonly IConfigurationStore configurationStore;
     protected readonly ILogger log;
     protected readonly ILoggerFactory logger;
-    
+
     private const int DefaultLogMaxChar = 1000;
     protected readonly int _logMaxChar;
 
@@ -82,11 +82,11 @@ namespace VSS.MasterData.Proxies
         }
         else
         {
-          result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get,customHeaders: customHeaders, timeout:timeout, retries:retries);
+          result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get, customHeaders: customHeaders, timeout: timeout, retries: retries);
         }
 
         log.LogDebug($"{nameof(SendRequestInternal)}: Result of send to master data request: {JsonConvert.SerializeObject(result).Truncate(_logMaxChar)}");
-        BaseProxyHealthCheck.SetStatus(true,this.GetType());
+        BaseProxyHealthCheck.SetStatus(true, GetType());
       }
       catch (Exception ex)
       {
@@ -110,10 +110,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="retries">How many times to retry the request (optional)</param>
     /// <returns>The item</returns>
     protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
-      string route = null, HttpMethod method = null, string queryParameters = null, int ? timeout = null, int retries = 3)
+      string route = null, HttpMethod method = null, string queryParameters = null, int? timeout = null, int retries = 3)
     {
       log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters.Truncate(_logMaxChar)} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders(_logMaxChar)}");
-      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload, timeout:timeout, retries:retries);
+      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload, timeout: timeout, retries: retries);
     }
 
     /// <summary>
@@ -179,7 +179,7 @@ namespace VSS.MasterData.Proxies
         var request = new GracefulWebRequest(logger, configurationStore);
         result = await request.ExecuteRequest<K>(url, customHeaders: customHeaders, method: HttpMethod.Get);
         log.LogDebug($"{nameof(GetObjectsFromMasterdata)}: Result of get item request: {JsonConvert.SerializeObject(result).Truncate(_logMaxChar)}");
-        BaseProxyHealthCheck.SetStatus(true,this.GetType());
+        BaseProxyHealthCheck.SetStatus(true, GetType());
       }
       catch (Exception ex)
       {
@@ -234,7 +234,7 @@ namespace VSS.MasterData.Proxies
         }
         else
           result = await (await request.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders)).ReadAsStreamAsync();
-        BaseProxyHealthCheck.SetStatus(true, this.GetType());
+        BaseProxyHealthCheck.SetStatus(true, GetType());
       }
       catch (Exception ex)
       {
@@ -492,7 +492,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     protected void ClearCacheByTag(string uid)
     {
-      if(!string.IsNullOrEmpty(uid))
+      if (!string.IsNullOrEmpty(uid))
         dataCache.RemoveByTag(uid);
     }
 
@@ -534,28 +534,23 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    ///   Check exception for Web Request details and log a warning
+    /// Check exception for Web Request details and log a warning
     /// </summary>
     /// <param name="ex">Exception to be logged</param>
     private void LogWebRequestExceptionAndSetHealth(Exception ex)
     {
-      var message = ex.Message;
-      var stacktrace = ex.StackTrace;
-      //Check for 400 and 500 errors which come through as an inner exception
-      if (ex.InnerException != null)
-      {
-        message = ex.InnerException.Message;
-        stacktrace = ex.InnerException.StackTrace;
-      }
-
-      log.LogWarning($"{nameof(LogWebRequestExceptionAndSetHealth)}: Error sending data from master data: ", message);
-      log.LogWarning($"{nameof(LogWebRequestExceptionAndSetHealth)}: Stacktrace: ", stacktrace);
+      log.LogWarning($"{nameof(LogWebRequestExceptionAndSetHealth)}: Error sending data from master data: ", ex.GetBaseException().Message);
+      log.LogWarning(ex, $"{nameof(LogWebRequestExceptionAndSetHealth)}: Stacktrace: ");
 
       //WE want to exclude business exceptions as they are valid cases for health monitoring
-      if (ex.InnerException != null && ex.InnerException is ServiceException serviceException &&
+      if (ex.InnerException != null &&
+          ex.InnerException is ServiceException serviceException &&
           serviceException.Code == HttpStatusCode.BadRequest)
+      {
         return;
-      BaseProxyHealthCheck.SetStatus(false, this.GetType());
+      }
+
+      BaseProxyHealthCheck.SetStatus(false, GetType());
     }
 
     /// <summary>
@@ -600,7 +595,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<U> GetItemWithRetry<T, U>(
       Func<string, string, IDictionary<string, string>, Task<List<U>>> getList,
-      Func<U, bool> itemSelector, string listUid, 
+      Func<U, bool> itemSelector, string listUid,
       string userId, IDictionary<string, string> customHeaders = null)
     {
       var item = await GetItemFromList(listUid, userId, getList, itemSelector, customHeaders);

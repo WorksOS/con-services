@@ -20,7 +20,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
     public async Task Test_Good_L1_Message()
     {
       // Test constants
-      var expectedUri = new Uri("http://nowhere.specific/positions/in/v1/CB460-1SW");
+      var expectedUri = new Uri("http://nowhere.specific/devicegateway/positions/CB460-1SW");
       var messageTime = DateTime.UtcNow;
       var expectedRequestMessage = "{\"ts\":\"" + messageTime.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") +  "\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
 
@@ -54,7 +54,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
       var l1Message = new L1ConnectedSiteMessage
       {
         Height = 1,
-        Lattitude = -2,
+        Latitude = -2,
         Longitude = 3,
         Timestamp = messageTime,
         HardwareID = "1SW",
@@ -84,10 +84,10 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
     public async Task Test_Good_L2_Message()
     {
       // Test constants
-      var expectedUri = new Uri("http://nowhere.specific/status/in/v1/CB430-1SM");
+      var expectedUri = new Uri("http://nowhere.specific/devicegateway/status/CB430-1SM");
       var messageTime = DateTime.UtcNow;
       var expectedRequestMessage =
-        "{\"timestamp\":\"" + messageTime.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") + "\",\"designName\":\"Highway to hell\",\"assetType\":\"Dozer\",\"appVersion\":\"666a\",\"appName\":\"GCS900\",\"assetNickname\":\"Little Nicky\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
+        "{\"ts\":\"" + messageTime.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") + "\",\"designName\":\"Highway to hell\",\"assetType\":\"Dozer\",\"appVersion\":\"666a\",\"appName\":\"GCS900\",\"assetNickname\":\"Little Nicky\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
 
       var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Loose);
       handlerMock
@@ -119,7 +119,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
       var l2Message = new L2ConnectedSiteMessage
       {
         Height = 1,
-        Lattitude = -2,
+        Latitude = -2,
         Longitude = 3,
         Timestamp = messageTime,
         HardwareID = "1SM",
@@ -172,7 +172,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
       var l2Message = new L2ConnectedSiteMessage
       {
         Height = 1,
-        Lattitude = -2,
+        Latitude = -2,
         Longitude = 3,
         Timestamp = DateTime.Now,
         HardwareID = "1SV",

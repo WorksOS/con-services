@@ -173,7 +173,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.GridPoints?.y1 ?? (request.WGS84Points?.lat1 ?? 0.0),
         request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
         request.GridPoints?.y2 ?? (request.WGS84Points?.lat2 ?? 0.0),
-        AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings));
+        AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings),
+        AutoMapperUtility.Automapper.Map<LiftSettings>(liftBuildSettings));
 
       var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders);
 
@@ -531,7 +532,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y1 ?? request.WGS84Points.lat1,
         request.GridPoints?.y2 ?? request.WGS84Points.lat2,
-        AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings)
+        AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings),
+        AutoMapperUtility.Automapper.Map<LiftSettings>(liftBuildSettings)
       );
 
       var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest>(summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders);

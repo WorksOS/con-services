@@ -5,11 +5,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -23,24 +23,31 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Xunit;
 using FilterModel = VSS.MasterData.Repositories.DBModels.Filter;
 
 namespace VSS.Productivity3D.Filter.Tests
 {
-  [TestClass]
-  public class FilterFilenameUtilTests : ExecutorBaseTests
+  public class FilterFilenameUtilTests : IClassFixture<ExecutorBaseTests>
   {
+    private readonly ExecutorBaseTests _classFixture;
+    private IServiceProvider serviceProvider => _classFixture.serviceProvider;
+    private IServiceExceptionHandler serviceExceptionHandler => _classFixture.serviceExceptionHandler;
+
     private readonly string custUid = Guid.NewGuid().ToString();
     private readonly string userUid = Guid.NewGuid().ToString();
     private readonly string projectUid = Guid.NewGuid().ToString();
     private string KafkaTopicName => GetType().Name;
     private static Mock<IKafka> Producer => new Mock<IKafka>();
 
-    [TestInitialize]
-    public void TestInit()
-    { }
+    public FilterFilenameUtilTests(ExecutorBaseTests classFixture)
+    { 
+      _classFixture = classFixture;
+    }
 
-    [TestMethod]
+    
+
+    [Fact]
     public async Task Should_return_when_DesignUid_and_AlignmentUid_arent_provided()
     {
       var name = Guid.NewGuid().ToString();
@@ -88,16 +95,16 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
-      Assert.IsNotNull(result);
-      Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
+      Assert.NotNull(result);
+      Assert.Equal(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.IsNull(resultFilter.AlignmentFileName);
-      Assert.IsNull(resultFilter.DesignFileName);
+      Assert.Null(resultFilter.AlignmentFileName);
+      Assert.Null(resultFilter.DesignFileName);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Should_return_When_no_files_exist_for_project()
     {
       var name = Guid.NewGuid().ToString();
@@ -148,16 +155,16 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
-      Assert.IsNotNull(result);
-      Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
+      Assert.NotNull(result);
+      Assert.Equal(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.IsNull(resultFilter.AlignmentFileName);
-      Assert.IsNull(resultFilter.DesignFileName);
+      Assert.Null(resultFilter.AlignmentFileName);
+      Assert.Null(resultFilter.DesignFileName);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Should_set_DesignName_When_DesignUid_is_provided()
     {
       var name = Guid.NewGuid().ToString();
@@ -222,16 +229,16 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
-      Assert.IsNotNull(result);
-      Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
+      Assert.NotNull(result);
+      Assert.Equal(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
-      Assert.IsNull(resultFilter.AlignmentFileName);
+      Assert.Equal(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
+      Assert.Null(resultFilter.AlignmentFileName);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Should_set_AlignmentName_When_AlignmentUid_is_provided()
     {
       var name = Guid.NewGuid().ToString();
@@ -297,16 +304,16 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
-      Assert.IsNotNull(result);
-      Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
+      Assert.NotNull(result);
+      Assert.Equal(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(resultFilter.AlignmentFileName, "Large Sites Road.svl");
-      Assert.IsNull(resultFilter.DesignFileName);
+      Assert.Equal(resultFilter.AlignmentFileName, "Large Sites Road.svl");
+      Assert.Null(resultFilter.DesignFileName);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Should_set_Alignment_and_Design_name_When_both_uids_are_provided()
     {
       var name = Guid.NewGuid().ToString();
@@ -382,13 +389,13 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
-      Assert.IsNotNull(result);
-      Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
+      Assert.NotNull(result);
+      Assert.Equal(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(resultFilter.AlignmentFileName, "Large Sites Road.svl");
-      Assert.AreEqual(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
+      Assert.Equal(resultFilter.AlignmentFileName, "Large Sites Road.svl");
+      Assert.Equal(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
     }
   }
 }

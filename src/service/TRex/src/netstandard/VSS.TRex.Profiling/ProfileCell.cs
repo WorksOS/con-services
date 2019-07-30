@@ -328,7 +328,7 @@ namespace VSS.TRex.Profiling
       GridDataType gridDataType)
     {
       // CCA tracking vars
-      int Tolerance = Dummy_LiftBuildSettings.CCATolerance;
+      int Tolerance = 0; // How many extra passes is OK before over-compaction is set
       bool TargetMeet = false;
       int ValidCCAPasses = 0;
 

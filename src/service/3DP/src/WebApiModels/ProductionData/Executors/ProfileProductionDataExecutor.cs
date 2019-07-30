@@ -52,7 +52,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y1 ?? request.WGS84Points.lat1,
         request.GridPoints?.y2 ?? request.WGS84Points.lat2,
-        AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings)
+        AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings),
+        AutoMapperUtility.Automapper.Map<LiftSettings>(liftBuildSettings)
       );
 
       var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders);

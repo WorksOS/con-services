@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -64,13 +65,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                                          serviceExceptionHandler, raptorProxy,
                                          projectRepo);
 
-        var dxfFileName = updateImportedFile.FileDescriptor.FileName;
+        var dxfFileName = updateImportedFile.DataOceanFileName;
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment)
         {
           //Create DXF file for alignment center line
           dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
             customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, raptorProxy, customHeaders, log,
-            serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.FileDescriptor.FileName, updateImportedFile.DataOceanRootFolder);
+            serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.DataOceanFileName, updateImportedFile.DataOceanRootFolder);
         }
 
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment ||
@@ -86,7 +87,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             existingImportedFile.ImportedFileUid, 
             updateImportedFile.DataOceanRootFolder, 
             dxfFileName,
-            projectTask.CoordinateSystemFileName, 
+            DataOceanFileUtil.DataOceanFileName(projectTask.CoordinateSystemFileName, false, Guid.Parse(projectTask.ProjectUID), null),
             updateImportedFile.DxfUnitsTypeId,
             updateImportedFile.SurveyedUtc);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
@@ -103,7 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           updateImportedFile.ProjectUid.ToString(),
           existingImportedFile.ImportedFileUid,
           updateImportedFile.DataOceanRootFolder, 
-          updateImportedFile.FileDescriptor.FileName,
+          updateImportedFile.DataOceanFileName,
           null,
           updateImportedFile.DxfUnitsTypeId,
           updateImportedFile.SurveyedUtc);

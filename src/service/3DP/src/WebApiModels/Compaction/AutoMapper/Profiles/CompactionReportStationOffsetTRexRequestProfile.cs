@@ -15,7 +15,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
             (ps.DesignFile != null) ? ps.DesignFile.Offset : (double?)null))
         .ForMember(x => x.AlignmentDesignUid, opt => opt.MapFrom(ps =>
             (ps.AlignmentFile != null && ps.AlignmentFile.FileUid.HasValue) ? ps.AlignmentFile.FileUid : null))
-        .ForMember(x => x.Overrides, opt => opt.MapFrom(ps => ps.LiftBuildSettings));
+        .ForMember(x => x.Overrides, opt => opt.MapFrom(ps => ps.LiftBuildSettings))
+        .ForMember(x => x.LiftSettings, opt => opt.MapFrom(ps => ps.LiftBuildSettings));
     }
   }
 }

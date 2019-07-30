@@ -248,7 +248,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);
       //Get generated DXF file from Raptor
       var dxfContents = await raptorProxy.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
-      //GradefulWebRequest should throw an exception if the web api call fails but just in case...
+      //GracefulWebRequest should throw an exception if the web api call fails but just in case...
       if (dxfContents != null && dxfContents.Length > 0)
       {
         //Unzip it and save to DataOcean 
@@ -263,8 +263,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               stream.CopyTo(ms);
               ms.Seek(0, SeekOrigin.Begin);
               await DataOceanHelper.WriteFileToDataOcean(
-                ms, rootFolder, customerUid, projectUid.ToString(),
-               generatedName, false, null, log, serviceExceptionHandler, dataOceanClient, authn);
+                ms, rootFolder, customerUid, projectUid.ToString(), generatedName, false, 
+                null, log, serviceExceptionHandler, dataOceanClient, authn, alignmentUid);
             }
           }
         }

@@ -125,20 +125,24 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           ? $"UpsertImportedFileV2. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
           : $"UpsertImportedFileV2. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
+      var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
+      var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(importedFileTbc.Name,
+        importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface || importedFileTbc.ImportedFileTypeId == ImportedFileType.GeoTiff,
+        importedFileUid, importedFileTbc.SurfaceFile?.SurveyedUtc);
+
+
       ImportedFileDescriptorSingleResult importedFile;
       if (creating)
       {
         var createImportedFile = new CreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
           fileDescriptor,
           importedFileTbc.ImportedFileTypeId,
-          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
-            ? importedFileTbc.SurfaceFile.SurveyedUtc
-            : (DateTime?)null,
+          importedFileTbc.SurfaceFile?.SurveyedUtc,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
-          DataOceanRootFolder, null, 0);
+          DataOceanRootFolder, null, 0, importedFileUid, dataOceanFileName);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -166,7 +170,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
           fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolder, 0
+          DataOceanRootFolder, 0, dataOceanFileName
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
@@ -187,7 +191,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         : ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.InternalServerError, -1);
 
       logger.LogInformation(
-        $"UpsertImportedFileV2. Completed succesfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
+        $"UpsertImportedFileV2. Completed successfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
 
       return response;
     }

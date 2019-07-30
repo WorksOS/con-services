@@ -70,7 +70,7 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
                 if (cmvValue.PreviousMeasuredCMV == CellPassConsts.NullCCV)
                   cmvChangeValue = MAX_PERCENTAGE_VALUE;
                 else
-                  cmvChangeValue = (cmvValue.MeasuredCMV - cmvValue.PreviousMeasuredCMV) / cmvValue.PreviousMeasuredCMV * MAX_PERCENTAGE_VALUE;
+                  cmvChangeValue = (double)(cmvValue.MeasuredCMV - cmvValue.PreviousMeasuredCMV) / (double)cmvValue.PreviousMeasuredCMV * MAX_PERCENTAGE_VALUE;
 
                 IncrementCountOfTransition(cmvChangeValue); // CMV Change Detail is counted here...
               }

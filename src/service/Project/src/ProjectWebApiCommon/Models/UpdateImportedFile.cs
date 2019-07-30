@@ -19,7 +19,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsTypeId,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
       FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId,
-      string dataOceanRootFolder, double? offset)
+      string dataOceanRootFolder, double? offset, string dataOceanFileName)
     {
       ProjectUid = projectUid;
       LegacyProjectId = legacyProjectId;
@@ -33,6 +33,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       ImportedFileId = importedFileId;
       DataOceanRootFolder = dataOceanRootFolder;
       Offset = offset;
+      DataOceanFileName = dataOceanFileName;
     }
   }
 }

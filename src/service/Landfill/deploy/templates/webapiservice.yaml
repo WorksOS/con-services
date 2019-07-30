@@ -8,7 +8,7 @@ metadata:
     prometheus.io/scrape: "true"
 spec:
   selector:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+    component: {{ template "component.webapi" . }}
   ports:
   - protocol: TCP
     port: 80

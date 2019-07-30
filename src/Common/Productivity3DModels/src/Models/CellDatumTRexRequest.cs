@@ -75,6 +75,12 @@ namespace VSS.Productivity3D.Models.Models
     public OverridingTargets Overrides { get; private set; }
 
     /// <summary>
+    /// Settings for lift analysis
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public LiftSettings LiftSettings { get; private set; }
+
+    /// <summary>
     /// Default private constructor
     /// </summary>
     private CellDatumTRexRequest()
@@ -91,7 +97,8 @@ namespace VSS.Productivity3D.Models.Models
       FilterResult filter,
       Guid? designUid,
       double? offset,
-      OverridingTargets overrides)
+      OverridingTargets overrides,
+      LiftSettings liftSettings)
     {
       ProjectUid = projectUid;
       DisplayMode = displayMode;
@@ -101,6 +108,7 @@ namespace VSS.Productivity3D.Models.Models
       DesignUid = designUid;
       Offset = offset;
       Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
 
@@ -138,6 +146,9 @@ namespace VSS.Productivity3D.Models.Models
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid designUid"));
       }
+
+      Overrides?.Validate();
+      LiftSettings?.Validate();
     }
   }
 }

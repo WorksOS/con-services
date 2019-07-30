@@ -33,7 +33,7 @@ namespace VSS.TRex.Designs.TTM
 
       var ttmData = new TrimbleTINModel();
 
-      ttmData.LoadFromFile(Path.ChangeExtension(fileName, ""));
+      ttmData.LoadFromFile(Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName)));
 
       Fence fence = null;
 

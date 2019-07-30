@@ -6,15 +6,18 @@ metadata:
   name: {{ $serviceName }}
   labels:
     app: {{ $serviceName }}
+    component: {{ template "component.webapi" . }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: {{ $serviceName }}
+      component: {{ template "component.webapi" . }}
   template:
     metadata:
       labels:
         app: {{ $serviceName }}
+        component: {{ template "component.webapi" . }}
     spec:
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-3dassetmgmt-webapi:{{ .Values.image.tag }}

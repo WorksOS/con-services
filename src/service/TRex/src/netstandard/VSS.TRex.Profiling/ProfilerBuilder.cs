@@ -43,18 +43,6 @@ namespace VSS.TRex.Profiling
     /// Configures a new profile builder that provides the three core builders used in profiling: construction of cell vector from profile line,
     /// profile analysis orchestration and per cell layer/statistics calculation
     /// </summary>
-    /// <param name="profileStyle"></param>
-    /// <param name="siteModel"></param>
-    /// <param name="productionDataExistenceMap"></param>
-    /// <param name="gridDataType"></param>
-    /// <param name="filterSet"></param>
-    /// <param name="referenceDesignWrapper"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
-    /// <param name="PopulationControl"></param>
-    /// <param name="CellPassFastEventLookerUpper"></param>
-    /// <param name="volumeType"></param>
-    /// <param name="overrides"></param>
-    /// <param name="slicerToolUsed"></param>
     public void Configure(ProfileStyle profileStyle,
       ISiteModel siteModel,
       ISubGridTreeBitMask productionDataExistenceMap,
@@ -66,6 +54,7 @@ namespace VSS.TRex.Profiling
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
       VolumeComputationType volumeType, 
       IOverrideParameters overrides,
+      ILiftParameters liftParams,
       bool slicerToolUsed = true)    
     {
         CellLiftBuilder = factory.NewCellLiftBuilder(siteModel, gridDataType, PopulationControl, filterSet, CellPassFastEventLookerUpper);
@@ -73,7 +62,8 @@ namespace VSS.TRex.Profiling
         CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, filterSet, referenceDesignWrapper, slicerToolUsed);
 
         CellProfileAnalyzer = factory.NewCellProfileAnalyzer(
-          profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, CellLiftBuilder, volumeType, overrides);
+          profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, 
+          referenceDesignWrapper, CellLiftBuilder, volumeType, overrides, liftParams);
     }
   }
 }

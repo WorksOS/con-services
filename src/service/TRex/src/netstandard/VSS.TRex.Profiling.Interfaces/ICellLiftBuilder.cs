@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Filters.Models;
+﻿using VSS.TRex.Common.Models;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
@@ -18,6 +19,7 @@ namespace VSS.TRex.Profiling.Interfaces
 
     bool Build(IProfileCell cell,
       // todo const LiftBuildSettings: TICLiftBuildSettings;
+      ILiftParameters liftParameters,
       IClientLeafSubGrid ClientGrid,
       FilteredValueAssignmentContext AssignmentContext,
       ISubGridSegmentCellPassIterator cellPassIterator,
