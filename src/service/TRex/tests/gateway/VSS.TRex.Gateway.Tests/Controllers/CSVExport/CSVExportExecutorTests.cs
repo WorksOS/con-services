@@ -36,7 +36,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         projectUid, filter, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -62,7 +62,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         siteModel.ID, null, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -94,7 +94,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         siteModel.ID, filterResult, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -128,7 +128,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         siteModel.ID, filterResult, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 

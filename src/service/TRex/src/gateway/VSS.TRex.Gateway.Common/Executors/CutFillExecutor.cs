@@ -8,8 +8,10 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -34,16 +36,12 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CutFillDetailsRequest;
+      var request = item as TRexCutFillDetailsRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException<CutFillDetailsRequest>();
+        ThrowRequestTypeCastException<TRexCutFillDetailsRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
-
-      // TODO: Configure lift build settings
-      //var liftBuildSettings = RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-
       var filter = ConvertFilter(request.Filter, siteModel);
 
       var operation = new CutFillStatisticsOperation();
@@ -52,7 +50,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
         ReferenceDesign = new DesignOffset(request.DesignDescriptor.FileUid ?? Guid.Empty, request.DesignDescriptor.Offset),
-        Offsets = request.CutFillTolerances
+        Offsets = request.CutFillTolerances,
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
       });
 
       if (cutFillResult != null)

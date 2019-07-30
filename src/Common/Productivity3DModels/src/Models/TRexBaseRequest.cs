@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// Base class for TRex summary requests
   /// </summary>
-  public abstract class TRexSummaryRequest 
+  public abstract class TRexBaseRequest 
   {
     /// <summary>
     /// A project unique identifier.
@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public void Validate()
+    public virtual void Validate()
     {
       new DataAnnotationsValidator().TryValidate(this, out var results);
 
