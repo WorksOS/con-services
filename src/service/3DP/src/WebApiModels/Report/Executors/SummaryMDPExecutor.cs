@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var mdpSummaryRequest = new MDPSummaryRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Filter,
             request.MdpSettings.MdpTarget,
             request.MdpSettings.OverrideTargetMDP,

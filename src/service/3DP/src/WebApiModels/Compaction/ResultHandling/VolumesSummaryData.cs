@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
   public class VolumesSummaryData
   {

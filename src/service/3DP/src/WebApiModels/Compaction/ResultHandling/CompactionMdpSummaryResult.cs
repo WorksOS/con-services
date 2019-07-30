@@ -2,6 +2,7 @@
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using MdpSummaryData = VSS.Productivity3D.WebApi.Models.Compaction.Models.MdpSummaryData;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
