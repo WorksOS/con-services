@@ -11,19 +11,16 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -33,19 +30,9 @@ namespace VSS.Productivity3D.Filter.Tests
   [TestClass]
   public class FilterExecutorTests : ExecutorBaseTests
   {
-    private IAssetResolverProxy _assetResolverProxy;
-
     [TestInitialize]
     public void TestInit()
-    {
-      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
-      mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
-      mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
-
-      _assetResolverProxy = mockedAssetResolverProxySetup.Object;
-    }
+    { }
 
     [TestMethod]
     [DataRow(FilterType.Persistent)]
@@ -266,7 +253,7 @@ namespace VSS.Productivity3D.Filter.Tests
         );
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, projectProxy.Object, 
-        raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
+        raptorProxy.Object, producer.Object, kafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
       StringAssert.Contains(ex.GetContent, "2016");
@@ -337,7 +324,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, null,
-        raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
+        raptorProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
       
       Assert.IsNotNull(result, "executor failed");
@@ -420,7 +407,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, null, 
-        raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
+        raptorProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor failed");
@@ -477,7 +464,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var request =
         FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, null, projectProxy.Object, raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
+        filterRepo.Object, null, projectProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       Assert.IsNotNull(result, "executor failed");

@@ -59,12 +59,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
 #endif
 
-      await PairUpAssetIdentifiers(projectIds, assetOnDesignLayerPeriods, haveUids);
+      await PairUpAssetIdentifiers(projectIds, assetOnDesignLayerPeriods);
       return new AssetOnDesignLayerPeriodsExecutionResult(assetOnDesignLayerPeriods);
     }
 
-    private async Task PairUpAssetIdentifiers(ProjectIDs projectIds, List<AssetOnDesignLayerPeriod> assetOnDesignLayerPeriods,
-      bool haveUids)
+    private async Task PairUpAssetIdentifiers(ProjectIDs projectIds, List<AssetOnDesignLayerPeriod> assetOnDesignLayerPeriods)
     {
       if (assetOnDesignLayerPeriods == null || assetOnDesignLayerPeriods.Count == 0)
         return;
@@ -77,21 +76,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
               customHeaders: customHeaders, customerUid: customerUid)
             .ProcessAsync(projectIds) is MachineExecutionResult machineExecutionResult && machineExecutionResult.MachineStatuses.Count > 0)
       {
-        if (haveUids)
+        foreach (var assetMatch in machineExecutionResult.MachineStatuses.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty && a.AssetId > 0))
         {
-          foreach (var assetMatch in machineExecutionResult.MachineStatuses)
-          {
-            foreach (var assetOnDesignPeriod in assetOnDesignLayerPeriods.FindAll(x => x.AssetUid == assetMatch.AssetUid))
-              assetOnDesignPeriod.AssetId = assetMatch.AssetId;
-          }
-        }
-        else
-        {
-          foreach (var assetMatch in machineExecutionResult.MachineStatuses)
-          {
-            foreach (var assetOnDesignPeriod in assetOnDesignLayerPeriods.FindAll(x => x.AssetId == assetMatch.AssetId))
-              assetOnDesignPeriod.AssetUid = assetMatch.AssetUid;
-          }
+          foreach (var assetOnDesignPeriod in assetOnDesignLayerPeriods.FindAll(a => a.AssetUid == assetMatch.AssetUid && a.AssetId < 1))
+            assetOnDesignPeriod.AssetId = assetMatch.AssetId;
+
+          foreach (var assetOnDesignPeriod in assetOnDesignLayerPeriods.FindAll(a => a.AssetId == assetMatch.AssetId && (!a.AssetUid.HasValue || a.AssetUid.Value == Guid.Empty)))
+            assetOnDesignPeriod.AssetUid = assetMatch.AssetUid;
         }
       }
     }

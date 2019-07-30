@@ -59,7 +59,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
     private async Task<List<MachineStatus>> GetTrexMachines(string projectUid)
     {
-      var machinesResult = await trexCompactionDataProxy
+      var machinesResult = new MachineExecutionResult(new List<MachineStatus>());
+#if RAPTOR
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES"))
+#endif
+        machinesResult = await trexCompactionDataProxy
         .SendDataGetRequest<MachineExecutionResult>(projectUid, $"/sitemodels/{projectUid}/machines",
           customHeaders);
       return machinesResult.MachineStatuses;
