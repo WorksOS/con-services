@@ -254,5 +254,10 @@ namespace VSS.TRex.Designs
 
       return DesignLoadResult.Success;
     }
+
+    public (double StartStation, double EndStation) GetStationRange()
+    {
+      return (data.StartStation, data.EndStation);
+    }
   }
 }
