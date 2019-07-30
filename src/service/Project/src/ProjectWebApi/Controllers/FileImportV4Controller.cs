@@ -494,7 +494,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         //save copy to DataOcean      
         await DataOceanHelper.WriteFileToDataOcean(
             fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), dataOceanFileName,
-            true, surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn);
+            true, surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn, importedFileUid);
         fileDescriptor = FileDescriptor.CreateFileDescriptor(
           FileSpaceId,
           $"/{customerUid}/{projectUid}",
@@ -541,7 +541,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           await DataOceanHelper.WriteFileToDataOcean(
               fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), dataOceanFileName,
               importedFileType == ImportedFileType.SurveyedSurface,
-              surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn)
+              surveyedUtc, logger, serviceExceptionHandler, dataOceanClient, authn, importedFileUid)
             .ConfigureAwait(false);
         }
       }

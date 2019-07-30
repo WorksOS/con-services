@@ -7,10 +7,13 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Abstractions.Http;
+using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
@@ -32,14 +35,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       Stream fileContents, string rootFolder, string customerUid, string projectUid,
       string dataOceanFileName, bool isSurveyedSurface, DateTime? surveyedUtc,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient,
-      ITPaaSApplicationAuthentication authn)
+      ITPaaSApplicationAuthentication authn, Guid fileUid)
     {
+      //Check file name starts with a Guid
+      if (!dataOceanFileName.StartsWith(fileUid.ToString()))
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            $"Invalid DataOcean file name {dataOceanFileName}"));
+      }
       var customHeaders = authn.CustomHeaders();
       var dataOceanPath = DataOceanPath(rootFolder, customerUid, projectUid);
-
-      //TODO: DataOcean has versions of files. We should leverage that rather than appending surveyed UTC to file name.
-      if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
-        dataOceanFileName = dataOceanFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
 
       bool ccPutFileResult = false;
       bool folderAlreadyExists = false;

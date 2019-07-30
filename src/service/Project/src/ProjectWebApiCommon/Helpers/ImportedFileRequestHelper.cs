@@ -263,8 +263,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               stream.CopyTo(ms);
               ms.Seek(0, SeekOrigin.Begin);
               await DataOceanHelper.WriteFileToDataOcean(
-                ms, rootFolder, customerUid, projectUid.ToString(),
-               generatedName, false, null, log, serviceExceptionHandler, dataOceanClient, authn);
+                ms, rootFolder, customerUid, projectUid.ToString(), generatedName, false, 
+                null, log, serviceExceptionHandler, dataOceanClient, authn, alignmentUid);
             }
           }
         }
