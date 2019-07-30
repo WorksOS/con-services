@@ -60,7 +60,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         "-XX:+UseG1GC"
       };
 
-      cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
+      cfg.JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_HEAP_SIZE_MB);
       cfg.UserAttributes = new Dictionary<string, object>
             {
                 { "Owner", TRexGrids.ImmutableGridName() }
