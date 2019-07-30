@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -42,12 +43,16 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request?.Filter, siteModel);
 
+      // Insert an extra element at the lower bound ...
+      var tempList = request?.CMVChangeDetailsValues.ToList();
+      tempList?.Insert(0, short.MinValue);
+
       var operation = new CMVChangeStatisticsOperation();
       var cmvChangeDetailsResult = await operation.ExecuteAsync(new CMVChangeStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        CMVChangeDetailsDataValues = request?.CMVChangeDetailsValues
+        CMVChangeDetailsDataValues = tempList?.ToArray()
       });
 
       if (cmvChangeDetailsResult != null)
