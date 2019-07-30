@@ -29,7 +29,7 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
       Aggregator = aggregator,
       Filters = argument.Filters,
       IncludeSurveyedSurfaces = true,
-      RequestedGridDataType = GridDataType.CCV
+      RequestedGridDataType = GridDataType.CCVPercentChange
     };
 
     public override void ReadOutResults(AggregatorBase aggregator, CMVChangeStatisticsResponse response)
