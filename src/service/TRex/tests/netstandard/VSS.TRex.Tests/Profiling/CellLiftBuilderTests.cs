@@ -184,15 +184,14 @@ namespace VSS.TRex.Tests.Profiling
       var segmentIterator = new SubGridSegmentIterator(serverGrid, serverGrid.Directory, siteModel.PrimaryStorageProxy);
       var cellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(segmentIterator);
 
-      builder.Build(cell, clientGrid, new FilteredValueAssignmentContext(), cellPassIterator, true).Should().BeTrue();
+      var filteredValueAssignmentContext = new FilteredValueAssignmentContext();
+
+      builder.Build(cell, new LiftParameters(), clientGrid, filteredValueAssignmentContext, cellPassIterator, true).Should().BeTrue();
 
       cell.Layers.Count().Should().Be(1);
       cell.Layers[0].PassCount.Should().Be(4);
-      //cell.Layers[0].MinimumPassHeight.Should().Be(lowest);
-      //cell.Layers[0].MaximumPassHeight.Should().Be(heighest);
-      //cell.Layers[0].FirstPassHeight.Should().Be(first);
-      //cell.Layers[0].LastPassHeight.Should().Be(last);
-
+      filteredValueAssignmentContext.FilteredValue.FilteredPassData.FilteredPass.CCV.Should().Be(cmvs[cmvs.Length - 1]);
+      filteredValueAssignmentContext.PreviousFilteredValue.FilteredPassData.FilteredPass.CCV.Should().Be(cmvs[cmvs.Length - 2]);
     }
   }
 }
