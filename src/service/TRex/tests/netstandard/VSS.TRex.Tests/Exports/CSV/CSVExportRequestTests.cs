@@ -182,7 +182,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       CleanupMockedFile(tempFileName, siteModel.ID);
     }
 
-    [Fact(Skip="See BUG#85914")]
+    [Fact]
     public async Task CSVExportRequest_Execute_UnableToWriteResultToS3()
     {
       AddApplicationGridRouting();

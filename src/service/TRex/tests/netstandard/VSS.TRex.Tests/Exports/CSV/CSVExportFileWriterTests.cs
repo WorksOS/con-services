@@ -12,7 +12,6 @@ using VSS.TRex.DI;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common.Utilities;
@@ -40,7 +39,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         csvExportUserPreference, new List<CSVExportMappedMachine>(), false, false
       ) { TRexNodeID = Guid.NewGuid().ToString() };
 
-      var dataRows = new List<string>() { "string one", "string two" };
+      var dataRows = new List<string> { "string one", "string two" };
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
@@ -302,7 +301,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         Directory.Delete(projectDir, true);
     }
 
-    [Fact(Skip="See BUG#85914")]
+    [Fact]
     public void CreateHeaders_RestrictOutputSize_SingleFile()
     {
       var projectUid = Guid.NewGuid();
@@ -361,7 +360,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         Directory.Delete(projectDir, true);
     }
 
-    [Fact(Skip="See BUG#85914")]
+    [Fact]
     public void CreateHeaders_RestrictOutputSize_TwoFiles()
     {
       var projectUid = Guid.NewGuid();
