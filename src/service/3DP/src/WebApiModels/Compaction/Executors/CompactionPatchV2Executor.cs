@@ -15,6 +15,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
@@ -42,12 +43,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
 #endif
           var patchDataRequest = new PatchDataRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Filter1,
             request.Filter2,
             request.Mode,
             request.PatchNumber,
-            request.PatchSize);
+            request.PatchSize,
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
 
           var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders);
 

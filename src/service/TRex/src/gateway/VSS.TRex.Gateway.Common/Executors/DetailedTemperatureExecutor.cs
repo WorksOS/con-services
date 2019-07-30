@@ -8,7 +8,9 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 
 
@@ -50,7 +52,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        TemperatureDetailValues = request.TemperatureList
+        TemperatureDetailValues = request.TemperatureList,
+        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings),
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
       });
 
       if (temperatureDetailResult != null)

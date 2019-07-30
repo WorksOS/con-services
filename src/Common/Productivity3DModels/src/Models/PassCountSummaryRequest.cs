@@ -5,7 +5,7 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// The request representation used to request Pass Count summary.
   /// </summary>
-  public class PassCountSummaryRequest : TRexSummaryRequest
+  public class PassCountSummaryRequest : TRexBaseRequest
   {
     /// <summary>
     /// Default private constructor.

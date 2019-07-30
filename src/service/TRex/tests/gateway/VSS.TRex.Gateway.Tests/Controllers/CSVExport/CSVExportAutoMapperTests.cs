@@ -53,8 +53,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
           DecimalSeparator = decimalSeparator, ThousandsSeparator = thousandsSeparator, Units = (int)units };
      
       var request = new CompactionVetaExportRequest(
-        projectUid, filter, fileName,
-        coordType, outputType, userPreference, machineNames);
+        projectUid, filter, fileName, coordType, outputType, userPreference, machineNames, null, null);
       request.Validate();
       var compactionCsvExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -94,7 +93,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionPassCountExportRequest(
         projectUid, filter, fileName,
-        coordType, outputType, userPreference, restrictOutputSize, rawDataAsDBase);
+        coordType, outputType, userPreference, restrictOutputSize, rawDataAsDBase, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 

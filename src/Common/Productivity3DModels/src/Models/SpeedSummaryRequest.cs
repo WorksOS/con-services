@@ -2,7 +2,7 @@
 
 namespace VSS.Productivity3D.Models.Models
 {
-  public class SpeedSummaryRequest : TRexSummaryRequest
+  public class SpeedSummaryRequest : TRexBaseRequest
   {
     /// <summary>
     /// Default private constructor.
