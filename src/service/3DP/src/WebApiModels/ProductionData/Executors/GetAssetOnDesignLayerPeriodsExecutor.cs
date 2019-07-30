@@ -18,9 +18,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = CastRequestObjectTo<ProjectID>(item);
+      var projectIds = item as ProjectIDs;
+      if (projectIds == null)
+        ThrowRequestTypeCastException<ProjectIDs>();
+
       log.LogInformation(
-        $"GetAssetOnDesignLayerPeriodsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_LAYERS")}");
+        $"GetAssetOnDesignLayerPeriodsExecutor: {JsonConvert.SerializeObject(projectIds)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_LAYERS")}");
 
       List<AssetOnDesignLayerPeriod> assetOnDesignLayerPeriods;
       bool haveUids = true;
@@ -29,91 +32,65 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_LAYERS"))
 #endif
       {
-        if (request.ProjectUid.HasValue && request.ProjectUid != Guid.Empty)
-        {
-          var siteModelId = request.ProjectUid.ToString();
-
-          var layersResult = await trexCompactionDataProxy
-            .SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(siteModelId,
-              $"/sitemodels/{siteModelId}/machinelayers",
-              customHeaders);
-          assetOnDesignLayerPeriods = layersResult.AssetOnDesignLayerPeriods;
-        }
-        else
-        {
-          log.LogError("GetAssetOnDesignLayerPeriodsExecutor: No projectUid provided. ");
-          throw CreateServiceException<GetAssetOnDesignLayerPeriodsExecutor>();
-        }
+        var layersResult = await trexCompactionDataProxy
+          .SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(projectIds.ProjectUid.ToString(),
+            $"/sitemodels/{projectIds.ProjectUid.ToString()}/machinelayers",
+            customHeaders);
+        assetOnDesignLayerPeriods = layersResult.AssetOnDesignLayerPeriods;
       }
 
 #if RAPTOR
       else
       {
-        if (request.ProjectId.HasValue && request.ProjectId >= 1)
+        haveUids = false;
+        raptorClient.GetOnMachineLayers(projectIds.ProjectId, out var layerList);
+        if (layerList == null || layerList.Length == 0)
+          return new AssetOnDesignLayerPeriodsExecutionResult(new List<AssetOnDesignLayerPeriod>());
+
+        var raptorDesigns = raptorClient.GetOnMachineDesignEvents(projectIds.ProjectId);
+        if (raptorDesigns == null)
         {
-          haveUids = false;
-          raptorClient.GetOnMachineLayers(request.ProjectId ?? -1, out var layerList);
-          if (layerList == null || layerList.Length == 0)
-            return new AssetOnDesignLayerPeriodsExecutionResult(new List<AssetOnDesignLayerPeriod>());
-
-          var raptorDesigns = raptorClient.GetOnMachineDesignEvents(request.ProjectId ?? -1);
-
-          if (raptorDesigns == null)
-          {
-            log.LogError(
+          log.LogError(
             $"GetAssetOnDesignLayerPeriodsExecutor: no raptor machineDesigns found to match with layers");
-            return new AssetOnDesignLayerPeriodsExecutionResult(new List<AssetOnDesignLayerPeriod>());
-          }
+          return new AssetOnDesignLayerPeriodsExecutionResult(new List<AssetOnDesignLayerPeriod>());
+        }
 
-          assetOnDesignLayerPeriods = ConvertLayerList(layerList, raptorDesigns);
-        }
-        else
-        {
-          log.LogError($"GetAssetOnDesignLayerPeriodsExecutor: No projectId provided. ");
-          throw CreateServiceException<GetAssetOnDesignLayerPeriodsExecutor>();
-        }
+        assetOnDesignLayerPeriods = ConvertLayerList(layerList, raptorDesigns);
       }
 #endif
 
-      await PairUpAssetIdentifiersAsync(assetOnDesignLayerPeriods, haveUids);
+      await PairUpAssetIdentifiers(projectIds, assetOnDesignLayerPeriods, haveUids);
       return new AssetOnDesignLayerPeriodsExecutionResult(assetOnDesignLayerPeriods);
     }
 
-    private async Task PairUpAssetIdentifiersAsync(List<AssetOnDesignLayerPeriod> assetOnDesignLayerPeriods,
+    private async Task PairUpAssetIdentifiers(ProjectIDs projectIds, List<AssetOnDesignLayerPeriod> assetOnDesignLayerPeriods,
       bool haveUids)
     {
       if (assetOnDesignLayerPeriods == null || assetOnDesignLayerPeriods.Count == 0)
         return;
 
-      if (haveUids)
+      if (await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(loggerFactory,
+#if RAPTOR
+              raptorClient,
+#endif
+              configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, assetResolverProxy: assetResolverProxy,
+              customHeaders: customHeaders, customerUid: customerUid)
+            .ProcessAsync(projectIds) is MachineExecutionResult machineExecutionResult && machineExecutionResult.MachineStatuses.Count > 0)
       {
-        // assetMatch will return rows if Uids found, however the legacyAssetIds may be invalid
-        var assetUids = new List<Guid>(assetOnDesignLayerPeriods
-          .Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty).Select(a => a.AssetUid.Value).Distinct());
-        if (assetUids.Count > 0)
+        if (haveUids)
         {
-          var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetUids, customHeaders)).ToList();
-          foreach (var assetMatch in assetMatchingResult)
+          foreach (var assetMatch in machineExecutionResult.MachineStatuses)
           {
-            if (assetMatch.Value > 0)
-              foreach (var assetOnDesignPeriod in assetOnDesignLayerPeriods.FindAll(x => x.AssetUid == assetMatch.Key))
-                assetOnDesignPeriod.AssetId = assetMatch.Value;
+            foreach (var assetOnDesignPeriod in assetOnDesignLayerPeriods.FindAll(x => x.AssetUid == assetMatch.AssetUid))
+              assetOnDesignPeriod.AssetId = assetMatch.AssetId;
           }
         }
-      }
-      else
-      {
-        // assetMatch will only return rows if Uids found for the legacyAssetIds
-        var assetIds =
-          new List<long>(assetOnDesignLayerPeriods.Where(a => a.AssetId > 0).Select(a => a.AssetId).Distinct());
-        if (assetIds.Count > 0)
+        else
         {
-          var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetIds, customHeaders)).ToList();
-          foreach (var assetMatch in assetMatchingResult)
+          foreach (var assetMatch in machineExecutionResult.MachineStatuses)
           {
-            if (assetMatch.Value > 0) // machineId of 0/-1 may occur for >1 AssetUid
-              foreach (var assetOnDesignPeriod in assetOnDesignLayerPeriods.FindAll(x => x.AssetId == assetMatch.Value))
-                assetOnDesignPeriod.AssetUid = assetMatch.Key;
+            foreach (var assetOnDesignPeriod in assetOnDesignLayerPeriods.FindAll(x => x.AssetId == assetMatch.AssetId))
+              assetOnDesignPeriod.AssetUid = assetMatch.AssetUid;
           }
         }
       }
@@ -127,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
       for (var i = 0; i < layerList.Length; i++)
       {
-        var designName = designNames.Where(d => d.FID == layerList[i].FDesignID).Select( d => d.FName).FirstOrDefault();
+        var designName = designNames.Where(d => d.FID == layerList[i].FDesignID).Select(d => d.FName).FirstOrDefault();
         assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod
         (
           layerList[i].FAssetID, layerList[i].FDesignID, layerList[i].FLayerID, layerList[i].FStartTime,

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Exceptions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -46,13 +44,15 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public async Task GetAssetOnDesignLayerPeriodsExecutor_TRex_Success()
     {
-      var projectIds = new ProjectID() {ProjectUid = Guid.NewGuid()};
+      var projectIds = new ProjectIDs(777, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetUid = Guid.NewGuid();
       var assetId = 777;
       long layerId = 444;
       var machineDesignName = "The machine design name";
-      var expectedResult = new AssetOnDesignLayerPeriodsExecutionResult
+
+      // for GetAssetOnDesignLayerPeriodsExecutor
+      var expectedAssetOnDesignLayerPeriodsExecutionResult = new AssetOnDesignLayerPeriodsExecutionResult
       (
         new List<AssetOnDesignLayerPeriod>(1)
         {
@@ -61,19 +61,32 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       );
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       tRexProxy.Setup(x => x.SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(projectIds.ProjectUid.ToString(),
-          It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedResult);
-
-      var assets = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
-      var assetProxy = new Mock<IAssetResolverProxy>();
-      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(assets);
-
+          It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(expectedAssetOnDesignLayerPeriodsExecutionResult);
       var configStore = new Mock<IConfigurationStore>();
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
 
+      // for GetMachineIdsExecutor
+      var expectedMachineExecutionResult = new MachineExecutionResult
+      (
+        new List<MachineStatus>(1)
+        {
+          new MachineStatus(-1, "MachineName2", false, "designName",
+            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid)
+        }
+      );
+      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
+          It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(expectedMachineExecutionResult);
+
+      // for GetMachineIdsExecutor
+      var assetMatches = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
+      var assetProxy = new Mock<IAssetResolverProxy>();
+      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(assetMatches);
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
+
+      // GetAssetOnDesignLayerPeriodsExecutor will call GetMachineIdsExecutor
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object, assetResolverProxy: assetProxy.Object,
@@ -82,38 +95,20 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var result = await executor.ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(1, result.AssetOnDesignLayerPeriods.Count, "Wrong layer count");
-      Assert.AreEqual(expectedResult.AssetOnDesignLayerPeriods[0].AssetUid, result.AssetOnDesignLayerPeriods[0].AssetUid,
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].AssetUid, result.AssetOnDesignLayerPeriods[0].AssetUid,
         "Wrong machine Uid");
-      Assert.AreEqual(assets[0].Value, result.AssetOnDesignLayerPeriods[0].AssetId,
+      Assert.AreEqual(assetMatches[0].Value, result.AssetOnDesignLayerPeriods[0].AssetId,
         "Wrong legacyAssetId");
       Assert.AreEqual(NULL_RAPTOR_MACHINE_DESIGN_ID, result.AssetOnDesignLayerPeriods[0].OnMachineDesignId, "Wrong design OnMachineDesignId");
-      Assert.AreEqual(expectedResult.AssetOnDesignLayerPeriods[0].OnMachineDesignName, result.AssetOnDesignLayerPeriods[0].OnMachineDesignName, "Wrong design OnMachineDesignName");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignName, result.AssetOnDesignLayerPeriods[0].OnMachineDesignName, "Wrong design OnMachineDesignName");
 
-      Assert.AreEqual(expectedResult.AssetOnDesignLayerPeriods[0].LayerId, result.AssetOnDesignLayerPeriods[0].LayerId, "Wrong layer id");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId, result.AssetOnDesignLayerPeriods[0].LayerId, "Wrong layer id");
     }
-
-    [TestMethod]
-    public async Task GetAssetOnDesignLayerPeriodsExecutor_TRex_NoProjectUid()
-    {
-      var projectIds = new ProjectID();
-
-      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
-
-      var executor = RequestExecutorContainerFactory
-        .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, configStore: configStore.Object,
-          trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);
-
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectIds));
-      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
-      Assert.AreEqual("Failed to get/update data requested by GetAssetOnDesignLayerPeriodsExecutor", ex.GetResult.Message);
-    }
-
+    
     [TestMethod]
     public async Task GetAssetOnDesignLayerPeriodsExecutor_TRex_MultiAssetUid()
     {
-      var projectIds = new ProjectID() { ProjectUid = Guid.NewGuid() };
+      var projectIds = new ProjectIDs(777, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetUid1Good = Guid.NewGuid();
       var assetId1Good = 777;
@@ -125,7 +120,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var assetId3Expected = -1;
       long layerId = 444;
       var machineDesignName = "The machine Design name";
-      var expectedResult = new AssetOnDesignLayerPeriodsExecutionResult
+      
+      // for GetAssetOnDesignLayerPeriodsExecutor
+      var expectedAssetOnDesignLayerPeriodsExecutionResult = new AssetOnDesignLayerPeriodsExecutionResult
       (
         new List<AssetOnDesignLayerPeriod>(1)
         {
@@ -142,20 +139,39 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           It.IsAny<string>(),
           It.IsAny<IDictionary<string, string>>(),
           It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedResult);
+        .ReturnsAsync(expectedAssetOnDesignLayerPeriodsExecutionResult);
+      var configStore = new Mock<IConfigurationStore>();
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
 
-      var assets = new List<KeyValuePair<Guid, long>>()
+      // for GetMachineIdsExecutor
+      var expectedMachineExecutionResult = new MachineExecutionResult
+      (
+        new List<MachineStatus>(1)
+        {
+          new MachineStatus(-1, "MachineName0", false, "designName0",
+            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid1Good),
+          new MachineStatus(-1, "MachineName1", false, "designName1",
+            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid2Good),
+          new MachineStatus(-1, "MachineName2", false, "designName1",
+          14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid3Good)
+        }
+      );
+      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
+          It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(expectedMachineExecutionResult);
+
+      // for GetMachineIdsExecutor
+      var assetMatches = new List<KeyValuePair<Guid, long>>()
       {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
       var assetProxy = new Mock<IAssetResolverProxy>();
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(assets);
+        .ReturnsAsync(assetMatches);
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
 
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
-
+      // GetAssetOnDesignLayerPeriodsExecutor will call GetMachineIdsExecutor
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object, assetResolverProxy: assetProxy.Object,
@@ -188,15 +204,91 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 #if RAPTOR
 
     [TestMethod]
+    public async Task GetAssetOnDesignLayerPeriodsExecutor_TRexJohnDoe_Success()
+    {
+      var projectIds = new ProjectIDs(777, Guid.NewGuid());
+      var customerUid = Guid.NewGuid();
+      var assetUid = Guid.NewGuid();
+      var assetId = 777;
+      long layerId = 444;
+      var machineDesignName = "The machine design name";
+
+      // for GetAssetOnDesignLayerPeriodsExecutor
+      var expectedAssetOnDesignLayerPeriodsExecutionResult = new AssetOnDesignLayerPeriodsExecutionResult
+      (
+        new List<AssetOnDesignLayerPeriod>(1)
+        {
+          new AssetOnDesignLayerPeriod(-1, NULL_RAPTOR_MACHINE_DESIGN_ID, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40), assetUid, machineDesignName)
+        }
+      );
+      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
+      tRexProxy.Setup(x => x.SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(projectIds.ProjectUid.ToString(),
+          It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(expectedAssetOnDesignLayerPeriodsExecutionResult);
+      var configStore = new Mock<IConfigurationStore>();
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
+
+      // for GetMachineIdsExecutor
+      var expectedMachineExecutionResult = new MachineExecutionResult
+      (
+        new List<MachineStatus>(1)
+        {
+          new MachineStatus(-1, "MachineName2", true, "designName",
+            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid)
+        }
+      );
+      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
+          It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(expectedMachineExecutionResult);
+
+      // for GetMachineIdsExecutor, raptor call to assetMatch on JohnDoe assets
+      var tMachines = new[]
+      {
+        new TMachineDetail
+        {
+          Name = expectedMachineExecutionResult.MachineStatuses[0].MachineName,
+          ID = assetId,
+          IsJohnDoeMachine = true
+        }
+      };
+      var raptorClient = new Mock<IASNodeClient>();
+      raptorClient
+        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
+        .Returns(tMachines);
+      
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
+
+      // GetAssetOnDesignLayerPeriodsExecutor will call GetMachineIdsExecutor
+      var executor = RequestExecutorContainerFactory
+        .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, configStore: configStore.Object,
+          raptorClient: raptorClient.Object, trexCompactionDataProxy: tRexProxy.Object, 
+          customHeaders: _customHeaders, customerUid: customerUid.ToString());
+
+      var result = await executor.ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
+      Assert.IsNotNull(result, "Result should not be null");
+      Assert.AreEqual(1, result.AssetOnDesignLayerPeriods.Count, "Wrong layer count");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].AssetUid, result.AssetOnDesignLayerPeriods[0].AssetUid,
+        "Wrong machine Uid");
+      Assert.AreEqual(tMachines[0].ID, result.AssetOnDesignLayerPeriods[0].AssetId,
+        "Wrong legacyAssetId");
+      Assert.AreEqual(NULL_RAPTOR_MACHINE_DESIGN_ID, result.AssetOnDesignLayerPeriods[0].OnMachineDesignId, "Wrong design OnMachineDesignId");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignName, result.AssetOnDesignLayerPeriods[0].OnMachineDesignName, "Wrong design OnMachineDesignName");
+
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId, result.AssetOnDesignLayerPeriods[0].LayerId, "Wrong layer id");
+    }
+
+    [TestMethod]
     public async Task GetAssetOnDesignLayerPeriodsExecutor_Raptor_Success()
     {
-      var projectIds = new ProjectID() {ProjectId = 999};
+      var projectIds = new ProjectIDs(999, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetId = 777;
       var assetUid = Guid.NewGuid();
       var designId = 888;
       var layerId = 999;
-      var expectedResult = new AssetOnDesignLayerPeriodsExecutionResult
+
+      // for GetAssetOnDesignLayerPeriodsExecutor
+      var expectedAssetOnDesignLayerPeriodsExecutionResult = new AssetOnDesignLayerPeriodsExecutionResult
       (
         new List<AssetOnDesignLayerPeriod>(1)
         {
@@ -208,27 +300,40 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       {
         new TDesignLayer
         {
-          FAssetID = expectedResult.AssetOnDesignLayerPeriods[0].AssetId,
-          FDesignID = expectedResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId,
-          FLayerID = (int) expectedResult.AssetOnDesignLayerPeriods[0].LayerId,
-          FStartTime = expectedResult.AssetOnDesignLayerPeriods[0].StartDate,
-          FEndTime = expectedResult.AssetOnDesignLayerPeriods[0].EndDate,
+          FAssetID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].AssetId,
+          FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId,
+          FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId,
+          FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].StartDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate,
         }
       };
 
       var raptorClient = new Mock<IASNodeClient>();
       raptorClient
-        .Setup(x => x.GetOnMachineLayers(projectIds.ProjectId.Value, out tLayers))
+        .Setup(x => x.GetOnMachineLayers(projectIds.ProjectId, out tLayers))
         .Returns(0);
-
-      var assets = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
-      var assetProxy = new Mock<IAssetResolverProxy>();
-      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(assets);
 
       var configStore = new Mock<IConfigurationStore>();
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(false);
 
+
+      // for GetMachineIdsExecutor
+      var tMachines = new[]
+      {
+        new TMachineDetail { Name = "blahblah", ID = assetId, IsJohnDoeMachine = false }
+      };
+      raptorClient
+        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
+        .Returns(tMachines);
+
+      // for GetMachineIdsExecutor
+      var assetMatches = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
+      var assetProxy = new Mock<IAssetResolverProxy>();
+      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(assetMatches);
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
+
+      // GetAssetOnDesignLayerPeriodsExecutor will call GetMachineIdsExecutor
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
           assetResolverProxy: assetProxy.Object,
@@ -236,20 +341,20 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var result = await executor.ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(1, result.AssetOnDesignLayerPeriods.Count, "Wrong layer count");
-      Assert.AreEqual(expectedResult.AssetOnDesignLayerPeriods[0].AssetId, result.AssetOnDesignLayerPeriods[0].AssetId, "Wrong machine OnMachineDesignId");
-      Assert.AreEqual(assets[0].Key, result.AssetOnDesignLayerPeriods[0].AssetUid, "Wrong assetUid");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].AssetId, result.AssetOnDesignLayerPeriods[0].AssetId, "Wrong machine OnMachineDesignId");
+      Assert.AreEqual(assetMatches[0].Key, result.AssetOnDesignLayerPeriods[0].AssetUid, "Wrong assetUid");
 
-      Assert.AreEqual(expectedResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId, result.AssetOnDesignLayerPeriods[0].OnMachineDesignId, "Wrong design OnMachineDesignId");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId, result.AssetOnDesignLayerPeriods[0].OnMachineDesignId, "Wrong design OnMachineDesignId");
       Assert.IsNull(result.AssetOnDesignLayerPeriods[0].OnMachineDesignName, "Wrong design OnMachineDesignName");
-      Assert.AreEqual(expectedResult.AssetOnDesignLayerPeriods[0].LayerId, result.AssetOnDesignLayerPeriods[0].LayerId, "Wrong layer OnMachineDesignId");
-      Assert.AreEqual(expectedResult.AssetOnDesignLayerPeriods[0].StartDate, result.AssetOnDesignLayerPeriods[0].StartDate, "Wrong startDate");
-      Assert.AreEqual(expectedResult.AssetOnDesignLayerPeriods[0].EndDate, result.AssetOnDesignLayerPeriods[0].EndDate, "Wrong endDate");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId, result.AssetOnDesignLayerPeriods[0].LayerId, "Wrong layer OnMachineDesignId");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].StartDate, result.AssetOnDesignLayerPeriods[0].StartDate, "Wrong startDate");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate, result.AssetOnDesignLayerPeriods[0].EndDate, "Wrong endDate");
     }
 
     [TestMethod]
     public async Task GetAssetOnDesignLayerPeriodsExecutor_Raptor_MultiAssetUid()
     {
-      var projectIds = new ProjectID() { ProjectId = 999 };
+      var projectIds = new ProjectIDs(999, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetUid1Good = Guid.NewGuid();
       long assetId1Good = 777;
@@ -262,7 +367,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Guid? assetUid3Expected = null;
       var designId = 888;
       var layerId = 999;
-      var expectedResult = new AssetOnDesignLayerPeriodsExecutionResult
+
+      // for GetAssetOnDesignLayerPeriodsExecutor
+      var expectedAssetOnDesignLayerPeriodsExecutionResult = new AssetOnDesignLayerPeriodsExecutionResult
       (
         new List<AssetOnDesignLayerPeriod>(1)
         {
@@ -279,59 +386,71 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       {
         new TDesignLayer
         {
-          FAssetID = expectedResult.AssetOnDesignLayerPeriods[0].AssetId,
-          FDesignID = expectedResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId,
-          FLayerID = (int) expectedResult.AssetOnDesignLayerPeriods[0].LayerId,
-          FStartTime = expectedResult.AssetOnDesignLayerPeriods[0].StartDate,
-          FEndTime = expectedResult.AssetOnDesignLayerPeriods[0].EndDate,
+          FAssetID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].AssetId,
+          FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId,
+          FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId,
+          FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].StartDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate,
         },
         new TDesignLayer
         {
-          FAssetID = expectedResult.AssetOnDesignLayerPeriods[1].AssetId,
-          FDesignID = expectedResult.AssetOnDesignLayerPeriods[1].OnMachineDesignId,
-          FLayerID = (int) expectedResult.AssetOnDesignLayerPeriods[1].LayerId,
-          FStartTime = expectedResult.AssetOnDesignLayerPeriods[1].StartDate,
-          FEndTime = expectedResult.AssetOnDesignLayerPeriods[1].EndDate,
+          FAssetID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].AssetId,
+          FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].OnMachineDesignId,
+          FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].LayerId,
+          FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].StartDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].EndDate,
         },
         new TDesignLayer
         {
-          FAssetID = expectedResult.AssetOnDesignLayerPeriods[2].AssetId,
-          FDesignID = expectedResult.AssetOnDesignLayerPeriods[2].OnMachineDesignId,
-          FLayerID = (int) expectedResult.AssetOnDesignLayerPeriods[2].LayerId,
-          FStartTime = expectedResult.AssetOnDesignLayerPeriods[2].StartDate,
-          FEndTime = expectedResult.AssetOnDesignLayerPeriods[2].EndDate,
+          FAssetID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].AssetId,
+          FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].OnMachineDesignId,
+          FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].LayerId,
+          FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].StartDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].EndDate,
         },
         new TDesignLayer
         {
-          FAssetID = expectedResult.AssetOnDesignLayerPeriods[3].AssetId,
-          FDesignID = expectedResult.AssetOnDesignLayerPeriods[3].OnMachineDesignId,
-          FLayerID = (int) expectedResult.AssetOnDesignLayerPeriods[3].LayerId,
-          FStartTime = expectedResult.AssetOnDesignLayerPeriods[3].StartDate,
-          FEndTime = expectedResult.AssetOnDesignLayerPeriods[3].EndDate,
+          FAssetID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].AssetId,
+          FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].OnMachineDesignId,
+          FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].LayerId,
+          FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].StartDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].EndDate,
         },
         new TDesignLayer
         {
-          FAssetID = expectedResult.AssetOnDesignLayerPeriods[4].AssetId,
-          FDesignID = expectedResult.AssetOnDesignLayerPeriods[4].OnMachineDesignId,
-          FLayerID = (int) expectedResult.AssetOnDesignLayerPeriods[4].LayerId,
-          FStartTime = expectedResult.AssetOnDesignLayerPeriods[4].StartDate,
-          FEndTime = expectedResult.AssetOnDesignLayerPeriods[4].EndDate,
+          FAssetID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].AssetId,
+          FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].OnMachineDesignId,
+          FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].LayerId,
+          FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].StartDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].EndDate,
         },
         new TDesignLayer
         {
-          FAssetID = expectedResult.AssetOnDesignLayerPeriods[5].AssetId,
-          FDesignID = expectedResult.AssetOnDesignLayerPeriods[5].OnMachineDesignId,
-          FLayerID = (int) expectedResult.AssetOnDesignLayerPeriods[5].LayerId,
-          FStartTime = expectedResult.AssetOnDesignLayerPeriods[5].StartDate,
-          FEndTime = expectedResult.AssetOnDesignLayerPeriods[5].EndDate,
+          FAssetID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].AssetId,
+          FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].OnMachineDesignId,
+          FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].LayerId,
+          FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].StartDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].EndDate,
         }
       };
 
       var raptorClient = new Mock<IASNodeClient>();
       raptorClient
-        .Setup(x => x.GetOnMachineLayers(projectIds.ProjectId.Value, out tLayers))
+        .Setup(x => x.GetOnMachineLayers(projectIds.ProjectId, out tLayers))
         .Returns(0);
+      var configStore = new Mock<IConfigurationStore>();
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(false);
 
+      // for GetMachineIdsExecutor
+      var tMachines = new[]
+      {
+        new TMachineDetail { Name = "blahblah", ID = assetId1Good, IsJohnDoeMachine = false }
+      };
+      raptorClient
+        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
+        .Returns(tMachines);
+
+      // for GetMachineIdsExecutor
       var assets = new List<KeyValuePair<Guid, long>>()
       {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
@@ -340,10 +459,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var assetProxy = new Mock<IAssetResolverProxy>();
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assets);
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
 
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(false);
-
+      // GetAssetOnDesignLayerPeriodsExecutor will call GetMachineIdsExecutor
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
           assetResolverProxy: assetProxy.Object,
@@ -367,6 +485,90 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.AreEqual(assetId2Invalid, result.AssetOnDesignLayerPeriods[4].AssetId, "Wrong legacyAssetId2 (3)");
       Assert.AreEqual(assetUid3Expected, result.AssetOnDesignLayerPeriods[5].AssetUid, "Wrong asset3 Uid (5)");
       Assert.AreEqual(assetId3NotFound, result.AssetOnDesignLayerPeriods[5].AssetId, "Wrong legacyAssetId3 (5)");
+    }
+
+    [TestMethod]
+    public async Task GetAssetOnDesignLayerPeriodsExecutor_RaptorJohnDoe_Success()
+    {
+      var projectIds = new ProjectIDs(999, Guid.NewGuid());
+      var customerUid = Guid.NewGuid();
+      var assetId = 777;
+      var assetUid = Guid.NewGuid();
+      var designId = 888;
+      var layerId = 999;
+
+      // for GetAssetOnDesignLayerPeriodsExecutor
+      var expectedAssetOnDesignLayerPeriodsExecutionResult = new AssetOnDesignLayerPeriodsExecutionResult
+      (
+        new List<AssetOnDesignLayerPeriod>(1)
+        {
+          new AssetOnDesignLayerPeriod(assetId, designId, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40),null)
+        }
+      );
+
+      var tLayers = new[]
+      {
+        new TDesignLayer
+        {
+          FAssetID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].AssetId,
+          FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId,
+          FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId,
+          FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].StartDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate,
+        }
+      };
+
+      var raptorClient = new Mock<IASNodeClient>();
+      raptorClient
+        .Setup(x => x.GetOnMachineLayers(projectIds.ProjectId, out tLayers))
+        .Returns(0);
+
+      var configStore = new Mock<IConfigurationStore>();
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(false);
+
+
+      // for GetMachineIdsExecutor
+      var tMachines = new[]
+      {
+        new TMachineDetail { Name = "MachineName2", ID = assetId, IsJohnDoeMachine = true }
+      };
+      raptorClient
+        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
+        .Returns(tMachines);
+
+      // GetMachineIdsExecutor trex call to assetMatch on JohnDoe assets
+      var expectedTRexResult = new MachineExecutionResult
+      (
+        new List<MachineStatus>(1)
+        {
+          new MachineStatus(-1, "MachineName2", true, "designName",
+            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid)
+        }
+      );
+      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
+      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
+          It.IsAny<string>(),
+          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(expectedTRexResult);
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
+
+      // GetAssetOnDesignLayerPeriodsExecutor will call GetMachineIdsExecutor
+      var executor = RequestExecutorContainerFactory
+        .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
+          trexCompactionDataProxy: tRexProxy.Object,
+          customHeaders: _customHeaders, customerUid: customerUid.ToString());
+      var result = await executor.ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
+      Assert.IsNotNull(result, "Result should not be null");
+      Assert.AreEqual(1, result.AssetOnDesignLayerPeriods.Count, "Wrong layer count");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].AssetId, result.AssetOnDesignLayerPeriods[0].AssetId, "Wrong machine OnMachineDesignId");
+      Assert.AreEqual(expectedTRexResult.MachineStatuses[0].AssetUid, result.AssetOnDesignLayerPeriods[0].AssetUid, "Wrong assetUid");
+
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId, result.AssetOnDesignLayerPeriods[0].OnMachineDesignId, "Wrong design OnMachineDesignId");
+      Assert.IsNull(result.AssetOnDesignLayerPeriods[0].OnMachineDesignName, "Wrong design OnMachineDesignName");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId, result.AssetOnDesignLayerPeriods[0].LayerId, "Wrong layer OnMachineDesignId");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].StartDate, result.AssetOnDesignLayerPeriods[0].StartDate, "Wrong startDate");
+      Assert.AreEqual(expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate, result.AssetOnDesignLayerPeriods[0].EndDate, "Wrong endDate");
     }
 #endif
 

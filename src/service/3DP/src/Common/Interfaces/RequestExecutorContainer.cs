@@ -45,6 +45,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// Logger for logging
     /// </summary>
     protected ILogger log;
+    protected ILoggerFactory loggerFactory;
 
     /// <summary>
     /// Where to get environment variables, connection string etc. from
@@ -166,7 +167,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger,
+    public void Initialise(ILoggerFactory loggerFactory, ILogger logger,
 #if RAPTOR
       IASNodeClient raptorClient,
       ITagProcessor tagProcessor,
@@ -175,7 +176,8 @@ namespace VSS.Productivity3D.Common.Interfaces
       ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
       IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders, string customerUid)
     {
-      log = logger;
+      this.loggerFactory = loggerFactory;
+      this.log = logger;
 #if RAPTOR
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;

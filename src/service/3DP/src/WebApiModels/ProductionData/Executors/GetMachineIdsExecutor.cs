@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.MasterData.Models.Models;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -24,20 +24,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     ///    resolve non-JohnDoe assetID/Uid using assetResolver
     ///    resolve JohnDoe assetID/Uid using opposite trex/raptor pathway
     /// Note that a request will always include both projectUID and ProjectID
-    /// todoJeannie what if RAPTOR not defined i.e. VLPDDecls etc not running (catch exception and do nothing?)
-    /// todoJeannie what if TRex or Raptor not running?
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns></returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as ProjectIDs;
-      if (request == null)
+      var projectIds = item as ProjectIDs;
+      if (projectIds == null)
         ThrowRequestTypeCastException<ProjectIDs>();
 
       log.LogInformation(
-        $"GetMachineIdsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES")}");
+        $"GetMachineIdsExecutor: {JsonConvert.SerializeObject(projectIds)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES")}");
 
       List<MachineStatus> machines;
       bool haveUids = true;
@@ -45,17 +43,17 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES"))
 #endif
-        machines = await GetTrexMachines(request.ProjectUid.ToString());
+        machines = await GetTrexMachines(projectIds.ProjectUid.ToString());
 
 #if RAPTOR
       else
       {
         haveUids = false;
-        machines = GetRaptorMachines(request.ProjectId);
+        machines = GetRaptorMachines(projectIds.ProjectId);
       }
 #endif
 
-      await PairUpAssetIdentifiers(request, machines, haveUids);
+      await PairUpAssetIdentifiers(projectIds, machines, haveUids);
       return new MachineExecutionResult(machines);
     }
 
@@ -77,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
       return ConvertMachineStatus(tMachines);
     }
-#endif 
+#endif
 
     private async Task PairUpAssetIdentifiers(ProjectIDs request, List<MachineStatus> machines, bool haveUids)
     {
@@ -87,12 +85,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       await PairUpVSSAssets(machines, haveUids);
       await PairUpJohnDoeAssets(request, machines, haveUids);
 
-      var unMatchedList = new List<Tuple<Guid?, long, bool, string>>(machines.Where(
-        a => !a.AssetUid.HasValue || a.AssetUid.Value == Guid.Empty || a.AssetId < 1)
-        .Select(a => new Tuple< Guid?, long, bool, string>((a.AssetUid ?? null), a.AssetId, a.IsJohnDoe, a.MachineName))
-        .Distinct());
+      var unMatchedList = (machines.Where(a => !a.AssetUid.HasValue || a.AssetUid.Value == Guid.Empty || a.AssetId < 1)
+        .Select(a => new {assetUid = a.AssetUid, assetId = a.AssetId, isJohnDoe = a.IsJohnDoe, machineName = a.MachineName})
+        .Distinct()).ToList();
       if (unMatchedList.Any())
-        log.LogError( $"PairUpAssetIdentifiers: UnableToMatchAllAssets: {JsonConvert.SerializeObject(unMatchedList)}");
+        log.LogError($"PairUpAssetIdentifiers: UnableToMatchAllAssets: {JsonConvert.SerializeObject(unMatchedList)}");
     }
 
     private async Task PairUpVSSAssets(List<MachineStatus> machines, bool haveUids)
