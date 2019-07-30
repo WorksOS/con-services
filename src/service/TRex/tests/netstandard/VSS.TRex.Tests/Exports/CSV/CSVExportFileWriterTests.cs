@@ -319,7 +319,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         TRexNodeID = Guid.NewGuid().ToString()
       };
 
-      var dataRows = new List<string>() { "string one", "string two" };
+      var dataRows = new List<string> { "string one", "string two" };
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));

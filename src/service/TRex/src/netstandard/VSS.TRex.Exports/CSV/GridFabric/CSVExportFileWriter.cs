@@ -88,7 +88,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       {
         // Write the header and all rows to a file
         targetFile = Path.Combine(localPath, requestArgument.FileName) + CSV_extension;
-        using (var fs = new StreamWriter(targetFile))
+        using (var fs = new StreamWriter(targetFile) {NewLine = "\r\n" })
         {
           fs.WriteLine(columnHeaders);
           foreach (var row in dataRows)
@@ -107,7 +107,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         {
           // Write the header and n rows to a file
           targetFile = Path.Combine(localPath, requestArgument.FileName + $"({fileNumber})") + CSV_extension;
-          using (var fs = new StreamWriter(targetFile))
+          using (var fs = new StreamWriter(targetFile) { NewLine = "\r\n" })
           {
             fs.WriteLine(columnHeaders);
             var countToWrite = startRowNumberInBlock + RestrictedOutputRowCount > dataRows.Count 
