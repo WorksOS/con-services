@@ -14,6 +14,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public DateTime? SurveyedUtc { get; set; }
     public string DataOceanRootFolder { get; set; }
 
+    public string DataOceanFileName { get; set; }
+
     /// <summary>
     /// Cannot delete a design (or alignment) which is used in a filter
     /// </summary>

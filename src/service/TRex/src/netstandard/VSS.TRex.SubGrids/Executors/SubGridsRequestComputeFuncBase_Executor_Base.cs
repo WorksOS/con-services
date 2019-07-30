@@ -93,6 +93,11 @@ namespace VSS.TRex.SubGrids.Executors
     private IOverrideParameters Overrides;
 
     /// <summary>
+    /// Parameters for lift analysis
+    /// </summary>
+    private ILiftParameters LiftParams;
+
+    /// <summary>
     /// Cleans an array of client leaf sub grids by repatriating them to the client leaf sub grid factory
     /// </summary>
     /// <param name="SubGridResultArray"></param>
@@ -235,6 +240,7 @@ namespace VSS.TRex.SubGrids.Executors
         ReferenceDesignWrapper = new DesignWrapper(arg.ReferenceDesign, siteModel.Designs.Locate(arg.ReferenceDesign.DesignID));
 
       Overrides = arg.Overrides;
+      LiftParams = arg.LiftParams;
     }
 
     /// <summary>
@@ -265,7 +271,7 @@ namespace VSS.TRex.SubGrids.Executors
       }
 
       // Reach into the sub grid request layer and retrieve an appropriate sub grid
-      var requestSubGridInternalResult = await requester.RequestSubGridInternal(address, Overrides, address.ProdDataRequested, address.SurveyedSurfaceDataRequested);
+      var requestSubGridInternalResult = await requester.RequestSubGridInternal(address, Overrides, LiftParams, address.ProdDataRequested, address.SurveyedSurfaceDataRequested);
       result.requestResult = requestSubGridInternalResult.requestResult;
       result.clientGrid = requestSubGridInternalResult.clientGrid;
 

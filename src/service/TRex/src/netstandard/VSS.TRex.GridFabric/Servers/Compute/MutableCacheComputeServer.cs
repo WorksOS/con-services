@@ -54,7 +54,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
-      cfg.JvmMaxMemoryMb = 2 * 1024; // Set max to 2Gb
+      cfg.JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_HEAP_SIZE_MB);
       cfg.UserAttributes = new Dictionary<string, object>
             {
                 { "Owner", TRexGrids.MutableGridName() }

@@ -63,7 +63,8 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           ReportTemperature = arg.ReportTemperature,
           ReportCutFill = arg.ReportCutFill,
           Points = new List<StationOffsetPoint>(),
-          Overrides = arg.Overrides
+          Overrides = arg.Overrides,
+          LiftParams = arg.LiftParams
         };
 
         // alignment sdk will convert interval/offsets into northing/eastings for the project
