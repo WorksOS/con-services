@@ -60,7 +60,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         // zip the directory
         var zipFullPath = Path.Combine(localExportPath, uniqueFileName) + ZIP_extension;
 
-        ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false);
+        ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false, Encoding.UTF8);
         // copy zip to S3
         s3FullPath = $"project/{requestArgument.ProjectID}/TRexExport/{uniqueFileName}{ZIP_extension}";
         fileLoadedOk = S3FileTransfer.WriteFileToBucket(zipFullPath, s3FullPath, awsBucketName);

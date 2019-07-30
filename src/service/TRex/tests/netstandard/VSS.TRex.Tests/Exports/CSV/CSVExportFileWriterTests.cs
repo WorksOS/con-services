@@ -315,7 +315,9 @@ namespace VSS.TRex.Tests.Exports.CSV
         CoordType.Northeast, OutputTypes.VedaFinalPass,
         csvExportUserPreference, new List<CSVExportMappedMachine>(), true, true
       )
-      { TRexNodeID = Guid.NewGuid().ToString() };
+      {
+        TRexNodeID = Guid.NewGuid().ToString()
+      };
 
       var dataRows = new List<string>() { "string one", "string two" };
 
@@ -365,7 +367,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     {
       var projectUid = Guid.NewGuid();
 
-      var userPreferences = new UserPreferences() { TemperatureUnits = (int)TemperatureUnitEnum.Fahrenheit };
+      var userPreferences = new UserPreferences { TemperatureUnits = (int)TemperatureUnitEnum.Fahrenheit };
       var csvExportUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
 
       var requestArgument = new CSVExportRequestArgument
@@ -374,7 +376,9 @@ namespace VSS.TRex.Tests.Exports.CSV
         CoordType.Northeast, OutputTypes.VedaFinalPass,
         csvExportUserPreference, new List<CSVExportMappedMachine>(), true, true
       )
-      { TRexNodeID = Guid.NewGuid().ToString() };
+      {
+        TRexNodeID = Guid.NewGuid().ToString()
+      };
 
       var dataRows = new List<string>(70000);
       for (int i = 0; i < 70000; i++)
