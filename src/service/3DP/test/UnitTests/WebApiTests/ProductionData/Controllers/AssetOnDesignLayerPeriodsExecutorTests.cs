@@ -552,6 +552,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(expectedTRexResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
+      configStore.Setup(x => x.GetValueBool("TREX_IS_AVAILABLE")).Returns(true);
 
       // GetAssetOnDesignLayerPeriodsExecutor will call GetMachineIdsExecutor
       var executor = RequestExecutorContainerFactory

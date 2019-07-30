@@ -623,6 +623,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .Returns(tMachineDesigns);
       var configStore = new Mock<IConfigurationStore>();
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns(false);
+      configStore.Setup(x => x.GetValueBool("TREX_IS_AVAILABLE")).Returns(true);
 
       // for GetMachineIdsExecutor
       var tMachines = new[]

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -57,12 +56,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       return new MachineExecutionResult(machines);
     }
 
+    // if primary call is intended for raptor i.e. #RAPTOR and UseTRexGateway == false
+    //    TREX_IS_AVAILABLE indicates that a TRex service is available, and can be used for resolving JohnDoes 
     private async Task<List<MachineStatus>> GetTrexMachines(string projectUid)
     {
       var machinesResult = new MachineExecutionResult(new List<MachineStatus>());
-#if RAPTOR
-      if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES"))
-#endif
+      if (TRexIsAvailable("TREX_IS_AVAILABLE") || UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES"))
         machinesResult = await trexCompactionDataProxy
         .SendDataGetRequest<MachineExecutionResult>(projectUid, $"/sitemodels/{projectUid}/machines",
           customHeaders);
