@@ -134,7 +134,7 @@ namespace VSS.TRex.Tools.KeyScanner
 
         using (var outFile = new FileStream(fileName, FileMode.Create))
         {
-          using (var writer = new StreamWriter(outFile))
+          using (var writer = new StreamWriter(outFile) { NewLine = "\r\n" })
           {
             if (mutability == StorageMutability.Immutable)
             {

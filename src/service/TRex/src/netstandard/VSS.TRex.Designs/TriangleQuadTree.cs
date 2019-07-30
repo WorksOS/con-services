@@ -1271,7 +1271,7 @@ namespace VSS.TRex.Designs
 
         public void dump_tree(string Title)
         {
-            using (StreamWriter writer = new StreamWriter(@"C:\Temp\DTree-csharp.txt"))
+            using (StreamWriter writer = new StreamWriter(@"C:\Temp\DTree-csharp.txt") { NewLine = "\r\n" })
             {
                 writer.WriteLine("===================================================================");
                 writer.WriteLine(Title);
