@@ -202,6 +202,14 @@ namespace VSS.TRex.Tests.Exports.CSV
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
 
+      var mockTransferProxy = new Mock<ITransferProxy>();
+      mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>())).Callback(() => throw new IOException("S3 not available"));
+
+      DIBuilder
+        .Continue()
+        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Complete();
+
       var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.ExportUnableToLoadFileToS3);
