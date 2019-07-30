@@ -129,5 +129,69 @@ namespace VSS.TRex.Tests.Profiling
       cell.Layers[0].FirstPassHeight.Should().Be(first);
       cell.Layers[0].LastPassHeight.Should().Be(last);
     }
+
+    [Theory]
+    [InlineData(new []{10.0F, 20.0F, 30.0F, 40.0F}, new short[]{35, 45, 65, 75})]
+
+    public void BuildLiftsForSinglePassCell_CMVPercentChange(float[] heights, short[] cmvs)
+    {
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var baseTime = DateTime.UtcNow;
+
+      var cellPasses = new[]
+      {
+        new CellPass
+        {
+          Time = baseTime,
+          Height = heights[0],
+          CCV = cmvs[0]
+        },
+        new CellPass
+        {
+          Time = baseTime.AddHours(1),
+          Height = heights[1],
+          CCV = cmvs[1]
+        },
+        new CellPass
+        {
+          Time = baseTime.AddHours(2),
+          Height = heights[2],
+          CCV = cmvs[2]
+        },
+        new CellPass
+        {
+          Time = baseTime.AddHours(3),
+          Height = heights[3],
+          CCV = cmvs[3]
+        }
+      };
+
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
+        (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      IClientLeafSubGrid clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CCVPercentChange) as ClientCMVLeafSubGrid;
+      
+      var serverGrid = TRex.SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(
+        siteModel.PrimaryStorageProxy, siteModel.Grid,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset,
+        siteModel.Grid.NumLevels, false, false) as IServerLeafSubGrid;
+
+      var builder = new CellLiftBuilder(siteModel, GridDataType.CCVPercentChange, new FilteredValuePopulationControl(),
+        new FilterSet(new CombinedFilter()), new CellPassFastEventLookerUpper(siteModel));
+
+      var cell = new ProfileCell();
+
+      var segmentIterator = new SubGridSegmentIterator(serverGrid, serverGrid.Directory, siteModel.PrimaryStorageProxy);
+      var cellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(segmentIterator);
+
+      var filteredValueAssignmentContext = new FilteredValueAssignmentContext();
+
+      builder.Build(cell, new LiftParameters(), clientGrid, filteredValueAssignmentContext, cellPassIterator, true).Should().BeTrue();
+
+      cell.Layers.Count().Should().Be(1);
+      cell.Layers[0].PassCount.Should().Be(4);
+      filteredValueAssignmentContext.FilteredValue.FilteredPassData.FilteredPass.CCV.Should().Be(cmvs[cmvs.Length - 1]);
+      filteredValueAssignmentContext.PreviousFilteredValue.FilteredPassData.FilteredPass.CCV.Should().Be(cmvs[cmvs.Length - 2]);
+    }
   }
 }

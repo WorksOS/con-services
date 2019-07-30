@@ -69,7 +69,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
       Assert.True(computor.Filters.Filters.Length == Arg.Filters.Filters.Length, "Invalid computor value for Filters length as different to Arg.");
       Assert.True(computor.Filters.Filters.Length == 1, "Invalid computor value for Filters length.");
       Assert.True(computor.IncludeSurveyedSurfaces, "Invalid computor value for IncludeSurveyedSurfaces.");
-      Assert.True(computor.RequestedGridDataType == GridDataType.CCV, "Invalid computor value for RequestedGridDataType.");
+      Assert.True(computor.RequestedGridDataType == GridDataType.CCVPercentChange, "Invalid computor value for RequestedGridDataType.");
     }
 
     [Fact]

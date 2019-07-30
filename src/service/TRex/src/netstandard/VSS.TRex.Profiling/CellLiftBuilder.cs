@@ -1000,7 +1000,7 @@ namespace VSS.TRex.Profiling
       //  Log.LogDebug($"In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}");
 
       bool Result = false;
-      NumCellPassesRemainingToFetch = 1000;
+      NumCellPassesRemainingToFetch = Consts.NumberCellPassesToBeFetched;
 
       if (AssignmentContext != null)
         AssignmentContext.LowestPassIdx = Consts.NullLowestPassIdx; // if LowestPassIdx ends up > -1 then lowestpass is used
@@ -1034,7 +1034,7 @@ namespace VSS.TRex.Profiling
 
       if (cellPassIterator == null)
       {
-        NumCellPassesRemainingToFetch = 1000; // TODO: = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
+        NumCellPassesRemainingToFetch = Consts.NumberCellPassesToBeFetched; // TODO: = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
         SetCellIterationParameters();
         if (CellPassFastEventLookerUpper != null)
@@ -1148,13 +1148,11 @@ namespace VSS.TRex.Profiling
 
             if (TempFilteredPassFlags[I]) // if valid pass
             {
-              Cell.FilteredPassFlags[Cell.Passes.PassCount - 1] =
-                PassFilter.FilterPass_MachineEvents(ref TempPasses[I]);
+              Cell.FilteredPassFlags[Cell.Passes.PassCount - 1] = PassFilter.FilterPass_MachineEvents(ref TempPasses[I]);
               if (Cell.FilteredPassFlags[Cell.Passes.PassCount - 1])
               {
                 Cell.FilteredPassCount++;
-                if (TempPasses[I].FilteredPass.HalfPass ||
-                    MachineTypeUtilities.IsHalfPassCompactorMachine(TempPasses[I].MachineType))
+                if (TempPasses[I].FilteredPass.HalfPass || MachineTypeUtilities.IsHalfPassCompactorMachine(TempPasses[I].MachineType))
                   Cell.FilteredHalfPassCount++;
                 else
                   Cell.FilteredHalfPassCount += 2; // record as a whole pass
@@ -1175,7 +1173,7 @@ namespace VSS.TRex.Profiling
         // standard fashion
         if (Cell.Passes.PassCount > 0)
         { 
-          for (int I = 0; I < Cell.Passes.PassCount / 2; I++)
+          for (var I = 0; I < Cell.Passes.PassCount / 2; I++)
           {
             TempPass = Cell.Passes.FilteredPassData[I];
 
@@ -1200,10 +1198,7 @@ namespace VSS.TRex.Profiling
         SetCellIterationParameters();
       }
       else
-      {
-        if (Cell.Passes.PassCount > Cell.FilteredPassFlags.Length)
-          Array.Resize(ref Cell.FilteredPassFlags, Cell.Passes.PassCount);
-      }
+        Array.Resize(ref Cell.FilteredPassFlags, Cell.Passes.PassCount);
 
       BeginCellPassIteration();
 
@@ -1304,7 +1299,7 @@ namespace VSS.TRex.Profiling
                     if (ClientGrid.GridDataType == GridDataType.CCVPercentChange ||
                         ClientGrid.GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue)
                       ((ClientCMVLeafSubGrid) ClientGrid).IgnoresNullValueForLastCMV = false;
-                    FilteredPassIndex++;
+                    FilteredPassIndex--;
                   }
                 }
                 else
@@ -1313,8 +1308,7 @@ namespace VSS.TRex.Profiling
                       ClientGrid.GridDataType == GridDataType.CellProfile ||
                       ClientGrid.GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue)
                   {
-                    AssignmentContext.PreviousFilteredValue.FilteredPassData.Assign(
-                      Cell.Passes.FilteredPassData[FilteredPassIndex]);
+                    AssignmentContext.PreviousFilteredValue.FilteredPassData.Assign(Cell.Passes.FilteredPassData[FilteredPassIndex]);
                     FilteredPassIndex--;
                   }
                 }
@@ -1392,14 +1386,14 @@ namespace VSS.TRex.Profiling
         // Cell.NormalizeLayersMaxThickness(liftParameters.FirstPassThickness);
 
         // Todo ... layer thickness computation not included in TRex yet
-        // ComputeLayerThicknessForLayers();
+        //ComputeLayerThicknessForLayers();
       }
 
       // if (Debug_ExtremeLogSwitchE)
       //   Log.LogDebug($" BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: Handling pass count check");
 
-
-      ApplyPassCountRangeFilter();
+      if (PassFilter != null && PassFilter.HasPassCountRangeFilter) // Filter only wants passes that match a range...
+        ApplyPassCountRangeFilter();
 
       // Apply the Elevation Type filter if any...
       ApplyElevationTypeFilter(liftParameters);
@@ -1407,6 +1401,10 @@ namespace VSS.TRex.Profiling
       // Remove all the non-filtered passes from the passes that were used to perform
       // the layer analysis and make sure indexing is correct in layers
       RemoveNonFilteredPasses(ref AssignmentContext);
+
+      // After removal applied we might have no passes due to passcount filter...
+      if (Result && Cell.Passes.PassCount == 0)
+        Result = false;
 
       // If the caller is really just interested in the pass count of the topmost (most
       // recent) layer in the processed lifts, then count the number of cell passes in
@@ -1430,14 +1428,14 @@ namespace VSS.TRex.Profiling
           }
           else
           {
-            for (int PassIndex = Cell.Layers.Last().StartCellPassIdx;
-              PassIndex < Cell.Layers.Last().EndCellPassIdx;
-              PassIndex++)
-              if (PassFilter.FilterPass(ref Cell.Passes.FilteredPassData[PassIndex], PassFilterAnnex))
+            for (var passIndex = Cell.Layers.Last().StartCellPassIdx;
+              passIndex <= Cell.Layers.Last().EndCellPassIdx;
+              passIndex++)
+              if (PassFilter.FilterPass(ref Cell.Passes.FilteredPassData[passIndex], PassFilterAnnex))
               {
                 FilteredPassCountOfTopMostLayer++;
-                if (Cell.Passes.FilteredPassData[PassIndex].FilteredPass.HalfPass ||
-                    MachineTypeUtilities.IsHalfPassCompactorMachine(Cell.Passes.FilteredPassData[PassIndex].MachineType))
+                if (Cell.Passes.FilteredPassData[passIndex].FilteredPass.HalfPass ||
+                    MachineTypeUtilities.IsHalfPassCompactorMachine(Cell.Passes.FilteredPassData[passIndex].MachineType))
                   FilteredHalfCellPassCountOfTopMostLayer++;
                 else
                   FilteredHalfCellPassCountOfTopMostLayer += 2;
