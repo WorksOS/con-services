@@ -124,7 +124,7 @@ namespace VSS.TRex.Designs.SVL.DXF
 
       if (X1 != Consts.NullDouble && Y1 != Consts.NullDouble && X2 != Consts.NullDouble && Y2 != Consts.NullDouble)
       {
-        GeometryUtils.rect_to_polar(Y1, X1, Y2, X2, out double result, out _);
+        GeometryUtils.RectToPolar(Y1, X1, Y2, X2, out double result, out _);
         return result;
       }
 

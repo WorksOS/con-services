@@ -19,7 +19,7 @@ TDesignFiles = class(TObject)
     FDesignUnlockedEvent : TSimpleEvent;
     function EnsureSufficientSpaceToLoadDesign(SpaceRequiredInKB: Integer): Boolean;
     function SpaceAvailableInKB: Integer;
-    function ImportFileFromTCC(const DesignDescriptor : TVLPDDesignDescriptor; const DataModelID : Int64) : Boolean;
+    function ImportFileFromTCC(const DesignDescriptor : TVLPDDesignDescriptor; const ProjectUid : Int64) : Boolean;
 
     procedure DeleteLocallyCachedFile(const FileToDelete: TFileName);
 
@@ -27,10 +27,10 @@ TDesignFiles = class(TObject)
     Function AnyLocks(out LockCount : integer) : Boolean;
 
     function GetCombinedSubgridIndexStream(const Surfaces: TICGroundSurfaceDetailsList;
-                                           const DataModelID : Int64; const ACellSize: Double;
+                                           const ProjectUid : Int64; const ACellSize: Double;
                                            out MS: TMemoryStream): Boolean;
 
-    procedure UpdateDesignCache(const DataModelID     :Int64;
+    procedure UpdateDesignCache(const ProjectUid     :Int64;
                                 const DesignFileName  :String;
                                 const DeleteTTMFile   :Boolean);
 end;

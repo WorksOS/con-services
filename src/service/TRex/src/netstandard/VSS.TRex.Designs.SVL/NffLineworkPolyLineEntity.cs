@@ -291,14 +291,14 @@ namespace VSS.TRex.Designs.SVL
         return;
 
       // Compute bearing of segment
-      GeometryUtils.rect_to_polar(Vertices[index].Y, Vertices[index].X,
+      GeometryUtils.RectToPolar(Vertices[index].Y, Vertices[index].X,
         Vertices[index + 1].Y, Vertices[index + 1].X, out double bearing, out double length);
 
       // Compute the plan position for this segment;
       var distance = (Stn - Vertices[index].Chainage);
 
-      GeometryUtils.polar_to_rect(Vertices[index].Y, Vertices[index].X, out Y, out X, bearing, distance);
-      GeometryUtils.polar_to_rect(Y, X, out Y, out X, bearing + (Math.PI / 2), Ofs);
+      GeometryUtils.PolarToRect(Vertices[index].Y, Vertices[index].X, out Y, out X, bearing, distance);
+      GeometryUtils.PolarToRect(Y, X, out Y, out X, bearing + (Math.PI / 2), Ofs);
     }
 
     //    procedure ResetStartStation(const NewStartStation : Double); Override;

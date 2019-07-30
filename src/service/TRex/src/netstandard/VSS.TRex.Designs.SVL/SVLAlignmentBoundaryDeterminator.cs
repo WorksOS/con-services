@@ -79,7 +79,7 @@ namespace VSS.TRex.Designs.SVL
 
     private double BearingOf(double x1, double y1, double x2, double y2)
     {
-      GeometryUtils.rect_to_polar(y1, x1, y2, x2, out double result, out _);
+      GeometryUtils.RectToPolar(y1, x1, y2, x2, out double result, out _);
       return result;
     }
 
@@ -102,7 +102,7 @@ namespace VSS.TRex.Designs.SVL
       Alignment.ComputeXY(TestStn2, 0, out double X2, out double Y2);
 
       if (X1 != Consts.NullDouble && Y1 != Consts.NullDouble && X2 != Consts.NullDouble && Y2 != Consts.NullDouble)
-        GeometryUtils.rect_to_polar(Y1, X1, Y2, X2, out result, out _);
+        GeometryUtils.RectToPolar(Y1, X1, Y2, X2, out result, out _);
 
       return result;
     }
@@ -162,9 +162,9 @@ namespace VSS.TRex.Designs.SVL
       int I = StartIdx;
       do
       {
-        GeometryUtils.rect_to_polar(fence[I - 1].X, fence[I - 1].Y, fence[I + 1].X, fence[I + 1].Y, out brng, out DistA);
-        GeometryUtils.rect_to_polar(fence[I].X, fence[I].Y, fence[I - 1].X, fence[I - 1].Y, out brng, out DistB);
-        GeometryUtils.rect_to_polar(fence[I].X, fence[I].Y, fence[I + 1].X, fence[I + 1].Y, out brng, out DistC);
+        GeometryUtils.RectToPolar(fence[I - 1].X, fence[I - 1].Y, fence[I + 1].X, fence[I + 1].Y, out brng, out DistA);
+        GeometryUtils.RectToPolar(fence[I].X, fence[I].Y, fence[I - 1].X, fence[I - 1].Y, out brng, out DistB);
+        GeometryUtils.RectToPolar(fence[I].X, fence[I].Y, fence[I + 1].X, fence[I + 1].Y, out brng, out DistC);
 
         if (DistA < Epsilon || DistB < SmallEpsilon || DistC < SmallEpsilon ||
             // Cosine rule

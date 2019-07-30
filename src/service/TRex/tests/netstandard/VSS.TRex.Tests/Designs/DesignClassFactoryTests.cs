@@ -28,7 +28,7 @@ namespace VSS.TRex.Tests.Designs
       design.Should().NotBeNull();
       design.Should().BeOfType<TTMDesign>();
       design.FileName.Should().Be(fileName);
-      design.DataModelID.Should().Be(siteModelUid);
+      design.ProjectUid.Should().Be(siteModelUid);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ namespace VSS.TRex.Tests.Designs
       design.Should().NotBeNull();
       design.Should().BeOfType<SVLAlignmentDesign>();
       design.FileName.Should().Be(fileName);
-      design.DataModelID.Should().Be(siteModelUid);
+      design.ProjectUid.Should().Be(siteModelUid);
     }
 
     [Fact]

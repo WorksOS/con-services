@@ -4,7 +4,7 @@ namespace VSS.TRex.Designs.SVL.Utilities
 {
   public static class ArcUtils
   {
-    public static void arc_bounding_rectangle(double x1, double y1, double x2, double y2, double cx, double cy,
+    public static void ArcBoundingRectangle(double x1, double y1, double x2, double y2, double cx, double cy,
       bool clockwise,
       bool ClockwiseCoordSystem,
       out double xa, out double ya, out double xb, out double yb)
@@ -19,24 +19,22 @@ namespace VSS.TRex.Designs.SVL.Utilities
       if (y2 < y1) ya = y2;
       else yb = y2;
 
-      if (point_on_arc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx + radius, cy))
+      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx + radius, cy))
        xb = cx + radius;
-      if (point_on_arc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx - radius, cy))
+      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx - radius, cy))
        xa = cx - radius;
-      if (point_on_arc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx, cy + radius))
+      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx, cy + radius))
        yb = cy + radius;
-      if (point_on_arc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx, cy - radius))
+      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx, cy - radius))
        ya = cy - radius;
     }
 
-    public static bool point_on_arc(double x1, double y1, double x2, double y2, double cx, double cy,
+    public static bool PointOnArc(double x1, double y1, double x2, double y2, double cx, double cy,
       bool clockwise,
       bool ClockwiseCoordSystem,
       double int_x, double int_y)
     {
       // Assumes(x1, y1), (x2, y2) and(int_x, int_y) are all on the circle with centre(cx, cy) 
-
-      int h1, h2, hi; 
 
       bool greater(int h, double a, double b)
         //{ Assumes a & b are in the same(X) hemisphere and are Y values.
@@ -46,9 +44,9 @@ namespace VSS.TRex.Designs.SVL.Utilities
         return (((a > b) == (h != 0)) == (clockwise == ClockwiseCoordSystem)) || (a == b);
       }
 
-      hi = int_x < cx ? 1 : 0;
-      h1 = x1 < cx ? 1 : 0;
-      h2 = x2 < cx ? 1 : 0;
+      int hi = int_x < cx ? 1 : 0;
+      int h1 = x1 < cx ? 1 : 0;
+      int h2 = x2 < cx ? 1 : 0;
 
       if (h1 == h2)
       {
@@ -76,8 +74,8 @@ namespace VSS.TRex.Designs.SVL.Utilities
 
       var bearing1 = Math.Atan2(sy - cy, sx - cx);
       var bearing2 = Math.Atan2(ey - cy, ex - cx);
-      GeometryUtils.clean_angle(ref bearing1);
-      GeometryUtils.clean_angle(ref bearing2);
+      GeometryUtils.CleanAngle(ref bearing1);
+      GeometryUtils.CleanAngle(ref bearing2);
       var Result = anglediff(bearing1, bearing2);
       // returns clockwise ang 
       if (!ClockWise)

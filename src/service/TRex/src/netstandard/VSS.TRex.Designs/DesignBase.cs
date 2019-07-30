@@ -22,7 +22,7 @@ namespace VSS.TRex.Designs
 
     //      property MemorySizeInKB : Integer read GetMemorySizeInKB;
 
-    public Guid DataModelID { get; set; }
+    public Guid ProjectUid { get; set; }
 
     protected DesignBase()
     {

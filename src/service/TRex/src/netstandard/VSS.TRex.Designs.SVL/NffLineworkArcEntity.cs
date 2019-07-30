@@ -330,12 +330,12 @@ namespace VSS.TRex.Designs.SVL
       // Convert the start/end angle into end points. Even though we have
       // read in the end points, we recalculate then to undo loss of precision when written
       // into the NFF file
-      // Angles are mathematical angles, polar_to_rect wants azimuth angles
+      // Angles are mathematical angles, PolarToRect wants azimuth angles
 
-      GeometryUtils.polar_to_rect(CY, CX, out Y1, out X1,
+      GeometryUtils.PolarToRect(CY, CX, out Y1, out X1,
         Math.PI / 2 - start_angle,
         radius);
-      GeometryUtils.polar_to_rect(CY, CX, out Y2, out X2,
+      GeometryUtils.PolarToRect(CY, CX, out Y2, out X2,
         Math.PI / 2 - end_angle,
         radius);
     }
@@ -344,7 +344,7 @@ namespace VSS.TRex.Designs.SVL
     {
       //MinX, MinY, MaxX, MaxY : Double;
       // Write out bounding box for arc
-      ArcUtils.arc_bounding_rectangle(X1, Y1, X2, Y2, CX, CY,
+      ArcUtils.ArcBoundingRectangle(X1, Y1, X2, Y2, CX, CY,
         true,
         true, // ###Check??? ClockwiseCoordSystem : Boolean;
         out double MinX, out double MinY, out double MaxX, out double MaxY);
@@ -558,16 +558,16 @@ namespace VSS.TRex.Designs.SVL
       // Calculate the deflection angle to the point on the curve
       var Deflection = (Stn - StartStation) / Math.Abs(Radius());
 
-      GeometryUtils.rect_to_polar(CY, CX, GetStartTransitPoint().Y, GetStartTransitPoint().X, out double InitialBrng, out double Dist);
+      GeometryUtils.RectToPolar(CY, CX, GetStartTransitPoint().Y, GetStartTransitPoint().X, out double InitialBrng, out double Dist);
 
       double Bearing = TransitDirectionIsCW() ? InitialBrng + Deflection : InitialBrng - Deflection;
 
-      GeometryUtils.clean_angle(ref Bearing);
+      GeometryUtils.CleanAngle(ref Bearing);
 
       if (TransitDirectionIsCW())
-        GeometryUtils.polar_to_rect(CY, CX, out Y, out X, Bearing, Math.Abs(Radius()) - Ofs);
+        GeometryUtils.PolarToRect(CY, CX, out Y, out X, Bearing, Math.Abs(Radius()) - Ofs);
       else
-        GeometryUtils.polar_to_rect(CY, CX, out Y, out X, Bearing, Math.Abs(Radius()) + Ofs);
+        GeometryUtils.PolarToRect(CY, CX, out Y, out X, Bearing, Math.Abs(Radius()) + Ofs);
 
 //  writeln(LogFile, Format('[Arc] Calcing XY from %.4f/%.4f, [Result: X=%.4f, Y=%.4f]', {SKIP}
 //                          [stn, ofs, X, Y]));

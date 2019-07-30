@@ -12,7 +12,7 @@ namespace VSS.TRex.Designs.Interfaces
   {
     int LockCount { get; }
     string FileName { get; set; }
-    Guid DataModelID { get; set; }
+    Guid ProjectUid { get; set; }
     bool IsStale { get; set; }
     bool Locked { get; }
     DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);

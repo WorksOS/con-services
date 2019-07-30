@@ -19,7 +19,7 @@ namespace VSS.TRex.Designs.Factories
         throw new TRexException($"Unknown design file type in design class factory for design {fileName}");
 
       result.FileName = fileName;
-      result.DataModelID = siteModelUid;
+      result.ProjectUid = siteModelUid;
 
       return result;
     }

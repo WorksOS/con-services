@@ -31,7 +31,7 @@ namespace VSS.TRex.Designs.SVL.Utilities
       return Res;
     }
 
-    public static void clean_angle(ref double radians)
+    public static void CleanAngle(ref double radians)
     {
       //  Returns angle in interval[0, 2pi) 
       while (radians < 0)
@@ -119,7 +119,7 @@ namespace VSS.TRex.Designs.SVL.Utilities
         Offset = -Offset;
     }
 
-    public static void polar_to_rect(double N1, double E1,
+    public static void PolarToRect(double N1, double E1,
         out double N2, out double E2,
         double brng, double dist)
       // Expects PLAN coords and a GROUND distance and a bearing in RADIANS. Returns PLAN coords. 
@@ -140,7 +140,7 @@ namespace VSS.TRex.Designs.SVL.Utilities
       N2 = N1 + dist * cosBrng; // * NorthSouthFactor;
     }
 
-    public static void rect_to_polar(double n1, double e1, double n2, double e2,
+    public static void RectToPolar(double n1, double e1, double n2, double e2,
         out double brng, out double dist)
       // Expects PLAN coords and returns GROUND distance and a bearing in RADIANS.
     {

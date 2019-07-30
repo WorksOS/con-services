@@ -295,25 +295,6 @@ P + t* X + (o + c) * Q
 Huzzah!
 =dave
 */
-
-      /*    var
-            c, g : Extended;
-          X_x, X_y :
-          Extended;
-          Y_x, Y_y :
-          Extended;
-          T_x, T_y :
-          Extended;
-          Q_x, Q_y :
-          Extended;
-          Mag_T :
-          Extended;
-          CoefficientsSum :
-          Extended;
-          _Offset :
-          Extended;
-          begin*/
-
       //For a given curved segment constructed on the line segment X (X would then be the
       //vector from the start of the curve to the end) from a start point P:
 
@@ -498,13 +479,8 @@ Huzzah!
       NFFLineworkSmoothedPolyLineVertexEntity StartPt, EndPt;
       XYZ StartPos, EndPos;
 
-      //  I : Integer;
-
       XYZ GetPosition(double Ordinate)
       {
-        //  o2 : Double;
-        //  Cubic : Double;
-
         double o2 = Ordinate * Ordinate;
         double Cubic = AlphaPlusBeta * o2 * Ordinate - TwoAlphaPlusBeta * o2 + Alpha * Ordinate;
 
