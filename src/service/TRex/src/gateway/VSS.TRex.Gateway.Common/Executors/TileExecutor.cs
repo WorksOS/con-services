@@ -148,9 +148,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           if (request.Palettes != null)
           {
-            cmvSummaryPalette.AboveCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
-            cmvSummaryPalette.WithinCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[1].Color);
+            cmvSummaryPalette.WithinCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
             cmvSummaryPalette.BelowCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
+            cmvSummaryPalette.AboveCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[3].Color);
           }
 
           break;
