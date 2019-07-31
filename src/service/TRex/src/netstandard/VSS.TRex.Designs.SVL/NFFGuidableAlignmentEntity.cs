@@ -117,8 +117,8 @@ namespace VSS.TRex.Designs.SVL
       var handle = GCHandle.Alloc(b, GCHandleType.Pinned);
       Header = (NFFLineworkGridFileHeader)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(NFFLineworkGridFileHeader));
 
-      if (NFFUtils.MagicNumberToANSIString(Header.MajicNumber) != NFFConsts.kNFFLineworkFileMajicNumber)
-        throw new IOException($"Expected {NFFConsts.kNFFLineworkFileMajicNumber} as the magic number, not: {Header.MajicNumber}");
+      if (NFFUtils.MagicNumberToANSIString(Header.MagicNumber) != NFFConsts.kNFFLineworkFileMagicNumber)
+        throw new IOException($"Expected {NFFConsts.kNFFLineworkFileMagicNumber} as the magic number, not: {Header.MagicNumber}");
 
       if (!NFFUtils.SetFileVersionFromMinorMajorVersionNumbers(Header.MajorVer, Header.MinorVer, out FileVersion))
         throw new IOException($"Unexpected file version, Major = {Header.MajorVer}, Minor - {Header.MinorVer}");
@@ -218,12 +218,10 @@ namespace VSS.TRex.Designs.SVL
         Bound.Include(Entities[I].GetEndPoint().Z);
       }
 
-      bool Result = Bound.IsValidHeightExtent;
+      MinZ = Bound.IsValidHeightExtent ? Bound.MinZ : Consts.NullDouble;
+      MaxZ = Bound.IsValidHeightExtent ? Bound.MaxZ : Consts.NullDouble;
 
-      MinZ = Result ? Bound.MinZ : Consts.NullDouble;
-      MaxZ = Result ? Bound.MaxZ : Consts.NullDouble;
-
-      return Result;
+      return Bound.IsValidHeightExtent;
     }
 
     //      Procedure SaveToCompoundDoc(const FileName : TFileName;

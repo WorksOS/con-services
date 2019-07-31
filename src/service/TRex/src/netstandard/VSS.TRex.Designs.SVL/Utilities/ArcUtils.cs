@@ -1,32 +1,33 @@
 ﻿using System;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL.Utilities
 {
   public static class ArcUtils
   {
-    public static void ArcBoundingRectangle(double x1, double y1, double x2, double y2, double cx, double cy,
-      bool clockwise,
-      bool ClockwiseCoordSystem,
-      out double xa, out double ya, out double xb, out double yb)
+    public static BoundingWorldExtent3D ArcBoundingRectangle(double x1, double y1, double x2, double y2, double cx, double cy,
+      bool clockwise, bool clockwiseCoordSystem)
     {
       double radius = Math.Sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy));
-      xa = x1;
-      xb = x1;
-      ya = y1;
-      yb = y1;
+      double xa = x1;
+      double xb = x1;
+      double ya = y1;
+      double yb = y1;
       if (x2 < x1) xa = x2;
       else xb = x2;
       if (y2 < y1) ya = y2;
       else yb = y2;
 
-      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx + radius, cy))
+      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, clockwiseCoordSystem, cx + radius, cy))
        xb = cx + radius;
-      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx - radius, cy))
+      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, clockwiseCoordSystem, cx - radius, cy))
        xa = cx - radius;
-      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx, cy + radius))
+      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, clockwiseCoordSystem, cx, cy + radius))
        yb = cy + radius;
-      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, ClockwiseCoordSystem, cx, cy - radius))
+      if (PointOnArc(x1, y1, x2, y2, cx, cy, clockwise, clockwiseCoordSystem, cx, cy - radius))
        ya = cy - radius;
+
+      return new BoundingWorldExtent3D(xa, ya, xb, yb);
     }
 
     public static bool PointOnArc(double x1, double y1, double x2, double y2, double cx, double cy,

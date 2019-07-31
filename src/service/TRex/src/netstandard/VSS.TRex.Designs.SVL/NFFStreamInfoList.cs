@@ -21,7 +21,7 @@ namespace VSS.TRex.Designs.SVL
       var handle = GCHandle.Alloc(b, GCHandleType.Pinned);
       DirectoryHeader = (NFFDirectoryStreamHeader)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(NFFDirectoryStreamHeader));
 
-      if (NFFUtils.MagicNumberToANSIString(DirectoryHeader.MajicNumber) != NFFConsts.kNFFIndexFileMajicNumber)
+      if (NFFUtils.MagicNumberToANSIString(DirectoryHeader.MagicNumber) != NFFConsts.kNFFIndexFileMagicNumber)
         return;
 
       // No stream lists are read from pre version 1.2 format files.

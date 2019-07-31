@@ -18,8 +18,8 @@ namespace VSS.TRex.Designs.SVL.DXF
 
     public virtual void SaveToFile(StreamWriter writer, DistanceUnitsType OutputUnits)
     {
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFLayerNameID, DXFUtils.DXFiseLayerName(Layer));
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFColourID, Colour.ToString());
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.LayerNameId, DXFUtils.DXFiseLayerName(Layer));
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.ColourId, Colour.ToString());
     }
 //    procedure CalculateExtents(var EMinX, EMinY, EMinZ, EMaxX, EMaxY, EMaxZ : Double); Virtual; Abstract;
 //    Procedure ConvertTo2D; Virtual; Abstract;

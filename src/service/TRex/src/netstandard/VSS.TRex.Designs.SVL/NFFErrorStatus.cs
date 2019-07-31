@@ -2,6 +2,7 @@
 {
   public enum NFFErrorStatus
   {
+    Unknown,
     OK,
     TIN_Too_Dense,
     FileSysError,

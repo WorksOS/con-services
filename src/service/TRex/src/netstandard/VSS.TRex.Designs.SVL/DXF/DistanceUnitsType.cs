@@ -3,16 +3,16 @@
   public enum DistanceUnitsType
 
   {
-    feet,
-    metres,
-    chains,
-    links,
-    yards,
-    millimetres,
-    inches,
+    Feet,
+    Meters,
+    Chains,
+    Links,
+    Yards,
+    Millimeters,
+    Inches,
     US_feet,
-    kilometres,
-    miles,
-    centimetres
+    Kilometers,
+    Miles,
+    Centimeters
   }
 }

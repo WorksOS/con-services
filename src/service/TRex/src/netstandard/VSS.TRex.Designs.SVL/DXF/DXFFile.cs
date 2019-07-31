@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.SVL.DXF
     public List<DXFEntity> Entities = new List<DXFEntity>();
     public List<string> Layers = new List<string>();
 
-    public DistanceUnitsType OutputUnits = DistanceUnitsType.metres; // Default to meters
+    public DistanceUnitsType OutputUnits = DistanceUnitsType.Meters; // Default to meters
 
     public DXFFile()
     {

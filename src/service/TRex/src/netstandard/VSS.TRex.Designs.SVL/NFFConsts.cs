@@ -29,9 +29,9 @@
 
     public const int kNFFMagicNumberArraySize = 8;
 
-    public const string kNFFSurfaceFileMajicNumber = "TRMSRFCE";
-    public const string kNFFLineworkFileMajicNumber = "TRMLINES";
-    public const string kNFFIndexFileMajicNumber = "TRMINDEX";
+    public const string kNFFSurfaceFileMagicNumber = "TRMSRFCE";
+    public const string kNFFLineworkFileMagicNumber = "TRMLINES";
+    public const string kNFFIndexFileMagicNumber = "TRMINDEX";
 
     public const string kNFFIndexStorageName = "Header";
   }

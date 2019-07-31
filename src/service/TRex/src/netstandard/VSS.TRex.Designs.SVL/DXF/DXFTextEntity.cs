@@ -92,7 +92,7 @@ namespace VSS.TRex.Designs.SVL.DXF
       base.SaveToFile(writer, OutputUnits);
 
       DXFUtils.WriteXYZToDXF(writer, 0, X, Y, Z, OutputUnits);
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFTextSizeID, DXFUtils.NoLocaleFloatToStrF(DXFUtils.DXFDistance(Size, OutputUnits), 3));
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.TextSizeId, DXFUtils.NoLocaleFloatToStrF(DXFUtils.DXFDistance(Size, OutputUnits), 3));
 
       // Note: Underline text attributes must be supported by use of the %%u descriptor
       //       embedded in the text, rather than in a style (can't be supported by styles)
@@ -114,12 +114,12 @@ namespace VSS.TRex.Designs.SVL.DXF
 
       /*
       if Assigned(FTextStyle) then
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFFontNameID, FTextStyle.Name);
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.FontNameId, FTextStyle.Name);
       else
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFFontNameID, FontName);
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.FontNameId, FontName);
       */
 
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFTextOrientationID, DXFUtils.NoLocaleFloatToStrF(((Math.PI / 2) - Orientation) * (180 / Math.PI), 3)); // fOrientation is in radians, but degress in file
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.TextOrientationId, DXFUtils.NoLocaleFloatToStrF(((Math.PI / 2) - Orientation) * (180 / Math.PI), 3)); // fOrientation is in radians, but degress in file
 
       /*
         unpack_text_format(fFormat, text_format);
@@ -146,9 +146,9 @@ namespace VSS.TRex.Designs.SVL.DXF
       end;
 
       if (XJust != 0)
-        DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFTextJustificationX, XJust.ToString());
+        DXFUtils.WriteDXFRecord(writer, DXFConsts.TextJustificationX, XJust.ToString());
       if (YJust != 0)
-        DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFTextJustificationY, YJust.ToString());
+        DXFUtils.WriteDXFRecord(writer, DXFConsts.TextJustificationY, YJust.ToString());
 
       if (XJust != 0 || YJust != 0) // write out secondary position, same as initial position
         DXFUtils.WriteXYZToDXF(writer, 1, AlignX, AlignY, 0, OutputUnits);
@@ -159,7 +159,7 @@ namespace VSS.TRex.Designs.SVL.DXF
     //    procedure SetExtents(AextMinX, AextMinY, AextMaxX, AextMaxY : Double);
     //    Function ReplaceChars(const Text  : String) : String;
 
-    public override DXFEntityTypes EntityType() => DXFEntityTypes.detText;
+    public override DXFEntityTypes EntityType() => DXFEntityTypes.Text;
 
 //    Procedure ConvertTo2D; Override;
     public override bool Is3D() => Z != Consts.NullDouble;

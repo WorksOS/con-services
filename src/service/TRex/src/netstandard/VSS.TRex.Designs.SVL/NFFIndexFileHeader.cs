@@ -6,7 +6,7 @@ namespace VSS.TRex.Designs.SVL
   public struct NFFIndexFileHeader
   {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = NFFConsts.kNFFMagicNumberArraySize)]
-    public byte[] MajicNumber;
+    public byte[] MagicNumber;
     public byte MajorVer;
     public byte MinorVer;
     public NFFAbsolute2dIntegerCoordinate GridOrigin;

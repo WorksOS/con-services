@@ -48,7 +48,7 @@ namespace VSS.TRex.Designs.SVL.DXF
       base.SaveToFile(writer, OutputUnits);
 
       DXFUtils.WriteXYZToDXF(writer, 0, CX, CY, CZ, OutputUnits);
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFArcRadiusID, DXFUtils.NoLocaleFloatToStrF(DXFUtils.DXFDistance(radius, OutputUnits), 6));
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.ArcRadiusId, DXFUtils.NoLocaleFloatToStrF(DXFUtils.DXFDistance(radius, OutputUnits), 6));
 
       if (!ItsACircle)
       {
@@ -63,16 +63,16 @@ namespace VSS.TRex.Designs.SVL.DXF
           end_angle = end_angle + 360;
 
         // Write the two angles to the DXF file
-        DXFUtils.WriteDXFAngle(writer, DXFConsts.DXFArcStartAngleID, start_angle);
-        DXFUtils.WriteDXFAngle(writer, DXFConsts.DXFArcEndAngleID, end_angle);
+        DXFUtils.WriteDXFAngle(writer, DXFConsts.ArcStartAngleId, start_angle);
+        DXFUtils.WriteDXFAngle(writer, DXFConsts.ArcEndAngleId, end_angle);
       }
 
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFThicknessID, Thickness.ToString());
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.DxfThicknessId, Thickness.ToString());
 
     }
     //    procedure CalculateExtents(var EMinX, EMinY, EMinZ, EMaxX, EMaxY, EMaxZ : Double); Override;
 
-    public override DXFEntityTypes EntityType() => DXFEntityTypes.detArc;
+    public override DXFEntityTypes EntityType() => DXFEntityTypes.Arc;
 
     // Procedure ConvertTo2D; Override;
     public override bool Is3D() => Z1 != Consts.NullDouble && Z2 != Consts.NullDouble && CZ != Consts.NullDouble;

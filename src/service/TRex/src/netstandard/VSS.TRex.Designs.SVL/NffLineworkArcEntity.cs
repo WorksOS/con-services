@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.SVL.Utilities;
 using VSS.TRex.Geometry;
@@ -340,17 +341,7 @@ namespace VSS.TRex.Designs.SVL
         radius);
     }
 
-    public override BoundingWorldExtent3D BoundingBox()
-    {
-      //MinX, MinY, MaxX, MaxY : Double;
-      // Write out bounding box for arc
-      ArcUtils.ArcBoundingRectangle(X1, Y1, X2, Y2, CX, CY,
-        true,
-        true, // ###Check??? ClockwiseCoordSystem : Boolean;
-        out double MinX, out double MinY, out double MaxX, out double MaxY);
-
-      return new BoundingWorldExtent3D(MinX, MinY, MaxX, MaxY);
-    }
+    public override BoundingWorldExtent3D BoundingBox() => ArcUtils.ArcBoundingRectangle(X1, Y1, X2, Y2, CX, CY, true, true);// ###Check??? ClockwiseCoordSystem : Boolean;
 
     public override bool HasValidHeight()
     {

@@ -9,7 +9,7 @@ namespace VSS.TRex.Designs.SVL.DXF
 {
   public class ExportToDXF
   {
-    public DistanceUnitsType Units { get; set; } = DistanceUnitsType.metres;
+    public DistanceUnitsType Units { get; set; } = DistanceUnitsType.Meters;
     public double AlignmentLabelingInterval { get; set; } = 10; // Default to 10 meters
 
     private const int kAlignmentCenterLineColor = 1; // Red
@@ -176,7 +176,7 @@ namespace VSS.TRex.Designs.SVL.DXF
         DXF.Entities.Add(new DXFTextEntity("B",
           kAlignmentCenterLineColor,
           X, Y, Consts.NullDouble,
-          $"{CurrentStation / DXFUtils.DistToMetres(Units):F2}",
+          $"{CurrentStation / DXFUtils.DistToMeters(Units):F2}",
           Orientation - (Math.PI / 2),
           2,
           "Arial",

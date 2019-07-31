@@ -46,7 +46,7 @@ namespace VSS.TRex.Designs.SVL.DXF
 
       base.SaveToFile(writer, OutputUnits);
 
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFThicknessID, Thickness.ToString());
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.DxfThicknessId, Thickness.ToString());
 
       DXFUtils.WriteDXFRecord(writer, 6, "CONTINUOUS");
 
@@ -77,15 +77,15 @@ namespace VSS.TRex.Designs.SVL.DXF
 
       if (Output3DVertices)
         PolylineFlags |= 0x08;
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFPolyLineFlagsID, PolylineFlags.ToString());
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.PolyLineFlagsId, PolylineFlags.ToString());
 
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFEntitiesFollow, "1");
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.EntitiesFollowId, "1");
       DXFUtils.WriteXYZToDXF(writer, 0, 0, 0, Consts.NullDouble, OutputUnits);
 
       for (int I = 0; I < Entities.Count; I++)
       {
         DXFUtils.WriteDXFRecord(writer, 0, "VERTEX");
-        DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFLayerNameID, DXFUtils.DXFiseLayerName(Layer));
+        DXFUtils.WriteDXFRecord(writer, DXFConsts.LayerNameId, DXFUtils.DXFiseLayerName(Layer));
 
         if (Entities[I] is DXFLineEntity lineEntity)
           DXFUtils.WriteXYZToDXF(writer, 0, lineEntity.X1, lineEntity.Y1, HasArcs ? Consts.NullDouble : lineEntity.Z1, OutputUnits);
@@ -97,24 +97,24 @@ namespace VSS.TRex.Designs.SVL.DXF
           // Write out the bulge for the arc
           var IncAngle = ArcUtils.CalcIncludedAngle(arcEntity.X1, arcEntity.Y1, arcEntity.X2, arcEntity.Y2, arcEntity.CX, arcEntity.CY, arcEntity.Clockwise);
           var Bulge = Math.Tan(IncAngle / 4);
-          DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFArcBulgeID, DXFUtils.NoLocaleFloatToStrF(Bulge, 6));
+          DXFUtils.WriteDXFRecord(writer, DXFConsts.ArcBulgeId, DXFUtils.NoLocaleFloatToStrF(Bulge, 6));
         }
 
         if (Output3DVertices)
-          DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFVertexFlagsID, "32");
+          DXFUtils.WriteDXFRecord(writer, DXFConsts.VertexFlagsId, "32");
       }
 
       // Write out last vertex
       DXFUtils.WriteDXFRecord(writer, 0, "VERTEX");
 
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFLayerNameID, DXFUtils.DXFiseLayerName(Layer));
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.LayerNameId, DXFUtils.DXFiseLayerName(Layer));
       if (Entities[Entities.Count - 1] is DXFArcEntity arcEntityEnd)
         DXFUtils.WriteXYZToDXF(writer, 0, arcEntityEnd.X2, arcEntityEnd.Y2, Consts.NullDouble, OutputUnits);
       else if (Entities[Entities.Count - 1] is DXFLineEntity lineEntity)
         DXFUtils.WriteXYZToDXF(writer, 0, lineEntity.X2, lineEntity.Y2, HasArcs ? Consts.NullDouble : lineEntity.Z2, OutputUnits);
 
       if (Output3DVertices)
-        DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFVertexFlagsID, "32");
+        DXFUtils.WriteDXFRecord(writer, DXFConsts.VertexFlagsId, "32");
 
       DXFUtils.WriteDXFRecord(writer, 0, "SEQEND");
     }
@@ -134,7 +134,7 @@ namespace VSS.TRex.Designs.SVL.DXF
     }
 //procedure CalculateExtents(var EMinX, EMinY, EMinZ, EMaxX, EMaxY, EMaxZ : Double); Override;
 
-    public override DXFEntityTypes EntityType() => DXFEntityTypes.detPolyLine;
+    public override DXFEntityTypes EntityType() => DXFEntityTypes.PolyLine;
 
 //Procedure ConvertTo2D; Override;
 //function EndpointsAreCoincident: Boolean;

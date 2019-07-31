@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using MySqlX.XDevAPI.Common;
 using VSS.TRex.Designs.SVL.Utilities;
 
 namespace VSS.TRex.Designs.SVL
@@ -15,7 +16,7 @@ namespace VSS.TRex.Designs.SVL
     //FGrids : TNFFGridList;
     //F3DLineDesignGridFile : TNFF3DGridLineworkFile;
 
-    public int GridSize; // Number of metres square the cell is
+    public int GridSize; // Number of Meters square the cell is
     public int GridOriginX;
     public int GridOriginY;
 
@@ -123,7 +124,7 @@ namespace VSS.TRex.Designs.SVL
       var handle = GCHandle.Alloc(b, GCHandleType.Pinned);
       Header = (NFFIndexFileHeader) Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(NFFIndexFileHeader));
 
-      if (NFFUtils.MagicNumberToANSIString(Header.MajicNumber) != NFFConsts.kNFFIndexFileMajicNumber)
+      if (NFFUtils.MagicNumberToANSIString(Header.MagicNumber) != NFFConsts.kNFFIndexFileMagicNumber)
         return false;
 
       if (!NFFUtils.SetFileVersionFromMinorMajorVersionNumbers(Header.MajorVer, Header.MinorVer, out FileVersion))
@@ -310,6 +311,7 @@ private void ProcessGuidanceAlignments()
         throw new IOException("NFFFile.CreateFromFile. Cannot load file");
       }
 
+      Result.ErrorStatus = NFFErrorStatus.OK;
       return Result;
     }
 
@@ -367,6 +369,7 @@ private void ProcessGuidanceAlignments()
         // FFilenameLoadedFrom:= Filename;
       }
 
+      ErrorStatus = NFFErrorStatus.OK;
       return true;
     }
 

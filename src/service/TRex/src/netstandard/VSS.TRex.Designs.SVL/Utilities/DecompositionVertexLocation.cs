@@ -2,8 +2,8 @@
 {
   public enum DecompositionVertexLocation
   {
-    dvlFirst,
-    dvlIntermediate,
-    dvlLast
+    First,
+    Intermediate,
+    Last
   }
 }

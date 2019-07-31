@@ -37,7 +37,7 @@ namespace VSS.TRex.Designs.SVL.Tests
       var export = new ExportToDXF
       {
         AlignmentLabelingInterval = 10,
-        Units = DistanceUnitsType.metres
+        Units = DistanceUnitsType.Meters
       };
 
       export.ConstructSVLCenterlineDXFAlignment(master, out var calcResult, out var MS).Should().BeTrue();

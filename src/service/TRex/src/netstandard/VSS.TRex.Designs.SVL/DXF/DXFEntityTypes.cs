@@ -2,11 +2,11 @@
 {
   public enum DXFEntityTypes
   {
-    detPoint,
-    detLine,
-    detArc,
-    detText,
-    detPolyLine,
-    det3DFace
+    Point,
+    Line,
+    Arc,
+    Text,
+    PolyLine,
+    ThreeDFace
   }
 }

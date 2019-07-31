@@ -415,7 +415,7 @@ Huzzah!
         double Beta = EndPt.Beta;
 
         // Add the start point of the segment to the polyline vertices
-        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.dvlFirst);
+        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.First);
 
         // zero co-efficients means a straight line
         if (Alpha != 0 && Beta != 0)
@@ -450,19 +450,19 @@ Huzzah!
             }
 
             // Add the vertex to the polyline
-            DecompCallback(pt.X, pt.Y, DecompositionVertexLocation.dvlIntermediate);
+            DecompCallback(pt.X, pt.Y, DecompositionVertexLocation.Intermediate);
 
             Ordinate = Ordinate + Step;
           }
         }
 
         // Add the end point of the segment to the polyline vertices
-        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.dvlLast);
+        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Last);
       }
       else
       {
-        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.dvlFirst);
-        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.dvlLast);
+        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.First);
+        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Last);
       }
     }
 
@@ -506,7 +506,7 @@ Huzzah!
           InsertIntoInterval(IntStart, HalfInterval, startPos, pos);
 
           // Insert the point that divides this interval
-          DecompCallback(pos.X, pos.Y, DecompositionVertexLocation.dvlIntermediate);
+          DecompCallback(pos.X, pos.Y, DecompositionVertexLocation.Intermediate);
 
           // Process the interval after before the point to insert
           InsertIntoInterval(HalfInterval, IntEnd, pos, endPos);
@@ -523,7 +523,7 @@ Huzzah!
 //  ly = EndPt.Y - StartPt.Y;
 
       // Add the start point of the smooth polyline
-      DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.dvlFirst);
+      DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.First);
 
       for (int I = 0; I < SmoothPolyline.Vertices.Count - 1; I++)
       {
@@ -549,13 +549,13 @@ Huzzah!
         }
 
         if (I < SmoothPolyline.Vertices.Count - 1)
-          DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.dvlIntermediate);
+          DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Intermediate);
 
         StartPt = EndPt;
       }
 
       // Add the end point of the segment to the polyline vertices
-      DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.dvlLast);
+      DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Last);
     }
   }
 }

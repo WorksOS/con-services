@@ -31,9 +31,12 @@ namespace VSS.TRex.Designs.SVL.Utilities
       return Res;
     }
 
+    /// <summary>
+    /// Takes an angle expressed in radians and returns the angle in the interval[0, 2pi) 
+    /// </summary>
+    /// <param name="radians"></param>
     public static void CleanAngle(ref double radians)
     {
-      //  Returns angle in interval[0, 2pi) 
       while (radians < 0)
         radians += 2 * Math.PI;
       while (radians >= 2 * Math.PI)
@@ -119,10 +122,19 @@ namespace VSS.TRex.Designs.SVL.Utilities
         Offset = -Offset;
     }
 
+    /// <summary>
+    /// Converts a polar coordinate into a grid coordinate
+    /// Expects PLAN coords and a GROUND distance and a bearing in RADIANS. Returns PLAN coords. 
+    /// </summary>
+    /// <param name="N1"></param>
+    /// <param name="E1"></param>
+    /// <param name="N2"></param>
+    /// <param name="E2"></param>
+    /// <param name="brng"></param>
+    /// <param name="dist"></param>
     public static void PolarToRect(double N1, double E1,
         out double N2, out double E2,
         double brng, double dist)
-      // Expects PLAN coords and a GROUND distance and a bearing in RADIANS. Returns PLAN coords. 
     {
       //NorthSouthFactor,
       //EastWestFactor : Integer;

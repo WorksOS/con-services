@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Designs.SVL.Comparers
 {

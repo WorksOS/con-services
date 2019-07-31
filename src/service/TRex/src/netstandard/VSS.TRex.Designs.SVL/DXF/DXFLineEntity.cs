@@ -29,12 +29,12 @@ namespace VSS.TRex.Designs.SVL.DXF
       DXFUtils.WriteXYZToDXF(writer, 0, X1, Y1, Z1, OutputUnits);
       DXFUtils.WriteXYZToDXF(writer, 1, X2, Y2, Z2, OutputUnits);
 
-      DXFUtils.WriteDXFRecord(writer, DXFConsts.DXFThicknessID, Thickness.ToString());
+      DXFUtils.WriteDXFRecord(writer, DXFConsts.DxfThicknessId, Thickness.ToString());
 
     }
 
     //   procedure CalculateExtents(var EMinX, EMinY, EMinZ, EMaxX, EMaxY, EMaxZ : Double); Override;
-    public override DXFEntityTypes EntityType() => DXFEntityTypes.detLine;
+    public override DXFEntityTypes EntityType() => DXFEntityTypes.Line;
 
     //  Procedure ConvertTo2D; Override;
     public override bool Is3D() => Z1 != Consts.NullDouble && Z2 != Consts.NullDouble;
