@@ -85,7 +85,7 @@ namespace VSS.AWS.TransferProxy
       }
     }
 
-  /// <summary>
+    /// <summary>
     /// Create a task to download a file from S3 storage
     /// </summary>
     /// <param name="s3Key">Key to the data to be downloaded</param>
