@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.Models.Models
+﻿namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
   public class SmoothPolylineRequest
   {

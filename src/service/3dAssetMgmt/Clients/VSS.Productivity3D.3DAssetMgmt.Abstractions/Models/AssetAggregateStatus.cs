@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.Models;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.AssetMgmt3D.Abstractions.Models
 {
   public class AssetAggregateStatus : IMasterDataModel
   {
