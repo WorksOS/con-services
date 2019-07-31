@@ -34,7 +34,10 @@ namespace VSS.AWS.TransferProxy
 
     public async Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName)
     {
-      return new FileStreamResult(new FileStream(Path.Combine(_rootLocalTransferProxyFolder, bucketName, s3Key), FileMode.Open, FileAccess.Read, FileShare.Read), ContentTypeConstants.ApplicationOctetStream);
+      var localKey = (s3Key.StartsWith("/") ? s3Key.Substring(1) : s3Key).Replace('/', Path.DirectorySeparatorChar);
+      var fileName = Path.Combine(_rootLocalTransferProxyFolder, bucketName, localKey);
+
+      return new FileStreamResult(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read), ContentTypeConstants.ApplicationOctetStream);
     }
 
     /// <summary>
@@ -42,14 +45,14 @@ namespace VSS.AWS.TransferProxy
     /// </summary>
     /// <param name="s3Key">Key to the data to be downloaded</param>
     /// <returns>FileStreamResult if the file exists</returns>
-    public async Task<FileStreamResult> Download(string s3Key) => await DownloadFromBucket(_awsBucketName, s3Key);
+    public async Task<FileStreamResult> Download(string s3Key) => await DownloadFromBucket(s3Key, _awsBucketName);
 
     public string GeneratePreSignedUrl(string s3Key)
     {
-      return "dummyLocalPreSignedURL";
+      return $"http://dummyLocalPreSignedURL/{s3Key}";
     }
 
-    public void Upload(Stream stream, string s3Key) => UploadToBucket(stream, _awsBucketName, s3Key);
+    public void Upload(Stream stream, string s3Key) => UploadToBucket(stream, s3Key, _awsBucketName);
 
     /// <summary>
     /// Upload a file to the local S3 storage. The filepath will contain the extension matched to the content type if not already present
@@ -78,7 +81,16 @@ namespace VSS.AWS.TransferProxy
 
     public void UploadToBucket(Stream stream, string s3Key, string bucketName)
     {
-      using (var fs = new FileStream(Path.Combine(_rootLocalTransferProxyFolder, bucketName, s3Key), FileMode.CreateNew, FileAccess.Write, FileShare.Write))
+      var localKey = (s3Key.StartsWith("/") ? s3Key.Substring(1) : s3Key).Replace('/', Path.DirectorySeparatorChar);
+      var fileName = Path.Combine(_rootLocalTransferProxyFolder, bucketName, localKey);
+      var directory = Path.GetDirectoryName(fileName);
+
+      if (!Directory.Exists(directory))
+      {
+        Directory.CreateDirectory(directory);
+      }
+
+      using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.Write))
       {
         stream.CopyTo(fs);
       }
