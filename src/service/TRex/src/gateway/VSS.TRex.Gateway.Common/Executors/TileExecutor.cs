@@ -235,9 +235,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           if (request.Palettes != null)
           {
-            speedSummaryPalette.OverSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
+            speedSummaryPalette.LowerSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
             speedSummaryPalette.WithinSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[1].Color);
-            speedSummaryPalette.LowerSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
+            speedSummaryPalette.OverSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
           }
 
           speedSummaryPalette.MachineSpeedTarget.Min = overrides?.TargetMachineSpeed.Min ?? CellPassConsts.NullMachineSpeed;
