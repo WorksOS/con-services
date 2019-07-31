@@ -158,14 +158,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       //Log.LogDebug($"QMesh tile request params. x:{x},y:{y},z:{z}, ProjectId:{projectUid}, FilterUId:{filterUId} *");
 
       // var basicTile = await FetchTile(testDataPath, x, y, z);
-      var basicTile = await FetchTile(projectUid, filterUId, x, y, z);
-      if (basicTile != null)
+      var qmTile = await FetchTile(projectUid, filterUId, x, y, z);
+      if (qmTile != null)
       {
-     // todo   HttpContext.Response.Headers.Add(ContentTypeConstants.ContentEncoding, ContentTypeConstants.ContentEncodingGzip); // already compressed on disk
-        HttpContext.Response.Headers.Add(ContentTypeConstants.ContentLength, basicTile.Length.ToString());
+        HttpContext.Response.Headers.Add(ContentTypeConstants.ContentEncoding, ContentTypeConstants.ContentEncodingGzip); 
+        HttpContext.Response.Headers.Add(ContentTypeConstants.ContentLength, qmTile.Length.ToString());
         HttpContext.Response.Headers.Add(ContentTypeConstants.ContentType, ContentTypeConstants.ApplicationOctetStream);
         HttpContext.Response.Headers.Add(ContentTypeConstants.ContentDisposition, $"attachment;filename={y}.terrain");
-        return File(basicTile, ContentTypeConstants.ApplicationOctetStream);
+        return File(qmTile, ContentTypeConstants.ApplicationOctetStream);
       }
 
       Log.LogDebug($"Requested tile x:{x},y: {y},z:{z} for Project:{projectUid} was not found");

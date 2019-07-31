@@ -63,7 +63,7 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
     */
 
     // from https://cesiumjs.org/2013/05/09/Computing-the-horizon-occlusion-point/
-    public static Vector3 FromPoints(Vector3[] points, BBSphere boundingSphere)
+    public static Vector3 FromPoints(ref Vector3[] points, BBSphere boundingSphere)
     {
       if (points.Length < 1)
       {

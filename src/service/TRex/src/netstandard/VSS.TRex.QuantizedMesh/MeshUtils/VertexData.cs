@@ -45,8 +45,8 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
 
     public void AddVertex(int idx, ushort x, ushort y, ushort z)
     {
-      u[idx] = x;
-      v[idx] = y;
+      u[idx] = x == 0 ? x : (ushort)(x-1); // allow for zero based range
+      v[idx] = y == 0 ? y : (ushort)(y-1);
       height[idx] = z;
     }
 
