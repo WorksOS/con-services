@@ -156,7 +156,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           raptorClient,
           null,
 #endif
-          configStore: configStore)
+          configStore: configStore,
+          trexCompactionDataProxy: tRexCompactionDataProxy)
           .ProcessAsync(request) as ExportResult;
     }
 
