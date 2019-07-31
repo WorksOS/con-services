@@ -70,6 +70,7 @@ data:
   ALK_BASE_URL: http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc
   AWS_TAGFILE_BUCKET_NAME: vss-stg-directtagfile-archives
   ENVIRONMENT: DEV
+  CORECLR_ENABLE_PROFILING: "0"
 #AWS configuration  
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-stg
