@@ -63,7 +63,7 @@ spec:
         - name: TAGFILE_ARCHIVE_FOLDER
           value: {{ .Values.mutableData.environment.tagfileArchiveFolder }}
         - name: TREX_IGNITE_JVM_HEAP_SIZE_MB
-          value: {{ .Values.mutableData.javaHeapSizeMb }}
+          value: {{ .Values.mutableData.javaHeapSizeMb | quote }}
 
 
         ports:
