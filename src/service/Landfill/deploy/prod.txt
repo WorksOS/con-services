@@ -6,8 +6,6 @@ KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.IProjectEvent.V2,VSS.Interfaces.E
 RAPTOR_V1_BASE_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1.0
 JAEGER_SERVICE_NAME: Landfill Service
 NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
-NEW_RELIC_APP_NAME: eks-landfill-service
-newrelic: "false"
 ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "true"
 NoOfDaysBackForCCA: "7"
 NoOfDaysBackForVolumes: "7"
