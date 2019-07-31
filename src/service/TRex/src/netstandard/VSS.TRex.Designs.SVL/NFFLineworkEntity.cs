@@ -255,7 +255,7 @@ namespace VSS.TRex.Designs.SVL
 
     public virtual NFFLineworkPolyLineVertexEntity GetVertex(int VertexNum)
     {
-      Debug.Assert(false, "NFFLineworkEntity.GetVertex not implemented for this entity type");
+      throw new TRexException("NFFLineworkEntity.GetVertex not implemented for this entity type");
       return null;
       // Base class does nothing
     }
@@ -269,7 +269,7 @@ namespace VSS.TRex.Designs.SVL
 
 //    public virtual bool IsSameAs(NFFLineworkEntity Other)
 //    {
-//      Debug.Assert(false, $"IsSameAs() is not implemented for {this.GetType().Name}");
+//      throw new TRexException($"IsSameAs() is not implemented for {this.GetType().Name}");
 //      return false;
 //    }
 
@@ -301,7 +301,7 @@ namespace VSS.TRex.Designs.SVL
 
     public virtual void Reverse(int StartIdx, int EndIdx)
     {
-      Debug.Assert(false, "NFFLineworkEntity.Reverse(const StartIdx, EndIdx: Integer) must never be called");
+      throw new TRexException("NFFLineworkEntity.Reverse(const StartIdx, EndIdx: Integer) must never be called");
     }
 
     public virtual void Reverse()
@@ -342,7 +342,7 @@ namespace VSS.TRex.Designs.SVL
       double Station,
       int Index)
     {
-      Debug.Assert(false, "No UpdateHeight implementation in NFFLineWorkEntity");
+      throw new TRexException("No UpdateHeight implementation in NFFLineWorkEntity");
       return false;
     }
 

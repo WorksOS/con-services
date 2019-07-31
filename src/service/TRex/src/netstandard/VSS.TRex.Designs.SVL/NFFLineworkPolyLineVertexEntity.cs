@@ -19,7 +19,7 @@ namespace VSS.TRex.Designs.SVL
     {
       if ((Value > 1E10) && (Value < 9.999E307))
       {
-        Debug.Assert(false, "Unexpectedly large, non-null, height assigned to vertex");
+        throw new TRexException("Unexpectedly large, non-null, height assigned to vertex");
       }
 
       Z = Value;

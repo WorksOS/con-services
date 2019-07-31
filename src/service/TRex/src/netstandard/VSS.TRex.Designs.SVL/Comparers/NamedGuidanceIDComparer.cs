@@ -31,7 +31,7 @@ namespace VSS.TRex.Designs.SVL.Comparers
          case NFFGuidanceAlignmentType.gtBatter:
             return BatterAlignmentOffset * Math.Sign(NamedGuidanceID.StartOffset);
           default:
-            Debug.Assert(false, "Unknown guidance alignment type");
+            throw new TRexException("Unknown guidance alignment type");
             return Consts.NullDouble;
         }
       }

@@ -37,26 +37,26 @@ to/from file if the kNFFElementHeaderHasStationing flag is set in their<headeerF
 
     protected virtual double GetVertexElevation(int VertexNum)
     {
-      Debug.Assert(false, "GetVertexElevation not implemented in base class");
+      throw new TRexException("GetVertexElevation not implemented in base class");
       return Consts.NullDouble;
     }
 
     protected virtual void SetVertexElevation(int VertexNum,
       double Value)
     {
-      Debug.Assert(false, "SetVertexElevation not implemented in base class");
+      throw new TRexException("SetVertexElevation not implemented in base class");
     }
 
     protected virtual double GetVertexStation(int VertexNum)
     {
-      Debug.Assert(false, "GetVertexStation not implemented in base class");
+      throw new TRexException("GetVertexStation not implemented in base class");
       return Consts.NullDouble;
     }
 
     protected virtual void SetVertexStation(int VertexNum,
       double Value)
     {
-      Debug.Assert(false, "SetVertexStation not implemented in base class");
+      throw new TRexException("SetVertexStation not implemented in base class");
     }
 
     /*
@@ -109,7 +109,7 @@ const Value: Double); Virtual;
       Stn = Consts.NullDouble;
       Ofs = Consts.NullDouble;
 
-      Debug.Assert(false, "NFFStationedLineworkEntity.ComputeStnOfs has null implementation");
+      throw new TRexException("NFFStationedLineworkEntity.ComputeStnOfs has null implementation");
     }
 
     public virtual void ComputeXY(double Stn, double Ofs, out double X, out double Y)
@@ -117,7 +117,7 @@ const Value: Double); Virtual;
       X = Consts.NullDouble;
       Y = Consts.NullDouble;
 
-      Debug.Assert(false, "NFFStationedLineworkEntity.ComputeXY has null implementation");
+      throw new TRexException("NFFStationedLineworkEntity.ComputeXY has null implementation");
     }
 
     // ResetStartStation sets a new start station for this element, including
@@ -153,13 +153,13 @@ const Value: Double); Virtual;
     // calculated from those of the surrounding vertices.
     public virtual NFFLineworkPolyLineVertexEntity CreateVertexAtStation(double Chainage)
     {
-      Debug.Assert(false, "NFFStationedLineworkEntity.CreateVertexAtStation should be considered abstract");
+      throw new TRexException("NFFStationedLineworkEntity.CreateVertexAtStation should be considered abstract");
       return null;
     }
 
     public virtual NFFLineworkPolyLineVertexEntity CreateNewVertex()
     {
-      Debug.Assert(false, "NFFStationedLineworkEntity.CreateNewVertex should be considered abstract");
+      throw new TRexException("NFFStationedLineworkEntity.CreateNewVertex should be considered abstract");
       return null;
     }
   }

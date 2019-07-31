@@ -355,7 +355,7 @@ namespace VSS.TRex.Designs.SVL
     {
       if (!Range.InRange(Index, 0, Vertices.Count - 1))
       {
-        Debug.Assert(false, "Out of range vertex index in NFFLineworkSmoothedPolyLineEntityElementLength");
+        throw new TRexException("Out of range vertex index in NFFLineworkSmoothedPolyLineEntityElementLength");
         return 0;
       }
 

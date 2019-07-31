@@ -69,7 +69,7 @@ namespace VSS.TRex.Designs.SVL
    if (VertexNum == 1)
      return GetEndTransitPoint().Z;
 
-   Debug.Assert(false, "Invalid vertex index in NFFLineworkArcEntity.GetVertexElevation");
+   throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.GetVertexElevation");
      return Consts.NullDouble;
  }
 
@@ -91,7 +91,7 @@ namespace VSS.TRex.Designs.SVL
    }
    else
    {
-     Debug.Assert(false, "Invalid vertex index in NFFLineworkArcEntity.SetVertexElevation");
+     throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.SetVertexElevation");
    }
  }
 
@@ -102,7 +102,7 @@ namespace VSS.TRex.Designs.SVL
    if (VertexNum == 1)
      return GetEndStation();
 
-   Debug.Assert(false, "Invalid vertex index in NFFLineworkArcEntity.GetVertexStation");
+   throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.GetVertexStation");
    return Consts.NullDouble;
  }
 
@@ -114,7 +114,7 @@ namespace VSS.TRex.Designs.SVL
       { } // Ignore it - end stationing controlled by element geometry
       else
       {
-        Debug.Assert(false, "Invalid vertex index in NFFLineworkArcEntity.setVertexStation");
+        throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.setVertexStation");
       }
  }
 
@@ -492,7 +492,7 @@ namespace VSS.TRex.Designs.SVL
         case NFFLineworkArcTransitDirection.atdEndToStart:
           return false;
         default:
-          Debug.Assert(false, "Unknown transit direction");
+          throw new TRexException("Unknown transit direction");
           return false;
       }
     }
@@ -587,7 +587,7 @@ namespace VSS.TRex.Designs.SVL
         case NFFLineworkArcTransitDirection.atdEndToStart:
           return ArcUtils.CalcIncludedAngle(X2, Y2, X1, Y1, CX, CY, false);
         default:
-          Debug.Assert(false, "Unknown transit direction");
+          throw new TRexException("Unknown transit direction");
           return 0;
       }
     }
