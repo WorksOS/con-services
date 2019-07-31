@@ -200,9 +200,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           if (request.Palettes != null)
           {
-            mdpSummaryPalette.AboveMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
-            mdpSummaryPalette.WithinMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[1].Color);
+            mdpSummaryPalette.WithinMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
             mdpSummaryPalette.BelowMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
+            mdpSummaryPalette.AboveMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[3].Color);
           }
 
           break;
