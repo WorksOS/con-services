@@ -487,6 +487,18 @@ namespace VSS.TRex.QuantizedMesh.Executors
       return (cnt /  GriddedElevDataArray.Length) * 100;
     }
 
+    private bool MakeRootTile()
+    {
+      Log.LogDebug($"#Tile.({TileY}) Returning root tile");
+      QMTileResponse.ResultStatus = RequestErrorStatus.OK;
+      if (TileY == 0)
+        QMTileResponse.data = QMConstants.Terrain0;
+      else
+        QMTileResponse.data = QMConstants.Terrain1;
+      ResultStatus = RequestErrorStatus.OK;
+      return true;
+    }
+
     /// <summary>
     /// Executor that implements requesting and rendering grid information to create the grid rows
     /// </summary>
@@ -497,6 +509,9 @@ namespace VSS.TRex.QuantizedMesh.Executors
       // Get the lat lon boundary from xyz tile
       TileBoundaryLL = MapGeo.TileXYZToRectLL(TileX, TileY, TileZ);
       Log.LogInformation($"#Tile.({TileY}) Execute. (X:{TileX}, Y:{TileY}, Z:{TileZ}). TileBoundary:{TileBoundaryLL.ToDisplay()}. DataModel:{DataModelUid}");
+
+      if (TileZ == 0) // Send back default root tile
+        return MakeRootTile();
 
       // get sitemodel
       var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid);

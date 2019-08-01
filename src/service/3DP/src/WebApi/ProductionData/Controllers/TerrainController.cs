@@ -56,7 +56,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
  //   private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
+    public const string layer = "{ \"tilejson\": \"2.1.0\",   \"name\": \"christchurch-15m-dem\",   \"description\": \"\",   \"version\": \"1.1.0\",   \"format\": \"quantized-mesh-1.0\",   \"attribution\": \"\",   \"schema\": \"tms\",   \"tiles\": [ \"{z}/{x}/{y}.terrain?v={version}\" ],   \"projection\": \"EPSG:4326\",   \"bounds\": [ 0.00, -90.00, 180.00, 90.00 ],   \"available\": [     [ { \"startX\": 0, \"startY\": 0, \"endX\": 1, \"endY\": 0 } ]    ,[ { \"startX\": 3, \"startY\": 0, \"endX\": 3, \"endY\": 0 } ]    ,[ { \"startX\": 7, \"startY\": 1, \"endX\": 7, \"endY\": 1 } ]    ,[ { \"startX\": 15, \"startY\": 2, \"endX\": 15, \"endY\": 2 } ]    ,[ { \"startX\": 31, \"startY\": 4, \"endX\": 31, \"endY\": 4 } ]    ,[ { \"startX\": 62, \"startY\": 8, \"endX\": 62, \"endY\": 8 } ]    ,[ { \"startX\": 125, \"startY\": 16, \"endX\": 125, \"endY\": 16 } ]    ,[ { \"startX\": 250, \"startY\": 32, \"endX\": 250, \"endY\": 33 } ]    ,[ { \"startX\": 501, \"startY\": 65, \"endX\": 501, \"endY\": 66 } ]    ,[ { \"startX\": 1002, \"startY\": 131, \"endX\": 1003, \"endY\": 132 } ]    ,[ { \"startX\": 2004, \"startY\": 263, \"endX\": 2007, \"endY\": 265 } ]    ,[ { \"startX\": 4009, \"startY\": 526, \"endX\": 4014, \"endY\": 531 } ]    ,[ { \"startX\": 8019, \"startY\": 1053, \"endX\": 8029, \"endY\": 1062 } ]    ,[ { \"startX\": 16039, \"startY\": 2106, \"endX\": 16059, \"endY\": 2125 } ]    ,[ { \"startX\": 32078, \"startY\": 4212, \"endX\": 32119, \"endY\": 4251 } ]    ,[ { \"startX\": 64156, \"startY\": 8425, \"endX\": 64238, \"endY\": 8503 } ]   ] } ";
 
+    
     /// <summary>
     /// Genric function to return a static layer file. Will change in Part Two to be dynamic
     /// </summary>
@@ -79,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         throw new FileNotFoundException($"[layer.json not in {fileInfo.FullName}] ", e);
       }
     }
-
+    
 
     /// <summary>
     /// Async call to make quantized mesh tile
@@ -182,7 +184,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       Log.LogInformation("GetTRexLayerFile: " + Request.QueryString);
       // Its possible this layer file could be custom made to control tile requests to a certain area around 
       // a projects boundary only. Hence reducing overall tile requets
-      return GetGenericLayerFile();
+         return GetGenericLayerFile();
+      //return layer;
     }
   }
 }
