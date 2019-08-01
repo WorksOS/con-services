@@ -10,10 +10,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using uhttpsharp;
 using uhttpsharp.Handlers;
@@ -21,15 +19,12 @@ using uhttpsharp.Headers;
 using uhttpsharp.Listeners;
 using uhttpsharp.Logging;
 using uhttpsharp.RequestProviders;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
-using VSS.ConfigurationStore;
-using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
+using Xunit;
 
 namespace VSS.MasterData.Proxies.UnitTests
 {
-  [TestClass]
-  public class GracefulWebRequestTests
+  public class GracefulWebRequestTests : IClassFixture<MemoryCacheTestsFixture>
   {
     public class EmptyHandler : IHttpRequestHandler
     {
@@ -78,21 +73,12 @@ namespace VSS.MasterData.Proxies.UnitTests
       }
     }
 
-    private IServiceProvider _serviceProvider;
-    private Random _random = new Random();
+    private readonly IServiceProvider _serviceProvider;
+    private readonly Random _random = new Random();
 
-    [TestInitialize]
-    public void StartMockServer()
+    public GracefulWebRequestTests(MemoryCacheTestsFixture testFixture)
     {
-      var serviceCollection = new ServiceCollection();
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      _serviceProvider = serviceCollection.BuildServiceProvider();
+      _serviceProvider = testFixture.serviceProvider;
     }
 
     private int GetPortForWebServer()
@@ -112,7 +98,6 @@ namespace VSS.MasterData.Proxies.UnitTests
           continue;
 
         return port;
-
       }
 
       throw new TestCanceledException($"No available ports for WebServer after {maxRetries} - Failing test");
@@ -133,7 +118,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       // Request handling : 
       httpServer.Use((context, next) =>
       {
-        Assert.IsTrue(validateRequestFunc(context));
+        Assert.True(validateRequestFunc(context));
         return next();
       });
       httpServer.Use(new HttpRouter().With(string.Empty, new EmptyHandler())); // make sure we return an OK Response
@@ -163,7 +148,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       var port = GetPortForWebServer();
 
       var gracefulWebRequest = ActivatorUtilities.CreateInstance(_serviceProvider, typeof(GracefulWebRequest)) as GracefulWebRequest;
-      Assert.IsNotNull(gracefulWebRequest);
+      Assert.NotNull(gracefulWebRequest);
 
       var requestPassed = false;
 
@@ -196,20 +181,19 @@ namespace VSS.MasterData.Proxies.UnitTests
       return requestPassed;
     }
 
-
-    private const string BinaryTestFilename = "TestFiles/TestBinary.ttm";
-    [DeploymentItem(BinaryTestFilename)]
-    [TestMethod]
+    [Fact]
     public void TestPostBinaryDataWithNoContentType()
     {
+      const string BinaryTestFilename = "TestFiles/TestBinary.ttm";
+
       const string correctMd5 = "36dd727b3ac476d39ee98daf465a0658"; // calculated manually
       const string expectedContentType = ContentTypeConstants.ApplicationOctetStream;
-      Assert.IsTrue(File.Exists(BinaryTestFilename), $"Test file '{BinaryTestFilename}' doesn't exist");
+      Assert.True(File.Exists(BinaryTestFilename), $"Test file '{BinaryTestFilename}' doesn't exist");
 
       var memoryStream = new MemoryStream(File.ReadAllBytes(BinaryTestFilename));
       var md5 = CalculateMD5(memoryStream);
       Console.WriteLine($"File MD5: {md5}");
-      Assert.IsTrue(string.Compare(md5, correctMd5, StringComparison.InvariantCultureIgnoreCase) == 0, "Invalid test data file");
+      Assert.True(string.Compare(md5, correctMd5, StringComparison.InvariantCultureIgnoreCase) == 0, "Invalid test data file");
 
       var requestPassed = false;
       var validatePostedData = new Func<MemoryStream, bool>((stream) =>
@@ -223,12 +207,12 @@ namespace VSS.MasterData.Proxies.UnitTests
         return requestPassed;
       });
 
-      Assert.IsTrue(ExecutePostRequest(memoryStream, expectedContentType, validatePostedData));
+      Assert.True(ExecutePostRequest(memoryStream, expectedContentType, validatePostedData));
 
-      Assert.IsTrue(requestPassed);
+      Assert.True(requestPassed);
     }
 
-    [TestMethod]
+    [Fact]
     public void TestGetJsonData()
     {
       var testModel = new TestClass()
@@ -275,11 +259,11 @@ namespace VSS.MasterData.Proxies.UnitTests
         return true;
       });
 
-      Assert.IsTrue(ExecutePostRequest(jsonTestMemoryStream, ContentTypeConstants.ApplicationJson, validateData));
+      Assert.True(ExecutePostRequest(jsonTestMemoryStream, ContentTypeConstants.ApplicationJson, validateData));
 
-      Assert.IsNotNull(resultModel);
-      Assert.AreEqual(jsonTestModel, JsonConvert.SerializeObject(resultModel));
-      Assert.IsTrue(testModel.Equals(resultModel));
+      Assert.NotNull(resultModel);
+      Assert.Equal(jsonTestModel, JsonConvert.SerializeObject(resultModel));
+      Assert.True(testModel.Equals(resultModel));
     }
 
   }
