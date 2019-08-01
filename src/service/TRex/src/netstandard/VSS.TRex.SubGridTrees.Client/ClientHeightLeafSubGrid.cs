@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using Org.BouncyCastle.Utilities;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.IO.Helpers;
@@ -247,9 +246,13 @@ namespace VSS.TRex.SubGridTrees.Client
              SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
     }
 
-    public void DumpToLog()
+    /// <summary>
+    /// Dumps Height values from sub grid to the log
+    /// </summary>
+    /// <param name="title"></param>
+    public override void DumpToLog(string title)
     {
-      base.DumpToLog();
+      base.DumpToLog(title);
     }
   }
 }
