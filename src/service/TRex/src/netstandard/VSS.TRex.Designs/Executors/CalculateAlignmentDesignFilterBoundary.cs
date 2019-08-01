@@ -17,7 +17,7 @@ namespace VSS.TRex.Designs.Executors
       try
       {
         // Perform the calculation
-        Fence result = null;
+        Fence result;
 
         // Todo: This implementation is dependent on a .Net standard version of the Symphony SDK
         throw new NotImplementedException("Alignment filter boundary implementation is dependent on a .Net standard version of the Symphony SDK");

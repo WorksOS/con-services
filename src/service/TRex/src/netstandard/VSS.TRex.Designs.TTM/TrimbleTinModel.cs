@@ -163,8 +163,8 @@ namespace VSS.TRex.Designs.TTM
       Header.FileMajorVersion = Consts.TTMMajorVersion;
       Header.FileMinorVersion = Consts.TTMMinorVersion;
 
-      Header.CoordinateUnits = 1; // Metres
-      Header.VertexValueUnits = 1; // Metres
+      Header.CoordinateUnits = 1; // Meters
+      Header.VertexValueUnits = 1; // Meters
       Header.InterpolationMethod = 1; // Linear
 
       SetUpSizes();

@@ -127,7 +127,7 @@ namespace VSS.TRex.Filters
           // Todo: Not yet supported (or demonstrated that it's needed as this should be taken care of in the larger scale determination of the subgrids that need to be queried).
 
           /* If the filter needs to retain a reference to the existence map, then do this...
-          Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
+          Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(ProjectUid, EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
           if (Filter.SpatialFilter.DesignMaskExistenceMap == null)
           {

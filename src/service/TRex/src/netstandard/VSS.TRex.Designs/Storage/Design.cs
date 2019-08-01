@@ -82,7 +82,6 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="profilePath"></param>
     /// <param name="cellSize"></param>
     /// <param name="offset"></param>
-    /// <param name="errorCode"></param>
     /// <returns></returns>
     public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset)
     {
@@ -177,8 +176,6 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="offset"></param>
     /// <param name="spotX"></param>
     /// <param name="spotY"></param>
-    /// <param name="spotHeight"></param>
-    /// <param name="errorCode"></param>
     public async Task<(double spotHeight, DesignProfilerRequestResult errorCode)> GetDesignSpotHeight(Guid siteModelID, double offset, double spotX, double spotY)
     {
       (double spotHeight, DesignProfilerRequestResult errorCode) result = (0.0, DesignProfilerRequestResult.OK);
@@ -200,8 +197,6 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="offset"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
-    /// <param name="designHeights"></param>
-    /// <param name="errorCode"></param>
     public async Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeights(
       Guid siteModelID, 
       double offset, 

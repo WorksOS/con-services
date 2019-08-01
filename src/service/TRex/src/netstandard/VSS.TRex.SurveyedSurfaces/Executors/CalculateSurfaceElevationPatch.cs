@@ -60,7 +60,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
       int Hint = -1;
 
       // if <config>.Debug_PerformDPServiceRequestHighRateLogging then
-      //   SIGLogMessage.PublishNoODS(Self, Format('In %s.Execute for DataModel:%d  OTGCellBottomLeftX:%d  OTGCellBottomLeftY:%d', [Self.ClassName, Args.DataModelID, Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY]), slmcDebug);
+      //   SIGLogMessage.PublishNoODS(Self, Format('In %s.Execute for DataModel:%d  OTGCellBottomLeftX:%d  OTGCellBottomLeftY:%d', [Self.ClassName, Args.ProjectUid, Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY]), slmcDebug);
       // InterlockedIncrement64(DesignProfilerRequestStats.NumSurfacePatchesComputed);
 
       //try
