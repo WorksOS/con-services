@@ -10,7 +10,7 @@ using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.Models.Validation;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// 3D Productivity project settings. Used in Raptor calculations.

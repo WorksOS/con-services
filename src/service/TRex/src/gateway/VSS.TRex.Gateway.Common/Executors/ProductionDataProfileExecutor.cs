@@ -54,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var arg = new ProfileRequestArgument_ApplicationService
       {
-        ProjectID = request.ProjectUid ?? Guid.Empty,
+        ProjectID = request.ProjectUid,
         ProfileTypeRequired = GridDataType.Height,
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = request.PositionsAreGrid,

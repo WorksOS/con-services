@@ -5,12 +5,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Exceptions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Validation;
+using VSS.Productivity3D.WebApi.Models.ProductionData;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
-namespace VSS.Productivity3D.Models.UnitTests
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
   public class TileRequestTests
   {

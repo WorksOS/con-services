@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.Models.Enums
+﻿namespace VSS.Productivity3D.Common.Models
 {
     /// <summary>
     /// Specifies CCV summarize mode. Initially was a set, but here is limited with only one selection.

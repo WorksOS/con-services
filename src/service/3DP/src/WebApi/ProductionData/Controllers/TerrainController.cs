@@ -89,7 +89,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         X = x,
         Y = y,
         Z = z,
-        CallId = new Guid(),
 
         // Todo setup correct filterUId filter in part two
         Filter = new FilterResult(),

@@ -4,7 +4,7 @@ using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// The range of permissible temperatures to report on.

@@ -208,6 +208,18 @@ namespace VSS.Productivity3D.Common.Interfaces
       return request;
     }
 
+    protected T CastTrexRequestObjectTo<T>(object item) where T : TRexBaseRequest
+    {
+      var request = item as T;
+
+      if (request == null)
+      {
+        ThrowRequestTypeCastException<T>();
+      }
+
+      return request;
+    }
+
     protected void ThrowRequestTypeCastException<T>(string errorMessage = null)
     {
       if (errorMessage == null)
