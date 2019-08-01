@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
@@ -29,9 +30,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
 #endif
         var temperatureDetailsRequest = new TemperatureDetailRequest(
-          request.ProjectUid,
+          request.ProjectUid.Value,
           request.Filter,
-          temperatureTargets);
+          temperatureTargets,
+          AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+          AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
 
         var temperatureDetailsResult = await trexCompactionDataProxy.SendDataPostRequest<TemperatureDetailResult, TemperatureDetailRequest>(temperatureDetailsRequest, "/temperature/details", customHeaders);
 

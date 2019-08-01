@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Executors
 #endif
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
-      var elevationStatisticsRequest = new ElevationDataRequest(request.ProjectUid, request.Filter);
+      var elevationStatisticsRequest = new ElevationDataRequest(request.ProjectUid.Value, request.Filter, null, null);
 
       trexCompactionDataProxy.Setup(x => x.SendDataPostRequest<ElevationStatisticsResult, ElevationDataRequest>(elevationStatisticsRequest, It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
         .Returns((Task<ElevationStatisticsResult>)null);

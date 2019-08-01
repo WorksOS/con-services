@@ -149,13 +149,16 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostExportReport)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
+
+      return await RequestExecutorContainerFactory.Build<ExportReportExecutor>(
+          logger,
 #if RAPTOR
-      return await RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
-          .ProcessAsync(request) as ExportResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+          raptorClient,
+          null,
 #endif
+          configStore: configStore,
+          trexCompactionDataProxy: tRexCompactionDataProxy)
+          .ProcessAsync(request) as ExportResult;
     }
 
     /// <summary>
