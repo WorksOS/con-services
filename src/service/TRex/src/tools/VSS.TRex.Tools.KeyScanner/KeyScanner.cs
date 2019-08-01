@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using VSS.TRex.DI;
@@ -28,10 +27,10 @@ namespace VSS.TRex.Tools.KeyScanner
       }
 
       var scanQuery = new ScanQuery<INonSpatialAffinityKey, byte[]>();
-      IQueryCursor<ICacheEntry<INonSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
+      var queryCursor = cache.Query(scanQuery);
       scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
-      foreach (ICacheEntry<INonSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
+      foreach (var cacheEntry in queryCursor)
       {
         writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
       }
@@ -57,9 +56,9 @@ namespace VSS.TRex.Tools.KeyScanner
         PageSize = 1 // Restrict the number of keys requested in each page to reduce memory consumption
       };
 
-      IQueryCursor<ICacheEntry<ISubGridSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
+      var queryCursor = cache.Query(scanQuery);
 
-      foreach (ICacheEntry<ISubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
+      foreach (var cacheEntry in queryCursor)
       {
         writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
       }
@@ -81,10 +80,10 @@ namespace VSS.TRex.Tools.KeyScanner
       }
 
       var scanQuery = new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>();
-      IQueryCursor<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryCursor = cache.Query(scanQuery);
+      var queryCursor = cache.Query(scanQuery);
       scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
-      foreach (ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> cacheEntry in queryCursor)
+      foreach (var cacheEntry in queryCursor)
       {
         writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Content.Length}");
       }
@@ -106,10 +105,10 @@ namespace VSS.TRex.Tools.KeyScanner
       }
 
       var scanQuery = new ScanQuery<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>();
-      IQueryCursor<ICacheEntry<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>> queryCursor = cache.Query(scanQuery);
+      var queryCursor = cache.Query(scanQuery);
       scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
-      foreach (ICacheEntry<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> cacheEntry in queryCursor)
+      foreach (var cacheEntry in queryCursor)
       {
         writer.WriteLine($"{count++}:{cacheEntry.Key}: retiree count = {cacheEntry.Value.SegmentKeys.Length}");
 
@@ -120,11 +119,36 @@ namespace VSS.TRex.Tools.KeyScanner
       writer.WriteLine();
     }
 
+    private void writeSiteModelChangeMapQueueKeys(string title, StreamWriter writer, ICache<ISiteModelMachineAffinityKey, byte[]> cache)
+    {
+      int count = 0;
+
+      writer.WriteLine(title);
+      writer.WriteLine("#####################");
+      writer.WriteLine();
+
+      if (cache == null)
+      {
+        return;
+      }
+
+      var scanQuery = new ScanQuery<ISiteModelMachineAffinityKey, byte[]>();
+      var queryCursor = cache.Query(scanQuery);
+      scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
+
+      foreach (var cacheEntry in queryCursor)
+      {
+        writer.WriteLine($"{count++}:{cacheEntry.Key}: size = {cacheEntry.Value.Length}");
+      }
+
+      writer.WriteLine();
+    }
+
     public void dumpKeysToFile(StorageMutability mutability, string fileName)
     {
       try
       {
-        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(mutability);
+        var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(mutability);
 
         if (ignite == null)
         {
@@ -162,6 +186,16 @@ namespace VSS.TRex.Tools.KeyScanner
               try
               {
                 WriteKeysSpatial(TRexCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
+              }
+              catch (Exception E)
+              {
+                writer.WriteLine($"Exception occurred: {E.Message}");
+              }
+
+              Console.WriteLine($"----> Writing keys for {TRexCaches.SiteModelChangeMapsCacheName()}");
+              try
+              {
+                writeSiteModelChangeMapQueueKeys(TRexCaches.SiteModelChangeMapsCacheName(), writer, ignite.GetCache<ISiteModelMachineAffinityKey, byte[]>(TRexCaches.SiteModelChangeMapsCacheName()));
               }
               catch (Exception E)
               {
