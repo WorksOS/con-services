@@ -37,16 +37,6 @@ namespace VSS.TRex.Profiling.Factories
     /// <summary>
     /// Creates a new builder responsible for analyzing profile information for a cell or cells identified along a profile line
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="pDExistenceMap"></param>
-    /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
-    /// <param name="referenceDesignWrapper"></param>
-    /// <param name="cellLiftBuilder"></param>
-    /// <param name="profileStyle"></param>
-    /// <param name="volumeComputationType"></param>
-    /// <param name="overrides"></param>
-    /// <returns></returns>
     public ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
       ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
@@ -55,13 +45,14 @@ namespace VSS.TRex.Profiling.Factories
       IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
       VolumeComputationType volumeComputationType,
-      IOverrideParameters overrides)
+      IOverrideParameters overrides,
+      ILiftParameters liftParams)
     {
       switch (profileStyle)
       {
         case ProfileStyle.CellPasses:
-          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, IOverrideParameters, ICellProfileAnalyzer<T>>>()
-            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder, overrides);
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder, overrides, liftParams);
 
         case ProfileStyle.SummaryVolume:
           return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, ICellProfileAnalyzer<T>>>()

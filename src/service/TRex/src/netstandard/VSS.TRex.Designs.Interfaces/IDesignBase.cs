@@ -12,7 +12,7 @@ namespace VSS.TRex.Designs.Interfaces
   {
     int LockCount { get; }
     string FileName { get; set; }
-    long DataModelID { get; set; }
+    Guid ProjectUid { get; set; }
     bool IsStale { get; set; }
     bool Locked { get; }
     DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);
@@ -31,12 +31,12 @@ namespace VSS.TRex.Designs.Interfaces
       double CellSize,
       double Offset);
 
-    bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
-      SubGridTreeBitmapSubGridBits Mask,
-      SubGridTreeBitmapSubGridBits Patch,
-      double OriginX, double OriginY,
-      double CellSize,
-      double Offset);
+    bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset,
+      SubGridTreeBitmapSubGridBits mask,
+      SubGridTreeBitmapSubGridBits patch,
+      double originX, double originY,
+      double cellSize,
+      double offset);
 
     void WindLock();
     void UnWindLock();

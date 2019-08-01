@@ -1,18 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -23,33 +22,37 @@ using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Xunit;
 
 namespace VSS.Productivity3D.Filter.Tests
 {
-  [TestClass]
-  public class FilterExecutorTests : ExecutorBaseTests
+  public class FilterExecutorTests : IClassFixture<ExecutorBaseTests>
   {
-    private IAssetResolverProxy _assetResolverProxy;
+    private readonly ExecutorBaseTests _classFixture;
+    private IServiceProvider serviceProvider => _classFixture.serviceProvider;
+    private IServiceExceptionHandler serviceExceptionHandler => _classFixture.serviceExceptionHandler;
 
-    [TestInitialize]
-    public void TestInit()
+    private readonly IAssetResolverProxy _assetResolverProxy;
+
+    public FilterExecutorTests(ExecutorBaseTests classFixture)
     {
+      _classFixture = classFixture;
+
       var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
       mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
+                                   .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
       mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
+                                   .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
 
       _assetResolverProxy = mockedAssetResolverProxySetup.Object;
     }
-
-    [TestMethod]
-    [DataRow(FilterType.Persistent)]
-    [DataRow(FilterType.Report)]
+    
+    [Theory]
+    [InlineData(FilterType.Persistent)]
+    [InlineData(FilterType.Report)]
     public async Task GetFilterExecutor(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
@@ -92,20 +95,16 @@ namespace VSS.Productivity3D.Filter.Tests
           filterRepo.Object, null);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterUid, result.FilterDescriptor.FilterUid,
-        "executor returned incorrect FilterDescriptor FilterUid");
-      Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name,
-        "executor returned incorrect FilterDescriptor Name");
-      Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptor.FilterJson,
-        "executor returned incorrect FilterDescriptor FilterJson");
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType,
-        "executor returned incorrect FilterDescriptor FilterType");
+      Assert.NotNull(result);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterUid, result.FilterDescriptor.FilterUid);
+      Assert.Equal(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
+      Assert.Equal("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptor.FilterJson);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
     }
 
-    [TestMethod]
-    [DataRow(FilterType.Persistent)]
-    [DataRow(FilterType.Report)]
+    [Theory]
+    [InlineData(FilterType.Persistent)]
+    [InlineData(FilterType.Report)]
     public async Task GetFilterExecutor_DoesntBelongToUser(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
@@ -146,13 +145,13 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler,
           filterRepo.Object, null);
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
+      var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
-      StringAssert.Contains(ex.GetContent, "2036");
-      StringAssert.Contains(ex.GetContent, "GetFilter By filterUid. The requested filter does not exist, or does not belong to the requesting customer; project or user.");
+      Assert.Contains("2036", ex.GetContent);
+      Assert.Contains("GetFilter By filterUid. The requested filter does not exist, or does not belong to the requesting customer; project or user.", ex.GetContent);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task GetFiltersExecutor()
     {
       string custUid = Guid.NewGuid().ToString();
@@ -201,18 +200,14 @@ namespace VSS.Productivity3D.Filter.Tests
           filterRepo.Object, null);
       var filterListResult = await executor.ProcessAsync(request) as FilterDescriptorListResult;
 
-      Assert.IsNotNull(filterListResult, "executor failed");
-      Assert.AreEqual(filterListToTest.FilterDescriptors[0].FilterUid, filterListResult.FilterDescriptors[0].FilterUid,
-        "executor returned incorrect filterDescriptor FilterUid");
-      Assert.AreEqual(filterListToTest.FilterDescriptors[0].Name, filterListResult.FilterDescriptors[0].Name,
-        "executor returned incorrect filterDescriptor Name");
-      Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}",
-        filterListResult.FilterDescriptors[0].FilterJson, "executor returned incorrect filterDescriptor FilterJson");
-      Assert.AreEqual(filterListToTest.FilterDescriptors[0].FilterType, filterListResult.FilterDescriptors[0].FilterType,
-        "executor returned incorrect filterDescriptor FilterType");
+      Assert.NotNull(filterListResult);
+      Assert.Equal(filterListToTest.FilterDescriptors[0].FilterUid, filterListResult.FilterDescriptors[0].FilterUid);
+      Assert.Equal(filterListToTest.FilterDescriptors[0].Name, filterListResult.FilterDescriptors[0].Name);
+      Assert.Equal("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", filterListResult.FilterDescriptors[0].FilterJson);
+      Assert.Equal(filterListToTest.FilterDescriptors[0].FilterType, filterListResult.FilterDescriptors[0].FilterType);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpsertFilterExecutor_Transient()
     {
       // this scenario, the FilterUid is supplied, this should throw an exception as update not supported.
@@ -267,13 +262,13 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, projectProxy.Object, 
         raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
+      var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
-      StringAssert.Contains(ex.GetContent, "2016");
-      StringAssert.Contains(ex.GetContent, "UpsertFilter failed. Transient filter not updateable, should not have filterUid provided.");
+      Assert.Contains("2016", ex.GetContent);
+      Assert.Contains("UpsertFilter failed. Transient filter not updateable, should not have filterUid provided.", ex.GetContent);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task UpsertFilterExecutor_TransientFilterWithBoundary()
     {
       string custUid = Guid.NewGuid().ToString();
@@ -340,21 +335,21 @@ namespace VSS.Productivity3D.Filter.Tests
         raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
       
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code, "executor returned incorrect result code");
+      Assert.NotNull(result);
+      Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       //Actual filter UID can not be validated as it is randomly generated by the logic. INstead we can check if it is not empty
-      //Assert.AreEqual(filterUid, result.FilterDescriptor.FilterUid, "Wrong filterUid");
-      Assert.IsFalse(String.IsNullOrEmpty(result.FilterDescriptor.FilterUid));
+      //Assert.Equal(filterUid, result.FilterDescriptor.FilterUid, "Wrong filterUid");
+      Assert.False(string.IsNullOrEmpty(result.FilterDescriptor.FilterUid));
       //Because of mocking can't use result JSON but request JSON should be hydrated
       var boundary = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(/*result.FilterDescriptor.FilterJson*/request.FilterJson);
-      Assert.AreEqual(geofence.GeofenceUID, boundary.PolygonUid, "Wrong polygonUID");
-      Assert.AreEqual(geofence.Name, boundary.PolygonName, "Wrong polygonName");
-      Assert.AreEqual(geofence.GeometryWKT, GetWicketFromPoints(boundary.PolygonLL), "Wrong polygonLL");
+      Assert.Equal(geofence.GeofenceUID, boundary.PolygonUid);
+      Assert.Equal(geofence.Name, boundary.PolygonName);
+      Assert.Equal(geofence.GeometryWKT, GetWicketFromPoints(boundary.PolygonLL));
     }
 
-    [TestMethod]
-    [DataRow(FilterType.Persistent)]
-    [DataRow(FilterType.Report)]
+    [Theory]
+    [InlineData(FilterType.Persistent)]
+    [InlineData(FilterType.Report)]
     public async Task UpsertFilterExecutor_Persistent(FilterType filterType)
     {
       // this scenario, the FilterUid is supplied, and is provided in Request
@@ -423,20 +418,16 @@ namespace VSS.Productivity3D.Filter.Tests
         raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterUid, result.FilterDescriptor.FilterUid,
-        "executor returned incorrect FilterDescriptor FilterUid");
-      Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name,
-        "executor returned incorrect FilterDescriptor Name");
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterJson, result.FilterDescriptor.FilterJson,
-        "executor returned incorrect FilterDescriptor FilterJson");
-      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType,
-        "executor returned incorrect FilterDescriptor FilterType");
+      Assert.NotNull(result);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterUid, result.FilterDescriptor.FilterUid);
+      Assert.Equal(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterJson, result.FilterDescriptor.FilterJson);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
     }
 
-    [TestMethod]
-    [DataRow(FilterType.Persistent)]
-    [DataRow(FilterType.Report)]
+    [Theory]
+    [InlineData(FilterType.Persistent)]
+    [InlineData(FilterType.Report)]
     public async Task DeleteFilterExecutor(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
@@ -480,8 +471,8 @@ namespace VSS.Productivity3D.Filter.Tests
         filterRepo.Object, null, projectProxy.Object, raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
-      Assert.IsNotNull(result, "executor failed");
-      Assert.AreEqual(0, result.Code, "executor returned incorrect result code");
+      Assert.NotNull(result);
+      Assert.Equal(0, result.Code);
     }
 
     private string GetWicketFromPoints(List<WGSPoint> points)

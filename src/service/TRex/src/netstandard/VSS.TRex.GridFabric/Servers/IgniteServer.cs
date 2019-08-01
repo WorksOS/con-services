@@ -17,6 +17,9 @@ namespace VSS.TRex.GridFabric.Servers
         public const string TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE = "TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE";
         public const int DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE = 500;
 
+        public const string TREX_IGNITE_JVM_HEAP_SIZE_MB = "TREX_IGNITE_JVM_HEAP_SIZE_MB";
+        public const int DEFAULT_TREX_IGNITE_JVM_HEAP_SIZE_MB = 1 * 1024;
+
         /// <summary>
         /// The mutable Ignite grid reference maintained by this server instance
         /// </summary>

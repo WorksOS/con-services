@@ -11,6 +11,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -44,9 +45,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var pcSummaryRequest = new PassCountSummaryRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Filter,
-            request.liftBuildSettings.OverridingTargetPassCountRange);
+            request.liftBuildSettings.OverridingTargetPassCountRange,
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.liftBuildSettings));
 
           return await trexCompactionDataProxy.SendDataPostRequest<PassCountSummaryResult, PassCountSummaryRequest>(pcSummaryRequest, "/passcounts/summary", customHeaders);
 #if RAPTOR

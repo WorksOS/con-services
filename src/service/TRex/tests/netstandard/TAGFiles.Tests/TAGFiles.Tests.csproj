@@ -53,7 +53,6 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj" />
-    <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />
     <ProjectReference Include="..\VSS.TRex.Tests\VSS.TRex.Tests.csproj" />
   </ItemGroup>
 

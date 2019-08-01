@@ -15,7 +15,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
         .ForMember(x => x.CutFillDesignOffset,
           opt => opt.MapFrom(ps =>
             (ps.DesignFile != null) ? ps.DesignFile.Offset : (double?) null))
-        .ForMember(x => x.Overrides, opt => opt.MapFrom(ps => ps.LiftBuildSettings));
+        .ForMember(x => x.Overrides, opt => opt.MapFrom(ps => ps.LiftBuildSettings))
+        .ForMember(x => x.LiftSettings, opt => opt.MapFrom(ps => ps.LiftBuildSettings));
     }
   }
 }

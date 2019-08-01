@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
@@ -48,6 +49,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
+        .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
         .Complete();
     }
 
@@ -81,6 +83,7 @@ namespace VSS.TRex.Server.DesignElevation
     {
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
 
     static async Task<int> Main(string[] args)

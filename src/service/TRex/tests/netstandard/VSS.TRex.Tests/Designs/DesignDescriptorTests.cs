@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using FluentAssertions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Tests.BinarizableSerialization;
@@ -21,7 +22,7 @@ namespace VSS.TRex.Tests.Designs
       dd.IsNull.Should().BeTrue();
     }
 
-    [Fact]
+    [Fact()]
     public void Creation2()
     {
       Guid newGuid = Guid.NewGuid();
@@ -31,7 +32,7 @@ namespace VSS.TRex.Tests.Designs
       dd.DesignID.Should().Be(newGuid);
       dd.FileName.Should().Be("file.name");
       dd.Folder.Should().Be("folder");
-      dd.FullPath.Should().Be(@"folder\file.name");
+      dd.FullPath.Should().Be(Path.Combine("folder", "file.name"));
       dd.IsNull.Should().BeFalse();
     }
 

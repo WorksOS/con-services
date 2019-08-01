@@ -68,7 +68,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
 
       //The subgrid tree extents are 1 << 30 or ~ 1 billion.
       //The default origin offset (SubGridTreeConsts.DefaultIndexOriginOffset) is ~500 million.
-      //So we are placing the cell at the world origin (N/E) and default cell size of 0.34 metres
+      //So we are placing the cell at the world origin (N/E) and default cell size of 0.34 Meters
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);

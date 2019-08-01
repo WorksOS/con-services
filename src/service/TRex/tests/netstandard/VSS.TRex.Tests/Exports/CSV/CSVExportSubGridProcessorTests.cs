@@ -9,7 +9,6 @@ using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Tests.Common;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.DI;
@@ -376,6 +375,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     {
       siteModel = SetupSiteAndRequestArgument(coordType, outputType, isRawDataAsDBaseRequired, tagFileDirectory, out requestArgument);
       var overrides = requestArgument.Overrides;
+      var liftParams = requestArgument.LiftParams;
 
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var gridDataType = outputType == OutputTypes.PassCountLastPass || outputType == OutputTypes.VedaFinalPass
@@ -390,7 +390,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
       {
-        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, overrides, true, false);
+        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, overrides, liftParams, true, false);
         if (requestSubGridInternalResult.requestResult == ServerRequestResult.NoError)
           requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });

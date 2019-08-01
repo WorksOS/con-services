@@ -38,6 +38,7 @@ namespace VSS.TRex.Profiling.Executors
     private readonly ProfileStyle ProfileStyle;
     private readonly VolumeComputationType VolumeType;
     private readonly IOverrideParameters Overrides;
+    private readonly ILiftParameters LiftParams;
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
@@ -54,19 +55,10 @@ namespace VSS.TRex.Profiling.Executors
     /// <summary>
     /// Constructs the profile analysis executor
     /// </summary>
-    /// <param name="profileStyle"></param>
-    /// <param name="projectID"></param>
-    /// <param name="profileTypeRequired"></param>
-    /// <param name="nEECoords"></param>
-    /// <param name="filters"></param>
-    /// <param name="design"></param>
-    /// <param name="returnAllPassesAndLayers"></param>
-    /// <param name="volumeType"></param>
-    /// <param name="overrides"></param>
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, IOverrideParameters overrides)
+      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, IOverrideParameters overrides, ILiftParameters liftParams)
     {
       ProfileStyle = profileStyle;
       ProjectID = projectID;
@@ -76,6 +68,7 @@ namespace VSS.TRex.Profiling.Executors
       Design = design;
       VolumeType = volumeType;
       Overrides = overrides;
+      LiftParams = liftParams;
     }
 
     /// <summary>
@@ -158,8 +151,10 @@ namespace VSS.TRex.Profiling.Executors
             return Response = new ProfileRequestResponse<T> { ResultStatus = RequestErrorStatus.FailedOnRequestProfile};
           }
 
-          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, new DesignWrapper(Design, design),
-            /* todo elevation range design + offset: */null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides);
+          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, 
+            new DesignWrapper(Design, design),
+            /* todo elevation range design + offset: */null, PopulationControl, 
+            new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides, LiftParams);
 
           Log.LogInformation("Building cell profile");
           if (await Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))

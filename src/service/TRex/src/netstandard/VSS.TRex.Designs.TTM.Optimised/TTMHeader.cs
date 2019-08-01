@@ -17,8 +17,8 @@ namespace VSS.TRex.Designs.TTM.Optimised
     public byte FileMinorVersion; // Must be 0
     public byte[] FileSignature; // = new byte[HeaderConsts.kDTMFileSignatureSize]; // Must be "TNL TIN DTM FILE" \0\0\0\0
     public byte[] DTMModelInternalName; // = new byte[HeaderConsts.kDTMInternalModelNameSize]; // E.g. "Christchurch area TIN DTM" \0
-    public byte CoordinateUnits; // Must be 1: Metres
-    public byte VertexValueUnits; // Must be 1: Metres
+    public byte CoordinateUnits; // Must be 1: Meters
+    public byte VertexValueUnits; // Must be 1: Meters
     public byte InterpolationMethod; // Must be 1: Linear
     public double NorthingOffsetValue; // e.g. 700500. Typically the centre of the area covered by the TIN
     public double EastingOffsetValue; // E.g. 300500. Typically the centre of the area covered by the TIN
@@ -63,8 +63,8 @@ namespace VSS.TRex.Designs.TTM.Optimised
       DTMModelInternalName = new byte[HeaderConsts.kDTMInternalModelNameSize];
       reader.Read(DTMModelInternalName, 0, HeaderConsts.kDTMInternalModelNameSize);
 
-      CoordinateUnits = reader.ReadByte(); // Must be 1: Metres
-      VertexValueUnits = reader.ReadByte(); // Must be 1: Metres
+      CoordinateUnits = reader.ReadByte(); // Must be 1: Meters
+      VertexValueUnits = reader.ReadByte(); // Must be 1: Meters
       InterpolationMethod = reader.ReadByte(); // Must be 1: Linear
       NorthingOffsetValue = reader.ReadDouble(); // e.g. 700500. Typically the centre of the area covered by the TIN
       EastingOffsetValue = reader.ReadDouble(); // E.g. 300500. Typically the centre of the area covered by the TIN

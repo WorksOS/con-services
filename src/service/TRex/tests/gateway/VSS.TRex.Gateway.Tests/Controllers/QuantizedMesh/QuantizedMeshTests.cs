@@ -45,7 +45,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
     }
 
 
-    [Fact]
+    [Fact(Skip="See BUG#85914")]
     public void TileExecutor_EmptySiteModel()
     {
       AddRoutings();

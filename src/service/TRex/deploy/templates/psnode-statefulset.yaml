@@ -54,6 +54,8 @@ spec:
           value: "true"
         - name: DEPLOYED_ENV
           value: {{ .Values.environment }}
+        - name: TREX_IGNITE_JVM_HEAP_SIZE_MB
+          value: {{ .Values.psnode.javaHeapSizeMb | quote  }}
 
         ports:
         # Ports to open.

@@ -82,7 +82,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
           {
             InternalSiteModelMachineIndex = bulldozerMachineIndex,
             Time = baseTime.AddMinutes(p),
-            CCV = (short)(baseCMV + x * cmvIncrement), // incrementally increase height across the sub grid
+            CCV = (short)(baseCMV + x * cmvIncrement), // incrementally increase CCV across the sub grid
             PassType = PassType.Front
           }).ToArray();
       });
@@ -131,18 +131,18 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       cmvChangeStatisticsResult.BelowTargetPercent.Should().Be(0);
       cmvChangeStatisticsResult.AboveTargetPercent.Should().Be(0);
       cmvChangeStatisticsResult.WithinTargetPercent.Should().Be(0);
-      cmvChangeStatisticsResult.TotalAreaCoveredSqMeters.Should().Be(0);
+      cmvChangeStatisticsResult.TotalAreaCoveredSqMeters.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
       cmvChangeStatisticsResult.Counts.Should().NotBeNull();
       cmvChangeStatisticsResult.Counts.Length.Should().Be(LENGTH);
 
       for (var i = 0; i < cmvChangeStatisticsResult.Counts.Length; i++)
-        cmvChangeStatisticsResult.Counts[i].Should().Be(0);
+        cmvChangeStatisticsResult.Counts[i].Should().Be(i != 4 ? 0 : 1);
 
       cmvChangeStatisticsResult.Percents.Should().NotBeNull();
       cmvChangeStatisticsResult.Percents.Length.Should().Be(LENGTH);
 
       for (var i = 0; i < cmvChangeStatisticsResult.Percents.Length; i++)
-        cmvChangeStatisticsResult.Percents[i].Should().Be(0);
+        cmvChangeStatisticsResult.Percents[i].Should().Be(i != 4 ? 0 : 100);
     }
 
     [Fact]
@@ -163,24 +163,39 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       cmvChangeStatisticsResult.BelowTargetPercent.Should().Be(0);
       cmvChangeStatisticsResult.AboveTargetPercent.Should().Be(0);
       cmvChangeStatisticsResult.WithinTargetPercent.Should().Be(0);
-      cmvChangeStatisticsResult.TotalAreaCoveredSqMeters.Should().Be(0);
+      cmvChangeStatisticsResult.TotalAreaCoveredSqMeters.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
       cmvChangeStatisticsResult.Counts.Should().NotBeNull();
       cmvChangeStatisticsResult.Counts.Length.Should().Be(LENGTH);
 
       for (var i = 0; i < cmvChangeStatisticsResult.Counts.Length; i++)
-        cmvChangeStatisticsResult.Counts[i].Should().Be(0);
+        cmvChangeStatisticsResult.Counts[i].Should().Be(i != 4 ? 0 : 1);
 
       cmvChangeStatisticsResult.Percents.Should().NotBeNull();
       cmvChangeStatisticsResult.Percents.Length.Should().Be(LENGTH);
 
       for (var i = 0; i < cmvChangeStatisticsResult.Percents.Length; i++)
-        cmvChangeStatisticsResult.Percents[i].Should().Be(0);
+        cmvChangeStatisticsResult.Percents[i].Should().Be(i != 4 ? 0 : 100);
     }
 
     [Fact]
     public async Task Test_CMVChangeStatisticsRequest_SiteModelWithMultipleCells_FullExtents()
     {
-      const short NUMBER_OF_CELLS = 2165;
+      const double TOLERANCE = 0.000001;
+      const short NUMBER_OF_CELLS = 1988;
+      const short NUMBER_OF_CELLS_SCANNED = 1994;
+
+      double[] expectedPercentages = 
+      {
+        2.3641851106639837,
+        11.921529175050303,
+        29.325955734406438,
+        26.911468812877263,
+        13.832997987927564,
+        5.6841046277665992,
+        9.9597585513078464
+      };
+
+      int[] expectedCounts = { 47, 237, 583, 535, 275, 113, 198 };
 
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -200,28 +215,19 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       cmvChangeStatisticsResult.BelowTargetPercent.Should().Be(0);
       cmvChangeStatisticsResult.AboveTargetPercent.Should().Be(0);
       cmvChangeStatisticsResult.WithinTargetPercent.Should().Be(0);
-      cmvChangeStatisticsResult.TotalAreaCoveredSqMeters.Should().BeApproximately(NUMBER_OF_CELLS * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      cmvChangeStatisticsResult.TotalAreaCoveredSqMeters.Should().BeApproximately(NUMBER_OF_CELLS_SCANNED * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, TOLERANCE);
       cmvChangeStatisticsResult.Counts.Should().NotBeNull();
       cmvChangeStatisticsResult.Counts.Length.Should().Be(LENGTH);
+      cmvChangeStatisticsResult.Counts.Sum().Should().Be(NUMBER_OF_CELLS);
 
       for (var i = 0; i < cmvChangeStatisticsResult.Counts.Length; i++)
-      {
-        if (i == LENGTH - 1)
-          cmvChangeStatisticsResult.Counts[i].Should().Be(NUMBER_OF_CELLS);
-        else
-          cmvChangeStatisticsResult.Counts[i].Should().Be(0);
-      }
+        cmvChangeStatisticsResult.Counts[i].Should().Be(expectedCounts[i]);
 
       cmvChangeStatisticsResult.Percents.Should().NotBeNull();
       cmvChangeStatisticsResult.Percents.Length.Should().Be(LENGTH);
 
       for (var i = 0; i < cmvChangeStatisticsResult.Percents.Length; i++)
-      {
-        if (i == LENGTH - 1)
-          cmvChangeStatisticsResult.Percents[i].Should().Be(100);
-        else
-          cmvChangeStatisticsResult.Percents[i].Should().Be(0);
-      }
+        cmvChangeStatisticsResult.Percents[i].Should().BeApproximately(expectedPercentages[i], TOLERANCE);
     }
   }
 }

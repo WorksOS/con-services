@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Common;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -11,6 +10,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.WebApi.ActionServices;
+using VSS.TRex.Tests;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 

@@ -61,7 +61,6 @@ namespace VSS.Productivity3D.Models.Models
     /// Override the target MDP recorded from the machine with the value of mdpTarget
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    [Required]
     public bool OverrideTargetMDP { get; private set; }
 
     /// <summary>
