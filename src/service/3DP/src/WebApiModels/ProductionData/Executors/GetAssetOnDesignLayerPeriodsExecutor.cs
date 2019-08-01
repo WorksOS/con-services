@@ -18,10 +18,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var projectIds = item as ProjectIDs;
-      if (projectIds == null)
-        ThrowRequestTypeCastException<ProjectIDs>();
-
+      var projectIds = CastRequestObjectToProjectIDs(item);
       log.LogInformation(
         $"GetAssetOnDesignLayerPeriodsExecutor: {JsonConvert.SerializeObject(projectIds)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_LAYERS")}");
 

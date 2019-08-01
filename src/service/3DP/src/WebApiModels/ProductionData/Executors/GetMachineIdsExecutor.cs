@@ -19,9 +19,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   {
 
     /// <summary>
-    /// Get list of Machines using required pathway trex/raptor
+    /// Get list of Machines using required pathway tRex/raptor
     ///    resolve non-JohnDoe assetID/Uid using assetResolver
-    ///    resolve JohnDoe assetID/Uid using opposite trex/raptor pathway
+    ///    resolve JohnDoe assetID/Uid using opposite tRex/raptor pathway
     /// Note that a request will always include both projectUID and ProjectID
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -29,10 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     /// <returns></returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var projectIds = item as ProjectIDs;
-      if (projectIds == null)
-        ThrowRequestTypeCastException<ProjectIDs>();
-
+      var projectIds = CastRequestObjectToProjectIDs(item);
       log.LogInformation(
         $"GetMachineIdsExecutor: {JsonConvert.SerializeObject(projectIds)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES")}");
 

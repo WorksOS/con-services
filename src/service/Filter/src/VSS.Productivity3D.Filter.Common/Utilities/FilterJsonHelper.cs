@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
       {
         // get project productionData data extents from 3dpm
-        var statistics = await raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders);
+        var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
         filterObj.StartUtc = statistics?.startTime;
         filterObj.EndUtc = statistics?.endTime;
       }
@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       // The UI needs to know the start date for specified ranges, this is actually the range data will be returned for
       if (filterObj.AsAtDate == true)
       {
-        var statistics = await raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders);
+        var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
         filterObj.StartUtc = statistics?.startTime;
         filterObj.DateRangeType = DateRangeType.Custom;
       }

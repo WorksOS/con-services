@@ -2,19 +2,14 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
-using VSS.TRex.Gateway.Common.Abstractions;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -22,25 +17,12 @@ using VLPDDecls;
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
   [TestClass]
-  public class MachineIdsExecutorTests
+  public class MachineIdsExecutorTests : MachineIdsBase
   {
-    private static IServiceProvider serviceProvider;
-    private static ILoggerFactory logger;
-    private static Dictionary<string, string> _customHeaders;
-
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection()
-        .AddLogging()
-        .AddSingleton(loggerFactory);
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      _customHeaders = new Dictionary<string, string>();
+      Init();
     }
 
     [TestMethod]
@@ -72,28 +54,16 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var customerUid = Guid.NewGuid();
       var assetUid = Guid.NewGuid();
       var assetId = 777;
-      var expectedResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(-1, "MachineName2", false, "designName",
-            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid)
-        }
-      );
-      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
-          It.IsAny<string>(), 
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedResult);
+      var machineName = "MachineName";
+      var isJohnDoe = false;
+ 
+      GetTRexMachineIdsMock(new List<MachineStatus>(1) { new MachineStatus(NULL_ASSETID, machineName, isJohnDoe, assetUid: assetUid) }, 
+        projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
-      var assetMatches = new List< KeyValuePair<Guid, long> >() { new KeyValuePair<Guid, long>(assetUid, assetId) };
-      var assetProxy = new Mock<IAssetResolverProxy>();
+      // to assetMatch on VSS assets
+      var assetMatches = new List< KeyValuePair<Guid, long> > { new KeyValuePair<Guid, long>(assetUid, assetId) };
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
-
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
@@ -102,13 +72,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
-      Assert.AreEqual(1, result.MachineStatuses.Count, "Wrong machine count");
-      Assert.AreEqual(expectedResult.MachineStatuses[0].AssetUid, result.MachineStatuses[0].AssetUid,
-        "Wrong machine Uid");
-      Assert.AreEqual(expectedResult.MachineStatuses[0].MachineName, result.MachineStatuses[0].MachineName,
-        "Wrong machine name");
-      Assert.AreEqual(assetMatches[0].Value, result.MachineStatuses[0].AssetId,
-        "Wrong legacyAssetId");
+      Assert.AreEqual(1, result.MachineStatuses.Count, "Wrong asset count");
+      Assert.AreEqual(assetUid, result.MachineStatuses[0].AssetUid, "Wrong asset Uid");
+      Assert.AreEqual(assetId, result.MachineStatuses[0].AssetId, "Wrong asset Id");
+      Assert.AreEqual(machineName, result.MachineStatuses[0].MachineName, "Wrong machine name");
     }
 
 #if RAPTOR
@@ -119,44 +86,20 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var customerUid = Guid.NewGuid();
       var assetUid = Guid.NewGuid();
       var assetId = 777;
-      var expectedTRexResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(-1, "MachineName2", true, "designName",
-            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid)
-        }
-      );
-      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
-          It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedTRexResult);
+      var machineName = "MachineName";
+      var isJohnDoe = true;
+
+      GetTRexMachineIdsMock(new List<MachineStatus>(1) { new MachineStatus(NULL_ASSETID, machineName, isJohnDoe, assetUid: assetUid) },
+        projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // to assetMatch on VSS assets
-      var assetMatches = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
-      var assetProxy = new Mock<IAssetResolverProxy>();
+      var assetMatches = new List<KeyValuePair<Guid, long>> { new KeyValuePair<Guid, long>(assetUid, assetId) };
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
       // raptor call to assetMatch on JohnDoe assets
-      var tMachines = new[]
-      {
-        new TMachineDetail
-        {
-          Name = expectedTRexResult.MachineStatuses[0].MachineName,
-          ID = assetId,
-          IsJohnDoeMachine = true
-        }
-      };
-      var raptorClient = new Mock<IASNodeClient>();
-      raptorClient
-        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
-        .Returns(tMachines);
-
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
+      GetRaptorMachineIdsMock(new[] { new TMachineDetail { Name = machineName, ID = assetId, IsJohnDoeMachine = isJohnDoe } },
+        projectIds.ProjectId, raptorClient);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
@@ -165,12 +108,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
-      Assert.AreEqual(1, result.MachineStatuses.Count, "Wrong machine count");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[0].AssetUid, result.MachineStatuses[0].AssetUid,
-        "Wrong machine Uid");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[0].MachineName, result.MachineStatuses[0].MachineName,
-        "Wrong machine name");
-      Assert.AreEqual(assetId, result.MachineStatuses[0].AssetId,"Wrong legacyAssetId");
+      Assert.AreEqual(1, result.MachineStatuses.Count, "Wrong asset count");
+      Assert.AreEqual(assetUid, result.MachineStatuses[0].AssetUid, "Wrong asset Uid");
+      Assert.AreEqual(assetId, result.MachineStatuses[0].AssetId, "Wrong asset Id");
+      Assert.AreEqual(machineName, result.MachineStatuses[0].MachineName, "Wrong machine name");
     }
 
     [TestMethod]
@@ -179,31 +120,15 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectIds = new ProjectIDs(1, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetUid = Guid.NewGuid();
-      var assetIdNoFound = -1;
-      var expectedTRexResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(-1, "MachineName2", true, "designName",
-            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid)
-        }
-      );
-      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
-          It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedTRexResult);
+      //var assetId = 777;
+      var machineName = "MachineName";
+      var isJohnDoe = true;
+
+      GetTRexMachineIdsMock(new List<MachineStatus>(1) { new MachineStatus(NULL_ASSETID, machineName, isJohnDoe, assetUid: assetUid) },
+        projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // raptor call to assetMatch on JohnDoe assets
-      var tMachines = new TMachineDetail[0];
-      var raptorClient = new Mock<IASNodeClient>();
-      raptorClient
-        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
-        .Returns(tMachines);
-
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
+      GetRaptorMachineIdsMock(new TMachineDetail[0], projectIds.ProjectId, raptorClient);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
@@ -212,12 +137,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
-      Assert.AreEqual(1, result.MachineStatuses.Count, "Wrong machine count");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[0].AssetUid, result.MachineStatuses[0].AssetUid,
-        "Wrong machine Uid");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[0].MachineName, result.MachineStatuses[0].MachineName,
-        "Wrong machine name");
-      Assert.AreEqual(assetIdNoFound, result.MachineStatuses[0].AssetId, "Wrong legacyAssetId");
+      Assert.AreEqual(1, result.MachineStatuses.Count, "Wrong asset count");
+      Assert.AreEqual(assetUid, result.MachineStatuses[0].AssetUid, "Wrong asset Uid");
+      Assert.AreEqual(NULL_ASSETID, result.MachineStatuses[0].AssetId, "Wrong asset Id");
+      Assert.AreEqual(machineName, result.MachineStatuses[0].MachineName, "Wrong machine name");
     }
 
     [TestMethod]
@@ -228,49 +151,33 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var johnDoeAssetId0 = 111;
       var johnDoeAssetId1 = 333;
       var nonJohnDoeAssetId2 = 555;
-      var expectedTRexResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(3)
-        {
-          new MachineStatus(-1, "MachineName2", true, "designName",
-            10, DateTime.UtcNow.AddDays(-1), null, null, null, null, 
-            Guid.NewGuid()),
-          new MachineStatus(-1, "machine name1", true, "designName1",
-            11, DateTime.UtcNow.AddDays(-1), null, null, null, null,
-            Guid.NewGuid()),
-          new MachineStatus(-1, "other Machine name", false, "designName2",
-          12, DateTime.UtcNow.AddDays(-1), null, null, null, null,
-          Guid.NewGuid())
-        }
-      );
-      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
-          It.IsAny<string>(),It.IsAny<IDictionary<string, string>>(),It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedTRexResult);
+
+      var machines = new List<MachineStatus>(3)
+      {
+        new MachineStatus(NULL_ASSETID, "MachineName2", true, assetUid: Guid.NewGuid()),
+        new MachineStatus(NULL_ASSETID, "machine name1", true, assetUid: Guid.NewGuid()),
+        new MachineStatus(NULL_ASSETID, "other Machine name", false, assetUid: Guid.NewGuid())
+      };
+      GetTRexMachineIdsMock(machines, projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // to assetMatch on VSS assets
       var assetMatches = new List<KeyValuePair<Guid, long>>()
       {
-        new KeyValuePair<Guid, long>(expectedTRexResult.MachineStatuses[2].AssetUid.Value, nonJohnDoeAssetId2) ,
+        new KeyValuePair<Guid, long>(machines[2].AssetUid.Value, nonJohnDoeAssetId2) ,
         new KeyValuePair<Guid, long>(Guid.NewGuid(), 111)
       };
-      var assetProxy = new Mock<IAssetResolverProxy>();
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
       // raptor call to assetMatch on JohnDoe assets
       var tMachines = new[]
       {
-        new TMachineDetail { Name = expectedTRexResult.MachineStatuses[1].MachineName, ID = johnDoeAssetId1, IsJohnDoeMachine = true },
-        new TMachineDetail { Name = expectedTRexResult.MachineStatuses[0].MachineName.ToLower(), ID = johnDoeAssetId0, IsJohnDoeMachine = true },
+        new TMachineDetail { Name = machines[1].MachineName, ID = johnDoeAssetId1, IsJohnDoeMachine = true },
+        new TMachineDetail { Name = machines[0].MachineName.ToLower(), ID = johnDoeAssetId0, IsJohnDoeMachine = true },
         new TMachineDetail { Name = "blahblah", ID = 44, IsJohnDoeMachine = true },
-        new TMachineDetail { Name = expectedTRexResult.MachineStatuses[0].MachineName, ID = johnDoeAssetId0, IsJohnDoeMachine = false }
+        new TMachineDetail { Name = machines[0].MachineName, ID = johnDoeAssetId0, IsJohnDoeMachine = false }
       };
-      var raptorClient = new Mock<IASNodeClient>();
-      raptorClient.Setup(x => x.GetMachineIDs(projectIds.ProjectId)).Returns(tMachines);
-
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
+      GetRaptorMachineIdsMock(tMachines, projectIds.ProjectId, raptorClient);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
@@ -280,14 +187,14 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(3, result.MachineStatuses.Count, "Wrong machine count");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[0].AssetUid, result.MachineStatuses[0].AssetUid, "Wrong machine Uid for machine1");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[0].MachineName, result.MachineStatuses[0].MachineName, "Wrong machine name for machine1");
+      Assert.AreEqual(machines[0].AssetUid, result.MachineStatuses[0].AssetUid, "Wrong machine Uid for machine1");
+      Assert.AreEqual(machines[0].MachineName, result.MachineStatuses[0].MachineName, "Wrong machine name for machine1");
       Assert.AreEqual(johnDoeAssetId0, result.MachineStatuses[0].AssetId, "Wrong legacyAssetId for machine1");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[1].AssetUid, result.MachineStatuses[1].AssetUid, "Wrong machine Uid for machine2");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[1].MachineName, result.MachineStatuses[1].MachineName, "Wrong machine name for machine2");
+      Assert.AreEqual(machines[1].AssetUid, result.MachineStatuses[1].AssetUid, "Wrong machine Uid for machine2");
+      Assert.AreEqual(machines[1].MachineName, result.MachineStatuses[1].MachineName, "Wrong machine name for machine2");
       Assert.AreEqual(johnDoeAssetId1, result.MachineStatuses[1].AssetId, "Wrong legacyAssetId for machine2");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[2].AssetUid, result.MachineStatuses[2].AssetUid, "Wrong machine Uid for machine3");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[2].MachineName, result.MachineStatuses[2].MachineName, "Wrong machine name for machine3");
+      Assert.AreEqual(machines[2].AssetUid, result.MachineStatuses[2].AssetUid, "Wrong machine Uid for machine3");
+      Assert.AreEqual(machines[2].MachineName, result.MachineStatuses[2].MachineName, "Wrong machine name for machine3");
       Assert.AreEqual(nonJohnDoeAssetId2, result.MachineStatuses[2].AssetId, "Wrong legacyAssetId for machine3");
     }
 #endif
@@ -302,36 +209,25 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var assetId1Expected = assetId1Good;
       var assetUid2Good = Guid.NewGuid();
       var assetId2Invalid = 0;
-      var assetId2Expected = -1;
+      var assetId2Expected = NULL_ASSETID;
       var assetUid3Good = Guid.NewGuid();
-      var assetId3Expected = -1;
-      var expectedResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
+      var assetId3Expected = NULL_ASSETID;
+
+      var machines = new List<MachineStatus>(3)
         {
-          new MachineStatus(-1, "MachineName2", false, "designName",14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid1Good),
-          new MachineStatus(-1, "MachineName3", false, "designName",14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid2Good),
-          new MachineStatus(-1, "MachineName4", false, "designName",14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid3Good)
-        }
-      );
-      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
-          It.IsAny<string>(), 
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedResult);
+          new MachineStatus(NULL_ASSETID, "MachineName2", false, assetUid: assetUid1Good),
+          new MachineStatus(NULL_ASSETID, "MachineName3", false, assetUid: assetUid2Good),
+          new MachineStatus(NULL_ASSETID, "MachineName4", false, assetUid: assetUid3Good)
+        };
+      GetTRexMachineIdsMock(machines, projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       var assetMatches = new List<KeyValuePair<Guid, long>>()
       {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
-      var assetProxy = new Mock<IAssetResolverProxy>();
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
-
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
@@ -358,32 +254,17 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var customerUid = Guid.NewGuid();
       var assetId = 777;
       var assetUid = Guid.NewGuid();
-      var expectedResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(assetId, "MachineName2", false, "designName",
-            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, null)
-        }
-      );
+      var machineName = "MachineName2";
+      var isJohnDoe = false;
 
-      var tMachines = new[]
-      {
-        new TMachineDetail { Name = expectedResult.MachineStatuses[0].MachineName, ID = expectedResult.MachineStatuses[0].AssetId, IsJohnDoeMachine = false }
-      };
-
-      var raptorClient = new Mock<IASNodeClient>();
-      raptorClient
-        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
-        .Returns(tMachines);
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
+      
+      GetRaptorMachineIdsMock(new[] { new TMachineDetail { Name = machineName, ID = assetId, IsJohnDoeMachine = isJohnDoe } },
+        projectIds.ProjectId, raptorClient);
 
       var assetMatches = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
-      var assetProxy = new Mock<IAssetResolverProxy>();
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
-
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
@@ -392,10 +273,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(1, result.MachineStatuses.Count, "Wrong machine count");
-      Assert.AreEqual(expectedResult.MachineStatuses[0].AssetId, result.MachineStatuses[0].AssetId, "Wrong machine Id");
-      Assert.AreEqual(expectedResult.MachineStatuses[0].MachineName, result.MachineStatuses[0].MachineName,
-        "Wrong machine name");
-      Assert.AreEqual(assetMatches[0].Key, result.MachineStatuses[0].AssetUid, "Wrong assetUid");
+      Assert.AreEqual(assetId, result.MachineStatuses[0].AssetId, "Wrong machine Id");
+      Assert.AreEqual(assetUid, result.MachineStatuses[0].AssetUid, "Wrong assetUid");
+      Assert.AreEqual(machineName, result.MachineStatuses[0].MachineName, "Wrong machine name");
     }
 
     [TestMethod]
@@ -405,44 +285,15 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var customerUid = Guid.NewGuid();
       var assetId = 777;
       var assetUid = Guid.NewGuid();
-      var expectedRaptorResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(assetId, "MachineName2", true, "designName",
-            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, null)
-        }
-      );
+      var machineName = "MachineName";
+      var isJohnDoe = true;
 
-      var tMachines = new[]
-      {
-        new TMachineDetail { Name = expectedRaptorResult.MachineStatuses[0].MachineName, ID = expectedRaptorResult.MachineStatuses[0].AssetId, IsJohnDoeMachine = expectedRaptorResult.MachineStatuses[0].IsJohnDoe }
-      };
-
-      var raptorClient = new Mock<IASNodeClient>();
-      raptorClient
-        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
-        .Returns(tMachines);
+      GetRaptorMachineIdsMock(new[] { new TMachineDetail { Name = machineName, ID = assetId, IsJohnDoeMachine = isJohnDoe } },
+        projectIds.ProjectId, raptorClient);
 
       // trex call to assetMatch on JohnDoe assets
-      var expectedTRexResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(-1, "MachineName2", true, "designName",
-            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, assetUid)
-        }
-      );
-      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
-          It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedTRexResult);
-
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
-      configStore.Setup(x => x.GetValueBool("TREX_IS_AVAILABLE")).Returns(true);
+      GetTRexMachineIdsMock(new List<MachineStatus>(1) { new MachineStatus(NULL_ASSETID, machineName, isJohnDoe, assetUid: assetUid) },
+        projectIds.ProjectUid, configStore, false, true, tRexProxy);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
@@ -451,10 +302,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(1, result.MachineStatuses.Count, "Wrong machine count");
-      Assert.AreEqual(expectedRaptorResult.MachineStatuses[0].AssetId, result.MachineStatuses[0].AssetId, "Wrong machine Id");
-      Assert.AreEqual(expectedRaptorResult.MachineStatuses[0].MachineName, result.MachineStatuses[0].MachineName,
-        "Wrong machine name");
-      Assert.AreEqual(expectedTRexResult.MachineStatuses[0].AssetUid, result.MachineStatuses[0].AssetUid, "Wrong assetUid");
+      Assert.AreEqual(assetId, result.MachineStatuses[0].AssetId, "Wrong machine Id");
+      Assert.AreEqual(assetUid, result.MachineStatuses[0].AssetUid, "Wrong assetUid");
+      Assert.AreEqual(machineName, result.MachineStatuses[0].MachineName, "Wrong machine name");
     }
 
     [TestMethod]
@@ -463,36 +313,15 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectIds = new ProjectIDs(999, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetId = 777;
-      var assetUid = Guid.NewGuid();
-      var expectedRaptorResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(assetId, "MachineName2", true, "designName",
-            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, null)
-        }
-      );
+      var machineName = "MachineName2";
+      var isJohnDoe = true;
 
-      var tMachines = new[]
-      {
-        new TMachineDetail { Name = expectedRaptorResult.MachineStatuses[0].MachineName, ID = expectedRaptorResult.MachineStatuses[0].AssetId, IsJohnDoeMachine = expectedRaptorResult.MachineStatuses[0].IsJohnDoe }
-      };
-
-      var raptorClient = new Mock<IASNodeClient>();
-      raptorClient
-        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
-        .Returns(tMachines);
+      GetRaptorMachineIdsMock(new[] { new TMachineDetail { Name = machineName, ID = assetId, IsJohnDoeMachine = isJohnDoe } },
+        projectIds.ProjectId, raptorClient);
 
       // trex call to assetMatch on JohnDoe assets
-      var expectedTRexResult = new MachineExecutionResult(new List<MachineStatus>());
-      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
-          It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(),It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedTRexResult);
-
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
-
+      GetTRexMachineIdsMock(new List<MachineStatus>(0), projectIds.ProjectUid, configStore, false, false, tRexProxy);
+      
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object,
@@ -500,10 +329,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(1, result.MachineStatuses.Count, "Wrong machine count");
-      Assert.AreEqual(expectedRaptorResult.MachineStatuses[0].AssetId, result.MachineStatuses[0].AssetId, "Wrong machine Id");
-      Assert.AreEqual(expectedRaptorResult.MachineStatuses[0].MachineName, result.MachineStatuses[0].MachineName,
-        "Wrong machine name");
+      Assert.AreEqual(assetId, result.MachineStatuses[0].AssetId, "Wrong machine Id");
       Assert.IsNull(result.MachineStatuses[0].AssetUid, "Wrong assetUid");
+      Assert.AreEqual(machineName, result.MachineStatuses[0].MachineName, "Wrong machine name");
     }
 
     [TestMethod]
@@ -512,35 +340,18 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectIds = new ProjectIDs(999, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetId = 777;
-      var assetUid = Guid.NewGuid();
-      var expectedRaptorResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(assetId, "MachineName2", true, "designName",
-            14, DateTime.UtcNow.AddDays(-1), null, null, null, null, null)
-        }
-      );
+      var machineName = "MachineName2";
+      var isJohnDoe = true;
 
-      var tMachines = new[]
-      {
-        new TMachineDetail { Name = expectedRaptorResult.MachineStatuses[0].MachineName, ID = expectedRaptorResult.MachineStatuses[0].AssetId, IsJohnDoeMachine = expectedRaptorResult.MachineStatuses[0].IsJohnDoe }
-      };
-
-      var raptorClient = new Mock<IASNodeClient>();
-      raptorClient
-        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
-        .Returns(tMachines);
+      GetRaptorMachineIdsMock(new[] { new TMachineDetail { Name = machineName, ID = assetId, IsJohnDoeMachine = isJohnDoe } },
+        projectIds.ProjectId, raptorClient);
 
       // trex call to assetMatch on JohnDoe assets - trex throws exception
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError));
-      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
          .ThrowsAsync(exception);
-
-      var configStore = new Mock<IConfigurationStore>();
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
       configStore.Setup(x => x.GetValueBool("TREX_IS_AVAILABLE")).Returns(true);
 
@@ -559,42 +370,31 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var assetUid1Good = Guid.NewGuid();
       long assetId1Good = 777;
       var assetUid1Expected = assetUid1Good;
+      var machineName1 = "MachineName1";
       long assetId2Invalid = 0; // johnDoe?
       Guid? assetUid2ExpectedNull = null;
+      var machineName2 = "MachineName2";
       var assetUid3Good = Guid.NewGuid();
       long assetId3Good = 888;
       var assetUid3Expected = assetUid3Good;
-      var expectedResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(assetId1Good, "MachineName0", false, "designName",14, DateTime.UtcNow.AddDays(-1), null, null, null, null, null),
-          new MachineStatus(assetId2Invalid, "MachineName1", false, "designName",14, DateTime.UtcNow.AddDays(-1), null, null, null, null, null),
-          new MachineStatus(assetId3Good, "MachineName2", false, "designName",14, DateTime.UtcNow.AddDays(-1), null, null, null, null, null)
-        }
-      );
+      var machineName3 = "MachineName3";
 
       var tMachines = new[]
       {
-        new TMachineDetail { Name = expectedResult.MachineStatuses[0].MachineName, ID = expectedResult.MachineStatuses[0].AssetId, IsJohnDoeMachine = false },
-        new TMachineDetail { Name = expectedResult.MachineStatuses[1].MachineName, ID = expectedResult.MachineStatuses[1].AssetId, IsJohnDoeMachine = false },
-        new TMachineDetail { Name = expectedResult.MachineStatuses[2].MachineName, ID = expectedResult.MachineStatuses[2].AssetId, IsJohnDoeMachine = false },
+        new TMachineDetail { Name = machineName1, ID = assetId1Good, IsJohnDoeMachine = false },
+        new TMachineDetail { Name = machineName2, ID = assetId2Invalid, IsJohnDoeMachine = false },
+        new TMachineDetail { Name = machineName3, ID = assetId3Good, IsJohnDoeMachine = false },
       };
-      var raptorClient = new Mock<IASNodeClient>();
-      raptorClient
-        .Setup(x => x.GetMachineIDs(projectIds.ProjectId))
-        .Returns(tMachines);
+      GetRaptorMachineIdsMock(tMachines, projectIds.ProjectId, raptorClient);
 
       var assetMatches = new List<KeyValuePair<Guid, long>>()
       {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid3Good, assetId3Good)
       };
-      var assetProxy = new Mock<IAssetResolverProxy>();
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
-      var configStore = new Mock<IConfigurationStore>();
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
 
       var executor = RequestExecutorContainerFactory

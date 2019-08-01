@@ -50,6 +50,7 @@ namespace VSS.Productivity3D.Models.Models
             "ProjectUid must be provided"));
       }
 
+      // seed for gen2 was 1. Seed for Gen3 is 1m.
       if (ProjectId <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

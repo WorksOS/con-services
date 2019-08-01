@@ -210,6 +210,21 @@ namespace VSS.Productivity3D.Common.Interfaces
       return request;
     }
 
+    /// <summary>
+    /// Casts input object to type ProjectIDs for use with child executors.
+    /// </summary>
+    protected ProjectIDs CastRequestObjectToProjectIDs(object item)
+    {
+      var request = item as ProjectIDs;
+
+      if (request == null)
+      {
+        ThrowRequestTypeCastException<ProjectIDs>();
+      }
+
+      return request;
+    }
+
     protected void ThrowRequestTypeCastException<T>(string errorMessage = null)
     {
       if (errorMessage == null)
