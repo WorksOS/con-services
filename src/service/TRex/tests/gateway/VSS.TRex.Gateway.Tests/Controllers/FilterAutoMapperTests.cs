@@ -93,6 +93,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       combinedFilter.AttributeFilter.HasDesignFilter.Should().BeFalse();
       combinedFilter.AttributeFilter.HasVibeStateFilter.Should().BeFalse();
       combinedFilter.AttributeFilter.HasLayerStateFilter.Should().BeFalse();
+      combinedFilter.AttributeFilter.HasLayerMethodFilter.Should().BeFalse();
       combinedFilter.AttributeFilter.HasElevationMappingModeFilter.Should().BeFalse();
       combinedFilter.AttributeFilter.HasElevationTypeFilter.Should().BeFalse();
       combinedFilter.AttributeFilter.HasGCSGuidanceModeFilter.Should().BeFalse();
@@ -281,6 +282,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.HasLayerStateFilter.Should().BeTrue();
       combinedFilter.AttributeFilter.LayerState.Should().Be(LayerState.On);
+      combinedFilter.AttributeFilter.LayerMethod.Should().Be(LayerMethod.Automatic);
 
       layerType = null;
       filterResult = new FilterResult(null, filter, null, null,
@@ -290,6 +292,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.HasLayerStateFilter.Should().BeFalse();
       combinedFilter.AttributeFilter.LayerState.Should().Be(LayerState.Off);
+      combinedFilter.AttributeFilter.LayerMethod.Should().Be(LayerMethod.Invalid);
     }
 
     [Fact]

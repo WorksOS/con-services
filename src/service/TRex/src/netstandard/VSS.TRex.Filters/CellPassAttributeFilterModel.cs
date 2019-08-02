@@ -158,6 +158,17 @@ namespace VSS.TRex.Filters
       }
     }
 
+    private bool _HasLayerMethodFilter;
+    public bool HasLayerMethodFilter
+    {
+      get => _HasLayerMethodFilter;
+      set
+      {
+        _HasLayerMethodFilter = value;
+        _prepared = false;
+      }
+    }
+
     private bool _HasLayerIDFilter;
     public bool HasLayerIDFilter
     {
@@ -327,6 +338,11 @@ namespace VSS.TRex.Filters
     public LayerState LayerState { get; set; } = LayerState.Invalid;
 
     /// <summary>
+    /// The layer method to use for analysis when LayerState is on.
+    /// </summary>
+    public LayerMethod LayerMethod { get; set; } = LayerMethod.Invalid;
+
+    /// <summary>
     /// ID of layer we are only interested in
     /// </summary>
     public int LayerID { get; set; } = -1;
@@ -371,6 +387,7 @@ namespace VSS.TRex.Filters
       writer.WriteBoolean(HasDesignFilter);
       writer.WriteBoolean(HasVibeStateFilter);
       writer.WriteBoolean(HasLayerStateFilter);
+      writer.WriteBoolean(HasLayerMethodFilter);
       writer.WriteBoolean(HasElevationMappingModeFilter);
       writer.WriteBoolean(HasElevationTypeFilter);
       writer.WriteBoolean(HasGCSGuidanceModeFilter);
@@ -418,6 +435,7 @@ namespace VSS.TRex.Filters
       ElevationRangeDesign?.ToBinary(writer);
 
       writer.WriteByte((byte)LayerState);
+      writer.WriteByte((byte)LayerMethod);
       writer.WriteInt(LayerID);
 
       int SurveyedSurfaceExclusionCount = SurveyedSurfaceExclusionList?.Length ?? 0;
@@ -445,6 +463,7 @@ namespace VSS.TRex.Filters
       HasDesignFilter = reader.ReadBoolean();
       HasVibeStateFilter = reader.ReadBoolean();
       HasLayerStateFilter = reader.ReadBoolean();
+      HasLayerMethodFilter = reader.ReadBoolean();
       HasElevationMappingModeFilter = reader.ReadBoolean();
       HasElevationTypeFilter = reader.ReadBoolean();
       HasGCSGuidanceModeFilter = reader.ReadBoolean();
@@ -493,6 +512,7 @@ namespace VSS.TRex.Filters
         ElevationRangeDesign.FromBinary(reader);
 
       LayerState = (LayerState)reader.ReadByte();
+      LayerMethod = (LayerMethod)reader.ReadByte();
       LayerID = reader.ReadInt();
 
       int surveyedSurfaceCount = reader.ReadInt();

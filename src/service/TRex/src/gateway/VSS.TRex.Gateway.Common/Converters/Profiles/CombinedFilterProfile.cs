@@ -50,6 +50,9 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           HasVibeStateFilter = src.VibeStateOn.HasValue && src.VibeStateOn.Value,
           HasLayerStateFilter = src.LayerType.HasValue,
           LayerState = src.LayerType.HasValue ? LayerState.On : LayerState.Off,
+          HasLayerMethodFilter = src.LayerType.HasValue,
+          LayerMethod = src.LayerType.HasValue && src.LayerType.Value != FilterLayerMethod.Invalid ? (LayerMethod)src.LayerType.Value : LayerMethod.Invalid,
+          //Invalid doesn't match on the enums
 
           HasElevationMappingModeFilter = false, // does this have something to do with LayerType/Number?
 

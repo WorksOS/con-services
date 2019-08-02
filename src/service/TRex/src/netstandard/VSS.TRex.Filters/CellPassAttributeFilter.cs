@@ -105,6 +105,7 @@ namespace VSS.TRex.Filters
         HasGPSToleranceFilter ||
         HasLayerIDFilter ||
         HasLayerStateFilter ||
+        HasLayerMethodFilter ||
         HasMachineDirectionFilter ||
         HasMachineFilter ||
         HasElevationMappingModeFilter ||
@@ -148,6 +149,7 @@ namespace VSS.TRex.Filters
       ClearTime();
       ClearVibeState();
       ClearLayerState();
+      ClearLayerMethod();
       ClearMachineDirection();
       ClearPassType();
       ClearMinElevationMapping();
@@ -535,6 +537,12 @@ namespace VSS.TRex.Filters
       LayerState = LayerState.Invalid;
     }
 
+    public void ClearLayerMethod()
+    {
+      HasLayerMethodFilter = false;
+      LayerMethod = LayerMethod.Invalid;
+    }
+
     public void Assign(ICellPassAttributeFilter Source)
     {
       SiteModel = Source.SiteModel;
@@ -559,6 +567,7 @@ namespace VSS.TRex.Filters
 
       // how to build layers
       LayerState = Source.LayerState;
+      LayerMethod = Source.LayerMethod;
 
       MachineDirection = Source.MachineDirection;
 
@@ -605,6 +614,7 @@ namespace VSS.TRex.Filters
       HasDesignFilter = Source.HasDesignFilter;
       HasVibeStateFilter = Source.HasVibeStateFilter;
       HasLayerStateFilter = Source.HasLayerStateFilter;
+      HasLayerMethodFilter = Source.HasLayerMethodFilter;
       HasElevationMappingModeFilter = Source.HasElevationMappingModeFilter;
       HasElevationTypeFilter = Source.HasElevationTypeFilter;
       HasGCSGuidanceModeFilter = Source.HasGCSGuidanceModeFilter;
@@ -1295,6 +1305,10 @@ namespace VSS.TRex.Filters
       // Layer state filter
       if (HasLayerStateFilter)
         sb.Append($"LS:{LayerState}");
+
+      // Layer method filter
+      if (HasLayerMethodFilter)
+        sb.Append($"LM:{LayerMethod}");
 
       // Compaction machines only
       if (HasCompactionMachinesOnlyFilter)
