@@ -603,11 +603,11 @@ namespace VSS.TRex.SubGrids
 
     private bool _commonCellPassStackExaminationDone;
 
-    private void SetupForCellPassStackExamination()
+    private void SetupForCellPassStackExamination(ILiftParameters liftParams)
     {
       if (!_commonCellPassStackExaminationDone)
       {
-        _populationControl.PreparePopulationControl(_gridDataType, /* todo LiftBuildSettings, */ _filter.AttributeFilter, _clientGrid.EventPopulationFlags);
+        _populationControl.PreparePopulationControl(_gridDataType, liftParams, _filter.AttributeFilter, _clientGrid.EventPopulationFlags);
 
         _filter.AttributeFilter.RequestedGridDataType = _gridDataType;
 
@@ -653,12 +653,12 @@ namespace VSS.TRex.SubGrids
       _clientGrid = clientGrid;
       _clientGridAsLeaf = clientGrid as ClientLeafSubGrid;
 
+      //Note: CCVSummaryTypes and MDPSummaryTypes always set to Compaction by default
       _canUseGlobalLatestCells &=
-       // todo: Re-add when lift build settings available
-       // !(_gridDataType == GridDataType.CCV ||
-       //   _gridDataType == GridDataType.CCVPercent) /*&& (LiftBuildSettings.CCVSummaryTypes<>[])*/ &&
-       // !(_gridDataType == GridDataType.MDP ||
-       //   _gridDataType == GridDataType.MDPPercent) /*&& (LiftBuildSettings.MDPSummaryTypes<>[])*/ &&
+        !(_gridDataType == GridDataType.CCV ||
+          _gridDataType == GridDataType.CCVPercent) &&
+        !(_gridDataType == GridDataType.MDP ||
+          _gridDataType == GridDataType.MDPPercent) &&
         !(_gridDataType == GridDataType.CCA || _gridDataType == GridDataType.CCAPercent) &&
         !(_gridDataType == GridDataType.CellProfile ||
           _gridDataType == GridDataType.PassCount ||
@@ -755,7 +755,7 @@ namespace VSS.TRex.SubGrids
 
         // SIGLogMessage.PublishNoODS(Nil, Format('Setup for stripe iteration at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]));
         
-        SetupForCellPassStackExamination();
+        SetupForCellPassStackExamination(liftParams);
 
         // Some display types require lift processing to be able to select the appropriate cell pass containing the filtered value required.
         if (_clientGrid.WantsLiftProcessingResults())
@@ -764,8 +764,6 @@ namespace VSS.TRex.SubGrids
           _cellPassIterator.MaxNumberOfPassesToReturn = _maxNumberOfPassesToReturn; //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
         }
 
-        // TODO Add when cell left build settings supported
-        // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
         _assignmentContext.Overrides = overrides;
         _assignmentContext.LiftParams = liftParams;
 

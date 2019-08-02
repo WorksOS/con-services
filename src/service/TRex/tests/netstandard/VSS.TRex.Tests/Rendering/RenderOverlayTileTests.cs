@@ -6,6 +6,7 @@ using VSS.TRex.Rendering.Executors;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using System.Drawing;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Tests.Rendering
@@ -26,7 +27,8 @@ namespace VSS.TRex.Tests.Rendering
         new DesignOffset(), // DesignDescriptor.Null(),
         null,
         Color.Black,
-        string.Empty);
+        string.Empty,
+        new LiftParameters());
 
       render.Should().NotBeNull();
     }

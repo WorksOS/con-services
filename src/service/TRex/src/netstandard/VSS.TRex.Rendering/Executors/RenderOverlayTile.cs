@@ -19,6 +19,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 using System.Drawing;
 using System.Threading.Tasks;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
@@ -71,21 +72,11 @@ namespace VSS.TRex.Rendering.Executors
     // ICOptions ICOptions = new ICOptions();
     private readonly Color RepresentColor;
 
+    private readonly ILiftParameters LiftParams;
+
     /// <summary>
     /// Constructor for the renderer
     /// </summary>
-    /// <param name="ADataModelID"></param>
-    /// <param name="AMode"></param>
-    /// <param name="ABLPoint"></param>
-    /// <param name="ATRPoint"></param>
-    /// <param name="ACoordsAreGrid"></param>
-    /// <param name="ANPixelsX"></param>
-    /// <param name="ANPixelsY"></param>
-    /// <param name="filters"></param>
-    /// <param name="ACutFillDesign"></param>
-    /// <param name="aColorPalettes"></param>
-    /// <param name="ARepresentColor"></param>
-    /// <param name="requestingTRexNodeId"></param>
     public RenderOverlayTile(Guid ADataModelID,
       //AExternalDescriptor :TASNodeRequestDescriptor;
       DisplayMode AMode,
@@ -100,7 +91,8 @@ namespace VSS.TRex.Rendering.Executors
       IPlanViewPalette aColorPalettes,
       //AICOptions: ...ICOptions;
       Color ARepresentColor,
-      string requestingTRexNodeId
+      string requestingTRexNodeId,
+      ILiftParameters liftParams
     )
     {
       DataModelID = ADataModelID;
@@ -118,6 +110,7 @@ namespace VSS.TRex.Rendering.Executors
       //ICOptions = AICOptions;
       RepresentColor = ARepresentColor;
       RequestingTRexNodeID = requestingTRexNodeId;
+      LiftParams = liftParams;
     }
 
     private readonly BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
@@ -546,13 +539,6 @@ namespace VSS.TRex.Rendering.Executors
           end;
         */
 
-        /* TODO Lift build settings not supported
-        if (Filter1 != null && Filter1.AttributeFilter.HasLayerStateFilter || Filter1.AttributeFilter.LayerMethod != TFilterLayerMethod.flmNone)
-            Renderer.LiftBuildSettings = ICOptions.GetLiftBuildSettings(Filter1.LayerMethod);
-        else
-            Renderer.LiftBuildSettings = ICOptions.LiftBuildSettings;
-        */
-
         // Renderer.WorkingPalette = WorkingColorPalette;
         // Renderer.ReferenceVolumeType = FReferenceVolumeType;
 
@@ -562,7 +548,7 @@ namespace VSS.TRex.Rendering.Executors
         Renderer.WorldTileWidth = WorldTileWidth;
         Renderer.WorldTileHeight = WorldTileHeight;
 
-        ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters);
+        ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
 
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
           return Renderer.Displayer.MapView.BitmapCanvas;

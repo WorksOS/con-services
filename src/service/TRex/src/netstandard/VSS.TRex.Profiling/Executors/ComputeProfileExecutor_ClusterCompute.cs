@@ -42,7 +42,6 @@ namespace VSS.TRex.Profiling.Executors
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
-    // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
     private readonly DesignOffset Design;
@@ -56,7 +55,6 @@ namespace VSS.TRex.Profiling.Executors
     /// Constructs the profile analysis executor
     /// </summary>
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
-      // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
       DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, IOverrideParameters overrides, ILiftParameters liftParams)
     {
@@ -103,6 +101,7 @@ namespace VSS.TRex.Profiling.Executors
     /// </summary>
     public async Task<ProfileRequestResponse<T>> ExecuteAsync()
     {
+      //Do we need this - Compaction is the default and currently we can only do one at a time
       // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
       // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
 
@@ -131,7 +130,7 @@ namespace VSS.TRex.Profiling.Executors
           var ProdDataExistenceMap = SiteModel.ExistenceMap;
 
           var PopulationControl = new FilteredValuePopulationControl();
-          PopulationControl.PreparePopulationControl(ProfileTypeRequired, Filters.Filters[0].AttributeFilter);
+          PopulationControl.PreparePopulationControl(ProfileTypeRequired, LiftParams, Filters.Filters[0].AttributeFilter);
 
           IDesign design = null;
           if (Design != null && Design.DesignID != Guid.Empty)

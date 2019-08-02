@@ -208,7 +208,7 @@ namespace VSS.TRex.Profiling
       if (lift.CCV == CellPassConsts.NullCCV && lift.MDP == CellPassConsts.NullMDP && lift.CCA == CellPassConsts.NullCCA)
         return;
 
-      Cell.CheckLiftCompaction(lift, overrides, /* todo LiftBuildSettings,*/ ProfileTypeRequired);
+      Cell.CheckLiftCompaction(lift, overrides, ProfileTypeRequired);
     }
 
     /// <summary>
@@ -990,7 +990,6 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public bool Build(IProfileCell cell,
       ILiftParameters liftParameters,
-      // todo const LiftBuildSettings: TICLiftBuildSettings;
       IClientLeafSubGrid ClientGrid,
       FilteredValueAssignmentContext AssignmentContext, 
       ISubGridSegmentCellPassIterator cellPassIterator,
@@ -1006,7 +1005,7 @@ namespace VSS.TRex.Profiling
         AssignmentContext.LowestPassIdx = Consts.NullLowestPassIdx; // if LowestPassIdx ends up > -1 then lowestpass is used
 
       FilteredValuePopulationControl.CalculateFlags(ProfileTypeRequired,
-        // todo ... LiftBuildSettings,
+        liftParameters,
         out CompactionSummaryInLiftBuildSettings,
         out WorkInProgressSummaryInLiftBuildSettings,
         out ThicknessInProgressInLiftBuildSettings);

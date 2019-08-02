@@ -130,10 +130,7 @@ namespace VSS.TRex.Rendering
     /// <summary>
     /// Perform rendering activities to produce a bitmap tile
     /// </summary>
-    /// <param name="mode"></param>
-    /// <param name="processor"></param>
-    /// <returns></returns>
-    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters)
+    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters, ILiftParameters liftParams)
     {
       // Obtain the display responsible for rendering the thematic information for this mode
       Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);

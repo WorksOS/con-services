@@ -46,8 +46,6 @@ namespace VSS.TRex.GridFabric.Arguments
     /// </summary>
     public ILiftParameters LiftParams { get; set; } = new LiftParameters();
 
-    // TODO  LiftBuildSettings  :TICLiftBuildSettings;
-
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);

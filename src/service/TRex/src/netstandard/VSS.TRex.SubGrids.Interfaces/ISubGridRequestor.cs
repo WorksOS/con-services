@@ -25,7 +25,6 @@ namespace VSS.TRex.SubGrids.Interfaces
       SubGridCellAddress subGridAddress,
       IOverrideParameters overrides,
       ILiftParameters liftParams,
-      // LiftBuildSettings: TICLiftBuildSettings;
       bool prodDataRequested,
       bool surveyedSurfaceDataRequested);
 

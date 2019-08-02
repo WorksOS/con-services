@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Events.Models;
+﻿using VSS.TRex.Common.Models;
+using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
 
@@ -177,43 +178,40 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Calculates the a set of lift build setting flags from the required data type and other lift build settings
     /// </summary>
-    /// <param name="ProfileTypeRequired"></param>
-    /// <param name="CompactionSummaryInLiftBuildSettings"></param>
-    /// <param name="WorkInProgressSummaryInLiftBuildSettings"></param>
-    /// <param name="ThicknessInProgressInLiftBuildSettings"></param>
     public static void CalculateFlags(GridDataType ProfileTypeRequired,
-      //todo const LiftBuildSettings: TICLiftBuildSettings;
-      out bool CompactionSummaryInLiftBuildSettings,
-      out bool WorkInProgressSummaryInLiftBuildSettings,
-      out bool ThicknessInProgressInLiftBuildSettings)
+      ILiftParameters liftParams,
+      out bool compactionSummaryInLiftBuildSettings,
+      out bool workInProgressSummaryInLiftBuildSettings,
+      out bool thicknessInProgressInLiftBuildSettings)
     {
+      //At the moment we only have one type for CCV/MDP summary
       if (ProfileTypeRequired == GridDataType.All || ProfileTypeRequired == GridDataType.CCV ||
           ProfileTypeRequired == GridDataType.CCVPercent)
       {
-        CompactionSummaryInLiftBuildSettings = false; // TODO = LiftBuildSettings.CCVSummaryTypes<>[];
-        WorkInProgressSummaryInLiftBuildSettings = CompactionSummaryInLiftBuildSettings;
-        ThicknessInProgressInLiftBuildSettings = CompactionSummaryInLiftBuildSettings;
+        compactionSummaryInLiftBuildSettings = liftParams.CCVSummaryTypes == 0; //CCVSummaryType.Compaction by default 
+        workInProgressSummaryInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
+        thicknessInProgressInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
       }
       else if (ProfileTypeRequired == GridDataType.All || ProfileTypeRequired == GridDataType.MDP ||
                ProfileTypeRequired == GridDataType.MDPPercent)
       {
-        CompactionSummaryInLiftBuildSettings = false; // TODO = LiftBuildSettings.MDPSummaryTypes<>[];
-        WorkInProgressSummaryInLiftBuildSettings = CompactionSummaryInLiftBuildSettings;
-        ThicknessInProgressInLiftBuildSettings = CompactionSummaryInLiftBuildSettings;
+        compactionSummaryInLiftBuildSettings = liftParams.MDPSummaryTypes == 0; //MDPSummaryType.Compaction by default 
+        workInProgressSummaryInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
+        thicknessInProgressInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
       }
 
       if (ProfileTypeRequired == GridDataType.All || ProfileTypeRequired == GridDataType.CCA ||
           ProfileTypeRequired == GridDataType.CCAPercent)
       {
-        CompactionSummaryInLiftBuildSettings = true;
-        WorkInProgressSummaryInLiftBuildSettings = CompactionSummaryInLiftBuildSettings;
-        ThicknessInProgressInLiftBuildSettings = CompactionSummaryInLiftBuildSettings;
+        compactionSummaryInLiftBuildSettings = true;
+        workInProgressSummaryInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
+        thicknessInProgressInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
       }
       else
       {
-        CompactionSummaryInLiftBuildSettings = false;
-        WorkInProgressSummaryInLiftBuildSettings = false;
-        ThicknessInProgressInLiftBuildSettings = false;
+        compactionSummaryInLiftBuildSettings = false;
+        workInProgressSummaryInLiftBuildSettings = false;
+        thicknessInProgressInLiftBuildSettings = false;
       }
     }
 
@@ -221,17 +219,14 @@ namespace VSS.TRex.Filters
     /// Prepares the set of event population control flags depending on the requested data type, filter, client grid
     /// and lift build related settings
     /// </summary>
-    /// <param name="profileTypeRequired"></param>
-    /// <param name="passFilter"></param>
-    /// <param name="eventPopulationFlags"></param>
     public void PreparePopulationControl(GridDataType profileTypeRequired,
-      // todo const LiftBuildSettings: TICLiftBuildSettings;
+      ILiftParameters liftParams,
       ICellPassAttributeFilter passFilter,
       PopulationControlFlags eventPopulationFlags)
     {
-      CalculateFlags(profileTypeRequired, // todo LiftBuildSettings,
-        out bool CompactionSummaryInLiftBuildSettings, out bool WorkInProgressSummaryInLiftBuildSettings,
-        out bool ThicknessInProgressInLiftBuildSettings);
+      CalculateFlags(profileTypeRequired, liftParams,
+        out bool compactionSummaryInLiftBuildSettings, out bool workInProgressSummaryInLiftBuildSettings,
+        out bool thicknessInProgressInLiftBuildSettings);
 
       Clear();
 
@@ -250,25 +245,26 @@ namespace VSS.TRex.Filters
         (eventPopulationFlags & PopulationControlFlags.WantsTempWarningLevelMinValues) != 0;
       WantsTempWarningLevelMaxValues =
         (eventPopulationFlags & PopulationControlFlags.WantsTempWarningLevelMaxValues) != 0;
-      WantsEventMapResetValues =
-        false; //todo LiftBuildSettings.LiftDetectionType in [icldtMapReset, icldtAutoMapReset];
+      WantsEventMapResetValues = liftParams.LiftDetectionType == LiftDetectionType.MapReset || liftParams.LiftDetectionType == LiftDetectionType.AutoMapReset;
       WantsEventDesignNameValues =
         (eventPopulationFlags & PopulationControlFlags.WantsEventDesignNameValues) != 0 ||
         passFilter.HasDesignFilter ||
         WantsEventMapResetValues;
       WantsTargetCCVValues = (eventPopulationFlags & PopulationControlFlags.WantsTargetCCVValues) != 0 ||
-                             CompactionSummaryInLiftBuildSettings ||
-                             WorkInProgressSummaryInLiftBuildSettings;
+                             compactionSummaryInLiftBuildSettings ||
+                             workInProgressSummaryInLiftBuildSettings;
       WantsTargetMDPValues = (eventPopulationFlags & PopulationControlFlags.WantsTargetMDPValues) != 0 ||
-                             CompactionSummaryInLiftBuildSettings ||
-                             WorkInProgressSummaryInLiftBuildSettings;
+                             compactionSummaryInLiftBuildSettings ||
+                             workInProgressSummaryInLiftBuildSettings;
       WantsTargetCCAValues = (eventPopulationFlags & PopulationControlFlags.WantsTargetCCAValues) != 0 ||
-                             CompactionSummaryInLiftBuildSettings ||
-                             WorkInProgressSummaryInLiftBuildSettings;
+                             compactionSummaryInLiftBuildSettings ||
+                             workInProgressSummaryInLiftBuildSettings;
       WantsTargetLiftThicknessValues =
-        (eventPopulationFlags & PopulationControlFlags.WantsTargetThicknessValues) !=
-        0 || ThicknessInProgressInLiftBuildSettings
-          || WorkInProgressSummaryInLiftBuildSettings; // todo || (LiftBuildSettings.LiftDetectionType in [icldtAutomatic, icldtAutoMapReset]);
+        (eventPopulationFlags & PopulationControlFlags.WantsTargetThicknessValues) != 0 
+          || thicknessInProgressInLiftBuildSettings
+          || workInProgressSummaryInLiftBuildSettings
+          || liftParams.LiftDetectionType == LiftDetectionType.Automatic 
+          || liftParams.LiftDetectionType == LiftDetectionType.AutoMapReset; 
       WantsEventVibrationStateValues =
         (eventPopulationFlags & PopulationControlFlags.WantsEventVibrationStateValues) != 0 ||
         passFilter.HasVibeStateFilter ||
@@ -292,9 +288,12 @@ namespace VSS.TRex.Filters
       WantsEventMachineAutomaticsValues =
         (eventPopulationFlags & PopulationControlFlags.WantsEventMachineAutomaticsValues) != 0 ||
         passFilter.HasGCSGuidanceModeFilter;
-      WantsLayerIDValues = profileTypeRequired == GridDataType.CellProfile || profileTypeRequired == GridDataType.CellProfile || passFilter.HasLayerIDFilter;
-
-      // Todo (LiftBuildSettings.LiftDetectionType = icldtTagfile) || passFilter.HasLayerIDFilter || (LiftBuildSettings.LiftDetectionType in[icldtMapReset, icldtAutoMapReset]);
+      WantsLayerIDValues = profileTypeRequired == GridDataType.CellProfile ||
+                           profileTypeRequired == GridDataType.CellPasses ||
+                           passFilter.HasLayerIDFilter ||
+                           liftParams.LiftDetectionType == LiftDetectionType.Tagfile ||
+                           liftParams.LiftDetectionType == LiftDetectionType.MapReset ||
+                           liftParams.LiftDetectionType == LiftDetectionType.AutoMapReset;
     }
 
     /// <summary>
@@ -303,12 +302,12 @@ namespace VSS.TRex.Filters
     /// <param name="profileTypeRequired"></param>
     /// <param name="passFilter"></param>
     public void PreparePopulationControl(GridDataType profileTypeRequired,
-      // todo const LiftBuildSettings: TICLiftBuildSettings;
+      ILiftParameters liftParams,
       ICellPassAttributeFilter passFilter)
     {
-      CalculateFlags(profileTypeRequired, // todo LiftBuildSettings,
-        out bool CompactionSummaryInLiftBuildSettings, out bool WorkInProgressSummaryInLiftBuildSettings,
-        out bool ThicknessInProgressInLiftBuildSettings);
+      CalculateFlags(profileTypeRequired, liftParams,
+        out bool compactionSummaryInLiftBuildSettings, out bool workInProgressSummaryInLiftBuildSettings,
+        out bool thicknessInProgressInLiftBuildSettings);
 
       Clear();
 
@@ -318,17 +317,18 @@ namespace VSS.TRex.Filters
       WantsTempWarningLevelMaxValues = profileTypeRequired == GridDataType.All;
 
       WantsEventMachineGearValues = passFilter.HasMachineDirectionFilter;
-      WantsEventMapResetValues =
-        false; //todo LiftBuildSettings.LiftDetectionType in [icldtMapReset, icldtAutoMapReset];
+      WantsEventMapResetValues = liftParams.LiftDetectionType == LiftDetectionType.MapReset || 
+                                 liftParams.LiftDetectionType == LiftDetectionType.AutoMapReset;
       WantsEventDesignNameValues = passFilter.HasDesignFilter || WantsEventMapResetValues;
 
-      WantsTargetCCVValues = CompactionSummaryInLiftBuildSettings || WorkInProgressSummaryInLiftBuildSettings;
-      WantsTargetMDPValues = CompactionSummaryInLiftBuildSettings || WorkInProgressSummaryInLiftBuildSettings;
-      WantsTargetCCAValues = CompactionSummaryInLiftBuildSettings || WorkInProgressSummaryInLiftBuildSettings;
+      WantsTargetCCVValues = compactionSummaryInLiftBuildSettings || workInProgressSummaryInLiftBuildSettings;
+      WantsTargetMDPValues = compactionSummaryInLiftBuildSettings || workInProgressSummaryInLiftBuildSettings;
+      WantsTargetCCAValues = compactionSummaryInLiftBuildSettings || workInProgressSummaryInLiftBuildSettings;
 
-      WantsTargetLiftThicknessValues =
-        false; // todo ThicknessInProgressInLiftBuildSettings || WorkInProgressSummaryInLiftBuildSettings ||
-      // todo (LiftBuildSettings.LiftDetectionType in [icldtAutomatic, icldtAutoMapReset]);
+      WantsTargetLiftThicknessValues = workInProgressSummaryInLiftBuildSettings || 
+                                       thicknessInProgressInLiftBuildSettings ||
+                                       liftParams.LiftDetectionType == LiftDetectionType.Automatic || 
+                                       liftParams.LiftDetectionType == LiftDetectionType.AutoMapReset;
 
       WantsEventVibrationStateValues = passFilter.HasVibeStateFilter ||
                                        (profileTypeRequired == GridDataType.All ||
@@ -343,8 +343,12 @@ namespace VSS.TRex.Filters
       WantsEventGPSAccuracyValues = passFilter.HasGPSAccuracyFilter || passFilter.HasGPSToleranceFilter;
       WantsEventPositioningTechValues = passFilter.HasPositioningTechFilter;
       WantsEventMachineAutomaticsValues = passFilter.HasGCSGuidanceModeFilter;
-      WantsLayerIDValues = profileTypeRequired == GridDataType.CellProfile || profileTypeRequired == GridDataType.CellProfile || passFilter.HasLayerIDFilter;
-      //  todo (LiftBuildSettings.LiftDetectionType = icldtTagfile) || passFilter.HasLayerIDFilter || (LiftBuildSettings.LiftDetectionType in [icldtMapReset, icldtAutoMapReset]);
+      WantsLayerIDValues = profileTypeRequired == GridDataType.CellProfile ||
+                          profileTypeRequired == GridDataType.CellPasses ||
+                          passFilter.HasLayerIDFilter ||
+                          liftParams.LiftDetectionType == LiftDetectionType.Tagfile ||
+                          liftParams.LiftDetectionType == LiftDetectionType.MapReset ||
+                          liftParams.LiftDetectionType == LiftDetectionType.AutoMapReset;
     }
   }
 }
