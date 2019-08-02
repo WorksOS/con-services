@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// A collection of parameters and configuration information relating to analysis and determination of material layers.

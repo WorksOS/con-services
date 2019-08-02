@@ -2,39 +2,39 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Validation;
 
-namespace VSS.Productivity3D.Models.UnitTests
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
   [TestClass]
-  public class TemperatureWarningLevelsTests
+  public class CCVRangePercentageTests
   {
     [TestMethod]
-    public void CanCreateTemperatureWarningLevelsTest()
+    public void CanCreateCCVRangePercentageTest()
     {
       var validator = new DataAnnotationsValidator();
-      TemperatureWarningLevels range = new TemperatureWarningLevels(300, 700);
+      CCVRangePercentage range = new CCVRangePercentage(35.0, 72.5);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(range, out results));
 
       //too big max
-      range = new TemperatureWarningLevels(0, 10000);
+      range = new CCVRangePercentage(35.0, 1000.0);
       Assert.IsFalse(validator.TryValidate(range, out results));
     }
 
     [TestMethod]
     public void ValidateSuccessTest()
     {
-      //min > max
-      TemperatureWarningLevels range = new TemperatureWarningLevels(300, 700);
+      CCVRangePercentage range = new CCVRangePercentage(35.0, 72.5);
       range.Validate();
     }
 
     [TestMethod]
     public void ValidateFailTest()
     {
-      TemperatureWarningLevels range = new TemperatureWarningLevels(700, 300);
+      //min > max
+      CCVRangePercentage range = new CCVRangePercentage(85.0, 40.0);
       Assert.ThrowsException<ServiceException>(() => range.Validate());
     }
   }

@@ -2,7 +2,7 @@
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.Models.Exceptions
+namespace VSS.Productivity3D.WebApi.Models.ProductionData
 {
   public class SingleFilterRequiredException : ServiceException
   {

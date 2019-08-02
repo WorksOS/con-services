@@ -6,12 +6,11 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Proxies;
-using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
@@ -21,8 +20,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// </summary>
   [ProjectVerifier]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class TileController : Controller, ITileContract
-  {
+  public class TileController : Controller
+  { 
 #if RAPTOR
     /// <summary>
     /// Raptor client for use by executor

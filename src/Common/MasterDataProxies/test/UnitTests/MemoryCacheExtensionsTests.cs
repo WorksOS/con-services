@@ -3,64 +3,50 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
+using Xunit;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.MasterData.Proxies.UnitTests
 {
-  [TestClass]
-
-  public class MemoryCacheExtensionsTests
+  public class MemoryCacheExtensionsTests : IClassFixture<MemoryCacheTestsFixture>
   {
-    private IServiceProvider serviceProvider;
+    private readonly MemoryCacheTestsFixture _testFixture;
+    private readonly IConfigurationStore _configStore;
+    private readonly ILogger _logger;
 
-    [TestInitialize]
-    public virtual void InitTest()
+    public MemoryCacheExtensionsTests(MemoryCacheTestsFixture TestFixture)
     {
-      var serviceCollection = new ServiceCollection();
+      _testFixture = TestFixture;
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
+      _configStore = _testFixture.serviceProvider.GetRequiredService<IConfigurationStore>();
 
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      serviceCollection.AddTransient<IMemoryCache, MemoryCache>();
-      serviceProvider = serviceCollection.BuildServiceProvider();
+      var logger = _testFixture.serviceProvider.GetRequiredService<ILoggerFactory>();
+      _logger = logger.CreateLogger<MemoryCacheExtensionsTests>();
+
     }
-
-
-    [TestMethod]
+    
+    [Fact]
     public void CanGetCacheOptions()
     {
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions("PROJECT_SETTINGS_CACHE_LIFE", configStore, log);
-      Assert.IsNotNull(opts);
-      Assert.AreEqual(new TimeSpan(0,10,0), opts.SlidingExpiration);
+      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions("PROJECT_SETTINGS_CACHE_LIFE", _configStore, _logger);
+      Assert.NotNull(opts);
+      Assert.Equal(new TimeSpan(0,10,0), opts.SlidingExpiration);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanGetDefaultCacheOptions()
     {
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(string.Empty, configStore, log);
-      Assert.IsNotNull(opts);
-      Assert.AreEqual(new TimeSpan(0, 15, 0), opts.SlidingExpiration);
+      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(string.Empty, _configStore, _logger);
+      Assert.NotNull(opts);
+      Assert.Equal(new TimeSpan(0, 15, 0), opts.SlidingExpiration);
     }
 
-    [TestMethod]
+    [Fact]
     public void CacheDoesNotReturnInvalidEntries()
     {
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      new MemoryCacheEntryOptions().GetCacheOptions(string.Empty, configStore, log);
-      var cache = serviceProvider.GetService<IMemoryCache>();
+      new MemoryCacheEntryOptions().GetCacheOptions(string.Empty, _configStore, _logger);
+      var cache = _testFixture.serviceProvider.GetService<IMemoryCache>();
 
       var cacheKey = $"test-CacheDoesNotReturnInvalidEntries-{Guid.NewGuid()}";
       var taskExecutionCounter = 0;
@@ -84,18 +70,15 @@ namespace VSS.MasterData.Proxies.UnitTests
         }
 
         // Each execution should increase the counter, as we aren't caching the failed result
-        Assert.IsTrue(taskExecutionCounter == cnt);
+        Assert.True(taskExecutionCounter == cnt);
       }
     }
 
-    [TestMethod]
+    [Fact]
     public void CacheDoesCacheValidEntries()
     {
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      new MemoryCacheEntryOptions().GetCacheOptions(string.Empty, configStore, log);
-      var cache = serviceProvider.GetService<IMemoryCache>();
+      new MemoryCacheEntryOptions().GetCacheOptions(string.Empty, _configStore, _logger);
+      var cache = _testFixture.serviceProvider.GetService<IMemoryCache>();
 
       var cacheKey = $"test-CacheDoesCacheValidEntries-{Guid.NewGuid()}";
       var taskExecutionCounter = 0;
@@ -111,8 +94,8 @@ namespace VSS.MasterData.Proxies.UnitTests
         var cacheEntry = cache.GetOrCreate(cacheKey, entry => mockedCacheFactory.Invoke().Result);
         
         // We should get the same result each time, but we should never execute the method more than once
-        Assert.IsTrue(string.Compare(cacheEntry, "Passed", StringComparison.Ordinal) == 0);
-        Assert.IsTrue(taskExecutionCounter == 1);
+        Assert.True(string.Compare(cacheEntry, "Passed", StringComparison.Ordinal) == 0);
+        Assert.True(taskExecutionCounter == 1);
       }
     }
   }

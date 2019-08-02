@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       try
       {
-        var request = CastRequestObjectTo<QMTileRequest>(item);
+        var request = CastTrexRequestObjectTo<QMTileRequest>(item);
         // Send request to TRex webapi endpoint
         var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/terrain", customHeaders);
         if (fileResult == null)

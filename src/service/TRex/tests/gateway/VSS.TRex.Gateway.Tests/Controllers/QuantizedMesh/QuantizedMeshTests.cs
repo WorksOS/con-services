@@ -55,7 +55,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
       var request = new QMTileRequest
       (
         siteModel.ID,
-        new Guid(),
         new FilterResult(),
         0,0,0
       );

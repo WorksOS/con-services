@@ -21,8 +21,8 @@ namespace VSS.Productivity3D.Models.Models
     public Guid ProjectUid { get; set; }
 
     /// <summary>
-    /// The filter instance to use in the request.
-    /// Value may be null.
+    /// The filter instance to use in the request. Value may be null.
+    /// The base or earliest filter to be used for filter-filter and filter-design volumes requests.
     /// </summary>
     [JsonProperty(Required = Required.Default)]
     public FilterResult Filter { get; set; }

@@ -4,12 +4,12 @@ using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
-  /// Contains a percentage range of observed CCV values with respect to the target MDP value configured on a machine
+  /// Contains a percentage range of observed MDP values with respect to the target MDP value configured on a machine
   /// </summary>
-  public class CCVRangePercentage 
+  public class MDPRangePercentage 
   {
     private const double MIN_PERCENT = 0.0;
     private const double MAX_PERCENT = 250.0;
@@ -30,19 +30,19 @@ namespace VSS.Productivity3D.Models.Models
     [Required]
     public double Max { get; private set; }
 
-
+    
     /// <summary>
     /// Default private constructor
     /// </summary>
-    private CCVRangePercentage()
-    { }
+    private MDPRangePercentage()
+    {}
 
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
     /// <param name="min"></param>
     /// <param name="max"></param>
-    public CCVRangePercentage(double min, double max)
+    public MDPRangePercentage(double min, double max)
     {
       Min = min;
       Max = max;
@@ -53,11 +53,10 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
-
       if (Min > Max)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "CCV percentage minimum must be less than CCV percentage maximum"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "MDP percentage minimum must be less than MDP percentage maximum"));
       }
     }
   }

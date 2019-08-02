@@ -49,14 +49,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         ThrowRequestTypeCastException<SummaryVolumesProfileDataRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
-      var baseFilter = ConvertFilter(request.BaseFilter, siteModel);
+      var baseFilter = ConvertFilter(request.Filter, siteModel);
       var topFilter = ConvertFilter(request.TopFilter, siteModel);
       var referenceDesign = new DesignOffset(request.ReferenceDesignUid ?? Guid.Empty, request.ReferenceDesignOffset ?? 0);
 
 
       var arg = new ProfileRequestArgument_ApplicationService
       {
-        ProjectID = request.ProjectUid ?? Guid.Empty,
+        ProjectID = request.ProjectUid,
         ProfileTypeRequired = GridDataType.Height,
         ProfileStyle = ProfileStyle.SummaryVolume,
         PositionsAreGrid = request.PositionsAreGrid,
