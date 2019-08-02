@@ -53,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
         TemperatureDetailValues = request.TemperatureList,
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings),
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType),
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
       });
 

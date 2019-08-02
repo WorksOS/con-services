@@ -55,7 +55,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         Point = request.CoordsAreGrid ? AutoMapperUtility.Automapper.Map<XYZ>(request.GridPoint) : AutoMapperUtility.Automapper.Map<XYZ>(request.LLPoint),
         ReferenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, request.Offset ?? 0),
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       return new CompactionCellDatumResult(response.DisplayMode, response.ReturnCode, response.Value, response.TimeStampUTC, response.Northing, response.Easting);

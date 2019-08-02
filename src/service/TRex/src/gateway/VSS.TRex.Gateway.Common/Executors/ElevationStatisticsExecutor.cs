@@ -37,7 +37,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         ProjectID = siteModel.ID,
         Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       if (elevationStatisticsResult != null)
