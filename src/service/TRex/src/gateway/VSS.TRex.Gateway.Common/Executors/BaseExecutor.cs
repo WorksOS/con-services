@@ -72,7 +72,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var liftParams = liftSettings != null ? AutoMapperUtility.Automapper.Map<LiftParameters>(liftSettings) : new LiftParameters();
       if (layerMethod.HasValue && layerMethod.Value != FilterLayerMethod.Invalid)
       {
-        switch (layerMethod)
+        switch (layerMethod.Value)
         {
           case FilterLayerMethod.AutoMapReset:
             liftParams.LiftDetectionType = LiftDetectionType.AutoMapReset;
