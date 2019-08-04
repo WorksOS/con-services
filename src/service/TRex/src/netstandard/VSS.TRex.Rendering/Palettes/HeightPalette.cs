@@ -9,6 +9,7 @@ namespace VSS.TRex.Rendering.Palettes
   public class HeightPalette : PaletteBase
   {
     private const byte VERSION_NUMBER = 1;
+    private Color UndefinedColor = Color.Black;
 
     private double MinElevation;
     private double MaxElevation;
@@ -16,26 +17,37 @@ namespace VSS.TRex.Rendering.Palettes
 
     public Color[] ElevationPalette =
     {
-      Color.Aqua,
-      Color.Yellow,
-      Color.Fuchsia,
-      Color.Lime,
-      Color.FromArgb(0x80, 0x80, 0xFF),
-      Color.LightGray,
-      Color.FromArgb(0xEB, 0xFD, 0xAC),
-      Color.FromArgb(0xFF, 0x80, 0x00),
-      Color.FromArgb(0xFF, 0xC0, 0xFF),
-      Color.FromArgb(0x96, 0xCB, 0xFF),
-      Color.FromArgb(0xB5, 0x8E, 0x6C),
-      Color.FromArgb(0xFF, 0xFF, 0x80),
-      Color.FromArgb(0xFF, 0x80, 0x80),
-      Color.FromArgb(0x80, 0xFF, 0x00),
-      Color.FromArgb(0x00, 0x80, 0xFF),
-      Color.FromArgb(0xFF, 0x00, 0x80),
-      Color.Teal,
-      Color.FromArgb(0xFF, 0xC0, 0xC0),
-      Color.FromArgb(0xFF, 0x80, 0xFF),
-      Color.FromArgb(0x00, 0xFF, 0x80)
+      Color.FromArgb(200,0,0),
+      Color.FromArgb(255,0,0),
+      Color.FromArgb(225,60,0),
+      Color.FromArgb(255,90,0),
+      Color.FromArgb(255,130,0),
+      Color.FromArgb(255,170,0),
+      Color.FromArgb(255,200,0),
+      Color.FromArgb(255,220,0),
+      Color.FromArgb(250,230,0),
+      Color.FromArgb(220,230,0),
+      Color.FromArgb(210,230,0),
+      Color.FromArgb(200,230,0),
+      Color.FromArgb(180,230,0),
+      Color.FromArgb(150,230,0),
+      Color.FromArgb(130,230,0),
+      Color.FromArgb(100,240,0),
+      Color.FromArgb(0,255,0),
+      Color.FromArgb(0,240,100),
+      Color.FromArgb(0,230,130),
+      Color.FromArgb(0,230,150),
+      Color.FromArgb(0,230,180),
+      Color.FromArgb(0,230,200),
+      Color.FromArgb(0,230,210),
+      Color.FromArgb(0,220,220),
+      Color.FromArgb(0,200,230),
+      Color.FromArgb(0,180,240),
+      Color.FromArgb(0,150,245),
+      Color.FromArgb(0,120,250),
+      Color.FromArgb(0,90,255),
+      Color.FromArgb(0,70,255),
+      Color.FromArgb(0,0,255)
     };
 
     public HeightPalette() : base(null)
@@ -45,17 +57,17 @@ namespace VSS.TRex.Rendering.Palettes
     {
       MinElevation = minElevation;
       MaxElevation = maxElevation;
-      ElevationPerBand = (MaxElevation - MinElevation) / ElevationPalette.Length;
+      ElevationPerBand = (MaxElevation - MinElevation) / (ElevationPalette.Length - 1);
     }
 
     public Color ChooseColour(double value)
     {
-      var color = Color.Black;
+      var color = UndefinedColor;
 
       if (value != Consts.NullDouble)
       {
         int index = (int)Math.Floor((value - MinElevation) / ElevationPerBand);
-        color = Range.InRange(index, 0, ElevationPalette.Length - 1) ? ElevationPalette[index] : Color.Black; // Color.Empty;
+        color = Range.InRange(index, 0, ElevationPalette.Length - 1) ? ElevationPalette[index] : UndefinedColor;
       }
 
       return color;

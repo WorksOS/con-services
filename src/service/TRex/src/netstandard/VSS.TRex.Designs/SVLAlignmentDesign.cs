@@ -259,5 +259,14 @@ namespace VSS.TRex.Designs
     {
       return (data.StartStation, data.EndStation);
     }
+
+    public DesignProfilerRequestResult DetermineFilterBoundary(double startStation, double endStation, double leftOffset, double rightOffset, out Fence fence)
+    {
+      var determinator = new SVLAlignmentBoundaryDeterminator(data, startStation, endStation, leftOffset, rightOffset);
+
+      determinator.DetermineBoundary(out DesignProfilerRequestResult calcResult, out fence);
+
+      return calcResult;
+    }
   }
 }
