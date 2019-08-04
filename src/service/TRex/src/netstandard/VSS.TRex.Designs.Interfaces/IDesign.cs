@@ -69,8 +69,6 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="offset"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
-    /// <param name="designHeights"></param>
-    /// <param name="errorCode"></param>
     /// <returns></returns>
     Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeights(Guid siteModelID, double offset, SubGridCellAddress originCellAddress, double cellSize);
 
@@ -80,8 +78,6 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="siteModelID"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
-    /// <param name="filterMask"></param>
-    /// <param name="errorCode"></param>
     /// <returns></returns>
     Task<(SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode)> GetFilterMask(Guid siteModelID, SubGridCellAddress originCellAddress, double cellSize);
 

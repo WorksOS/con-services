@@ -52,6 +52,7 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Compression\VSS.TRex.Compression.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.SVL\VSS.TRex.Designs.SVL.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs\VSS.TRex.Designs.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events.Interfaces\VSS.TRex.Events.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events.Models\VSS.TRex.Events.Models.csproj" />
@@ -118,6 +119,9 @@
     <None Update="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\CERA.SVL">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Common\Bug36372.ttm.DesignBoundary">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -125,6 +129,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\Bug36372.ttm.DesignSubgridIndex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.svl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm">

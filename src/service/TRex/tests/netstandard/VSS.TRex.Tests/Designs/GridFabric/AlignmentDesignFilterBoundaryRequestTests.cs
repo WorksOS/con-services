@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       request.Should().NotBeNull();
     }
 
-    [Fact(Skip="See BUG#85914")]
+    [Fact]
     public async Task Test_AlignmentDesignFilterBoundaryRequest()
     {
       const double START_STATION = 0.0;
@@ -36,11 +36,11 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       AddDesignProfilerGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddSVLAlignmentDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Large Sites Road - Trimble Road.svl", false);
       var referenceDesign = new DesignOffset(designUid, 0);
 
       var request = new AlignmentDesignFilterBoundaryRequest();
-      var response = await request.ExecuteAsync(new AlignmentDesignFilterBoundaryArgument()
+      var response = await request.ExecuteAsync(new AlignmentDesignFilterBoundaryArgument
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,

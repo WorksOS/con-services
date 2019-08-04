@@ -1,40 +1,39 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace VSS.MasterData.Proxies.UnitTests
 {
-  [TestClass]
   public class StringExtensionsTests
   {
-    [TestMethod]
+    [Fact]
     public void CanCallTruncateWithNullString()
     {
       string str = null;
       var truncStr = str.Truncate(2);
-      Assert.IsNull(truncStr);
+      Assert.Null(truncStr);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanCallTruncateWithZeroMaxLength()
     {
       string str = "some string";
       var truncStr = str.Truncate(0);
-      Assert.AreEqual(str, truncStr);
+      Assert.Equal(str, truncStr);
     }
 
-    [TestMethod]
+    [Fact]
     public void CanTruncateStringWithEllipsis()
     {
       string str = "some string";
       var truncStr = str.Truncate(8);
-      Assert.AreEqual("some str...", truncStr);
+      Assert.Equal("some str...", truncStr);
     }
 
-    [TestMethod]
+    [Fact]
     public void NoTruncationForShortString()
     {
       string str = "some string";
       var truncStr = str.Truncate(20);
-      Assert.AreEqual(str, truncStr);
+      Assert.Equal(str, truncStr);
     }
   }
 }

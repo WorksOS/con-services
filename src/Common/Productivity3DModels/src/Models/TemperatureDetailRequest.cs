@@ -9,21 +9,13 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// Request for a temperature detail report
   /// </summary>
-  public class TemperatureDetailRequest : ProjectID
+  public class TemperatureDetailRequest : TRexBaseRequest
   {
-
-    /// <summary>
-    /// The filter instance to use in the request
-    /// Value may be null.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
-
     /// <summary>
     /// The array of temperature limits to be accounted for in the temperature count analysis.
     /// Order is from low to high.
     /// </summary>
-    [JsonProperty(PropertyName = "temperatureList", Required = Required.Always)]
+    [JsonProperty(Required = Required.Always)]
     public int[] TemperatureList { get; private set; }
 
 
@@ -38,14 +30,18 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public TemperatureDetailRequest(
-      Guid? projectUid,
+      Guid projectUid,
       FilterResult filter,
-      int[] temperatureList
+      int[] temperatureList,
+      OverridingTargets overrides,
+      LiftSettings liftSettings
     )
     {
       ProjectUid = projectUid;
       Filter = filter;
       TemperatureList = temperatureList;
+      Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
     /// <summary>
@@ -54,8 +50,6 @@ namespace VSS.Productivity3D.Models.Models
     public override void Validate()
     {
       base.Validate();
-
-      Filter?.Validate();
 
       if (TemperatureList == null || TemperatureList.Length == 0)
       {

@@ -43,10 +43,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public void PD_GetTerrainTile_TRex_Fail()
     {
-      var projectIds = new ProjectID() { ProjectUid = null, ProjectId = 1 };
-      var callerId = Guid.NewGuid();
-      var customerUid = Guid.NewGuid();
-
       var expectedResult = new QMTileResult
       (
         new byte[] { 0x41, 0x42, 0x42, 0x41} // may get compressed(gzip) later in part two
@@ -64,15 +60,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         X = 0,
         Y = 0,
         Z = 0,
-        CallId = new Guid(),
         Filter = new FilterResult(),
-        ProjectId = 1,
-        ProjectUid = projectIds.ProjectUid
+        ProjectUid = Guid.Empty	
       };
 
       // make bad call
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse<QMTileRequest>(
-        It.Is<QMTileRequest>(r => r.CallId == request.CallId),
+        It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrainNoValid"),
           It.IsAny<IDictionary<string, string>>()))
        .Returns(Task.FromResult<Stream>(resultStream));
@@ -88,7 +82,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.IsNull(result, "Result should be null");
 
       tRexProxy.Verify(m => m.SendDataPostRequestWithStreamResponse(
-        It.Is<QMTileRequest>(r => r.CallId == request.CallId),
+        It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
           It.IsAny<IDictionary<string, string>>())
       , Times.Once);
@@ -98,10 +92,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public void PD_GetTerrainTile_TRex_Success()
     {
-      var projectIds = new ProjectID() { ProjectUid = Guid.NewGuid(), ProjectId = 1 };
-      var callerId = Guid.NewGuid();
-      var customerUid = Guid.NewGuid();
-
       var expectedResult = new QMTileResult
       (
         new byte[] { 0x41, 0x42, 0x42, 0x41 } // may get compressed(gzip) later in part two
@@ -119,15 +109,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         X = 0,
         Y = 0,
         Z = 0,
-        CallId = new Guid(),
         Filter = new FilterResult(),
-        ProjectId = 1,
-        ProjectUid = projectIds.ProjectUid
+        ProjectUid = Guid.NewGuid	()
       };
 
 
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse<QMTileRequest>(
-        It.Is<QMTileRequest>(r => r.CallId == request.CallId),
+        It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
           It.IsAny<IDictionary<string, string>>()))
        .Returns(Task.FromResult<Stream>(resultStream));
@@ -155,7 +143,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
 
       tRexProxy.Verify(m => m.SendDataPostRequestWithStreamResponse(
-        It.Is<QMTileRequest>(r => r.CallId == request.CallId),
+        It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
           It.IsAny<IDictionary<string, string>>())
       , Times.Once);

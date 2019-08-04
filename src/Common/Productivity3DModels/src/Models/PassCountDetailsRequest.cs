@@ -9,15 +9,8 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// The request representation used to request Pass Count details.
   /// </summary>
-  public class PassCountDetailsRequest : ProjectID
+  public class PassCountDetailsRequest : TRexBaseRequest
   {
-    /// <summary>
-    /// The filter instance to use in the request
-    /// Value may be null.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
-
     /// <summary>
     /// The array of passcount numbers to be accounted for in the pass count analysis.
     /// Order is from low to high. There must be at least one item in the array and the first item's value must > 0. 
@@ -41,14 +34,18 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public PassCountDetailsRequest(
-      Guid? projectUid,
+      Guid projectUid,
       FilterResult filter,
-      int[] passCounts
+      int[] passCounts,
+      OverridingTargets overrides,
+      LiftSettings liftSettings
     )
     {
       ProjectUid = projectUid;
       Filter = filter;
       PassCounts = passCounts;
+      Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
     /// <summary>
@@ -57,8 +54,6 @@ namespace VSS.Productivity3D.Models.Models
     public override void Validate()
     {
       base.Validate();
-
-      Filter?.Validate();
 
       const ushort MIN_TARGET_PASS_COUNT = 0;
       const ushort MAX_TARGET_PASS_COUNT = ushort.MaxValue;

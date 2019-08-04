@@ -36,7 +36,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostSubGridPatches)}: {Request.QueryString}");
 
       patchRequest.Validate();
-      ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter1);
+      ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter);
       ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter2);
       
       var patchResult = await WithServiceExceptionTryExecuteAsync(() =>

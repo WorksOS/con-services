@@ -147,7 +147,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var executor = new CellPassesExecutor();
       var coords = new Point(0.1, 0.1);
 
-      var request = new CellPassesTRexRequest(siteModel.ID, coords, null);
+      var request = new CellPassesTRexRequest(siteModel.ID, coords, null, null, null);
 
       var response = await executor.ProcessAsync(request) as CellPassesV2Result;
       response.Should().NotBeNull();

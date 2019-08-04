@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Apache.Ignite.Core;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Designs.SVL;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
@@ -101,6 +103,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
+        .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
         .Add(x => x.AddSingleton(igniteMock.mockCompute))
         .Add(x => x.AddSingleton(igniteMock.mockIgnite))
@@ -157,6 +160,45 @@ namespace VSS.TRex.Tests.TestFixtures
                 destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
       File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION,
         destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+
+      return designUid;
+    }
+
+    /// <summary>
+    /// Adds a design identified by a filename and location to the site model
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="filePath"></param>
+    /// <param name="fileName"></param>
+    /// <param name="constructIndexFilesOnLoad"></param>
+    /// <returns></returns>
+    public static Guid AddSVLAlignmentDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName,
+      bool constructIndexFilesOnLoad)
+    {
+      var filePathAndName = Path.Combine(filePath, fileName);
+
+      var svl = NFFFile.CreateFromFile(filePathAndName);
+      var designLoadResult = svl.LoadFromFile(filePathAndName);
+      designLoadResult.Should().Be(true);
+
+      var masterAlignment = svl.GuidanceAlignments.FirstOrDefault(x => x.IsMasterAlignment());
+      masterAlignment.Should().NotBeNull();
+
+      var designUid = Guid.NewGuid();
+
+      // Create the design surface in the site model
+      var alignmentDesign = DIContext.Obtain<IDesignManager>().Add(siteModel.ID, new DesignDescriptor(designUid, filePath, fileName), masterAlignment.BoundingBox());
+
+      // get the newly updated site model with the design reference included
+      siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
+
+      // Place the design into the project temp folder prior to executing the render so the design profiler
+      // will not attempt to access the file from S3
+      var tempPath = FilePathHelper.GetTempFolderForProject(siteModel.ID);
+      var srcFileName = Path.Combine(filePath, fileName);
+      var destFileName = Path.Combine(tempPath, fileName);
+
+      File.Copy(srcFileName, destFileName);
 
       return designUid;
     }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
 {

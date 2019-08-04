@@ -1,16 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {

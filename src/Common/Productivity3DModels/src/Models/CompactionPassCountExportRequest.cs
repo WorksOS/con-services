@@ -55,12 +55,11 @@ namespace VSS.Productivity3D.Models.Models
       OutputTypes outputType,
       UserPreferences userPreferences,
       bool restrictOutputSize,
-      bool rawDataAsDBase
-    )
+      bool rawDataAsDBase,
+      OverridingTargets overrides,
+      LiftSettings liftSettings
+    ) : base(projectUid, filter, fileName, overrides, liftSettings)
     {
-      ProjectUid = projectUid;
-      Filter = filter;
-      FileName = fileName;
       CoordType = coordType;
       OutputType = outputType;
       UserPreferences = userPreferences;
@@ -72,7 +71,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public new void Validate()
+    public override void Validate()
     {
       base.Validate();
 

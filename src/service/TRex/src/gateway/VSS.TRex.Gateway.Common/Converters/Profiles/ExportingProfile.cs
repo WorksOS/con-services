@@ -17,11 +17,19 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.RestrictOutputSize,
           opt => opt.UseValue(false))
         .ForMember(x => x.RawDataAsDBase,
-          opt => opt.UseValue(false));
+          opt => opt.UseValue(false))
+        .ForMember(x => x.Overrides,
+          opt => opt.MapFrom(o => o.Overrides))
+        .ForMember(x => x.LiftSettings,
+          opt => opt.MapFrom(o => o.LiftSettings));
 
       CreateMap<CompactionPassCountExportRequest, CompactionCSVExportRequest>()
         .ForMember(x => x.MachineNames,
-          opt => opt.UseValue(new string[0]));
+          opt => opt.UseValue(new string[0]))
+        .ForMember(x => x.Overrides,
+          opt => opt.MapFrom(o => o.Overrides))
+        .ForMember(x => x.LiftSettings,
+          opt => opt.MapFrom(o => o.LiftSettings));
 
       CreateMap<CompactionCSVExportRequest, CSVExportRequestArgument>()
         .ForMember(x => x.ProjectID,
@@ -40,7 +48,11 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.Overrides,
           opt => opt.Ignore())
         .ForMember(x => x.LiftParams,
-        opt => opt.Ignore());
+        opt => opt.Ignore())
+        .ForMember(x => x.Overrides,
+          opt => opt.MapFrom(o => o.Overrides))
+        .ForMember(x => x.LiftParams,
+          opt => opt.MapFrom(o => o.LiftSettings));
 
     }
   }
