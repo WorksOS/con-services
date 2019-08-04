@@ -22,6 +22,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
@@ -91,7 +92,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           $"Cut/Fill statistics have not been implemented in TRex yet. ProjectUid: {projectUid}"));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataPostRequest<CompactionCutFillDetailedResult, CutFillDetailsRequest>(request, It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
+      tRexProxy.Setup(x => x.SendDataPostRequest<CompactionCutFillDetailedResult, TRexCutFillDetailsRequest>(It.IsAny<TRexCutFillDetailsRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

@@ -24,6 +24,9 @@ namespace VSS.DataOcean.Client.Models
     public DataOceanTransfer DataOceanDownload { get; set; }
     [JsonProperty(PropertyName = "upload", Required = Required.Default)]
     public DataOceanTransfer DataOceanUpload { get; set; }
-
+    [JsonProperty(PropertyName = "created_at", Required = Required.Default)]
+    public DateTime CreatedAt { get; set; }
+    [JsonProperty(PropertyName = "updated_at", Required = Required.Default)]
+    public DateTime UpdatedAt { get; set; }
   }
 }

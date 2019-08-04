@@ -25,7 +25,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       switch (importedFileType)
       {
         case ImportedFileType.GeoTiff:
-          fileName = fileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
           runParams = new TileGenerationRequest();
           jobUid = GeoTiffTileGenerationJob.VSSJOB_UID;
           break;

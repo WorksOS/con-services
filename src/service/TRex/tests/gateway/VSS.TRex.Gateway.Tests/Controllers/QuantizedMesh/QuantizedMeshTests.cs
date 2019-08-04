@@ -45,7 +45,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
     }
 
 
-    [Fact(Skip="See BUG#85914")]
+    [Fact]
     public void TileExecutor_EmptySiteModel()
     {
       AddRoutings();
@@ -55,7 +55,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
       var request = new QMTileRequest
       (
         siteModel.ID,
-        new Guid(),
         new FilterResult(),
         0,0,0
       );
@@ -74,6 +73,4 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
       result.TileData.Should().NotBeNull();
     }
   }
-
-
 }

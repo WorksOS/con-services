@@ -41,6 +41,11 @@ namespace VSS.TRex.GridFabric.Arguments
     /// </summary>
     public IOverrideParameters Overrides { get; set; } = new OverrideParameters();
 
+    /// <summary>
+    /// Parameters for lift analysis
+    /// </summary>
+    public ILiftParameters LiftParams { get; set; } = new LiftParameters();
+
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
 
     public override void ToBinary(IBinaryRawWriter writer)
@@ -60,6 +65,9 @@ namespace VSS.TRex.GridFabric.Arguments
 
       writer.WriteBoolean(Overrides != null);
       Overrides?.ToBinary(writer);
+
+      writer.WriteBoolean(LiftParams != null);
+      LiftParams?.ToBinary(writer);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -85,6 +93,12 @@ namespace VSS.TRex.GridFabric.Arguments
       {
         Overrides = new OverrideParameters();
         Overrides.FromBinary(reader);
+      }
+
+      if (reader.ReadBoolean())
+      {
+        LiftParams = new LiftParameters();
+        LiftParams.FromBinary(reader);
       }
     }
   }

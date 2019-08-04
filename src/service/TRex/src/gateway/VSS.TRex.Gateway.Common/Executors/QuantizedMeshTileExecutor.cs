@@ -54,15 +54,16 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     protected byte[] GetTempDummyTile(int x, int y, int z)
     {
-      var dstr = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-      string fname = @"Executors\TestData\0.terrain";
+      var dstr = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+      var fname = Path.Combine("Executors", "TestData", "0.terrain");
+
       if (z == 0)
-        {
+      {
           if ( y == 0)
-            fname = @"Executors\TestData\0.terrain";
+            fname = Path.Combine("Executors", "TestData", "0.terrain");
           else
-            fname = @"Executors\TestData\1.terrain";
-        }
+            fname = Path.Combine("Executors", "TestData", "1.terrain"); 
+      }
       else
         fname = @"Executors\TestData\x.terrain";
 

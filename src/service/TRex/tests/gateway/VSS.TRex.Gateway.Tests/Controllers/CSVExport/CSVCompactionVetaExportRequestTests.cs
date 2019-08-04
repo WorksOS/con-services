@@ -23,7 +23,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       var userPreferences = new UserPreferences();
       var request = new CompactionVetaExportRequest(
         projectUid, filter, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
     }
 
@@ -37,7 +37,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       var userPreferences = new UserPreferences();
       var request = new  CompactionVetaExportRequest(
         projectUid, filter, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
 
       var validate = new ValidFilenameAttribute(256);
       var result = validate.IsValid(request.FileName);
@@ -62,7 +62,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       var userPreferences = new UserPreferences();
       var request = new CompactionVetaExportRequest(
         projectUid, filter, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
 
       var ex = Assert.Throws<ServiceException>(() => request.Validate());
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);

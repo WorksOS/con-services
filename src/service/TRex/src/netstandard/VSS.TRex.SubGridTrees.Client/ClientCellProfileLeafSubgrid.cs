@@ -147,7 +147,7 @@ namespace VSS.TRex.SubGridTrees.Client
         {
           if (profileCell.Layers[i].FilteredPassCount > 0)
           {
-            if ((profileCell.Layers[i].Status & LayerStatus.Superseded) != 0 && !Dummy_LiftBuildSettings.IncludeSuperseded)
+            if ((profileCell.Layers[i].Status & LayerStatus.Superseded) != 0 && !context.LiftParams.IncludeSuperseded)
               continue;
 
             if (DataStillRequiredForCCV && profileCell.CellCCV == CellPassConsts.NullCCV && profileCell.Layers[i].CCV != CellPassConsts.NullCCV)
@@ -158,10 +158,10 @@ namespace VSS.TRex.SubGridTrees.Client
               int PassSearchIdx = profileCell.Layers[i].CCV_CellPassIdx - 1;
               while (PassSearchIdx >= 0)
               {
-                if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly && (PassSearchIdx < profileCell.Layers[i].StartCellPassIdx || PassSearchIdx > profileCell.Layers[i].EndCellPassIdx))
+                if (context.LiftParams.CCVSummarizeTopLayerOnly && (PassSearchIdx < profileCell.Layers[i].StartCellPassIdx || PassSearchIdx > profileCell.Layers[i].EndCellPassIdx))
                   break;
 
-                if (!profileCell.Layers.IsCellPassInSupersededLayer(PassSearchIdx) || Dummy_LiftBuildSettings.IncludeSuperseded)
+                if (!profileCell.Layers.IsCellPassInSupersededLayer(PassSearchIdx) || context.LiftParams.IncludeSuperseded)
                 {
                   profileCell.CellPreviousMeasuredCCV = profileCell.Passes.FilteredPassData[PassSearchIdx].FilteredPass.CCV;
                   if (context.Overrides?.OverrideMachineCCV ?? false)
@@ -181,7 +181,7 @@ namespace VSS.TRex.SubGridTrees.Client
             if (!DataStillRequiredForCCV)
               break;
 
-            if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
+            if (context.LiftParams.CCVSummarizeTopLayerOnly)
               DataStillRequiredForCCV = false;
           }
         }

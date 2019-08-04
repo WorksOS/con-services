@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using CmvSummaryData = VSS.Productivity3D.WebApi.Models.Compaction.Models.CmvSummaryData;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling

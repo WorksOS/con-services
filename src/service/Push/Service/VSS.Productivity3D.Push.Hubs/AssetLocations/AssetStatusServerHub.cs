@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity.Push.Models;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 
 namespace VSS.Productivity3D.Push.Hubs.AssetLocations

@@ -1,23 +1,9 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.Models.Models
 {
-  public class SpeedSummaryRequest : ProjectID
+  public class SpeedSummaryRequest : TRexBaseRequest
   {
-    /// <summary>
-    /// The filter instance to use in the request.
-    /// Value may be null.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
-
-    /// <summary>
-    /// Only MachineSpeedTarget used.
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public OverridingTargets Overrides { get; private set; }
-
     /// <summary>
     /// Default private constructor.
     /// </summary>
@@ -29,25 +15,16 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public SpeedSummaryRequest(
-      Guid? projectUid,
+      Guid projectUid,
       FilterResult filter,
-      MachineSpeedTarget machineSpeedTarget
+      MachineSpeedTarget machineSpeedTarget,
+      LiftSettings liftSettings
     )
     {
       ProjectUid = projectUid;
       Filter = filter;
       Overrides = new OverridingTargets(machineSpeedTarget: machineSpeedTarget);
-    }
-
-    /// <summary>
-    /// Validates all properties
-    /// </summary>
-    public override void Validate()
-    {
-      base.Validate();
-
-      Filter?.Validate();
-      Overrides?.Validate();
+      LiftSettings = liftSettings;
     }
   }
 }

@@ -54,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var arg = new ProfileRequestArgument_ApplicationService
       {
-        ProjectID = request.ProjectUid ?? Guid.Empty,
+        ProjectID = request.ProjectUid,
         ProfileTypeRequired = GridDataType.Height,
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = request.PositionsAreGrid,
@@ -63,7 +63,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         StartPoint = new WGS84Point(request.StartX, request.StartY),
         EndPoint = new WGS84Point(request.EndX, request.EndY),
         ReturnAllPassesAndLayers = true,
-        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 

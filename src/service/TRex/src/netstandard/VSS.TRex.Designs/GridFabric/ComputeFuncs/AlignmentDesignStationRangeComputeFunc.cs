@@ -21,7 +21,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         var stationRange = executor.Execute(args.ProjectID, args.ReferenceDesign.DesignID);
 
-        if (stationRange.startStation == double.MaxValue || stationRange.endStation == double.MinValue)
+        if (stationRange.StartStation == double.MaxValue || stationRange.EndStation == double.MinValue)
           return new AlignmentDesignStationRangeResponse()
           {
             RequestResult = DesignProfilerRequestResult.FailedToCalculateAlignmentStationRange

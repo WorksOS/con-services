@@ -32,7 +32,7 @@ namespace VSS.TRex.Tools.TTMToSTLConverter
         {
           if (type == "text")
           {
-            using (StreamWriter writer = new StreamWriter(stl))
+            using (StreamWriter writer = new StreamWriter(stl) { NewLine = "\r\n" })
             {
               writer.WriteLine($"solid {fileName}");
 

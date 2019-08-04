@@ -124,7 +124,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo,
-      Guid? parentUid, double? offset)
+      Guid? parentUid, double? offset, Guid importedFileUid)
     {
       log.LogDebug($"Creating the ImportedFile {filename} for project {projectUid}.");
       var nowUtc = DateTime.UtcNow;
@@ -132,7 +132,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
-        ImportedFileUID = Guid.NewGuid(),
+        ImportedFileUID = importedFileUid,
         ImportedFileType = importedFileType,
         DxfUnitsType = dxfUnitsType,
         Name = filename,

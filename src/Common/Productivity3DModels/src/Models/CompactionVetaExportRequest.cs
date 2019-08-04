@@ -15,13 +15,13 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Type of Coordinates required in result e.g. NE
     /// </summary>
-    [JsonProperty(PropertyName = "coordType", Required = Required.Default)]
+    [JsonProperty(Required = Required.Default)]
     public CoordType CoordType { get; private set; }
 
     /// <summary>
     /// which type of passes
     /// </summary>
-    [JsonProperty(PropertyName = "outputType", Required = Required.Default)]
+    [JsonProperty(Required = Required.Default)]
     public OutputTypes OutputType { get; private set; }
 
     /// <summary>
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Include the names of these machines
     /// </summary>
     /// 
-    [JsonProperty(PropertyName = "machineNames", Required = Required.Default)]
+    [JsonProperty(Required = Required.Default)]
     public string[] MachineNames { get; private set; }
 
 
@@ -50,12 +50,11 @@ namespace VSS.Productivity3D.Models.Models
       CoordType coordType,
       OutputTypes coordinateOutputType,
       UserPreferences userPreferences,
-      string[] machineNames
-    )
+      string[] machineNames,
+      OverridingTargets overrides,
+      LiftSettings liftSettings
+    ) : base(projectUid, filter, fileName, overrides, liftSettings)
     {
-      ProjectUid = projectUid;
-      Filter = filter;
-      FileName = fileName;
       CoordType = coordType;
       OutputType = coordinateOutputType;
       UserPreferences = userPreferences;
@@ -65,7 +64,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public new void Validate()
+    public override void Validate()
     {
       base.Validate();
 

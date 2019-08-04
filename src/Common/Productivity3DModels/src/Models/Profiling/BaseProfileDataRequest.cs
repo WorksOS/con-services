@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Net;
 using Newtonsoft.Json;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.Models.Profiling
 {
   /// <summary>
   /// The representation of a profile request.
   /// </summary>
-  public class BaseProfileDataRequest : ProjectID
+  public class BaseProfileDataRequest : TRexBaseRequest
   {
     /// <summary>
     /// The unique identifier of the design surface to be used for cut-fill for production data profiles
@@ -53,13 +50,6 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     public bool PositionsAreGrid { get; private set; }
-
-    /// <summary>
-    /// Any overriding machine targets
-    /// </summary>
-    [JsonProperty(Required = Required.Always)]
-    public OverridingTargets Overrides { get; private set; }
-
     /// <summary>
     /// Default public constructor.
     /// </summary>
@@ -78,7 +68,9 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       double startY,
       double endX,
       double endY,
-      OverridingTargets overrides)
+      OverridingTargets overrides,
+      LiftSettings liftSettings,
+      FilterResult filter)
     {
       ProjectUid = projectUid;
       ReferenceDesignUid = referenceDesignUid;
@@ -89,15 +81,9 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       EndX = endX;
       EndY = endY;
       Overrides = overrides;
+      LiftSettings = liftSettings;
+      Filter = filter;
     }
 
-    /// <summary>
-    /// Validates all properties.
-    /// </summary>
-    public override void Validate()
-    {
-      base.Validate();
-      Overrides?.Validate();
-    }
   }
 }

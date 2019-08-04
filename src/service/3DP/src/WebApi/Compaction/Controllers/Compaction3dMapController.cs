@@ -633,7 +633,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
 
         outputStream.Seek(0, SeekOrigin.Begin);
-        Log.LogInformation($"GetExportReportSurface completed: ExportData size={outputStream.Length}");
+        Log.LogInformation($"GetMapTileData completed: ExportData size={outputStream.Length}");
         return new FileStreamResult(outputStream, ContentTypeConstants.TextPlain);
       }
     }

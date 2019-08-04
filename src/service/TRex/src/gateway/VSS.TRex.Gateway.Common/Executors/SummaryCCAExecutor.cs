@@ -8,7 +8,9 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CCAStatistics;
 using VSS.TRex.Analytics.CCAStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -48,7 +50,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         new CCAStatisticsArgument()
         {
           ProjectID = siteModel.ID,
-          Filters = new FilterSet(filter)
+          Filters = new FilterSet(filter),
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+          LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
         }
       );
 

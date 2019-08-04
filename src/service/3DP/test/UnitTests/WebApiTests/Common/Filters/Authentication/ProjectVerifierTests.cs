@@ -11,7 +11,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Models.Models;
@@ -49,7 +48,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
     }
 
     [TestMethod]
-    public void Should_throw_When_actionArguments_contains_no_request_parmameter()
+    public void Should_throw_When_actionArguments_contains_no_request_parameter()
     {
       var actionArguments = new Dictionary<string, object>
       {
@@ -103,12 +102,11 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
 
       var projectVerifier = new ProjectVerifier();
 
-      var ex = Assert.ThrowsException<AggregateException>(() => projectVerifier.OnActionExecuting(context));
-      var innerException = ex.InnerExceptions[0] as ServiceException;
+      var ex = Assert.ThrowsException<ServiceException>(() => projectVerifier.OnActionExecuting(context));
 
-      Assert.IsNotNull(innerException);
-      Assert.AreEqual("{\"Code\":-1,\"Message\":\"Missing project UID\"}", innerException.GetContent);
-      Assert.AreEqual(HttpStatusCode.BadRequest, innerException.Code);
+      Assert.IsNotNull(ex);
+      Assert.AreEqual("{\"Code\":-1,\"Message\":\"ProjectId and ProjectUID cannot both be null.\"}", ex.GetContent);
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
     }
 
     [TestMethod]
@@ -150,12 +148,57 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
     }
 
     [TestMethod]
+    public void Should_throw_When_request_body_contains_projectId_and_project_isnt_found()
+    {
+      var actionArguments = new Dictionary<string, object>
+      {
+        {"request", new ProjectID{ProjectId = legacyProjectId } }
+      };
+
+      var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = new Random().Next() };
+      var contextHeaders = new Dictionary<string, string>();
+
+      var mockProxy = new Mock<IProjectProxy>();
+      mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), legacyProjectId, contextHeaders)).ReturnsAsync(projectData);
+
+      httpContext.User = new RaptorPrincipal(new ClaimsIdentity(), Guid.NewGuid().ToString(), "customerName", "merino@vss.com", true, "3D Productivity", mockProxy.Object, contextHeaders);
+
+      var context = new ActionExecutingContext(
+        new ActionContext
+        {
+          HttpContext = httpContext,
+          RouteData = new RouteData(),
+          ActionDescriptor = new ActionDescriptor(),
+        },
+        new List<IFilterMetadata>(),
+        actionArguments,
+        new Mock<Controller>().Object);
+
+      var projectVerifier = new ProjectVerifier();
+
+      var ex = Assert.ThrowsException<AggregateException>(() => projectVerifier.OnActionExecuting(context));
+      var innerException = ex.InnerExceptions[0] as ServiceException;
+
+      Assert.IsNotNull(innerException);
+      Assert.AreEqual($"{{\"Code\":-5,\"Message\":\"Missing Project or project does not belong to specified customer or don\'t have access to the project {legacyProjectId}\"}}", innerException.GetContent);
+      Assert.AreEqual(HttpStatusCode.Unauthorized, innerException.Code);
+    }
+
+    [TestMethod]
     public void Should_not_throw_When_request_body_contains_projectId()
     {
       var actionArguments = new Dictionary<string, object>
       {
         {"request", new ProjectID { ProjectId = legacyProjectId } }
       };
+
+      var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = legacyProjectId };
+      var contextHeaders = new Dictionary<string, string>();
+
+      var mockProxy = new Mock<IProjectProxy>();
+      mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), legacyProjectId, contextHeaders)).ReturnsAsync(projectData);
+
+      httpContext.User = new RaptorPrincipal(new ClaimsIdentity(), customerUid.ToString(), "customerName", "merino@vss.com", true, "3D Productivity", mockProxy.Object, contextHeaders);
 
       var context = new ActionExecutingContext(
         new ActionContext
@@ -175,7 +218,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var request = context.ActionArguments["request"] as ProjectID;
 
       Assert.IsNotNull(request);
-      Assert.AreEqual(legacyProjectId, request.ProjectId);
+      Assert.AreEqual(projectUid, request.ProjectUid);
     }
 
     [TestMethod]

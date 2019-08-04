@@ -15,6 +15,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
@@ -54,11 +55,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (UseTRexGateway(configKeys[request.ExportType]))
         {
 #endif
+          var overrides = AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings);
+          var liftSettings = AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings);
           switch (request.ExportType)
           {
             case ExportTypes.SurfaceExport:
               var compactionSurfaceExportRequest =
-                new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.Tolerance);
+                new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.Tolerance,
+                  overrides, liftSettings);
 
               log.LogInformation($"Calling TRex SendSurfaceExportRequest for projectUid: {request.ProjectUid}");
               return await trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionSurfaceExportRequest>(compactionSurfaceExportRequest, "/export/surface/ttm", customHeaders);
@@ -69,15 +73,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               var requestHelper = item as ExportRequestHelper;
 
               var compactionVetaExportRequest =
-                new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs,
-                  requestHelper.GetMachineNameList());
+                new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, 
+                  request.OutputType, request.UserPrefs, requestHelper.GetMachineNameList(), overrides, liftSettings);
 
               log.LogInformation($"Calling TRex SendVetaExportRequest for projectUid: {request.ProjectUid}");
               return await trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders);
 
             case ExportTypes.PassCountExport:
               var compactionPassCountExportRequest =
-                new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
+                new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, 
+                  request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData, overrides, liftSettings);
 
               log.LogInformation($"Calling TRex SendPassCountExportRequest for projectUid: {request.ProjectUid}");
               return await trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionPassCountExportRequest>(compactionPassCountExportRequest, "/export/passcount", customHeaders);

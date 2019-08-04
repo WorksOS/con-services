@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using VSS.Common.Abstractions.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.DataOcean.Client
@@ -145,9 +146,6 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the generated DXF file name
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="fileType"></param>
-    /// <returns></returns>
     public static string GeneratedFileName(string fileName, ImportedFileType fileType)
     {
       if (fileType == ImportedFileType.Alignment)
@@ -160,6 +158,20 @@ namespace VSS.DataOcean.Client
         return fileName;
       }
       throw new ArgumentException($"{fileName} is not a DXF, GeoTIFF or alignment file.");
+    }
+
+    /// <summary>
+    /// Constructs the file name that the file is stored with in DataOcean
+    /// </summary>
+    public static string DataOceanFileName(string fileName, bool includeSurveyedUtc, Guid fileUid, DateTime? surveyedUtc)
+    {
+      //DataOcean doesn't handle Japanese characters so use fileUid as file name.
+      //Coordinate system files use the projectUid and generated files for alignment center lines use alignmentUid
+      var dataOceanFileName = $"{fileUid}{Path.GetExtension(fileName)}";
+      //TODO: DataOcean has versions of files. We should leverage that rather than appending surveyed UTC to file name.
+      if (includeSurveyedUtc && surveyedUtc != null) // validation should prevent this
+        dataOceanFileName = dataOceanFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
+      return dataOceanFileName;
     }
 
     /// <summary>

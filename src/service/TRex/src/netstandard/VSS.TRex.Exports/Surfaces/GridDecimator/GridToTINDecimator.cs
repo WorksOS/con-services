@@ -185,7 +185,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 //                begin
 //                  Engine.TIN.SaveToFile('C:\temp\GRID_ToTIN_Decimator_Assert_surface.ttm'); {SKIP}
 //
-//                  Debug.Assert(False, 'Adding candidate to heap with same insertion point'); {SKIP}
+//                  throw new TRexException('Adding candidate to heap with same insertion point'); {SKIP}
 //                end;
 //            end;
 //          {$ENDIF}
@@ -197,7 +197,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
         //      {$IFDEF DEBUG}
         //      if Heap[ScanTri.HeapIndex].Tri <> ScanTri then
-        //        Debug.Assert(False, 'Tri references different'); {SKIP}
+        //        throw new TRexException('Tri references different'); {SKIP}
         //      {$ENDIF}
 
         // Update the 3D grid position information in the new/updated heap node

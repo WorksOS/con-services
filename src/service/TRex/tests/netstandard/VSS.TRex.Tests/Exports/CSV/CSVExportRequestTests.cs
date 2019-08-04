@@ -182,7 +182,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       CleanupMockedFile(tempFileName, siteModel.ID);
     }
 
-    [Fact(Skip="See BUG#85914")]
+    [Fact]
     public async Task CSVExportRequest_Execute_UnableToWriteResultToS3()
     {
       AddApplicationGridRouting();
@@ -201,6 +201,14 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      var mockTransferProxy = new Mock<ITransferProxy>();
+      mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>())).Callback(() => throw new IOException("S3 not available"));
+
+      DIBuilder
+        .Continue()
+        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Complete();
 
       var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();

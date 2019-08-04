@@ -77,7 +77,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid project UID."));
       }
-      ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.BaseFilter);
+      ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.Filter);
       ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.TopFilter);
       
       return WithServiceExceptionTryExecuteAsync(() =>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Analytics.CCAStatistics;
@@ -25,7 +24,6 @@ using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -50,7 +48,7 @@ namespace VSS.TRex.Webtools.Controllers
       const int CMV_DENOMINATOR = 10;
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -111,7 +109,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -162,12 +160,12 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(UID, false);
-        var cmvPercentBands = new double[] { -50.0, -20.0, -10.0, -5.0, 0.0, 5.0, 10.0, 20.0, 50.0 };
+        var cmvPercentBands = new double[] {short.MinValue, -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 };
 
         if (siteModel == null)
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
@@ -202,7 +200,10 @@ namespace VSS.TRex.Webtools.Controllers
               if (Math.Abs(anyTwoDigitsNumber) > 0 && Math.Abs(cmvPercentBands[i]) >= 0 && Math.Abs(cmvPercentBands[i]) < TWO_DIGITS_NUMBER)
                 space += "&nbsp;&nbsp;";
 
-              resultString += $"<b>{space}{cmvPercentBands[i]:##0.#0}%</b> - {result.Percents[i]:##0.#0}%<br/>";
+              if (cmvPercentBands[i] == short.MinValue)
+                resultString += $"<b>{space}<{cmvPercentBands[i + 1]:##0.#0}%</b> - {result.Percents[i]:##0.#0}%<br/>";
+              else
+                resultString += $"<b>{space}{cmvPercentBands[i]:##0.#0}%</b> - {result.Percents[i]:##0.#0}%<br/>";
             }
 
             resultToReturn = resultString;
@@ -223,7 +224,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -273,7 +274,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -328,7 +329,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -378,7 +379,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -428,7 +429,7 @@ namespace VSS.TRex.Webtools.Controllers
       const int TEMP_DENOMINATOR = 10;
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -489,7 +490,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -539,7 +540,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -591,7 +592,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else if (cutFillDesignUid == Guid.Empty)
         resultToReturn = "<b>Missing CutFill Design UID</b>";
@@ -653,7 +654,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
