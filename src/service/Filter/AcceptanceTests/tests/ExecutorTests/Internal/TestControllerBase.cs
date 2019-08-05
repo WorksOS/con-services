@@ -34,7 +34,6 @@ namespace ExecutorTests.Internal
     protected IProjectProxy ProjectProxy;
     protected IFileImportProxy FileImportProxy;
     protected IRaptorProxy RaptorProxy;
-    protected IAssetResolverProxy AssetResolverProxy;
     protected IKafka Producer;
     protected string KafkaTopicName;
     protected FilterRepository FilterRepo;
@@ -84,7 +83,6 @@ namespace ExecutorTests.Internal
       ProjectProxy = ServiceProvider.GetRequiredService<IProjectProxy>();
       FileImportProxy = ServiceProvider.GetRequiredService<IFileImportProxy>();
       RaptorProxy = ServiceProvider.GetRequiredService<IRaptorProxy>();
-      AssetResolverProxy = ServiceProvider.GetRequiredService<IAssetResolverProxy>();
       GeofenceProxy = ServiceProvider.GetRequiredService<IGeofenceProxy>();
       UnifiedProductivityProxy = ServiceProvider.GetRequiredService<IUnifiedProductivityProxy>();
 

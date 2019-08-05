@@ -73,9 +73,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<MachineExecutionResult> GetMachinesOnProject([FromRoute] long projectId)
     {
       _log.LogInformation($"{nameof(GetMachinesOnProject)} Request. projectId: {projectId}");
-      
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
       return await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
@@ -98,8 +97,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachinesOnProject)} Request. projectUid: {projectUid}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       return await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
@@ -126,8 +124,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineOnProject)} Request. projectId: {projectId} machineId: {machineId}");
 
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
       var result = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
@@ -156,9 +153,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<ContractExecutionResult> GetMachineOnProject([FromRoute] Guid projectUid, [FromRoute] long machineId)
     {
       _log.LogInformation($"{nameof(GetMachineOnProject)} Request. projectUid: {projectUid} machineId: {machineId}");
-      
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       var result = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
@@ -188,8 +184,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineOnProject)} Request. projectUid: {projectUid} machineUid: {machineUid}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       var result = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
@@ -219,8 +214,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineDesigns)} Request. projectId: {projectId}");
 
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
       var result = await RequestExecutorContainerFactory.Build<GetAssetOnDesignPeriodsExecutor>(_logger,
@@ -247,8 +241,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineDesigns)} Request. projectUid: {projectUid}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       var result = await RequestExecutorContainerFactory.Build<GetAssetOnDesignPeriodsExecutor>(_logger,
@@ -299,8 +292,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineDesignByDateRangeDetails)} Request. projectUid: {projectUid} startUtc: {startUtc} endUtc: {endUtc}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       ValidateDates(startUtc, endUtc, out var beginUtc, out var finishUtc);
@@ -372,9 +364,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<AssetOnDesignLayerPeriodsExecutionResult> GetMachineOnDesignLayerPeriods([FromRoute] long projectId)
     {
       _log.LogInformation($"{nameof(GetMachineOnDesignLayerPeriods)} Request. projectId: {projectId}");
-      
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
       return await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
@@ -399,8 +390,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineOnDesignLayerPeriods)} Request. projectUid: {projectUid}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       var result = await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
@@ -432,8 +422,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineLiftsByDateRange)} Request. projectId: {projectId} startUtc: {startUtc} endUtc: {endUtc}");
 
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
       return await GetMachineLiftsWith(projectIds, startUtc, endUtc);
@@ -456,15 +445,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineLiftsByDateRange)} Request. projectUid: {projectUid} startUtc: {startUtc} endUtc: {endUtc}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       return await GetMachineLiftsWith(projectIds, startUtc, endUtc);
     }
 
-    private async Task<MachineLayerIdsExecutionResult> GetMachineLiftsWith(ProjectID projectIds, string startUtc,
-      string endUtc)
+    private async Task<MachineLayerIdsExecutionResult> GetMachineLiftsWith(ProjectIDs projectIds, string startUtc, string endUtc)
     {
       //Note: we use strings in the uri because the framework converts to local time although we are using UTC format.
       //Posts on the internet suggests using JsonSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc

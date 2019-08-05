@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Moq;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Utilities;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using Xunit;
 
@@ -16,15 +18,14 @@ namespace VSS.Productivity3D.Filter.Tests
 {
   public class FilterResponseHelperTests
   {
-    private IRaptorProxy mockedRaptorProxy;
-    private IAssetResolverProxy mockedAssetResolverProxy;
+    private Mock<IRaptorProxy> mockedRaptorProxySetup;
     private Guid ProjectGuid = Guid.NewGuid();
     private static DateTime mockedStartTime = new DateTime(2016, 11, 5);
     private DateTime mockedEndTime = new DateTime(2018, 11, 6);
 
     public FilterResponseHelperTests()
     {
-      var mockedRaptorProxySetup = new Mock<IRaptorProxy>();
+      mockedRaptorProxySetup = new Mock<IRaptorProxy>();
       mockedRaptorProxySetup.Setup(IRaptorProxy =>
           IRaptorProxy.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
         .Returns(Task.FromResult(new ProjectStatisticsResult
@@ -32,18 +33,6 @@ namespace VSS.Productivity3D.Filter.Tests
           startTime = mockedStartTime,
           endTime = mockedEndTime
         }));
-
-      mockedRaptorProxy = mockedRaptorProxySetup.Object;
-
-      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
-
-      mockedAssetResolverProxy = mockedAssetResolverProxySetup.Object;
     }
 
     [Fact]
@@ -53,8 +42,7 @@ namespace VSS.Productivity3D.Filter.Tests
       {
         var filter = new MasterData.Repositories.DBModels.Filter
           {FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}"};
-        await FilterJsonHelper.ParseFilterJson(null, filter, mockedRaptorProxy, mockedAssetResolverProxy,
-          new Dictionary<string, string>());
+        await FilterJsonHelper.ParseFilterJson(null, filter, mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
         var filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
         Assert.Equal(DateRangeType.Today, filterObj.DateRangeType);
@@ -71,8 +59,7 @@ namespace VSS.Productivity3D.Filter.Tests
       try
       {
         await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter) null,
-          raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
-          customHeaders: new Dictionary<string, string>());
+          raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
       }
       catch (Exception exception)
       {
@@ -86,8 +73,7 @@ namespace VSS.Productivity3D.Filter.Tests
       try
       {
         await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (FilterDescriptor) null,
-          raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
-          customHeaders: new Dictionary<string, string>());
+          raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
       }
       catch (Exception exception)
       {
@@ -100,8 +86,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filters: null, raptorProxy: mockedRaptorProxy,
-          assetResolverProxy: mockedAssetResolverProxy, customHeaders: new Dictionary<string, string>());
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filters: null, raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
       }
       catch (Exception exception)
       {
@@ -116,8 +101,7 @@ namespace VSS.Productivity3D.Filter.Tests
       {
         var filter = new MasterData.Repositories.DBModels.Filter
           {FilterJson = "{\"dateRangeType\":\"4\",\"elevationType\":null}"};
-        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter, raptorProxy: mockedRaptorProxy,
-          assetResolverProxy: mockedAssetResolverProxy, customHeaders: new Dictionary<string, string>());
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter, raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
 
         var filterObj =
           JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
@@ -147,8 +131,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       await FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filter,
-        raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
-        customHeaders: new Dictionary<string, string>());
+        raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
 
       Abstractions.Models.Filter filterObj =
         JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
@@ -181,8 +164,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
-        raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
-        customHeaders: new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       Abstractions.Models.Filter filterObj =
         JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
@@ -210,8 +192,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
-        raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
-        customHeaders: new Dictionary<string, string>());
+        raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
 
       Abstractions.Models.Filter filterObj =
         JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
@@ -253,8 +234,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       await FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filters,
-        raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
-        customHeaders: new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       foreach (var filter in filters)
       {
@@ -288,8 +268,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       await FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filter,
-        raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
-        customHeaders: new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       ValidateDates(filter.FilterJson, asAtDate);
     }
@@ -321,8 +300,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
-        raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
-        customHeaders: new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       ValidateDates(filterDescriptor.FilterJson, asAtDate);
     }
@@ -342,7 +320,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
-        mockedRaptorProxy, mockedAssetResolverProxy, new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Equal(expectedResult, actualResult.ContributingMachines);
@@ -354,33 +332,38 @@ namespace VSS.Productivity3D.Filter.Tests
       var dateRangeType = DateRangeType.CurrentMonth;
       var asAtDate = true;
 
-      long legacyAssetId = 999;
+      long assetId = 999;
       var machineName = "the machine name";
       var isJohnDoe = false;
       var assetUid = Guid.NewGuid();
 
       var contributingMachinesString =
-        $",\"contributingMachines\":[{{\"assetID\":\"{legacyAssetId}\",\"machineName\":\"{machineName}\",\"isJohnDoe\":{(isJohnDoe ? "true" : "false")}}}]";
+        $",\"contributingMachines\":[{{\"assetID\":\"{assetId}\",\"machineName\":\"{machineName}\",\"isJohnDoe\":{(isJohnDoe ? "true" : "false")}}}]";
       var filterDescriptor = new FilterDescriptor
       {
         FilterJson =
           $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null{contributingMachinesString}}}"
       };
 
-      var expectedResult = new List<MachineDetails>()
-        {new MachineDetails(legacyAssetId, machineName, isJohnDoe, assetUid)};
+      var expectedResult = new List<MachineDetails>() {new MachineDetails(assetId, machineName, isJohnDoe, assetUid)};
 
-      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, legacyAssetId)});
+      var getMachinesExecutionResult = new MachineExecutionResult
+      (
+        new List<MachineStatus>(1)
+        {
+          new MachineStatus(assetId, machineName, isJohnDoe,
+            string.Empty, 0, null, null, null, null, null,
+            assetUid: assetUid)
+        }
+      );
+
+      mockedRaptorProxySetup.Setup(x =>
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(getMachinesExecutionResult);
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
-        mockedRaptorProxy, mockedAssetResolverProxySetup.Object, new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Equal(1, actualResult.ContributingMachines.Count);
@@ -393,7 +376,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var dateRangeType = DateRangeType.CurrentMonth;
       var asAtDate = true;
 
-      long legacyAssetId = 999;
+      long assetId = 999;
       var nullLegacyAssetId = -1;
       var machineName = "the machine name";
       var isJohnDoe = false;
@@ -408,19 +391,24 @@ namespace VSS.Productivity3D.Filter.Tests
       };
 
       var expectedResult = new List<MachineDetails>()
-        {new MachineDetails(legacyAssetId, machineName, isJohnDoe, assetUid)};
+        {new MachineDetails(assetId, machineName, isJohnDoe, assetUid)};
 
-      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, legacyAssetId)});
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, legacyAssetId)});
-
+      var getMachinesExecutionResult = new MachineExecutionResult
+      (
+        new List<MachineStatus>(1)
+        {
+          new MachineStatus(assetId, machineName, isJohnDoe, 
+            string.Empty, 0, null, null, null, null, null, 
+            assetUid: assetUid)
+        }
+      );
+      mockedRaptorProxySetup.Setup(x =>
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(getMachinesExecutionResult);
+      
       FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
-        mockedRaptorProxy, mockedAssetResolverProxySetup.Object, new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Equal(1, actualResult.ContributingMachines.Count);
@@ -449,17 +437,9 @@ namespace VSS.Productivity3D.Filter.Tests
       var expectedResult = new List<MachineDetails>()
         {new MachineDetails(legacyAssetId, machineName, isJohnDoe, assetUid)};
 
-      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, legacyAssetId)});
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, legacyAssetId)});
-
       FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
-        mockedRaptorProxy, mockedAssetResolverProxySetup.Object, new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Equal(1, actualResult.ContributingMachines.Count);
@@ -488,18 +468,10 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var expectedResult = new List<MachineDetails>()
         {new MachineDetails(nullLegacyAssetId, machineName, isJohnDoe, Guid.Empty)};
-
-      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, legacyAssetId)});
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, legacyAssetId)});
-
+      
       FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
-        mockedRaptorProxy, mockedAssetResolverProxySetup.Object, new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Equal(1, actualResult.ContributingMachines.Count);
@@ -528,17 +500,9 @@ namespace VSS.Productivity3D.Filter.Tests
       var expectedResult = new List<MachineDetails>()
         {new MachineDetails(legacyAssetId, machineName, isJohnDoe, assetUid)};
 
-      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>());
-      mockedAssetResolverProxySetup.Setup(x =>
-          x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(new List<KeyValuePair<Guid, long>>());
-
       FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
-        mockedRaptorProxy, mockedAssetResolverProxySetup.Object, new Dictionary<string, string>());
+        mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Equal(1, actualResult.ContributingMachines.Count);

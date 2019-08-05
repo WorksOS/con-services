@@ -22,7 +22,7 @@ data:
   MYSQL_SERVER_NAME_ReadVSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
 #Kafka configuration
-  KAFKA_URI: 10.211.16.11
+  KAFKA_URI: kafka1.services.myvisionlink.com,kafka2.services.myvisionlink.com,kafka3.services.myvisionlink.com
   KAFKA_PORT: "9092"
   KAFKA_OFFSET: latest
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
@@ -67,7 +67,8 @@ data:
   ALK_BASE_URL: http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc
   AWS_TAGFILE_BUCKET_NAME: vss-prod-directtagfile-archives
   ENVIRONMENT: PROD
-  NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
+  CORECLR_ENABLE_PROFILING: "0"
+#NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
 #AWS configuration  
   AWS_BUCKET_NAME: vss-prod-3dexports
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-prod
