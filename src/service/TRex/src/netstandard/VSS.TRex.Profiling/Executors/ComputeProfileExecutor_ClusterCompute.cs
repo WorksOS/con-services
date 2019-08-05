@@ -21,6 +21,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
+using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.Profiling.Executors
 {
@@ -101,9 +102,8 @@ namespace VSS.TRex.Profiling.Executors
     /// </summary>
     public async Task<ProfileRequestResponse<T>> ExecuteAsync()
     {
-      //Do we need this - Compaction is the default and currently we can only do one at a time
-      // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
-      // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
+      LiftParams.CCVSummaryTypes |= CCVSummaryTypes.Compaction;
+      LiftParams.MDPSummaryTypes |= MDPSummaryTypes.Compaction;
 
       ProfileRequestResponse<T> Response = null;
       try

@@ -25,6 +25,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.SubGrids
 {
@@ -653,12 +654,13 @@ namespace VSS.TRex.SubGrids
       _clientGrid = clientGrid;
       _clientGridAsLeaf = clientGrid as ClientLeafSubGrid;
 
-      //Note: CCVSummaryTypes and MDPSummaryTypes always set to Compaction by default
       _canUseGlobalLatestCells &=
         !(_gridDataType == GridDataType.CCV ||
           _gridDataType == GridDataType.CCVPercent) &&
+        liftParams.CCVSummaryTypes != CCVSummaryTypes.None &&
         !(_gridDataType == GridDataType.MDP ||
           _gridDataType == GridDataType.MDPPercent) &&
+        liftParams.MDPSummaryTypes != MDPSummaryTypes.None &&
         !(_gridDataType == GridDataType.CCA || _gridDataType == GridDataType.CCAPercent) &&
         !(_gridDataType == GridDataType.CellProfile ||
           _gridDataType == GridDataType.PassCount ||

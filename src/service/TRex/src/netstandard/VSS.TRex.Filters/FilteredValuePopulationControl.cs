@@ -2,6 +2,7 @@
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
+using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.Filters
 {
@@ -184,18 +185,17 @@ namespace VSS.TRex.Filters
       out bool workInProgressSummaryInLiftBuildSettings,
       out bool thicknessInProgressInLiftBuildSettings)
     {
-      //At the moment we only have one type for CCV/MDP summary
       if (ProfileTypeRequired == GridDataType.All || ProfileTypeRequired == GridDataType.CCV ||
           ProfileTypeRequired == GridDataType.CCVPercent)
       {
-        compactionSummaryInLiftBuildSettings = liftParams.CCVSummaryTypes == 0; //CCVSummaryType.Compaction by default 
+        compactionSummaryInLiftBuildSettings = liftParams.CCVSummaryTypes != CCVSummaryTypes.None; 
         workInProgressSummaryInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
         thicknessInProgressInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
       }
       else if (ProfileTypeRequired == GridDataType.All || ProfileTypeRequired == GridDataType.MDP ||
                ProfileTypeRequired == GridDataType.MDPPercent)
       {
-        compactionSummaryInLiftBuildSettings = liftParams.MDPSummaryTypes == 0; //MDPSummaryType.Compaction by default 
+        compactionSummaryInLiftBuildSettings = liftParams.MDPSummaryTypes != MDPSummaryTypes.None;
         workInProgressSummaryInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
         thicknessInProgressInLiftBuildSettings = compactionSummaryInLiftBuildSettings;
       }
