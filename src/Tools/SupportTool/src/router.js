@@ -1,25 +1,43 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
 import Home from './views/Home.vue'
+import Dashboard from './views/Dashboard.vue'
+import Highcharts from './views/Highcharts.vue'
+import Settings from './views/Settings.vue'
+
+import ProjectCoordinatesystem from './views/projects/CoordinateSystem.vue'
+import ProjectTagFileUpload from './views/projects/Tagfiles.vue'
 
 Vue.use(Router)
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: Home
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: function () { 
-        return import(/* webpackChunkName: "about" */ './views/About.vue')
-      }
-    }
-  ]
-})
+const DEFAULT_TITLE = '(' + process.env.VUE_APP_ENV + ') TRex Support Tool';
+
+const router = new Router({
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes: [{
+    path: '/',
+    alias: '/home',
+    component: Home,
+    children: [{
+      path: "/project/tagfiles",
+      component : ProjectTagFileUpload,
+      meta : { title: "Tag File Upload "}
+    }, {
+      path: '/project/coordsystem',
+      component: ProjectCoordinatesystem
+    }, {
+      path: '/settings',
+      component: Settings
+    }] 
+  }]
+});
+
+
+
+router.afterEach((to, from) => {
+    document.title = to.meta.title || DEFAULT_TITLE;
+});
+
+export default router;
