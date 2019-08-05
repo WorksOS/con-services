@@ -82,7 +82,6 @@ namespace VSS.TRex.Tests.Filters
           Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasLayerIDFilter = state, filter => filter.HasLayerIDFilter);
           Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasGPSToleranceFilter = state, filter => filter.HasGPSToleranceFilter);
           Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasLayerStateFilter = state, filter => filter.HasLayerStateFilter);
-          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasLayerMethodFilter = state, filter => filter.HasLayerMethodFilter);
           Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasMachineDirectionFilter = state, filter => filter.HasMachineDirectionFilter);
           Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasMachineFilter = state, filter => filter.HasMachineFilter);
           Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasPassTypeFilter = state, filter => filter.HasPassTypeFilter);
@@ -390,16 +389,6 @@ namespace VSS.TRex.Tests.Filters
                                                             x => x.HasLayerStateFilter,
                                                             x => { x.ClearLayerState(); },
                                                             x => !x.HasLayerStateFilter);
-        }
-
-        [Fact()]
-        public void Test_CellPassAttributeFilter_ClearLayerMethod()
-        {
-          Test_CellPassAttributeFilter_ClearFilter_Aspect("Layer Method",
-            x => { x.HasLayerMethodFilter = true; },
-            x => x.HasLayerMethodFilter,
-            x => { x.ClearLayerMethod(); },
-            x => !x.HasLayerMethodFilter);
         }
 
         [Fact()]

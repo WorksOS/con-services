@@ -509,28 +509,6 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
-    public void Test_GetCacheFingerPrint_LayerMethod_Present()
-    {
-      var filter = CombinedFilter.MakeFilterWith(x =>
-      {
-        x.AttributeFilter.HasLayerMethodFilter = true;
-        x.AttributeFilter.LayerMethod = LayerMethod.Automatic;
-      });
-
-      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("LM:Automatic", StringComparison.OrdinalIgnoreCase),
-        "Fingerprint does not contain layer method filter ID");
-    }
-
-    [Fact]
-    public void Test_GetCacheFingerPrint_LayerMethod_NotPresent()
-    {
-      var filter = new CombinedFilter();
-
-      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("LM:", StringComparison.OrdinalIgnoreCase),
-        "Fingerprint contains layer method filter ID");
-    }
-
-    [Fact]
     public void Test_GetCacheFingerPrint_LayerID_Present()
     {
       var filter = CombinedFilter.MakeFilterWith(x =>

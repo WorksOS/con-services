@@ -27,7 +27,6 @@ namespace VSS.TRex.Filters.Interfaces
     bool HasGPSAccuracyFilter { get; set; }
     bool HasGPSToleranceFilter { get; set; }
     bool HasPositioningTechFilter { get; set; }
-    bool HasLayerMethodFilter { get; set; }
     bool HasLayerIDFilter { get; set; }
     bool HasElevationRangeFilter { get; set; }
     bool HasPassTypeFilter { get; set; }
@@ -99,14 +98,9 @@ namespace VSS.TRex.Filters.Interfaces
 
     /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
-    /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
+    /// LiftDetectionType or if extracted cell passes are wrapped into a single containing layer.
     /// </summary>
     LayerState LayerState { get; set; }
-
-    /// <summary>
-    /// The layer method to use for analysis when LayerState is on.
-    /// </summary>
-    LayerMethod LayerMethod { get; set; }
 
     /// <summary>
     /// ID of layer we are only interested in

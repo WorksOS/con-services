@@ -36,7 +36,6 @@ namespace VSS.TRex.Filters.Interfaces
     void ClearGuidanceMode();
     void ClearLayerID();
     void ClearLayerState();
-    void ClearLayerMethod();
     void Assign(ICellPassAttributeFilter Source);
     void ClearCompactionMachineOnlyRestriction();
     void ClearMachineDirection();
