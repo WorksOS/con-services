@@ -79,7 +79,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
       IClientLeafSubGrid clientResult = null;
       var result = Compute.Apply(_computeFunc, arg);
 
-      if (result != null)
+      if (result.Bytes != null)
       {
         clientResult = ClientLeafSubGridFactory.GetSubGrid(arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime);
         clientResult.FromBytes(result.Bytes);

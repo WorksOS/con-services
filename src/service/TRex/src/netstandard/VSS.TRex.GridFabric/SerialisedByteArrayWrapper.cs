@@ -20,7 +20,7 @@ namespace VSS.TRex.GridFabric
 
     public SerialisedByteArrayWrapper(byte[] bytes, int count)
     {
-      Bytes = bytes ?? new byte[0];
+      Bytes = bytes;
       Count = count;
     }
 
