@@ -40,7 +40,7 @@ namespace VSS.TRex.GridFabric
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Bytes = reader.ReadByteArray();
-      Count = Bytes.Length;
+      Count = Bytes?.Length ?? 0;
     }
 
     /// <summary>
