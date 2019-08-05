@@ -9,17 +9,21 @@ namespace VSS.TRex.GridFabric
   /// This will allow array pools and similar cached constructs to be used for these byte arrays when these
   /// facilities become available in the platform and usable by the Ignite C# client serialised.
   /// </summary>
-  public struct SerialisedByteArrayWrapper : IBinarizable, IFromToBinary
+  public class SerialisedByteArrayWrapper : IBinarizable, IFromToBinary, ISerialisedByteArrayWrapper
   {
     private const byte VERSION_NUMBER = 1;
 
-    public byte[] Bytes;
-    public int Count;
+    public byte[] Bytes { get; set; }
+    public int Count { get; set; }
 
     public SerialisedByteArrayWrapper(byte[] bytes, int count)
     {
       Bytes = bytes;
       Count = count;
+    }
+
+    public SerialisedByteArrayWrapper(byte[] bytes) : this(bytes, bytes.Length)
+    {
     }
 
     public void ToBinary(IBinaryRawWriter writer)

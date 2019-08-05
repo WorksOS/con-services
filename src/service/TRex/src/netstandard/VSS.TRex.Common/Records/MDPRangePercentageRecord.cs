@@ -1,9 +1,10 @@
 ﻿using System.IO;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Common.Records
 {
-  public struct MDPRangePercentageRecord //: IBinaryReaderWriter
+  public struct MDPRangePercentageRecord : IBinaryReaderWriter
   {
     /// <summary>
     /// Minimum MDP percentage range value.
@@ -16,7 +17,7 @@ namespace VSS.TRex.Common.Records
     public double Max;
 
     /// <summary>
-    /// Constractor with arguments.
+    /// Constructor with arguments.
     /// </summary>
     /// <param name="min"></param>
     /// <param name="max"></param>
@@ -45,10 +46,8 @@ namespace VSS.TRex.Common.Records
       writer.Write(Max);
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     /// <summary>
-    /// Serialises comtent of the cell from the writer
+    /// Serialises content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)

@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -19,7 +20,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
     /// <param name="key"></param>
     /// <param name="mask"></param>
     /// <returns></returns>
-    public void Execute(INonSpatialAffinityKey key, ISubGridTreeBitMask mask) => server.SetExistenceMap(key, mask.ToBytes());
+    public void Execute(INonSpatialAffinityKey key, ISubGridTreeBitMask mask) => server.SetExistenceMap(key, new SerialisedByteArrayWrapper(mask.ToBytes()));
 
     /// <summary>
     /// Executes the request to set an existence map given it's type descriptor and ID
