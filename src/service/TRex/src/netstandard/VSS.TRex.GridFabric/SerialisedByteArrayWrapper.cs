@@ -16,6 +16,8 @@ namespace VSS.TRex.GridFabric
     public byte[] Bytes { get; set; }
     public int Count { get; set; }
 
+    public SerialisedByteArrayWrapper() { }
+
     public SerialisedByteArrayWrapper(byte[] bytes, int count)
     {
       Bytes = bytes;
