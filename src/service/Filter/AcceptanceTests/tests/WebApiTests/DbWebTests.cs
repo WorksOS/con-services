@@ -320,9 +320,6 @@ namespace WebApiTests
     {
       var startUtc = DateTime.Now.AddMonths(-6).ToUniversalTime();
       var endUtc = DateTime.Now.AddMonths(+6).ToUniversalTime();
-      var listMachines = new List<MachineDetails>();
-      var machine = new MachineDetails(123456789, "TheMachineName", false);
-      listMachines.Add(machine);
       var listPoints = new List<WGSPoint>
       {
         new WGSPoint(38.8361907402694, -121.349260032177),
@@ -330,7 +327,7 @@ namespace WebApiTests
         new WGSPoint(38.8387897637231, -121.347275197506),
         new WGSPoint(38.8387145521594, -121.347189366818)
       };
-      var filter = new VSS.Productivity3D.Filter.Abstractions.Models.Filter(startUtc, endUtc, Guid.NewGuid().ToString(), "DesignName", listMachines, 123,
+      var filter = new VSS.Productivity3D.Filter.Abstractions.Models.Filter(startUtc, endUtc, Guid.NewGuid().ToString(), "DesignName", null, 123,
                                         elevation, vibestate, listPoints, forward, layerNo, onMachineDesignName: "MachineDesign Name");
       return JsonConvert.SerializeObject(filter);
     }

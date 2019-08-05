@@ -35,6 +35,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       var executor = new TExecutor();
 
       executor.Initialise(
+        logger,
         log,
 #if RAPTOR      
         raptorClient,
