@@ -24,7 +24,7 @@ namespace VSS.TRex.GridFabric
       Count = count;
     }
 
-    public SerialisedByteArrayWrapper(byte[] bytes) : this(bytes, bytes.Length)
+    public SerialisedByteArrayWrapper(byte[] bytes) : this(bytes, bytes?.Length ?? 0)
     {
     }
 
