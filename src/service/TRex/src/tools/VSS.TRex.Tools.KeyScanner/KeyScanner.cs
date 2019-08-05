@@ -3,6 +3,7 @@ using System.IO;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
@@ -13,7 +14,7 @@ namespace VSS.TRex.Tools.KeyScanner
 {
   public class KeyScanner
   {
-    private void writeKeys(string title, StreamWriter writer, ICache<INonSpatialAffinityKey, byte[]> cache)
+    private void writeKeys(string title, StreamWriter writer, ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> cache)
     {
       int count = 0;
 
@@ -26,19 +27,19 @@ namespace VSS.TRex.Tools.KeyScanner
         return;
       }
 
-      var scanQuery = new ScanQuery<INonSpatialAffinityKey, byte[]>();
+      var scanQuery = new ScanQuery<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>();
       var queryCursor = cache.Query(scanQuery);
       scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
       foreach (var cacheEntry in queryCursor)
       {
-        writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
+        writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Bytes.Length}");
       }
 
       writer.WriteLine();
     }
 
-    private void WriteKeysSpatial(string title, StreamWriter writer, ICache<ISubGridSpatialAffinityKey, byte[]> cache)
+    private void WriteKeysSpatial(string title, StreamWriter writer, ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> cache)
     {
       int count = 0;
 
@@ -51,7 +52,7 @@ namespace VSS.TRex.Tools.KeyScanner
         return;
       }
 
-      var scanQuery = new ScanQuery<ISubGridSpatialAffinityKey, byte[]>
+      var scanQuery = new ScanQuery<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>
       {
         PageSize = 1 // Restrict the number of keys requested in each page to reduce memory consumption
       };
@@ -60,7 +61,7 @@ namespace VSS.TRex.Tools.KeyScanner
 
       foreach (var cacheEntry in queryCursor)
       {
-        writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
+        writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Bytes.Length}");
       }
 
       writer.WriteLine();
@@ -119,7 +120,7 @@ namespace VSS.TRex.Tools.KeyScanner
       writer.WriteLine();
     }
 
-    private void writeSiteModelChangeMapQueueKeys(string title, StreamWriter writer, ICache<ISiteModelMachineAffinityKey, byte[]> cache)
+    private void writeSiteModelChangeMapQueueKeys(string title, StreamWriter writer, ICache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> cache)
     {
       int count = 0;
 
@@ -132,13 +133,13 @@ namespace VSS.TRex.Tools.KeyScanner
         return;
       }
 
-      var scanQuery = new ScanQuery<ISiteModelMachineAffinityKey, byte[]>();
+      var scanQuery = new ScanQuery<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>();
       var queryCursor = cache.Query(scanQuery);
       scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
       foreach (var cacheEntry in queryCursor)
       {
-        writer.WriteLine($"{count++}:{cacheEntry.Key}: size = {cacheEntry.Value.Length}");
+        writer.WriteLine($"{count++}:{cacheEntry.Key}: size = {cacheEntry.Value.Bytes.Length}");
       }
 
       writer.WriteLine();
@@ -165,7 +166,7 @@ namespace VSS.TRex.Tools.KeyScanner
               Console.WriteLine($"----> Writing keys for {TRexCaches.ImmutableNonSpatialCacheName()}");
               try
               {
-                writeKeys(TRexCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.ImmutableNonSpatialCacheName()));
+                writeKeys(TRexCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.ImmutableNonSpatialCacheName()));
               }
               catch (Exception E)
               {
@@ -175,7 +176,7 @@ namespace VSS.TRex.Tools.KeyScanner
               Console.WriteLine($"----> Writing keys for {TRexCaches.DesignTopologyExistenceMapsCacheName()}");
               try
               {
-                writeKeys(TRexCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName()));
+                writeKeys(TRexCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.DesignTopologyExistenceMapsCacheName()));
               }
               catch (Exception E)
               {
@@ -185,7 +186,7 @@ namespace VSS.TRex.Tools.KeyScanner
               Console.WriteLine($"----> Writing keys for {TRexCaches.ImmutableSpatialCacheName()}");
               try
               {
-                WriteKeysSpatial(TRexCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
+                WriteKeysSpatial(TRexCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.ImmutableSpatialCacheName()));
               }
               catch (Exception E)
               {
@@ -195,7 +196,7 @@ namespace VSS.TRex.Tools.KeyScanner
               Console.WriteLine($"----> Writing keys for {TRexCaches.SiteModelChangeMapsCacheName()}");
               try
               {
-                writeSiteModelChangeMapQueueKeys(TRexCaches.SiteModelChangeMapsCacheName(), writer, ignite.GetCache<ISiteModelMachineAffinityKey, byte[]>(TRexCaches.SiteModelChangeMapsCacheName()));
+                writeSiteModelChangeMapQueueKeys(TRexCaches.SiteModelChangeMapsCacheName(), writer, ignite.GetCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SiteModelChangeMapsCacheName()));
               }
               catch (Exception E)
               {
@@ -208,7 +209,7 @@ namespace VSS.TRex.Tools.KeyScanner
               Console.WriteLine($"----> Writing keys for {TRexCaches.MutableNonSpatialCacheName()}");
               try
               {
-                writeKeys(TRexCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.MutableNonSpatialCacheName()));
+                writeKeys(TRexCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.MutableNonSpatialCacheName()));
               }
               catch (Exception E)
               {
@@ -218,7 +219,7 @@ namespace VSS.TRex.Tools.KeyScanner
               Console.WriteLine($"----> Writing keys for {TRexCaches.MutableSpatialCacheName()}");
               try
               {
-                WriteKeysSpatial(TRexCaches.MutableSpatialCacheName(), writer, ignite.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.MutableSpatialCacheName()));
+                WriteKeysSpatial(TRexCaches.MutableSpatialCacheName(), writer, ignite.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.MutableSpatialCacheName()));
               }
               catch (Exception E)
               {

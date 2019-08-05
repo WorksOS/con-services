@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -40,9 +41,9 @@ namespace VSS.TRex.Storage
     /// </summary>
     private void EstablishCaches()
     {
-      spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
-      generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
-      siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
+      spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
+      generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
+      siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
     }
 
     /// <summary>

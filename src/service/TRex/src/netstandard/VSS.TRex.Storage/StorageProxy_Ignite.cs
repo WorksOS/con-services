@@ -6,6 +6,7 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Transactions;
 using VSS.Serilog.Extensions;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
@@ -40,10 +41,10 @@ namespace VSS.TRex.Storage
 
     private void EstablishCaches()
     {
-      spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
-      generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
-      siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
-      siteModelMachineCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]>>>()(ignite, Mutability, FileSystemStreamType.SiteModelMachineElevationChangeMap);
+      spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
+      generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
+      siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
+      siteModelMachineCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.SiteModelMachineElevationChangeMap);
     }
 
     /// <summary>
@@ -69,7 +70,7 @@ namespace VSS.TRex.Storage
         {
           if (Log.IsTraceEnabled())
             Log.LogInformation($"Putting key:{cacheKey} in {NonSpatialCache(streamType).Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
-          NonSpatialCache(streamType).Put(cacheKey, compressedStream.ToArray());
+          NonSpatialCache(streamType).Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
         }
 
         try
@@ -130,7 +131,7 @@ namespace VSS.TRex.Storage
         {
           if (Log.IsTraceEnabled())
             Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
-          spatialCache.Put(cacheKey, compressedStream.ToArray());
+          spatialCache.Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
         }
 
         // Convert the stream to the immutable form and write it to the immutable storage proxy
@@ -176,7 +177,7 @@ namespace VSS.TRex.Storage
 
         try
         {
-          using (var MS = new MemoryStream(NonSpatialCache(streamType).Get(cacheKey)))
+          using (var MS = new MemoryStream(NonSpatialCache(streamType).Get(cacheKey).Bytes))
           {
             stream = MemoryStreamCompression.Decompress(MS);
             stream.Position = 0;
@@ -230,7 +231,7 @@ namespace VSS.TRex.Storage
 
         try
         {
-          using (var MS = new MemoryStream(spatialCache.Get(cacheKey)))
+          using (var MS = new MemoryStream(spatialCache.Get(cacheKey).Bytes))
           {
             stream = MemoryStreamCompression.Decompress(MS);
             stream.Position = 0;
