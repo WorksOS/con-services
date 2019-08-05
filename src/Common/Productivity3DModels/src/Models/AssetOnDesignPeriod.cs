@@ -24,25 +24,25 @@ namespace VSS.Productivity3D.Models.Models
     public long OnMachineDesignId { get; private set; }
 
     /// <summary>
-    /// Machine identifier that the design is on. Used for filtering in machine details end point only.
+    /// Machine identifier that the design is on (Raptor). 
     /// </summary>
-    [JsonIgnore]
+    [JsonProperty(PropertyName = "machineId")]
     public long MachineId { get; set; }
     /// <summary>
-    /// Start date and time for the design on the machine. Used for filtering in machine details end point only.
+    /// Start date and time for the design on the machine. 
     /// </summary>
-    [JsonIgnore]
+    [JsonProperty(PropertyName = "startDate")]
     public DateTime StartDate { get; private set; }
     /// <summary>
-    /// End date and time for the design on the machine. Used for filtering in machine details end point only.
+    /// End date and time for the design on the machine. 
     /// </summary>
-    [JsonIgnore]
+    [JsonProperty(PropertyName = "endDate")]
     public DateTime EndDate { get; private set; }
 
     /// <summary>
-    /// Machine identifier that the design is on. Used for filtering in machine details end point only.
+    /// Machine identifier that the design is on (TRex). 
     /// </summary>
-    [JsonIgnore]
+    [JsonProperty(PropertyName = "assetUid")]
     public Guid? AssetUid { get; set; }
 
 
