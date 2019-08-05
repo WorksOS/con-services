@@ -14,8 +14,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
-using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
@@ -79,7 +77,6 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>();
 
       services.AddServiceDiscovery();
-      services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
       services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
       services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
 
