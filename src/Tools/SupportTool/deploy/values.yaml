@@ -1,0 +1,26 @@
+environment: alpha
+
+rootDomain: eks.vspengg.com
+
+replicaCount: 1
+
+image:
+  tag: latest
+
+ingress:
+  enabled: true
+  # Used to create an Ingress record. environment name will be appended
+  hosts:
+    - trex-support-tool
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/target: eks.vspengg.com
+
+resources: 
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+

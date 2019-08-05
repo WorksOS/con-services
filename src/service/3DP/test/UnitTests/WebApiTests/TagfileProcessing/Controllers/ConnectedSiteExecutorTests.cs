@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #endif
 
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_CONNECTED_SITE_GATEWAY")).Returns("false");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_CONNECTED_SITE_GATEWAY")).Returns(false);
 
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
       mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirectToConnectedSite(request, It.IsAny<IDictionary<string, string>>()))
@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #endif
       // create the Trex mocks with successful result
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_CONNECTED_SITE_GATEWAY")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_CONNECTED_SITE_GATEWAY")).Returns(true);
       var connectedSiteResult =
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
         TagFileConnectedSiteSubmissionExecutor.DEFAULT_ERROR_MESSAGE);
@@ -162,7 +162,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         .Returns(TTAGProcServerProcessResult.tpsprOK);
 #endif
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_CONNECTED_SITE_GATEWAY")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_CONNECTED_SITE_GATEWAY")).Returns(true);
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.OK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();

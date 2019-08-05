@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using ASNodeRaptorReports;
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ProcessErrorCodes();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -41,13 +42,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (request == null)
           ThrowRequestTypeCastException<CompactionReportStationOffsetRequest>();
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_STATIONOFFSET") ?? false)
         {
 #endif
-          var responseData = trexCompactionDataProxy
-            .SendDataPostRequestWithStreamResponse(AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(request), "/report/stationoffset", customHeaders).Result;
+          var responseData = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(request), "/report/stationoffset", customHeaders);
 
           return responseData.Length > 0
             ? ConvertTRexStationOffsetResult(request, responseData)
@@ -168,6 +166,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
 #endif
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

@@ -93,10 +93,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<ContractExecutionResult> GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
     {
       long projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      ProjectID projId = new ProjectID(projectId, projectUid);
+      var projId = new ProjectID(projectId, projectUid);
       projId.Validate();
 
-      DataID ssId = DataID.CreateDataID(surveyedSurfaceId);
+      var ssId = DataID.CreateDataID(surveyedSurfaceId);
       ssId.Validate();
 #if RAPTOR
       return
@@ -134,7 +134,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<SurveyedSurfaceResult> Get([FromRoute] Guid projectUid)
     {
       long projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      ProjectID request = new ProjectID(projectId, projectUid);
+      var request = new ProjectID(projectId, projectUid);
 
       request.Validate();
 #if RAPTOR

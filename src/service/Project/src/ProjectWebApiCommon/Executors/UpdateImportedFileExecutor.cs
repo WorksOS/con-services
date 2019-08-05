@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
-using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
-using VSS.Productivity3D.Scheduler.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -28,6 +28,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   /// </summary>
   public class UpdateImportedFileExecutor : RequestExecutorContainer
   {
+
+    protected static ProjectErrorCodesProvider ProjectErrorCodesProvider = new ProjectErrorCodesProvider();
     /// <summary>
     /// Processes the Upsert
     /// </summary>  
@@ -38,10 +40,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
 
-      ImportedFile existingImportedFile = null;
-
-      var existingImportedFileTask = projectRepo.GetImportedFile(updateImportedFile.ImportedFileUid.ToString())
-                                                .ContinueWith(t => existingImportedFile = t.Result);
+      var existingImportedFile = await projectRepo.GetImportedFile(updateImportedFile.ImportedFileUid.ToString());
+      if (existingImportedFile == null)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(122),
+            ProjectErrorCodesProvider.FirstNameWithOffset(122)));
 
       if (useTrexGatewayDesignImport && updateImportedFile.IsDesignFileType)
       {
@@ -49,10 +52,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           updateImportedFile.ImportedFileType, updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileUid,
           updateImportedFile.SurveyedUtc,
           log, customHeaders, serviceExceptionHandler,
-          tRexImportFileProxy, projectRepo).ConfigureAwait(false);
+          tRexImportFileProxy, projectRepo);
       }
 
-      if (useRaptorGatewayDesignImport)
+      if (useRaptorGatewayDesignImport && updateImportedFile.ImportedFileType != ImportedFileType.GeoTiff)
       {
         await ImportedFileRequestHelper.NotifyRaptorAddFile(
                                          updateImportedFile.LegacyProjectId, Guid.Parse(updateImportedFile.ProjectUid.ToString()),
@@ -60,48 +63,61 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                                          updateImportedFile.FileDescriptor, updateImportedFile.ImportedFileId,
                                          Guid.Parse(updateImportedFile.ImportedFileUid.ToString()), false, log, customHeaders,
                                          serviceExceptionHandler, raptorProxy,
-                                         projectRepo)
-                                       .ConfigureAwait(false);
+                                         projectRepo);
 
-        var dxfFileName = updateImportedFile.FileDescriptor.FileName;
+        var dxfFileName = updateImportedFile.DataOceanFileName;
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment)
         {
           //Create DXF file for alignment center line
           dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
             customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, raptorProxy, customHeaders, log,
-            serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.FileDescriptor.FileName, updateImportedFile.DataOceanRootFolder);
+            serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.DataOceanFileName, updateImportedFile.DataOceanRootFolder);
         }
 
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment ||
-            updateImportedFile.ImportedFileType == ImportedFileType.Linework ||
-            updateImportedFile.ImportedFileType == ImportedFileType.GeoTiff)
+            updateImportedFile.ImportedFileType == ImportedFileType.Linework)
         {
           //Generate raster tiles
-          var projectTask = ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
-
-          Task.WhenAll(existingImportedFileTask, projectTask).Wait();
+          var projectTask = await ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
           var jobRequest = TileGenerationRequestHelper.CreateRequest(
             updateImportedFile.ImportedFileType, 
             customerUid, 
             updateImportedFile.ProjectUid.ToString(),
             existingImportedFile.ImportedFileUid, 
-            updateImportedFile.DataOceanRootFolder, dxfFileName,
-            projectTask.Result.CoordinateSystemFileName, 
-            updateImportedFile.DxfUnitsTypeId);
+            updateImportedFile.DataOceanRootFolder, 
+            dxfFileName,
+            DataOceanFileUtil.DataOceanFileName(projectTask.CoordinateSystemFileName, false, Guid.Parse(projectTask.ProjectUID), null),
+            updateImportedFile.DxfUnitsTypeId,
+            updateImportedFile.SurveyedUtc);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
       }
 
-      Task.WhenAll(existingImportedFileTask).Wait();
+      if (updateImportedFile.ImportedFileType == ImportedFileType.GeoTiff)
+      {
+        //Generate raster tiles
+
+        var jobRequest = TileGenerationRequestHelper.CreateRequest(
+          updateImportedFile.ImportedFileType,
+          customerUid,
+          updateImportedFile.ProjectUid.ToString(),
+          existingImportedFile.ImportedFileUid,
+          updateImportedFile.DataOceanRootFolder, 
+          updateImportedFile.DataOceanFileName,
+          null,
+          updateImportedFile.DxfUnitsTypeId,
+          updateImportedFile.SurveyedUtc);
+        await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
+      }
+
 
       // if all succeeds, update Db and  put update to kafka que
       var updateImportedFileEvent = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existingImportedFile,
           existingImportedFile.FileDescriptor,
           updateImportedFile.SurveyedUtc, existingImportedFile.MinZoomLevel, existingImportedFile.MaxZoomLevel,
           updateImportedFile.FileCreatedUtc, updateImportedFile.FileUpdatedUtc, userEmailAddress,
-          log, serviceExceptionHandler, projectRepo)
-        .ConfigureAwait(false);
+          log, serviceExceptionHandler, projectRepo);
 
       var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
       producer.Send(kafkaTopicName,

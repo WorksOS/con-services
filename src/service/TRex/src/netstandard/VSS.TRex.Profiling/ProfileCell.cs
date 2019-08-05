@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
@@ -320,12 +321,14 @@ namespace VSS.TRex.Profiling
     /// Checks to see if compaction as measured by CCV/MDP or CCA has met or not the compaction metrics
     /// </summary>
     /// <param name="layer"></param>
+    /// <param name="overrides"></param>
     /// <param name="gridDataType"></param>
     public void CheckLiftCompaction(ProfileLayer layer, /*todo const LiftBuildSettings :TICLiftBuildSettings; */
+      IOverrideParameters overrides,
       GridDataType gridDataType)
     {
       // CCA tracking vars
-      int Tolerance = Dummy_LiftBuildSettings.CCATolerance;
+      int Tolerance = 0; // How many extra passes is OK before over-compaction is set
       bool TargetMeet = false;
       int ValidCCAPasses = 0;
 
@@ -333,11 +336,11 @@ namespace VSS.TRex.Profiling
       bool IsMDP = gridDataType == GridDataType.MDP || gridDataType == GridDataType.MDPPercent;
       bool IsCCA = gridDataType == GridDataType.CCA || gridDataType == GridDataType.CCAPercent;
 
-      short ATargetCCV = Dummy_LiftBuildSettings.OverrideMachineCCV
-        ? Dummy_LiftBuildSettings.OverridingMachineCCV
+      short ATargetCCV = overrides.OverrideMachineCCV
+        ? overrides.OverridingMachineCCV
         : CellPassConsts.NullCCV;
-      short ATargetMDP = Dummy_LiftBuildSettings.OverrideMachineMDP
-        ? Dummy_LiftBuildSettings.OverridingMachineMDP
+      short ATargetMDP = overrides.OverrideMachineMDP
+        ? overrides.OverridingMachineMDP
         : CellPassConsts.NullMDP;
 
       for (int I = layer.EndCellPassIdx; I >= layer.StartCellPassIdx; I--)
@@ -356,16 +359,16 @@ namespace VSS.TRex.Profiling
         {
           if (Passes.FilteredPassData[I].FilteredPass.CCV != CellPassConsts.NullCCV)
           {
-            if (!Dummy_LiftBuildSettings.OverrideMachineCCV)
+            if (!overrides.OverrideMachineCCV)
               ATargetCCV = Passes.FilteredPassData[I].TargetValues.TargetCCV;
 
             if (ATargetCCV == CellPassConsts.NullCCV)
               continue;
 
-            if (Passes.FilteredPassData[I].FilteredPass.CCV < ATargetCCV * Dummy_LiftBuildSettings.CCVRange.Min / 100)
+            if (Passes.FilteredPassData[I].FilteredPass.CCV < ATargetCCV * overrides.CMVRange.Min / 100)
               layer.Status |= LayerStatus.Undercompacted;
             else if (Passes.FilteredPassData[I].FilteredPass.CCV >
-                     ATargetCCV * Dummy_LiftBuildSettings.CCVRange.Max / 100)
+                     ATargetCCV * overrides.CMVRange.Max / 100)
               layer.Status |= LayerStatus.Overcompacted;
           }
         }
@@ -374,16 +377,16 @@ namespace VSS.TRex.Profiling
         {
           if (Passes.FilteredPassData[I].FilteredPass.MDP != CellPassConsts.NullMDP)
           {
-            if (!Dummy_LiftBuildSettings.OverrideMachineMDP)
+            if (!overrides.OverrideMachineMDP)
               ATargetMDP = Passes.FilteredPassData[I].TargetValues.TargetMDP;
 
             if (ATargetMDP == CellPassConsts.NullMDP)
               continue;
 
-            if (Passes.FilteredPassData[I].FilteredPass.MDP < ATargetMDP * Dummy_LiftBuildSettings.MDPRange.Min / 100)
+            if (Passes.FilteredPassData[I].FilteredPass.MDP < ATargetMDP * overrides.MDPRange.Min / 100)
               layer.Status |= LayerStatus.Undercompacted;
             else if (Passes.FilteredPassData[I].FilteredPass.MDP >
-                     ATargetMDP * Dummy_LiftBuildSettings.MDPRange.Max / 100)
+                     ATargetMDP * overrides.MDPRange.Max / 100)
               layer.Status |= LayerStatus.Overcompacted;
           }
         }

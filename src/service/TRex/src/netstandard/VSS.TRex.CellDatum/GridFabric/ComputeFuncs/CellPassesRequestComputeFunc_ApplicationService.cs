@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.CellDatum.Executors;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Responses;
@@ -26,9 +27,9 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
       {
         var request = new CellPassesComputeFuncExecutor_ApplicationService();
 
-        Log.LogInformation($"Executing {nameof(CellPassesRequestComputeFunc_ApplicationService)}.Execute()");
+        Log.LogInformation($"Executing {nameof(CellPassesRequestComputeFunc_ApplicationService)}.ExecuteAsync()");
 
-        return request.Execute(arg);
+        return request.ExecuteAsync(arg).WaitAndUnwrapException();
       }
       finally
       {

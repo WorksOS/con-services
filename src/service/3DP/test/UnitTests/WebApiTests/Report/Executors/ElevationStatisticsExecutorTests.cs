@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Executors
       var logger = new Mock<ILoggerFactory>();
 
       var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_ELEVATION")).Returns("false");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_ELEVATION")).Returns(false);
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
@@ -62,11 +62,11 @@ namespace VSS.Productivity3D.WebApiTests.Report.Executors
 
       var mockConfigStore = new Mock<IConfigurationStore>();
 #if RAPTOR
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_ELEVATION")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_ELEVATION")).Returns(true);
 #endif
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
-      var elevationStatisticsRequest = new ElevationDataRequest(request.ProjectUid, request.Filter);
+      var elevationStatisticsRequest = new ElevationDataRequest(request.ProjectUid.Value, request.Filter, null, null);
 
       trexCompactionDataProxy.Setup(x => x.SendDataPostRequest<ElevationStatisticsResult, ElevationDataRequest>(elevationStatisticsRequest, It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
         .Returns((Task<ElevationStatisticsResult>)null);

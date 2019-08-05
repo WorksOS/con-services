@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Cache;
+using Moq;
 using VSS.TRex.Storage;
 
 namespace VSS.TRex.Tests.TestFixtures
@@ -9,6 +10,12 @@ namespace VSS.TRex.Tests.TestFixtures
     public StorageProxyCacheTransacted_TestHarness(ICache<TK, TV> cache, IEqualityComparer<TK> comparer) : base(cache, comparer)
     {
     }
+
+    /// <summary>
+    /// Expose pending transacted writes in test context to provide simplified access to content in unit tests
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<TK, TV> GetPendingTransactedWrites() => PendingTransactedWrites;
 
     /// <summary>
     /// Override the name property which extracts the cache name from the storage proxy. Test harnesses don;t have a valid cache
@@ -60,5 +67,12 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       base.Clear();
     }
+
+    /// <summary>
+    /// Returns a mocked ICacheLock for the key
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public override ICacheLock Lock(TK key) => new Mock<ICacheLock>().Object;
   }
 }

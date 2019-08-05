@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -59,6 +59,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
+    /// <param name="explicitFilters"></param>
     /// <returns>
     /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
     /// </returns>
@@ -79,70 +80,73 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] bool explicitFilters = false)
     {
       Log.LogInformation("GetProfileProductionDataSlicer: " + Request.QueryString);
-      var projectId = await GetLegacyProjectId(projectUid);
+      var projectId = GetLegacyProjectId(projectUid);
 
-      var settings = await GetProjectSettingsTargets(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, OperationType.Profiling);
+      var settings = GetProjectSettingsTargets(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+      var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, OperationType.Profiling);
 
-      FilterResult baseFilter = null;
-      FilterResult topFilter = null;
-      DesignDescriptor volumeDesign = null;
+      Task<FilterResult> baseFilter = null;
+      Task<FilterResult> topFilter = null;
+      Task<DesignDescriptor> volumeDesign = null;
       if (volumeCalcType.HasValue)
       {
         switch (volumeCalcType.Value)
         {
           case VolumeCalcType.GroundToGround:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
+            baseFilter = GetCompactionFilter(projectUid, volumeBaseUid);
+            topFilter = GetCompactionFilter(projectUid, volumeTopUid);
+
+            await Task.WhenAll(projectId, settings, filter, cutFillDesign, baseFilter, topFilter);
             break;
           case VolumeCalcType.GroundToDesign:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, OperationType.Profiling);
+            baseFilter = GetCompactionFilter(projectUid, volumeBaseUid);
+            volumeDesign = GetAndValidateDesignDescriptor(projectUid, volumeTopUid, OperationType.Profiling);
+
+            await Task.WhenAll(projectId, settings, filter, cutFillDesign, baseFilter, volumeDesign);
             break;
           case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, OperationType.Profiling);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
+            volumeDesign = GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, OperationType.Profiling);
+            topFilter = GetCompactionFilter(projectUid, volumeTopUid);
+
+            await Task.WhenAll(projectId, settings, filter, cutFillDesign, volumeDesign, topFilter);
             break;
         }
       }
 
       //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
-          .ProjectId(projectId)
+          .ProjectId(projectId.Result)
           .ProjectUid(projectUid)
-          .Headers(this.CustomHeaders)
-          .ProjectSettings(settings)
-          .Filter(filter)
-          .DesignDescriptor(cutFillDesign))
-          .SetBaseFilter(baseFilter)
-          .SetTopFilter(topFilter)
+          .Headers(CustomHeaders)
+          .ProjectSettings(settings.Result)
+          .Filter(filter.Result)
+          .DesignDescriptor(cutFillDesign.Result))
+          .SetBaseFilter(baseFilter?.Result)
+          .SetTopFilter(topFilter?.Result)
           .SetVolumeCalcType(volumeCalcType)
-          .SetVolumeDesign(volumeDesign)
+          .SetVolumeDesign(volumeDesign?.Result)
           .CreateProductionDataProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, explicitFilters);
 
       slicerProductionDataProfileRequest.Validate();
 
-      var slicerProductionDataResult = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(LoggerFactory,
+      var slicerProductionDataResult = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory.Build<CompactionProfileExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, profileResultHelper: profileResultHelper, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileDataResult>
-      );
+          .ProcessAsync(slicerProductionDataProfileRequest)) as CompactionProfileResult<CompactionProfileDataResult>;
 
-      if (cutFillDesign != null)
+      if (cutFillDesign.Result != null)
       {
-        await FindCutFillElevations(projectId, projectUid, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
-          cutFillDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
+        await FindCutFillElevations(projectId.Result, projectUid, settings.Result, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
+          cutFillDesign.Result, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
       }
 
-      if (volumeDesign != null && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
+      if (volumeDesign?.Result != null && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
       {
-        await FindCutFillElevations(projectId, projectUid, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
-          volumeDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
+        await FindCutFillElevations(projectId.Result, projectUid, settings.Result, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
+          volumeDesign.Result, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
       }
       return slicerProductionDataResult;
     }
@@ -215,10 +219,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
 
-      var projectId = await GetLegacyProjectId(projectUid);
-      var settings = await GetProjectSettingsTargets(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-
       if (importedFileUid.Length == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -226,25 +226,30 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             "At least one importedFileUid must be specified"));
       }
 
+      var projectId = GetLegacyProjectId(projectUid);
+      var settings = GetProjectSettingsTargets(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
+
+      await Task.WhenAll(projectId, settings, filter);
+
       var results = new Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>();
 
-      foreach (Guid impFileUid in importedFileUid)
+      foreach (var impFileUid in importedFileUid)
       {
         var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, impFileUid, OperationType.Profiling);
 
         var profileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
-            .ProjectId(projectId)
+            .ProjectId(projectId.Result)
             .ProjectUid(projectUid)
-            .Headers(this.CustomHeaders)
-            .ProjectSettings(settings)
-            .Filter(filter)
+            .Headers(CustomHeaders)
+            .ProjectSettings(settings.Result)
+            .Filter(filter.Result)
             .DesignDescriptor(designDescriptor))
           .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
         profileRequest.Validate();
 
-          var slicerDesignResult = await WithServiceExceptionTryExecuteAsync(() =>
-          RequestExecutorContainerFactory
+          var slicerDesignResult = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
             .Build<CompactionDesignProfileExecutor>(LoggerFactory,
 #if RAPTOR
               RaptorClient,

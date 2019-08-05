@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
@@ -27,7 +28,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
   public class StationOffsetClusterComputeTests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
   {
     [Fact]
-    public void CalculateFromTAGFileDerivedModel()
+    public async Task CalculateFromTAGFileDerivedModel()
     {
       var tagFiles = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", "ElevationMappingMode-KettlewellDrive"), "*.tag").ToArray();
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out var processedTasks);
@@ -70,7 +71,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
         ReportTemperature = true
       });
 
-      var result = executor.Execute();
+      var result = await executor.ExecuteAsync();
 
       result.ResultStatus.Should().Be(RequestErrorStatus.OK);
       result.ReturnCode.Should().Be(ReportReturnCode.NoError);
@@ -91,7 +92,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     }
 
     [Fact]
-    public void CalculateFromTAGFileDerivedModel_NoPoints()
+    public async Task CalculateFromTAGFileDerivedModel_NoPoints()
     {
       var tagFiles = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", "ElevationMappingMode-KettlewellDrive"), "*.tag").ToArray();
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out var processedTasks);
@@ -106,7 +107,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
         ReportElevation = true
       });
 
-      var result = executor.Execute();
+      var result = await executor.ExecuteAsync();
 
       result.ResultStatus.Should().Be(RequestErrorStatus.OK);
       result.ReturnCode.Should().Be(ReportReturnCode.NoData);
@@ -114,7 +115,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     }
 
     [Fact]
-    public void CalculateFromTAGFileDerivedModel_ShouldHaveNoPointValues()
+    public async Task CalculateFromTAGFileDerivedModel_ShouldHaveNoPointValues()
     {
       var tagFiles = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", "ElevationMappingMode-KettlewellDrive"), "*.tag").ToArray();
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out var processedTasks);
@@ -129,7 +130,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
         ReportElevation = true
       });
 
-      var result = executor.Execute();
+      var result = await executor.ExecuteAsync();
 
       result.ResultStatus.Should().Be(RequestErrorStatus.OK);
       result.ReturnCode.Should().Be(ReportReturnCode.NoError);
@@ -140,7 +141,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     }
 
     [Fact]
-    public void CalculateFromManuallyGeneratedSubGrid()
+    public async Task CalculateFromManuallyGeneratedSubGrid()
     {
       var siteModel = CreateSiteModelWithSingleCellForTesting();
       
@@ -157,7 +158,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
         ReportTemperature = true
       });
 
-      var result = executor.Execute();
+      var result = await executor.ExecuteAsync();
 
       result.ResultStatus.Should().Be(RequestErrorStatus.OK);
       result.ReturnCode.Should().Be(ReportReturnCode.NoError);

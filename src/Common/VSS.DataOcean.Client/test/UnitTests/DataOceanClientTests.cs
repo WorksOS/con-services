@@ -11,32 +11,29 @@ using VSS.DataOcean.Client.ResultHandling;
 using VSS.DataOcean.Client.Models;
 using System.Collections.Generic;
 using System.Net.Http;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Serilog.Extensions;
 
 namespace VSS.DataOcean.Client.UnitTests
 {
   public class DataOceanClientTests
   {
-    private IServiceProvider serviceProvider;
-    private IServiceCollection serviceCollection;
+    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceCollection serviceCollection;
 
     public DataOceanClientTests()
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
+      serviceCollection = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.DataOcean.Client.UnitTests.log")))
+        .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
-      serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       //This is real one to be added in services using DataOcean client. We mock it below for unit tests.
       //serviceCollection.AddSingleton<IWebRequest, GracefulWebRequest>();
       serviceCollection.AddTransient<IDataOceanClient, DataOceanClient>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
-
-      _ = serviceProvider.GetRequiredService<ILoggerFactory>();
-
     }
 
     //Use [Theory] with [InlineData] for parameterized tests
@@ -44,9 +41,9 @@ namespace VSS.DataOcean.Client.UnitTests
     public async Task CanCheckTopLevelFolderExists()
     {
       const string folderName = "unittest";
-      var expectedFolderResult = new DataOceanDirectory {Id = Guid.NewGuid(), Name = folderName};
+      var expectedFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = folderName };
       var expectedBrowseResult =
-        new BrowseDirectoriesResult {Directories = new List<DataOceanDirectory> {expectedFolderResult}};
+        new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedFolderResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -56,7 +53,7 @@ namespace VSS.DataOcean.Client.UnitTests
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success = await client.FolderExists($"{Path.DirectorySeparatorChar}{folderName}", null);
@@ -67,9 +64,9 @@ namespace VSS.DataOcean.Client.UnitTests
     public async Task CanCheckSubFolderExists()
     {
       const string topLevelFolderName = "unittest";
-      var expectedTopFolderResult = new DataOceanDirectory {Id = Guid.NewGuid(), Name = topLevelFolderName};
+      var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };
       var expectedTopBrowseResult =
-        new BrowseDirectoriesResult {Directories = new List<DataOceanDirectory> {expectedTopFolderResult}};
+        new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedTopFolderResult } };
       const string subFolderName = "anything";
       var expectedSubFolderResult = new DataOceanDirectory
       {
@@ -78,7 +75,7 @@ namespace VSS.DataOcean.Client.UnitTests
         ParentId = expectedTopFolderResult.Id
       };
       var expectedSubBrowseResult =
-        new BrowseDirectoriesResult {Directories = new List<DataOceanDirectory> {expectedSubFolderResult}};
+        new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedSubFolderResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -93,7 +90,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseSubUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedSubBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
@@ -106,7 +103,7 @@ namespace VSS.DataOcean.Client.UnitTests
     public async Task CanCheckFolderDoesNotExist()
     {
       const string folderName = "unittest";
-      var expectedBrowseResult = new BrowseDirectoriesResult {Directories = new List<DataOceanDirectory>()};
+      var expectedBrowseResult = new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory>() };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -116,7 +113,7 @@ namespace VSS.DataOcean.Client.UnitTests
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success = await client.FolderExists($"{Path.DirectorySeparatorChar}{folderName}", null);
@@ -127,13 +124,13 @@ namespace VSS.DataOcean.Client.UnitTests
     public async Task CanCheckFileExists()
     {
       const string folderName = "unittest";
-      var expectedFolderResult = new DataOceanDirectory {Id = Guid.NewGuid(), Name = folderName};
+      var expectedFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = folderName };
       var expectedFolderBrowseResult =
-        new BrowseDirectoriesResult {Directories = new List<DataOceanDirectory> {expectedFolderResult}};
+        new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedFolderResult } };
 
       const string fileName = "dummy.dxf";
-      var expectedFileResult = new DataOceanFile {Id = Guid.NewGuid(), Name = fileName, ParentId = expectedFolderResult.Id };
-      var expectedFileBrowseResult = new BrowseFilesResult() {Files = new List<DataOceanFile> {expectedFileResult}};
+      var expectedFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = fileName, ParentId = expectedFolderResult.Id };
+      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -148,7 +145,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
@@ -161,12 +158,12 @@ namespace VSS.DataOcean.Client.UnitTests
     public async Task CanCheckFileDoesNotExist()
     {
       const string folderName = "unittest";
-      var expectedFolderResult = new DataOceanDirectory {Id = Guid.NewGuid(), Name = folderName};
+      var expectedFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = folderName };
       var expectedFolderBrowseResult =
-        new BrowseDirectoriesResult {Directories = new List<DataOceanDirectory> {expectedFolderResult}};
+        new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedFolderResult } };
 
       const string fileName = "dummy.dxf";
-      var expectedFileBrowseResult = new BrowseFilesResult() {Files = new List<DataOceanFile>()};
+      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile>() };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -181,7 +178,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
@@ -194,8 +191,8 @@ namespace VSS.DataOcean.Client.UnitTests
     public async Task CanCreateTopLevelFolder()
     {
       const string folderName = "unittest";
-      var expectedFolderResult = new DataOceanDirectory {Id = Guid.NewGuid(), Name = folderName};
-      var expectedBrowseResult = new BrowseDirectoriesResult {Directories = new List<DataOceanDirectory>()};
+      var expectedFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = folderName };
+      var expectedBrowseResult = new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory>() };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -207,16 +204,16 @@ namespace VSS.DataOcean.Client.UnitTests
         .Returns(Task.FromResult(expectedBrowseResult));
       gracefulMock
         .Setup(g => g.ExecuteRequest<DataOceanDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
-          false)).ReturnsAsync(new DataOceanDirectoryResult{Directory  = expectedFolderResult});
+          false)).ReturnsAsync(new DataOceanDirectoryResult { Directory = expectedFolderResult });
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success = await client.MakeFolder($"{Path.DirectorySeparatorChar}{folderName}", null);
       Assert.True(success);
 
       //Check it also succeeds when the folder already exists
-      expectedBrowseResult.Directories = new List<DataOceanDirectory> {expectedFolderResult};
+      expectedBrowseResult.Directories = new List<DataOceanDirectory> { expectedFolderResult };
       success = await client.MakeFolder($"{Path.DirectorySeparatorChar}{folderName}", null);
       Assert.True(success);
 
@@ -227,9 +224,9 @@ namespace VSS.DataOcean.Client.UnitTests
     public async Task CanCreateSubFolder()
     {
       const string topLevelFolderName = "unittest";
-      var expectedTopFolderResult = new DataOceanDirectory {Id = Guid.NewGuid(), Name = topLevelFolderName};
+      var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };
       var expectedTopBrowseResult =
-        new BrowseDirectoriesResult {Directories = new List<DataOceanDirectory> {expectedTopFolderResult}};
+        new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedTopFolderResult } };
       const string subFolderName = "anything";
       var expectedSubFolderResult = new DataOceanDirectory
       {
@@ -237,7 +234,7 @@ namespace VSS.DataOcean.Client.UnitTests
         Name = subFolderName,
         ParentId = expectedTopFolderResult.Id
       };
-      var expectedSubBrowseResult = new BrowseDirectoriesResult {Directories = new List<DataOceanDirectory>()};
+      var expectedSubBrowseResult = new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory>() };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -256,7 +253,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<DataOceanDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
           false)).ReturnsAsync(new DataOceanDirectoryResult { Directory = expectedSubFolderResult });
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
@@ -265,13 +262,13 @@ namespace VSS.DataOcean.Client.UnitTests
       Assert.True(success);
 
       //Check it also succeeds when the folder already exists
-      expectedSubBrowseResult.Directories = new List<DataOceanDirectory> {expectedSubFolderResult};
+      expectedSubBrowseResult.Directories = new List<DataOceanDirectory> { expectedSubFolderResult };
       success = await client.MakeFolder(
         $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{subFolderName}", null);
       Assert.True(success);
 
     }
-  
+
 
     [Fact]
     public void CanPutFileSuccess()
@@ -323,7 +320,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest(deleteFileUrl, null, null, HttpMethod.Delete, null, 3, false))
         .Returns(Task.CompletedTask);
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
@@ -356,7 +353,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
@@ -382,7 +379,7 @@ namespace VSS.DataOcean.Client.UnitTests
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var Id = await client.GetFolderId($"{Path.DirectorySeparatorChar}{folderName}", null);
@@ -403,7 +400,7 @@ namespace VSS.DataOcean.Client.UnitTests
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var Id = await client.GetFolderId($"{Path.DirectorySeparatorChar}{folderName}", null);
@@ -436,7 +433,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var Id =
@@ -469,7 +466,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var Id =
@@ -482,7 +479,7 @@ namespace VSS.DataOcean.Client.UnitTests
     public async Task CanGetExistingSingleFile()
     {
       var downloadUrl = "https://fs-ro-us1.staging-tdata-cdn.com/r/2a0de221-1ab6-42e1-9c1e-08f4aa0cde59?Signature=Fw~5911qUEoVm5UPWPeNv79RonR8OFkaQ6XfXEmo86i9Fu7-wtiXevP9WYkrFbpDW3A7YAZva2qMLbrstuSGojpitZrArPpyAcowP2jurHQk~fvuHk601gkZMJNmmxJpaakSRoUH4rUiaan8ATC0k1OZKne5qX-vPgebvO3mZswQbrcEbwvln98pyXVHRX530epu58r05pOKPCSi-DuK8RUjtQleH-DZ3c~A3q7q73dhkMbumMFQMjDDOEzifQF1gZ7pOtpiUfcjxxU0Xzh3lX7WLGJn0TcFq6Cctylgpg0Xguw3dL4qpL2LAfjn7nNsQtuAukPUzmymCHcnP1qWJg__&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9mcy1yby11czEuc3RhZ2luZy10ZGF0YS1jZG4uY29tL3IvMmEwZGUyMjEtMWFiNi00MmUxLTljMWUtMDhmNGFhMGNkZTU5LyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE1NDQ1Njg0NDd9fX1dfQ__&Key-Pair-Id=APKAJZFK5OCWBA5LQHUQ";
-      var expectedResult = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
+      var expectedResult = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       var stream = new MemoryStream(expectedResult);
       var expectedDownloadResult = new StreamContent(stream);
 
@@ -520,11 +517,11 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, null, null, null, 3, false))
         .ReturnsAsync(expectedDownloadResult);
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
 
-      var resultStream = await client.GetFile($"{Path.DirectorySeparatorChar}{folderName}{Path.DirectorySeparatorChar}{fileName}", 
+      var resultStream = await client.GetFile($"{Path.DirectorySeparatorChar}{folderName}{Path.DirectorySeparatorChar}{fileName}",
         null);
       using (var ms = new MemoryStream())
       {
@@ -558,7 +555,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
 
@@ -583,17 +580,31 @@ namespace VSS.DataOcean.Client.UnitTests
         new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedFolderResult } };
 
       const string multiFileName = "dummy.dxf_Tiles$";
+      var fileUid = Guid.NewGuid();
+      var updatedAt = DateTime.UtcNow.AddHours(-2);
       var expectedFileResult = new DataOceanFile
       {
-        Id = Guid.NewGuid(),
+        Id = fileUid,
         Name = multiFileName,
         ParentId = expectedFolderResult.Id,
         Multifile = true,
         RegionPreferences = new List<string> { "us1" },
         Status = "AVAILABLE",
-        DataOceanDownload = new DataOceanTransfer { Url = downloadUrl }
+        DataOceanDownload = new DataOceanTransfer { Url = downloadUrl },
+        UpdatedAt = updatedAt
       };
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult } };
+      var otherFileResult = new DataOceanFile
+      {
+        Id = fileUid,
+        Name = multiFileName,
+        ParentId = expectedFolderResult.Id,
+        Multifile = true,
+        RegionPreferences = new List<string> { "us1" },
+        Status = "AVAILABLE",
+        DataOceanDownload = new DataOceanTransfer { Url = downloadUrl },
+        UpdatedAt = updatedAt.AddHours(-5)
+      };
+      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult, otherFileResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -611,7 +622,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequestAsStreamContent(substitutedDownloadUrl, HttpMethod.Get, null, null, null, 0, false))
         .ReturnsAsync(expectedDownloadResult);
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
 
@@ -631,9 +642,6 @@ namespace VSS.DataOcean.Client.UnitTests
       var fileName = $"{Path.DirectorySeparatorChar}tiles{Path.DirectorySeparatorChar}15{Path.DirectorySeparatorChar}18756{Path.DirectorySeparatorChar}2834.png";
       var downloadUrl = "https://fs-ro-us1.staging-tdata-cdn.com/r/2a0de221-1ab6-42e1-9c1e-08f4aa0cde59/{path}?Signature=Fw~5911qUEoVm5UPWPeNv79RonR8OFkaQ6XfXEmo86i9Fu7-wtiXevP9WYkrFbpDW3A7YAZva2qMLbrstuSGojpitZrArPpyAcowP2jurHQk~fvuHk601gkZMJNmmxJpaakSRoUH4rUiaan8ATC0k1OZKne5qX-vPgebvO3mZswQbrcEbwvln98pyXVHRX530epu58r05pOKPCSi-DuK8RUjtQleH-DZ3c~A3q7q73dhkMbumMFQMjDDOEzifQF1gZ7pOtpiUfcjxxU0Xzh3lX7WLGJn0TcFq6Cctylgpg0Xguw3dL4qpL2LAfjn7nNsQtuAukPUzmymCHcnP1qWJg__&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9mcy1yby11czEuc3RhZ2luZy10ZGF0YS1jZG4uY29tL3IvMmEwZGUyMjEtMWFiNi00MmUxLTljMWUtMDhmNGFhMGNkZTU5LyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE1NDQ1Njg0NDd9fX1dfQ__&Key-Pair-Id=APKAJZFK5OCWBA5LQHUQ";
       var substitutedDownloadUrl = downloadUrl.Replace("{path}", fileName.Substring(1));
-      var expectedResult = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
-      var stream = new MemoryStream(expectedResult);
-      var expectedDownloadResult = new StreamContent(stream);
 
       const string folderName = "unittest";
       var expectedFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = folderName };
@@ -669,7 +677,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequestAsStreamContent(substitutedDownloadUrl, HttpMethod.Get, null, null, null, 3, false))
         .ReturnsAsync((HttpContent)null);
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
 
@@ -693,7 +701,7 @@ namespace VSS.DataOcean.Client.UnitTests
         Status = status,
         DataOceanUpload = new DataOceanTransfer { Url = uploadUrl }
       };
-      var expectedFileResult = new DataOceanFileResult {File = expectedFile};
+      var expectedFileResult = new DataOceanFileResult { File = expectedFile };
       var folderName = $"{Path.DirectorySeparatorChar}";
       var expectedBrowseResult = new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory>() };
       var expectedUploadResult = new StringContent("some ok result");
@@ -720,12 +728,12 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest(deleteFileUrl, null, null, HttpMethod.Delete, null, 3, false))
         .Returns(Task.CompletedTask);
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
-      return client.PutFile(folderName, fileName, null, null);
+      return client.PutFile(folderName, fileName, null);
     }
+
     #endregion
   }
-
 }

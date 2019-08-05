@@ -112,3 +112,52 @@ export enum DisplayModeType {
   // Elevation Range
   ElevationRange
 }
+
+export class OverrideRange {
+  Min: number;
+  Max: number;
+
+  public constructor(min: number, max: number) {
+    this.Min = min;
+    this.Max = max;
+  }
+}
+
+export class OverrideParameters {
+  OverrideMachineCCV: boolean = false;
+  OverridingMachineCCV: number;
+  CMVRange: OverrideRange;
+  OverrideMachineMDP: boolean = false;
+  OverridingMachineMDP: number;
+  MDPRange: OverrideRange;
+  OverrideTargetPassCount: boolean = false;
+  OverridingTargetPassCountRange: OverrideRange;
+  OverrideTemperatureWarningLevels: boolean = false;
+  OverridingTemperatureWarningLevels: OverrideRange;
+  TargetMachineSpeed: OverrideRange;
+
+  public constructor(
+      overrideMachineCCV: boolean,
+      overridingMachineCCV: number,
+      cmvRange: OverrideRange,
+      overrideMachineMDP: boolean,
+      overridingMachineMDP: number,
+      mdpRange: OverrideRange,
+      overrideTargetPassCount: boolean,
+      overridingTargetPassCountRange: OverrideRange,
+      overrideTemperatureWarningLevels: boolean,
+      overridingTemperatureWarningLevels: OverrideRange,
+      targetMachineSpeed: OverrideRange) {
+          this.OverrideMachineCCV = overrideMachineCCV;
+          this.OverridingMachineCCV = overridingMachineCCV;
+          this.CMVRange = cmvRange;
+          this.OverrideMachineMDP = overrideMachineMDP;
+          this.OverridingMachineMDP = overridingMachineMDP;
+          this.MDPRange = mdpRange;
+          this.OverrideTargetPassCount = overrideTargetPassCount;
+          this.OverridingTargetPassCountRange = overridingTargetPassCountRange;
+          this.OverrideTemperatureWarningLevels = overrideTemperatureWarningLevels;
+          this.OverridingTemperatureWarningLevels = overridingTemperatureWarningLevels;
+          this.TargetMachineSpeed = targetMachineSpeed;
+  }
+}

@@ -21,11 +21,8 @@ namespace VSS.Productivity3D.AssetMgmt3D
 {
   public class Startup : BaseStartup
   {
-    public const string LoggerRepoName = "3d-assetmgmt";
-
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    { }
 
     public override string ServiceName => "3D Asset Management API";
 

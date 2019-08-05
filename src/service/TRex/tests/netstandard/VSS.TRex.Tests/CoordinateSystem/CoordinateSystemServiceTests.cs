@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
-using Tests.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Models;
@@ -16,9 +16,9 @@ namespace VSS.TRex.Tests.CoordinateSystem
   public class CoordinateSystemServiceTests : IClassFixture<CoordinatesAPIClientTestDIFixture>
   {
    [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_SimpleLLHToNEE()
+    public async Task CoordinateService_SimpleLLHToNEE()
     {
-      var NEECoords = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(TestCommonConsts.DIMENSIONS_2012_DC_CSIB,
+      var NEECoords = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(TestCommonConsts.DIMENSIONS_2012_DC_CSIB,
         new LLH
         {
           Latitude = 36.2073144965672,
@@ -35,16 +35,16 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_ManyLLHToNEE()
+    public async Task CoordinateService_ManyLLHToNEE()
     {
-      var NEECoords = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(TestCommonConsts.DIMENSIONS_2012_DC_CSIB,
+      var NEECoords = (await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(TestCommonConsts.DIMENSIONS_2012_DC_CSIB,
         new[]
         {
           new LLH { Latitude = 36.21, Longitude = -115.01, Height = 10 },
           new LLH { Latitude = 36.22, Longitude = -115.02, Height = 11 },
           new LLH { Latitude = 36.23, Longitude = -115.03, Height = 12 }
         },
-        false).NEECoordinates.ToList();
+        false)).NEECoordinates.ToList();
 
       NEECoords.Should().NotBeNull();
 
@@ -62,9 +62,9 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_SimpleNEEToLLH()
+    public async Task CoordinateService_SimpleNEEToLLH()
     {
-      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, new NEE { East = 2313, North = 1204, Elevation = 609 });
+      var LLHCoords = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, new NEE { East = 2313, North = 1204, Elevation = 609 });
 
       LLHCoords.Should().NotBeNull();
 
@@ -74,14 +74,14 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_ManyNEEToLLH()
+    public async Task CoordinateService_ManyNEEToLLH()
     {
       var requestArray = new[] {
         new NEE { East = 2313, North = 1204, Elevation = 609 },
         new NEE { East = 2313, North = 1204, Elevation = 609 }
       };
 
-      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, requestArray).LLHCoordinates;
+      var LLHCoords = (await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, requestArray)).LLHCoordinates;
 
       LLHCoords.Should().NotBeNull();
 
@@ -95,10 +95,10 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_SimpleXYZLLHToNEE()
+    public async Task CoordinateService_SimpleXYZLLHToNEE()
     {
       // XYZ coordinate holding LLH data.
-      var NEECoords = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, new XYZ(-115.01, 36.21, 10), false);
+      var NEECoords = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, new XYZ(-115.01, 36.21, 10), false);
 
       NEECoords.Should().NotBeNull();
 
@@ -108,7 +108,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_ManyXYZLLHToNEE()
+    public async Task CoordinateService_ManyXYZLLHToNEE()
     {
       // XYZ coordinates holding LLH data values.
       var coords = new[]
@@ -118,7 +118,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
         new XYZ(-115.03, 36.23, 12)
       };
 
-      var NEECoords = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, coords, false).NEECoordinates;
+      var NEECoords = (await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, coords, false)).NEECoordinates;
 
       NEECoords.Should().NotBeNull();
 
@@ -136,10 +136,10 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_SimpleXYZNEEToLLH()
+    public async Task CoordinateService_SimpleXYZNEEToLLH()
     {
       // XYZ coordinate holding NEE data.
-      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, new XYZ(2313, 1204, 609));
+      var LLHCoords = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, new XYZ(2313, 1204, 609));
 
       LLHCoords.Should().NotBeNull();
 
@@ -149,7 +149,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_ManyXYZNEEToLLH()
+    public async Task CoordinateService_ManyXYZNEEToLLH()
     {
       // XYZ coordinates holding NEE data values.
       var requestArray = new[] {
@@ -157,7 +157,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
         new XYZ(2314, 1205, 610)
       };
 
-      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, requestArray).LLHCoordinates;
+      var LLHCoords = (await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, requestArray)).LLHCoordinates;
 
       LLHCoords.Should().NotBeNull();
 
@@ -171,9 +171,9 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_SimpleWGS84PointToXYZNEE()
+    public async Task CoordinateService_SimpleWGS84PointToXYZNEE()
     {
-      var NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, new WGS84Point(-115.01, 36.21, 10), false);
+      var NEECoords = await DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, new WGS84Point(-115.01, 36.21, 10), false);
 
       NEECoords.Should().NotBeNull();
 
@@ -182,7 +182,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       Assert.True(Math.Abs(NEECoords.Z - 68.058950967814724) < 0.001, $"Expected {68.058950967814724}, but found {NEECoords.Z}");
     }
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_ManyWGS84PointToXYZNEE()
+    public async Task CoordinateService_ManyWGS84PointToXYZNEE()
     {
       var points = new[]
       {
@@ -190,7 +190,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
         new WGS84Point(-115.02, 36.22, 11)
       };
 
-      var NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, points, false);
+      var NEECoords = await DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, points, false);
 
       NEECoords.Should().NotBeNull();
 
@@ -204,7 +204,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_ImportCSIBFromDCAsync()
+    public async Task CoordinateService_ImportCSIBFromDCAsync()
     {
       var tmpFolder = Path.Combine(Directory.GetCurrentDirectory(), "tmp");
 
@@ -214,14 +214,14 @@ namespace VSS.TRex.Tests.CoordinateSystem
 
       File.WriteAllBytes(filepath, Resources.BootCamp_2012);
 
-      string result = DIContext.Obtain<IConvertCoordinates>().DCFileToCSIB(filepath);
+      string result = await DIContext.Obtain<IConvertCoordinates>().DCFileToCSIB(filepath);
       Assert.True(TestCommonConsts.DIMENSIONS_2012_DC_CSIB == result);
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public void CoordinateService_ImportFromDCContentAsync()
+    public async Task CoordinateService_ImportFromDCContentAsync()
     {
-      var csib = DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSIB("BootCamp_2012.dc", Resources.BootCamp_2012);
+      var csib = await DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSIB("BootCamp_2012.dc", Resources.BootCamp_2012);
 
       Assert.True(TestCommonConsts.DIMENSIONS_2012_DC_CSIB == csib);
     }

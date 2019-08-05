@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -72,21 +73,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">Parameters to request project data extents</param>
     /// <returns></returns>
     /// <executor>ProjectExtentsSubmitter</executor>
-    /// 
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/projectextents")]
     [HttpPost]
 
-    public ProjectExtentsResult Post([FromBody] ExtentRequest request)
+    public async Task<ProjectExtentsResult> Post([FromBody] ExtentRequest request)
     {
-      return RequestExecutorContainerFactory.
+      return await RequestExecutorContainerFactory.
         Build<ProjectExtentsSubmitter>(logger,
 #if RAPTOR
           raptorClient, 
 #endif
           configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders)
-        .Process(request) as ProjectExtentsResult;
+        .ProcessAsync(request) as ProjectExtentsResult;
     }
   }
 }

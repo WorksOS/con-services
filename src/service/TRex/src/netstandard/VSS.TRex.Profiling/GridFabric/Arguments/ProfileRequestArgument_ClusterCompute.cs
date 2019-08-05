@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -21,8 +22,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public ProfileStyle ProfileStyle { get; set; }
 
     public XYZ[] NEECoords { get; set; } = new XYZ[0];
-
-    public OverrideParameters Overrides { get; set; } = new OverrideParameters();
 
     public bool ReturnAllPassesAndLayers { get; set; }
 
@@ -56,9 +55,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       writer.WriteBoolean(ReturnAllPassesAndLayers);
 
       writer.WriteInt((int) VolumeType);
-
-      writer.WriteBoolean(Overrides != null);
-      Overrides?.ToBinary(writer);
     }
 
     /// <summary>
@@ -81,10 +77,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
       VolumeType = (VolumeComputationType)reader.ReadInt();
-
-      Overrides = new OverrideParameters();
-      if (reader.ReadBoolean())
-        Overrides.FromBinary(reader);
     }
   }
 }

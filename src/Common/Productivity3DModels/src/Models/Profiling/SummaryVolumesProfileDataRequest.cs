@@ -9,12 +9,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
   /// The representation of a summary volumes profile request
   /// </summary>
   public class SummaryVolumesProfileDataRequest : BaseProfileDataRequest
-  {
-    /// <summary>
-    /// The base or earliest filter to be used for filter-filter and filter-design volumes.
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public FilterResult BaseFilter { get; private set; }
+  { 
     /// <summary>
     /// The top or latest filter to be used for filter-filter and design-filter volumes
     /// </summary>
@@ -49,12 +44,12 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       double startY,
       double endX,
       double endY,
-      OverridingTargets overrides) 
+      OverridingTargets overrides,
+      LiftSettings liftSettings) 
 
       : base (projectUid, referenceDesignUid, referenceDesignOffset, positionsAreGrid, 
-              startX, startY, endX, endY, overrides)
+              startX, startY, endX, endY, overrides, liftSettings, baseFilter)
     {
-      BaseFilter = baseFilter;
       TopFilter = topFilter;
       VolumeCalcType = volumeCalcType;
     }
@@ -66,7 +61,6 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     {
       base.Validate();
 
-      BaseFilter?.Validate();
       TopFilter?.Validate();
     }
   }

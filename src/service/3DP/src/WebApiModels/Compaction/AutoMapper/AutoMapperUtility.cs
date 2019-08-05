@@ -53,6 +53,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper
           cfg.AddProfile<LiftBuildSettingsProfile>();
           cfg.AddProfile<CompactionReportGridTRexRequestProfile>();
           cfg.AddProfile<CompactionReportStationOffsetTRexRequestProfile>();
+          cfg.AddProfile<OverridingTargetsProfile>();
+          cfg.AddProfile<LiftSettingsProfile>();
         }
       );
 

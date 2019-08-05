@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -53,9 +54,9 @@ namespace VSS.MasterData.Proxies
               _log.LogWarning($"Can't add header {customHeader.Key}");
         }
 
-        if (!x.Headers.Contains("Accept"))
+        if (!x.Headers.Contains(HeaderConstants.ACCEPT))
         {
-          if (!x.Headers.TryAddWithoutValidation("Accept", "*/*"))
+          if (!x.Headers.TryAddWithoutValidation(HeaderConstants.ACCEPT, "*/*"))
             _log.LogWarning("Can't add Accept header");
         }
       }
@@ -284,7 +285,7 @@ namespace VSS.MasterData.Proxies
         {
           _log.LogDebug(
             policyResult.FinalException,
-            "ExecuteRequest_multi(). endpoint: {endpoint} customHeaders: {customHeaders}");
+            $"ExecuteRequest_multi(). endpoint: {endpoint} customHeaders: {customHeaders}");
         }
 
         throw policyResult.FinalException;

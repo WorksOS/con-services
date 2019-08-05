@@ -3,6 +3,7 @@ using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
 using Xunit;
@@ -22,8 +23,10 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet(new CombinedFilter()),
-      OverrideMachineCMV = true,
-      OverridingMachineCMV = 70
+      Overrides = new OverrideParameters {
+        OverrideMachineCCV = true,
+        OverridingMachineCCV = 70
+      }
     };
 
     private CMVStatisticsCoordinator _getCoordinator()
@@ -70,8 +73,8 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg_Summary.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
-      Assert.True(aggregator.OverrideMachineCMV == Arg_Summary.OverrideMachineCMV, "Invalid aggregator value for OverrideMachineCMV.");
-      Assert.True(aggregator.OverridingMachineCMV == Arg_Summary.OverridingMachineCMV, "Invalid aggregator value for OverridingMachineCMV.");
+      Assert.True(aggregator.OverrideMachineCMV == Arg_Summary.Overrides.OverrideMachineCCV, "Invalid aggregator value for OverrideMachineCMV.");
+      Assert.True(aggregator.OverridingMachineCMV == Arg_Summary.Overrides.OverridingMachineCCV, "Invalid aggregator value for OverridingMachineCMV.");
     }
 
     [Fact]

@@ -160,10 +160,10 @@ namespace VSS.TCCFileAccess
       long sizeOfContents)
     {
       var result = await PutFileEx(filespaceId, path, filename, contents, sizeOfContents);
+
       if (!result.success)
-      {
         CheckForInvalidTicket(result, "PutFile");
-      }
+
       return result.success;
     }
 
@@ -181,7 +181,7 @@ namespace VSS.TCCFileAccess
         commitUpload = true,
         filename = filename//WebUtility.UrlEncode(filename)
       };
-      if (String.IsNullOrEmpty(tccBaseUrl))
+      if (string.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
       var gracefulClient = new GracefulWebRequest(logFactory, configStore);
@@ -192,7 +192,7 @@ namespace VSS.TCCFileAccess
       headers.Add("X-FileType", "");
       headers.Add("Content-Type", ContentTypeConstants.ApplicationOctetStream);
 
-      PutFileResponse result = default(PutFileResponse);
+      var result = default(PutFileResponse);
       try
       {
         result = await gracefulClient.ExecuteRequest<PutFileResponse>(requestString, contents, headers, HttpMethod.Put);
@@ -333,7 +333,7 @@ namespace VSS.TCCFileAccess
           }
         }
 
-        RenParams renParams = new RenParams
+        var renParams = new RenParams
         {
           filespaceid = org.filespaceId,
           path = srcFullName,//WebUtility.UrlEncode(srcFullName),
@@ -346,9 +346,8 @@ namespace VSS.TCCFileAccess
         if (renResult != null)
         {
           if (renResult.success || renResult.errorid.Contains("INVALID_OPERATION_FILE_IS_LOCKED"))
-          {
             return true;
-          }
+
           CheckForInvalidTicket(renResult, "MoveFile");
         }
         else
@@ -387,7 +386,7 @@ namespace VSS.TCCFileAccess
           }
         }
 
-        CopyParams copyParams = new CopyParams
+        var copyParams = new CopyParams
         {
           filespaceid = srcFilespaceId,
           path = srcFullName, //WebUtility.UrlEncode(srcFullName),
@@ -400,9 +399,8 @@ namespace VSS.TCCFileAccess
         if (copyResult != null)
         {
           if (copyResult.success || copyResult.errorid.Contains("INVALID_OPERATION_FILE_IS_LOCKED"))
-          {
             return true;
-          }
+
           CheckForInvalidTicket(copyResult, "CopyFile");
         }
         else
@@ -424,7 +422,7 @@ namespace VSS.TCCFileAccess
       try
       {
         //Get list of folders one level down from path
-        DirParams dirParams = new DirParams
+        var dirParams = new DirParams
         {
           filespaceid = org.filespaceId,
           path = path,//WebUtility.UrlEncode(path),
@@ -456,7 +454,7 @@ namespace VSS.TCCFileAccess
       try
       {
         //Get list of files one level down from path
-        DirParams dirParams = new DirParams
+        var dirParams = new DirParams
         {
           filespaceid = filespaceId,
           path = path,//WebUtility.UrlEncode(path),
@@ -577,7 +575,7 @@ namespace VSS.TCCFileAccess
       Log.LogDebug("DeleteFileEx: filespaceId={0}, fullName={1}", filespaceId, fullName);
       try
       {
-        DeleteFileParams deleteParams = new DeleteFileParams
+        var deleteParams = new DeleteFileParams
         {
           filespaceid = filespaceId,
           path = fullName,//WebUtility.UrlEncode(fullName),
@@ -635,7 +633,7 @@ namespace VSS.TCCFileAccess
       Log.LogInformation("Logging in to TCC: user={0}, org={1}", tccUserName, tccOrganization);
       try
       {
-        LoginParams loginParams = new LoginParams
+        var loginParams = new LoginParams
         {
           username = tccUserName,
           orgname = tccOrganization,
@@ -647,9 +645,8 @@ namespace VSS.TCCFileAccess
         if (loginResult != null)
         {
           if (loginResult.success)
-          {
             return loginResult.ticket;
-          }
+
           Log.LogError("Failed to login to TCC: errorId={0}, reason={1}", loginResult.errorid,
             loginResult.reason);
         }
@@ -706,7 +703,7 @@ namespace VSS.TCCFileAccess
 
     private async Task<T> ExecuteRequest<T>(string token, string contractPath, object requestData)
     {
-      if (String.IsNullOrEmpty(tccBaseUrl))
+      if (string.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
       var gracefulClient = new GracefulWebRequest(logFactory, configStore);
@@ -739,14 +736,14 @@ namespace VSS.TCCFileAccess
       const string FILE_DOES_NOT_EXIST_ERROR =
         "{\"errorid\":\"FILE_DOES_NOT_EXIST\",\"message\":\"File does not exist\",\"success\":false}";
 
-      if (String.IsNullOrEmpty(tccBaseUrl))
+      if (string.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
       var gracefulClient = new GracefulWebRequest(logFactory, configStore);
       var (requestString, headers) = FormRequest(requestData, contractPath, token);
 
       headers.Add("Content-Type", ContentTypeConstants.ApplicationJson);
-      T result = default(T);
+      var result = default(T);
       try
       {
         result = await gracefulClient.ExecuteRequest<T>(requestString, method: HttpMethod.Get, customHeaders:headers, retries: 0, suppressExceptionLogging: true);
@@ -803,7 +800,7 @@ namespace VSS.TCCFileAccess
       Log.LogDebug("CreateFileJob: filespaceId={0}, path={1}", filespaceId, path);
       try
       {
-        CreateFileJobParams jobParams = new CreateFileJobParams
+        var jobParams = new CreateFileJobParams
         {
           filespaceid = filespaceId,
           path = path,//WebUtility.UrlEncode(path),
@@ -844,7 +841,7 @@ namespace VSS.TCCFileAccess
       Log.LogDebug("CheckFileJobStatus: jobId={0}", jobId);
       try
       {
-        CheckFileJobStatusParams statusParams = new CheckFileJobStatusParams
+        var statusParams = new CheckFileJobStatusParams
         {
           jobid = jobId
         };
@@ -852,9 +849,8 @@ namespace VSS.TCCFileAccess
         if (statusResult != null)
         {
           if (statusResult.success)
-          {
             return statusResult;
-          }
+
           CheckForInvalidTicket(statusResult, "CheckFileJobStatus");
           return null;
         }
@@ -871,7 +867,7 @@ namespace VSS.TCCFileAccess
       Log.LogDebug("GetFileJobResult: fileId={0}", fileId);
       try
       {
-        GetFileJobResultParams resultParams = new GetFileJobResultParams
+        var resultParams = new GetFileJobResultParams
         {
           fileid = fileId
         };
@@ -895,7 +891,7 @@ namespace VSS.TCCFileAccess
         srcFilespaceId, srcPath, dstFilespaceId, dstPath, zoomLevel);
       try
       {
-        ExportToWebFormatParams exportParams = new ExportToWebFormatParams
+        var exportParams = new ExportToWebFormatParams
         {
           sourcefilespaceid = srcFilespaceId,
           sourcepath = srcPath,
@@ -910,9 +906,8 @@ namespace VSS.TCCFileAccess
         if (exportResult != null)
         {
           if (exportResult.success)
-          {
             return exportResult.jobId;
-          }
+
           CheckForInvalidTicket(exportResult, "ExportToWebFormat");
           return null;
         }
@@ -929,7 +924,7 @@ namespace VSS.TCCFileAccess
       Log.LogDebug("CheckExportJob: jobId={0}", jobId);
       try
       {
-        CheckExportJobParams checkParams = new CheckExportJobParams
+        var checkParams = new CheckExportJobParams
         {
           jobid = jobId
         };
@@ -937,9 +932,8 @@ namespace VSS.TCCFileAccess
         if (checkResult != null)
         {
           if (checkResult.success)
-          {
             return checkResult.status;
-          }
+
           CheckForInvalidTicket(checkResult, "CheckExportJob");
           return null;
         }

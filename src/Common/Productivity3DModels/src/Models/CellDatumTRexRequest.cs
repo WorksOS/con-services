@@ -69,6 +69,18 @@ namespace VSS.Productivity3D.Models.Models
     public bool CoordsAreGrid => GridPoint != null;
 
     /// <summary>
+    /// Any overriding machine targets
+    /// </summary>
+    [JsonProperty(Required = Required.Always)]
+    public OverridingTargets Overrides { get; private set; }
+
+    /// <summary>
+    /// Settings for lift analysis
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public LiftSettings LiftSettings { get; private set; }
+
+    /// <summary>
     /// Default private constructor
     /// </summary>
     private CellDatumTRexRequest()
@@ -84,7 +96,9 @@ namespace VSS.Productivity3D.Models.Models
       Point gridPoint,
       FilterResult filter,
       Guid? designUid,
-      double? offset)
+      double? offset,
+      OverridingTargets overrides,
+      LiftSettings liftSettings)
     {
       ProjectUid = projectUid;
       DisplayMode = displayMode;
@@ -93,6 +107,8 @@ namespace VSS.Productivity3D.Models.Models
       Filter = filter;
       DesignUid = designUid;
       Offset = offset;
+      Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
 
@@ -130,6 +146,9 @@ namespace VSS.Productivity3D.Models.Models
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid designUid"));
       }
+
+      Overrides?.Validate();
+      LiftSettings?.Validate();
     }
   }
 }

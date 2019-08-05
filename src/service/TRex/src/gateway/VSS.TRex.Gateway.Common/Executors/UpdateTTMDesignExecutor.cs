@@ -4,10 +4,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
@@ -50,7 +49,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns></returns>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as DesignRequest;
       if (request == null)
@@ -83,8 +82,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         // load core file from s3 to local
         var localPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
         var localPathAndFileName = Path.Combine(new[] { localPath, request.FileName });
-        TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-        var designLoadResult = ttm.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
+        var ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+        var designLoadResult = await ttm.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# UpdateTTMDesignExecutor. Loading of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
@@ -103,7 +102,7 @@ namespace VSS.TRex.Gateway.Common.Executors
               RequestErrorStatus.DesignImportUnableToUpdateDesign, designLoadResult.ToString());
         }
 
-        BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+        var extents = new BoundingWorldExtent3D();
         ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
@@ -130,6 +129,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         //  TTM.LoadFromFile() will have created these 2 files. We need to store them on S3 to reload cache when required
         S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
         S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+        S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
 
         log.LogInformation($"#Out# UpdateTTMDesignExecutor. Processed update design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }
@@ -143,15 +143,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       return new ContractExecutionResult();
     }
-
-
+    
     /// <summary>
-    /// Processes the request asynchronously.
+    /// Processes the request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
-
   }
 }

@@ -14,16 +14,6 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
-    /// The flag is to indicate whether or not the machine Pass Count target range to be user overrides.
-    /// </summary>
-    public bool OverrideTargetPassCount { get; set; }
-
-    /// <summary>
-    /// Pass Count target range.
-    /// </summary>
-    public PassCountRangeRecord OverridingTargetPassCountRange;
-
-    /// <summary>
     /// Pass Count details values.
     /// </summary>
     public int[] PassCountDetailValues { get; set; }
@@ -38,10 +28,6 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteBoolean(OverrideTargetPassCount);
-
-      OverridingTargetPassCountRange.ToBinary(writer);
-
       writer.WriteIntArray(PassCountDetailValues);
     }
 
@@ -54,10 +40,6 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
       base.FromBinary(reader);
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
-      OverrideTargetPassCount = reader.ReadBoolean();
-
-      OverridingTargetPassCountRange.FromBinary(reader);
 
       PassCountDetailValues = reader.ReadIntArray();
     }

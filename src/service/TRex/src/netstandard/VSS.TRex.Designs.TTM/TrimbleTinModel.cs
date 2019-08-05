@@ -163,8 +163,8 @@ namespace VSS.TRex.Designs.TTM
       Header.FileMajorVersion = Consts.TTMMajorVersion;
       Header.FileMinorVersion = Consts.TTMMinorVersion;
 
-      Header.CoordinateUnits = 1; // Metres
-      Header.VertexValueUnits = 1; // Metres
+      Header.CoordinateUnits = 1; // Meters
+      Header.VertexValueUnits = 1; // Meters
       Header.InterpolationMethod = 1; // Linear
 
       SetUpSizes();
@@ -210,16 +210,16 @@ namespace VSS.TRex.Designs.TTM
       }
     }
 
-    public void LoadFromFile(string FileName)
+    public void LoadFromFile(string fileName)
     {
-      using (var ms = new MemoryStream(File.ReadAllBytes(FileName)))
+      using (var ms = new MemoryStream(File.ReadAllBytes(fileName)))
       {
         LoadFromStream(ms);
       }
 
       if (ModelName.Length == 0)
       {
-        ModelName = Path.ChangeExtension(Path.GetFileName(FileName), "");
+        ModelName = Path.GetFileNameWithoutExtension(fileName);
       }
     }
 

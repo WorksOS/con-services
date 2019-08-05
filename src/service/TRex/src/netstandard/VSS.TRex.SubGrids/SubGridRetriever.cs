@@ -389,7 +389,7 @@ namespace VSS.TRex.SubGrids
     /// Retrieves cell values for a sub grid stripe at a time.
     /// </summary>
     /// <returns></returns>
-    private void RetrieveSubGridStripe(byte StripeIndex)
+    private void RetrieveSubGridStripe(byte StripeIndex, ILiftParameters liftParams)
     {
       //  int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
@@ -500,7 +500,7 @@ namespace VSS.TRex.SubGrids
 
               // if (Debug_ExtremeLogSwitchD)  Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Calling BuildLiftsForCell");
 
-              if (_profiler.CellLiftBuilder.Build(_cellProfile, _clientGrid,
+              if (_profiler.CellLiftBuilder.Build(_cellProfile, liftParams, _clientGrid,
                 _assignmentContext, // Place a filtered value into this assignment context
                 _cellPassIterator, // Iterate over the cells using this cell pass iterator
                 true)) // Return an individual filtered value
@@ -561,8 +561,8 @@ namespace VSS.TRex.SubGrids
             _clientGrid.AssignFilteredValue(StripeIndex, J, _assignmentContext);
           else
           {
-            if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) && (Dummy_LiftBuildSettings.CCVSummaryTypes == 0 || !Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
-                ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) && (Dummy_LiftBuildSettings.MDPSummaryTypes == 0 || !Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
+            if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) && (liftParams.CCVSummaryTypes == 0 || !liftParams.CCVSummarizeTopLayerOnly)) ||
+                ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) && (liftParams.MDPSummaryTypes == 0 || !liftParams.MDPSummarizeTopLayerOnly)) ||
                 // ReSharper disable once UseMethodAny.0
                 _cellProfile.Layers.Count() > 0 ||
                 _gridDataType == GridDataType.CCA || _gridDataType == GridDataType.CCAPercent) // no CCA settings
@@ -635,7 +635,8 @@ namespace VSS.TRex.SubGrids
       _segmentIterator.Directory = _subGridAsLeaf.Directory;
     }
 
-    public ServerRequestResult RetrieveSubGrid(// liftBuildSettings          : TICLiftBuildSettings;
+    public ServerRequestResult RetrieveSubGrid(IOverrideParameters overrides,
+      ILiftParameters liftParams,
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
@@ -676,7 +677,7 @@ namespace VSS.TRex.SubGrids
         _profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
         _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, new FilterSet(_filter),
-          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None);
+          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None, overrides, liftParams);
 
         _cellProfile = new ProfileCell();
 
@@ -765,6 +766,8 @@ namespace VSS.TRex.SubGrids
 
         // TODO Add when cell left build settings supported
         // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
+        _assignmentContext.Overrides = overrides;
+        _assignmentContext.LiftParams = liftParams;
 
         // Determine if a sieve filter is required for the sub grid where the sieve matches
         // the X and Y pixel world size (used for WMS tile computation)
@@ -795,7 +798,7 @@ namespace VSS.TRex.SubGrids
 
         // Iterate over the stripes in the sub grid processing each one in turn.
         for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
-          RetrieveSubGridStripe(I);
+          RetrieveSubGridStripe(I, liftParams);
 
         //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {clientGrid.OriginX}x{clientGrid.OriginY}");
 

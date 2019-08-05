@@ -188,6 +188,11 @@ namespace VSS.TRex.SubGridTrees.Server
             // Briefly lock this sub grid just for the period required to read its contents
             Result = SubGrid.LoadDirectoryFromFile(storageProxy, FullFileName);
           }
+          else
+          {
+            // A previous thread has already read the directory so there is nothing more to do, return a true result.
+            return true;
+          }
         }
       }
       finally

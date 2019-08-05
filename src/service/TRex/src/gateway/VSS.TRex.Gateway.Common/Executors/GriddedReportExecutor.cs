@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
@@ -30,7 +29,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionReportGridTRexRequest;
       if (request == null)
@@ -46,7 +45,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var griddedReportRequestArgument = AutoMapperUtility.Automapper.Map<GriddedReportRequestArgument>(request);
       griddedReportRequestArgument.Filters = new FilterSet(filter);
 
-      var response = tRexRequest.Execute(griddedReportRequestArgument);
+      var response = await tRexRequest.ExecuteAsync(griddedReportRequestArgument);
       var result = new GriddedReportResult()
       {
         ReturnCode = response?.ReturnCode ?? ReportReturnCode.UnknownError,
@@ -59,11 +58,11 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
     /// <summary>
-    /// Processes the request asynchronously.
+    /// Processes the tile request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

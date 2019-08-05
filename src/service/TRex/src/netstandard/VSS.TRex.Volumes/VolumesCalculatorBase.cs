@@ -354,7 +354,7 @@ namespace VSS.TRex.Volumes
                                    ((FPipeLine.OperationNode.NumPendingResultsReceived > 0) or (FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0)) then
                                   SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d): #Progress# - Scanned = %d, Submitted = %d, Processed = %d (with %d pending and %d results outstanding)',
                                                                           [Self.ClassName,
-                                                                           FRequestDescriptor, FPipeline.DataModelID,
+                                                                           FRequestDescriptor, FPipeline.ProjectUid,
                                                                            FPipeLine.SubmissionNode.TotalNumberOfSubgridsScanned,
                                                                            FPipeLine.SubmissionNode.TotalSumbittedSubgridRequests,
                                                                            FPipeLine.OperationNode.TotalOperatedOnSubgrids,
@@ -369,7 +369,7 @@ namespace VSS.TRex.Volumes
                                     if (FPipeLine.OperationNode.NumPendingResultsReceived > 0) or (FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0) then
                                       SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d) being aborted as it''s completed event has remained set but still has work to do (%d outstanding subgrids, %d pending results to process) over a sleep epoch',
                                                                             [Self.ClassName,
-                                                                             FRequestDescriptor, FPipeline.DataModelID,
+                                                                             FRequestDescriptor, FPipeline.ProjectUid,
                                                                              FPipeLine.OperationNode.OustandingSubgridsToOperateOn,
                                                                              FPipeLine.OperationNode.NumPendingResultsReceived]), slmcError);
                                     FPipeLine.Abort;
@@ -381,7 +381,7 @@ namespace VSS.TRex.Volumes
                                     if (FPipeLine.OperationNode.NumPendingResultsReceived > 0) or (FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0) then
                                       SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d) has it''s completed event set but still has work to do (%d outstanding subgrids, %d pending results to process)',
                                                                             [Self.ClassName,
-                                                                             FRequestDescriptor, FPipeline.DataModelID,
+                                                                             FRequestDescriptor, FPipeline.ProjectUid,
                                                                              FPipeLine.OperationNode.OustandingSubgridsToOperateOn,
                                                                              FPipeLine.OperationNode.NumPendingResultsReceived]), slmcDebug);
                                     Sleep(500);

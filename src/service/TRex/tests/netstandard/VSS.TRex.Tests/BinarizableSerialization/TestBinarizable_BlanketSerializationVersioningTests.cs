@@ -161,7 +161,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       // For each of the former it should be possible to write a version number into the start of
       // an IFromToBinary based serialization implementing Ignite IBinarizable serialization).
       // For each of the latter we should find the inherited member that implement the version 
-      // number and perform the same check against the base class serialization (ie: So the the base
+      // number and perform the same check against the base class serialization (ie: So that the base
       // serialization is exercised through the type instance)
 
       var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;

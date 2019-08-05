@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
@@ -10,6 +11,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
@@ -29,12 +31,12 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CellPassesTRexRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException<CellDatumTRexRequest>();
+        ThrowRequestTypeCastException<CellPassesTRexRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
@@ -43,12 +45,15 @@ namespace VSS.TRex.Gateway.Common.Executors
         : AutoMapperUtility.Automapper.Map<XYZ>(request.LLPoint);
 
       var cellPassesApplicationService = new CellPassesRequest_ApplicationService();
-      var response = cellPassesApplicationService.Execute(new CellPassesRequestArgument_ApplicationService
+      var response = await cellPassesApplicationService.ExecuteAsync(new CellPassesRequestArgument_ApplicationService
       {
         ProjectID = siteModel.ID,
         Filters =  new FilterSet(filter),
         CoordsAreGrid = request.CoordsAreGrid,
         Point = coords,
+        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings),
+        //NOTE: Currently cell passes is raw data so does not use overriding targets
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
       });
 
       if(response.ReturnCode != CellPassesReturnCode.DataFound)
@@ -143,6 +148,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         case VibrationState.Invalid: return VibrationStateType.Invalid;
         default: throw new ArgumentException($"Unknown TICVibrationState type: {cellPassEventVibrationState}");
       }
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

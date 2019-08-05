@@ -1,10 +1,11 @@
 ﻿using System;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
+using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
-using VSS.TRex.Profiling.Models;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
@@ -40,17 +39,17 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns></returns>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionTagFileRequest;
 
-      ContractExecutionResult result = new ContractExecutionResult((int)TRexTagFileResultCode.TRexUnknownException, "TRex unknown result (TagFileExecutor.ProcessEx)");
+      var result = new ContractExecutionResult((int)TRexTagFileResultCode.TRexUnknownException, "TRex unknown result (TagFileExecutor.ProcessEx)");
 
       try
       {
         log.LogInformation($"#In# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUid}, TCCOrgID:{request.OrgId}");
 
-        SubmitTAGFileRequest submitRequest = new SubmitTAGFileRequest();
+        var submitRequest = new SubmitTAGFileRequest();
 
         var arg = new SubmitTAGFileRequestArgument
         {
@@ -61,7 +60,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           TCCOrgID = request.OrgId
         };
 
-        var res = submitRequest.Execute(arg);
+        var res = await submitRequest.ExecuteAsync(arg);
 
         if (res.Success)
           result = TagFileResult.Create(0, ContractExecutionResult.DefaultMessage);
@@ -78,17 +77,15 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       }
       return result;
-
     }
 
 
     /// <summary>
-    /// Processes the tag file request asynchronously.
+    /// Processes the tile request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
-
   }
 }

@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
@@ -230,18 +231,24 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
 
     private Task<CellPassesV2Result> GetTRexCellPasses(CellPassesRequest request)
     {
+      var overrides = AutoMapperUtility.Automapper.Map<OverridingTargets>(request.liftBuildSettings);
+      var liftSettings = AutoMapperUtility.Automapper.Map<LiftSettings>(request.liftBuildSettings);
       CellPassesTRexRequest tRexRequest;
       if (request.probePositionGrid != null)
       {
         tRexRequest = new CellPassesTRexRequest(request.ProjectUid.Value,
           request.probePositionGrid,
-          request.filter);
+          request.filter,
+          overrides,
+          liftSettings);
       }
       else
       {
         tRexRequest = new CellPassesTRexRequest(request.ProjectUid.Value,
           request.probePositionLL,
-          request.filter);
+          request.filter,
+          overrides,
+          liftSettings);
       }
 
       return trexCompactionDataProxy.SendDataPostRequest<CellPassesV2Result, CellPassesTRexRequest>(tRexRequest, "/cells/passes", customHeaders);

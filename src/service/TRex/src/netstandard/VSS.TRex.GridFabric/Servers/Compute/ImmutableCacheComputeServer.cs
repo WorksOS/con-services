@@ -60,7 +60,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         "-XX:+UseG1GC"
       };
 
-      cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
+      cfg.JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_HEAP_SIZE_MB);
       cfg.UserAttributes = new Dictionary<string, object>
             {
                 { "Owner", TRexGrids.ImmutableGridName() }
@@ -171,7 +171,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.Backups = 0;
     }
 
-    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
     {
       Console.WriteLine($"CacheConfig is: {CacheCfg}");
       Console.WriteLine($"immutableTRexGrid is : {immutableTRexGrid}");
@@ -207,11 +207,39 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         KeepBinaryInStore = true,
         CacheMode = CacheMode.Replicated,
 
-        // No backups for now
+        // TODO: No backups for now
         Backups = 0,
 
         DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION
       });
+    }
+
+    /// <summary>
+    /// Create the cache that holds the per project, per machine, change maps driven by TAG file ingest
+    /// Note: This machine based information is distinguished from that in the non-spatial cache in that
+    /// it is partitioned, rather than replicated.
+    /// </summary>
+    private void InstantiateSiteModelMachinesChangeMapsCacheReference()
+    {
+      immutableTRexGrid.GetOrCreateCache<ISiteModelMachineAffinityKey, byte[]>(new CacheConfiguration
+      {
+        Name = TRexCaches.SiteModelChangeMapsCacheName(),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Partitioned,
+
+        // TODO: No backups for now
+        Backups = 0,
+
+        DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION,
+
+        // Configure the function that maps the change maps to nodes in the grid
+        // Note: This cache uses the mutable spatial affinity function that assigns data for 
+        // a site model onto a single node. For the purposes of the immutable grid, it is helpful
+        // to contain all change maps for a single site model as this simplifies the process of
+        // updating those change maps in response to messages from production data ingest 
+        // TODO: Make a particular Immutable version of this affinity function to improve naming consistency when we no longer require the Java affinity function implementations
+        AffinityFunction = new MutableSpatialAffinityFunction()
+    });
     }
 
     public void StartTRexGridCacheNode()
@@ -238,9 +266,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       // Add the immutable Spatial & NonSpatial caches
 
-      CacheConfiguration CacheCfg = new CacheConfiguration();
+      var CacheCfg = new CacheConfiguration();
       ConfigureNonSpatialImmutableCache(CacheCfg);
-      NonSpatialImmutableCache = InstantiateTRexCacheReference(CacheCfg);
+      NonSpatialImmutableCache = InstantiateNonSpatialTRexCacheReference(CacheCfg);
 
       //CacheCfg = new CacheConfiguration();
       var spatialCacheConfiguration = immutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.ImmutableSpatialCacheName()));
@@ -249,6 +277,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       SpatialImmutableCache = InstantiateSpatialCacheReference(spatialCacheConfiguration);
 
       InstantiateSiteModelsCacheReference();
+      InstantiateSiteModelMachinesChangeMapsCacheReference();
     }
   }
 }

@@ -5,7 +5,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.Abstractions
 {
   public interface IL2ConnectedSiteMessage : IConnectedSiteMessage
   {
-    [JsonProperty("timestamp")]
+    [JsonProperty("ts")]
     DateTime? Timestamp { get; set; }
 
     [JsonProperty("designName")]

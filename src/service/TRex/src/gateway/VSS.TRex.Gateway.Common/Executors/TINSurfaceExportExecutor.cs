@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.SiteModels.Interfaces;
 using TINSurfaceExportResult = VSS.TRex.Gateway.Common.ResultHandling.TINSurfaceExportResult;
 
@@ -40,7 +40,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       return siteModel.SurveyedSurfaces == null || includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionSurfaceExportRequest;
 
@@ -52,22 +52,24 @@ namespace VSS.TRex.Gateway.Common.Executors
       var filter = ConvertFilter(request?.Filter, siteModel);
 
       var tinRequest = new TINSurfaceRequest();
-      var response = tinRequest.Execute(new TINSurfaceRequestArgument
+      var response = await tinRequest.ExecuteAsync(new TINSurfaceRequestArgument
       {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          Tolerance = request?.Tolerance ?? 0.0
+          Tolerance = request?.Tolerance ?? 0.0,
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+          LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
       });
 
       return TINSurfaceExportResult.CreateTINResult(response.data);
     }
 
     /// <summary>
-    /// Processes the surface request asynchronously.
+    /// Processes the tile request synchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

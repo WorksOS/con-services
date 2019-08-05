@@ -13,7 +13,7 @@ namespace VSS.TRex.Designs
 
         // private FSearchStamps : TPAWord = null;
 
-        private StreamWriter writer = new StreamWriter(@"C:\Temp\DTreeProgress-CSharp.txt", false);
+        private StreamWriter writer = new StreamWriter(@"C:\Temp\DTreeProgress-CSharp.txt", false) { NewLine = "\r\n" };
 
         void AddTriangle(Triangle Tri, int Index)
         {

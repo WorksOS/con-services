@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
@@ -21,7 +22,7 @@ namespace VSS.TRex.Designs
 
     //      property MemorySizeInKB : Integer read GetMemorySizeInKB;
 
-    public long DataModelID { get; set; } = -1;
+    public Guid ProjectUid { get; set; }
 
     protected DesignBase()
     {
@@ -35,7 +36,8 @@ namespace VSS.TRex.Designs
 
     public abstract DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);
 
-    public abstract DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false);
+    public abstract Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
+      bool loadIndices = false);
 
     public abstract void GetExtents(out double x1, out double y1, out double x2, out double y2);
 
@@ -54,15 +56,15 @@ namespace VSS.TRex.Designs
     // ComputeFilterPatch computes a bit set representing which cells in the
     // sub grid will be selected within the filter (i.e. the design forms a mask
     // over the production data where the cells 'under' the design are considered
-    // to be in the filtered set. The Mask parameter allows the caller to restrict
+    // to be in the filtered set. The mask parameter allows the caller to restrict
     // the set of cells in the sub grid to be filtered, allowing additional spatial
     // filtering operations to be applied prior to this filtering step.
-    public abstract bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
-      SubGridTreeBitmapSubGridBits Mask,
-      SubGridTreeBitmapSubGridBits Patch,
-      double OriginX, double OriginY,
-      double CellSize,
-      double Offset);
+    public abstract bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset,
+      SubGridTreeBitmapSubGridBits mask,
+      SubGridTreeBitmapSubGridBits patch,
+      double originX, double originY,
+      double cellSize,
+      double offset);
 
     public void WindLock() => Interlocked.Increment(ref FLockCount);
 
@@ -86,5 +88,7 @@ namespace VSS.TRex.Designs
     public void ReleaseExclusiveInterlock() => Monitor.Exit(this);
 
     public abstract List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
+
+    public abstract List<Fence> GetBoundary();
   }
 }

@@ -3,12 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.Productivity3D.Scheduler.WebAPI.JobRunner;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.Scheduler.Tests
 {
@@ -24,11 +26,13 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestInitialize]
     public void TestInitialize()
     {
-      var services = new ServiceCollection();
-      services.AddSingleton<MockTileGenerationJob>();
-      serviceProvider = services
-        .AddLogging()
-        .BuildServiceProvider();
+      var logger = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Scheduler.UnitTests"));
+      var serviceCollection = new ServiceCollection();
+
+      serviceProvider = serviceCollection.AddLogging()
+                       .AddSingleton(logger)
+                       .AddSingleton<MockTileGenerationJob>()
+                       .BuildServiceProvider();
 
       loggerFactory = serviceProvider.GetService<ILoggerFactory>();
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Analytics.CCAStatistics;
 using VSS.TRex.Analytics.CCAStatistics.GridFabric;
@@ -66,7 +67,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryCCAStatistics_EmptySiteModel_FullExtents()
+    public async Task Test_SummaryCCAStatistics_EmptySiteModel_FullExtents()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -74,14 +75,14 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new CCAStatisticsOperation();
 
-      var ccaStatisticsResult = operation.Execute(SimpleCCAStatisticsArgument(siteModel));
+      var ccaStatisticsResult = await operation.ExecuteAsync(SimpleCCAStatisticsArgument(siteModel));
 
       ccaStatisticsResult.Should().NotBeNull();
       ccaStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
     }
 
     [Fact]
-    public void Test_SummaryCCAStatistics_SiteModelWithSingleCell_FullExtents_NoTarget()
+    public async Task Test_SummaryCCAStatistics_SiteModelWithSingleCell_FullExtents_NoTarget()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -89,7 +90,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT);
       var operation = new CCAStatisticsOperation();
 
-      var ccaStatisticsResult = operation.Execute(SimpleCCAStatisticsArgument(siteModel));
+      var ccaStatisticsResult = await operation.ExecuteAsync(SimpleCCAStatisticsArgument(siteModel));
 
       ccaStatisticsResult.Should().NotBeNull();
       ccaStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -105,7 +106,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryCCAStatistics_SiteModelWithSingleCell_FullExtents()
+    public async Task Test_SummaryCCAStatistics_SiteModelWithSingleCell_FullExtents()
     {
       const byte TARGET_CCA = 5;
 
@@ -115,7 +116,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       var siteModel = BuildModelForSingleCellCCA(CCA_INCREMENT, TARGET_CCA);
       var operation = new CCAStatisticsOperation();
 
-      var ccaStatisticsResult = operation.Execute(SimpleCCAStatisticsArgument(siteModel));
+      var ccaStatisticsResult = await operation.ExecuteAsync(SimpleCCAStatisticsArgument(siteModel));
 
       ccaStatisticsResult.Should().NotBeNull();
       ccaStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);

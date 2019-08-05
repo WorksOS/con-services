@@ -1,4 +1,5 @@
-﻿using VSS.TRex.SubGridTrees.Interfaces;
+﻿using VSS.TRex.Common.Models;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Filters.Models
 {
@@ -36,6 +37,10 @@ namespace VSS.TRex.Filters.Models
 
         public object /*IProfileCell*/ CellProfile { get; set; }
 
+        public IOverrideParameters Overrides { get; set; }
+
+        public ILiftParameters LiftParams { get; set; }
+
         // TODO     LiftBuildSettings: TICLiftBuildSettings;
 
         /// <summary>
@@ -55,7 +60,9 @@ namespace VSS.TRex.Filters.Models
             FilteredValue.Clear();
             PreviousFilteredValue.Clear();
             CellProfile = null;
-            LowestPassIdx = Common.Consts.NullLowestPassIdx ;
+            LowestPassIdx = Common.Consts.NullLowestPassIdx;
+            Overrides = new OverrideParameters();
+            LiftParams = new LiftParameters();
 //          todo  LiftBuildSettings = Nil;
         }
     }

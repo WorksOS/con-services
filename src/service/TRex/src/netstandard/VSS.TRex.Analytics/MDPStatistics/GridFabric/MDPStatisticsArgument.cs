@@ -1,8 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Records;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
 {
@@ -12,21 +10,6 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   public class MDPStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
-
-    /// <summary>
-    /// The flag is to indicate whether or not the machine MDP target to be user overrides.
-    /// </summary>
-    public bool OverrideMachineMDP { get; set; }
-
-    /// <summary>
-    /// User overriding MDP target value.
-    /// </summary>
-    public short OverridingMachineMDP { get; set; }
-
-    /// <summary>
-    /// MDP percentage range.
-    /// </summary>
-    public MDPRangePercentageRecord MDPPercentageRange;
 
     /// <summary>
     /// MDP details values.
@@ -43,11 +26,6 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteBoolean(OverrideMachineMDP);
-      writer.WriteShort(OverridingMachineMDP);
-
-      MDPPercentageRange.ToBinary(writer);
-
       writer.WriteIntArray(MDPDetailValues);
     }
 
@@ -60,11 +38,6 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
       base.FromBinary(reader);
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
-      OverrideMachineMDP = reader.ReadBoolean();
-      OverridingMachineMDP = reader.ReadShort();
-
-      MDPPercentageRange.FromBinary(reader);
 
       MDPDetailValues = reader.ReadIntArray();
     }

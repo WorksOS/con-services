@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
@@ -36,15 +37,6 @@ namespace VSS.TRex.Profiling.Factories
     /// <summary>
     /// Creates a new builder responsible for analyzing profile information for a cell or cells identified along a profile line
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="pDExistenceMap"></param>
-    /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
-    /// <param name="referenceDesignWrapper"></param>
-    /// <param name="cellLiftBuilder"></param>
-    /// <param name="profileStyle"></param>
-    /// <param name="volumeComputationType"></param>
-    /// <returns></returns>
     public ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
       ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
@@ -52,13 +44,15 @@ namespace VSS.TRex.Profiling.Factories
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
-      VolumeComputationType volumeComputationType)
+      VolumeComputationType volumeComputationType,
+      IOverrideParameters overrides,
+      ILiftParameters liftParams)
     {
       switch (profileStyle)
       {
         case ProfileStyle.CellPasses:
-          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
-            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder);
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder, overrides, liftParams);
 
         case ProfileStyle.SummaryVolume:
           return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, ICellProfileAnalyzer<T>>>()

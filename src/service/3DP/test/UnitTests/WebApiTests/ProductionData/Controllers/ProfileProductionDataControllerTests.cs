@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -56,7 +57,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     /// </summary>
     /// 
     [TestMethod]
-    public void PD_PostProfileProductionDataSuccessful()
+    public async Task PD_PostProfileProductionDataSuccessful()
     {
       ProfileProductionDataRequest request = CreateRequest();
 
@@ -90,9 +91,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       mockRaptorClient.Setup(prj => prj.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()/*args*/)).Returns(raptorResult);
 
       // Create an executor...
-      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      ContractExecutionResult result = executor.Process(request);
+      var result = await executor.ProcessAsync(request);
 
       // Assert
       Assert.IsNotNull(result);
@@ -133,9 +134,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       mockRaptorClient.Setup(prj => prj.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()/*args*/)).Returns(raptorResult);
 
       // Create an executor...
-      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
+      var executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
     }
   }
 }

@@ -8,6 +8,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
+using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -55,7 +56,7 @@ namespace VSS.Tile.Service.Common.Executors
         files = request3d.files?.ToList();
         zoomLevel = request3d.zoomLevel;
         numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
-        topLeftTile = new Point { x = request3d.xTile, y = request3d.yTile };
+        topLeftTile = new Point {x = request3d.xTile, y = request3d.yTile};
       }
       else
       {
@@ -72,6 +73,7 @@ namespace VSS.Tile.Service.Common.Executors
         {
           emptyOverlayData = bitmap.BitmapToByteArray();
         }
+
         return new TileResult(emptyOverlayData);
       }
 
@@ -80,16 +82,34 @@ namespace VSS.Tile.Service.Common.Executors
       var tileList = new List<byte[]>();
       var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
 
+      //For GeoTIFF files, use the latest version of a file
+      var geoTiffFiles = files.Where(x => x.ImportedFileType == ImportedFileType.GeoTiff).ToList();
+      if (geoTiffFiles.Any())
+      {
+        //Find any with multiple versions and remove old ones from the list
+        var latestFiles = geoTiffFiles.GroupBy(g => g.Name).Select(g => g.OrderBy(o => o.SurveyedUtc).Last()).ToList();
+        foreach (var geoTiffFile in geoTiffFiles)
+        {
+          if (!latestFiles.Contains(geoTiffFile))
+          {
+            files.Remove(geoTiffFile);
+          }
+        }
+      }
+
       var fileTasks = files.Select(async file =>
       {
         //foreach (var file in request.files)
         //Check file type to see if it has tiles
-        if (file.ImportedFileType == ImportedFileType.Linework || 
+        if (file.ImportedFileType == ImportedFileType.Linework ||
             file.ImportedFileType == ImportedFileType.Alignment ||
             file.ImportedFileType == ImportedFileType.GeoTiff)
         {
           var fullPath = DataOceanFileUtil.DataOceanPath(rootFolder, file.CustomerUid, file.ProjectUid);
-          var fileName = DataOceanFileUtil.GeneratedFileName(file.Name, file.ImportedFileType);
+          var fileName = DataOceanFileUtil.DataOceanFileName(file.Name,
+            file.ImportedFileType == ImportedFileType.SurveyedSurface || file.ImportedFileType == ImportedFileType.GeoTiff,
+            Guid.Parse(file.ImportedFileUid), file.SurveyedUtc);
+          fileName = DataOceanFileUtil.GeneratedFileName(fileName, file.ImportedFileType);
 
           if (zoomLevel >= file.MinZoomLevel)
           {
@@ -109,6 +129,7 @@ namespace VSS.Tile.Service.Common.Executors
               log.LogDebug(
                 "DxfTileExecutor: difference between requested and maximum zooms too large; not even going to try to scale tile");
             }
+
             if (tileData != null && tileData.Length > 0)
             {
               tileList.Add(tileData);

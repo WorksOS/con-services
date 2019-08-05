@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.Analytics.Common;
@@ -16,7 +17,8 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet(new CombinedFilter()),
-      TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 100)
+      Overrides = new OverrideParameters
+      { TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 100) }
     };
 
     private SpeedStatisticsCoordinator _getCoordinator()
@@ -48,8 +50,8 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
-      Assert.True(aggregator.TargetMachineSpeed.Max == Arg.TargetMachineSpeed.Max, "Invalid aggregator value for TargetMachineSpeed.Max.");
-      Assert.True(aggregator.TargetMachineSpeed.Min == Arg.TargetMachineSpeed.Min, "Invalid aggregator value for TargetMachineSpeed.Min.");
+      Assert.True(aggregator.TargetMachineSpeed.Max == Arg.Overrides.TargetMachineSpeed.Max, "Invalid aggregator value for TargetMachineSpeed.Max.");
+      Assert.True(aggregator.TargetMachineSpeed.Min == Arg.Overrides.TargetMachineSpeed.Min, "Invalid aggregator value for TargetMachineSpeed.Min.");
     }
 
     [Fact]

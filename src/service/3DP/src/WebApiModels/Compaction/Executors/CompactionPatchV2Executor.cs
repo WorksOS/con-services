@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using SVOICVolumeCalculationsDecls;
@@ -14,6 +15,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
@@ -29,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ProcessErrorCodes();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.
@@ -37,20 +39,20 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         var request = CastRequestObjectTo<PatchRequest>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PATCHES"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES") ?? false)
         {
 #endif
           var patchDataRequest = new PatchDataRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Filter1,
             request.Filter2,
             request.Mode,
             request.PatchNumber,
-            request.PatchSize);
+            request.PatchSize,
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
 
-          var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders).Result;
+          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders);
 
           return fileResult.Length > 0
               ? ConvertPatchResult(fileResult, true)
@@ -233,6 +235,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           dataPatchSubgridCount,
           subgrids);
       }
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

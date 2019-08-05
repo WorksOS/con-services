@@ -63,7 +63,6 @@
     <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />
 
     <Compile Remove=".\ProductionData\Executors\CellPassesExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\DesignExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\EditDataExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\GetEditDataExecutor.cs" />
@@ -77,7 +76,6 @@
 
     <Compile Remove=".\Report\Executors\ConfigExecutor.cs" />
     <Compile Remove=".\Report\Executors\ExportGridCSVExecutor.cs" />
-    <Compile Remove=".\Report\Executors\ExportReportExecutor.cs" />
     <Compile Remove=".\Report\Executors\SummaryThicknessExecutor.cs" />
     <Compile Remove=".\Report\Executors\SummaryVolumesExecutor.cs" />
     <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />

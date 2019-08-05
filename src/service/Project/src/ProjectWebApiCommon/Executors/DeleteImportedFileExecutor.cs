@@ -4,10 +4,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -87,22 +89,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                 log, serviceExceptionHandler, fileRepo, projectRepo)
               .ConfigureAwait(false);
 
+            var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(deleteImportedFile.FileDescriptor.FileName,
+              deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface || deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff,
+              deleteImportedFile.ImportedFileUid, deleteImportedFile.SurveyedUtc);
+
             importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
-              deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.DataOceanRootFolder, customerUid,
+              dataOceanFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
               deleteImportedFile.ProjectUid,
               deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
 
             if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
-                deleteImportedFile.ImportedFileType == ImportedFileType.Linework)
+                deleteImportedFile.ImportedFileType == ImportedFileType.Linework ||
+                deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff)
             {
               var tasks = new List<Task>();
               //delete generated DXF tiles
-              var dxfFileName = deleteImportedFile.ImportedFileType == ImportedFileType.Linework
-                ? deleteImportedFile.FileDescriptor.FileName
-                : DataOceanFileUtil.GeneratedFileName(deleteImportedFile.FileDescriptor.FileName,
-                  deleteImportedFile.ImportedFileType);
-
-              tasks.Add(pegasusClient.DeleteDxfTiles(dxfFileName, DataOceanHelper.CustomHeaders(authn)));
+              string dxfFileName = DataOceanFileUtil.GeneratedFileName(dataOceanFileName, deleteImportedFile.ImportedFileType);
+              tasks.Add(pegasusClient.DeleteTiles(dxfFileName, DataOceanHelper.CustomHeaders(authn)));
 
               if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
               {

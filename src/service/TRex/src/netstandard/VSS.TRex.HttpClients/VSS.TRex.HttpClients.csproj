@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\VSS.Tpaas.Client\src\VSS.Tpaas.Client.csproj" />
     <ProjectReference Include="..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
   </ItemGroup>

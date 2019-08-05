@@ -14,7 +14,7 @@ namespace VSS.DataOcean.Client.UnitTests
     public void CanCreateValidDataOceanFileUtil(string extension)
     {
       var fileName = $"/dev/folder-one/folder-two/dummy.{extension}";
-      var file = new DataOceanFileUtil(fileName);
+      _ = new DataOceanFileUtil(fileName);
     }
 
     [Fact]
@@ -43,5 +43,27 @@ namespace VSS.DataOcean.Client.UnitTests
         $"{pathAndName}{DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX}/tiles/{expectedName}.json";
       Assert.Equal(expectedMetadata, metadataName);
     }
+
+    [Theory]
+    [InlineData("some name.dxf")]
+    [InlineData("下絵.dxf")]
+    public void DataOceanFileNameShouldContainAGuid(string fileName)
+    {
+      var fileUid = Guid.NewGuid();
+      var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(fileName, false, fileUid, null);
+      Assert.StartsWith(fileUid.ToString(), dataOceanFileName);
+    }
+
+    [Fact]
+    public void DataOceanFileNameForGeotiffShouldContainSurveyedUtc()
+    {
+      var fileUid = Guid.NewGuid();
+      var surveyedUtc = DateTime.UtcNow;
+      var dataOceanFileName = DataOceanFileUtil.DataOceanFileName("some name.tif", true, fileUid, surveyedUtc);
+      Assert.StartsWith(fileUid.ToString(), dataOceanFileName);
+      var datePart = Path.GetFileNameWithoutExtension(dataOceanFileName).Substring(fileUid.ToString().Length);
+      Assert.False(string.IsNullOrEmpty(datePart));
+    }
+
   }
 }

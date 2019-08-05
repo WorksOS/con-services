@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
@@ -25,9 +26,12 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
         ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
-        MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
-        OverrideMachineMDP = false,
-        OverridingMachineMDP = 1000
+        Overrides = new OverrideParameters
+        { 
+          MDPRange = new MDPRangePercentageRecord(80, 120),
+          OverrideMachineMDP = false,
+          OverridingMachineMDP = 1000
+        }
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom MDPStatisticsArgument not same after round trip serialisation");

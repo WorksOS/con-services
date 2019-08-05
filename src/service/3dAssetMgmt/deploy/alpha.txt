@@ -4,6 +4,5 @@ KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.IAssetEvent.V1,VSS.Interfaces.Eve
 CUSTOM_INIT_SCRIPT: zookeeper_check.sh
 JAEGER_SERVICE_NAME: Alpha AssetMgmt3D Service API
 KAFKA_OFFSET: earliest
-KAFKA_URI: 10.211.16.11
-KAFKA_PORT: "9092"
+KAFKA_URI: kafka1.services.myvisionlink.com,kafka2.services.myvisionlink.com,kafka3.services.myvisionlink.com
 KAFKA_TOPIC_NAME_SUFFIX: "" 

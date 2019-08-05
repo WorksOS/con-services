@@ -1,14 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -31,9 +33,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      CMVDetailsRequest request = item as CMVDetailsRequest;
+      var request = item as CMVDetailsRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<CMVDetailsRequest>();
@@ -42,12 +44,14 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      CMVStatisticsOperation operation = new CMVStatisticsOperation();
-      CMVStatisticsResult cmvDetailsResult = operation.Execute(new CMVStatisticsArgument()
+      var operation = new CMVStatisticsOperation();
+      var cmvDetailsResult = await operation.ExecuteAsync(new CMVStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        CMVDetailValues = request.CustomCMVDetailTargets
+        CMVDetailValues = request.CustomCMVDetailTargets,
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
       });
 
       if (cmvDetailsResult != null)
@@ -59,6 +63,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       throw CreateServiceException<DetailedCMVExecutor>();
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity.Push.Models;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 

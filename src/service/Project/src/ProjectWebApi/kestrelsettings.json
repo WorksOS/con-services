@@ -5,5 +5,5 @@
     "OpenTracing.Contrib.NetCore.AspNetCore": "Warning",
     "System": "Warning"
   },
-    "server.urls": "http://*:80"
-  }
+  "server.urls": "http://*:80"
+}

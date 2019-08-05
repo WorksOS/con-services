@@ -87,11 +87,25 @@ namespace VSS.Productivity3D.Models.Models.Reports
     public double? CutFillDesignOffset { get; protected set; }
 
     /// <summary>
+    /// Any overriding machine targets
+    /// </summary>
+    [JsonProperty(Required = Required.Always)]
+    public OverridingTargets Overrides { get; protected set; }
+
+    /// <summary>
+    /// Settings for lift analysis
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public LiftSettings LiftSettings { get; protected set; }
+
+    /// <summary>
     /// Validates properties.
     /// </summary>
     /// 
     public virtual void Validate()
     {
+      Overrides?.Validate();
+      LiftSettings?.Validate();
       if (ReportCutFill)
       {
         if (CutFillDesignUid == null || CutFillDesignUid.Value == Guid.Empty)

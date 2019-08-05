@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using ASNodeRPC;
@@ -13,6 +14,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -33,31 +35,33 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <summary>
     /// Processes the detailed CMV request by passing the request to Raptor and returning the result.
     /// </summary>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
         var request = CastRequestObjectTo<CMVRequest>(item);
 #if RAPTOR
-        if (!request.IsCustomCMVTargets || !bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway))
-          useTrexGateway = false;
-
-        if (useTrexGateway)
+        if (request.IsCustomCMVTargets && (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CMV") ?? false))
         {
 #endif
           var settings = (CMVSettingsEx)request.CmvSettings;
-          var cmvDetailsRequest = new CMVDetailsRequest(request.ProjectUid, request.Filter, settings.CustomCMVDetailTargets);
-          return trexCompactionDataProxy.SendDataPostRequest<CMVDetailedResult, CMVDetailsRequest>(cmvDetailsRequest, "/cmv/details", customHeaders).Result;
+          var cmvDetailsRequest = new CMVDetailsRequest(
+            request.ProjectUid.Value, 
+            request.Filter, 
+            settings.CustomCMVDetailTargets,
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
+          return await trexCompactionDataProxy.SendDataPostRequest<CMVDetailedResult, CMVDetailsRequest>(cmvDetailsRequest, "/cmv/details", customHeaders);
 #if RAPTOR
         }
 
         var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient, request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
 
-        TASNodeRequestDescriptor externalRequestDescriptor = ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(
+        var externalRequestDescriptor = ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(
           request.CallId ?? Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtCMVDetailed);
 
-        TICLiftBuildSettings liftBuildSettings = RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod);
+        var liftBuildSettings = RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod);
 
         TCMVDetails cmvDetails;
         TASNodeErrorStatus raptorResult;
@@ -137,5 +141,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       };
     }
 #endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

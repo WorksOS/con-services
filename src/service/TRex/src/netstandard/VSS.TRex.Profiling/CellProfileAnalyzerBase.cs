@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -160,6 +161,6 @@ namespace VSS.TRex.Profiling
     /// <param name="ProfileCells"></param>
     /// <param name="cellPassIterator"></param>
     /// <returns></returns>
-    public abstract bool Analyze(List<T> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator);
+    public abstract Task<bool> Analyze(List<T> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator);
   }
 }

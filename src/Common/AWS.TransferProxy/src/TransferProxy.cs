@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Amazon;
-using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
@@ -11,10 +10,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using MimeTypes;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
-using VSS.ConfigurationStore;
 
 namespace VSS.AWS.TransferProxy
 {
@@ -88,7 +85,7 @@ namespace VSS.AWS.TransferProxy
       }
     }
 
-  /// <summary>
+    /// <summary>
     /// Create a task to download a file from S3 storage
     /// </summary>
     /// <param name="s3Key">Key to the data to be downloaded</param>

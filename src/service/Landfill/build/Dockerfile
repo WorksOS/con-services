@@ -15,8 +15,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 
-ENV CORECLR_ENABLE_PROFILING=1 \
-    CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
+ENV CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
     CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent \
     CORECLR_PROFILER_PATH=/usr/local/newrelic-netcore20-agent/libNewRelicProfiler.so 
 
@@ -32,3 +31,4 @@ ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
 COPY --from=build_container /artifacts .
+

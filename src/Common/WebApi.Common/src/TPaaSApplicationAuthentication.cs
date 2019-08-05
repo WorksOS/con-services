@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
@@ -51,9 +52,9 @@ namespace VSS.WebApi.Common
         {
           var customHeaders = new Dictionary<string, string>
           {
-            {"Accept", ContentTypeConstants.ApplicationJson},
-            {"Content-Type", ContentTypeConstants.ApplicationFormUrlEncoded},
-            {"Authorization", string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
+            {HeaderConstants.ACCEPT, ContentTypeConstants.ApplicationJson},
+            {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationFormUrlEncoded},
+            {HeaderConstants.AUTHORIZATION, string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
           TPaasOauthResult tPaasOauthResult; 
 
@@ -62,7 +63,7 @@ namespace VSS.WebApi.Common
             //Revoke expired or expiring token
             if (!string.IsNullOrEmpty(_applicationBearerToken))
             {
-              var revokeResult = tpaas.RevokeApplicationBearerToken(_applicationBearerToken, customHeaders).Result;
+              var revokeResult = tpaas.RevokeApplicationBearerToken(_applicationBearerToken, customHeaders).WaitAndUnwrapException();
               if (revokeResult.Code != 0)
               {
                 Log.LogInformation($"GetApplicationBearerToken failed to revoke token: {revokeResult.Message}");
@@ -75,7 +76,7 @@ namespace VSS.WebApi.Common
               _tPaasTokenExpiryUtc = DateTime.MinValue;
             }
             //Authenticate to get a token
-            tPaasOauthResult = tpaas.GetApplicationBearerToken(grantType, customHeaders).Result;
+            tPaasOauthResult = tpaas.GetApplicationBearerToken(grantType, customHeaders).WaitAndUnwrapException();
 
             var tPaasUrl = configuration.GetValueString("TPAAS_OAUTH_URL") ?? "null";
             Log.LogInformation(
@@ -114,8 +115,8 @@ namespace VSS.WebApi.Common
     {
       return new Dictionary<string, string>
       {
-        {"Content-Type", ContentTypeConstants.ApplicationJson},
-        {"Authorization", $"Bearer {GetApplicationBearerToken()}"}
+        {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson},
+        {HeaderConstants.AUTHORIZATION, $"Bearer {GetApplicationBearerToken()}"}
       };
     }
   }

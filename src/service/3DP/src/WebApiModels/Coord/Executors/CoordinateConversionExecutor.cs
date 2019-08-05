@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -46,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// <param name="item">A Domain object.</param>
     /// <returns></returns>
     /// 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       if (item != null)
       {
@@ -57,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
           if (UseTRexGateway("ENABLE_TREX_GATEWAY_CS") || UseTRexGateway("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS"))
           {
 #endif
-          return trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(request, "/coordinateconversion", customHeaders).Result;
+          return await trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(request, "/coordinateconversion", customHeaders);
 #if RAPTOR
           }
 
@@ -99,5 +101,10 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
       return new CoordinateConversionResult(convertedPoints);
     }
 #endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

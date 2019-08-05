@@ -62,6 +62,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       tRexProxy.Setup(x => x.SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
+          It.IsAny<IDictionary<string, string>>(),
           It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(expectedResult);
 
@@ -71,7 +72,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .ReturnsAsync(assets);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_LAYERS")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, configStore: configStore.Object,
@@ -92,19 +93,19 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     }
 
     [TestMethod]
-    public void GetAssetOnDesignLayerPeriodsExecutor_TRex_NoProjectUid()
+    public async Task GetAssetOnDesignLayerPeriodsExecutor_TRex_NoProjectUid()
     {
       var projectIds = new ProjectID();
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_LAYERS")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);
 
-      var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectIds)).Result;
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectIds));
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
       Assert.AreEqual("Failed to get/update data requested by GetAssetOnDesignLayerPeriodsExecutor", ex.GetResult.Message);
     }
@@ -139,6 +140,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       tRexProxy.Setup(x => x.SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
+          It.IsAny<IDictionary<string, string>>(),
           It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(expectedResult);
 
@@ -152,7 +154,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .ReturnsAsync(assets);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_LAYERS")).Returns("true");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, configStore: configStore.Object,
@@ -225,7 +227,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .ReturnsAsync(assets);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_LAYERS")).Returns("false");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(false);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
@@ -340,7 +342,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .ReturnsAsync(assets);
 
       var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_LAYERS")).Returns("false");
+      configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(false);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignLayerPeriodsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,

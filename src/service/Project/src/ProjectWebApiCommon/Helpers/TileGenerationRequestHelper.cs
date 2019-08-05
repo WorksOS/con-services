@@ -1,4 +1,6 @@
 ﻿using System;
+using VSS.Common.Abstractions.Extensions;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;
@@ -15,7 +17,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Creates a job request for generating raster tiles
     /// </summary>
     public static JobRequest CreateRequest(ImportedFileType importedFileType, string customerUid, string projectUid,
-      string importedFileUid, string dataOceanRootFolder, string fileName, string dcFileName = null, DxfUnitsType dxfUnitsType = DxfUnitsType.Meters)
+      string importedFileUid, string dataOceanRootFolder, string fileName, string dcFileName = null, DxfUnitsType 
+        dxfUnitsType = DxfUnitsType.Meters, DateTime? surveyedUtc = null)
     {
       TileGenerationRequest runParams;
       Guid jobUid;

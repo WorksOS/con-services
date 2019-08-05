@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -24,7 +24,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
   public class CSVExportExecutorTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
-    public void CSVExportExecutor_SiteModelNotFound()
+    public async Task CSVExportExecutor_SiteModelNotFound()
     {
       var projectUid = Guid.NewGuid(); 
       FilterResult filter = null;
@@ -36,7 +36,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         projectUid, filter, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -44,14 +44,14 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         .Build<CSVExportExecutor>(DIContext.Obtain<IConfigurationStore>(),
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
-      var result = Assert.Throws<ServiceException>(() => executor.Process(compactionCSVExportRequest));
+      var result = await Assert.ThrowsAsync<ServiceException>(() => executor.ProcessAsync(compactionCSVExportRequest));
       result.Code.Should().Be(HttpStatusCode.BadRequest);
       result.GetResult.Code.Should().Be(ContractExecutionStatesEnum.InternalProcessingError);
       result.GetResult.Message.Should().Be($"Site model {projectUid} is unavailable");
     }
 
     [Fact]
-    public void CSVExportExecutor_NoCSIB()
+    public async Task CSVExportExecutor_NoCSIB()
     {
       var fileName = "gotAFilename";
       var coordType = CoordType.LatLon;
@@ -62,7 +62,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         siteModel.ID, null, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -70,14 +70,14 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         .Build<CSVExportExecutor>(DIContext.Obtain<IConfigurationStore>(),
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
-      var result = Assert.Throws<ServiceException>(() => executor.Process(compactionCSVExportRequest));
+      var result = await Assert.ThrowsAsync<ServiceException>(() => executor.ProcessAsync(compactionCSVExportRequest));
       result.Code.Should().Be(HttpStatusCode.InternalServerError);
       result.GetResult.Code.Should().Be(ContractExecutionStatesEnum.InternalProcessingError);
       result.GetResult.Message.Should().Be("Failed to complete TRex request: CSVExportExecutor with error: Unable to load CSIB for LatLong conversion");
     }
 
     [Fact]
-    public void CSVExportExecutor_GotSiteAndFilter()
+    public async Task CSVExportExecutor_GotSiteAndFilter()
     {
       var fileName = "gotAFilename";
       var coordType = CoordType.Northeast;
@@ -94,7 +94,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         siteModel.ID, filterResult, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -102,19 +102,19 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         .Build<CSVExportExecutor>(DIContext.Obtain<IConfigurationStore>(),
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
-      var result = Assert.Throws<ServiceException>(() => executor.Process(compactionCSVExportRequest));
+      var result = await Assert.ThrowsAsync<ServiceException>(() => executor.ProcessAsync(compactionCSVExportRequest));
       result.Code.Should().Be(HttpStatusCode.InternalServerError);
       result.GetResult.Code.Should().Be(ContractExecutionStatesEnum.InternalProcessingError);
       result.GetResult.Message.Should().Be("Failed to complete TRex request: CSVExportExecutor with error: Failed to configure internal pipeline.");
     }
 
     [Fact]
-    public void CSVExportExecutor_GotFilterWithContributingMachines()
+    public async Task CSVExportExecutor_GotFilterWithContributingMachines()
     {
       var fileName = "gotAFilename";
       var coordType = CoordType.Northeast;
       var outputType = OutputTypes.VedaAllPasses;
-      string[] machineNames = new string[] { "first machineName" };
+      string[] machineNames = { "first machineName" };
       var userPreferences = new UserPreferences();
       var contributingMachines = new List<MachineDetails>()
         { new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Machine Name", false, Guid.NewGuid())};
@@ -128,7 +128,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         siteModel.ID, filterResult, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -136,7 +136,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         .Build<CSVExportExecutor>(DIContext.Obtain<IConfigurationStore>(),
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
-      var result = Assert.Throws<ServiceException>(() => executor.Process(compactionCSVExportRequest));
+      var result = await Assert.ThrowsAsync<ServiceException>(() => executor.ProcessAsync(compactionCSVExportRequest));
       result.Code.Should().Be(HttpStatusCode.InternalServerError);
       result.GetResult.Code.Should().Be(ContractExecutionStatesEnum.InternalProcessingError);
       result.GetResult.Message.Should().Be("Failed to complete TRex request: CSVExportExecutor with error: Failed to configure internal pipeline.");

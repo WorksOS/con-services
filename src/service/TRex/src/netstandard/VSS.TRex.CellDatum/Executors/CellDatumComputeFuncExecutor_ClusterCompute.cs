@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -34,13 +35,13 @@ namespace VSS.TRex.CellDatum.Executors
     /// <summary>
     /// Executor that implements requesting and rendering sub grid information to create the cell datum
     /// </summary>
-    public CellDatumResponse_ClusterCompute Execute(CellDatumRequestArgument_ClusterCompute arg, SubGridSpatialAffinityKey key)
+    public async Task<CellDatumResponse_ClusterCompute> ExecuteAsync(CellDatumRequestArgument_ClusterCompute arg, SubGridSpatialAffinityKey key)
     {
       Log.LogInformation($"Performing Execute for DataModel:{arg.ProjectID}, Mode={arg.Mode}");
 
       var result = new CellDatumResponse_ClusterCompute { ReturnCode = CellDatumReturnCode.UnexpectedError };
 
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
       if (siteModel == null)
       {
         Log.LogError($"Failed to locate site model {arg.ProjectID}");
@@ -57,14 +58,14 @@ namespace VSS.TRex.CellDatum.Executors
         }
       }
 
-      GetProductionData(siteModel, cutFillDesign, result, arg);
+      await GetProductionData(siteModel, cutFillDesign, result, arg);
       return result;
     }
 
     /// <summary>
     /// Gets the production data values for the requested cell
     /// </summary>
-    private void GetProductionData(ISiteModel siteModel, IDesign cutFillDesign, CellDatumResponse_ClusterCompute result, CellDatumRequestArgument_ClusterCompute arg)
+    private async Task GetProductionData(ISiteModel siteModel, IDesign cutFillDesign, CellDatumResponse_ClusterCompute result, CellDatumRequestArgument_ClusterCompute arg)
     {
       var existenceMap = siteModel.ExistenceMap;
 
@@ -84,20 +85,20 @@ namespace VSS.TRex.CellDatum.Executors
 
       // using the cell address get the index of cell in clientGrid
       var thisSubGridOrigin = new SubGridCellAddress(arg.OTGCellX, arg.OTGCellY);
-      var request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true, out var clientGrid);
-      if (request != ServerRequestResult.NoError)
+      var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(thisSubGridOrigin, arg.Overrides, arg.LiftParams, true, true);
+      if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
       {
-        if (request == ServerRequestResult.SubGridNotFound)
+        if (requestSubGridInternalResult.requestResult == ServerRequestResult.SubGridNotFound)
           result.ReturnCode = CellDatumReturnCode.NoValueFound;
         else
-          Log.LogError($"Request for sub grid {thisSubGridOrigin} request failed with code {request}");
+          Log.LogError($"Request for sub grid {thisSubGridOrigin} request failed with code {requestSubGridInternalResult.requestResult}");
         return;
       }
 
-      ClientCellProfileLeafSubgridRecord cell = (clientGrid as ClientCellProfileLeafSubgrid).Cells[cellX, cellY];
+      var cell = ((ClientCellProfileLeafSubgrid) requestSubGridInternalResult.clientGrid).Cells[cellX, cellY];
       if (cell.PassCount > 0) // Cell is not in our areaControlSet...
       {
-        ExtractRequiredValue(cutFillDesign, cell, result, arg);
+        await ExtractRequiredValue(cutFillDesign, cell, result, arg);
         result.TimeStampUTC = cell.LastPassTime;
       }
     }
@@ -105,7 +106,7 @@ namespace VSS.TRex.CellDatum.Executors
     /// <summary>
     /// Gets the required datum from the cell according to the requested display mode
     /// </summary>
-    private void ExtractRequiredValue(IDesign cutFillDesign, ClientCellProfileLeafSubgridRecord cell, CellDatumResponse_ClusterCompute result, CellDatumRequestArgument_ClusterCompute arg)
+    private async Task ExtractRequiredValue(IDesign cutFillDesign, ClientCellProfileLeafSubgridRecord cell, CellDatumResponse_ClusterCompute result, CellDatumRequestArgument_ClusterCompute arg)
     {
       var success = false;
       int intValue;
@@ -124,7 +125,7 @@ namespace VSS.TRex.CellDatum.Executors
         case DisplayMode.CCVSummary:
         case DisplayMode.CCVPercentSummary:
           result.Value = 0; // default - no value...
-          intValue = Dummy_LiftBuildSettings.OverrideMachineCCV ? Dummy_LiftBuildSettings.OverridingMachineCCV : cell.TargetCCV;
+          intValue = arg.Overrides.OverrideMachineCCV ? arg.Overrides.OverridingMachineCCV : cell.TargetCCV;
           if (intValue != 0)
           {
             success = cell.LastPassValidCCV != CellPassConsts.NullCCV && intValue != CellPassConsts.NullCCV;
@@ -138,12 +139,12 @@ namespace VSS.TRex.CellDatum.Executors
           break;
         case DisplayMode.PassCountSummary:
           result.Value = 0; // default - no value...
-          if (Dummy_LiftBuildSettings.OverrideTargetPassCount)
+          if (arg.Overrides.OverrideTargetPassCount)
           {
-            if (cell.PassCount > Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Max)
-              intValue = Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Max;
-            else if (cell.PassCount < Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Min)
-              intValue = Dummy_LiftBuildSettings.OverridingTargetPassCountRange.Min;
+            if (cell.PassCount > arg.Overrides.OverridingTargetPassCountRange.Max)
+              intValue = arg.Overrides.OverridingTargetPassCountRange.Max;
+            else if (cell.PassCount < arg.Overrides.OverridingTargetPassCountRange.Min)
+              intValue = arg.Overrides.OverridingTargetPassCountRange.Min;
             else
               intValue = cell.PassCount;
           }
@@ -160,11 +161,11 @@ namespace VSS.TRex.CellDatum.Executors
           result.Value = cell.Height;
           if (arg.ReferenceDesign != null && arg.ReferenceDesign.DesignID != Guid.Empty)
           {
-            cutFillDesign.GetDesignSpotHeight(arg.ProjectID, arg.ReferenceDesign.Offset, arg.NEECoords.X, arg.NEECoords.Y, out var spotHeight, out var errorCode);
+            var designSpotHeightResult = await cutFillDesign.GetDesignSpotHeight(arg.ProjectID, arg.ReferenceDesign.Offset, arg.NEECoords.X, arg.NEECoords.Y);
 
-            if (errorCode == DesignProfilerRequestResult.OK && spotHeight != CellPassConsts.NullHeight)
+            if (designSpotHeightResult.errorCode == DesignProfilerRequestResult.OK && designSpotHeightResult.spotHeight != CellPassConsts.NullHeight)
             {
-              result.Value = result.Value - spotHeight;
+              result.Value = result.Value - designSpotHeightResult.spotHeight;
               success = true;
             }
           }
@@ -184,7 +185,7 @@ namespace VSS.TRex.CellDatum.Executors
         case DisplayMode.MDPPercent:
         case DisplayMode.MDPPercentSummary:
           result.Value = 0; // default - no value...
-          intValue = Dummy_LiftBuildSettings.OverrideMachineMDP ? Dummy_LiftBuildSettings.OverridingMachineMDP : cell.TargetMDP;
+          intValue = arg.Overrides.OverrideMachineMDP ? arg.Overrides.OverridingMachineMDP : cell.TargetMDP;
           if (intValue != 0)
           {
             success = cell.LastPassValidMDP != CellPassConsts.NullMDP && intValue != CellPassConsts.NullMDP;

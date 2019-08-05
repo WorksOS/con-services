@@ -5,6 +5,7 @@ using System.Text;
 using FluentAssertions;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -41,7 +42,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null, null);
 
       var result = AutoMapperUtility.Automapper.Map<GriddedReportData>(request);
 
@@ -60,24 +61,36 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       true, false, true, false, true, false,
       null, null,
       null, GridReportOption.Automatic,
-      800000, 400000, 800001, 400001, 2)]
+      800000, 400000, 800001, 400001, 2, false)]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       false, true, false, true, false, true,
       null, null,
       null, GridReportOption.Automatic,
-      800000, 400000, 800001, 400001, 2)]
+      800000, 400000, 800001, 400001, 2, true)]
     public void MapGriddedRequestToArgument(
       Guid projectUid, FilterResult filter,
       bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
       Guid? cutFillDesignUid, double? cutfillDesignOffset,
       double? gridInterval, GridReportOption gridReportOption,
-      double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth)
+      double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth, bool useOverrides)
     {
+      var overrides = useOverrides
+        ? new OverridingTargets(75, true, 70, 90, 0, false, 80, 125, new TargetPassCountRange(4, 10),
+          new TemperatureSettings(120, 70, true), null)
+        : null;
+
+      var liftSettings = useOverrides
+        ? new LiftSettings(true, false, SummaryType.Compaction, 
+          SummaryType.WorkInProgress, 0.2f, LiftDetectionType.AutoMapReset, LiftThicknessType.Compacted,
+          new LiftThicknessTarget{ TargetLiftThickness = 0.75f, AboveToleranceLiftThickness = 0.3f, BelowToleranceLiftThickness = 0.2f }, 
+          true, 0.5f, true, 0.3, 0.7)
+        : null;
+
       var request = new CompactionReportGridTRexRequest(
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, overrides, liftSettings);
 
       var result = AutoMapperUtility.Automapper.Map<GriddedReportRequestArgument>(request);
 
@@ -91,6 +104,17 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       Assert.Equal(request.ReportMdp, result.ReportMdp);
       Assert.Equal(request.ReportPassCount, result.ReportPassCount);
       Assert.Equal(request.ReportTemperature, result.ReportTemperature);
+      //Overrides mapping tested separately in AutoMapperTests
+      if (useOverrides)
+      {
+        Assert.NotNull(result.Overrides);
+        Assert.NotNull(result.LiftParams);
+      }
+      else
+      {
+        Assert.Null(result.Overrides);
+        Assert.Null(result.LiftParams);
+      }
     }
 
     [Theory]
@@ -110,7 +134,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null, null);
       request.Validate();
     }
 
@@ -133,7 +157,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null, null);
 
       var ex = Assert.Throws<ServiceException>(() => request.Validate());
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
@@ -153,7 +177,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         true, true, true, true, true, true,
         cutFillDesignUid, cutFillDesignOffset,
         null, GridReportOption.Automatic,
-        800000, 400000, 800001, 400001, 2);
+        800000, 400000, 800001, 400001, 2, null, null);
 
       var computeResult = new GriddedReportResult()
       {

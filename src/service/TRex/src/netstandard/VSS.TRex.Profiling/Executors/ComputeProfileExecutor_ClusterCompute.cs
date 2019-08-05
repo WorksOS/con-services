@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -34,7 +36,9 @@ namespace VSS.TRex.Profiling.Executors
     private readonly XYZ[] NEECoords;
     private readonly IFilterSet Filters;
     private readonly ProfileStyle ProfileStyle;
-    private readonly VolumeComputationType VolumeType;	
+    private readonly VolumeComputationType VolumeType;
+    private readonly IOverrideParameters Overrides;
+    private readonly ILiftParameters LiftParams;
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
@@ -51,18 +55,10 @@ namespace VSS.TRex.Profiling.Executors
     /// <summary>
     /// Constructs the profile analysis executor
     /// </summary>
-    /// <param name="profileStyle"></param>
-    /// <param name="projectID"></param>
-    /// <param name="profileTypeRequired"></param>
-    /// <param name="nEECoords"></param>
-    /// <param name="filters"></param>
-    /// <param name="design"></param>
-    /// <param name="returnAllPassesAndLayers"></param>
-    /// <param name="volumeType"></param>
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
+      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, IOverrideParameters overrides, ILiftParameters liftParams)
     {
       ProfileStyle = profileStyle;
       ProjectID = projectID;
@@ -71,6 +67,8 @@ namespace VSS.TRex.Profiling.Executors
       Filters = filters;
       Design = design;
       VolumeType = volumeType;
+      Overrides = overrides;
+      LiftParams = liftParams;
     }
 
     /// <summary>
@@ -103,7 +101,7 @@ namespace VSS.TRex.Profiling.Executors
     /// Executes the profiler logic in the cluster compute context where each cluster node processes its fraction of the work and returns the
     /// results to the application service context
     /// </summary>
-    public ProfileRequestResponse<T> Execute()
+    public async Task<ProfileRequestResponse<T>> ExecuteAsync()
     {
       // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
       // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
@@ -153,16 +151,18 @@ namespace VSS.TRex.Profiling.Executors
             return Response = new ProfileRequestResponse<T> { ResultStatus = RequestErrorStatus.FailedOnRequestProfile};
           }
 
-          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, new DesignWrapper(Design, design),
-            /* todo elevation range design + offset: */null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel), VolumeType);
+          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, 
+            new DesignWrapper(Design, design),
+            /* todo elevation range design + offset: */null, PopulationControl, 
+            new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides, LiftParams);
 
           Log.LogInformation("Building cell profile");
-          if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
+          if (await Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
           {
             SetupForCellPassStackExamination(Filters.Filters[0].AttributeFilter);
 
             Log.LogInformation("Building lift profile");
-            if (Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
+            if (await Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
             {
               Log.LogInformation("Lift profile building succeeded");
 

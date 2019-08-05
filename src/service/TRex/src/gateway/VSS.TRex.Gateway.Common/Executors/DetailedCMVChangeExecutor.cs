@@ -1,14 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CMVChangeStatistics;
 using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -31,9 +34,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      CMVChangeDetailsRequest request = item as CMVChangeDetailsRequest;
+      var request = item as CMVChangeDetailsRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<CMVChangeDetailsRequest>();
@@ -42,12 +45,18 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request?.Filter, siteModel);
 
-      CMVChangeStatisticsOperation operation = new CMVChangeStatisticsOperation();
-      CMVChangeStatisticsResult cmvChangeDetailsResult = operation.Execute(new CMVChangeStatisticsArgument()
+      // Insert an extra element at the lower bound ...
+      var tempList = request?.CMVChangeDetailsValues.ToList();
+      tempList?.Insert(0, short.MinValue);
+
+      var operation = new CMVChangeStatisticsOperation();
+      var cmvChangeDetailsResult = await operation.ExecuteAsync(new CMVChangeStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        CMVChangeDetailsDataValues = request?.CMVChangeDetailsValues
+        CMVChangeDetailsDataValues = tempList?.ToArray(),
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
       });
 
       if (cmvChangeDetailsResult != null)
@@ -59,6 +68,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       throw CreateServiceException<DetailedCMVChangeExecutor>();
+    }
+
+    /// <summary>
+    /// Processes the tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

@@ -11,12 +11,12 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -56,28 +56,50 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       var boundaries = new List<GeofenceData>();
       var projectRepo = (IProjectRepository) auxRepository;
-      //a) Custom boundaries 
-      var boundariesTask = BoundaryHelper.GetProjectBoundaries(
-        log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository) Repository);
-      //b) favorite geofences that overlap project 
-      var favoritesTask =
-        GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
-      //c) unified productivity associated geofences
-      var associatedTask = UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid, request.CustomHeaders);
-      await Task.WhenAll(boundariesTask, favoritesTask, associatedTask);
 
-      boundaries.AddRange(boundariesTask.Result.GeofenceData);
-      if (associatedTask.Result != null)
-        boundaries.AddRange(associatedTask.Result);
-
-      //Find out which favorite geofences overlap project boundary
-      var overlappingGeofences =
-        (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT,
-          favoritesTask.Result.Select(g => g.GeometryWKT))).ToList();
-      for (var i = 0; i < favoritesTask.Result.Count; i++)
+      Task<GeofenceDataListResult> boundariesTask = null;
+      Task<List<GeofenceData>> favoritesTask = null;
+      Task<List<GeofenceData>> associatedTask = null;
+      try
       {
-        if (overlappingGeofences[i])
-          boundaries.Add(favoritesTask.Result[i]);
+        //a) Custom boundaries 
+        boundariesTask = BoundaryHelper.GetProjectBoundaries(
+        log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository) Repository);
+        //b) favorite geofences that overlap project 
+        favoritesTask =
+          GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
+        //c) unified productivity associated geofences
+        associatedTask = UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid, request.CustomHeaders);
+ 
+        await Task.WhenAll(boundariesTask, favoritesTask, associatedTask);
+      }
+      catch (Exception e)
+      {
+        log.LogError(e, "Failed to retrieve all boundaries");
+      }
+
+      try
+      {
+        if (boundariesTask != null && !boundariesTask.IsFaulted && boundariesTask.Result != null)
+          boundaries.AddRange(boundariesTask.Result.GeofenceData);
+        if (associatedTask != null && !associatedTask.IsFaulted && associatedTask.Result != null)
+          boundaries.AddRange(associatedTask.Result);
+        if (favoritesTask != null && !favoritesTask.IsFaulted && favoritesTask.Result != null)
+        {
+          //Find out which favorite geofences overlap project boundary
+          var overlappingGeofences =
+            (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT,
+              favoritesTask.Result.Select(g => g.GeometryWKT))).ToList();
+          for (var i = 0; i < favoritesTask.Result.Count; i++)
+          {
+            if (overlappingGeofences[i])
+              boundaries.Add(favoritesTask.Result[i]);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        log.LogError(ex, "Failed to aggregate all boundaries");
       }
 
       //Remove any duplicates

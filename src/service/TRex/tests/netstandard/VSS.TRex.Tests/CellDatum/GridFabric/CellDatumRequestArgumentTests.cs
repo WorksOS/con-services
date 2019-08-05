@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -27,7 +28,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       XYZ latLngPoint = new XYZ(12345.6789, 98765.4321);
       IFilterSet filters = new FilterSet();
       var referenceDesign = new DesignOffset(Guid.NewGuid(), 12.34);
-      var arg = new CellDatumRequestArgument_ApplicationService(siteModelID, mode, coordsAreGrid, latLngPoint, filters, referenceDesign);
+      var overrides = new OverrideParameters {OverrideMachineMDP = true, OverridingMachineMDP = 321};
+      var arg = new CellDatumRequestArgument_ApplicationService(siteModelID, mode, coordsAreGrid, latLngPoint, filters, referenceDesign, overrides);
       Assert.NotNull(arg);
       Assert.Equal(siteModelID, arg.ProjectID);
       Assert.Equal(mode, arg.Mode);
@@ -36,6 +38,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(filters, arg.Filters);
       Assert.Equal(referenceDesign.DesignID, arg.ReferenceDesign.DesignID);
       Assert.Equal(referenceDesign.Offset, arg.ReferenceDesign.Offset);
+      Assert.Equal(overrides.OverrideMachineMDP, arg.Overrides.OverrideMachineMDP);
+      Assert.Equal(overrides.OverridingMachineMDP, arg.Overrides.OverridingMachineMDP);
     }
 
     [Fact]
@@ -55,7 +59,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       int otgCellY = 55236;
       IFilterSet filters = new FilterSet();
       var referenceDesign = new DesignOffset(Guid.NewGuid(), 12.34);
-      var arg = new CellDatumRequestArgument_ClusterCompute(siteModelID, mode, neeCoords, otgCellX, otgCellY, filters, referenceDesign);
+      var overrides = new OverrideParameters { OverrideMachineMDP = true, OverridingMachineMDP = 321 };
+      var arg = new CellDatumRequestArgument_ClusterCompute(siteModelID, mode, neeCoords, otgCellX, otgCellY, filters, referenceDesign, overrides, null);
       Assert.NotNull(arg);
       Assert.Equal(siteModelID, arg.ProjectID);
       Assert.Equal(mode, arg.Mode);
@@ -65,6 +70,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(filters, arg.Filters);
       Assert.Equal(referenceDesign.DesignID, arg.ReferenceDesign.DesignID);
       Assert.Equal(referenceDesign.Offset, arg.ReferenceDesign.Offset);
+      Assert.Equal(overrides.OverrideMachineMDP, arg.Overrides.OverrideMachineMDP);
+      Assert.Equal(overrides.OverridingMachineMDP, arg.Overrides.OverridingMachineMDP);
     }
   }
 }

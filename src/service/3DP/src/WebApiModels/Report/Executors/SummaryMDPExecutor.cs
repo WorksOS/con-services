@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
@@ -11,6 +12,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -34,26 +36,25 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns>a CMVSummaryResult if successful</returns>      
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
         var request = CastRequestObjectTo<MDPRequest>(item);
 #if RAPTOR
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_MDP"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_MDP") ?? false)
         {
 #endif
           var mdpSummaryRequest = new MDPSummaryRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Filter,
             request.MdpSettings.MdpTarget,
             request.MdpSettings.OverrideTargetMDP,
             request.MdpSettings.MaxMDPPercent,
-            request.MdpSettings.MinMDPPercent);
+            request.MdpSettings.MinMDPPercent,
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
 
-          return trexCompactionDataProxy.SendDataPostRequest<MDPSummaryResult, MDPSummaryRequest>(mdpSummaryRequest, "/mdp/summary", customHeaders).Result;
+          return await trexCompactionDataProxy.SendDataPostRequest<MDPSummaryResult, MDPSummaryRequest>(mdpSummaryRequest, "/mdp/summary", customHeaders);
 #if RAPTOR
         }
 
@@ -112,5 +113,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       };
     }
 #endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

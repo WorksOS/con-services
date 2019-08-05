@@ -1,15 +1,12 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Landfill.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -30,24 +27,15 @@ namespace LandfillService.WebApi.netcore
     /// </summary>
     private const string SERVICE_TITLE = "Landfill Service API";
 
-    /// <summary>
-    ///   The logger repository name
-    /// </summary>
-    public const string LoggerRepoName = "WebApi";
+    public override string ServiceName => SERVICE_TITLE;
+    public override string ServiceDescription => "A service for landfill request";
+    public override string ServiceVersion => "v1";
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Startup" /> class.
     /// </summary>
-    /// <param name="env">The env.</param>
-    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
-    {
-    }
-    
-    public override string ServiceName => SERVICE_TITLE;
-
-    public override string ServiceDescription => "A service for landfill request";
-
-    public override string ServiceVersion => "v1";
+    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    { }
 
     // This method gets called by the runtime. Use this method to add services to the container
     /// <summary>
@@ -67,7 +55,7 @@ namespace LandfillService.WebApi.netcore
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
-      
+
       services.AddServiceDiscovery();
 
       services.AddOpenTracing(builder =>
@@ -84,9 +72,6 @@ namespace LandfillService.WebApi.netcore
     /// <summary>
     ///   Configures the specified application.
     /// </summary>
-    /// <param name="app">The application.</param>
-    /// <param name="env">The env.</param>
-    /// <param name="loggerFactory">The logger factory.</param>
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       app.UseFilterMiddleware<TIDAuthentication>();

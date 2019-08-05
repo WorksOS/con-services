@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
@@ -75,21 +76,21 @@ namespace VSS.TRex.Tests.Exports.Patches
     }
 
     [Fact]
-    public void Test_PatchRequest_Execute_EmptySiteModel()
+    public async Task Test_PatchRequest_Execute_EmptySiteModel()
     {
       AddApplicationGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new PatchRequest();
 
-      var response = request.Execute(SimplePatchRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimplePatchRequestArgument(siteModel.ID));
 
       response.Should().NotBeNull();
       response.SubGrids.Should().BeNull();
     }
 
     [Fact]
-    public void Test_PatchRequest_Execute_SingleTAGFileSiteModel()
+    public async Task Test_PatchRequest_Execute_SingleTAGFileSiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -101,7 +102,7 @@ namespace VSS.TRex.Tests.Exports.Patches
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       var request = new PatchRequest();
-      var response = request.Execute(SimplePatchRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimplePatchRequestArgument(siteModel.ID));
 
       response.Should().NotBeNull();
       response.SubGrids.Should().NotBeNull();
@@ -115,7 +116,7 @@ namespace VSS.TRex.Tests.Exports.Patches
     }
 
     [Fact]
-    public void Test_PatchRequest_Execute_SingleCellSiteModel()
+    public async Task Test_PatchRequest_Execute_SingleCellSiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -123,7 +124,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       var siteModel = BuildModelForSingleCellPatch(HEIGHT_INCREMENT_0_5);
 
       var request = new PatchRequest();
-      var response = request.Execute(SimplePatchRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimplePatchRequestArgument(siteModel.ID));
 
       response.Should().NotBeNull();
       response.SubGrids.Should().NotBeNull();
@@ -134,7 +135,7 @@ namespace VSS.TRex.Tests.Exports.Patches
     }
 
     [Fact]
-    public void ExecuteAndConvertToResult()
+    public async Task ExecuteAndConvertToResult()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -142,7 +143,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       var siteModel = BuildModelForSingleCellPatch(HEIGHT_INCREMENT_0_5);
 
       var request = new PatchRequest();
-      var result = request.ExecuteAndConvertToResult(SimplePatchRequestArgument(siteModel.ID));
+      var result = await request.ExecuteAndConvertToResult(SimplePatchRequestArgument(siteModel.ID));
 
       result.Should().NotBeNull();
       result.Patch.Should().NotBeNull();
@@ -153,7 +154,7 @@ namespace VSS.TRex.Tests.Exports.Patches
     }
 
     [Fact]
-    public void PatchResult_ConstructResultData()
+    public async Task PatchResult_ConstructResultData()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -161,7 +162,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       var siteModel = BuildModelForSingleCellPatch(HEIGHT_INCREMENT_0_5);
 
       var request = new PatchRequest();
-      var result = request.ExecuteAndConvertToResult(SimplePatchRequestArgument(siteModel.ID));
+      var result = await request.ExecuteAndConvertToResult(SimplePatchRequestArgument(siteModel.ID));
 
       var bytes = result.ConstructResultData();
       bytes.Should().NotBeNull();

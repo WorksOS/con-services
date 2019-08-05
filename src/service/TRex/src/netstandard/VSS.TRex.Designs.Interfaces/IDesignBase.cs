@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -11,11 +12,12 @@ namespace VSS.TRex.Designs.Interfaces
   {
     int LockCount { get; }
     string FileName { get; set; }
-    long DataModelID { get; set; }
+    Guid ProjectUid { get; set; }
     bool IsStale { get; set; }
     bool Locked { get; }
     DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);
-    DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false);
+    Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
+      bool loadIndices = false);
     void GetExtents(out double x1, out double y1, out double x2, out double y2);
     void GetHeightRange(out double z1, out double z2);
 
@@ -29,12 +31,12 @@ namespace VSS.TRex.Designs.Interfaces
       double CellSize,
       double Offset);
 
-    bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
-      SubGridTreeBitmapSubGridBits Mask,
-      SubGridTreeBitmapSubGridBits Patch,
-      double OriginX, double OriginY,
-      double CellSize,
-      double Offset);
+    bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset,
+      SubGridTreeBitmapSubGridBits mask,
+      SubGridTreeBitmapSubGridBits patch,
+      double originX, double originY,
+      double cellSize,
+      double offset);
 
     void WindLock();
     void UnWindLock();
@@ -46,7 +48,7 @@ namespace VSS.TRex.Designs.Interfaces
     void AcquireExclusiveInterlock();
     void ReleaseExclusiveInterlock();
     List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
-
+    List<Fence> GetBoundary();
     bool IsLoading { get; set; }
   }
 }

@@ -74,6 +74,7 @@ namespace VSS.Pegasus.Client
       }
     }
 
+
     /// <summary>
     /// Generates DXF tiles using the Pegasus API and stores them in the data ocean.
     /// </summary>
@@ -237,9 +238,10 @@ namespace VSS.Pegasus.Client
       {
         if (executionWaitInterval > 0) await Task.Delay(executionWaitInterval);
         executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Get, null, 3, false);
-        success = executionResult.Execution.ExecutionStatus == ExecutionStatus.FINISHED || executionResult.Execution.ExecutionStatus == ExecutionStatus.SUCCEEDED;
-        done = success || executionResult.Execution.ExecutionStatus == ExecutionStatus.FAILED;
-        Log.LogDebug($"Execution status {executionResult.Execution.ExecutionStatus} for {fileName}");
+        var status = executionResult.Execution.ExecutionStatus.ToUpper();
+        success = string.Compare(status, "FINISHED", true) == 0 || string.Compare(status, "SUCCEEDED", true) == 0;
+        done = success || string.Compare(status, "FAILED", true) == 0;
+        Log.LogDebug($"Execution status {status} for {fileName}");
       }
 
       if (!done)

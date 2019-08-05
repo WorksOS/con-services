@@ -9,20 +9,17 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -58,9 +55,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var filter = GetCompactionFilter(projectUid, filterUid, filterMustExist: true);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
       var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
+
+      await Task.WhenAll(projectId, filter, projectSettings, cutFillDesign);
+
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
 
       var request = new CellDatumRequest(
         projectId.Result,
@@ -103,7 +103,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var filter = GetCompactionFilter(projectUid, filterUid);
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(await GetProjectSettingsTargets(projectUid));
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+
+      await Task.WhenAll(projectId, filter, projectSettings);
+
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
 
       var patchRequest = new PatchRequest(
         projectId.Result,
@@ -119,13 +123,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       patchRequest.Validate();
 
-      var v2PatchRequestResponse = WithServiceExceptionTryExecute(() => RequestExecutorContainerFactory
+      var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
         .Build<CompactionPatchV2Executor>(LoggerFactory,
 #if RAPTOR
           RaptorClient,
 #endif
           configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-        .Process(patchRequest));
+        .ProcessAsync(patchRequest));
 
       return Ok(v2PatchRequestResponse);
     }
@@ -173,22 +177,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
 
       if (result?.Layers.Length > 1)
-      {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Multiple layers found"));
-      }
 
       if (result?.Layers.Length == 0)
-      {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No layers found"));
-      }
 
       if (result?.Layers[0].PassData == null)
-      {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No cell passes found"));
-      }
 
       // With our lift settings set to None, we should have exactly 1 layer
-      return result?.Layers[0].PassData.ToList();
+      return result.Layers[0].PassData.ToList();
     }
   }
 }

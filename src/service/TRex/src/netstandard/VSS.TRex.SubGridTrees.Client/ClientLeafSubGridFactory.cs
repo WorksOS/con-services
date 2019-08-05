@@ -101,7 +101,7 @@ namespace VSS.TRex.SubGridTrees.Client
       // Make sure the type of the client grid being returned matches it's advertised grid type
       // if (!typeMap[(int)clientGrid.GridDataType].Equals(clientGrid.GetType()))
       // {
-      //    Debug.Assert(false, "Type of client grid being returned does not match advertised grid data type.");
+      //    throw new TRexException("Type of client grid being returned does not match advertised grid data type.");
       // }
 
       ClientLeaves[(int) clientGrid.GridDataType].Add(clientGrid);

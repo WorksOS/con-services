@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Records;

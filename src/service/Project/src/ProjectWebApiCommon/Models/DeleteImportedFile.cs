@@ -14,7 +14,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public DeleteImportedFile(
       Guid projectUid, ImportedFileType importedFileTypeId,
       FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId,
-      long? legacyImportedFileId, string dataOceanRootFolder)
+      long? legacyImportedFileId, string dataOceanRootFolder, DateTime? surveyedUtc)
     {
       ProjectUid = projectUid;
       ImportedFileType = importedFileTypeId;
@@ -23,6 +23,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       ImportedFileId = importedFileId;
       LegacyImportedFileId = legacyImportedFileId;
       DataOceanRootFolder = dataOceanRootFolder;
+      SurveyedUtc = surveyedUtc;
     }
   }
 }

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
-using VSS.DataOcean.Client.Models;
-using VSS.DataOcean.Client.ResultHandling;
-using VSS.ConfigurationStore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
+using VSS.DataOcean.Client.Models;
+using VSS.DataOcean.Client.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.DataOcean.Client
@@ -116,7 +115,7 @@ namespace VSS.DataOcean.Client
       if (newFile != null)
       {
         //2. Upload the file
-        HttpContent result = await gracefulClient.ExecuteRequestAsStreamContent(newFile.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents, null, 3, false);
+        _ = await gracefulClient.ExecuteRequestAsStreamContent(newFile.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents, null, 3, false);
 
         //3. Monitor status of upload until done
         var route = $"/api/files/{newFile.Id}";
@@ -283,14 +282,14 @@ namespace VSS.DataOcean.Client
       {
         return result.Files[0];
       }
-
       if (count == 0)
       {
         Log.LogInformation($"File {fullName} not found");
       }
-      else if (count > 1)
+      if (count > 1)
       {
-        Log.LogWarning($"Multiple copies of file {fullName} found");
+        Log.LogWarning($"Multiple copies of file {fullName} found - returning latest");
+        return result.Files.OrderByDescending(f => f.UpdatedAt).First();
       }
 
       return null;
@@ -495,9 +494,5 @@ namespace VSS.DataOcean.Client
     }
 
     #endregion
-
-
-
-
   }
 }

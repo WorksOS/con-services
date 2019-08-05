@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -43,7 +44,9 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       int otgCellX,
       int otgCellY,
       IFilterSet filters,
-      DesignOffset referenceDesign)
+      DesignOffset referenceDesign,
+      IOverrideParameters overrides,
+      ILiftParameters liftParams)
     {
       ProjectID = siteModelID;
       Mode = mode;
@@ -52,6 +55,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       OTGCellY = otgCellY;
       Filters = filters;
       ReferenceDesign = referenceDesign;
+      Overrides = overrides;
+      LiftParams = liftParams;
     }
 
     /// <summary>

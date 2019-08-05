@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
@@ -11,6 +12,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -31,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <summary>
     /// Processes the detailed pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -40,8 +42,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_PASSCOUNT"))
         {
 #endif
-          var pcDetailsRequest = new PassCountDetailsRequest(request.ProjectUid, request.Filter, request.passCountSettings.passCounts);
-          return trexCompactionDataProxy.SendDataPostRequest<PassCountDetailedResult, PassCountDetailsRequest>(pcDetailsRequest, "/passcounts/details", customHeaders).Result;
+          var pcDetailsRequest = new PassCountDetailsRequest(
+            request.ProjectUid.Value, 
+            request.Filter, 
+            request.passCountSettings.passCounts,
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.liftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.liftBuildSettings));
+          return await trexCompactionDataProxy.SendDataPostRequest<PassCountDetailedResult, PassCountDetailsRequest>(pcDetailsRequest, "/passcounts/details", customHeaders);
 #if RAPTOR
         }
 
@@ -92,5 +99,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       };
     }
 #endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

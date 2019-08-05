@@ -1,7 +1,5 @@
 [Console]::ResetColor()
 
-IF ($args -contains "--set-vars") { & ./set-environment-variables.ps1 }
-
 # Set KAFKA_ADVERTISED_HOST_NAME for local testing.
 & ../../config/apply-kafka-config-local.ps1
 
@@ -16,7 +14,7 @@ Write-Host "Connecting to image host" -ForegroundColor DarkGray
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 IF (-not $?) {
-    Write-Host "Error: Logging in to AWS, won't pull latest images for container dependancies." -ForegroundColor Red
+    Write-Host "Error: Logging in to AWS, won't pull latest images for container dependencies." -ForegroundColor Red
 }
 
 IF ($args -notcontains "--no-build") {
@@ -35,7 +33,6 @@ IF ($args -notcontains "--no-build") {
     Copy-Item ./appsettings.json $artifactsWorkingDir
     Copy-Item ./Dockerfile $artifactsWorkingDir
     Copy-Item ./web.config $artifactsWorkingDir
-    Copy-Item ./log4net.xml $artifactsWorkingDir
 
     & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
 }
@@ -46,11 +43,7 @@ Set-Location $PSScriptRoot
 Invoke-Expression "docker-compose --file docker-compose-local.yml pull"
 
 Write-Host "Building Docker containers" -ForegroundColor DarkGray
-
-Set-Location $PSScriptRoot
-
-$detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
-Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach > ${PSScriptRoot}/artifacts/logs/output.log"
+Invoke-Expression "docker-compose --file docker-compose-local.yml up --build --detach > ${PSScriptRoot}/artifacts/logs/output.log"
 
 IF ($args -contains "--no-test") { 
     $acceptanceTestContainerName = "project_accepttest"
