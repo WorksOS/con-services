@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Common.Records
 {
-  public struct MDPRangePercentageRecord : IBinaryReaderWriter
+  public struct MDPRangePercentageRecord
   {
     /// <summary>
     /// Minimum MDP percentage range value.

@@ -2,11 +2,10 @@
 using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Common.Records
 {
-  public struct PassCountRangeRecord : IBinaryReaderWriter
+  public struct PassCountRangeRecord
   {
     /// <summary>
     /// Minimum Pass Count range value.
