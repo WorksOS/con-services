@@ -5,8 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN echo "Building for environment: ${environment}"
-RUN npm run build -- --mode ${environment}
+RUN npm run build -- 
 
 # production stage
 FROM nginx:stable-alpine as production-stage
