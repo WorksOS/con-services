@@ -214,14 +214,25 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0
         ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID))
         : geofences;
-
+   
       var thumbnails = await Task.WhenAll(selectedGeofences.Select(GeofenceThumbnailPng));
 
-      return new MultipleThumbnailsResult
+      var result = new MultipleThumbnailsResult
       {
         Thumbnails = thumbnails.Select(thumb => new ThumbnailResult
-          {Uid = thumb.Item1, Data = GetStreamContents(thumb.Item2)}).ToList()
+          { Uid = thumb.Item1, Data = GetStreamContents(thumb.Item2) }).ToList()
       };
+
+      //Add in any requested geofenceUids for which we haven't retrieved a geofence.
+      if (geofenceUids != null && geofenceUids.Length > 0)
+      {
+        var selectedGeofenceUids = selectedGeofences.Select(s => s.GeofenceUID);
+        var missingGeofenceUids = geofenceUids.Where(g => !selectedGeofenceUids.Contains(g));
+        result.Thumbnails.AddRange(missingGeofenceUids.Select(m => new ThumbnailResult
+          { Uid = m, Data = TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT) }));
+      }
+
+      return result;
     }
 
     /// <summary>
