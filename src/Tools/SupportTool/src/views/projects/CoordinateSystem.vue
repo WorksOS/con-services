@@ -35,12 +35,12 @@
         </div>
         <div v-if="!uploading">
             <p>
-                <file-select v-model="file" prompt="Step 1: Select a Coordinate System" :disabled="uploading"></file-select>
+                <file-select v-model="files" :allow-multiple='false' prompt="Step 1: Select a Coordinate System" :disabled="uploading"></file-select>
             </p>
 
             <!-- stage 2 - project UID -->
             <p>
-                <v-card outlined :disabled="!file || uploading">
+                <v-card outlined :disabled="!files || uploading">
                     <v-list-item two-line>
                         <v-list-item-content>
                             <v-list-item-title class="overline mb-4">Step 2: Enter Project UID</v-list-item-title>
@@ -57,14 +57,14 @@
 
             <!-- stage 3 - project UID -->
             <p>
-                <v-card outlined :disabled="!file || !projectUid || uploading">
+                <v-card outlined :disabled="!files || !projectUid || uploading">
                     <v-list-item two-line>
                         <v-list-item-content>
                             <v-list-item-title class="overline mb-4">Step 3: Upload Coordinate System</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                     <v-card-actions>
-                        <v-btn class="select-button ma-2" color="primary" v-on:click="greet">Upload</v-btn>
+                        <v-btn class="select-button ma-2" color="primary" v-on:click="uploadCoordinateSystem">Upload</v-btn>
                     </v-card-actions>
                 </v-card>
             </p>
@@ -87,7 +87,7 @@ export default {
       uploaded: false,
       uploadFailed: false,
       uploading: false,
-      file: null,
+      files: null,
       projectUid: null,
       projectUidRules: [
         v => !!v || 'A Project UID must be provided.',
@@ -96,13 +96,20 @@ export default {
     }
   },
   methods: {
-    greet: function (event) {
+    uploadCoordinateSystem: function (event) {
         var self = this;
         this.uploading = true;
-        this.base64Encode(this.file).then((encoded) => {
+        if(this.files.length != 1) {
+            // Should not happen, as the are not allowing multiple
+            console.error("Incorrect files selected");
+            return;
+        }
+        var file = this.files[0];
+        console.log("Uploading file", file)
+        this.base64Encode(file).then((encoded) => {
             var payload = {
                 "projectUid" : this.projectUid,
-                "csFileName" : self.file.name,
+                "csFileName" : file.name,
                 "csFileContent" : encoded
             };
             var url = urljoin(config.VUE_APP_TREX_MUTABLE_GATEWAY_URL, "/api/v1/coordsystem");
@@ -114,7 +121,7 @@ export default {
                 .then(result => {
                     console.log("result", result);
                     this.uploading = false;
-                    this.file = null;
+                    this.files = null;
                     this.projectUid = null;
                     this.uploaded = true;
                 })
