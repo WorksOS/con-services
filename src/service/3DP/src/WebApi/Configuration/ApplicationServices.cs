@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
       services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
 
-      /* todoJeannie 
+      /* todo
       // service discovery
       services.AddTransient<IProjectSettingsProxy, ProjectSettingsV4ServiceDiscoveryProxy>();
       services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
       services.AddTransient<ITRexTagFileProxy, TRexTagFileV1ServiceDiscoveryProxy>();
       services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1ServiceDiscoveryProxy>();
-      todoJeannie */
+      */
       
       //Disable CAP for now #76666
       /*

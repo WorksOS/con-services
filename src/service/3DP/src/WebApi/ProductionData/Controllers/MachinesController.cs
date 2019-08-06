@@ -219,7 +219,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinedesigns")]
     [HttpGet]
-    public async Task<MachineDesignsExecutionResult> GetMachineDesigns([FromRoute] long projectId)
+    public async Task<MachineDesignsResult> GetMachineDesigns([FromRoute] long projectId)
     {
       _log.LogInformation($"{nameof(GetMachineDesigns)} Request. projectId: {projectId}");
 
@@ -249,7 +249,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinedesigns")]
     [HttpGet]
-    public async Task<MachineDesignsExecutionResult> GetMachineDesigns([FromRoute] Guid projectUid)
+    public async Task<MachineDesignsResult> GetMachineDesigns([FromRoute] Guid projectUid)
     {
       _log.LogInformation($"{nameof(GetMachineDesigns)} Request. projectUid: {projectUid}");
 
@@ -273,9 +273,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Creates a unique list of all assetOnDesigns for all machines
     /// </summary>
-    private MachineDesignsExecutionResult CreateUniqueMachineDesignList(MachineDesignsExecutionResult result)
+    private MachineDesignsResult CreateUniqueMachineDesignList(MachineDesignsExecutionResult result)
     {
-      return new MachineDesignsExecutionResult(RemoveDuplicateMachineDesigns(result.AssetOnDesignPeriods));
+      return new MachineDesignsResult(RemoveDuplicateMachineDesigns(result.AssetOnDesignPeriods));
     }
 
     /// <summary>
@@ -287,8 +287,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private List<AssetOnDesignPeriod> RemoveDuplicateMachineDesigns(List<AssetOnDesignPeriod> assetsOnDesignPeriods)
     {
-      // order by Uid. Gen3 assetsOnDesignPeriods won't have LegacyId
-      return assetsOnDesignPeriods.Distinct().OrderBy(d => d.OnMachineDesignId).ThenBy(n => n.OnMachineDesignName).ToList();}
+      // TRex won't have machineDesignId, but DesignName should be unique
+      return assetsOnDesignPeriods.Distinct().OrderBy(d => d.OnMachineDesignId).ThenBy(n => n.OnMachineDesignName).ToList();
+    }
 
     /// <summary>
     /// Gets On Machine assetOnDesigns by machine and date range for the selected project
@@ -354,7 +355,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
           if (filteredDesigns.Count > 0)
           {
-            designDetailsList.Add(MachineDesignDetails.CreateMachineDesignDetails(
+            designDetailsList.Add(new MachineDesignDetails(
               machine.AssetId, machine.MachineName, machine.IsJohnDoe,
               RemoveDuplicateMachineDesigns(filteredDesigns).ToArray(), machine.AssetUid));
           }

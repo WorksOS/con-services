@@ -132,7 +132,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
 #if RAPTOR
         // JohnDoe assetMatch looks in Raptor machines for JohnDoe with matching name
-        // todoJeannie JohnDoe names should not be unique, that is internal to Raptor and Trex. Can machineName be string.Empty()? Should we check? 
         var johnDoeAssets = new List<string>(
           machines.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty && a.IsJohnDoe)
             .Select(a => a.MachineName)
