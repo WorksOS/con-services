@@ -5,7 +5,7 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// The request representation used to request CMV summary.
   /// </summary>
-  public class CMVSummaryRequest : TRexSummaryRequest
+  public class CMVSummaryRequest : TRexBaseRequest
   {
     /// <summary>
     /// Default private constructor.

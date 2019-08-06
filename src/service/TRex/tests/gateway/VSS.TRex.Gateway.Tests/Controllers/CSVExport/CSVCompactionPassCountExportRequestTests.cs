@@ -22,7 +22,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       var userPreferences = new UserPreferences();
       var request = new CompactionPassCountExportRequest(
         projectUid, filter, fileName,
-        coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase);
+        coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase, null, null);
       request.Validate();
     }
    
@@ -41,7 +41,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       var userPreferences = new UserPreferences();
       var request = new CompactionPassCountExportRequest(
         projectUid, filter, fileName,
-        coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase);
+        coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase, null, null);
 
       var ex = Assert.Throws<ServiceException>(() => request.Validate());
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);

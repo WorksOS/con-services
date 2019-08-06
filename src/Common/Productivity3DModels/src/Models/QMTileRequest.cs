@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Net;
 using Newtonsoft.Json;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.Models
 {
-  public class QMTileRequest : RaptorHelper
+  /// <summary>
+  /// Request to get a quantized mesh tile
+  /// </summary>
+  public class QMTileRequest : TRexBaseRequest
   {
-
-    /// <summary>
-    /// The base filter to be used.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; set; }
-
+    /// The base or earliest filter to be used.
+    [JsonProperty(PropertyName = "filter1", Required = Required.Default)]
     [JsonProperty(Required = Required.Always)]
     public int X { get; set; }
 
@@ -31,15 +26,11 @@ namespace VSS.Productivity3D.Models.Models
     { }
 
     /// <summary>
-    /// Overload constructor with parameters.
+    /// Overload constructor with parameters. x,y,z are tile coordinates.
     /// </summary>
-    /// <param name="projectUId">Project ID</param>
-    /// <param name="filter">Filter</param>
-    /// <param name="X">tile X coordinate</param>
-    /// <param name="Y">tile Y coordinate</param>
-    /// <param name="Z">tile Z coordinate</param>
+    /// <param name="filter">Filter 1</param>
     public QMTileRequest(
-      Guid? projectUid,
+      Guid projectUid,
       FilterResult filter,
       int x,
       int y,
@@ -51,21 +42,5 @@ namespace VSS.Productivity3D.Models.Models
       Y = y;
       Z = z;
     }
-
-    /// <summary>
-    /// Validates all properties
-    /// </summary>
-    public override void Validate()
-    {
-      base.Validate();
-      Filter?.Validate();
-      if (ProjectUid == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "ProjectUid must not be null"));
-      }
-    }
-
   }
 }

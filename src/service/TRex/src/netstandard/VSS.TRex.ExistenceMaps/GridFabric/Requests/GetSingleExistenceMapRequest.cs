@@ -2,6 +2,7 @@
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.ExistenceMaps.Servers;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -30,13 +31,13 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <returns></returns>
         public ISubGridTreeBitMask Execute(INonSpatialAffinityKey key)
         {
-            byte[] bytes = server.GetExistenceMap(key);
+            ISerialisedByteArrayWrapper bytes = server.GetExistenceMap(key);
             ISubGridTreeBitMask mask = null;
 
             if (bytes != null)
             {
                 mask = new SubGridTreeSubGridExistenceBitMask();
-                mask.FromBytes(bytes);
+                mask.FromBytes(bytes.Bytes);
             }
 
             return mask;

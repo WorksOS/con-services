@@ -1,6 +1,10 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs.Executors
 {
@@ -16,18 +20,24 @@ namespace VSS.TRex.Designs.Executors
     {
       try
       {
-        // Perform the calculation
-        Fence result;
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUID, false);
+        var design = DIContext.Obtain<IDesignFiles>()?.Lock(referenceDesignUID, projectUID, siteModel.CellSize, out var lockResult);
 
-        // Todo: This implementation is dependent on a .Net standard version of the Symphony SDK
-        throw new NotImplementedException("Alignment filter boundary implementation is dependent on a .Net standard version of the Symphony SDK");
-
-        if (result == null)
+        if (design == null)
         {
-          // TODO: Handle failure to calculate the boundary
+          Log.LogWarning($"Failed to read file for design {referenceDesignUID}");
+          return null;
         }
 
-        return result;
+        var result = (design as SVLAlignmentDesign).DetermineFilterBoundary(startStation, endStation, leftOffset, rightOffset, out var fence);
+
+        if (result != DesignProfilerRequestResult.OK)
+        {
+          Log.LogWarning($"Failed to compute filter boundary with error {result}");
+          return null;
+        }
+
+        return fence;
       }
       catch (Exception E)
       {

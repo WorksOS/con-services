@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Apache.Ignite.Core.Transactions;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -15,8 +16,8 @@ namespace VSS.TRex.Storage
   [ExcludeFromCodeCoverage] // Not currently used...
   public class StorageProxy_FileSystem : IStorageProxy
   {
-    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType) => null; // Not implemented
-    public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; } = null; // Not implemented
+    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialCache(FileSystemStreamType streamType) => null; // Not implemented
+    public IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache { get; } = null; // Not implemented
 
     public StorageMutability Mutability { get; set; } = StorageMutability.Immutable;
 
@@ -73,7 +74,7 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
-    public IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> ProjectMachineCache(FileSystemStreamType streamType)
+    public IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> ProjectMachineCache(FileSystemStreamType streamType)
     {
       throw new NotImplementedException();
     }

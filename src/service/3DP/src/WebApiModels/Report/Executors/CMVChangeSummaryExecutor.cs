@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -51,7 +52,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_CMV"))
         {
 #endif
-          var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(request.ProjectUid, request.Filter, request.CMVChangeSummaryValues);
+          var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(
+            request.ProjectUid.Value, 
+            request.Filter, 
+            request.CMVChangeSummaryValues,
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
           return await trexCompactionDataProxy.SendDataPostRequest<CMVChangeSummaryResult, CMVChangeDetailsRequest>(cmvChangeDetailsRequest, "/cmv/percentchange", customHeaders);
 #if RAPTOR
         }

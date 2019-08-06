@@ -126,7 +126,6 @@ namespace VSS.Productivity3D.Scheduler.Proxy
       return null;
     }
 
-    // todoJeannie this is from the jobRunnerController and should be a separate proxy. See if/how it is used
     /// <inheritdoc />
     public async Task<ScheduleJobResult> ScheduleVSSJob(JobRequest request, IDictionary<string, string> customHeaders)
     {

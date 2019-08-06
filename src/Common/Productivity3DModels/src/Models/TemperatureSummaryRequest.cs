@@ -5,7 +5,7 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// The request representation used to request MDP summary.
   /// </summary>
-  public class TemperatureSummaryRequest : TRexSummaryRequest
+  public class TemperatureSummaryRequest : TRexBaseRequest
   {
     /// <summary>
     /// Default private constructor

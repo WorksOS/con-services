@@ -5,6 +5,7 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Messaging;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models;
@@ -58,7 +59,7 @@ namespace VSS.TRex.SubGrids.Executors
         //                localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
         //                rmtMsg.ClusterGroup.GetNodes().Where(x => x.GetAttributes().Where(a => a.Key.StartsWith(ServerRoles.ROLE_ATTRIBUTE_NAME)).Count() > 0).Aggregate("|", (s1, s2) => s1 + s2 + "|"),
         //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("TRexNodeId"));
-        rmtMsg.Send(MS.ToArray(), localArg.MessageTopic);
+        rmtMsg.Send(new SerialisedByteArrayWrapper(MS.ToArray()), localArg.MessageTopic);
       }
     }
 

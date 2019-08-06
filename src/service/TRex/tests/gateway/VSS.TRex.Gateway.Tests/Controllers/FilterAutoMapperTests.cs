@@ -34,7 +34,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.Should().NotBeNull();
       combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass.Should().BeTrue();
-      combinedFilter.AttributeFilter.ElevationType.Should().Be(ElevationType.First);
 
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Should().NotBeNull();
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Should().BeEmpty();
@@ -61,7 +60,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.Should().NotBeNull();
       combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass.Should().BeTrue();
-      combinedFilter.AttributeFilter.ElevationType.Should().Be(ElevationType.First);
 
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Should().NotBeNull();
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Should().BeEmpty();
@@ -232,7 +230,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     }
 
     [Fact]
-    public void MapFilterResultHasDesignFilterToCombinedFilter()
+    public void MapFilterResultHasMachineDesignFilterToCombinedFilter()
     {
       var onMachineDesignId = 66;
       var filter = new Filter(
@@ -295,7 +293,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasElevationTypeFilterToCombinedFilter()
     {
-      var filterResult = new FilterResult(null, new Filter(), null, null, 
+      var filter = new Filter(null, null, null, null, null, null, MasterData.Models.Models.ElevationType.First, null, null,null,null);
+      var filterResult = new FilterResult(null, filter, null, null, 
         null, null, true, null);
       filterResult.Validate();
 
@@ -304,22 +303,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass.Should().BeTrue();
       combinedFilter.AttributeFilter.HasElevationTypeFilter.Should().BeTrue();
       combinedFilter.AttributeFilter.ElevationType.Should().Be(ElevationType.First);
-
-      filterResult.ReturnEarliest = false;
-      filterResult.Validate();
-
-      combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
-      combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass.Should().BeFalse();
-      combinedFilter.AttributeFilter.HasElevationTypeFilter.Should().BeTrue();
-      combinedFilter.AttributeFilter.ElevationType.Should().Be(ElevationType.Last);
-
-      filterResult.ReturnEarliest = null;
-      filterResult.Validate();
-
-      combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
-      combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass.Should().BeFalse();
-      combinedFilter.AttributeFilter.HasElevationTypeFilter.Should().BeFalse();
-      combinedFilter.AttributeFilter.ElevationType.Should().Be(ElevationType.Last);
     }
 
     [Fact]
@@ -373,8 +356,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.HasTemperatureRangeFilter.Should().BeTrue();
-      combinedFilter.AttributeFilter.MaterialTemperatureMin.Should().Be(34);
-      combinedFilter.AttributeFilter.MaterialTemperatureMax.Should().Be(89);
+      combinedFilter.AttributeFilter.MaterialTemperatureMin.Should().Be(340);
+      combinedFilter.AttributeFilter.MaterialTemperatureMax.Should().Be(890);
     }
 
     [Fact]

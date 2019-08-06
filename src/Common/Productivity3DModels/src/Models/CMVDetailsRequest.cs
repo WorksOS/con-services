@@ -10,20 +10,13 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// The request representation used to request CMV details.
   /// </summary>
-  public class CMVDetailsRequest : ProjectID
+  public class CMVDetailsRequest : TRexBaseRequest
   {
-    /// <summary>
-    /// The filter instance to use in the request
-    /// Value may be null.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; set; }
-
     /// <summary>
     /// The collection of CMV targets. Values are in ascending order.
     /// There must be 16 values and the first value must be 0.
     /// </summary>
-    [JsonProperty(PropertyName = "customCMVDetailTargets", Required = Required.Always)]
+    [JsonProperty(Required = Required.Always)]
     [Required]
     public int[] CustomCMVDetailTargets { get; set; }
 
@@ -38,14 +31,18 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public CMVDetailsRequest(
-      Guid? projectUid,
+      Guid projectUid,
       FilterResult filter,
-      int[] customCMVDetailTargets
+      int[] customCMVDetailTargets,
+      OverridingTargets overrides,
+      LiftSettings liftSettings
     )
     {
       ProjectUid = projectUid;
       Filter = filter;
       CustomCMVDetailTargets = customCMVDetailTargets;
+      Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
     /// <summary>
@@ -54,8 +51,6 @@ namespace VSS.Productivity3D.Models.Models
     public override void Validate()
     {
       base.Validate();
-
-      Filter?.Validate();
 
       // Validate custom CMV Detail targets...
       if (CustomCMVDetailTargets == null || CustomCMVDetailTargets.Length == 0)

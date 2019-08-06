@@ -8,7 +8,9 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -47,7 +49,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        CMVDetailValues = request.CustomCMVDetailTargets
+        CMVDetailValues = request.CustomCMVDetailTargets,
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       if (cmvDetailsResult != null)

@@ -30,10 +30,10 @@ namespace VSS.TRex.GridFabric.Servers
         /// </summary>
         protected IIgnite immutableTRexGrid = null;
 
-        protected static ICache<INonSpatialAffinityKey, byte[]> NonSpatialMutableCache = null;
-        protected static ICache<INonSpatialAffinityKey, byte[]> NonSpatialImmutableCache = null;
-        protected static ICache<ISubGridSpatialAffinityKey, byte[]> SpatialMutableCache = null;
-        protected static ICache<ISubGridSpatialAffinityKey, byte[]> SpatialImmutableCache = null;
+        protected static ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialMutableCache = null;
+        protected static ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialImmutableCache = null;
+        protected static ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialMutableCache = null;
+        protected static ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialImmutableCache = null;
 
         /// <summary>
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
@@ -66,7 +66,7 @@ namespace VSS.TRex.GridFabric.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg);
 
         /// <summary>
         /// Base configuration for the mutable spatial cache
@@ -86,7 +86,7 @@ namespace VSS.TRex.GridFabric.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_SPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<ISubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
 
         // This code added to correctly implement the disposable pattern.
         public void Dispose()

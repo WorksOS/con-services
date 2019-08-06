@@ -98,7 +98,7 @@ namespace VSS.TRex.Filters.Interfaces
 
     /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
-    /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
+    /// LiftDetectionType or if extracted cell passes are wrapped into a single containing layer.
     /// </summary>
     LayerState LayerState { get; set; }
 

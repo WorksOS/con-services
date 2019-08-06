@@ -49,14 +49,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         ThrowRequestTypeCastException<SummaryVolumesProfileDataRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
-      var baseFilter = ConvertFilter(request.BaseFilter, siteModel);
+      var baseFilter = ConvertFilter(request.Filter, siteModel);
       var topFilter = ConvertFilter(request.TopFilter, siteModel);
       var referenceDesign = new DesignOffset(request.ReferenceDesignUid ?? Guid.Empty, request.ReferenceDesignOffset ?? 0);
 
 
       var arg = new ProfileRequestArgument_ApplicationService
       {
-        ProjectID = request.ProjectUid ?? Guid.Empty,
+        ProjectID = request.ProjectUid,
         ProfileTypeRequired = GridDataType.Height,
         ProfileStyle = ProfileStyle.SummaryVolume,
         PositionsAreGrid = request.PositionsAreGrid,
@@ -67,7 +67,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         ReturnAllPassesAndLayers = false,
         VolumeType = ConvertVolumesType(request.VolumeCalcType),
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 

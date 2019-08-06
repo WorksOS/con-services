@@ -10,8 +10,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "ITask\src\VSS.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.KafkaConsumer", "KafkaConsumer\src\VSS.KafkaConsumer.csproj", "{A47FEFC1-6ED6-4DEE-9C5F-3A3545432F77}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{8BEDF6E1-B721-4F5A-8C2B-8BE949DDAE45}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "MasterDataModels\src\VSS.MasterData.Models.csproj", "{593D68D0-419C-443C-8178-DEB13561FE7B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies", "MasterDataProxies\src\VSS.MasterData.Proxies.csproj", "{3657ECE2-91C2-47A2-A549-6FF23E9D4563}"
@@ -109,10 +107,6 @@ Global
 		{A47FEFC1-6ED6-4DEE-9C5F-3A3545432F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A47FEFC1-6ED6-4DEE-9C5F-3A3545432F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A47FEFC1-6ED6-4DEE-9C5F-3A3545432F77}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8BEDF6E1-B721-4F5A-8C2B-8BE949DDAE45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8BEDF6E1-B721-4F5A-8C2B-8BE949DDAE45}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8BEDF6E1-B721-4F5A-8C2B-8BE949DDAE45}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8BEDF6E1-B721-4F5A-8C2B-8BE949DDAE45}.Release|Any CPU.Build.0 = Release|Any CPU
 		{593D68D0-419C-443C-8178-DEB13561FE7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{593D68D0-419C-443C-8178-DEB13561FE7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{593D68D0-419C-443C-8178-DEB13561FE7B}.Release|Any CPU.ActiveCfg = Release|Any CPU

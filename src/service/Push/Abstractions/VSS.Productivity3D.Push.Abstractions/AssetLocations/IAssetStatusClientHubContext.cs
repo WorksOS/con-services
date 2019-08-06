@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 
 namespace VSS.Productivity3D.Push.Abstractions.AssetLocations
 {

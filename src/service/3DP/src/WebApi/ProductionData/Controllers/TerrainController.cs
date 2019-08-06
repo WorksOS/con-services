@@ -10,12 +10,9 @@ using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.WebApi.Compaction.ActionServices;
-using VSS.Productivity3D.WebApi.Compaction.Controllers;
-using VSS.Productivity3D.WebApi.Models.Interfaces;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
-using VSS.TCCFileAccess;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -24,17 +21,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// </summary>
   [Route("api/[controller]")]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-
-  // BaseTileController<CompactionTileController>
-  //   public class TerrainController : ControllerBase, ITerrainContract
-
-  public class TerrainController : BaseController<TerrainController>
+  public class TerrainController : ControllerBase, ITerrainContract
   {
 
     /// <summary>
     /// LoggerFactory for logging
     /// </summary>
- //   private readonly ILogger log;
+    private readonly ILogger log;
 
     /// <summary>
     /// LoggerFactory factory for use by executor

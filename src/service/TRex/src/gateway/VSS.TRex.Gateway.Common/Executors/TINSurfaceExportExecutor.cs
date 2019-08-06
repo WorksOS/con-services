@@ -6,8 +6,10 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.SiteModels.Interfaces;
 using TINSurfaceExportResult = VSS.TRex.Gateway.Common.ResultHandling.TINSurfaceExportResult;
 
@@ -54,7 +56,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          Tolerance = request?.Tolerance ?? 0.0
+          Tolerance = request?.Tolerance ?? 0.0,
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+          LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       return TINSurfaceExportResult.CreateTINResult(response.data);

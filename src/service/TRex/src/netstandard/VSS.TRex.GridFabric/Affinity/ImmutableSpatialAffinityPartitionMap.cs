@@ -9,7 +9,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Defines a spatial cache partition map for the sub grid data maintained in the immutable data grid
     /// </summary>
-    public class ImmutableSpatialAffinityPartitionMap : AffinityPartitionMap<ISubGridSpatialAffinityKey, byte[]>, IImmutableSpatialAffinityPartitionMap
+    public class ImmutableSpatialAffinityPartitionMap : AffinityPartitionMap<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>, IImmutableSpatialAffinityPartitionMap
     {
         /// <summary>
         /// Local static instance variable to hold the partition map singleton
@@ -21,7 +21,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// </summary>
         public ImmutableSpatialAffinityPartitionMap() :
             base(DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable)
-                .GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()))
+                .GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.ImmutableSpatialCacheName()))
         {
         }
 

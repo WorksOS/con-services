@@ -14,35 +14,22 @@ namespace VSS.Productivity3D.Models.Models
     /// <remarks>
     /// The value should be in meters.
     /// </remarks>
-    [JsonProperty(PropertyName = "tolerance", Required = Required.Default)]
-    public double? Tolerance { get; set; }
+    [JsonProperty(Required = Required.Default)]
+    public double? Tolerance { get; private set; }
 
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="filter"></param>
-    /// <param name="fileName"></param>
-    /// <param name="tolerance"></param>
     public CompactionSurfaceExportRequest(
       Guid projectUid,
       FilterResult filter,
       string fileName,
-      double tolerance)
+      double tolerance,
+      OverridingTargets overrides,
+      LiftSettings liftSettings
+      ) : base(projectUid, filter, fileName, overrides, liftSettings)
     {
-      ProjectUid = projectUid;
-      Filter = filter;
-      FileName = fileName;
       Tolerance = tolerance;
-    }
-    
-    /// <summary>
-    /// Validates all properties
-    /// </summary>
-    public new void Validate()
-    {
-      base.Validate();
-
     }
   }
 }

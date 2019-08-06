@@ -11,6 +11,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
@@ -35,7 +36,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as CellPassesTRexRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException<CellDatumTRexRequest>();
+        ThrowRequestTypeCastException<CellPassesTRexRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
@@ -49,8 +50,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         ProjectID = siteModel.ID,
         Filters =  new FilterSet(filter),
         CoordsAreGrid = request.CoordsAreGrid,
-        Point = coords
+        Point = coords,
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType),
         //NOTE: Currently cell passes is raw data so does not use overriding targets
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
       });
 
       if(response.ReturnCode != CellPassesReturnCode.DataFound)

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
+using Serilog;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
@@ -15,6 +16,7 @@ using VSS.DataOcean.Client.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client.Models;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
@@ -22,24 +24,20 @@ namespace VSS.Pegasus.Client.UnitTests
 {
   public class PegasusClientTests
   {
-    private IServiceProvider serviceProvider;
-    private IServiceCollection serviceCollection;
+    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceCollection serviceCollection;
 
     public PegasusClientTests()
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddSingleton<VSS.Common.Abstractions.Configuration.IConfigurationStore, GenericConfiguration>();
-      serviceCollection.AddTransient<IPegasusClient, PegasusClient>();
+      serviceCollection = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Pegasus.Client.UnitTests.log")))
+        .AddSingleton<Common.Abstractions.Configuration.IConfigurationStore, GenericConfiguration>()
+        .AddTransient<IPegasusClient, PegasusClient>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
       _ = serviceProvider.GetRequiredService<ILoggerFactory>();
-
     }
 
     #region DXF
@@ -130,7 +128,7 @@ namespace VSS.Pegasus.Client.UnitTests
 
       var expectedExecutionResult = new PegasusExecutionResult { Execution = expectedExecution };
 
-      var config = serviceProvider.GetRequiredService<VSS.Common.Abstractions.Configuration.IConfigurationStore>();
+      var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
       var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
       var baseRoute = "/api/executions";
       var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";
@@ -275,7 +273,7 @@ namespace VSS.Pegasus.Client.UnitTests
         ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = "EXECUTING" }
       };
 
-      var config = serviceProvider.GetRequiredService<VSS.Common.Abstractions.Configuration.IConfigurationStore>();
+      var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
       var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
       var baseRoute = "/api/executions";
       var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";
@@ -356,7 +354,7 @@ namespace VSS.Pegasus.Client.UnitTests
         ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = "EXECUTING" }
       };
 
-      var config = serviceProvider.GetRequiredService<VSS.Common.Abstractions.Configuration.IConfigurationStore>();
+      var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
       var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
       var baseRoute = "/api/executions";
       var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";
@@ -400,7 +398,7 @@ namespace VSS.Pegasus.Client.UnitTests
         ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = "EXECUTING" }
       };
 
-      var config = serviceProvider.GetRequiredService<VSS.Common.Abstractions.Configuration.IConfigurationStore>();
+      var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
       var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
       var baseRoute = "/api/executions";
       var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";

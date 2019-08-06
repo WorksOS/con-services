@@ -43,10 +43,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public void PD_GetTerrainTile_TRex_Fail()
     {
-      var projectIds = new ProjectID() { ProjectUid = null, ProjectId = 1 };
-      var callerId = Guid.NewGuid();
-      var customerUid = Guid.NewGuid();
-
       var expectedResult = new QMTileResult
       (
         new byte[] { 0x41, 0x42, 0x42, 0x41} // may get compressed(gzip) later in part two
@@ -65,8 +61,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         Y = 0,
         Z = 0,
         Filter = new FilterResult(),
-        ProjectId = 1,
-        ProjectUid = projectIds.ProjectUid
+        ProjectUid = Guid.Empty	
       };
 
       // make bad call
@@ -97,10 +92,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public void PD_GetTerrainTile_TRex_Success()
     {
-      var projectIds = new ProjectID() { ProjectUid = Guid.NewGuid(), ProjectId = 1 };
-      var callerId = Guid.NewGuid();
-      var customerUid = Guid.NewGuid();
-
       var expectedResult = new QMTileResult
       (
         new byte[] { 0x41, 0x42, 0x42, 0x41 } // may get compressed(gzip) later in part two
@@ -119,8 +110,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         Y = 0,
         Z = 0,
         Filter = new FilterResult(),
-        ProjectId = 1,
-        ProjectUid = projectIds.ProjectUid
+        ProjectUid = Guid.NewGuid	()
       };
 
 
