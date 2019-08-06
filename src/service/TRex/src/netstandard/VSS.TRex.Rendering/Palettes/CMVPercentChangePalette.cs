@@ -116,6 +116,8 @@ namespace VSS.TRex.Rendering.Palettes
       base.ToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
+      writer.WriteBoolean(UseAbsoluteValues);
     }
 
     /// <summary>
@@ -127,6 +129,8 @@ namespace VSS.TRex.Rendering.Palettes
       base.FromBinary(reader);
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      UseAbsoluteValues = reader.ReadBoolean();
     }
   }
 }
