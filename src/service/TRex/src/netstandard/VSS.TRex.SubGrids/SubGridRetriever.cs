@@ -562,8 +562,8 @@ namespace VSS.TRex.SubGrids
             _clientGrid.AssignFilteredValue(StripeIndex, J, _assignmentContext);
           else
           {
-            if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) && (liftParams.CCVSummaryTypes == 0 || !liftParams.CCVSummarizeTopLayerOnly)) ||
-                ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) && (liftParams.MDPSummaryTypes == 0 || !liftParams.MDPSummarizeTopLayerOnly)) ||
+            if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) && (liftParams.CCVSummaryTypes == CCVSummaryTypes.None || !liftParams.CCVSummarizeTopLayerOnly)) ||
+                ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) && (liftParams.MDPSummaryTypes == MDPSummaryTypes.None || !liftParams.MDPSummarizeTopLayerOnly)) ||
                 // ReSharper disable once UseMethodAny.0
                 _cellProfile.Layers.Count() > 0 ||
                 _gridDataType == GridDataType.CCA || _gridDataType == GridDataType.CCAPercent) // no CCA settings

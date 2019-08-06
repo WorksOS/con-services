@@ -17,6 +17,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.Profiling
 {
@@ -1331,10 +1332,10 @@ namespace VSS.TRex.Profiling
             if (LayerContainsAFilteredPass) // CCA not catered for here with settings
             {
               if ((ClientGrid.GridDataType == GridDataType.CCV && liftParameters.CCVSummarizeTopLayerOnly &&
-                   liftParameters.CCVSummaryTypes != 0)
+                   liftParameters.CCVSummaryTypes != CCVSummaryTypes.None)
                   ||
                   (ClientGrid.GridDataType == GridDataType.MDP && ProfileTypeRequired == GridDataType.MDP &&
-                   liftParameters.MDPSummarizeTopLayerOnly && liftParameters.MDPSummaryTypes != 0)
+                   liftParameters.MDPSummarizeTopLayerOnly && liftParameters.MDPSummaryTypes != MDPSummaryTypes.None)
                   ||
                   (ClientGrid.TopLayerOnly)
                   ||
