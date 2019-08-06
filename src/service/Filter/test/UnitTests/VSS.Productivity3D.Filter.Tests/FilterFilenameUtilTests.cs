@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,12 +13,13 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -31,7 +34,6 @@ namespace VSS.Productivity3D.Filter.Tests
     private IServiceProvider serviceProvider => _classFixture.serviceProvider;
     private IServiceExceptionHandler serviceExceptionHandler => _classFixture.serviceExceptionHandler;
 
-    private readonly IAssetResolverProxy _assetResolverProxy;
     private readonly string custUid = Guid.NewGuid().ToString();
     private readonly string userUid = Guid.NewGuid().ToString();
     private readonly string projectUid = Guid.NewGuid().ToString();
@@ -39,16 +41,8 @@ namespace VSS.Productivity3D.Filter.Tests
     private static Mock<IKafka> Producer => new Mock<IKafka>();
 
     public FilterFilenameUtilTests(ExecutorBaseTests classFixture)
-    {
+    { 
       _classFixture = classFixture;
-
-      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
-      mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-                                   .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
-      mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
-                                   .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
-
-      _assetResolverProxy = mockedAssetResolverProxySetup.Object;
     }
 
     
@@ -61,6 +55,11 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+
+      var getMachinesExecutionResult = new MachineExecutionResult (new List<MachineStatus>(0));
+      raptorProxy.Setup(x =>
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
       {
@@ -92,7 +91,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -113,7 +112,12 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
-     
+
+      var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
+      raptorProxy.Setup(x =>
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(getMachinesExecutionResult);
+
       var filter = new FilterModel
       {
         CustomerUid = custUid,
@@ -147,7 +151,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileImportProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName, fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -168,6 +172,11 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+
+      var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
+      raptorProxy.Setup(x =>
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
       {
@@ -216,7 +225,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileImportProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName, fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -237,7 +246,12 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
-     
+
+      var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
+      raptorProxy.Setup(x =>
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(getMachinesExecutionResult);
+
       var filter = new FilterModel
       {
         CustomerUid = custUid,
@@ -286,7 +300,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileImportProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName, fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -307,6 +321,11 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+
+      var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
+      raptorProxy.Setup(x =>
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
       {
@@ -366,7 +385,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileImportProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName, fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 

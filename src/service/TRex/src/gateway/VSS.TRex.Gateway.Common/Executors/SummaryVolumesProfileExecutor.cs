@@ -67,7 +67,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         ReturnAllPassesAndLayers = false,
         VolumeType = ConvertVolumesType(request.VolumeCalcType),
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 

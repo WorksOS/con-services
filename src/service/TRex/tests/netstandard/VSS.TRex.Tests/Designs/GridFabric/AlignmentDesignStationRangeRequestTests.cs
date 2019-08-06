@@ -25,13 +25,13 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       request.Should().NotBeNull();
     }
 
-    [Fact(Skip="BUG#85914")]
+    [Fact]
     public async Task Test_AlignmentDesignStationRangeRequest()
     {
       AddDesignProfilerGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddSVLAlignmentDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Large Sites Road - Trimble Road.svl", false);
       var referenceDesign = new DesignOffset(designUid, 0);
 
       var request = new AlignmentDesignStationRangeRequest();

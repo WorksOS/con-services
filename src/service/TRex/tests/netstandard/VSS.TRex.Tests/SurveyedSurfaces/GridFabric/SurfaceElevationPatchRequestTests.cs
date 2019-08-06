@@ -5,6 +5,7 @@ using VSS.TRex.Caching;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
@@ -23,7 +24,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(SurfaceElevationPatchRequest))]
   public class SurfaceElevationPatchRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, byte[]>();
+    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
 
     [Fact]
     public void Creation()

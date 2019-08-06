@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using VSS.Serilog.Extensions;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
@@ -24,27 +25,27 @@ namespace VSS.TRex.Storage
 
     protected readonly IIgnite ignite;
 
-    protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> generalNonSpatialCache;
-    protected IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> spatialCache;
+    protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> generalNonSpatialCache;
+    protected IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> spatialCache;
 
-    public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
-
-
-    protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> siteModelCache;
-
-    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> SiteModelCache => siteModelCache;
+    public IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache => spatialCache;
 
 
-    protected IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> siteModelMachineCache;
+    protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> siteModelCache;
 
-    public IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> SiteModelMachineCache => siteModelMachineCache;
+    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> SiteModelCache => siteModelCache;
+
+
+    protected IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> siteModelMachineCache;
+
+    public IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> SiteModelMachineCache => siteModelMachineCache;
 
     /// <summary>
     /// Determines the correct cache to read/write particular types of information from/to
     /// </summary>
     /// <param name="streamType"></param>
     /// <returns></returns>
-    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType)
+    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialCache(FileSystemStreamType streamType)
     {
       switch (streamType)
       {
@@ -63,7 +64,7 @@ namespace VSS.TRex.Storage
     /// </summary>
     /// <param name="streamType"></param>
     /// <returns></returns>
-    public IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> ProjectMachineCache(FileSystemStreamType streamType)
+    public IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> ProjectMachineCache(FileSystemStreamType streamType)
     {
       switch (streamType)
       {
@@ -115,8 +116,8 @@ namespace VSS.TRex.Storage
     /// <param name="cacheKey"></param>
     /// <param name="streamType"></param>
     /// <returns></returns>
-    protected bool PerformNonSpatialImmutabilityConversion(IStorageProxyCache<INonSpatialAffinityKey, byte[]> mutableCache,
-      IStorageProxyCache<INonSpatialAffinityKey, byte[]> immutableCache,
+    protected bool PerformNonSpatialImmutabilityConversion(IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> mutableCache,
+      IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> immutableCache,
       INonSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType)
     {
@@ -125,7 +126,7 @@ namespace VSS.TRex.Storage
         return false;
       }
 
-      using (var MS = new MemoryStream(mutableCache.Get(cacheKey)))
+      using (var MS = new MemoryStream(mutableCache.Get(cacheKey).Bytes))
       {
         using (var mutableStream = MemoryStreamCompression.Decompress(MS))
         {
@@ -144,7 +145,7 @@ namespace VSS.TRex.Storage
     /// <param name="source"></param>
     /// <returns></returns>
     protected bool PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
-      IStorageProxyCache<INonSpatialAffinityKey, byte[]> immutableCache,
+      IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> immutableCache,
       INonSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType,
       object source)
@@ -168,7 +169,7 @@ namespace VSS.TRex.Storage
                 $"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
 
             // Place the converted immutable item into the immutable cache
-            immutableCache.Put(cacheKey, compressedStream.ToArray());
+            immutableCache.Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
 
             return true;
           }
@@ -199,8 +200,8 @@ namespace VSS.TRex.Storage
     /// <param name="cacheKey"></param>
     /// <param name="streamType"></param>
     /// <returns></returns>
-    protected void PerformSpatialImmutabilityConversion(IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> mutableCache,
-      IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> immutableCache,
+    protected void PerformSpatialImmutabilityConversion(IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> mutableCache,
+      IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> immutableCache,
       ISubGridSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType)
     {
@@ -209,7 +210,7 @@ namespace VSS.TRex.Storage
         return;
       }
 
-      using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)), mutableStream = MemoryStreamCompression.Decompress(MS))
+      using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey).Bytes), mutableStream = MemoryStreamCompression.Decompress(MS))
       {
         PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
       }
@@ -225,7 +226,7 @@ namespace VSS.TRex.Storage
     /// <param name="source"></param>
     /// <returns></returns>
     protected void PerformSpatialImmutabilityConversion(MemoryStream mutableStream,
-      IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> immutableCache,
+      IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> immutableCache,
       ISubGridSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType,
       object source)
@@ -250,7 +251,7 @@ namespace VSS.TRex.Storage
                 $"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
 
             // Place the converted immutable item into the immutable cache
-            immutableCache.Put(cacheKey, compressedStream.ToArray());
+            immutableCache.Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
           }
         }
         else

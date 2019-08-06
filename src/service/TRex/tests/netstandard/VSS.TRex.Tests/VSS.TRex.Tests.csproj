@@ -131,6 +131,9 @@
     <None Update="TestData\Common\Bug36372.ttm.DesignSubgridIndex">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Common\Large Sites Road - Trimble Road.svl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Common\Large Sites Road - Trimble Road.ttm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

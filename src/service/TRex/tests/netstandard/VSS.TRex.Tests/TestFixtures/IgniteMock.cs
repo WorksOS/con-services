@@ -14,6 +14,7 @@ using Moq;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
@@ -62,8 +63,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
       mockMessaging = new Mock<IMessaging>();
       mockMessaging
-        .Setup(x => x.LocalListen(It.IsAny<IMessageListener<byte[]>>(), It.IsAny<object>()))
-        .Callback((IMessageListener<byte[]> listener, object topic) =>
+        .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISerialisedByteArrayWrapper>>(), It.IsAny<object>()))
+        .Callback((IMessageListener<ISerialisedByteArrayWrapper> listener, object topic) =>
         {
           messagingDictionary.Add(topic, listener);
         });
@@ -81,7 +82,7 @@ namespace VSS.TRex.Tests.TestFixtures
         {
           messagingDictionary.TryGetValue(topic, out var listener);
           if (listener is SubGridListener _listener)
-            _listener.Invoke(Guid.Empty, message as byte[]);
+            _listener.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
           else
             throw new TRexException($"Type of listener ({listener}) not SubGridListener as expected.");
         });
@@ -92,7 +93,7 @@ namespace VSS.TRex.Tests.TestFixtures
         {
           messagingDictionary.TryGetValue(topic, out var listener);
           if (listener is SubGridListener _listener1)
-            _listener1.Invoke(Guid.Empty, message as byte[]);
+            _listener1.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
           else if (listener is SiteModelAttributesChangedEventListener _listener2)
             _listener2.Invoke(Guid.Empty, message as SiteModelAttributesChangedEvent);
           else
@@ -193,7 +194,7 @@ namespace VSS.TRex.Tests.TestFixtures
       cacheDictionary = new Dictionary<string, object>(); 
 
       // Create the mocked cache for the existence maps cache and any other cache using this signature
-      AddMockedCacheToIgniteMock<INonSpatialAffinityKey, byte[]>();
+      AddMockedCacheToIgniteMock<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>();
 
       // Create the mocked cache for the site model change map queue cache and any other cache using this signature
       AddMockedCacheToIgniteMock<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>();

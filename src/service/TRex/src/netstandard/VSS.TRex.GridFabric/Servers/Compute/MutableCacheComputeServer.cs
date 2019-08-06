@@ -186,9 +186,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //cfg.Backups = 0;
     }
 
-    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
     {
-      return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
     }
 
     public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
@@ -209,9 +209,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.AffinityFunction = new MutableSpatialAffinityFunction();
     }
 
-    public override ICache<ISubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
     {
-      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, byte[]>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
     }
 
     public void ConfigureTAGFileBufferQueueCache(CacheConfiguration cfg)
@@ -238,7 +238,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
     private void InstantiateSiteModelsCacheReference()
     {
-      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(new CacheConfiguration
+      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(new CacheConfiguration
       {
         Name = TRexCaches.SiteModelsCacheName(StorageMutability.Mutable),
         KeepBinaryInStore = true,

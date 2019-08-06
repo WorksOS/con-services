@@ -62,13 +62,13 @@ namespace VSS.Productivity3D.Models.Models
         long assetID,
         string machineName,
         bool isJohnDoe,
-        string lastKnownDesignName,
-        ushort? lastKnownLayerId,
-        DateTime? lastKnownTimeStamp,
-        double? lastKnownLatitude,
-        double? lastKnownLongitude,
-        double? lastKnownX,
-        double? lastKnownY,
+        string lastKnownDesignName = null,
+        ushort? lastKnownLayerId = null,
+        DateTime? lastKnownTimeStamp = null,
+        double? lastKnownLatitude = null,
+        double? lastKnownLongitude = null,
+        double? lastKnownX = null,
+        double? lastKnownY = null,
         Guid? assetUid = null
         )
     {

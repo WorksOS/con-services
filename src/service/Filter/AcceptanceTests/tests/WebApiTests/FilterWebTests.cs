@@ -332,10 +332,7 @@ namespace WebApiTests
                                     DateTime? endUtc = null, string polygonUid = null, string polygonName = null,
                                     List<WGSPoint> polygonPoints = null, GeofenceType? polygonType=null)
     {
-      var listMachines = new List<MachineDetails>();
-      var machine = new MachineDetails(123456789, "TheMachineName", false);
-      listMachines.Add(machine);
-      var filter = new Filter(startUtc, endUtc, null, null, listMachines, onMachineDesignId,
+      var filter = new Filter(startUtc, endUtc, null, null, null, onMachineDesignId,
                                        elevation, vibestate, polygonPoints, forward, layerNo, polygonUid, polygonName, polygonType:polygonType);
       return JsonConvert.SerializeObject(filter);
     }
