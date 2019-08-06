@@ -490,19 +490,20 @@ namespace VSS.TRex.Rendering.Executors
 
         // Construct PipelineProcessor
         var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
-          requestDescriptor: RequestDescriptor,
-          dataModelID: DataModelID,
-          gridDataType: GridDataFromModeConverter.Convert(Mode),
-          response: new SubGridsPipelinedResponseBase(),
-          cutFillDesign: CutFillDesign,
-          filters: Filters,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
-          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
+          RequestDescriptor,
+          DataModelID,
+          GridDataFromModeConverter.Convert(Mode),
+          new SubGridsPipelinedResponseBase(),
+          Filters,
+          CutFillDesign,
+          DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
+          DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+          DIContext.Obtain<IRequestAnalyser>(),
+          Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
                                              Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistenceMap: Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
-          overrideSpatialCellRestriction: CellExtents
+          Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
+          CellExtents,
+          LiftParams
         );
 
         // Set the PVM rendering rexTask parameters for progressive processing

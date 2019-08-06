@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
@@ -44,6 +45,11 @@ namespace VSS.TRex.Analytics.Foundation
         public GridDataType RequestedGridDataType { get; set; } = GridDataType.All;
 
         /// <summary>
+        /// Parameters for lift analysis
+        /// </summary>
+        public ILiftParameters LiftParams { get; set; } = new LiftParameters();
+
+        /// <summary>
         ///  Default no-arg constructor
         /// </summary>
         public AnalyticsComputor()
@@ -62,22 +68,20 @@ namespace VSS.TRex.Analytics.Foundation
         /// <returns></returns>
         public async Task<bool> ComputeAnalytics(BaseAnalyticsResponse response)
         {
-          // TODO: add when lift build setting supported
-          // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
-
-          var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
-          (requestDescriptor: RequestDescriptor,
-            dataModelID: SiteModel.ID,
-            gridDataType: RequestedGridDataType,
-            response: response,
-            filters: Filters,
-            cutFillDesign: CutFillDesign,
-            task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
-            pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
-            requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-            requestRequiresAccessToDesignFileExistenceMap: CutFillDesign?.DesignID != Guid.Empty,
-            requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,
-            overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
+          var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+            RequestDescriptor,
+            SiteModel.ID,
+            RequestedGridDataType,
+            response,
+            Filters,
+            CutFillDesign,
+            DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
+            DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
+            DIContext.Obtain<IRequestAnalyser>(),
+            CutFillDesign?.DesignID != Guid.Empty,
+            IncludeSurveyedSurfaces,
+            BoundingIntegerExtent2D.Inverted(),
+            LiftParams
           );
 
           // Assign the provided aggregator into the pipelined sub grid task

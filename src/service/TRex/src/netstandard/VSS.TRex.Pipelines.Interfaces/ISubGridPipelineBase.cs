@@ -104,5 +104,7 @@ namespace VSS.TRex.Pipelines.Interfaces
         long SubGridsRemainingToProcess { get; }
 
         DesignOffset ReferenceDesign { get; set; }
-    }
+
+        ILiftParameters LiftParams { get; set; }
+  }
 }

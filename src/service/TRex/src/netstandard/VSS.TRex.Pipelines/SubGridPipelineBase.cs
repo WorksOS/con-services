@@ -106,8 +106,9 @@ namespace VSS.TRex.Pipelines
             }
         }
 
-        // FLiftBuildSettings is a reference to a lift build settings object provided by the caller
-        //  property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
+        // LiftParams is a reference to a lift build settings object provided by the caller
+        public ILiftParameters LiftParams { get; set; } = new LiftParameters();
+
         //  property Terminated : Boolean read FTerminated;
       
         /// <summary>

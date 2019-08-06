@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
@@ -38,6 +39,7 @@ namespace VSS.TRex.Exports.Patches.Executors
     private Guid DataModelID;
     private DisplayMode Mode;
     private IFilterSet Filters;
+    private ILiftParameters LiftParams;
 
     private int DataPatchPageNumber;
     private int DataPatchPageSize;
@@ -56,14 +58,8 @@ namespace VSS.TRex.Exports.Patches.Executors
     /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
     /// </summary>
-    /// <param name="dataModelID"></param>
-    /// <param name="mode"></param>
-    /// <param name="filters"></param>
-    /// <param name="cutFillDesign"></param>
-    /// <param name="requestingTRexNodeId"></param>
-    /// <param name="dataPatchPageNumber"></param>
-    /// <param name="dataPatchPageSize"></param>
-    public PatchExecutor(Guid dataModelID,
+    public PatchExecutor(
+      Guid dataModelID,
       //AExternalDescriptor :TASNodeRequestDescriptor;
       DisplayMode mode,
       IFilterSet filters,
@@ -71,7 +67,8 @@ namespace VSS.TRex.Exports.Patches.Executors
       //AReferenceVolumeType : TComputeICVolumesType;
       string requestingTRexNodeId,
       int dataPatchPageNumber,
-      int dataPatchPageSize
+      int dataPatchPageSize,
+      ILiftParameters liftParams
     )
     {
       DataModelID = dataModelID;
@@ -83,6 +80,7 @@ namespace VSS.TRex.Exports.Patches.Executors
       RequestingTRexNodeID = requestingTRexNodeId;
       DataPatchPageNumber = dataPatchPageNumber;
       DataPatchPageSize = dataPatchPageSize;
+      LiftParams = liftParams;
     }
 
     /// <summary>
@@ -97,19 +95,21 @@ namespace VSS.TRex.Exports.Patches.Executors
 
       Guid RequestDescriptor = Guid.NewGuid();
 
-      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: RequestDescriptor,
-        dataModelID: DataModelID,
-        gridDataType: GridDataFromModeConverter.Convert(Mode),
-        response: PatchSubGridsResponse,
-        filters: Filters,
-        cutFillDesign: CutFillDesign,
-        task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
-        pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-        requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-        requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
-                                           && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-        requestRequiresAccessToDesignFileExistenceMap: Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
-        overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
+      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+        RequestDescriptor,
+        DataModelID,
+        GridDataFromModeConverter.Convert(Mode),
+        PatchSubGridsResponse,
+        Filters,
+        CutFillDesign,
+        DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
+        DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+        DIContext.Obtain<IRequestAnalyser>(),
+        Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
+                                 && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+        Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
+        BoundingIntegerExtent2D.Inverted(),
+        LiftParams);
 
       // Configure the request analyser to return a single page of results.
       processor.RequestAnalyser.SinglePageRequestNumber = DataPatchPageNumber;

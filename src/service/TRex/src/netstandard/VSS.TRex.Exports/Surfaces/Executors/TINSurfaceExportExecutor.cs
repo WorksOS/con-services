@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
@@ -41,6 +42,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     private Guid DataModelID;
     private IFilterSet Filters;
     private double Tolerance;
+    private ILiftParameters LiftParams;
 
     /// <summary>
     /// The pipeline processor used to coordinate construction, coordinate and orchestration of the pipelined request
@@ -50,20 +52,19 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
     /// </summary>
-    /// <param name="dataModelID"></param>
-    /// <param name="filters"></param>
-    /// <param name="tolerance"></param>
-    /// <param name="requestingTRexNodeId"></param>
-    public TINSurfaceExportExecutor(Guid dataModelID,
+    public TINSurfaceExportExecutor(
+      Guid dataModelID,
       IFilterSet filters,
       double tolerance,
-      string requestingTRexNodeId
+      string requestingTRexNodeId,
+      ILiftParameters liftParams
     )
     {
       DataModelID = dataModelID;
       Filters = filters;
       Tolerance = tolerance;
       RequestingTRexNodeID = requestingTRexNodeId;
+      LiftParams = liftParams;
     }
 
     /// <summary>
@@ -116,18 +117,19 @@ namespace VSS.TRex.Exports.Surfaces.Executors
         // Provide the processor with a customised request analyser configured to return a set of sub grids. These sub grids
         // are the feed stock for the generated TIN surface
         processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
-          requestDescriptor: RequestDescriptor,
-          dataModelID: DataModelID,
-          gridDataType: GridDataFromModeConverter.Convert(DisplayMode.Height),
-          response: SurfaceSubGridsResponse,
-          filters: Filters,
-          cutFillDesign: new DesignOffset(), 
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SurfaceExport),
-          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistenceMap: false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(DisplayMode.Height),
-          overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
+          RequestDescriptor,
+          DataModelID,
+          GridDataFromModeConverter.Convert(DisplayMode.Height),
+          SurfaceSubGridsResponse,
+          Filters,
+          new DesignOffset(), 
+          DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SurfaceExport),
+          DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+          DIContext.Obtain<IRequestAnalyser>(),
+          Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+          false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(DisplayMode.Height),
+          BoundingIntegerExtent2D.Inverted(),
+          LiftParams);
 
         // Set the surface TRexTask parameters for progressive processing
         processor.Task.RequestDescriptor = RequestDescriptor;
