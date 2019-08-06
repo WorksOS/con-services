@@ -35,5 +35,3 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ $configName }}
-        - configMapRef:
-            name: {{ .Values.globalConfig }}

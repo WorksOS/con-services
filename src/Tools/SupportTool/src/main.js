@@ -36,7 +36,7 @@ Vue.use(Vuetify)
 Vue.component('file-select', FileSelect);
 Vue.mixin(helpers);
 
-console.log("Running in", process.env.VUE_APP_ENV);
+console.log("Running in", config.VUE_APP_ENV);
 
 new Vue({
   router,

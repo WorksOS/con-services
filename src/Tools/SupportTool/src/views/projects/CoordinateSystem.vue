@@ -105,7 +105,7 @@ export default {
                 "csFileName" : self.file.name,
                 "csFileContent" : encoded
             };
-            var url = urljoin(process.env.VUE_APP_TREX_MUTABLE_GATEWAY_URL, "/api/v1/coordsystem");
+            var url = urljoin(config.VUE_APP_TREX_MUTABLE_GATEWAY_URL, "/api/v1/coordsystem");
             axios.post(url, payload, {
                 headers: {
                         "Content-Type": "application/json"

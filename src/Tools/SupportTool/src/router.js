@@ -11,7 +11,7 @@ import ProjectTagFileUpload from './views/projects/Tagfiles.vue'
 
 Vue.use(Router)
 
-const DEFAULT_TITLE = '(' + process.env.VUE_APP_ENV + ') TRex Support Tool';
+const DEFAULT_TITLE = '(' + config.VUE_APP_ENV + ') TRex Support Tool';
 
 const router = new Router({
   mode: 'history',
