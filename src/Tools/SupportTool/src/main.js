@@ -15,7 +15,7 @@ Vue.config.productionTip = false
 
 const opts = {
   theme: {
-   // dark: false,
+    // dark: false,
     themes: {
       light: {
         // primary: '...',

@@ -10,15 +10,15 @@
       app
     >
       <v-list dense>
-        <v-list-group v-for="(rootItem, i) in menuItems" :key="i"  no-action :value="true">
+        <v-list-group v-for="(rootItem, i) in menuItems" :key="i" no-action :value="true">
           <template v-slot:activator>
-              <v-list-item-icon>
-                <v-icon v-text="rootItem.icon"></v-icon>
-              </v-list-item-icon>
-              <v-list-item-title>{{rootItem.text}}</v-list-item-title>
+            <v-list-item-icon>
+              <v-icon v-text="rootItem.icon"></v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>{{rootItem.text}}</v-list-item-title>
           </template>
 
-          <v-list-item v-for="(item, i) in rootItem.items" :key="i"  :to="item.link">
+          <v-list-item v-for="(item, i) in rootItem.items" :key="i" :to="item.link">
             <v-list-item-title v-text="item.text"></v-list-item-title>
             <v-list-item-icon>
               <v-icon v-text="item.icon"></v-icon>
@@ -57,10 +57,10 @@ export default {
   data: () => ({
     appSettings: null,
     menuItems: {
-      "projects" : {
-        "icon" : "mdi-book-open",
-        "text" : "Projects",
-        "items": [
+      projects: {
+        icon: "mdi-book-open",
+        text: "Projects",
+        items: [
           {
             icon: "mdi-apps-box",
             text: "Process Tag Files",
@@ -70,7 +70,7 @@ export default {
             icon: "mdi-axis-y-arrow",
             text: "Import DC File",
             link: "/project/coordsystem"
-          },
+          }
         ]
       }
     }

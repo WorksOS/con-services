@@ -12,7 +12,9 @@
                 {{ v.name }}
             </li>
         </v-list-item-title>
-        <v-list-item-title class="headline mb-1" v-else>No file selected</v-list-item-title>
+        <v-list-item-title class="headline mb-1" v-else>
+          No file{{allowMultiple ? "(s)" : ""}} selected
+        </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
 
