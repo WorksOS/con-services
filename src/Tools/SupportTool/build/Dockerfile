@@ -15,4 +15,4 @@ COPY build/setupConfig.sh .
 COPY build/start.sh .
 EXPOSE 80
 # We need to save the env variables to a file for Node
-CMD ["./start.sh"]
+CMD ["sh","./start.sh"]
