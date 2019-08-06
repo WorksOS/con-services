@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.Models.Models
       }
 
       // seed for gen2 was 1. Seed for Gen3 is 1m.
-      if (ProjectId <= 0)
+      if (ProjectId < 1)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

@@ -874,7 +874,7 @@ return localVersionMap;
               machine.ID));
           }
 
-// where multi events for same design -  want to retain startDate of first
+          // where multi events for same design -  want to retain startDate of first
           if (priorMachineDesignId != machineDesignId)
           {
             priorMachineDesignId = machineDesignId;
@@ -917,7 +917,7 @@ return localVersionMap;
           startStopEvents.GetStateAtIndex(startStopEventIndex - 1, out var startReportingPeriod, out _);
           startStopEvents.GetStateAtIndex(startStopEventIndex, out var endReportingPeriod, out _);
 
-// identify layer changes within a report period which will likely overlap reporting periods.
+          // identify layer changes within a report period which will likely overlap reporting periods.
           var priorLayerId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents
             .GetValueAtDate(startReportingPeriod, out var layerStateChangeIndex, ushort.MaxValue);
           var priorMachineDesignId = MachinesTargetValues[machine.InternalSiteModelMachineIndex]
@@ -952,7 +952,7 @@ return localVersionMap;
             priorLayerId = nextLayerId;
           }
 
-// event earlier in report period, this covers to end of period
+          // event earlier in report period, this covers to end of period
           if (layerStateChangeIndex == layerEventCount && thisLayerChangeTime < endReportingPeriod)
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
