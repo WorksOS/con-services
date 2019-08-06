@@ -54,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         Filters = new FilterSet(filter),
         PassCountDetailValues = UpdatePassCounts(request.PassCounts),
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       if (passCountDetailsResult != null)

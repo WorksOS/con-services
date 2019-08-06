@@ -52,7 +52,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         ReferenceDesign = new DesignOffset(request.DesignDescriptor.FileUid ?? Guid.Empty, request.DesignDescriptor.Offset),
         Offsets = request.CutFillTolerances,
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       if (cutFillResult != null)

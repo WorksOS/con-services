@@ -51,7 +51,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         Filters = new FilterSet(filter),
         CMVDetailValues = request.CustomCMVDetailTargets,
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       if (cmvDetailsResult != null)

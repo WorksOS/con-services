@@ -58,7 +58,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           Filters = new FilterSet(filter),
           Tolerance = request?.Tolerance ?? 0.0,
           Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
-          LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
+          LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       return TINSurfaceExportResult.CreateTINResult(response.data);

@@ -106,7 +106,10 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Default public constructor.
     /// </summary>
-    public LiftSettings() {}
+    public LiftSettings()
+    {
+      LiftDetectionType = LiftDetectionType.None;
+    }
 
     /// <summary>
     /// Overload constructor with parameters.
