@@ -70,5 +70,5 @@ spec:
             value: "/trex/"
           - name: IS_KUBERNETES
             value: "true"
-          - name: TREX_IGNITE_JVM_HEAP_SIZE_MB
-            value: {{ .Values.utilities.javaHeapSizeMb | quote }}
+          - name: TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB
+            value: {{ .Values.utilities.javaHeapMaxSizeMb | quote }}
