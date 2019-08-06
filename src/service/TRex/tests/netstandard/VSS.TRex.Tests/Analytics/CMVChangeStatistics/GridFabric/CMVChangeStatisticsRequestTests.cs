@@ -181,21 +181,21 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
     public async Task Test_CMVChangeStatisticsRequest_SiteModelWithMultipleCells_FullExtents()
     {
       const double TOLERANCE = 0.000001;
-      const short NUMBER_OF_CELLS = 1988;
-      const short NUMBER_OF_CELLS_SCANNED = 1994;
+      const short NUMBER_OF_CELLS = 2164;
+      const short NUMBER_OF_CELLS_SCANNED = 2170;
 
       double[] expectedPercentages = 
       {
-        2.3641851106639837,
-        11.921529175050303,
-        29.325955734406438,
-        26.911468812877263,
-        13.832997987927564,
-        5.6841046277665992,
-        9.9597585513078464
+        2.310536044362292,
+        11.367837338262476,
+        28.188539741219966,
+        25.508317929759706,
+        12.985212569316081,
+        5.360443622920517,
+        14.279112754158966
       };
 
-      int[] expectedCounts = { 47, 237, 583, 535, 275, 113, 198 };
+      int[] expectedCounts = { 50, 246, 610, 552, 281, 116, 309 };
 
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();

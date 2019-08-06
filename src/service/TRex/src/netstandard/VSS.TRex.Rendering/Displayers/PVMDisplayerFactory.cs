@@ -26,6 +26,9 @@ namespace VSS.TRex.Rendering.Displayers
         case DisplayMode.CCVPercentSummary:
           displayer = new PVMDisplayer_CMVSummary();
           break;
+        case DisplayMode.CMVChange:
+          displayer = new PVMDisplayer_CMVPercentChange();
+          break;
         case DisplayMode.MDP:
           displayer = new PVMDisplayer_MDP();
           break;
@@ -42,7 +45,7 @@ namespace VSS.TRex.Rendering.Displayers
           displayer = new PVMDisplayer_Temperature();
           break;
         case DisplayMode.TemperatureSummary:
-          displayer = new PVMDisplayer_Temperature();
+          displayer = new PVMDisplayer_TemperatureSummary();
           break;
         case DisplayMode.CutFill:
           displayer = new PVMDisplayer_CutFill();

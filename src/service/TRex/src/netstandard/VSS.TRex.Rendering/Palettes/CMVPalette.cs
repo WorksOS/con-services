@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.SubGridTrees.Client.Types;
 
 namespace VSS.TRex.Rendering.Palettes
@@ -35,6 +36,10 @@ namespace VSS.TRex.Rendering.Palettes
     {
     }
 
+    public CMVPalette(Transition[] transitions) : base(transitions)
+    {
+    }
+
     public Color ChooseColour(SubGridCellPassDataCMVEntryRecord cmvData)
     {
       if (cmvData.IsDecoupled && DisplayDecoupledColourInPVM)
@@ -44,7 +49,7 @@ namespace VSS.TRex.Rendering.Palettes
       // if it is. CCVRange holds a min/max percentage of target CMV...
       var targetCMVValue = !UseMachineTargetCMV ? AbsoluteTargetCMV : cmvData.TargetCMV;
 
-      if (DisplayTargetCCVColourInPVM && (cmvData.MeasuredCMV >= targetCMVValue * _minTarget && cmvData.MeasuredCMV <= targetCMVValue * _maxTarget))
+      if (DisplayTargetCCVColourInPVM && Range.InRange(cmvData.MeasuredCMV, targetCMVValue * _minTarget, targetCMVValue * _maxTarget))
         return TargetCCVColour;
 
       return ChooseColour(cmvData.MeasuredCMV);

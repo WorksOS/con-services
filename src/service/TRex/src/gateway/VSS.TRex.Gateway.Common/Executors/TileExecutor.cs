@@ -12,8 +12,8 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
@@ -154,6 +154,21 @@ namespace VSS.TRex.Gateway.Common.Executors
           }
 
           break;
+        case DisplayMode.CMVChange:
+          convertedPalette = new CMVPercentChangePalette();
+
+          var cmvPercentChangePalette = ((CMVPercentChangePalette)convertedPalette);
+          
+          cmvPercentChangePalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
+          cmvPercentChangePalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
+
+          cmvPercentChangePalette.UseAbsoluteValues = false;
+
+          cmvPercentChangePalette.UseMachineTargetCMV = !overrides?.OverrideMachineCCV ?? true;
+          cmvPercentChangePalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
+
+          cmvPercentChangePalette.TargetCCVColour = Color.Green;
+          cmvPercentChangePalette.DefaultDecoupledCMVColour = Color.Black; break;
         case DisplayMode.CutFill:
           convertedPalette = new CutFillPalette();
           break;
@@ -278,10 +293,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           var transitions = new Transition[request.Palettes.Count];
 
-        for (var i = 0; i < request.Palettes.Count; i++)
-          transitions[i] = new Transition(request.Palettes[i].Value, ColorUtility.UIntToColor(request.Palettes[i].Color));
+          for (var i = 0; i < request.Palettes.Count; i++)
+            transitions[i] = new Transition(request.Palettes[i].Value, ColorUtility.UIntToColor(request.Palettes[i].Color));
 
-        convertedPalette.PaletteTransitions = transitions;
+          convertedPalette.PaletteTransitions = transitions;
         }
       }
 
