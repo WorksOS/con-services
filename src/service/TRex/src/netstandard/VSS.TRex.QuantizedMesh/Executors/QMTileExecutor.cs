@@ -148,86 +148,32 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// <returns></returns>
     private async Task<bool> ConvertGridToDEM(float minElev, float maxElev)
     {
-      Log.LogDebug($"Tile.({TileY}) ConvertGridToDEM, MinElev:{minElev}, MaxElev:{maxElev}, FirstPos:{GriddedElevDataArray[0,0].Easting},{GriddedElevDataArray[0, 0].Northing},{GriddedElevDataArray[0, 0].Elevation}");
+      Log.LogDebug($"Tile.({TileY}) ConvertGridToDEM, MinElev:{minElev}, MaxElev:{maxElev}, FirstPos:{GriddedElevDataArray[0, 0].Easting},{GriddedElevDataArray[0, 0].Northing},{GriddedElevDataArray[0, 0].Elevation}");
       ElevData.MaximumHeight = maxElev;
       ElevData.MinimumHeight = minElev;
 
-
-      // Run Test
-      /*
-      var NEECoordsX = new XYZ[2];
-      NEECoordsX[0] = new XYZ(2882.177879, 1148.867816, 0);
-      NEECoordsX[1] = new XYZ(1186.969147, 1186.969147, 0);
-      var conversionResultX = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIMENSIONS_2012_DC_CSIB, NEECoordsX);
-      if (conversionResultX.ErrorCode == RequestErrorStatus.OK)
-      {
-        var LLHCoordsX = new XYZ[conversionResultX.LLHCoordinates.Length];
-        for (var i = 0; i < conversionResultX.LLHCoordinates.Length; i++)
-        {
-          LLHCoordsX[i].X = conversionResultX.LLHCoordinates[i].X;
-          LLHCoordsX[i].Y = conversionResultX.LLHCoordinates[i].Y;
-          LLHCoordsX[i].Z = conversionResultX.LLHCoordinates[i].Z;
-        }
-        Log.LogDebug($"Tile.({TileY}) After conversion LLCoordsX are {string.Concat(LLHCoordsX)}");
-        var LLHCoordsX2 = conversionResultX.LLHCoordinates;
-        Log.LogDebug($"Tile.({TileY}) After conversion LLCoordsX2 are {string.Concat(LLHCoordsX2)}");
-      }
-      */
-
-      var neeCoords = new XYZ[TileGridSize * TileGridSize];
-      int d = 0;
-      // build up a results grid from SW to NE
+      var defaultElev = LowestElevation;
+      // This is the fastest way to get to ECEF points without using corex and good enough for header info
+      var yRange = TileBoundaryLL.North - TileBoundaryLL.South;
+      var xRange = TileBoundaryLL.East - TileBoundaryLL.West;
+      var xStep = xRange / (TileGridSize - 1);
+      var yStep = yRange / (TileGridSize - 1);
+      var k = 0;
       for (int y = 0; y < TileGridSize; y++)
         for (int x = 0; x < TileGridSize; x++)
         {
-          neeCoords[d] = new XYZ(GriddedElevDataArray[x, y].Easting, GriddedElevDataArray[x, y].Northing, 0);
-          d++;
+          // calculate LL position
+          var lat = TileBoundaryLL.South + (y * yStep);
+          var lon = TileBoundaryLL.West + (x * xStep);
+          // todo eventually replace when SS part three implemented. There must be a value for now
+          var elev = GriddedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight ? defaultElev : GriddedElevDataArray[x, y].Elevation;
+          if (elev < ElevData.MinimumHeight)
+            ElevData.MinimumHeight = elev; // reset to base
+          ElevData.EcefPoints[k] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(lon), Y = MapUtils.Deg2Rad(lat), Z = elev });
+          if (ElevData.ElevGrid[k] != elev)
+            ElevData.ElevGrid[k] = elev; // missing data set to lowest
+          k++;
         }
-
-      //Log.LogDebug($"Tile.({TileY}) After conversion NEECoords3 are {string.Concat(neeCoords)}");
-      
-
-
-      // todo      (var errorCode, XYZ[] LLHCoords2) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid).CSIB(), NEECoords2);
-      //    (var errorCode, XYZ[] LLHCoords2) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIMENSIONS_2012_DC_CSIB, NEECoords2);
-
-      // var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(DIMENSIONS_2012_DC_CSIB, LLHCoords);
-
-      int k = 0;
-      var conversionResult = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIMENSIONS_2012_DC_CSIB, neeCoords);
-      if (conversionResult.ErrorCode == RequestErrorStatus.OK)
-      {
-        var llCoords = conversionResult.LLHCoordinates;
-        Log.LogDebug($"Tile.({TileY}) ConvertGridToDEM, NEEToLL First LL position. {llCoords[0].X},{llCoords[0].Y}");
-       // Log.LogDebug($"Tile.({TileY}) ConvertGridToDEM, NEEToLL All. {string.Concat(llCoords)}");
-
-        // use min hgt for default if present
-//        var defaultElev = float.IsPositiveInfinity(ElevData.MinimumHeight) ? QMConstants.SealLevelElev : ElevData.MinimumHeight;
-        var defaultElev = LowestElevation;
-
-        //  if (errorCode == RequestErrorStatus.OK)
-
-        for (int y = 0; y < TileGridSize; y++)
-          for (int x = 0; x < TileGridSize; x++)
-          {
-            // todo eventually replace when SS part three implemented. There must be a value for now
-            var elev = GriddedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight ? defaultElev : GriddedElevDataArray[x, y].Elevation;
-            if (elev < ElevData.MinimumHeight)
-              ElevData.MinimumHeight = elev; // reset to base
-            // list of ecef points used in header calculations
-            ElevData.EcefPoints[k] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(llCoords[k].X), Y = MapUtils.Deg2Rad(llCoords[k].Y), Z = elev});
-            // tile elevation data
-            ElevData.ElevGrid[k] = elev;
-            k++;
-          }
-
-      }
-      else
-      {
-        Log.LogError($"Tile.({TileY}) failure, could not convert bounding area from grid to WGS coordinates");
-        // todo response.ResponseCode = SubGridRequestsResponseResult.Failure;
-        return false;
-      }
 
       return true;
     }
@@ -312,13 +258,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     private async Task<bool> SetupPipelineTask(BoundingWorldExtent3D siteModelExtent, double cellSize)
     {
 
-      //      Log.LogDebug($"QMTileExecutor Details. GridSize:{TileGridSize}, Y:{TileY}, LLBoundary:{TileBoundaryLL.ToDisplay()}");
       var requestDescriptor = Guid.NewGuid();
-
-
-      //    Log.LogDebug($"QMTileExecutor.({TileY}) LLHCoords for tile request {string.Concat(LLHCoords)}");
-
-
       // Note coords are always supplied lat long
       /*      if (SiteModel.CSIB() == string.Empty)
             {
@@ -335,8 +275,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
           new XYZ(MapUtils.Deg2Rad(TileBoundaryLL.West), MapUtils.Deg2Rad(TileBoundaryLL.North), 0),
           new XYZ(MapUtils.Deg2Rad(TileBoundaryLL.East), MapUtils.Deg2Rad(TileBoundaryLL.South), 0)};
 
-
-      Log.LogDebug($"Tile.({TileY}) Alan before LLHToNEE conversion LLHCoords are {string.Concat(LLHCoords)}");
 
       //        var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(DIMENSIONS_2012_DC_CSIB, LLHCoords, false);
 
@@ -367,7 +305,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       GridIntervalX = (NEECoords[1].X - NEECoords[0].X) / (TileGridSize - 1);
       GridIntervalY = (NEECoords[2].Y - NEECoords[0].Y) / (TileGridSize - 1);
 
-      Log.LogDebug($"Tile.({TileY}) GridInterval(m) X:{GridIntervalX}, Y:{GridIntervalY}");
+      Log.LogDebug($"Tile.({TileY}) Zoom:{TileZ}, TileSize:{NEECoords[1].X - NEECoords[0].X}m x {NEECoords[2].Y - NEECoords[0].Y}m, GridInterval(m) X:{GridIntervalX}, Y:{GridIntervalY}");
 
         //  WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
       //   WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);

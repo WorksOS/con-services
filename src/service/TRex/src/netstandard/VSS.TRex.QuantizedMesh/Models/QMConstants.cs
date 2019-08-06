@@ -8,8 +8,8 @@ namespace VSS.TRex.QuantizedMesh.Models
   {
     // Always make gridsize an odd number for best results
     public const int FlatResolutionGridSize = 6;    // Tile GridSize
-    public const int MidResolutionGridSize  = 65;   // Tile GridSize
-    public const int HighResolutionGridSize = 65;   // Tile GridSize
+    public const int MidResolutionGridSize  = 33;   // Tile GridSize
+    public const int HighResolutionGridSize = 33;   // Tile GridSize
     public const int DemoResolutionGridSize = 5;    // Tile GridSize
     public const int TileValueRange = 32768;        // 0 to 32767
 
