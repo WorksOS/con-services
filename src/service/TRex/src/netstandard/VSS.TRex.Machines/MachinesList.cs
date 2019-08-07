@@ -17,7 +17,7 @@ namespace VSS.TRex.Machines
   public class MachinesList : List<IMachine>, IMachinesList, IBinaryReaderWriter
   {
     private const byte VERSION_NUMBER = 1;
-    private const string MACHINES_LIST_STREAM_NAME = "Machines";
+    public const string MACHINES_LIST_STREAM_NAME = "Machines";
 
     /// <summary>
     /// Maps machine IDs (currently as 64 bit integers) to the instance containing all the event lists for all the machines

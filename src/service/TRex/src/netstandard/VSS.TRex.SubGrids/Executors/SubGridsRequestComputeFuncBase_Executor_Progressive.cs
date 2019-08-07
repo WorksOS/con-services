@@ -11,6 +11,7 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.IO.Helpers;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.SubGrids.Executors
@@ -79,8 +80,8 @@ namespace VSS.TRex.SubGrids.Executors
     {
       contextEstablishmentResponse = SubGridRequestsResponseResult.OK;
 
-      IIgnite Ignite = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.ImmutableGridName());
-      IClusterGroup group = Ignite?.GetCluster().ForAttribute("TRexNodeId", tRexNodeIDAsString);
+      var Ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
+      var group = Ignite?.GetCluster().ForAttribute("TRexNodeId", tRexNodeIDAsString);
 
       if (group == null)
       {

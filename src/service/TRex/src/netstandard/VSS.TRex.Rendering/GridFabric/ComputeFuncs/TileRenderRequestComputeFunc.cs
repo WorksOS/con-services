@@ -12,7 +12,6 @@ using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 {
