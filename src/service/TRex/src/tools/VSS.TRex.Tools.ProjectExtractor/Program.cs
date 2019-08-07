@@ -34,137 +34,6 @@ namespace VSS.TRex.Tools.ProjectExtractor
         .Complete();
     }
 
-    static void ExtractEventData(ISiteModel siteModel, string projectOutputPath)
-    {
-      foreach (var machine in siteModel.Machines)
-      {
-        var allEventsForMachine = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].GetEventLists();
-
-        foreach (var evtList in allEventsForMachine)
-        {
-          siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(siteModel.ID, evtList.EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
-
-          using (MS)
-          {
-            File.WriteAllBytes(Path.Combine(projectOutputPath, "Events", $"Machine-{machine.ID}", evtList.EventChangeListPersistantFileName()), MS.ToArray());
-          }
-        }
-      }
-    }
-
-    static void ExtractSpatialData(ISiteModel siteModel, string projectOutputPath)
-    {
-      //  overallMap.ScanAllSetBitsAsSubGridAddresses(address => subGridGrouper.IntegrateSubGridGroup(result.ConstructPathToCell(address.X, address.Y, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid));
-
-      // First write out the subGrid directory stream
-
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(address =>
-      {
-        var fileName = ServerSubGridTree.GetLeafSubGridFullFileName(address);
-        var FSError = siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore(siteModel.ID, fileName, address.X, address.Y, -1, -1, 0,
-          FileSystemStreamType.SubGridDirectory, out MemoryStream MS);
-
-        if (FSError != FileSystemErrorStatus.OK)
-        {
-          Log.LogError($"Failed to read directory stream for {fileName} with error {FSError}");
-          return;
-        }
-
-        using (MS)
-        {
-          File.WriteAllBytes(Path.Combine(projectOutputPath, "Spatial", fileName), MS.ToArray());
-        }
-
-        // Write out all segment streams for the subGrid
-
-        var subGrid = new ServerSubGridTreeLeaf();
-        if (subGrid.LoadDirectoryFromStream(MS))
-        {
-          subGrid.Directory.SegmentDirectory.ForEach(segment =>
-          {
-            var segmentFileName = segment.FileName(address.X, address.Y);
-            var FSErrorSegment = siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore(siteModel.ID, segmentFileName, address.X, address.Y, -1, -1, 0,
-              FileSystemStreamType.SubGridDirectory, out MemoryStream MSSegment);
-
-            if (FSErrorSegment != FileSystemErrorStatus.OK)
-            {
-              Log.LogError($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
-              return;
-            }
-
-            using (MSSegment)
-            {
-              File.WriteAllBytes(Path.Combine(projectOutputPath, "Spatial", fileName), MSSegment.ToArray());
-            }
-          });
-        }
-        else
-        {
-          Log.LogError($"Failed to read directory stream for {fileName}");
-        }
-      });
-    }
-
-    static void ExtractExistenceMap(ISiteModel siteModel, string projectOutputPath)
-    {
-      var readResult = siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(siteModel.ID, SiteModel.kSubGridExistenceMapFileName,
-        FileSystemStreamType.SubGridExistenceMap, out MemoryStream MS);
-
-      using (MS)
-      {
-        File.WriteAllBytes(Path.Combine(projectOutputPath, "MetaData", SiteModel.kSubGridExistenceMapFileName), MS.ToArray());
-      }
-    }
-
-    static void ExtractSiteModelCoreMetaData(ISiteModel siteModel, string projectOutputPath)
-    {
-      var readResult = siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(siteModel.ID, SiteModel.kSiteModelXMLFileName,
-        FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
-
-      using (MS)
-      {
-        File.WriteAllBytes(Path.Combine(projectOutputPath, "MetaData", SiteModel.kSiteModelXMLFileName), MS.ToArray());
-      }
-    }
-
-    static void ExtractChangeMaps(ISiteModel siteModel, string projectOutputPath)
-    {
-      var proxyStorageCache = DIContext.Obtain<ISiteModels>().PrimaryImmutableStorageProxy.ProjectMachineCache(FileSystemStreamType.SiteModelMachineElevationChangeMap);
-
-      foreach (var machine in siteModel.Machines)
-      {
-        try
-        {
-          var changeMap = proxyStorageCache.Get(new SiteModelMachineAffinityKey(siteModel.ID, machine.ID, FileSystemStreamType.SiteModelMachineElevationChangeMap));
-
-          File.WriteAllBytes(Path.Combine(projectOutputPath, "ChangeMaps", $"Machine-{machine.ID}"), changeMap.Bytes);
-        }
-        catch (KeyNotFoundException)
-        {
-          // No change map for machine - continue on
-        }
-      }
-    }
-
-    static void ExtractMachines(ISiteModel siteModel, string projectOutputPath)
-    {
-      siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(siteModel.ID, MachinesList.MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, out MemoryStream MS);
-
-      if (MS == null)
-      {
-        Log.LogWarning($"No machines found for site model {siteModel.ID}");
-        Console.WriteLine($"No machines found for site model {siteModel.ID}");
-      }
-      else
-      {
-        using (MS)
-        {
-          File.WriteAllBytes(Path.Combine(projectOutputPath, "MachineList"), MS.ToArray());
-        }
-      }
-    }
-  
-
     static void Main(string[] args)
     {
       if (args.Length < 2)
@@ -205,12 +74,15 @@ namespace VSS.TRex.Tools.ProjectExtractor
         Console.WriteLine($"Scanning project: {projectUid}");
         Console.WriteLine($"Outputting project data to: {ProjectOutputFolder}");
 
-        ExtractSiteModelCoreMetaData(siteModel, ProjectOutputFolder);
-        ExtractMachines(siteModel, ProjectOutputFolder);
-        ExtractExistenceMap(siteModel, ProjectOutputFolder);
-        ExtractEventData(siteModel, ProjectOutputFolder);
-        ExtractSpatialData(siteModel, ProjectOutputFolder);
-        ExtractChangeMaps(siteModel, ProjectOutputFolder);
+        var extractor = new Extractor(siteModel, ProjectOutputFolder);
+
+        extractor.ExtractSiteModelCoreMetaData();
+        extractor.ExtractCoordinateSystem();
+        extractor.ExtractMachines();
+        extractor.ExtractExistenceMap();
+        extractor.ExtractEventData();
+        extractor.ExtractSpatialData();
+        extractor.ExtractChangeMaps();
 
         Log.LogInformation($"Extraction of data for project {siteModel.ID} complete");
         Console.WriteLine($"Extraction of data for project {siteModel.ID} complete");
