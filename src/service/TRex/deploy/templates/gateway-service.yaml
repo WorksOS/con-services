@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: {{ template "trex.deployname" . }}-gateway
   labels:
-    service-name: {{ .Values.serviceName }}
+    service-name: {{ .Values.gateway.serviceDiscoveryName }}
   annotations:
     prometheus.io/scrape: "true"
 spec:

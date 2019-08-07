@@ -42,7 +42,8 @@ designElevation:
 gateway:
   replicaCount: 1
   javaHeapMaxSizeMb: 512
-  resources: 
+  serviceDiscoveryName: trex-service-immutable
+  resources:
     requests:
       cpu: 300m
       memory: 768Mi
@@ -76,7 +77,8 @@ mutableData:
 mutableGateway:
   replicaCount: 1
   javaHeapMaxSizeMb: 512
-  resources: 
+  serviceDiscoveryName: trex-service-mutable
+  resources:
     requests:
       cpu: 300m
       memory: 768Mi
