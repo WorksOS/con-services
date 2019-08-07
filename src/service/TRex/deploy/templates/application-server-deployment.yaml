@@ -73,6 +73,6 @@ spec:
             value: "true"
           - name: DEPLOYED_ENV
             value: {{ .Values.environment }}
-          - name: TREX_IGNITE_JVM_HEAP_SIZE_MB
-            value: {{ .Values.applicationServer.javaHeapSizeMb | quote  }}
+          - name: TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB
+            value: {{ .Values.applicationServer.javaHeapMaxSizeMb | quote  }}
 
