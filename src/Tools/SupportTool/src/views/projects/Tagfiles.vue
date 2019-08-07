@@ -1,28 +1,25 @@
 <template>
   <div>
     <h1>Tag File Upload</h1>
-    <div>
+
+    <p>
       <v-alert
-        type="success"
-        v-model="uploaded"
-        dismissible
+        v-for="(value, key) in uploadResults"
+        v-bind:key="key"
+        v-bind:type="value.type"
+        v-model="uploadResults[key].visible"
+        dark
         outlined
-      >Tag Files Uploaded Successfully</v-alert>
-      <v-alert
-        type="error"
-        v-model="uploadFailed"
-        dismissible
-        outlined
-      >Tag Files Failed to Upload - See Developer Tools</v-alert>
-      <v-card style="height: 400px;" v-if="uploading">
-        <v-layout align-content-center justify-center fill-height wrap>
-          <v-flex xs12 subtitle-1 text-center>Uploading Tag File: {{ currentFile.name }}</v-flex>
-          <v-flex xs6>
-            <v-progress-linear color="green accent-4" v-model="uploadProgress" rounded height="6"></v-progress-linear>
-          </v-flex>
-        </v-layout>
-      </v-card>
-    </div>
+      >
+        <div class="title">{{key}}</div>
+        <div v-if="value.inprogress">Currently Uploading</div>
+        <div v-else>{{ value.message }} ({{value.code}})</div>
+      </v-alert>
+      <v-spacer></v-spacer>
+      <v-btn block color="primary" dark v-if="uploading" @click="reset">Done</v-btn>
+    </p>
+
+
 
     <div v-if="!uploading">
       <p>
@@ -81,13 +78,10 @@ export default {
   },
   data() {
     return {
-      uploaded: false,
-      uploadFailed: false,
       uploading: false,
       files: null,
-      currentFile: null,
-      uploadProgress: 0,
       projectUid: null,
+      uploadResults: {},
       projectUidRules: [
         v => !!v || "A Project UID must be provided.",
         v => Consts.GUID_REGEX.test(v) || "Project UID must be a valid UID."
@@ -95,11 +89,74 @@ export default {
     };
   },
   methods: {
+    reset: function() {
+        console.log("Resetting");
+        this.uploading = false;
+        this.uploadResults = {};
+    },
     uploadTagFiles: function(event) {
       var self = this;
       this.uploading = true;
-      console.log("Uploading file", this.files);
-      this.base64Encode(file).then(encoded => {});
+      // Get the URL
+      const url = urljoin(
+        config.VUE_APP_TREX_MUTABLE_GATEWAY_URL,
+        "/api/v2/tagfiles"
+      );
+
+      for (var i = 0; i < self.files.length; i++) {
+        var file = this.files[i];
+        this.uploadResults[file.name] = {
+          success: false,
+          inprogress: true,
+          visible: true,
+          type: "info"
+        };
+        
+        this.base64Encode(file).then(res => {
+            
+          var f = res.file; // Get a reference to the file
+          var encoded = res.encoded; // Get the base64 encoded data
+
+          // Generate the payload for each tag file
+          var payload = {
+            projectUid: this.projectUid,
+            fileName: f.name,
+            data: encoded
+          };
+
+          axios
+            .post(url, payload, {
+              headers: {
+                "Content-Type": "application/json"
+              }
+            })
+            .then(result => {
+              console.log("result", f.name, result.data);
+              self.uploadResults[f.name].success = true;
+              self.uploadResults[f.name].inprogress = false;
+              self.uploadResults[f.name].message = result.data.Message || null;
+              self.uploadResults[f.name].code = result.data.Code || -1;
+              self.uploadResults[f.name].type = result.data.Code == 0 ? "success" : "warning";
+              self.$forceUpdate();
+            })
+            .catch(error => {
+              console.log("fetch-error", error);
+              var message = null;
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.Message
+              )
+                message = error.response.data.Message;
+
+              self.uploadResults[f.name].success = false;
+              self.uploadResults[f.name].inprogress = false;
+              self.uploadResults[f.name].message = result.data.Message || null;
+              self.uploadResults[f.name].type = "error";
+              self.$forceUpdate();
+            });
+        });
+      }
     }
   }
 };

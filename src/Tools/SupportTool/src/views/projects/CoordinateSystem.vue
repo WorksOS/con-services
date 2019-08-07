@@ -13,7 +13,11 @@
         v-model="uploadFailed"
         dismissible
         outlined
-      >Coordinate System Failed to Upload - See Developer Tools</v-alert>
+      >
+        Coordinate System Failed to Upload.
+        <p v-if="uploadError">Message: {{ uploadError }}</p>
+        <p v-else>See Developer Tools.</p> 
+      </v-alert>
       <v-card style="height: 400px;" v-if="uploading">
         <v-layout align-content-center justify-center fill-height wrap>
           <v-flex xs12 subtitle-1 text-center>Uploading Coordinate System</v-flex>
@@ -83,6 +87,7 @@ export default {
   },
   data() {
     return {
+      uploadError:null,
       uploaded: false,
       uploadFailed: false,
       uploading: false,
@@ -98,6 +103,7 @@ export default {
     uploadCoordinateSystem: function(event) {
       var self = this;
       this.uploading = true;
+      this.uploadError = null;
       if (this.files.length != 1) {
         // Should not happen, as the are not allowing multiple
         console.error("Incorrect files selected");
@@ -106,12 +112,13 @@ export default {
       var file = this.files[0];
       console.log("Uploading file", file);
       this.base64Encode(file)
-        .then(encoded => {
+        .then((res) => {
           var payload = {
             projectUid: this.projectUid,
             csFileName: file.name,
-            csFileContent: encoded
+            csFileContent: res.encoded
           };
+          console.log("Payload", payload);
           var url = urljoin(
             config.VUE_APP_TREX_MUTABLE_GATEWAY_URL,
             "/api/v1/coordsystem"
@@ -131,6 +138,8 @@ export default {
             })
             .catch(error => {
               console.log("fetch-error", error);
+              if(error.response && error.response.data)
+                this.uploadError = error.response.data.Message || null;
               this.uploading = false;
               this.uploadFailed = true;
             });

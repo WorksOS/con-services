@@ -11,7 +11,7 @@ export default {
                     if ((encoded.length % 4) > 0) {
                         encoded += '='.repeat(4 - (encoded.length % 4));
                     }
-                    resolve(encoded);
+                    resolve({file, encoded});
                 };
                 reader.onerror = error => reject(error);
             });
