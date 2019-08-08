@@ -3,15 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using Moq;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Repositories.ExtendedModels;
 
 namespace WebApiTests.Executors
 {
@@ -73,8 +71,8 @@ namespace WebApiTests.Executors
       string deviceTypeExisting, string radioSerialExisting,
       string deviceTypeExpected, string radioSerialExpected)
     {
-      var assetDeviceIdsToBeReturned = new AssetDeviceIds()
-      {
+      var assetDeviceIdsToBeReturned = new AssetDeviceIds
+                                       {
         AssetUID = Guid.NewGuid().ToString(),
         DeviceType = deviceTypeExpected,
         DeviceUID = Guid.NewGuid().ToString(),

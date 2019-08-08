@@ -53,12 +53,12 @@ namespace WebApiTests.Executors
       _projectUidRequest = GetProjectUidRequest.CreateGetProjectUidRequest(6, "radSer45", 91, 181, _timeOfLocation);
       _loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      _assetDeviceIds = new AssetDeviceIds() { OwningCustomerUID = _assetOwningCustomerUid, AssetUID = _assetUid };
+      _assetDeviceIds = new AssetDeviceIds { OwningCustomerUID = _assetOwningCustomerUid, AssetUID = _assetUid };
       _deviceRepo = new Mock<IDeviceRepository>();
      
-      _subscriptions = new List<Subscription>()
-      {
-        new Subscription()
+      _subscriptions = new List<Subscription>
+                       {
+        new Subscription
         {
           CustomerUID = _assetOwningCustomerUid,
           ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring,
@@ -69,9 +69,9 @@ namespace WebApiTests.Executors
         }
       };
      
-      _projects = new List<Project>()
-      {
-        new Project()
+      _projects = new List<Project>
+                  {
+        new Project
         {
           ProjectUID = _projectUidToBeDiscovered,
           CustomerUID = _assetOwningCustomerUid,
