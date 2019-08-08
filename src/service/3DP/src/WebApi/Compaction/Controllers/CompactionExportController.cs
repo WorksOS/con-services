@@ -443,7 +443,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //But need to set here for export.
         var projectUid = await ((RaptorPrincipal)User).GetProjectUid(projectId);
         var result = await ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId,
-          filter?.SurveyedSurfaceExclusionList, filter?.ExcludedSurveyedSurfaceUids, GetUserId());
+          filter?.SurveyedSurfaceExclusionList, filter?.ExcludedSurveyedSurfaceUids);
 
         var startUtc = filter?.StartUtc ?? result.startTime;
         var endUtc = filter?.EndUtc ?? result.endTime;

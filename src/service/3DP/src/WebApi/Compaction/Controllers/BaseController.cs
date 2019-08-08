@@ -386,13 +386,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return cachedFilter;
       }
 
-      var excludedIds = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
+      var excludedSs = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
+      var excludedIds = excludedSs.Select(e => e.Item1).ToList();
+      var excludedUids = excludedSs.Select(e => e.Item2).ToList();
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
 
       if (!filterUid.HasValue)
       {
         return haveExcludedIds
-          ? FilterResult.CreateFilter(excludedIds)
+          ? FilterResult.CreateFilter(excludedIds, excludedUids)
           : null;
       }
 
@@ -440,7 +442,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               returnEarliest = true;
             }
 
-            var raptorFilter = new FilterResult(filterUid, filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
+            var raptorFilter = new FilterResult(filterUid, filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, excludedUids, returnEarliest, designDescriptor);
 
             Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
 
@@ -468,7 +470,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         throw;
       }
 
-      return haveExcludedIds ? FilterResult.CreateFilter(excludedIds) : null;
+      return haveExcludedIds ? FilterResult.CreateFilter(excludedIds, excludedUids) : null;
     }
 
     /// <summary>

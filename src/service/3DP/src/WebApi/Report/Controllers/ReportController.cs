@@ -294,12 +294,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #endif
         );
 
-      return await projectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(
+      return await projectStatisticsHelper.GetProjectStatisticsWithRequestSsExclusions(
         request.ProjectUid ?? Guid.Empty, 
         request.ProjectId ?? -1,
+        GetUserId(),
         request.ExcludedSurveyedSurfaceIds,
-        null, //TODO: get excluded uids
-        GetUserId());
+        CustomHeaders);
     }
 
     /// <summary>

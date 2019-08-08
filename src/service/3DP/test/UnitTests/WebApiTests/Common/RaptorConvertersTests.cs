@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       public void Should_return_filter_with_correct_startUTC_When_overrideStartUTC_is_set()
       {
         var filter = CreateFilter();
-        var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
         var overrideStartUTC = new DateTime(2019, 1, 1);
 
         var result = RaptorConverters.ConvertFilter(filterResult, overrideStartUTC: overrideStartUTC);
@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       {
         var filter = CreateFilter();
 
-        var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
         var overrideEndUTC = new DateTime(2019, 1, 1);
 
         var result = RaptorConverters.ConvertFilter(filterResult, overrideEndUTC: overrideEndUTC);
@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       [DataRow(30303, 30303)]
       public void Should_set_DesignNameID_From_OnMachineDesignId_value(long machineDesignId, int expectedValue)
       {
-        var filterResult = new FilterResult(null, CreateFilter(machineDesignId), null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, CreateFilter(machineDesignId), null, null, null, null, null, null, null);
         var result = RaptorConverters.ConvertFilter(filterResult);
 
         Assert.AreEqual(expectedValue, result.DesignNameID);
@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
         var mockRaptorClient = new Mock<IASNodeClient>();
         mockRaptorClient.Setup(prj => prj.GetOnMachineDesignEvents(It.IsAny<long>())).Returns(machineDesigns);
         
-        var filterResult = new FilterResult(null, CreateFilter(onMachineDesignId, onMachineDesignName: onMachineDesignName), null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, CreateFilter(onMachineDesignId, onMachineDesignName: onMachineDesignName), null, null, null, null, null, null, null);
         Assert.AreEqual(onMachineDesignId, filterResult.OnMachineDesignId);
 
         var raptorFilter = RaptorConverters.ConvertFilter(filterResult, 1, mockRaptorClient.Object);
@@ -133,7 +133,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
         var mockRaptorClient = new Mock<IASNodeClient>();
         mockRaptorClient.Setup(prj => prj.GetOnMachineDesignEvents(It.IsAny<long>())).Returns(machineDesigns);
 
-        var filterResult = new FilterResult(null, CreateFilter(onMachineDesignId, onMachineDesignName: onMachineDesignName), null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, CreateFilter(onMachineDesignId, onMachineDesignName: onMachineDesignName), null, null, null, null, null, null, null);
         Assert.AreEqual(onMachineDesignId, filterResult.OnMachineDesignId);
 
         var raptorFilter = RaptorConverters.ConvertFilter(filterResult, 1, mockRaptorClient.Object);
@@ -187,7 +187,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       [DataRow(true, TICVibrationState.vsOn)]
       public void Should_set_VibeState_From_VibeStateOn_value(bool vibeStateOn, TICVibrationState expectedState)
       {
-        var filterResult = new FilterResult(null, CreateFilter(vibeStateOn: vibeStateOn), null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, CreateFilter(vibeStateOn: vibeStateOn), null, null, null, null, null, null, null);
         var result = RaptorConverters.ConvertFilter(filterResult);
 
         Assert.AreEqual(expectedState, result.VibeState);
@@ -200,7 +200,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       [DataRow(ElevationType.Lowest, TICElevationType.etLowest)]
       public void Should_set_ElevationType_From_ElevationType_value(ElevationType elevationType, TICElevationType expectedElevationType)
       {
-        var filterResult = new FilterResult(null, CreateFilter(elevationType: elevationType), null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, CreateFilter(elevationType: elevationType), null, null, null, null, null, null, null);
         var result = RaptorConverters.ConvertFilter(filterResult);
 
         Assert.AreEqual(expectedElevationType, result.ElevationType);
@@ -214,7 +214,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       [DataRow(true, TICMachineDirection.mdForward)]
       public void Should_set_MachineDirection_From_ForwardDirection_value(bool? forwardDirection, TICMachineDirection expectedState)
       {
-        var filterResult = new FilterResult(null, CreateFilter(forwardDirection: forwardDirection), null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, CreateFilter(forwardDirection: forwardDirection), null, null, null, null, null, null, null);
         var result = RaptorConverters.ConvertFilter(filterResult);
 
         Assert.AreEqual(expectedState, result.MachineDirection);
@@ -226,7 +226,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       [DataRow(AutomaticsType.Unknown, TGCSAutomaticsMode.amUnknown)]
       public void Should_set_GCSGuidanceMode_From_AutomaticsType_value(AutomaticsType automaticsType, TGCSAutomaticsMode automaticsMode)
       {
-        var filterResult = new FilterResult(null, CreateFilter(automaticsType: automaticsType), null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, CreateFilter(automaticsType: automaticsType), null, null, null, null, null, null, null);
         var result = RaptorConverters.ConvertFilter(filterResult);
 
         Assert.AreEqual(automaticsMode, result.GCSGuidanceMode);
@@ -239,7 +239,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       [DataRow(2.34, 3.45)]
       public void Should_set_TemperatureRange_From_TemperatureRange_values(double? temperatureRangeMin, double? temperatureRangeMax)
       {
-        var filterResult = new FilterResult(null, CreateFilter(temperatureRangeMin: temperatureRangeMin, temperatureRangeMax: temperatureRangeMax), null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, CreateFilter(temperatureRangeMin: temperatureRangeMin, temperatureRangeMax: temperatureRangeMax), null, null, null, null, null, null, null);
         var result = RaptorConverters.ConvertFilter(filterResult);
 
         if (!temperatureRangeMin.HasValue || !temperatureRangeMax.HasValue)
@@ -261,7 +261,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       [DataRow(2, 3)]
       public void Should_set_PassCountRange_From_PassCountRange_values(int? passCountRangeMin, int? passCountRangeMax)
       {
-        var filterResult = new FilterResult(null, CreateFilter(passCountRangeMin: passCountRangeMin, passCountRangeMax: passCountRangeMax), null, null, null, null, null, null);
+        var filterResult = new FilterResult(null, CreateFilter(passCountRangeMin: passCountRangeMin, passCountRangeMax: passCountRangeMax), null, null, null, null, null, null, null);
         var result = RaptorConverters.ConvertFilter(filterResult);
 
         if (!passCountRangeMin.HasValue || !passCountRangeMax.HasValue)

@@ -317,7 +317,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       ProjectStatisticsResult statsResult;
       try
       {
-        statsResult = await ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId, excludedIds, excludedUids, userId);
+        statsResult = await ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId, excludedIds, excludedUids);
       }
       catch (ServiceException se)
       {

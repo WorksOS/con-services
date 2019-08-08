@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -26,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   [ProjectVerifier]
-  public class EditDataController : IEditDataContract
+  public class EditDataController : Controller, IEditDataContract
   {
 #if RAPTOR
     private readonly ITagProcessor tagProcessor;
@@ -91,7 +93,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         EditDataResult editResult = PostEditDataAcquire(getRequest);
         ValidateNoOverlap(editResult.dataEdits, request.dataEdit);
         //Validate request date range within production data date range
-        await ValidateDates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.dataEdit);
+        await ValidateDates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.ProjectUid.Value, request.dataEdit);
       }
 
       return RequestExecutorContainerFactory.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);
@@ -135,11 +137,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Validates new edit is within production data date range for the project
     /// </summary>
-    private async Task ValidateDates(long projectId, ProductionDataEdit dataEdit)
+    private async Task ValidateDates(long projectId, Guid projectUid, ProductionDataEdit dataEdit)
     {
 #if RAPTOR
       var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, null, null, raptorClient);
-      var stats = await projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]) as ProjectStatisticsResult;
+      var stats = await projectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(
+        projectUid, projectId, ((RaptorPrincipal)User).Identity.Name, Request.Headers.GetCustomHeaders());
       if (stats == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

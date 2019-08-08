@@ -397,7 +397,6 @@ namespace VSS.Productivity3D.Models.Models
       double? layerThickness,
       List<MachineDetails> contributingMachines,
       List<long> surveyedSurfaceExclusionList,
-      List<Guid> excludedSurveyedSurfaceUids,
       bool? returnEarliest,
       GPSAccuracy? accuracy,
       bool? inclusive,
@@ -441,7 +440,6 @@ namespace VSS.Productivity3D.Models.Models
         LayerThickness = layerThickness,
         ContributingMachines = contributingMachines,
         SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList,
-        ExcludedSurveyedSurfaceUids = excludedSurveyedSurfaceUids,
         ReturnEarliest = returnEarliest,
         GpsAccuracy = accuracy,
         GpsAccuracyIsInclusive = inclusive,
@@ -484,13 +482,13 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Creates a new <see cref="FilterResult"/> specifically for excluding surveyed surfaces only.
     /// </summary>
-    public static FilterResult CreateFilter(List<(long, Guid)> surveyedSurfaceExclusionList)
+    public static FilterResult CreateFilter(List<long> excludedIds, List<Guid> excludedUids)
     {
       return new FilterResult
       {
         isFilterContainsSSOnly = true,
-        SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList.Select(s => s.Item1).ToList(),
-        ExcludedSurveyedSurfaceUids = surveyedSurfaceExclusionList.Select(s => s.Item2).ToList()
+        SurveyedSurfaceExclusionList = excludedIds,
+        ExcludedSurveyedSurfaceUids = excludedUids
       };
     }
 
