@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
       {
-        var requestSubGridInternalResult = await Requestors[0].RequestSubGridInternal(x, null, null, true, false);
+        var requestSubGridInternalResult = await Requestors[0].RequestSubGridInternal(x, new OverrideParameters(), new LiftParameters(), true, false);
         if (requestSubGridInternalResult.requestResult  == ServerRequestResult.NoError)
           requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });
