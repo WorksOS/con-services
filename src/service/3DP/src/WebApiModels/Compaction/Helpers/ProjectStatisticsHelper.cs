@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// This is the deactivated ones.
     /// </summary>
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
-    public async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IDictionary<string, string> customHeaders)
+    public async Task<List<(long, Guid)>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IDictionary<string, string> customHeaders)
     {
       var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
       if (fileList == null || fileList.Count == 0)
@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       var results = fileList
         .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
-        .Select(f => f.LegacyFileId).ToList();
+        .Select(f => (f.LegacyFileId, Guid.Parse(f.ImportedFileUid))).ToList();
 
       return results;
     }
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// Gets the Uid and Id lists of the surveyed surfaces to exclude from TRex/Raptor calculations. 
     /// This is the deactivated ones.
     /// </summary>
-    private async Task<List<Guid>> GetExcludedSurveyedSurfacesMatches(Guid projectUid, List<long> Ids, string userId, IDictionary<string, string> customHeaders)
+    private async Task<List<Guid>> GetExcludedSurveyedSurfacesMatches(Guid projectUid, long[] Ids, string userId, IDictionary<string, string> customHeaders)
     {
       var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
       if (fileList == null || fileList.Count == 0)
@@ -100,6 +100,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         .Select(f => Guid.Parse(f.ImportedFileUid)).ToList();
       return uidList;
     }
+
 
     public async Task<ProjectStatisticsResult> GetProjectStatisticsWithProjectSsExclusions(Guid projectUid, long projectId, string userId, IDictionary<string, string> customHeaders)
     {
@@ -117,12 +118,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           .ProcessAsync(request) as ProjectStatisticsResult;
     }
 
-    // special case for obsolete controllers
-    // supported only on Raptor
-    public Task<ContractExecutionResult> GetProjectStatisticsWithExclusions(long projectId, long[] excludedSsIds)
+
+    public Task<ContractExecutionResult> GetProjectStatisticsWithExclusions(Guid projectUid, long projectId, long[] excludedIds)
     {
-      var request = new ProjectStatisticsMultiRequest(null, projectId,
-        new Guid[0], excludedSsIds);
+      Guid[] excludedUids = null;
+      if (excludedIds != null && excludedIds.Length > 0)
+        excludedUids = await GetExcludedSurveyedSurfacesMatches(projectUid, excludedIds, userId, customHeaders);
+
+      var request = new ProjectStatisticsMultiRequest(projectUid, projectId, excludedUids, excludedIds);
 
       return RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,
 #if RAPTOR
@@ -131,15 +134,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             configStore: _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy)
           .ProcessAsync(request);
     }
-
-    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithFilterSsExclusions(Guid projectUid, long projectId, List<long> filterSSExclusionList, string userId, IDictionary<string, string> customHeaders)
+    
+    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithFilterSsExclusions(Guid projectUid, long projectId, long[] excludedIds, Guid[] excludedUids, string userId)
     {
-      List<Guid> excludedSSUids = null;
-      if (filterSSExclusionList != null && filterSSExclusionList.Count > 0)
-        excludedSSUids = await GetExcludedSurveyedSurfacesMatches(projectUid, filterSSExclusionList.ToList(), userId, customHeaders);
-
-      var request = new ProjectStatisticsMultiRequest(projectUid, projectId,
-        excludedSSUids?.ToArray(), filterSSExclusionList?.ToArray());
+      var request = new ProjectStatisticsMultiRequest(projectUid, projectId, excludedUids, excludedIds);
 
       return await
         RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,

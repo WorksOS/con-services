@@ -40,7 +40,6 @@
     <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
-    <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
 

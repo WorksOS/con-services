@@ -8,7 +8,6 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Executors;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -36,8 +35,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       var siteModel = GetSiteModel(request.ProjectUid);
-      var extents = ProjectExtents.ProductionDataAndSurveyedSurfaces(request.ProjectUid,
-        request.ExcludedSurveyedSurfaceUids);
+      var extents = siteModel?.GetAdjustedDataModelSpatialExtents(request.ExcludedSurveyedSurfaceUids);
 
       var result = new ProjectStatisticsResult();
       if (extents != null)

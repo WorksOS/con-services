@@ -303,31 +303,21 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Get the production data extents for the project.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="projectId"></param>
-    /// <param name="filter"></param>
-    /// <returns></returns>
     private async Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId, FilterResult filter, string userId, IDictionary<string, string> customHeaders)
     {
-      return await GetProductionDataExtents(projectUid, projectId, filter?.SurveyedSurfaceExclusionList, userId, customHeaders);
+      return await GetProductionDataExtents(projectUid, projectId, filter?.SurveyedSurfaceExclusionList?.ToArray(), filter?.ExcludedSurveyedSurfaceUids?.ToArray(), userId, customHeaders);
     }
 
     /// <summary>
     /// Get the production data extents for the project.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="projectId"></param>
-    /// <param name="excludedIds"></param>
-    /// <param name="userId"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
     public async Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId,
-      List<long> excludedIds, string userId, IDictionary<string, string> customHeaders)
+      long[] excludedIds, Guid[] excludedUids, string userId, IDictionary<string, string> customHeaders)
     {
       ProjectStatisticsResult statsResult;
       try
       {
-        statsResult = await ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId, excludedIds, userId, customHeaders);
+        statsResult = await ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId, excludedIds, excludedUids, userId);
       }
       catch (ServiceException se)
       {

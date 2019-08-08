@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
@@ -202,10 +203,16 @@ namespace VSS.Productivity3D.Models.Models
     public List<MachineDetails> ContributingMachines { get; private set; }
 
     /// <summary>
-    /// A list of surveyed surfaces that have been added to the project which are to be excluded from consideration.
+    /// A list of surveyed surfaces that have been added to the project which are to be excluded from consideration in Raptor.
     /// </summary>
     [JsonProperty(PropertyName = "surveyedSurfaceExclusionList", Required = Required.Default)]
     public List<long> SurveyedSurfaceExclusionList { get; private set; }
+
+    /// <summary>
+    /// A list of surveyed surfaces that have been added to the project which are to be excluded from consideration in TRex.
+    /// </summary>
+    [JsonProperty(PropertyName = "excludedSurveyedSurfaceUids", Required = Required.Default)]
+    public List<Guid> ExcludedSurveyedSurfaceUids { get; private set; }
 
     /// <summary>
     /// The selected cell pass to be used from the cell passes matching a filter is the earliest matching pass if true. If false, or not present the latest cell pass is used.
@@ -341,6 +348,7 @@ namespace VSS.Productivity3D.Models.Models
         !LayerThickness.HasValue &&
         (ContributingMachines == null || ContributingMachines.Count == 0) &&
         (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Count == 0) &&
+        (ExcludedSurveyedSurfaceUids == null || ExcludedSurveyedSurfaceUids.Count == 0) &&
         !ReturnEarliest.HasValue &&
         !GpsAccuracy.HasValue &&
         !GpsAccuracyIsInclusive.HasValue &&
@@ -389,6 +397,7 @@ namespace VSS.Productivity3D.Models.Models
       double? layerThickness,
       List<MachineDetails> contributingMachines,
       List<long> surveyedSurfaceExclusionList,
+      List<Guid> excludedSurveyedSurfaceUids,
       bool? returnEarliest,
       GPSAccuracy? accuracy,
       bool? inclusive,
@@ -432,6 +441,7 @@ namespace VSS.Productivity3D.Models.Models
         LayerThickness = layerThickness,
         ContributingMachines = contributingMachines,
         SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList,
+        ExcludedSurveyedSurfaceUids = excludedSurveyedSurfaceUids,
         ReturnEarliest = returnEarliest,
         GpsAccuracy = accuracy,
         GpsAccuracyIsInclusive = inclusive,
@@ -474,12 +484,13 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Creates a new <see cref="FilterResult"/> specifically for excluding surveyed surfaces only.
     /// </summary>
-    public static FilterResult CreateFilter(List<long> surveyedSurfaceExclusionList)
+    public static FilterResult CreateFilter(List<(long, Guid)> surveyedSurfaceExclusionList)
     {
       return new FilterResult
       {
         isFilterContainsSSOnly = true,
-        SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList
+        SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList.Select(s => s.Item1).ToList(),
+        ExcludedSurveyedSurfaceUids = surveyedSurfaceExclusionList.Select(s => s.Item2).ToList()
       };
     }
 
@@ -494,6 +505,7 @@ namespace VSS.Productivity3D.Models.Models
       DesignDescriptor alignmentFile,
       FilterLayerMethod? layerType,
       List<long> surveyedSurfaceExclusionList,
+      List<Guid> excludedSurveyedSurfaceUids,
       bool? returnEarliest,
       DesignDescriptor designFile)
     {
@@ -515,6 +527,7 @@ namespace VSS.Productivity3D.Models.Models
       LayerNumber = filter.LayerNumber;
       ContributingMachines = filter.ContributingMachines;
       SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList;
+      ExcludedSurveyedSurfaceUids = excludedSurveyedSurfaceUids;
       ReturnEarliest = returnEarliest;
       DesignFile = designFile;
       DateRangeType = filter.DateRangeType;
@@ -759,6 +772,7 @@ namespace VSS.Productivity3D.Models.Models
              LayerThickness.Equals(other.LayerThickness) &&
              ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
              SurveyedSurfaceExclusionList.ScrambledEquals(other.SurveyedSurfaceExclusionList) &&
+             ExcludedSurveyedSurfaceUids.ScrambledEquals(other.ExcludedSurveyedSurfaceUids) &&
              ReturnEarliest.Equals(other.ReturnEarliest) &&
              GpsAccuracy.Equals(other.GpsAccuracy) &&
              GpsAccuracyIsInclusive.Equals(other.GpsAccuracyIsInclusive) &&
@@ -814,6 +828,7 @@ namespace VSS.Productivity3D.Models.Models
         hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerThickness));
         hashCode = GetHashCode(hashCode, GetListHashCode(ContributingMachines));
         hashCode = GetHashCode(hashCode, GetListHashCode(SurveyedSurfaceExclusionList));
+        hashCode = GetHashCode(hashCode, GetListHashCode(ExcludedSurveyedSurfaceUids));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(ReturnEarliest));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(GpsAccuracy));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(GpsAccuracyIsInclusive));

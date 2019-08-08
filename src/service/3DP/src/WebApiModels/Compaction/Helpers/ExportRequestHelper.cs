@@ -86,9 +86,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       // todo once the requirement for RAPTOR build to be able to call TRex endpoints is removed
       //      this whole tangle can be unraveled
-#if RAPTOR
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
-
+#if RAPTOR
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
       machineNameList = new string[0];
@@ -154,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return new ExportReport(
         ProjectId,
         ProjectUid,
-        null,
+        liftSettings,
         Filter,
         -1,
         null,
@@ -167,7 +166,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         false,
         restrictSize,
         rawData,
-        null,
+        null,//project extents are retrieved in the TRex gateway as part of this request
         false,
         outputType,
         null,

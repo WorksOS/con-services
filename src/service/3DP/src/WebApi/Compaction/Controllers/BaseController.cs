@@ -388,8 +388,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var excludedIds = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
-      DesignDescriptor designDescriptor = null;
-      DesignDescriptor alignmentDescriptor = null;
 
       if (!filterUid.HasValue)
       {
@@ -400,6 +398,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
+        DesignDescriptor designDescriptor = null;
+        DesignDescriptor alignmentDescriptor = null;
+
         var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
 
         if (filterMustExist && filterData == null)

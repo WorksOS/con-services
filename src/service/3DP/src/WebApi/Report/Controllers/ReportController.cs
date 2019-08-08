@@ -297,8 +297,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       return await projectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(
         request.ProjectUid ?? Guid.Empty, 
         request.ProjectId ?? -1,
-        request.ExcludedSurveyedSurfaceIds?.ToList() ?? new List<long>(0), 
-        GetUserId(), CustomHeaders);
+        request.ExcludedSurveyedSurfaceIds,
+        null, //TODO: get excluded uids
+        GetUserId());
     }
 
     /// <summary>
