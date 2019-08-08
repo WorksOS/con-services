@@ -56,7 +56,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
       (
         siteModel.ID,
         new FilterResult(),
-        0,0,0
+        0,0,0,0
       );
             
       request.Validate();

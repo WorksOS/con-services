@@ -17,6 +17,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.Tests;
+using VSS.TRex.QuantizedMesh.Models;
 
 namespace VSS.TRex.QuantizedMesh.Tests
 {
@@ -26,7 +27,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     public async Task Execute_FailWithNoSiteModel()
     {
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(new Guid(), filter, 0, 0, 0, "1");
+      var request = new QMTileExecutor(new Guid(), filter, 0, 0, 0,0, "1");
       var result = await request.ExecuteAsync();
       result.Should().BeFalse();
     }
@@ -40,7 +41,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     public void Creation()
     {
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(Guid.NewGuid(), filter, 0, 0, 0, "1");
+      var request = new QMTileExecutor(Guid.NewGuid(), filter, 0, 0, 0, 0, "1");
       request.Should().NotBeNull();
     }
 
@@ -51,7 +52,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 0, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 0, 0, "1");
 
       request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
@@ -59,6 +60,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
       QMTileResponse.data.Should().BeNull();
     }
 
+    /*
     [Fact]
     public void Execute_DemoTile()
     {
@@ -66,14 +68,13 @@ namespace VSS.TRex.QuantizedMesh.Tests
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, "1");
-      request.DemoMode = true;
-      request.SaveOutputToDisk = true;
+      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, QMConstants.DisplayModeDev, "1");
       request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
       QMTileResponse.data.Should().NotBeNull();
     }
+    */
 
     [Fact]
     public void Execute_RequestEmptyTile_Success()
@@ -141,7 +142,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
 
 
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0,0, "1");
 //      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0, "1");
 
       //request.OverrideGridSize = 0;
@@ -231,7 +232,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
 
 
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, 0, "1");
       request.OverrideGridSize = 50;
       request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);

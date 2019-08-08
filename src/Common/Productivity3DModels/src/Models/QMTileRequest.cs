@@ -19,6 +19,9 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(Required = Required.Always)]
     public int Z { get; set; }
 
+    [JsonProperty(Required = Required.Always)]
+    public int DisplayMode{ get; set; }
+
     /// <summary>
     /// Default public constructor.
     /// </summary>
@@ -32,12 +35,14 @@ namespace VSS.Productivity3D.Models.Models
     public QMTileRequest(
       Guid projectUid,
       FilterResult filter,
+      int displayMode,
       int x,
       int y,
       int z)
     {
       ProjectUid = projectUid;
       Filter = filter;
+      DisplayMode = displayMode;
       X = x;
       Y = y;
       Z = z;

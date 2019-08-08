@@ -13,14 +13,12 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
     public int X { get; set; }
     public int Y { get; set; }
     public int Z { get; set; }
-
-    //    public BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted();
-
+    public int DisplayMode { get; set; }
 
     public QuantizedMeshRequestArgument()
     { }
 
-    public QuantizedMeshRequestArgument(Guid projectUId, int x, int y, int z, IFilterSet filters)
+    public QuantizedMeshRequestArgument(Guid projectUId, int x, int y, int z, IFilterSet filters, int displayMode)
     {
       // todo whats needed
       ProjectID = projectUId;
@@ -28,6 +26,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
       Y = y;
       Z = z;
       Filters = filters;
+      DisplayMode = displayMode;
     }
 
     /// <summary>
@@ -41,6 +40,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
       writer.WriteInt(X);
       writer.WriteInt(Y);
       writer.WriteInt(Z);
+      writer.WriteInt(DisplayMode);
     }
 
 
@@ -55,6 +55,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
       X = reader.ReadInt();
       Y = reader.ReadInt();
       Z = reader.ReadInt();
+      DisplayMode= reader.ReadInt();
     }
 
   }

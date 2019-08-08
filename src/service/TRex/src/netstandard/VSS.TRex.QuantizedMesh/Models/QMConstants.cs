@@ -13,6 +13,10 @@ namespace VSS.TRex.QuantizedMesh.Models
     public const int DemoResolutionGridSize = 5;    // Tile GridSize
     public const int TileValueRange = 32768;        // 0 to 32767
 
+    public const int DisplayModeStandard = 0;
+    public const int DisplayModeDemo     = 100;
+    public const int DisplayModeDev      = 101;
+
     public const int MidResolutionLevel  = 16; // MidResolutionLevel to HighResolutionLevel-1
     public const int HighResolutionLevel = 20; // HighResolutionLevel to max
 
