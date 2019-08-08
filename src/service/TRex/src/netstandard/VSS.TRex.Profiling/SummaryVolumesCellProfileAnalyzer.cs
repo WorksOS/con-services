@@ -52,21 +52,16 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Constructs a profile lift builder that analyzes cells in a cell profile vector
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="pDExistenceMap"></param>
-    /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
-    /// <param name="referenceDesignWrapper"></param>
-    /// <param name="cellLiftBuilder"></param>
-    /// <param name="volumeType"></param>
     public SummaryVolumesCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
-      VolumeComputationType volumeType) 
-      : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
+      VolumeComputationType volumeType,
+      IOverrideParameters overrides,
+      ILiftParameters liftParams) 
+      : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, overrides, liftParams)
     {
       svDesignWrapper = referenceDesignWrapper;
       VolumeType = volumeType;
@@ -148,7 +143,7 @@ namespace VSS.TRex.Profiling
         x.CellOverrideMask = cellOverrideMask;
 
         // Reach into the sub grid request layer and retrieve an appropriate sub grid
-        var requestSubGridInternalResult = await x.RequestSubGridInternal(address, null, null, prodDataAtAddress, true);
+        var requestSubGridInternalResult = await x.RequestSubGridInternal(address, Overrides, LiftParams, prodDataAtAddress, true);
         if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
           Log.LogError($"Request for sub grid {address} request failed with code {requestSubGridInternalResult.requestResult}");
 

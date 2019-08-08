@@ -78,8 +78,8 @@ namespace VSS.TRex.Analytics.Foundation
             DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
             DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
             DIContext.Obtain<IRequestAnalyser>(),
-            CutFillDesign?.DesignID != Guid.Empty,
             IncludeSurveyedSurfaces,
+            CutFillDesign?.DesignID != Guid.Empty,
             BoundingIntegerExtent2D.Inverted(),
             LiftParams
           );

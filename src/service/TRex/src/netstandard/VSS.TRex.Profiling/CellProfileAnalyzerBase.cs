@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
@@ -80,25 +81,29 @@ namespace VSS.TRex.Profiling
     /// </summary>
     protected IDesign AlignmentDesignMaskDesign;
 
+    protected IOverrideParameters Overrides;
+    protected ILiftParameters LiftParams;
+
+
     public CellProfileAnalyzerBase()
     { }
 
     /// <summary>
     /// Constructs a profile lift builder that analyzes cells in a cell profile vector
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="pDExistenceMap"></param>
-    /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     public CellProfileAnalyzerBase(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
-      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper)
+      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
+      IOverrideParameters overrides,
+      ILiftParameters liftParams)
     {
       SiteModel = siteModel;
       PDExistenceMap = pDExistenceMap;
       FilterSet = filterSet;
       CellPassFilter_ElevationRangeDesignWrapper = cellPassFilter_ElevationRangeDesignWrapper;
+      Overrides = overrides;
+      LiftParams = liftParams;
 
       Initialise();
     }
