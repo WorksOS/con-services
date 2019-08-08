@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData() { ProjectUid = projectUid },
+        new ProjectData { ProjectUid = projectUid },
         userUid,
         boundaryUid
       );
@@ -146,7 +146,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData() { ProjectUid = projectUid },
+        new ProjectData { ProjectUid = projectUid },
         userUid,
         null
       );
@@ -226,7 +226,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData() { ProjectUid = projectUid },
+        new ProjectData { ProjectUid = projectUid },
         userUid,
         null
       );
@@ -295,7 +295,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData() { ProjectUid = projectUid },
+        new ProjectData { ProjectUid = projectUid },
         userUid,
         null
       );
@@ -371,7 +371,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData() { ProjectUid = projectUid },
+        new ProjectData { ProjectUid = projectUid },
         userUid,
         null
       );
@@ -436,7 +436,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData() { ProjectUid = projectUid },
+        new ProjectData { ProjectUid = projectUid },
         userUid,
         new BoundaryRequest {BoundaryUid = null, Name = name, BoundaryPolygonWKT = geometryWKT}
       );
@@ -492,7 +492,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData() { ProjectUid = projectUid },
+        new ProjectData { ProjectUid = projectUid },
         userUid,
         boundaryUid
       );

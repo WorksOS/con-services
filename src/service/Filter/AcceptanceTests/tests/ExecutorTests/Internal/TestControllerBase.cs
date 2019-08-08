@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
@@ -16,12 +17,12 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Serilog.Extensions;
 
 namespace ExecutorTests.Internal
 {
@@ -41,19 +42,12 @@ namespace ExecutorTests.Internal
     protected GeofenceRepository GeofenceRepo;
     protected IGeofenceProxy GeofenceProxy;
     protected IUnifiedProductivityProxy UnifiedProductivityProxy;
-    private const string LOGGER_REPO_NAME = "UnitTestLogTest";
 
     public void SetupDI()
     {
-      Log4NetProvider.RepoName = LOGGER_REPO_NAME;
-      Log4NetAspExtensions.ConfigureLog4Net(LOGGER_REPO_NAME, "log4nettest.xml");
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
-
       ServiceProvider = new ServiceCollection()
         .AddLogging()
-        .AddSingleton(loggerFactory)
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Filter.ExecutorTests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()

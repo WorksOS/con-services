@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult (new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -175,7 +175,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -249,7 +249,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -324,7 +324,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
