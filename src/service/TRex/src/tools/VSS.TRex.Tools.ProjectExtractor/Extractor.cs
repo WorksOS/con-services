@@ -41,7 +41,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
     {
       foreach (var machine in _siteModel.Machines)
       {
-        var basePath = Path.Combine(_projectOutputPath, "Events", $"Machine-{machine.ID}");
+        var basePath = Path.Combine(_projectOutputPath, "Events", machine.ID.ToString());
         Directory.CreateDirectory(basePath);
 
         foreach (var evtList in ProductionEventLists.ProductionEventTypeValues)
