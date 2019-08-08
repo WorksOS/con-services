@@ -20,6 +20,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -70,8 +71,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private CompactionReportResult ConvertTRexStationOffsetResult(CompactionReportStationOffsetRequest request, Stream stream)
     {
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+      log.LogDebug($"{nameof(ConvertTRexStationOffsetResult)}: Retrieving response data from TRex");
+
+      var stationOffsetReportResult = new StationOffsetReportResultPackager(ReportType.StationOffset);
+      stationOffsetReportResult.Read((stream as MemoryStream)?.ToArray());
+
+      var stationRows = new StationRow[stationOffsetReportResult.GriddedData.NumberOfRows];
+
+      for (var i = 0; i < stationOffsetReportResult.GriddedData.NumberOfRows; i++)
+      {
+        var station = stationOffsetReportResult.GriddedData.Rows[i];
+        var stationRow = StationRow.Create(station, request);
+
+        for (var j = 0; j < station.Offsets.Count; j++)
+          stationRow.Offsets[j] = StationOffsetRow.CreateRow(station.Offsets[j], request);
+
+        stationRows[i] = stationRow;
+      }
+
+      var startAndEndTime = request.Filter.StartUtc ?? DateTime.Now;
+      var stationOffsetReport = StationOffsetReport.CreateReport(startAndEndTime, startAndEndTime, stationRows, request);
+
+      return CompactionReportResult.CreateExportDataResult(stationOffsetReport, 1);
     }
 
 #if RAPTOR
@@ -146,9 +167,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var stationRow = StationRow.Create(station, request);
 
         for (var j = 0; j < station.NumberOfOffsets; j++)
-        {
           stationRow.Offsets[j] = StationOffsetRow.CreateRow(station.Offsets[j], request);
-        }
 
         stationRows[i] = stationRow;
       }

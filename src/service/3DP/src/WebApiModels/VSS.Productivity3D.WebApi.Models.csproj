@@ -52,10 +52,6 @@
     <Compile Remove=".\Compaction\Executors\AlignmentLineworkExecutor.cs" />
 
     <Compile Remove=".\Compaction\Models\LineworkRequest.cs" />
-    <Compile Remove=".\Compaction\Models\Reports\OffsetStatistics.cs" />
-    <Compile Remove=".\Compaction\Models\Reports\StationOffsetReport.cs" />
-    <Compile Remove=".\Compaction\Models\Reports\StationOffsetRow.cs" />
-    <Compile Remove=".\Compaction\Models\Reports\StationRow.cs" />
 
     <Compile Remove=".\Compaction\ResultHandling\DxfLineworkFileResult.cs" />
 
