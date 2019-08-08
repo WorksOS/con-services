@@ -19,7 +19,7 @@ namespace VSS.TRex.Events
     /// <summary>
     /// The machine to which these events relate
     /// </summary>
-    public long MachineID { get; set; }
+    public short MachineID { get; set; }
 
     /// <summary>
     /// The event type this list stores
@@ -28,7 +28,7 @@ namespace VSS.TRex.Events
 
     public string EventChangeListPersistantFileName() => EventChangeListPersistantFileName(MachineID, EventListType);
 
-    public static string EventChangeListPersistantFileName(long machineID, ProductionEventType eventListType) => $"{machineID}-Events-{eventListType}-Summary.evt";
+    public static string EventChangeListPersistantFileName(short machineID, ProductionEventType eventListType) => $"{machineID}-Events-{eventListType}-Summary.evt";
   }
 
   /// <summary>
@@ -107,7 +107,7 @@ namespace VSS.TRex.Events
     // The list containing all the time ordered instances of this event type
     public List<Event> Events = new List<Event>();
 
-    public ProductionEvents(long machineID, Guid siteModelID,
+    public ProductionEvents(short machineID, Guid siteModelID,
       ProductionEventType eventListType,
       Action<BinaryWriter, T> serialiseStateOut,
       Func<BinaryReader, T> serialiseStateIn,
