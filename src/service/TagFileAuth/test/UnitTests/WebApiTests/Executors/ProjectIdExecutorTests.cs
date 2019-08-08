@@ -12,7 +12,6 @@ namespace WebApiTests.Executors
   [TestClass]
   public class ProjectIdExecutorTests : ExecutorBaseTests
   {
-
     [TestMethod]
     public async Task CanCallProjectIDExecutorNoValidInput()
     {

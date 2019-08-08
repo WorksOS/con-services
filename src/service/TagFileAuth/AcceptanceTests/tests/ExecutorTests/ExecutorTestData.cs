@@ -1,15 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+using RdKafkaDriver = VSS.KafkaConsumer.Kafka.RdKafkaDriver;
 
 namespace ExecutorTests
 {
@@ -27,30 +30,21 @@ namespace ExecutorTests
 
     protected IKafka producer;
     protected string kafkaTopicName;
-    private readonly string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
     public virtual void InitTest()
     {
-      var serviceCollection = new ServiceCollection();
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection
-        .AddSingleton(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
-        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
-        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
-        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
-        .AddSingleton<IKafka, RdKafkaDriver>(); 
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
+      serviceProvider = new ServiceCollection()
+                        .AddLogging()
+                        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.TagFileAuth.WepApiTests.log")))
+                        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+                        .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
+                        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+                        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
+                        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+                        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+                        .AddSingleton<IKafka, RdKafkaDriver>()
+                        .BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<TagFileProcessingErrorExecutorTests>();
       assetRepo = serviceProvider.GetRequiredService<IRepository<IAssetEvent>>() as AssetRepository;

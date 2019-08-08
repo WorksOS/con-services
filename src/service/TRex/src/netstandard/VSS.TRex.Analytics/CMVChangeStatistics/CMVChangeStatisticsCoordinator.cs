@@ -29,7 +29,7 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
       Aggregator = aggregator,
       Filters = argument.Filters,
       IncludeSurveyedSurfaces = true,
-      RequestedGridDataType = GridDataType.CCVPercentChange,
+      RequestedGridDataType = GridDataType.CCVPercentChangeIgnoredTopNullValue,
       LiftParams = argument.LiftParams
     };
 

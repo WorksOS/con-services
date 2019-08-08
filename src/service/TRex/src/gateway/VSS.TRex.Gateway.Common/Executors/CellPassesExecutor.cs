@@ -51,7 +51,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         Filters =  new FilterSet(filter),
         CoordsAreGrid = request.CoordsAreGrid,
         Point = coords,
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings),
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType),
         //NOTE: Currently cell passes is raw data so does not use overriding targets
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
       });

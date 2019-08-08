@@ -95,7 +95,7 @@ namespace VSS.TRex.GridFabric
       if (_Group == null)
         throw new TRexException($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {_role} on grid {_gridName}");
 
-      if (_Group.GetNodes()?.Count == 0)
+      if ((_Group.GetNodes()?.Count ?? 0) == 0)
         throw new TRexException($"Group cluster topology is empty for role {_role} on grid {_gridName}");
 
       _compute = _Group.GetCompute();

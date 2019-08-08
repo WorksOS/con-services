@@ -49,7 +49,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         DataPatchNumber = request.PatchNumber,
         DataPatchSize = request.PatchSize,
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
-        LiftParams = AutoMapperUtility.Automapper.Map<LiftParameters>(request.LiftSettings)
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       result.CellSize = siteModel.CellSize;

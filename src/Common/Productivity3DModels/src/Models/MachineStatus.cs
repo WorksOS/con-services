@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.Models.Models
     public MachineStatus(
         long assetID,
         string machineName,
-        bool isJohnDoe,
+        bool isJohnDoe = false,
         string lastKnownDesignName = null,
         ushort? lastKnownLayerId = null,
         DateTime? lastKnownTimeStamp = null,

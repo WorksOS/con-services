@@ -2,13 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace WebApiTests.Executors
@@ -18,7 +19,7 @@ namespace WebApiTests.Executors
   {
     protected IConfigurationStore configStore;
 
-    public IServiceProvider serviceProvider = null;
+    public IServiceProvider serviceProvider;
     protected AssetRepository assetRepository;
     protected DeviceRepository deviceRepository;
     protected CustomerRepository customerRepository;
@@ -26,20 +27,14 @@ namespace WebApiTests.Executors
     protected SubscriptionRepository subscriptionRepository;
     protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
     protected string kafkaTopicName;
-    private readonly string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
     public virtual void InitTest()
     {
       var serviceCollection = new ServiceCollection();
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
       
       serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
+      serviceCollection.AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.TagFileAuth.WepApiTests.log")));
       serviceCollection.AddTransient<IRepository<IAssetEvent>, AssetRepository>()
         .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()

@@ -116,6 +116,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         //  return (MachineExecutionResult) new ContractExecutionResult(response);
       }
 
+      Log.LogInformation($"{nameof(GetMachines)}: result: {JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -130,7 +131,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetAssetOnDesignPeriods)}: siteModelID: {siteModelID}");
 
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetAssetOnDesignPeriods), siteModelID);
-      return new MachineDesignsExecutionResult(siteModel.GetAssetOnDesignPeriods());
+      var result = new MachineDesignsExecutionResult(siteModel.GetAssetOnDesignPeriods());
+
+      Log.LogInformation($"{nameof(GetAssetOnDesignPeriods)}: result: {JsonConvert.SerializeObject(result)}");
+      return result;
     }
 
     /// <summary>
@@ -144,7 +148,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetMachineLayers)}: siteModelID: {siteModelID}");
 
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetMachineLayers), siteModelID);
-      return new AssetOnDesignLayerPeriodsExecutionResult(siteModel.GetAssetOnDesignLayerPeriods());
+      var result = new AssetOnDesignLayerPeriodsExecutionResult(siteModel.GetAssetOnDesignLayerPeriods());
+
+      Log.LogInformation($"{nameof(GetMachineLayers)}: result: {JsonConvert.SerializeObject(result)}");
+      return result;
     }
 
   }

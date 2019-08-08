@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         .Select(a => new {assetUid = a.AssetUid, assetId = a.AssetId, isJohnDoe = a.IsJohnDoe, machineName = a.MachineName})
         .Distinct()).ToList();
       if (unMatchedList.Any())
-        log.LogError($"PairUpAssetIdentifiers: UnableToMatchAllAssets: {JsonConvert.SerializeObject(unMatchedList)}");
+        log.LogWarning($"PairUpAssetIdentifiers: UnmatchedAssetCount: {unMatchedList.Count} MatchedAssetCount: {machines.Count - unMatchedList.Count} UnableToMatchAllAssets: {JsonConvert.SerializeObject(unMatchedList)}");
     }
 
     private async Task PairUpVSSAssets(List<MachineStatus> machines, bool haveUids)
@@ -132,7 +132,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
 #if RAPTOR
         // JohnDoe assetMatch looks in Raptor machines for JohnDoe with matching name
-        // todoJeannie JohnDoe names should not be unique, that is internal to Raptor and Trex. Can machineName be string.Empty()? Should we check? 
         var johnDoeAssets = new List<string>(
           machines.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty && a.IsJohnDoe)
             .Select(a => a.MachineName)
