@@ -64,3 +64,5 @@ spec:
             value: "7.00:00:00"        
           - name: TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB
             value: {{ .Values.gateway.javaHeapMaxSizeMb | quote }}  
+          - name: TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB
+            value: {{ .Values.gateway.javaHeapInitialSizeMb | quote }}  

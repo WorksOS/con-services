@@ -25,44 +25,49 @@ service:
 
 applicationServer:
   replicaCount: 1
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 1024
+  javaHeapInitialSizeMb: 768  
   resources: 
     requests:
       cpu: 300m
-      memory: 1Gi
+      memory: 2Gi
 
 designElevation:
   replicaCount: 1
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 1024
+  javaHeapInitialSizeMb: 768  
   resources: 
     requests:
       cpu: 300m
-      memory: 1Gi
+      memory: 2Gi
 
 gateway:
   replicaCount: 1
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 768
+  javaHeapInitialSizeMb: 768  
   serviceDiscoveryName: trex-service-immutable
   resources:
     requests:
       cpu: 300m
-      memory: 768Mi
+      memory: 1280Mi
 
 immutableData:
   replicaCount: 1
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 1024
+  javaHeapInitialSizeMb: 768  
   resources: 
     requests:
       cpu: 300m
-      memory: 1Gi
+      memory: 1536Mi
 
 mutableData:
   replicaCount: 2
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 1024
+  javaHeapInitialSizeMb: 768  
   resources: 
     requests:
       cpu: 300m
-      memory: 1Gi
+      memory: 1536Mi
   storage:
     size: 10Gi
     className: efs
@@ -76,16 +81,18 @@ mutableData:
 
 mutableGateway:
   replicaCount: 1
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 768
+  javaHeapInitialSizeMb: 768  
   serviceDiscoveryName: trex-service-mutable
   resources:
     requests:
       cpu: 300m
-      memory: 768Mi
+      memory: 1Gi
 
 psnode:
   replicaCount: 2
   javaHeapMaxSizeMb: 4096
+  javaHeapInitialSizeMb: 768  
   resources: 
     requests:
       cpu: 500m
@@ -97,39 +104,44 @@ psnode:
 
 reportServer:
   replicaCount: 1
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 1024
+  javaHeapInitialSizeMb: 768  
   resources:
     requests:
       cpu: 300m
-      memory: 1.0Gi
+      memory: 1280Mi
 
 tileServer:
   replicaCount: 1
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 1024
+  javaHeapInitialSizeMb: 768  
   resources: 
     requests:
       cpu: 300m
-      memory: 1.0Gi
+      memory: 1536Mi
 
 tinExportServer:
   replicaCount: 1
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 1026
+  javaHeapInitialSizeMb: 768  
   resources: 
     requests:
       cpu: 300m
-      memory: 1.0Gi
+      memory: 1536Mi
 
 utilities:
   replicaCount: 0
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 768
+  javaHeapInitialSizeMb: 768  
   resources: 
     requests:
       cpu: 200m
-      memory: 768Mi
+      memory: 1Gi
 
 webtools:
   replicaCount: 1
-  javaHeapMaxSizeMb: 512
+  javaHeapMaxSizeMb: 768
+  javaHeapInitialSizeMb: 768  
   resources: 
     requests:
       cpu: 300m
