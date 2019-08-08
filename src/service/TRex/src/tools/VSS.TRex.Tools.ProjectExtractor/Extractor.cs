@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
+using VSS.TRex.Events;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
@@ -40,24 +41,24 @@ namespace VSS.TRex.Tools.ProjectExtractor
     {
       foreach (var machine in _siteModel.Machines)
       {
-        var allEventsForMachine = _siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].GetEventLists();
         var basePath = Path.Combine(_projectOutputPath, "Events", $"Machine-{machine.ID}");
         Directory.CreateDirectory(basePath);
 
-        foreach (var evtList in allEventsForMachine)
+        foreach (var evtList in ProductionEventLists.ProductionEventTypeValues)
         {
-          var readResult = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, evtList.EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
+          var eventsFileName = ProductionEvents.EventChangeListPersistantFileName(machine.InternalSiteModelMachineIndex, evtList);
+          var readResult = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, eventsFileName, FileSystemStreamType.Events, out MemoryStream MS);
 
           if (readResult != FileSystemErrorStatus.OK || MS == null)
           {
-            Log.LogError($"Failed to read directory stream for {evtList.EventChangeListPersistantFileName()} with error {readResult}, or read stream is null");
-            Console.WriteLine($"Failed to read directory stream for {evtList.EventChangeListPersistantFileName()} with error {readResult}, or read stream is null");
+            Log.LogError($"Failed to read directory stream for {eventsFileName} with error {readResult}, or read stream is null");
+            Console.WriteLine($"Failed to read directory stream for {eventsFileName} with error {readResult}, or read stream is null");
             continue;
           }
 
           using (MS)
           {
-            File.WriteAllBytes(Path.Combine(basePath, evtList.EventChangeListPersistantFileName()), MS.ToArray());
+            File.WriteAllBytes(Path.Combine(basePath, eventsFileName), MS.ToArray());
           }
         }
       }
@@ -75,7 +76,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
       _siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(address =>
       {
         var fileName = ServerSubGridTree.GetLeafSubGridFullFileName(address);
-        var FSError = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore(_siteModel.ID, fileName, address.X, address.Y, -1, -1, 0,
+        var FSError = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore(_siteModel.ID, fileName, address.X, address.Y, -1, -1, 1,
           FileSystemStreamType.SubGridDirectory, out MemoryStream MS);
 
         if (FSError != FileSystemErrorStatus.OK || MS == null)
@@ -88,35 +89,41 @@ namespace VSS.TRex.Tools.ProjectExtractor
         using (MS)
         {
           File.WriteAllBytes(Path.Combine(basePath, fileName), MS.ToArray());
-        }
 
-        // Write out all segment streams for the subGrid
+          // Write out all segment streams for the subGrid
 
-        var subGrid = new ServerSubGridTreeLeaf();
-        if (subGrid.LoadDirectoryFromStream(MS))
-        {
-          subGrid.Directory.SegmentDirectory.ForEach(segment =>
+          using (var subGrid = new ServerSubGridTreeLeaf())
           {
-            var segmentFileName = segment.FileName(address.X, address.Y);
-            var FSErrorSegment = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore(_siteModel.ID, segmentFileName, address.X, address.Y, -1, -1, 0,
-              FileSystemStreamType.SubGridDirectory, out MemoryStream MSSegment);
-
-            if (FSErrorSegment != FileSystemErrorStatus.OK)
+            subGrid.SetIsMutable(true);
+            
+            MS.Position = 0;
+            if (subGrid.LoadDirectoryFromStream(MS))
             {
-              Log.LogError($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
-              Console.WriteLine($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
-              return;
-            }
+              subGrid.Directory.SegmentDirectory.ForEach(segment =>
+              {
+                var segmentFileName = segment.FileName(address.X, address.Y);
+                var FSErrorSegment = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore
+                (_siteModel.ID, segmentFileName, address.X, address.Y, segment.StartTime.Ticks, segment.EndTime.Ticks, segment.Version,
+                  FileSystemStreamType.SubGridDirectory, out MemoryStream MSSegment);
 
-            using (MSSegment)
-            {
-              File.WriteAllBytes(Path.Combine(basePath, fileName), MSSegment.ToArray());
+                if (FSErrorSegment != FileSystemErrorStatus.OK)
+                {
+                  Log.LogError($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
+                  Console.WriteLine($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
+                  return;
+                }
+
+                using (MSSegment)
+                {
+                  File.WriteAllBytes(Path.Combine(basePath, segmentFileName), MSSegment.ToArray());
+                }
+              });
             }
-          });
-        }
-        else
-        {
-          Log.LogError($"Failed to read directory stream for {fileName}");
+            else
+            {
+              Log.LogError($"Failed to read directory stream for {fileName}");
+            }
+          }
         }
       });
     }
