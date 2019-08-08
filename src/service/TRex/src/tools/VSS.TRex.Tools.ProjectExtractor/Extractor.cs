@@ -16,8 +16,8 @@ namespace VSS.TRex.Tools.ProjectExtractor
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<Extractor>();
 
-    private ISiteModel _siteModel;
-    private string _projectOutputPath;
+    private readonly ISiteModel _siteModel;
+    private readonly string _projectOutputPath;
 
     public Extractor(ISiteModel siteModel, string projectOutputPath)
     {
@@ -25,19 +25,39 @@ namespace VSS.TRex.Tools.ProjectExtractor
       _projectOutputPath = projectOutputPath;
     }
 
+    public void ExtractAll()
+    {
+      ExtractSiteModelCoreMetaData();
+      ExtractCoordinateSystem();
+      ExtractMachines();
+      ExtractExistenceMap();
+      ExtractEventData();
+      ExtractSpatialData();
+      ExtractChangeMaps();
+    }
+
     public void ExtractEventData()
     {
       foreach (var machine in _siteModel.Machines)
       {
         var allEventsForMachine = _siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].GetEventLists();
+        var basePath = Path.Combine(_projectOutputPath, "Events", $"Machine-{machine.ID}");
+        Directory.CreateDirectory(basePath);
 
         foreach (var evtList in allEventsForMachine)
         {
-          _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, evtList.EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
+          var readResult = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, evtList.EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
+
+          if (readResult != FileSystemErrorStatus.OK || MS == null)
+          {
+            Log.LogError($"Failed to read directory stream for {evtList.EventChangeListPersistantFileName()} with error {readResult}, or read stream is null");
+            Console.WriteLine($"Failed to read directory stream for {evtList.EventChangeListPersistantFileName()} with error {readResult}, or read stream is null");
+            continue;
+          }
 
           using (MS)
           {
-            File.WriteAllBytes(Path.Combine(_projectOutputPath, "Events", $"Machine-{machine.ID}", evtList.EventChangeListPersistantFileName()), MS.ToArray());
+            File.WriteAllBytes(Path.Combine(basePath, evtList.EventChangeListPersistantFileName()), MS.ToArray());
           }
         }
       }
@@ -49,6 +69,9 @@ namespace VSS.TRex.Tools.ProjectExtractor
 
       // First write out the subGrid directory stream
 
+      var basePath = Path.Combine(_projectOutputPath, "Spatial");
+      Directory.CreateDirectory(basePath);
+
       _siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(address =>
       {
         var fileName = ServerSubGridTree.GetLeafSubGridFullFileName(address);
@@ -58,12 +81,13 @@ namespace VSS.TRex.Tools.ProjectExtractor
         if (FSError != FileSystemErrorStatus.OK || MS == null)
         {
           Log.LogError($"Failed to read directory stream for {fileName} with error {FSError}, or read stream is null");
+          Console.WriteLine($"Failed to read directory stream for {fileName} with error {FSError}, or read stream is null");
           return;
         }
 
         using (MS)
         {
-          File.WriteAllBytes(Path.Combine(_projectOutputPath, "Spatial", fileName), MS.ToArray());
+          File.WriteAllBytes(Path.Combine(basePath, fileName), MS.ToArray());
         }
 
         // Write out all segment streams for the subGrid
@@ -80,12 +104,13 @@ namespace VSS.TRex.Tools.ProjectExtractor
             if (FSErrorSegment != FileSystemErrorStatus.OK)
             {
               Log.LogError($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
+              Console.WriteLine($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
               return;
             }
 
             using (MSSegment)
             {
-              File.WriteAllBytes(Path.Combine(_projectOutputPath, "Spatial", fileName), MSSegment.ToArray());
+              File.WriteAllBytes(Path.Combine(basePath, fileName), MSSegment.ToArray());
             }
           });
         }
@@ -110,7 +135,10 @@ namespace VSS.TRex.Tools.ProjectExtractor
       {
         using (MS)
         {
-          File.WriteAllBytes(Path.Combine(_projectOutputPath, "MetaData", SiteModel.kSubGridExistenceMapFileName), MS.ToArray());
+          var basePath = Path.Combine(_projectOutputPath, "MetaData");
+          Directory.CreateDirectory(basePath);
+
+          File.WriteAllBytes(Path.Combine(SiteModel.kSubGridExistenceMapFileName), MS.ToArray());
         }
       }
     }
@@ -129,7 +157,10 @@ namespace VSS.TRex.Tools.ProjectExtractor
       {
         using (MS)
         {
-          File.WriteAllBytes(Path.Combine(_projectOutputPath, "MetaData", SiteModel.kSiteModelXMLFileName), MS.ToArray());
+          var basePath = Path.Combine(_projectOutputPath, "MetaData");
+          Directory.CreateDirectory(basePath);
+
+          File.WriteAllBytes(Path.Combine(basePath, SiteModel.kSiteModelXMLFileName), MS.ToArray());
         }
       }
     }
@@ -144,7 +175,10 @@ namespace VSS.TRex.Tools.ProjectExtractor
         {
           var changeMap = proxyStorageCache.Get(new SiteModelMachineAffinityKey(_siteModel.ID, machine.ID, FileSystemStreamType.SiteModelMachineElevationChangeMap));
 
-          File.WriteAllBytes(Path.Combine(_projectOutputPath, "ChangeMaps", $"Machine-{machine.ID}"), changeMap.Bytes);
+          var basePath = Path.Combine(_projectOutputPath, "ChangeMaps");
+          Directory.CreateDirectory(basePath);
+
+          File.WriteAllBytes(Path.Combine(basePath, $"Machine-{machine.ID}"), changeMap.Bytes);
         }
         catch (KeyNotFoundException)
         {
@@ -166,7 +200,10 @@ namespace VSS.TRex.Tools.ProjectExtractor
       {
         using (MS)
         {
-          File.WriteAllBytes(Path.Combine(_projectOutputPath, "MachineList"), MS.ToArray());
+          var basePath = Path.Combine(_projectOutputPath);
+          Directory.CreateDirectory(basePath);
+
+          File.WriteAllBytes(Path.Combine(basePath, "MachineList"), MS.ToArray());
         }
       }
     }
@@ -184,7 +221,10 @@ namespace VSS.TRex.Tools.ProjectExtractor
       {
         using (MS)
         {
-          File.WriteAllBytes(Path.Combine(_projectOutputPath, "MachineList"), MS.ToArray());
+          var basePath = Path.Combine(_projectOutputPath);
+          Directory.CreateDirectory(basePath);
+
+          File.WriteAllBytes(Path.Combine(_projectOutputPath, "CoordinateSystem"), MS.ToArray());
         }
       }
     }
