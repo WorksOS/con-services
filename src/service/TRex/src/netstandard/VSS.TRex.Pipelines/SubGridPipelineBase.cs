@@ -84,7 +84,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public IFilterSet FilterSet { get; set; }
 
-        public int MaxNumberOfPassesToReturn = 0;
+        public int MaxNumberOfPassesToReturn { get; set; } = int.MaxValue;
 
         public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 

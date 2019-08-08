@@ -196,5 +196,10 @@ namespace VSS.TRex.Common.CellPasses
     /// </summary>
     public const int NullEventMapResetDesignNameId = int.MaxValue;
 
+    /// <summary>
+    /// Maximum depth of cell passes to consider
+    /// </summary>
+    public const int MaxCellPassDepthForAllLayersCompactionSummaryAnalysis = 200;
+
   }
 }

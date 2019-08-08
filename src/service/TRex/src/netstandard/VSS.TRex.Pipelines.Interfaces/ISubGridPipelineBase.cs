@@ -106,5 +106,9 @@ namespace VSS.TRex.Pipelines.Interfaces
         DesignOffset ReferenceDesign { get; set; }
 
         ILiftParameters LiftParams { get; set; }
+
+        int MaxNumberOfPassesToReturn { get; set; }
+    }
+
   }
 }

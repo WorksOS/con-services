@@ -620,7 +620,7 @@ namespace VSS.TRex.SubGrids
 
         // Create and configure the cell pass iterator to be used
 
-        _cellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(_segmentIterator);
+        _cellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(_segmentIterator, _maxNumberOfPassesToReturn);
         _cellPassIterator.SetTimeRange(_filter.AttributeFilter.HasTimeFilter, _filter.AttributeFilter.StartTime, _filter.AttributeFilter.EndTime);
 
         _commonCellPassStackExaminationDone = true;

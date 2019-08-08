@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs;
@@ -347,18 +348,19 @@ namespace VSS.TRex.Pipelines
       // analysis engine to apply to restriction to the number of cell passes to use
       // to perform layer analysis (ie: all cell passes will be used).
 
-      /*Todo: Delegate this kind of specialised configuration to the client of the pipeline processor
+      //Todo: Delegate this kind of specialised configuration to the client of the pipeline processor
+      /*
       if (Mode == DisplayMode.CCVSummary || Mode == DisplayMode.CCVPercentSummary)
       {
         if (!Pipeline.LiftParams.CCVSummarizeTopLayerOnly)
-           Pipeline.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
+           Pipeline.MaxNumberOfPassesToReturn = CellPassConsts.MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
       }
 
       if (Mode == DisplayMode.MDPSummary || Mode == DisplayMode.MDPPercentSummary)
       {
         if (!Pipeline.LiftParams.MDPSummarizeTopLayerOnly)
-          Pipeline.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-      }
+          Pipeline.MaxNumberOfPassesToReturn = CellPassConsts.MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
+      } 
       */
      
       Pipeline.OverallExistenceMap = OverallExistenceMap;
