@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: {{ template "trex.deployname" . }}-csg
   labels:
-    service-name: {{ .Values.serviceName }}
+    service-name: {{ .Values.connectedSiteGateway.serviceDiscoveryName }}
   annotations:
     prometheus.io/scrape: "true"
 spec:

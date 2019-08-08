@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
     static readonly int GridDataTypeCount = GetGridDataTypeCount();
 
-    private const int kGridDataTypeCount_Expected = 15;
+    private const int kGridDataTypeCount_Expected = 16;
     private const int kGridDataTypeCount = 29;
 
     /// <summary>
@@ -34,6 +34,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
              gridDataType == GridDataType.CompositeHeights ||
              gridDataType == GridDataType.CCV ||
              gridDataType == GridDataType.CCVPercentChange ||
+             gridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue ||
              gridDataType == GridDataType.MDP ||
              gridDataType == GridDataType.MachineSpeed ||
              gridDataType == GridDataType.MachineSpeedTarget ||

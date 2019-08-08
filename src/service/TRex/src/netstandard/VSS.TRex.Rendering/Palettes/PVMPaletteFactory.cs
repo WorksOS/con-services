@@ -25,6 +25,7 @@ namespace VSS.TRex.Rendering.Palettes
         case DisplayMode.TargetSpeedSummary: return new SpeedSummaryPalette();
         case DisplayMode.CCV: return new CMVPalette();
         case DisplayMode.CCVPercentSummary: return new CMVSummaryPalette();
+        case DisplayMode.CMVChange: return new CMVPercentChangePalette();
         case DisplayMode.MDP: return new MDPPalette();
         case DisplayMode.MDPPercentSummary: return new MDPSummaryPalette();
         case DisplayMode.PassCount: return new PassCountPalette();
