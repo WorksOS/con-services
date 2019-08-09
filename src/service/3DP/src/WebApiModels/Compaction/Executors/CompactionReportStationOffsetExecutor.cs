@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using ASNodeRaptorReports;
 #endif
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
@@ -90,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
 
       var startAndEndTime = request.Filter.StartUtc ?? DateTime.UtcNow;
-      var stationOffsetReport = StationOffsetReport.CreateReport(startAndEndTime, startAndEndTime, stationRows, request);
+      var stationOffsetReport = new StationOffsetReport(startAndEndTime, startAndEndTime, stationRows, request);
 
       return CompactionReportResult.CreateExportDataResult(stationOffsetReport, 1);
     }
@@ -173,8 +171,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
 
       var startAndEndTime = request.Filter.StartUtc ?? DateTime.UtcNow;
-      var stationOffsetReport =
-        StationOffsetReport.CreateReport(startAndEndTime, startAndEndTime, stationRows, request);
+      var stationOffsetReport = new StationOffsetReport(startAndEndTime, startAndEndTime, stationRows, request);
 
       return CompactionReportResult.CreateExportDataResult(stationOffsetReport, 1);
     }
