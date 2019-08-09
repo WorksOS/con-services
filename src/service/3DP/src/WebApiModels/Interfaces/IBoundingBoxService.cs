@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.WebApi.Models.Interfaces
 
     Task<AlignmentStationRangeResult> GetAlignmentStationRange(ProjectData project, DesignDescriptor alignDescriptor, IDictionary<string, string> customHeaders);
 
-    Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId, long[] excludedIds, Guid[] excludedUids,
+    Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId, IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids,
       string userId, IDictionary<string, string> customHeaders);
   }
 }

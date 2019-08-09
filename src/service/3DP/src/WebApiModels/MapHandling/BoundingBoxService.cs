@@ -305,14 +305,14 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// </summary>
     private async Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId, FilterResult filter, string userId, IDictionary<string, string> customHeaders)
     {
-      return await GetProductionDataExtents(projectUid, projectId, filter?.SurveyedSurfaceExclusionList?.ToArray(), filter?.ExcludedSurveyedSurfaceUids?.ToArray(), userId, customHeaders);
+      return await GetProductionDataExtents(projectUid, projectId, filter?.SurveyedSurfaceExclusionList, filter?.ExcludedSurveyedSurfaceUids, userId, customHeaders);
     }
 
     /// <summary>
     /// Get the production data extents for the project.
     /// </summary>
     public async Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId,
-      long[] excludedIds, Guid[] excludedUids, string userId, IDictionary<string, string> customHeaders)
+      IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids, string userId, IDictionary<string, string> customHeaders)
     {
       ProjectStatisticsResult statsResult;
       try

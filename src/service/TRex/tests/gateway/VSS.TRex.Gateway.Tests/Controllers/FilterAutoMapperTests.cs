@@ -378,5 +378,22 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       combinedFilter.AttributeFilter.PassCountRangeMin.Should().Be(34);
       combinedFilter.AttributeFilter.PassCountRangeMax.Should().Be(89);
     }
+
+    [Fact]
+    public void MapFilterResultHasExcludedSurveyedSurfacesToCombinedFilter()
+    {
+      var id1 = Guid.NewGuid();
+      var id2 = Guid.NewGuid();
+      var excludedIds = new List<Guid> {id1, id2};
+      var filterResult = new FilterResult(null, new Filter(), null, null, null,
+        null, excludedIds, true, null);
+      filterResult.Validate();
+
+      var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Should().NotBeNull();
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Length.Should().Be(excludedIds.Count);
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList[0].Should().Be(id1);
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList[1].Should().Be(id2);
+    }
   }
 }
