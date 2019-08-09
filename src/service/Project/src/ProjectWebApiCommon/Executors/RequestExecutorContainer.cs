@@ -21,6 +21,7 @@ using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -64,7 +65,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Interface to 3dp service validation
     /// </summary>
-    protected IRaptorProxy raptorProxy;
+    protected IProductivity3dProxy productivity3dProxy;
 
     /// <summary>
     /// 
@@ -187,7 +188,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null,
       IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
-      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
+      IProductivity3dProxy productivity3dProxy = null, ISubscriptionProxy subscriptionProxy = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, 
       ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, 
       ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
@@ -204,7 +205,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.customHeaders = headers;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
-      this.raptorProxy = raptorProxy;
+      this.productivity3dProxy = productivity3dProxy;
       this.subscriptionProxy = subscriptionProxy;
       this.persistantTransferProxy = persistantTransferProxy;
       this.filterServiceProxy = filterServiceProxy;

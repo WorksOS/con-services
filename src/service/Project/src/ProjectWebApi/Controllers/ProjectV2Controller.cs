@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -16,6 +14,7 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TCCFileAccess;
@@ -49,11 +48,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, ICustomerRepository customerRepo,
       IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
-      IRaptorProxy raptorProxy,
+      IProductivity3dProxy productivity3DProxy,
       ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,
       IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, productivity3DProxy,
         loggerFactory, serviceExceptionHandler, dataOceanClient, authn)
     {
       this.customerRepo = customerRepo;
@@ -98,7 +97,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // Read CoordSystem file from TCC as byte[]. 
       //    Filename and content are used: 
       //      validated via raptorproxy
-      //      created in Raptor via raptorProxy
+      //      created in Raptor via productivity3dProxy
       //      stored in CreateKafkaEvent
       //    Only Filename is stored in the VL database 
       createProjectEvent.CoordinateSystemFileContent = 
@@ -110,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(loggerFactory, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders, producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy, null, null, null, projectRepo, 
+            Productivity3DProxy, subscriptionProxy, null, null, null, projectRepo, 
             subscriptionRepo, fileRepo, null, httpContextAccessor, dataOceanClient, authn)
           .ProcessAsync(createProjectEvent)
       );

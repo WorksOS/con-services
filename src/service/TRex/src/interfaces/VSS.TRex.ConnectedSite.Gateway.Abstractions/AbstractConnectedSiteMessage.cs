@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
 using VSS.TRex.Common.Types;
 
 namespace VSS.TRex.ConnectedSite.Gateway.Abstractions

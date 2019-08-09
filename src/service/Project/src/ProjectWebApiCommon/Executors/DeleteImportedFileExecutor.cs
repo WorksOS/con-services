@@ -56,7 +56,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy, projectRepo).ConfigureAwait(false);
 
-        // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
+        // DB change must be made before productivity3dProxy.DeleteFile is called as it calls back here to get list of Active files
         deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
           (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (useRaptorGatewayDesignImport)
       {
-        // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
+        // DB change must be made before productivity3dProxy.DeleteFile is called as it calls back here to get list of Active files
         if (deleteImportedFileEvent == null)
         {
           deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
@@ -77,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             deleteImportedFile.ImportedFileUid, deleteImportedFile.FileDescriptor,
             deleteImportedFile.ImportedFileId, deleteImportedFile.LegacyImportedFileId,
             log, customHeaders, serviceExceptionHandler,
-            projectRepo, raptorProxy)
+            projectRepo, productivity3dProxy)
           .ConfigureAwait(false);
 
         if (importedFileInternalResult == null)

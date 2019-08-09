@@ -13,10 +13,9 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -40,12 +39,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, FileDescriptor fileDescriptor, long importedFileId,
       Guid importedFileUid, bool isCreate,
       ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
-      IRaptorProxy raptorProxy, IProjectRepository projectRepo)
+      IProductivity3dProxy productivity3DProxy, IProjectRepository projectRepo)
     {
       AddFileResult notificationResult = null;
       try
       {
-        notificationResult = await raptorProxy
+        notificationResult = await productivity3DProxy
           .AddFile(projectUid, importedFileType, importedFileUid,
             JsonConvert.SerializeObject(fileDescriptor), importedFileId, dxfUnitsType, headers);
 
@@ -58,7 +57,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid,
               serviceExceptionHandler, projectRepo, true)
             .ConfigureAwait(false);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.AddFile",
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "productivity3dProxy.AddFile",
           e.Message);
       }
 
@@ -89,19 +88,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static async Task<ImportedFileInternalResult> NotifyRaptorDeleteFile(Guid projectUid, ImportedFileType importedFileType,
       Guid importedFileUid, FileDescriptor fileDescriptor, long importedFileId, long? legacyImportedFileId,
       ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectRepository projectRepo, IRaptorProxy raptorProxy)
+      IProjectRepository projectRepo, IProductivity3dProxy productivity3DProxy)
     {
       BaseDataResult notificationResult = null;
       try
       {
-        notificationResult = await raptorProxy
+        notificationResult = await productivity3DProxy
           .DeleteFile(projectUid, importedFileType, importedFileUid, JsonConvert.SerializeObject(fileDescriptor), importedFileId, legacyImportedFileId, headers)
           .ConfigureAwait(false);
       }
       catch (Exception e)
       {
         log.LogError(e, $"NotifyRaptorDeleteFile DeleteFile in RaptorServices failed with exception. projectUid:{projectUid} FileDescriptor:{fileDescriptor}");
-        return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "raptorProxy.DeleteFile", e.Message);
+        return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "productivity3dProxy.DeleteFile", e.Message);
       }
 
       log.LogDebug(
@@ -241,13 +240,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Create a DXF file of the alignment center line using Raptor and save it to data ocean.
     /// </summary>
     /// <returns>The generated file name</returns>
-    public static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IRaptorProxy raptorProxy, 
+    public static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IProductivity3dProxy productivity3DProxy, 
       IDictionary<string, string> headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, 
       IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName, string rootFolder)
     {
       var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);
       //Get generated DXF file from Raptor
-      var dxfContents = await raptorProxy.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
+      var dxfContents = await productivity3DProxy.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
       //GracefulWebRequest should throw an exception if the web api call fails but just in case...
       if (dxfContents != null && dxfContents.Length > 0)
       {

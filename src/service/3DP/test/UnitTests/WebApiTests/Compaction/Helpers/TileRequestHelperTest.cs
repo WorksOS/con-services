@@ -6,6 +6,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 {

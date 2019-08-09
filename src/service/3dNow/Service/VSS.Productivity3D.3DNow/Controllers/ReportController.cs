@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Now3D.Models;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.Now3D.Controllers
 {
@@ -23,19 +23,19 @@ namespace VSS.Productivity3D.Now3D.Controllers
     private readonly IProjectProxy projectProxy;
     private readonly IFileImportProxy fileImportProxy;
     private readonly IFilterServiceProxy filterServiceProxy;
-    private readonly IRaptorProxy raptorProxy;
+    private readonly IProductivity3dProxy productivity3dProxy;
 
     public ReportController(ILoggerFactory loggerFactory, 
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy,
       IFileImportProxy fileImportProxy, 
       IFilterServiceProxy filterServiceProxy,
-      IRaptorProxy raptorProxy) : base(loggerFactory, serviceExceptionHandler)
+      IProductivity3dProxy productivity3DProxy) : base(loggerFactory, serviceExceptionHandler)
     {
       this.projectProxy = projectProxy;
       this.fileImportProxy = fileImportProxy;
       this.filterServiceProxy = filterServiceProxy;
-      this.raptorProxy = raptorProxy;
+      this.productivity3dProxy = productivity3DProxy;
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
       // Base UID needs to be filter
       // Top UID needs to be design
       var route = $"/volumes/summary?projectUid={filter.ProjectUid}&baseUid={filterUid}&topUid={filter.DesignFileUid}";
-      var result = await raptorProxy.ExecuteGenericV2Request<CompactionVolumesSummaryResult>(route, HttpMethod.Get, null, CustomHeaders);
+      var result = await productivity3dProxy.ExecuteGenericV2Request<CompactionVolumesSummaryResult>(route, HttpMethod.Get, null, CustomHeaders);
 
       if (result != null)
         return Json(result);
@@ -158,7 +158,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
         }
       }
 
-      var result = await raptorProxy.ExecuteGenericV2Request<T>(route, HttpMethod.Get, null, CustomHeaders);
+      var result = await productivity3dProxy.ExecuteGenericV2Request<T>(route, HttpMethod.Get, null, CustomHeaders);
 
       if (result != null)
         return result;

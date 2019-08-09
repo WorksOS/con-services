@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 
 namespace VSS.Productivity3D.Models.Models
 {

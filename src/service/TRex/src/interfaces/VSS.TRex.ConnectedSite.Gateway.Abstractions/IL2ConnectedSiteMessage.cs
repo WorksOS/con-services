@@ -17,7 +17,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.Abstractions
     [JsonProperty("appVersion")]
     string AppVersion { get; set; }
     /// <summary>
-    /// This will normally for GCS900 for messges from harvested TAGS 
+    /// This will normally for GCS900 for messages from harvested TAGS 
     /// </summary>
     [JsonProperty("appName")]
     string AppName { get; }
