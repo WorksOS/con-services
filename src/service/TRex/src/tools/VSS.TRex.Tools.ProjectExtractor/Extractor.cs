@@ -155,7 +155,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
           var basePath = Path.Combine(_projectOutputPath);
           Directory.CreateDirectory(basePath);
 
-          File.WriteAllBytes(Path.Combine(fileName), MS.ToArray());
+          File.WriteAllBytes(Path.Combine(basePath, fileName), MS.ToArray());
         }
       }
     }
@@ -193,7 +193,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
           var basePath = Path.Combine(_projectOutputPath, "ChangeMaps");
           Directory.CreateDirectory(basePath);
 
-          File.WriteAllBytes(Path.Combine(basePath, $"Machine-{machine.ID}"), changeMap.Bytes);
+          File.WriteAllBytes(Path.Combine(basePath, machine.ID.ToString()), changeMap.Bytes);
         }
         catch (KeyNotFoundException)
         {
