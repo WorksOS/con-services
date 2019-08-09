@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         stationRows[i] = stationRow;
       }
 
-      var startAndEndTime = request.Filter.StartUtc ?? DateTime.Now;
+      var startAndEndTime = request.Filter.StartUtc ?? DateTime.UtcNow;
       var stationOffsetReport = StationOffsetReport.CreateReport(startAndEndTime, startAndEndTime, stationRows, request);
 
       return CompactionReportResult.CreateExportDataResult(stationOffsetReport, 1);
@@ -172,7 +172,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         stationRows[i] = stationRow;
       }
 
-      var startAndEndTime = request.Filter.StartUtc ?? DateTime.Now;
+      var startAndEndTime = request.Filter.StartUtc ?? DateTime.UtcNow;
       var stationOffsetReport =
         StationOffsetReport.CreateReport(startAndEndTime, startAndEndTime, stationRows, request);
 
