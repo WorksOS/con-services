@@ -46,14 +46,14 @@ Copy-Item ./web.config $artifactsWorkingDir
 
 & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
 
-Write-Host "Building image dependencies" -ForegroundColor DarkGray
-
 Set-Location $PSScriptRoot
-Invoke-Expression "docker-compose --file docker-compose-local.yml pull"
+$dockerComposeConfig = "docker-compose-local"
+
+Write-Host "Building image dependencies" -ForegroundColor DarkGray
+Invoke-Expression "docker-compose --file $dockerComposeConfig.yml pull"
 
 Write-Host "Building Docker containers" -ForegroundColor DarkGray
-
-Invoke-Expression "docker-compose --file docker-compose-local.yml up --build --detach > ${PSScriptRoot}/artifacts/logs/output.log"
+Invoke-Expression "docker-compose --file $dockerComposeConfig.yml up --build --detach > ${PSScriptRoot}/artifacts/logs/output.log"
 
 IF (-not $?) {
     Write-Host "Error: Environment failed to start" -ForegroundColor Red

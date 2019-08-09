@@ -25,9 +25,6 @@ namespace VSS.Productivity3D.Filter.Tests
 {
   public class BoundaryExecutorTests : ExecutorBaseTests
   {
-    public void TestInit()
-    { }
-
     [Fact]
     public async Task GetBoundaryExecutor()
     {
