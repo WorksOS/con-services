@@ -387,8 +387,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       var excludedSs = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
-      var excludedIds = excludedSs.Select(e => e.Item1).ToList();
-      var excludedUids = excludedSs.Select(e => e.Item2).ToList();
+      var excludedIds = excludedSs?.Select(e => e.Item1).ToList();
+      var excludedUids = excludedSs?.Select(e => e.Item2).ToList();
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
 
       if (!filterUid.HasValue)
