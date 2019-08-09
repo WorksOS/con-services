@@ -1,41 +1,34 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
+using VSS.Serilog.Extensions;
 
 namespace RepositoryTests
 {
   [TestClass]
   public class SchemaTests
   {
-    public IServiceProvider serviceProvider = null;
+    public IServiceProvider serviceProvider;
     IConfigurationStore gc;
-    private readonly string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
     public virtual void InitTest()
     {
-      var serviceCollection = new ServiceCollection();
-
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      serviceCollection.AddSingleton<IRepositoryFactory, RepositoryFactory>();
-      serviceProvider = serviceCollection.BuildServiceProvider();
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.TagFileAuth.WepApiTests.log")))
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<IRepositoryFactory, RepositoryFactory>()
+        .BuildServiceProvider();
 
       gc = serviceProvider.GetService<IConfigurationStore>();
     }
@@ -44,7 +37,7 @@ namespace RepositoryTests
     public void AssetSchemaExists()
     {
       const string tableName = "Asset";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "ID", "AssetUID", "LegacyAssetID", "Name" , "MakeCode" , "SerialNumber", "Model", "ModelYear", "IconKey", "AssetType", "IsDeleted", "OwningCustomerUID", "EquipmentVIN", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
@@ -55,7 +48,7 @@ namespace RepositoryTests
     public void CustomerSchemaExists()
     {
       const string tableName = "Customer";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "ID", "CustomerUID", "Name", "fk_CustomerTypeID", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
@@ -66,7 +59,7 @@ namespace RepositoryTests
     public void DeviceSchemaExists()
     {
       const string tableName = "Device";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "ID", "DeviceUID", "DeviceSerialNumber", "DeviceType" , "DeviceState" , "DeregisteredUTC", "ModuleType", "MainboardSoftwareVersion", "RadioFirmwarePartNumber", "GatewayFirmwarePartNumber", "DataLinkType", "OwningCustomerUID", "LastActionedUTC"
           };
@@ -77,7 +70,7 @@ namespace RepositoryTests
     public void AssetDeviceSchemaExists()
     {
       const string tableName = "AssetDevice";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "ID", "fk_DeviceUID", "fk_AssetUID", "LastActionedUTC"
           };
@@ -89,7 +82,7 @@ namespace RepositoryTests
     public void ProjectSchemaExists()
     {
       const string tableName = "Project";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "ProjectUID", "LegacyProjectID", "Name", "Description", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC", "PolygonST", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC"
           };
@@ -100,7 +93,7 @@ namespace RepositoryTests
     public void CustomerProjectSchemaExists()
     {
       const string tableName = "CustomerProject";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "fk_CustomerUID", "fk_ProjectUID", "LegacyCustomerID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
@@ -111,7 +104,7 @@ namespace RepositoryTests
     public void CustomerTccOrgSchemaExists()
     {
       const string tableName = "CustomerTccOrg";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "CustomerUID", "TCCOrgID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
@@ -122,7 +115,7 @@ namespace RepositoryTests
     public void SubscriptionSchemaExists()
     {
       const string tableName = "Subscription";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "ID", "SubscriptionUID", "fk_CustomerUID", "fk_ServiceTypeID", "StartDate", "EndDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
@@ -133,7 +126,7 @@ namespace RepositoryTests
     public void ProjectSubscriptionSchemaExists()
     {
       const string tableName = "ProjectSubscription";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "fk_ProjectUID", "fk_SubscriptionUID", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
@@ -144,7 +137,7 @@ namespace RepositoryTests
     public void AssetSubscriptionSchemaExists()
     {
       const string tableName = "AssetSubscription";
-      List<string> columnNames = new List<string>
+      var columnNames = new List<string>
           {
             "fk_AssetUID", "fk_SubscriptionUID", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
@@ -181,9 +174,8 @@ namespace RepositoryTests
 
     private string GetQuery(string tableName, bool selectTable)
     {
-      string what = selectTable ? "TABLE_NAME" : "COLUMN_NAME";
-      var query = string.Format("SELECT {0} FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{1}' AND TABLE_NAME ='{2}'",
-        what, gc.GetValueString("MYSQL_DATABASE_NAME"), tableName);
+      var what = selectTable ? "TABLE_NAME" : "COLUMN_NAME";
+      var query = $"SELECT {what} FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{gc.GetValueString("MYSQL_DATABASE_NAME")}' AND TABLE_NAME ='{tableName}'";
       return query;
     }
   }

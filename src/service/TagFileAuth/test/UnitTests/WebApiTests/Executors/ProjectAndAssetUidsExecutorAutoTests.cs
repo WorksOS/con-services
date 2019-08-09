@@ -50,8 +50,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -70,9 +70,9 @@ namespace WebApiTests.Executors
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
         assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>()
-        {
-          new Subscription()
+        assetSubs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             StartDate = DateTime.UtcNow.AddYears(-1).Date,
@@ -99,8 +99,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -122,9 +122,9 @@ namespace WebApiTests.Executors
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
         ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>()
-        {
-          new Subscription()
+        ec520Subs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             StartDate = DateTime.UtcNow.AddYears(-1).Date,
@@ -148,8 +148,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -171,9 +171,9 @@ namespace WebApiTests.Executors
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
         ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>()
-        {
-          new Subscription()
+        ec520Subs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             StartDate = DateTime.UtcNow.AddYears(-1).Date,
@@ -181,9 +181,9 @@ namespace WebApiTests.Executors
           }
         },
         assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>()
-        {
-          new Subscription()
+        assetCustomerSubs: new List<Subscription>
+                           {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring,
             StartDate = DateTime.UtcNow.AddYears(-1).Date,
@@ -205,8 +205,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -224,10 +224,10 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>()
-        {
-          new Subscription()
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetSubs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             StartDate = DateTime.UtcNow.AddYears(-1).Date,
@@ -254,8 +254,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -273,9 +273,9 @@ namespace WebApiTests.Executors
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
         assetDevice: (AssetDeviceIds)null, 
-        assetSubs: new List<Subscription>()
-        {
-          new Subscription()
+        assetSubs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             StartDate = DateTime.UtcNow.AddYears(-1).Date,
@@ -302,8 +302,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -321,9 +321,9 @@ namespace WebApiTests.Executors
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
         assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>()
-        {
-          new Subscription()
+        assetSubs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             StartDate = DateTime.UtcNow.AddYears(-1).Date,
@@ -350,8 +350,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -369,9 +369,9 @@ namespace WebApiTests.Executors
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
         assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>()
-        {
-          new Subscription()
+        assetSubs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             StartDate = DateTime.UtcNow.AddYears(-1).Date,
@@ -402,8 +402,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -442,8 +442,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -482,8 +482,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -522,8 +522,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -566,8 +566,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.ProjectMonitoring,
         CustomerUID = projectCustomerUid,
@@ -606,8 +606,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.ProjectMonitoring,
         CustomerUID = projectCustomerUid,
@@ -646,8 +646,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.ProjectMonitoring,
         CustomerUID = projectCustomerUid,
@@ -686,8 +686,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.ProjectMonitoring,
         CustomerUID = projectCustomerUid,
@@ -728,16 +728,16 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterestStd = new Project()
-      {
+      var projectOfInterestStd = new Project
+                                 {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
         StartDate = DateTime.UtcNow.AddDays(-4),
         EndDate = DateTime.UtcNow.AddDays(3)
       };
-      var projectOfInterestPM = new Project()
-      {
+      var projectOfInterestPM = new Project
+                                {
         ProjectUID = projectUid,
         ProjectType = ProjectType.ProjectMonitoring,
         CustomerUID = projectCustomerUid,
@@ -758,9 +758,9 @@ namespace WebApiTests.Executors
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
         assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>()
-        {
-          new Subscription()
+        assetSubs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             StartDate = DateTime.UtcNow.AddYears(-1).Date,
