@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid, userId, customHeaders);
 
-      return await GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds.Select(e => e.Item1), excludedIds.Select(e => e.Item2));
+      return await GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds?.Select(e => e.Item1), excludedIds?.Select(e => e.Item2));
     }
 
     /// <summary>

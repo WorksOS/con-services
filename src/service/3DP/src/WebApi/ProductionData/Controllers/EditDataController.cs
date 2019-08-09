@@ -15,11 +15,13 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -36,6 +38,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #endif
     private readonly ILoggerFactory logger;
     private readonly IConfigurationStore configStore;
+    private readonly IFileImportProxy fileImportProxy;
+    private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
 
     /// <summary>
     /// Constructor with dependency injection
@@ -46,7 +50,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ITagProcessor tagProcessor, 
 #endif
       ILoggerFactory logger,
-      IConfigurationStore configStore)
+      IConfigurationStore configStore,
+      IFileImportProxy fileImportProxy,
+      ITRexCompactionDataProxy tRexCompactionDataProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -54,6 +60,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #endif
       this.logger = logger;
       this.configStore = configStore;
+      this.fileImportProxy = fileImportProxy;
+      this.tRexCompactionDataProxy = this.tRexCompactionDataProxy;
     }
 
     /// <summary>
@@ -140,7 +148,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private async Task ValidateDates(long projectId, Guid projectUid, ProductionDataEdit dataEdit)
     {
 #if RAPTOR
-      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, null, null, raptorClient);
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy, raptorClient);
       var stats = await projectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(
         projectUid, projectId, ((RaptorPrincipal)User).Identity.Name, Request.Headers.GetCustomHeaders());
       if (stats == null)
