@@ -41,7 +41,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
       ExtractChangeMaps();
       ExtractSiteModelDesigns();
       ExtractMachineSiteModelDesigns();
-      ExtractMachineSiteModelDesignNames();
+      ExtractSiteModelMachineDesignNames();
       ExtractSurveyedSurfaces();
       ExtractAlignments();
       ExtractProofingRuns();
@@ -170,7 +170,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
 
     public void ExtractMachineSiteModelDesigns() => ExtractSiteModelFile(SiteModelDesignList.LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns);
 
-    public void ExtractMachineSiteModelDesignNames() => ExtractSiteModelFile(SiteModelMachineDesignList.MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames);
+    public void ExtractSiteModelMachineDesignNames() => ExtractSiteModelFile(SiteModelMachineDesignList.MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames);
 
     public void ExtractExistenceMap() => ExtractSiteModelFile(SiteModel.kSubGridExistenceMapFileName, FileSystemStreamType.SubGridExistenceMap);
 
