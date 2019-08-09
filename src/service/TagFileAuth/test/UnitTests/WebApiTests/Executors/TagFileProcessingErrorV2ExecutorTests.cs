@@ -41,7 +41,7 @@ namespace WebApiTests.Executors
         deviceSerialNumber, 0);
       tagFileProcessingErrorRequest.Validate();
       var customerRepo = new Mock<ICustomerRepository>();
-      var customerTccOrg = new CustomerTccOrg() { Name = "theName", CustomerType = VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer, CustomerUID = customerUid, TCCOrgID = tccOrgId};
+      var customerTccOrg = new CustomerTccOrg { Name = "theName", CustomerType = VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer, CustomerUID = customerUid, TCCOrgID = tccOrgId};
       customerRepo.Setup(c => c.GetCustomerWithTccOrg(It.IsAny<string>())).ReturnsAsync(customerTccOrg);
 
       var producer = new Mock<IKafka>();
@@ -148,7 +148,7 @@ namespace WebApiTests.Executors
       tagFileProcessingErrorRequest.Validate();
   
       var projectRepo = new Mock<IProjectRepository>();
-      var project = new Project() { LegacyProjectID = legacyProjectId.Value, ProjectUID = projectUid, Name = "theProjectName", ProjectType = ProjectType.LandFill, CustomerUID = customerUid, LegacyCustomerID = legacyCustomerId};
+      var project = new Project { LegacyProjectID = legacyProjectId.Value, ProjectUID = projectUid, Name = "theProjectName", ProjectType = ProjectType.LandFill, CustomerUID = customerUid, LegacyCustomerID = legacyCustomerId};
       projectRepo.Setup(c => c.GetProject(It.IsAny<long>())).ReturnsAsync(project);
 
       var producer = new Mock<IKafka>();
@@ -188,7 +188,7 @@ namespace WebApiTests.Executors
       tagFileProcessingErrorRequest.Validate();
      
       var assetRepo = new Mock<IAssetRepository>();
-      var asset = new Asset() { LegacyAssetID = legacyAssetId.Value, AssetUID = assetUid, Name = "theAssetName", SerialNumber = "AssetSerialNumber", AssetType = "SNM940", OwningCustomerUID = customerUid };
+      var asset = new Asset { LegacyAssetID = legacyAssetId.Value, AssetUID = assetUid, Name = "theAssetName", SerialNumber = "AssetSerialNumber", AssetType = "SNM940", OwningCustomerUID = customerUid };
       assetRepo.Setup(c => c.GetAsset(It.IsAny<long>())).ReturnsAsync(asset);
 
       var producer = new Mock<IKafka>();
@@ -233,11 +233,11 @@ namespace WebApiTests.Executors
         deviceType);
       tagFileProcessingErrorRequest.Validate();
       var customerRepo = new Mock<ICustomerRepository>();
-      var customerTccOrg = new CustomerTccOrg() { Name = "theName", CustomerType = VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer, CustomerUID = customerUid, TCCOrgID = tccOrgId };
+      var customerTccOrg = new CustomerTccOrg { Name = "theName", CustomerType = VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer, CustomerUID = customerUid, TCCOrgID = tccOrgId };
       customerRepo.Setup(c => c.GetCustomerWithTccOrg(It.IsAny<string>())).ReturnsAsync(customerTccOrg);
 
       var deviceRepo = new Mock<IDeviceRepository>();
-      var assetDeviceIds = new AssetDeviceIds() { DeviceUID = deviceUid, AssetUID = assetUid, OwningCustomerUID = customerUid, DeviceType = deviceTypeString, RadioSerial = radioSerial};
+      var assetDeviceIds = new AssetDeviceIds { DeviceUID = deviceUid, AssetUID = assetUid, OwningCustomerUID = customerUid, DeviceType = deviceTypeString, RadioSerial = radioSerial};
       deviceRepo.Setup(c => c.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDeviceIds);
 
       var producer = new Mock<IKafka>();
@@ -275,7 +275,7 @@ namespace WebApiTests.Executors
         deviceSerialNumber);
       tagFileProcessingErrorRequest.Validate();
       var customerRepo = new Mock<ICustomerRepository>();
-      var customerTccOrg = new CustomerTccOrg() { Name = "theName", CustomerType = VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer, CustomerUID = customerUid, TCCOrgID = tccOrgId };
+      var customerTccOrg = new CustomerTccOrg { Name = "theName", CustomerType = VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer, CustomerUID = customerUid, TCCOrgID = tccOrgId };
       customerRepo.Setup(c => c.GetCustomerWithTccOrg(It.IsAny<string>())).ReturnsAsync(customerTccOrg);
 
       var producer = new Mock<IKafka>();
