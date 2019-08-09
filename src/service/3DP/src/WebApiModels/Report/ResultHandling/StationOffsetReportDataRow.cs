@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     {
       Station = reader.ReadDouble();
       var offsetsCount = reader.ReadInt32();
-      Offsets = new List<StationOffsetDataRow>();
+      Offsets = new List<StationOffsetDataRow>(offsetsCount);
       for (var i = 0; i < offsetsCount; i++)
       {
         var offset = new StationOffsetDataRow();

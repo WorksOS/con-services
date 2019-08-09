@@ -5,8 +5,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   public class StationOffsetReportDataRows : List<StationOffsetReportDataRow>
   {
-    public StationOffsetReportDataRows()
+    public StationOffsetReportDataRows(int numberOfRows = 0)
     {
+      Capacity = numberOfRows;
     }
 
     public void Write(BinaryWriter writer)

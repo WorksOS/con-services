@@ -16,6 +16,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 
     public new void Clear()
     {
+      base.Clear();
+
       Rows = new StationOffsetReportDataRows();
       NumberOfRows = Rows.Count;
     }
@@ -31,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     public new void Read(BinaryReader reader)
     {
       NumberOfRows = reader.ReadInt32();
-      Rows = new StationOffsetReportDataRows();
+      Rows = new StationOffsetReportDataRows(NumberOfRows);
       Rows.Read(reader, NumberOfRows);
       base.Read(reader);
     }
