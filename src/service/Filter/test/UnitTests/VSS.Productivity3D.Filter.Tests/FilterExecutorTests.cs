@@ -472,11 +472,11 @@ namespace VSS.Productivity3D.Filter.Tests
       var polygonWkt = new StringBuilder("POLYGON((");
       foreach (var point in points)
       {
-        polygonWkt.Append(String.Format("{0} {1},", point.Lon, point.Lat));
+        polygonWkt.Append(string.Format("{0} {1},", point.Lon, point.Lat));
       }
       if (points[0] != points[points.Count - 1])
       {
-        polygonWkt.Append(String.Format("{0} {1},", points[0].Lon, points[0].Lat));
+        polygonWkt.Append(string.Format("{0} {1},", points[0].Lon, points[0].Lat));
       }
       return polygonWkt.ToString().TrimEnd(',') + "))";
     }

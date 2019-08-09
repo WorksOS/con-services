@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.Filter.Tests
       try
       {
         var filter = new MasterData.Repositories.DBModels.Filter
-          {FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}"};
+        { FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}" };
         await FilterJsonHelper.ParseFilterJson(null, filter, mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
         var filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter) null,
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter)null,
           raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
       }
       catch (Exception exception)
@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (FilterDescriptor) null,
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (FilterDescriptor)null,
           raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
       }
       catch (Exception exception)
@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.Filter.Tests
       try
       {
         var filter = new MasterData.Repositories.DBModels.Filter
-          {FilterJson = "{\"dateRangeType\":\"4\",\"elevationType\":null}"};
+        { FilterJson = "{\"dateRangeType\":\"4\",\"elevationType\":null}" };
         await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter, raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
 
         var filterObj =
@@ -118,8 +118,8 @@ namespace VSS.Productivity3D.Filter.Tests
     [InlineData(DateRangeType.Custom, false)]
     public async Task Should_not_set_dates_based_on_DateRangeType(DateRangeType dateRangeType, bool asAtDate)
     {
-      var startUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 5) : (DateTime?) null;
-      var endUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 6) : (DateTime?) null;
+      var startUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 5) : (DateTime?)null;
+      var endUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 6) : (DateTime?)null;
       //Json deserialize interprets date as mm/dd/yyyy so format date that way
       var startUtcStr = startUtc?.ToString("MM/dd/yyyy");
       var endUtcStr = endUtc?.ToString("MM/dd/yyyy");
@@ -130,7 +130,7 @@ namespace VSS.Productivity3D.Filter.Tests
       };
 
       await FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filter,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filter,
         raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
 
       Abstractions.Models.Filter filterObj =
@@ -149,8 +149,8 @@ namespace VSS.Productivity3D.Filter.Tests
     public void Should_not_set_dates_based_on_DateRangeType_When_using_Custom(DateRangeType dateRangeType,
       bool asAtDate)
     {
-      var startUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 5) : (DateTime?) null;
-      var endUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 6) : (DateTime?) null;
+      var startUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 5) : (DateTime?)null;
+      var endUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 6) : (DateTime?)null;
 
 
       //Json deserialize interprets date as mm/dd/yyyy so format date that way
@@ -163,7 +163,7 @@ namespace VSS.Productivity3D.Filter.Tests
       };
 
       FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       Abstractions.Models.Filter filterObj =
@@ -178,8 +178,8 @@ namespace VSS.Productivity3D.Filter.Tests
     [InlineData(DateRangeType.ProjectExtents, false)]
     public void Should_return_project_extents_for_project_extents(DateRangeType dateRangeType, bool useNullDate)
     {
-      var startUtc = useNullDate ? (DateTime?) null : new DateTime(2017, 11, 5);
-      var endUtc = useNullDate ? (DateTime?) null : new DateTime(2017, 11, 6);
+      var startUtc = useNullDate ? (DateTime?)null : new DateTime(2017, 11, 5);
+      var endUtc = useNullDate ? (DateTime?)null : new DateTime(2017, 11, 6);
 
       //Json deserialize interprets date as mm/dd/yyyy so format date that way
       var startUtcStr = startUtc?.ToString("MM/dd/yyyy");
@@ -191,7 +191,7 @@ namespace VSS.Productivity3D.Filter.Tests
       };
 
       FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor,
         raptorProxy: mockedRaptorProxySetup.Object, customHeaders: new Dictionary<string, string>());
 
       Abstractions.Models.Filter filterObj =
@@ -233,7 +233,7 @@ namespace VSS.Productivity3D.Filter.Tests
       }
 
       await FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filters,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filters,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       foreach (var filter in filters)
@@ -264,10 +264,10 @@ namespace VSS.Productivity3D.Filter.Tests
     public async Task Should_set_dates_based_on_DateRangeType_When_using_Filter(DateRangeType dateRangeType, bool asAtDate)
     {
       var filter = new MasterData.Repositories.DBModels.Filter
-        {FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}"};
+      { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
       await FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filter,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filter,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       ValidateDates(filter.FilterJson, asAtDate);
@@ -296,10 +296,10 @@ namespace VSS.Productivity3D.Filter.Tests
       bool asAtDate)
     {
       var filterDescriptor = new FilterDescriptor
-        {FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}"};
+      { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
       FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       ValidateDates(filterDescriptor.FilterJson, asAtDate);
@@ -319,7 +319,7 @@ namespace VSS.Productivity3D.Filter.Tests
       List<MachineDetails> expectedResult = null;
 
       FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
@@ -345,7 +345,7 @@ namespace VSS.Productivity3D.Filter.Tests
           $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null{contributingMachinesString}}}"
       };
 
-      var expectedResult = new List<MachineDetails>() {new MachineDetails(assetId, machineName, isJohnDoe, assetUid)};
+      var expectedResult = new List<MachineDetails> { new MachineDetails(assetId, machineName, isJohnDoe, assetUid) };
 
       var getMachinesExecutionResult = new MachineExecutionResult
       (
@@ -362,11 +362,11 @@ namespace VSS.Productivity3D.Filter.Tests
         .ReturnsAsync(getMachinesExecutionResult);
 
       FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
-      Assert.Equal(1, actualResult.ContributingMachines.Count);
+      Assert.Single(actualResult.ContributingMachines);
       Assert.Equal(expectedResult[0], actualResult.ContributingMachines[0]);
     }
 
@@ -390,28 +390,27 @@ namespace VSS.Productivity3D.Filter.Tests
           $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null{contributingMachinesString}}}"
       };
 
-      var expectedResult = new List<MachineDetails>()
-        {new MachineDetails(assetId, machineName, isJohnDoe, assetUid)};
+      var expectedResult = new List<MachineDetails> { new MachineDetails(assetId, machineName, isJohnDoe, assetUid) };
 
       var getMachinesExecutionResult = new MachineExecutionResult
       (
         new List<MachineStatus>(1)
         {
-          new MachineStatus(assetId, machineName, isJohnDoe, 
-            string.Empty, 0, null, null, null, null, null, 
+          new MachineStatus(assetId, machineName, isJohnDoe,
+            string.Empty, 0, null, null, null, null, null,
             assetUid: assetUid)
         }
       );
       mockedRaptorProxySetup.Setup(x =>
           x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
-      
+
       FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
-      Assert.Equal(1, actualResult.ContributingMachines.Count);
+      Assert.Single(actualResult.ContributingMachines);
       Assert.Equal(expectedResult[0], actualResult.ContributingMachines[0]);
     }
 
@@ -434,15 +433,14 @@ namespace VSS.Productivity3D.Filter.Tests
           $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null{contributingMachinesString}}}"
       };
 
-      var expectedResult = new List<MachineDetails>()
-        {new MachineDetails(legacyAssetId, machineName, isJohnDoe, assetUid)};
+      var expectedResult = new List<MachineDetails> { new MachineDetails(legacyAssetId, machineName, isJohnDoe, assetUid) };
 
       FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
-      Assert.Equal(1, actualResult.ContributingMachines.Count);
+      Assert.Single(actualResult.ContributingMachines);
       Assert.Equal(expectedResult[0], actualResult.ContributingMachines[0]);
     }
 
@@ -452,11 +450,9 @@ namespace VSS.Productivity3D.Filter.Tests
       var dateRangeType = DateRangeType.CurrentMonth;
       var asAtDate = true;
 
-      long legacyAssetId = 999;
       var nullLegacyAssetId = -1;
       var machineName = "the machine name";
       var isJohnDoe = false;
-      var assetUid = Guid.NewGuid();
 
       var contributingMachinesString =
         $",\"contributingMachines\":[{{\"assetID\":\"{nullLegacyAssetId}\",\"machineName\":\"{machineName}\",\"isJohnDoe\":{(isJohnDoe ? "true" : "false")},\"assetUid\":\"{Guid.Empty}\"}}]";
@@ -466,15 +462,14 @@ namespace VSS.Productivity3D.Filter.Tests
           $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null{contributingMachinesString}}}"
       };
 
-      var expectedResult = new List<MachineDetails>()
-        {new MachineDetails(nullLegacyAssetId, machineName, isJohnDoe, Guid.Empty)};
-      
+      var expectedResult = new List<MachineDetails> { new MachineDetails(nullLegacyAssetId, machineName, isJohnDoe, Guid.Empty) };
+
       FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
-      Assert.Equal(1, actualResult.ContributingMachines.Count);
+      Assert.Single(actualResult.ContributingMachines);
       Assert.Equal(expectedResult[0], actualResult.ContributingMachines[0]);
     }
 
@@ -497,15 +492,14 @@ namespace VSS.Productivity3D.Filter.Tests
           $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null{contributingMachinesString}}}"
       };
 
-      var expectedResult = new List<MachineDetails>()
-        {new MachineDetails(legacyAssetId, machineName, isJohnDoe, assetUid)};
+      var expectedResult = new List<MachineDetails> { new MachineDetails(legacyAssetId, machineName, isJohnDoe, assetUid) };
 
       FilterJsonHelper.ParseFilterJson(
-        new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor,
+        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor,
         mockedRaptorProxySetup.Object, new Dictionary<string, string>());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
-      Assert.Equal(1, actualResult.ContributingMachines.Count);
+      Assert.Single(actualResult.ContributingMachines);
       Assert.Equal(expectedResult[0], actualResult.ContributingMachines[0]);
     }
 
