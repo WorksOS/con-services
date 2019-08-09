@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Alignments;
+using VSS.TRex.CoordinateSystems;
+using VSS.TRex.Designs;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.GridFabric.Affinity;
@@ -9,6 +12,7 @@ using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Tools.ProjectExtractor
@@ -35,6 +39,12 @@ namespace VSS.TRex.Tools.ProjectExtractor
       ExtractEventData();
       ExtractSpatialData();
       ExtractChangeMaps();
+      ExtractSiteModelDesigns();
+      ExtractMachineSiteModelDesigns();
+      ExtractMachineSiteModelDesignNames();
+      ExtractSurveyedSurfaces();
+      ExtractAlignments();
+      ExtractProofingRuns();
     }
 
     public void ExtractEventData()
@@ -77,7 +87,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
       {
         var fileName = ServerSubGridTree.GetLeafSubGridFullFileName(address);
         var FSError = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore(_siteModel.ID, fileName, address.X, address.Y, -1, -1, 1,
-          FileSystemStreamType.SubGridDirectory, out MemoryStream MS);
+          FileSystemStreamType.SubGridDirectory, out var MS);
 
         if (FSError != FileSystemErrorStatus.OK || MS == null)
         {
@@ -104,7 +114,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
                 var segmentFileName = segment.FileName(address.X, address.Y);
                 var FSErrorSegment = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore
                 (_siteModel.ID, segmentFileName, address.X, address.Y, segment.StartTime.Ticks, segment.EndTime.Ticks, segment.Version,
-                  FileSystemStreamType.SubGridDirectory, out MemoryStream MSSegment);
+                  FileSystemStreamType.SubGridDirectory, out var MSSegment);
 
                 if (FSErrorSegment != FileSystemErrorStatus.OK)
                 {
@@ -128,49 +138,47 @@ namespace VSS.TRex.Tools.ProjectExtractor
       });
     }
 
-    public void ExtractExistenceMap()
+    public void ExtractSiteModelFile(string fileName, FileSystemStreamType streamType)
     {
-      var readResult = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, SiteModel.kSubGridExistenceMapFileName,
-        FileSystemStreamType.SubGridExistenceMap, out MemoryStream MS);
+      var readResult = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, fileName, streamType, out var MS);
 
       if (readResult != FileSystemErrorStatus.OK || MS == null)
       {
-        Log.LogInformation($"Failed to read existence map (readResult = {readResult}), or stream is null");
+        Log.LogInformation($"Failed to read file {fileName} of type {streamType}, (readResult = {readResult}), or stream is null");
+        Console.WriteLine($"Failed to read file {fileName} of type {streamType}, (readResult = {readResult}), or stream is null");
         Console.WriteLine($"Failed to read existence map (readResult = {readResult}), or stream is null");
       }
       else
       {
         using (MS)
         {
-          var basePath = Path.Combine(_projectOutputPath, "MetaData");
+          var basePath = Path.Combine(_projectOutputPath);
           Directory.CreateDirectory(basePath);
 
-          File.WriteAllBytes(Path.Combine(SiteModel.kSubGridExistenceMapFileName), MS.ToArray());
+          File.WriteAllBytes(Path.Combine(fileName), MS.ToArray());
         }
       }
     }
 
-    public void ExtractSiteModelCoreMetaData()
-    {
-      var readResult = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, SiteModel.kSiteModelXMLFileName,
-        FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+    public void ExtractProofingRuns() => ExtractSiteModelFile(SiteProofingRunList.PROOFING_RUN_LIST_STREAM_NAME, FileSystemStreamType.ProofingRuns);
 
-      if (readResult != FileSystemErrorStatus.OK || MS == null)
-      {
-        Log.LogInformation($"Failed to read core project metadata (readResult = {readResult}), or stream is null");
-        Console.WriteLine($"Failed to read core project metadata (readResult = {readResult}), or stream is null");
-      }
-      else
-      {
-        using (MS)
-        {
-          var basePath = Path.Combine(_projectOutputPath, "MetaData");
-          Directory.CreateDirectory(basePath);
+    public void ExtractAlignments() => ExtractSiteModelFile(AlignmentManager.ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments);
 
-          File.WriteAllBytes(Path.Combine(basePath, SiteModel.kSiteModelXMLFileName), MS.ToArray());
-        }
-      }
-    }
+    public void ExtractSurveyedSurfaces() => ExtractSiteModelFile(SurveyedSurfaceManager.SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces);
+
+    public void ExtractSiteModelDesigns() => ExtractSiteModelFile(DesignManager.DESIGNS_STREAM_NAME, FileSystemStreamType.Designs);
+
+    public void ExtractMachineSiteModelDesigns() => ExtractSiteModelFile(SiteModelDesignList.LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns);
+
+    public void ExtractMachineSiteModelDesignNames() => ExtractSiteModelFile(SiteModelMachineDesignList.MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames);
+
+    public void ExtractExistenceMap() => ExtractSiteModelFile(SiteModel.kSubGridExistenceMapFileName, FileSystemStreamType.SubGridExistenceMap);
+
+    public void ExtractSiteModelCoreMetaData() => ExtractSiteModelFile(SiteModel.kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML);
+
+    public void ExtractMachines() => ExtractSiteModelFile(MachinesList.MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines);
+
+    public void ExtractCoordinateSystem() => ExtractSiteModelFile(CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, FileSystemStreamType.CoordinateSystemCSIB);
 
     public void ExtractChangeMaps()
     {
@@ -190,48 +198,6 @@ namespace VSS.TRex.Tools.ProjectExtractor
         catch (KeyNotFoundException)
         {
           // No change map for machine - continue on
-        }
-      }
-    }
-
-    public void ExtractMachines()
-    {
-      _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, MachinesList.MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, out MemoryStream MS);
-
-      if (MS == null)
-      {
-        Log.LogWarning($"No machines found for site model {_siteModel.ID}");
-        Console.WriteLine($"No machines found for site model {_siteModel.ID}");
-      }
-      else
-      {
-        using (MS)
-        {
-          var basePath = Path.Combine(_projectOutputPath);
-          Directory.CreateDirectory(basePath);
-
-          File.WriteAllBytes(Path.Combine(basePath, "MachineList"), MS.ToArray());
-        }
-      }
-    }
-
-    public void ExtractCoordinateSystem()
-    {
-      _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, MachinesList.MACHINES_LIST_STREAM_NAME, FileSystemStreamType.CoordinateSystemCSIB, out MemoryStream MS);
-
-      if (MS == null)
-      {
-        Log.LogWarning($"No coordinate system found for site model {_siteModel.ID}");
-        Console.WriteLine($"No coordinate system found for site model {_siteModel.ID}");
-      }
-      else
-      {
-        using (MS)
-        {
-          var basePath = Path.Combine(_projectOutputPath);
-          Directory.CreateDirectory(basePath);
-
-          File.WriteAllBytes(Path.Combine(_projectOutputPath, "CoordinateSystem"), MS.ToArray());
         }
       }
     }
