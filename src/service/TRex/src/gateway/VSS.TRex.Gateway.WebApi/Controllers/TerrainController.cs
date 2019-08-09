@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -48,7 +49,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
 //      if (tileResult?.TileData == null)
 
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "application/octet-stream");
+      return new FileStreamResult(new MemoryStream(tileResult?.TileData), ContentTypeConstants.ApplicationOctetStream);
     }
 
 

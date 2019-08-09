@@ -120,7 +120,7 @@ export class ProjectService {
 
   public addAlignment(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-      ('addAlignment', `designs/${projectUid}/Alignment?fileNameAndLocalPath=${descriptor.fileName}`, null);
+        ('addAlignment', `designs/${projectUid}/Alignment?fileNameAndLocalPath=${descriptor.fileName}&designUid=${descriptor.designId}`, null);
   }
 
   public getAlignments(projectUid: string): Observable<Alignment[]> {

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Mvc;
+using VSS.Common.Abstractions.Http;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Reports.Gridded;
@@ -72,7 +73,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
       copyOfOrig.Read(byteArrayOfOriginal);
 
       // Graceful WebReq
-      var fileStream = new FileStreamResult(new MemoryStream(byteArrayOfOriginal), "application/octet-stream");
+      var fileStream = new FileStreamResult(new MemoryStream(byteArrayOfOriginal), ContentTypeConstants.ApplicationOctetStream);
       var memoryStream = (MemoryStream)fileStream.FileStream;
       var resultFromStream = new GriddedReportResult();
 
