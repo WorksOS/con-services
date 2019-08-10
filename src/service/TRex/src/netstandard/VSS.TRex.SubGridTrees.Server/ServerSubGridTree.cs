@@ -182,7 +182,9 @@ namespace VSS.TRex.SubGridTrees.Server
         // when there is already content in the segment directory are strictly forbidden and break immutability
         // rules for sub grids
         if (SubGrid.Dirty)
+        {
           throw new TRexSubGridIOException("Leaf sub grid directory loads may not be performed while the sub grid is dirty. The information should be taken from the cache instead.");
+        }
 
         // Load the cells into it from its file
         // Briefly lock this sub grid just for the period required to read its contents

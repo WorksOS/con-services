@@ -66,6 +66,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Server
           (siteModel.PrimaryStorageProxy, siteModel.Grid, address.X, address.Y, siteModel.Grid.NumLevels, false, false);
 
         subGrid.Should().NotBeNull();
+        subGrid.Parent.Should().NotBeNull();
+        subGrid.Owner.Should().Be(siteModel.Grid);
       });
 
       siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(0);

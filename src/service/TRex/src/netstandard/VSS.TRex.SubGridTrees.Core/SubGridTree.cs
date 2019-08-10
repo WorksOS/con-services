@@ -134,9 +134,11 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         private readonly ISubGridFactory SubGridFactory;
 
-        // CreateNewSubGrid creates a new sub grid relevant to the requested level
-        // in the tree. This new sub grid is not added into the tree structure -
-        // it is unattached until explicitly inserted.
+        /// <summary>
+        /// CreateNewSubGrid creates a new sub grid relevant to the requested level
+        /// in the tree. This new sub grid is not added into the tree structure -
+        /// it is unattached until explicitly inserted.
+        /// </summary>
         public virtual ISubGrid CreateNewSubGrid(byte level) => SubGridFactory.GetSubGrid(this, level);
 
         protected int indexOriginOffset;
@@ -356,10 +358,10 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="pathType"></param>
         /// <returns></returns>
         public virtual ISubGrid ConstructPathToCell(int cellX, int cellY,
-                                            SubGridPathConstructionType pathType)
+                                                    SubGridPathConstructionType pathType)
         {
             ISubGrid result = null;
-            INodeSubGrid subGrid = _root;
+            var subGrid = _root;
 
             // First descend through the node levels of the tree
             for (byte I = 1; I < numLevels - 1; I++) // Yes, -1 because we choose a sub grid cell from the next level down...
@@ -379,7 +381,7 @@ namespace VSS.TRex.SubGridTrees
                         return null;
                     }
 
-                    INodeSubGrid lockSubGrid = subGrid;
+                    var lockSubGrid = subGrid;
                     // Obtain a lock on the node sub grid to create and add the new child node sub grid to it
                     lock (lockSubGrid)
                     {
@@ -395,7 +397,7 @@ namespace VSS.TRex.SubGridTrees
                         else
                         {
                             // We need to create a new sub grid
-                            ISubGrid newSubGrid = CreateNewSubGrid((byte) (I + 1));
+                            var newSubGrid = CreateNewSubGrid((byte) (I + 1));
 
                             // ... and add it into this sub grid as the sub grid cell coordinates
                             // returned by GetSubGridContainingCell ...
