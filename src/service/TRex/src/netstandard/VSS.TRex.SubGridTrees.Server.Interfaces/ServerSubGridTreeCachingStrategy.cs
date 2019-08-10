@@ -13,6 +13,6 @@
     /// Sub grids retrieved using this strategy have a life cycle constrained by the involvement of the sub grid
     /// in the processing of the request that stimulated the request for the sub grid in question
     /// </summary>
-    CacheSubGridsInGridCache
+    CacheSubGridsInIgniteGridCache
   }
 }
