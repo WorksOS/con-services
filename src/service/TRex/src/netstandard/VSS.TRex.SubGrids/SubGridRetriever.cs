@@ -712,7 +712,6 @@ namespace VSS.TRex.SubGrids
         // First get the sub grid we are interested in
         // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [clientGrid.OriginX, clientGrid.OriginY])); 
 
-        // Todo: Look at intercession here to prevent caching of raw sub grid data in the tree
         _subGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(_storageProxy, _siteModel.Grid, clientGrid.OriginX, clientGrid.OriginY, _siteModel.Grid.NumLevels, false, false);
 
         //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [clientGrid.OriginX, clientGrid.Origin]));
