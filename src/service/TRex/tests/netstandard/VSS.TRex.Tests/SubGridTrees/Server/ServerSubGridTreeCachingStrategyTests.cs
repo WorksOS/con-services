@@ -34,7 +34,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Server
     public void NoLocalCachingAfterRequest()
     {
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel
-        (new [] { Path.Combine(TestHelper.CommonTestDataPath, "TestTagFile.tag")}, out _);
+        (new [] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag")}, out _);
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
