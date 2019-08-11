@@ -76,8 +76,6 @@ namespace VSS.TRex.Tools.ProjectExtractor
 
     public void ExtractSpatialData()
     {
-      //  overallMap.ScanAllSetBitsAsSubGridAddresses(address => subGridGrouper.IntegrateSubGridGroup(result.ConstructPathToCell(address.X, address.Y, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid));
-
       // First write out the subGrid directory stream
 
       var basePath = Path.Combine(_projectOutputPath, "Spatial");
@@ -146,7 +144,6 @@ namespace VSS.TRex.Tools.ProjectExtractor
       {
         Log.LogInformation($"Failed to read file {fileName} of type {streamType}, (readResult = {readResult}), or stream is null");
         Console.WriteLine($"Failed to read file {fileName} of type {streamType}, (readResult = {readResult}), or stream is null");
-        Console.WriteLine($"Failed to read existence map (readResult = {readResult}), or stream is null");
       }
       else
       {
