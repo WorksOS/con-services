@@ -16,7 +16,7 @@ namespace VSS.TRex.Events
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        public StartEndProductionEvents(long machineID, Guid siteModelID,
+        public StartEndProductionEvents(short machineID, Guid siteModelID,
             ProductionEventType eventListType,
             Action<BinaryWriter, ProductionEventType> serialiseStateOut,
             Func<BinaryReader, ProductionEventType> serialiseStateIn) : base(machineID, siteModelID,

@@ -633,7 +633,7 @@ namespace VSS.Productivity3D.Filter.Tests
         (
           "sfgsdfsf",
           false,
-          new ProjectData() { ProjectUid = projectUid },
+          new ProjectData { ProjectUid = projectUid },
           userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = GeometryWKT }
         );
@@ -651,7 +651,7 @@ namespace VSS.Productivity3D.Filter.Tests
         (
           custUid,
           false,
-          new ProjectData() { ProjectUid = projectUid },
+          new ProjectData { ProjectUid = projectUid },
           string.Empty,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = GeometryWKT }
         );
@@ -677,7 +677,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_InvalidBoundaryUid()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = "this is so wrong", Name = Name, BoundaryPolygonWKT = GeometryWKT });
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -689,7 +689,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_InvalidName()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = null, BoundaryPolygonWKT = GeometryWKT });
 
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -702,7 +702,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_BoundaryWKTMissing()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = null });
 
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -715,7 +715,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_BoundaryWKTLessThan3Points()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
           new BoundaryRequest
           {
             BoundaryUid = boundaryUid,
@@ -733,7 +733,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_BoundaryWKTInvalidFormat()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = "Nothing here" });
 
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));

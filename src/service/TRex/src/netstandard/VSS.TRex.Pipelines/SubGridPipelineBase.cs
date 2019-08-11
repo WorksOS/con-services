@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.Types;
@@ -38,7 +37,7 @@ namespace VSS.TRex.Pipelines
         /// As each sub grid result is processed in the task, the task pings the pipeline to note another task has been 
         /// completed. Once this count reaches zero the pipeline is cleared to complete its processing.
         /// </summary>
-        private long subGridsRemainingToProcess = 0;
+        private long subGridsRemainingToProcess;
         public long SubGridsRemainingToProcess => subGridsRemainingToProcess;
 
         public ITRexTask PipelineTask { get; set; }

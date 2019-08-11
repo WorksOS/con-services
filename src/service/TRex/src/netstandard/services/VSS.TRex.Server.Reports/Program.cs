@@ -39,6 +39,8 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Server.Reports
 {
@@ -78,6 +80,7 @@ namespace VSS.TRex.Server.Reports
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
+        .Add(x => x.AddSingleton<ISubGridCellLatestPassesDataWrapperFactory>(new SubGridCellLatestPassesDataWrapperFactory()))
         .Add(Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Build()
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))

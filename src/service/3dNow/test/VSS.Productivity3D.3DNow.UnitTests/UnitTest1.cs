@@ -1,14 +1,13 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace VSS.Productivity3D.Now3D.UnitTests
 {
-  [TestClass]
   public class UnitTest1
   {
-    [TestMethod]
+    [Fact]
     public void TestMethod1()
     {
-      Assert.IsTrue(true);
+      Assert.True(true);
     }
   }
 }
