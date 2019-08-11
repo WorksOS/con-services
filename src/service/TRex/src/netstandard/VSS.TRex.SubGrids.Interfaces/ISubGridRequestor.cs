@@ -23,8 +23,6 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// </summary>
     Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)> RequestSubGridInternal(
       SubGridCellAddress subGridAddress,
-      IOverrideParameters overrides,
-      ILiftParameters liftParams,
       bool prodDataRequested,
       bool surveyedSurfaceDataRequested);
 
@@ -46,6 +44,9 @@ namespace VSS.TRex.SubGrids.Interfaces
       ITRexSpatialMemoryCacheContext subGridCacheContext,
       ISurveyedSurfaces filteredSurveyedSurfaces,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
-      ISurfaceElevationPatchArgument surfaceElevationPatchArgument);
+      ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
+      IOverrideParameters overrides,
+      ILiftParameters liftParams
+    );
   }
 }

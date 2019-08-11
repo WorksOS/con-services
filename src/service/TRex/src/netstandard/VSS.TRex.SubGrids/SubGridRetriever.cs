@@ -78,6 +78,9 @@ namespace VSS.TRex.SubGrids
 
     private readonly SubGridTreeBitmapSubGridBits _aggregatedCellScanMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
+    private IOverrideParameters _overrides;
+    private ILiftParameters _liftParams;
+
     /// <summary>
     /// Constructor for the sub grid retriever helper
     /// </summary>
@@ -104,7 +107,9 @@ namespace VSS.TRex.SubGrids
       int maxNumberOfPassesToReturn,
       AreaControlSet areaControlSet,
       IFilteredValuePopulationControl populationControl,
-      ISubGridTreeBitMask pDExistenceMap)
+      ISubGridTreeBitMask pDExistenceMap,
+      IOverrideParameters overrides,
+      ILiftParameters liftParams)
     {
       _siteModel = siteModel;
       _gridDataType = gridDataType;
@@ -125,6 +130,10 @@ namespace VSS.TRex.SubGrids
       // Create and configure the assignment context which is used to contain a filtered pass and
       // its attendant machine events and target values prior to assignment to the client sub grid.
       _assignmentContext = new FilteredValueAssignmentContext();
+      _assignmentContext.Overrides = overrides;
+      _assignmentContext.LiftParams = liftParams;
+      _overrides = overrides;
+      _liftParams = liftParams;
     }
 
     /// <summary>
@@ -390,7 +399,7 @@ namespace VSS.TRex.SubGrids
     /// Retrieves cell values for a sub grid stripe at a time.
     /// </summary>
     /// <returns></returns>
-    private void RetrieveSubGridStripe(byte StripeIndex, ILiftParameters liftParams)
+    private void RetrieveSubGridStripe(byte StripeIndex)
     {
       //  int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
@@ -501,7 +510,7 @@ namespace VSS.TRex.SubGrids
 
               // if (Debug_ExtremeLogSwitchD)  Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Calling BuildLiftsForCell");
 
-              if (_profiler.CellLiftBuilder.Build(_cellProfile, liftParams, _clientGrid,
+              if (_profiler.CellLiftBuilder.Build(_cellProfile, _liftParams, _clientGrid,
                 _assignmentContext, // Place a filtered value into this assignment context
                 _cellPassIterator, // Iterate over the cells using this cell pass iterator
                 true)) // Return an individual filtered value
@@ -562,8 +571,10 @@ namespace VSS.TRex.SubGrids
             _clientGrid.AssignFilteredValue(StripeIndex, J, _assignmentContext);
           else
           {
-            if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) && (liftParams.CCVSummaryTypes == CCVSummaryTypes.None || !liftParams.CCVSummarizeTopLayerOnly)) ||
-                ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) && (liftParams.MDPSummaryTypes == MDPSummaryTypes.None || !liftParams.MDPSummarizeTopLayerOnly)) ||
+            if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) && 
+                 (_liftParams.CCVSummaryTypes == CCVSummaryTypes.None || !_liftParams.CCVSummarizeTopLayerOnly)) ||
+                ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) && 
+                 (_liftParams.MDPSummaryTypes == MDPSummaryTypes.None || !_liftParams.MDPSummarizeTopLayerOnly)) ||
                 // ReSharper disable once UseMethodAny.0
                 _cellProfile.Layers.Count() > 0 ||
                 _gridDataType == GridDataType.CCA || _gridDataType == GridDataType.CCAPercent) // no CCA settings
@@ -604,11 +615,11 @@ namespace VSS.TRex.SubGrids
 
     private bool _commonCellPassStackExaminationDone;
 
-    private void SetupForCellPassStackExamination(ILiftParameters liftParams)
+    private void SetupForCellPassStackExamination()
     {
       if (!_commonCellPassStackExaminationDone)
       {
-        _populationControl.PreparePopulationControl(_gridDataType, liftParams, _filter.AttributeFilter, _clientGrid.EventPopulationFlags);
+        _populationControl.PreparePopulationControl(_gridDataType, _liftParams, _filter.AttributeFilter, _clientGrid.EventPopulationFlags);
 
         _filter.AttributeFilter.RequestedGridDataType = _gridDataType;
 
@@ -636,9 +647,7 @@ namespace VSS.TRex.SubGrids
       _segmentIterator.Directory = _subGridAsLeaf.Directory;
     }
 
-    public ServerRequestResult RetrieveSubGrid(IOverrideParameters overrides,
-      ILiftParameters liftParams,
-      IClientLeafSubGrid clientGrid,
+    public ServerRequestResult RetrieveSubGrid(IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
       if (!Utilities.DerivedGridDataTypesAreCompatible(_gridDataType, clientGrid.GridDataType))
@@ -657,10 +666,10 @@ namespace VSS.TRex.SubGrids
       _canUseGlobalLatestCells &=
         !(_gridDataType == GridDataType.CCV ||
           _gridDataType == GridDataType.CCVPercent) &&
-        liftParams.CCVSummaryTypes != CCVSummaryTypes.None &&
+        _liftParams.CCVSummaryTypes != CCVSummaryTypes.None &&
         !(_gridDataType == GridDataType.MDP ||
           _gridDataType == GridDataType.MDPPercent) &&
-        liftParams.MDPSummaryTypes != MDPSummaryTypes.None &&
+        _liftParams.MDPSummaryTypes != MDPSummaryTypes.None &&
         !(_gridDataType == GridDataType.CCA || _gridDataType == GridDataType.CCAPercent) &&
         !(_gridDataType == GridDataType.CellProfile ||
           _gridDataType == GridDataType.PassCount ||
@@ -679,7 +688,7 @@ namespace VSS.TRex.SubGrids
         _profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
         _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, new FilterSet(_filter),
-          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None, overrides, liftParams);
+          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None, _overrides, _liftParams);
 
         _cellProfile = new ProfileCell();
 
@@ -757,7 +766,7 @@ namespace VSS.TRex.SubGrids
 
         // SIGLogMessage.PublishNoODS(Nil, Format('Setup for stripe iteration at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]));
         
-        SetupForCellPassStackExamination(liftParams);
+        SetupForCellPassStackExamination();
 
         // Some display types require lift processing to be able to select the appropriate cell pass containing the filtered value required.
         if (_clientGrid.WantsLiftProcessingResults())
@@ -765,9 +774,6 @@ namespace VSS.TRex.SubGrids
           _segmentIterator.IterationDirection = IterationDirection.Forwards;
           _cellPassIterator.MaxNumberOfPassesToReturn = _maxNumberOfPassesToReturn; //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
         }
-
-        _assignmentContext.Overrides = overrides;
-        _assignmentContext.LiftParams = liftParams;
 
         // Determine if a sieve filter is required for the sub grid where the sieve matches
         // the X and Y pixel world size (used for WMS tile computation)
@@ -798,7 +804,7 @@ namespace VSS.TRex.SubGrids
 
         // Iterate over the stripes in the sub grid processing each one in turn.
         for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
-          RetrieveSubGridStripe(I, liftParams);
+          RetrieveSubGridStripe(I);
 
         //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {clientGrid.OriginX}x{clientGrid.OriginY}");
 

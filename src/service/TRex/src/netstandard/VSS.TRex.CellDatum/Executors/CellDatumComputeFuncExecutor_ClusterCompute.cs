@@ -70,7 +70,7 @@ namespace VSS.TRex.CellDatum.Executors
       var existenceMap = siteModel.ExistenceMap;
 
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var requestors = utilities.ConstructRequestors(siteModel,
+      var requestors = utilities.ConstructRequestors(siteModel, arg.Overrides, arg.LiftParams,
         utilities.ConstructRequestorIntermediaries(siteModel, arg.Filters, true, GridDataType.CellProfile),
         AreaControlSet.CreateAreaControlSet(), existenceMap);
 
@@ -85,7 +85,7 @@ namespace VSS.TRex.CellDatum.Executors
 
       // using the cell address get the index of cell in clientGrid
       var thisSubGridOrigin = new SubGridCellAddress(arg.OTGCellX, arg.OTGCellY);
-      var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(thisSubGridOrigin, arg.Overrides, arg.LiftParams, true, true);
+      var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true);
       if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
       {
         if (requestSubGridInternalResult.requestResult == ServerRequestResult.SubGridNotFound)

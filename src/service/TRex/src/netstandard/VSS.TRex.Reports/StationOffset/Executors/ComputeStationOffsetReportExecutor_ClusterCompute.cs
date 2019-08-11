@@ -99,7 +99,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
       var existenceMap = siteModel.ExistenceMap;
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var requestors = utilities.ConstructRequestors(siteModel,
+      var requestors = utilities.ConstructRequestors(siteModel, requestArgument.Overrides, requestArgument.LiftParams,
         utilities.ConstructRequestorIntermediaries(siteModel, requestArgument.Filters, true, GridDataType.CellProfile),
         AreaControlSet.CreateAreaControlSet(), existenceMap);
 
@@ -127,7 +127,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
         // using the cell address get the index of cell in clientGrid
         var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(
-          thisSubGridOrigin, requestArgument.Overrides, requestArgument.LiftParams, true, true);
+          thisSubGridOrigin, true, true);
 
         if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
         {

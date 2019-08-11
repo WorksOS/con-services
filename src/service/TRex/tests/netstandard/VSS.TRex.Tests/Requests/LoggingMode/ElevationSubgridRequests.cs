@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var Requestors = utilities.ConstructRequestors(siteModel,
+      var Requestors = utilities.ConstructRequestors(siteModel, new OverrideParameters(), new LiftParameters(), 
         utilities.ConstructRequestorIntermediaries(siteModel, new FilterSet(new CombinedFilter()), true, GridDataType.Height),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
 
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
       {
-        var requestSubGridInternalResult = await Requestors[0].RequestSubGridInternal(x, new OverrideParameters(), new LiftParameters(), true, false);
+        var requestSubGridInternalResult = await Requestors[0].RequestSubGridInternal(x, true, false);
         if (requestSubGridInternalResult.requestResult  == ServerRequestResult.NoError)
           requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });
@@ -75,7 +75,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     {
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var Requestors = utilities.ConstructRequestors(siteModel,
+      var Requestors = utilities.ConstructRequestors(siteModel, new OverrideParameters(), new LiftParameters(), 
         utilities.ConstructRequestorIntermediaries(siteModel, new FilterSet(filters), true, gridDataType),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
 
@@ -91,7 +91,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
       {
-        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, null, new LiftParameters(), true, false);
+        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, true, false);
         if (requestSubGridInternalResult.requestResult == ServerRequestResult.NoError)
           requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });

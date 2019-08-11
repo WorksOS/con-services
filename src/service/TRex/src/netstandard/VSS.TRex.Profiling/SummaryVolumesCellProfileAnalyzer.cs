@@ -143,7 +143,7 @@ namespace VSS.TRex.Profiling
         x.CellOverrideMask = cellOverrideMask;
 
         // Reach into the sub grid request layer and retrieve an appropriate sub grid
-        var requestSubGridInternalResult = await x.RequestSubGridInternal(address, Overrides, LiftParams, prodDataAtAddress, true);
+        var requestSubGridInternalResult = await x.RequestSubGridInternal(address, prodDataAtAddress, true);
         if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
           Log.LogError($"Request for sub grid {address} request failed with code {requestSubGridInternalResult.requestResult}");
 
@@ -232,7 +232,7 @@ namespace VSS.TRex.Profiling
 
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      Requestors = utilities.ConstructRequestors(SiteModel,
+      Requestors = utilities.ConstructRequestors(SiteModel, Overrides, LiftParams,
         utilities.ConstructRequestorIntermediaries(SiteModel, ConstructFilters(), true, GridDataType.HeightAndTime),
         AreaControlSet.CreateAreaControlSet(), PDExistenceMap);
 

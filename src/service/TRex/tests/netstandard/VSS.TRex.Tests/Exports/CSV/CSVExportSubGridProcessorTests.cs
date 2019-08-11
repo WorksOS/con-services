@@ -380,7 +380,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var gridDataType = outputType == OutputTypes.PassCountLastPass || outputType == OutputTypes.VedaFinalPass
         ? GridDataType.CellProfile : GridDataType.CellPasses;
-      var requestors = utilities.ConstructRequestors(siteModel,
+      var requestors = utilities.ConstructRequestors(siteModel, requestArgument.Overrides, requestArgument.LiftParams,
         utilities.ConstructRequestorIntermediaries(siteModel, requestArgument.Filters, false, gridDataType),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
       requestors.Should().NotBeNull();
@@ -390,7 +390,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
       {
-        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, overrides, liftParams, true, false);
+        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, true, false);
         if (requestSubGridInternalResult.requestResult == ServerRequestResult.NoError)
           requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });
