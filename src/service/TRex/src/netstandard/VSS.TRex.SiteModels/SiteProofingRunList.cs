@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Common;
-using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -14,7 +13,7 @@ namespace VSS.TRex.SiteModels
   public class SiteProofingRunList : List<ISiteProofingRun>, ISiteProofingRunList
   {
     private const byte VERSION_NUMBER = 1;
-    private const string PROOFING_RUN_LIST_STREAM_NAME = "ProofingRuns";
+    public const string PROOFING_RUN_LIST_STREAM_NAME = "ProofingRuns";
 
     /// <summary>
     /// The identifier of the site model owning this list of machine design names

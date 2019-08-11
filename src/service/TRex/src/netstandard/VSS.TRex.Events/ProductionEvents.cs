@@ -14,11 +14,28 @@ using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Events
 {
+  public class ProductionEvents
+  {
+    /// <summary>
+    /// The machine to which these events relate
+    /// </summary>
+    public short MachineID { get; set; }
+
+    /// <summary>
+    /// The event type this list stores
+    /// </summary>
+    public ProductionEventType EventListType { get; protected set; } = ProductionEventType.Unknown;
+
+    public string EventChangeListPersistantFileName() => EventChangeListPersistantFileName(MachineID, EventListType);
+
+    public static string EventChangeListPersistantFileName(short machineID, ProductionEventType eventListType) => $"{machineID}-Events-{eventListType}-Summary.evt";
+  }
+
   /// <summary>
   /// ProductionEvents implements a generic event list without using class instances for each event
   /// </summary>
   /// <typeparam name="T"></typeparam>
-  public class ProductionEvents<T> : IProductionEvents<T>
+  public class ProductionEvents<T> : ProductionEvents, IProductionEvents<T>
   {
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ProductionEvents<T>>();
@@ -74,11 +91,6 @@ namespace VSS.TRex.Events
     /// </summary>
     public Guid SiteModelID { get; set; }
 
-    /// <summary>
-    /// The machine to which these events relate
-    /// </summary>
-    public long MachineID { get; set; }
-
 //        private DateTime lastUpdateTimeUTC = DateTime.MinValue;
 
     /// <summary>
@@ -90,17 +102,12 @@ namespace VSS.TRex.Events
 
     public Func<BinaryReader, T> SerialiseStateIn { get; set; }
 
-    /// <summary>
-    /// The event type this list stores
-    /// </summary>
-    public ProductionEventType EventListType { get; } = ProductionEventType.Unknown;
-
     // private bool eventsListIsOutOfDate;
 
     // The list containing all the time ordered instances of this event type
     public List<Event> Events = new List<Event>();
 
-    public ProductionEvents(long machineID, Guid siteModelID,
+    public ProductionEvents(short machineID, Guid siteModelID,
       ProductionEventType eventListType,
       Action<BinaryWriter, T> serialiseStateOut,
       Func<BinaryReader, T> serialiseStateIn,
@@ -433,8 +440,6 @@ namespace VSS.TRex.Events
     // Function CalculateInMemorySize : Integer; Virtual;
     // Function InMemorySize : Integer; InLine;
     // Procedure MarkEventListAsInMemoryOnly; Inline;
-
-    public string EventChangeListPersistantFileName() => $"{MachineID}-Events-{EventListType}-Summary.evt";
 
     public MemoryStream GetMutableStream()
     {
