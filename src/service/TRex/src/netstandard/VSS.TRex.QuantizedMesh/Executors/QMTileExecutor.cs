@@ -21,6 +21,8 @@ using VSS.TRex.QuantizedMesh.Executors.Tasks;
 using System.Threading.Tasks;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.QuantizedMesh.Models;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.QuantizedMesh.Executors
 {
@@ -49,7 +51,8 @@ namespace VSS.TRex.QuantizedMesh.Executors
     private QuantizedMeshTask task;
     private int DisplayMode = 0;
     private ISiteModel SiteModel;
-
+    // The rotation of tile in the grid coordinate space due to any defined rotation on the coordinate system.
+    public double TileRotation { get; set; }
     public QuantizedMeshResponse QMTileResponse { get; } = new QuantizedMeshResponse();
     public ElevationGridResponse GriddedElevationsResponse { get; } = new ElevationGridResponse();
     public GriddedElevDataRow[,] GriddedElevDataArray;
@@ -61,6 +64,13 @@ namespace VSS.TRex.QuantizedMesh.Executors
     public double EndEasting { get; set; }
     public double Azimuth { get; set; }
     public int OverrideGridSize = 0;
+
+    private bool Rotating;
+    //public double Rotation;
+    private double CosOfRotation = 1.0;
+    private double SinOfRotation; //= 0.0;
+    private double CenterX = Consts.NullDouble;
+    private double CenterY = Consts.NullDouble;
 
     /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
@@ -186,6 +196,21 @@ namespace VSS.TRex.QuantizedMesh.Executors
       return true;
     }
 
+
+    private void SetRotation(double rotation)
+    {
+      SinOfRotation = Math.Sin(rotation);
+      CosOfRotation = Math.Cos(rotation);
+      Rotating = rotation != 0.0;
+    }
+
+    public void Rotate_point(double fromX, double fromY, out double toX, out double toY)
+    {
+      toX = CenterX + (fromX - CenterX) * CosOfRotation - (fromY - CenterY) * SinOfRotation;
+      toY = CenterY + (fromY - CenterY) * CosOfRotation + (fromX - CenterX) * SinOfRotation;
+    }
+
+
     /// <summary>
     /// Setup GridSize for tile
     /// </summary>
@@ -253,17 +278,24 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       Log.LogDebug($"Tile.({TileY}) Zoom:{TileZ}, TileSize:{NEECoords[1].X - NEECoords[0].X}m x {NEECoords[2].Y - NEECoords[0].Y}m, GridInterval(m) X:{GridIntervalX}, Y:{GridIntervalY}");
 
-      //  WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
-      //   WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);
+      var WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
+      var WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);
 
-      //  double dx = NEECoords[2].X - NEECoords[0].X;
-      //  double dy = NEECoords[2].Y - NEECoords[0].Y;
-      //   TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
+      double dx = NEECoords[2].X - NEECoords[0].X;
+      CenterX = NEECoords[2].X + dx / 2;
+      double dy = NEECoords[2].Y - NEECoords[0].Y;
+      CenterY = NEECoords[0].Y + dy / 2;
+      TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
+      SetRotation(TileRotation);
+
+      Log.LogDebug($"QMTile render executing across tile: [Rotation:{ MathUtilities.RadiansToDegrees(TileRotation)}] " +
+          $" [BL:{NEECoords[0].X}, {NEECoords[0].Y}, TL:{NEECoords[2].X},{NEECoords[2].Y}, " +
+          $"TR:{NEECoords[1].X}, {NEECoords[1].Y}, BR:{NEECoords[3].X}, {NEECoords[3].Y}] " +
+          $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}");
 
       RotatedTileBoundingExtents.SetInverted();
       foreach (var xyz in NEECoords)
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
-      // Todo check with Raymond 
 
       // Intersect the site model extents with the extents requested by the caller
       Log.LogDebug($"Tile.({TileY}) Calculating intersection of bounding box and site model {DataModelUid}:{siteModelExtent}");
@@ -313,13 +345,22 @@ namespace VSS.TRex.QuantizedMesh.Executors
       // Setup new grid array for results 
       GriddedElevDataArray = new GriddedElevDataRow[TileGridSize, TileGridSize];
       int k = 0;
+      double px1, py1, px2, py2;
 
       // build up a data sample grid from SW to NE
       for (int y = 0; y < TileGridSize; y++)
         for (int x = 0; x < TileGridSize; x++)
         {
-          GriddedElevDataArray[x, y].Easting = NEECoords[0].X + (GridIntervalX * x);
-          GriddedElevDataArray[x, y].Northing = NEECoords[0].Y + (GridIntervalY * y);
+          var x1 = NEECoords[0].X + (GridIntervalX * x);
+          var y1 = NEECoords[0].Y + (GridIntervalY * y);
+          if (Rotating)
+            Rotate_point(x1, y1, out x1, out y1);
+
+//          GriddedElevDataArray[x, y].Easting = NEECoords[0].X + (GridIntervalX * x);
+  //        GriddedElevDataArray[x, y].Northing = NEECoords[0].Y + (GridIntervalY * y);
+
+          GriddedElevDataArray[x, y].Easting = x1;
+          GriddedElevDataArray[x, y].Northing = y1;
           GriddedElevDataArray[x, y].Elevation = CellPassConsts.NullHeight;
           k++;
         }
@@ -399,8 +440,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
       if (TileZ == 0) // Send back default root tile
         return MakeRootTile();
 
-
-      // get sitemodel
       SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid);
       if (SiteModel == null)
       {
@@ -408,8 +447,9 @@ namespace VSS.TRex.QuantizedMesh.Executors
         Log.LogError($"Tile.({TileY}) Failed to obtain site model for {DataModelUid}");
         return false;
       }
-
       Log.LogDebug($"Tile.({TileY}) Site model extents are {SiteModel.SiteModelExtent}. TileBoundary:{TileBoundaryLL.ToDisplay()}");
+      if (!SiteModel.SiteModelExtent.IsValidPlanExtent) // No data return empty tile
+        return BuildEmptyTile();
 
       // We will draw all missing data just below lowest elevation for site
       LowestElevation = (float)SiteModel.SiteModelExtent.MinZ - 1F;
@@ -427,7 +467,10 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
         var setupResult = await SetupPipelineTask(SiteModel.SiteModelExtent, SiteModel.CellSize);
         if (!setupResult)
+        {
+          Log.LogError($"Tile.({TileY}) Unable to setup pipelinetask.");
           return BuildEmptyTile();
+        }
 
         processor.Process();
         if (GriddedElevationsResponse.ResultStatus != RequestErrorStatus.OK)

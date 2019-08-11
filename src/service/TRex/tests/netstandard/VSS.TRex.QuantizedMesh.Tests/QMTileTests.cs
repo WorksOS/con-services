@@ -17,17 +17,16 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.Tests;
-using VSS.TRex.QuantizedMesh.Models;
 
 namespace VSS.TRex.QuantizedMesh.Tests
 {
-  public class QMTileTests_NoIgniteDI : IClassFixture<DILoggingFixture>
+  public class QMTileTests_NoIgniteDI : IClassFixture<DITagFileFixture>
   {
     [Fact]
     public async Task Execute_FailWithNoSiteModel()
     {
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(new Guid(), filter, 0, 0, 0,0, "1");
+      var request = new QMTileExecutor(new Guid(), filter, 0, 0, 19, 0, "1");
       var result = await request.ExecuteAsync();
       result.Should().BeFalse();
     }
@@ -46,38 +45,21 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
     [Fact]
-    public void Execute_EmptySiteModel_Fail()
+    public void Execute_EmptySiteModel_ReturnEmptyTile()
     {
   
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 0, 0, "1");
-
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 19, 0, "1");
       request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
-      QMTileResponse.data.Should().BeNull();
+      QMTileResponse.data.Should().HaveCount(164);
     }
 
-    /*
-    [Fact]
-    public void Execute_DemoTile()
-    {
-
-      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-
-      var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, QMConstants.DisplayModeDev, "1");
-      request.ExecuteAsync();
-      request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
-      var QMTileResponse = request.QMTileResponse;
-      QMTileResponse.data.Should().NotBeNull();
-    }
-    */
 
     [Fact]
-    public void Execute_RequestEmptyTile_Success()
+    public void Execute_EmptyTile_Expected()
     {
       AddClusterComputeGridRouting();
 
@@ -89,20 +71,14 @@ namespace VSS.TRex.QuantizedMesh.Tests
       };
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
-
-
       var boundary = new List<Fence>() { new Fence() };
       boundary[0].Points.Add(new FencePoint(2700.20170260547, 1225.08445683629, 0.0));
       boundary[0].Points.Add(new FencePoint(2700.16517351542, 1224.38744027628, 0.0));
       boundary[0].Points.Add(new FencePoint(2700.10136538994, 1223.16990871245, 0.0));
       boundary[0].Points.Add(new FencePoint(2889.7599542129, 1178.36648123432, 0.0));
 
-
       // Mocked ConvertCoordinates expected result.
       var neeCoords = new XYZ[boundary[0].Points.Count];
-
-      // SiteModel Extents 
-      // minX:2847.16 minY:1219.92, maxX:2879.12 maxY:1276.38
 
       // mock tile boundary within model extents 
       //WS
@@ -117,7 +93,6 @@ namespace VSS.TRex.QuantizedMesh.Tests
       // ES
       neeCoords[3].X = Math.Round(2879.11, DECIMALS);
       neeCoords[3].Y = Math.Round(1219.93, DECIMALS);
-
 
       var llhCoords = new XYZ[2500];
       for (int i = 0; i < 2500; i++)
@@ -135,17 +110,9 @@ namespace VSS.TRex.QuantizedMesh.Tests
       convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).ReturnsAsync(expectedCoordinateConversionResult2);
       DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();
 
-      // NEE to LL
-      //  var convertCoordinatesMock2 = new Mock<IConvertCoordinates>();
-      //  convertCoordinatesMock2.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).Returns(expectedCoordinateConversionResult2);
-      // DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock2.Object)).Complete();
-
-
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0,0, "1");
-//      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0, 0, "1");
 
-      //request.OverrideGridSize = 0;
       request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
@@ -154,12 +121,10 @@ namespace VSS.TRex.QuantizedMesh.Tests
 
 
     [Fact]
-    public void Execute_EmptySiteModel_Success()
+    public void Execute_NotEmptySiteModel_Success()
     {
       AddClusterComputeGridRouting();
-
       const int DECIMALS = 6;
-  //    var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var tagFiles = new[]
       {
@@ -168,32 +133,13 @@ namespace VSS.TRex.QuantizedMesh.Tests
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
-
       var boundary = new List<Fence>() { new Fence() };
       boundary[0].Points.Add(new FencePoint(2700.20170260547, 1225.08445683629, 0.0));
       boundary[0].Points.Add(new FencePoint(2700.16517351542, 1224.38744027628, 0.0));
       boundary[0].Points.Add(new FencePoint(2700.10136538994, 1223.16990871245, 0.0));
       boundary[0].Points.Add(new FencePoint(2889.7599542129, 1178.36648123432, 0.0));
-
-
       // Mocked ConvertCoordinates expected result.
       var neeCoords = new XYZ[boundary[0].Points.Count];
-      /*
-            neeCoords[0].X = Math.Round(-115.02063908350371, DECIMALS);
-            neeCoords[0].Y = Math.Round(36.20750448242144, DECIMALS);
-            neeCoords[1].X = Math.Round(-115.02063948986357, DECIMALS);
-            neeCoords[1].Y = Math.Round(36.20749820152535, DECIMALS);
-            neeCoords[2].X = Math.Round(-115.02064019968294, DECIMALS);
-            neeCoords[2].Y = Math.Round(36.20748723020888, DECIMALS);
-            neeCoords[3].X = Math.Round(-115.01853140279106, DECIMALS);
-            neeCoords[3].Y = Math.Round(36.2070834400289, DECIMALS);
-
-       *
-       */
-
-      // SiteModel Extents 
-      // minX:2847.16 minY:1219.92, maxX:2879.12 maxY:1276.38
-
       // mock tile boundary within model extents 
       //WS
       neeCoords[0].X = Math.Round(2847.26, DECIMALS);
@@ -207,7 +153,6 @@ namespace VSS.TRex.QuantizedMesh.Tests
       // ES
       neeCoords[3].X = Math.Round(2879.11, DECIMALS);
       neeCoords[3].Y = Math.Round(1219.93, DECIMALS);
-
 
       var llhCoords = new XYZ[2500];
       for (int i = 0; i < 2500; i++)
@@ -225,17 +170,10 @@ namespace VSS.TRex.QuantizedMesh.Tests
       convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).ReturnsAsync(expectedCoordinateConversionResult2);
       DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();
 
-      // NEE to LL
-    //  var convertCoordinatesMock2 = new Mock<IConvertCoordinates>();
-    //  convertCoordinatesMock2.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).Returns(expectedCoordinateConversionResult2);
-     // DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock2.Object)).Complete();
-
-
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, 0, "1");
-      request.OverrideGridSize = 50;
+      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, 1, "1");
       request.ExecuteAsync();
-      request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
+      request.ResultStatus.Should().Be(RequestErrorStatus.OK);
       var QMTileResponse = request.QMTileResponse;
       QMTileResponse.data.Should().NotBeNull();
     }
