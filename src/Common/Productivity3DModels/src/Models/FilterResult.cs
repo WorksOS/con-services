@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
@@ -459,13 +458,13 @@ namespace VSS.Productivity3D.Models.Models
     /// Static constructor for use with the CCATileController class.
     /// </summary>
     public static FilterResult CreateFilterForCCATileRequest(
-      DateTime? startUtc,
-      DateTime? endUtc,
-      List<long> assetIDs,
-      List<WGSPoint> polygonLL,
-      FilterLayerMethod? layerType,
-      int? layerNumber,
-      List<MachineDetails> contributingMachines)
+      DateTime? startUtc = null,
+      DateTime? endUtc = null,
+      List<long> assetIDs = null,
+      List<WGSPoint> polygonLL = null,
+      FilterLayerMethod? layerType = null,
+      int? layerNumber = null,
+      List<MachineDetails> contributingMachines = null)
     {
       return new FilterResult
       {
@@ -497,44 +496,44 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public FilterResult
     (
-      Guid? uid,
-      Productivity3D.Filter.Abstractions.Models.Filter filter,
-      List<WGSPoint> polygonLL,
-      DesignDescriptor alignmentFile,
-      FilterLayerMethod? layerType,
-      List<long> surveyedSurfaceExclusionList,
-      List<Guid> excludedSurveyedSurfaceUids,
-      bool? returnEarliest,
-      DesignDescriptor designFile)
+      Guid? uid = null,
+      Filter.Abstractions.Models.Filter filter = null,
+      List<WGSPoint> polygonLL = null,
+      DesignDescriptor alignmentFile = null,
+      FilterLayerMethod? layerType = null,
+      List<long> surveyedSurfaceExclusionList = null,
+      List<Guid> excludedSurveyedSurfaceUids = null,
+      bool? returnEarliest = null,
+      DesignDescriptor designFile = null)
     {
       Uid = uid;
-      StartUtc = filter.StartUtc;
-      EndUtc = filter.EndUtc;
-      OnMachineDesignId = filter.OnMachineDesignId;
-      OnMachineDesignName = filter.OnMachineDesignName;
-      VibeStateOn = filter.VibeStateOn;
-      ElevationType = filter.ElevationType;
+      StartUtc = filter?.StartUtc;
+      EndUtc = filter?.EndUtc;
+      OnMachineDesignId = filter?.OnMachineDesignId;
+      OnMachineDesignName = filter?.OnMachineDesignName;
+      VibeStateOn = filter?.VibeStateOn;
+      ElevationType = filter?.ElevationType;
       PolygonLL = polygonLL;
-      ForwardDirection = filter.ForwardDirection;
+      ForwardDirection = filter?.ForwardDirection;
       AlignmentFile = alignmentFile;
-      StartStation = filter.StartStation;
-      EndStation = filter.EndStation;
-      LeftOffset = filter.LeftOffset;
-      RightOffset = filter.RightOffset;
+      StartStation = filter?.StartStation;
+      EndStation = filter?.EndStation;
+      LeftOffset = filter?.LeftOffset;
+      RightOffset = filter?.RightOffset;
       LayerType = layerType;
-      LayerNumber = filter.LayerNumber;
-      ContributingMachines = filter.ContributingMachines;
+      LayerNumber = filter?.LayerNumber;
+      ContributingMachines = filter?.ContributingMachines;
       SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList;
       ExcludedSurveyedSurfaceUids = excludedSurveyedSurfaceUids;
       ReturnEarliest = returnEarliest;
       DesignFile = designFile;
-      DateRangeType = filter.DateRangeType;
-      AsAtDate = filter.AsAtDate;
-      AutomaticsType = filter.AutomaticsType;
-      TemperatureRangeMin = filter.TemperatureRangeMin;
-      TemperatureRangeMax = filter.TemperatureRangeMax;
-      PassCountRangeMin = filter.PassCountRangeMin;
-      PassCountRangeMax = filter.PassCountRangeMax;
+      DateRangeType = filter?.DateRangeType;
+      AsAtDate = filter?.AsAtDate;
+      AutomaticsType = filter?.AutomaticsType;
+      TemperatureRangeMin = filter?.TemperatureRangeMin;
+      TemperatureRangeMax = filter?.TemperatureRangeMax;
+      PassCountRangeMin = filter?.PassCountRangeMin;
+      PassCountRangeMax = filter?.PassCountRangeMax;
     }
 
     /// <summary>
@@ -732,6 +731,31 @@ namespace VSS.Productivity3D.Models.Models
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               $"Invalid pass count range filter. Range must be between {ValidationConstants.MIN_PASS_COUNT} and {ValidationConstants.MAX_PASS_COUNT}."));
+        }
+      }
+
+      if (SurveyedSurfaceExclusionList != null && SurveyedSurfaceExclusionList.Count > 0)
+      {
+        foreach (var id in SurveyedSurfaceExclusionList)
+        {
+          if (id <= 0)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                $"Invalid excluded surveyed surface id {id}"));
+          }
+        }
+      }
+      if (ExcludedSurveyedSurfaceUids != null && ExcludedSurveyedSurfaceUids.Count > 0)
+      {
+        foreach (var uid in ExcludedSurveyedSurfaceUids)
+        {
+          if (uid == Guid.Empty)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                $"Invalid excluded surveyed surface id {uid}"));
+          }
         }
       }
     }

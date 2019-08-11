@@ -303,9 +303,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Get the production data extents for the project.
     /// </summary>
-    private async Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId, FilterResult filter, string userId, IDictionary<string, string> customHeaders)
+    private Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId, FilterResult filter, string userId, IDictionary<string, string> customHeaders)
     {
-      return await GetProductionDataExtents(projectUid, projectId, filter?.SurveyedSurfaceExclusionList, filter?.ExcludedSurveyedSurfaceUids, userId, customHeaders);
+      return GetProductionDataExtents(projectUid, projectId, filter?.SurveyedSurfaceExclusionList, filter?.ExcludedSurveyedSurfaceUids, userId, customHeaders);
     }
 
     /// <summary>
