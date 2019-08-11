@@ -8,7 +8,7 @@ using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-    public class MapSurface
+    public class MapSurface : IDisposable
     {
         private const double MaxViewDimensionMeters = 20000000;
 //        private const double MaxViewDimensionFeet = 60000000;
@@ -1086,7 +1086,10 @@ double BorderSize)
                 PrevDisplayHeight = BitmapCanvas.Height;
             }
 
+            BitmapCanvas?.Dispose();
             BitmapCanvas = RenderingFactory.CreateBitmap(AWidth, AHeight);
+
+            DrawCanvas?.Dispose();
             DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
 
             if (BitmapCanvas != null)
@@ -1145,5 +1148,45 @@ double BorderSize)
 //    Procedure RecordRepaint;
 
     public double Scale { get => GetScale(); set => SetScale(value); }
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          DrawCanvasPen?.Dispose();
+          DrawCanvasPen = null;
+          DrawCanvasBrush?.Dispose();
+          DrawCanvasBrush = null;
+          BitmapCanvas?.Dispose();
+          BitmapCanvas = null;
+          DrawCanvas?.Dispose();
+          DrawCanvas = null;
+        }
+
+        disposedValue = true;
+      }
     }
+
+    // Override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+    // ~MapSurface()
+    // {
+    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+    //   Dispose(false);
+    // }
+
+    // This code added to correctly implement the disposable pattern.
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+      // Uncomment the following line if the finalizer is overridden above.
+      // GC.SuppressFinalize(this);
+    }
+    #endregion
+  }
 }

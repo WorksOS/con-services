@@ -24,7 +24,7 @@ namespace VSS.TRex.Events
     /// <summary>
     /// The array of enumeration values represented by ProductionEventType
     /// </summary>
-    private static readonly ProductionEventType[] _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType)).Cast<ProductionEventType>().ToArray();
+    public static readonly ProductionEventType[] ProductionEventTypeValues = Enum.GetValues(typeof(ProductionEventType)).Cast<ProductionEventType>().ToArray();
  
     private static readonly IProductionEventsFactory _ProductionEventsFactory = DIContext.Obtain<IProductionEventsFactory>();
 
@@ -293,7 +293,7 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public bool LoadEventsForMachine(IStorageProxy storageProxy)
     {
-      foreach (ProductionEventType evt in _productionEventTypeValues)
+      foreach (ProductionEventType evt in ProductionEventTypeValues)
       {
         Log.LogDebug($"Loading {evt} events for machine {_internalSiteModelMachineIndex} in project {SiteModel.ID}");
 

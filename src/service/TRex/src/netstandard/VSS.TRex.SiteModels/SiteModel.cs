@@ -62,8 +62,8 @@ namespace VSS.TRex.SiteModels
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModel>();
 
-    private const string kSiteModelXMLFileName = "ProductionDataModel.XML";
-    private const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
+    public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
+    public const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
     //private const string kSubGridVersionMapFileName = "SubGridVersionMap";
 
     private const byte VERSION_NUMBER = 1;

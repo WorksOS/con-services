@@ -16,7 +16,7 @@ namespace VSS.TRex.Tests.Rendering
     [Fact()]
     public void Test_RenderOverlayTile_Creation()
     {
-      RenderOverlayTile render = new RenderOverlayTile(Guid.NewGuid(),
+      var render = new RenderOverlayTile(Guid.NewGuid(),
         DisplayMode.Height,
         new XYZ(0, 0),
         new XYZ(100, 100),

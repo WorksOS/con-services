@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

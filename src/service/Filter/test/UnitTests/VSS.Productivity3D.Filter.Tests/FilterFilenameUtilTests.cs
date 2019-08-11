@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult (new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -175,7 +175,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -234,7 +234,7 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.Equal(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
+      Assert.Equal("Large Sites Road - Trimble Road.TTM", resultFilter.DesignFileName);
       Assert.Null(resultFilter.AlignmentFileName);
     }
 
@@ -249,7 +249,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -309,7 +309,7 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.Equal(resultFilter.AlignmentFileName, "Large Sites Road.svl");
+      Assert.Equal("Large Sites Road.svl", resultFilter.AlignmentFileName);
       Assert.Null(resultFilter.DesignFileName);
     }
 
@@ -324,7 +324,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       raptorProxy.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -394,8 +394,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.Equal(resultFilter.AlignmentFileName, "Large Sites Road.svl");
-      Assert.Equal(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
+      Assert.Equal("Large Sites Road.svl", resultFilter.AlignmentFileName);
+      Assert.Equal("Large Sites Road - Trimble Road.TTM", resultFilter.DesignFileName);
     }
   }
 }
