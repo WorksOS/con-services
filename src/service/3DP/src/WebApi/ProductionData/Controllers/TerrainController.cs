@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet("v1/qmesh/layer.json")]
     public string GetTRexLayerFile()
     {
-      return layer; // GetGenericLayerFile();
+      return layer; 
     }
   }
 }
