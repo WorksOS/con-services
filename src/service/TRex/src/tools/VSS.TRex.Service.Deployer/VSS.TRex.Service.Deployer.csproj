@@ -21,7 +21,6 @@
     <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModelChangeMaps\VSS.TRex.SiteModelChangeMaps.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
   <ItemGroup>

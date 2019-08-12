@@ -46,10 +46,6 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.MappedMachines,
           opt => opt.Ignore())
         .ForMember(x => x.Overrides,
-          opt => opt.Ignore())
-        .ForMember(x => x.LiftParams,
-        opt => opt.Ignore())
-        .ForMember(x => x.Overrides,
           opt => opt.MapFrom(o => o.Overrides))
         .ForMember(x => x.LiftParams,
           opt => opt.MapFrom(o => o.LiftSettings));

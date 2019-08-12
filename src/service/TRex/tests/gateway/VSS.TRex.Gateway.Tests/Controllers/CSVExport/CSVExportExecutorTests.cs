@@ -89,7 +89,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         new List<MachineDetails>(), null, null, null, null, null, null
       );
-      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var request = new CompactionVetaExportRequest(
@@ -123,7 +123,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         contributingMachines, null, ElevationType.First, null, null, null, null
       );
-      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var request = new CompactionVetaExportRequest(
