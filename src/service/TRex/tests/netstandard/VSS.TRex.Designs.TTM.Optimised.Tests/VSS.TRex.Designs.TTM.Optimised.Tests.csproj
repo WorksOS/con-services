@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -28,18 +28,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestData\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
   </ItemGroup>
 
+  <!-- Bulk copy static runtime file dependencies. -->
   <ItemGroup>
-    <None Update="TestData\Bug36372.ttm">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Compile Remove="TestData\**" />
+    <EmbeddedResource Remove="TestData\**" />
+    <None Remove="TestData\**" />
   </ItemGroup>
+  <ItemGroup>
+    <TestData Include="./TestData/**" />
+  </ItemGroup>
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/TestData/%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <!-- End bulk copy. -->
 
 </Project>

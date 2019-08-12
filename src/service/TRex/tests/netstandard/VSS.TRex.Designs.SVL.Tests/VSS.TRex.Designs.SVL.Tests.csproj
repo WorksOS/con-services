@@ -28,40 +28,18 @@
     <ProjectReference Include="..\VSS.TRex.Tests\VSS.TRex.Tests.csproj" />
   </ItemGroup>
 
+  <!-- Bulk copy static runtime file dependencies. -->
   <ItemGroup>
-    <None Update="TestData\Common\CERA.MasterAlignment.DXF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\CERA.SVL">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.MasterAlignment.DXF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.svl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Large Sites Road - Trimble Road.svl.MasterAlignment.DXF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Milling - Milling.MasterAlignment.DXF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Milling - Milling.svl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Milling - Milling.svl.MasterAlignment.DXF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Topcon Road - Topcon Phil.MasterAlignment.DXF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Topcon Road - Topcon Phil.svl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\Common\Topcon Road - Topcon Phil.svl.MasterAlignment.DXF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Compile Remove="TestData\**" />
+    <EmbeddedResource Remove="TestData\**" />
+    <None Remove="TestData\**" />
   </ItemGroup>
+  <ItemGroup>
+    <TestData Include="./TestData/**" />
+  </ItemGroup>
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/TestData/%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <!-- End bulk copy. -->
 
 </Project>

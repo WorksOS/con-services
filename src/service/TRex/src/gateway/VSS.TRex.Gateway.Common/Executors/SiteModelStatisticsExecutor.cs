@@ -53,6 +53,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         result.indexOriginOffset = (int) siteModel.Grid.IndexOriginOffset;
       }
 
+      result.cellSize = siteModel.Grid.CellSize;
+      result.indexOriginOffset = siteModel.Grid.IndexOriginOffset;
       return result;
     }
 
