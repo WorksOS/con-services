@@ -15,27 +15,21 @@ namespace VSS.TRex.Gateway.Common.Executors
   {
     public SiteModelStatisticsExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
-    {
-    }
+    { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public SiteModelStatisticsExecutor()
-    {
-    }
+    { }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as ProjectStatisticsTRexRequest;
-      if (request == null)
-      {
-        ThrowRequestTypeCastException<SiteModelStatisticsExecutor>();
-        return null; // to keep compiler happy
-      }
+      var request = CastRequestObjectTo<ProjectStatisticsTRexRequest>(item);
+      var siteModel = GetSiteModel(request.ProjectUid);
 
       var result = new ProjectStatisticsResult();
-      var siteModel = GetSiteModel(request.ProjectUid);
+
       if (siteModel != null)
       {
         var extents = siteModel.GetAdjustedDataModelSpatialExtents(request.ExcludedSurveyedSurfaceUids);
@@ -50,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         result.endTime = DateTime.ParseExact(startEndDates.endUtc.ToString(format, CultureInfo.InvariantCulture), format, CultureInfo.InvariantCulture);
 
         result.cellSize = siteModel.Grid.CellSize;
-        result.indexOriginOffset = (int) siteModel.Grid.IndexOriginOffset;
+        result.indexOriginOffset = siteModel.Grid.IndexOriginOffset;
       }
 
       return result;

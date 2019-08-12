@@ -32,12 +32,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CompactionCSVExportRequest;
-      if (request == null)
-      {
-        ThrowRequestTypeCastException<CompactionCSVExportRequest>();
-        return null; // to keep compiler happy
-      }
+      var request = CastRequestObjectTo<CompactionCSVExportRequest>(item);
 
       var siteModel = GetSiteModel(request.ProjectUid);
       if (request.CoordType == CoordType.LatLon && siteModel.CSIBLoaded == false)
@@ -69,7 +64,6 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       return new CompactionExportResult(response.fileName);
     }
-
 
     /// <summary>
     /// Processes the tile request synchronously.
