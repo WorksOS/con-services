@@ -46,12 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as DesignRequest;
-      if (request == null)
-      {
-        ThrowRequestTypeCastException<DesignRequest>();
-        return null; // to keep compiler happy
-      }
+      var request = CastRequestObjectTo<DesignRequest>(item);
 
       try
       {
@@ -62,7 +57,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
 
         var alignmentDesign = new AlignmentDesign(SubGridTreeConsts.DefaultCellSize);
-        var designLoadResult = await alignmentDesign.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
+        var designLoadResult = await alignmentDesign.LoadFromStorage(request.ProjectUid, request.FileName, localPath);
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# AddSVLDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
@@ -78,7 +73,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
 
         // Create the new alignment in our site model
-        var designAlignment = DIContext.Obtain<IAlignmentManager>()
+        _ = DIContext.Obtain<IAlignmentManager>()
           .Add(request.ProjectUid,
             new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
             extents);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TagFileHarvester.Implementation;
 using TagFileHarvester.Interfaces;
@@ -18,7 +18,7 @@ namespace TagFileHarvester.TaskQueues
     //each org should have it's own queue of threads processing files
     private readonly Organization org;
     private readonly Dictionary<Task, Tuple<Organization, CancellationTokenSource>> orgsTracker;
-    private readonly ILog log;
+    private readonly ILogger log;
 
     public OrgProcessorTask(IUnityContainer container, Organization org, CancellationTokenSource cancellationToken,
       Dictionary<Task, Tuple<Organization, CancellationTokenSource>> orgsList)
@@ -28,7 +28,7 @@ namespace TagFileHarvester.TaskQueues
       this.org = org;
       Result.Reset();
       this.cancellationToken = cancellationToken;
-      log = container.Resolve<ILog>();
+      log = container.Resolve<ILogger>();
       orgsTracker = orgsList;
     }
 
@@ -65,7 +65,6 @@ namespace TagFileHarvester.TaskQueues
 
       var filetasksCancel = new CancellationTokenSource();
       var sleepFlag = false;
-      var totalfiles = 0;
 
       try
       {
@@ -78,33 +77,30 @@ namespace TagFileHarvester.TaskQueues
         //We need to get list of folder recursevly here
         try
         {
-          var fromCache = false;
-          var folders = fileRepository.ListFolders(org, out fromCache).ToList();
+          var folders = fileRepository.ListFolders(org, out _).ToList();
 
           //this could be a long time to get files, so check if we are requested to stop
           if (cancellationToken.IsCancellationRequested) return Result;
 
-          log.DebugFormat("Found {0} folders for org {1}", folders.Count(), org.shortName);
+          log.LogDebug("Found {0} folders for org {1}", folders.Count, org.shortName);
           var files = folders.SelectMany(f => fileRepository.ListFiles(org, f)).ToList();
 
-          log.DebugFormat("Found {0} files for org {1}", files.Count(), org.shortName);
+          log.LogDebug("Found {0} files for org {1}", files.Count, org.shortName);
 
           //this could be a long time to get files, so check if we are requested to stop
           if (cancellationToken.IsCancellationRequested) return Result;
-
-          totalfiles = files.Count();
 
           files.OrderBy(t => t.createdUTC).Take(OrgsHandler.NumberOfFilesInPackage).ForEach(filenames.Add);
 
           //this could be a long time to get files, so check if we are requested to stop
           if (cancellationToken.IsCancellationRequested) return Result;
 
-          log.DebugFormat("Got {0} files for org {1}", filenames.Count, org.shortName);
+          log.LogDebug("Got {0} files for org {1}", filenames.Count, org.shortName);
         }
         catch (Exception ex)
         {
           repositoryError = true;
-          log.WarnFormat("Repository error occured for org {0}, could not get files or folders from TCC Exception: {1}",
+          log.LogWarning("Repository error occured for org {0}, could not get files or folders from TCC Exception: {1}",
             org.shortName, ex.Message);
         }
 
@@ -138,7 +134,7 @@ namespace TagFileHarvester.TaskQueues
                   }
 
                   // raise flag that we have at least one failured file
-                  log.DebugFormat(
+                  log.LogDebug(
                     "TagFile {0} processed with result {1}",
                     f.fullName, JsonConvert.SerializeObject(localresult));
                   return localresult;
@@ -150,7 +146,7 @@ namespace TagFileHarvester.TaskQueues
           if (!Task.WaitAll(fileTasks.ToArray(), (int) OrgsHandler.TagFileSubmitterTasksTimeout.TotalMilliseconds,
             cancellationToken.Token))
           {
-            log.WarnFormat("Filetasks ran out of time for completion for org {0}", org.shortName);
+            log.LogWarning("Filetasks ran out of time for completion for org {0}", org.shortName);
             repositoryError = true;
           }
 
@@ -158,7 +154,7 @@ namespace TagFileHarvester.TaskQueues
           fileTasks.Clear();
         }
 
-        log.InfoFormat("Org {0} cycle completed. Submitted files {1} Refused files {2} Errors {3}", org.shortName,
+        log.LogInformation("Org {0} cycle completed. Submitted files {1} Refused files {2} Errors {3}", org.shortName,
           Result.ProcessedFiles, Result.RefusedFiles, Result.ErroneousFiles);
 
         //Run callback action
@@ -169,29 +165,29 @@ namespace TagFileHarvester.TaskQueues
         }
         catch (Exception ex)
         {
-          log.Error("Failed while calling back", ex);
+          log.LogError("Failed while calling back", ex);
         }
 
         if (SingleCycle) return Result;
       }
       catch (Exception ex)
       {
-        log.ErrorFormat("Exception while processing org {0} occured {1}", org.shortName, ex.Message);
+        log.LogError("Exception while processing org {0} occured {1}", org.shortName, ex.Message);
         return Result;
       }
 
       if (!cancellationToken.IsCancellationRequested)
       {
-        log.InfoFormat("Rescheduling processing of org {0}", org.shortName);
+        log.LogInformation("Rescheduling processing of org {0}", org.shortName);
         //delete current task from org tacker and add a new one
         //sleep only if there is nothing to process. Otherwise process everything we could have
         var delayExecution = false;
-        log.DebugFormat("Trying to Sleep for the org {0} {1} {2}", org.shortName, Result.ProcessedFiles,
+        log.LogDebug("Trying to Sleep for the org {0} {1} {2}", org.shortName, Result.ProcessedFiles,
           Result.RefusedFiles);
         if (!fileRepository.IsAnythingInCahe(org) && Result.ProcessedFiles == 0 && Result.RefusedFiles == 0 ||
             sleepFlag)
         {
-          log.DebugFormat("Sleeping for the org {0}", org.shortName);
+          log.LogDebug("Sleeping for the org {0}", org.shortName);
           /*Task.Delay(OrgsHandler.OrgProcessingDelay, cancellationToken.Token).Wait();*/
           delayExecution = true;
         }
@@ -204,7 +200,7 @@ namespace TagFileHarvester.TaskQueues
             {
               ProcessOrg(false,
                 t => log
-                  .InfoFormat("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
+                  .LogInformation("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
                     harvesterTasks.Status().Item1,
                     harvesterTasks.Status().Item2, OrgsHandler.GetUsedThreads()));
             }, cancellationToken.Token, delayExecution),
