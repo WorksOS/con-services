@@ -39,7 +39,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "","",
         new List<MachineDetails>(), null, null, null, null, null, null
       );
-      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
 
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       var machine = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
@@ -62,7 +62,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         null, "", "",
         new List<MachineDetails>(), null, null, null, null, null, null
       );
-      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
 
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       var machine = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());

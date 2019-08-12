@@ -33,7 +33,6 @@
     <ProjectReference Include="..\..\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
-    <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
   <ItemGroup>

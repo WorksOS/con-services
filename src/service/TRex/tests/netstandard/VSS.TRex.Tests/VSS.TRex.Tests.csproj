@@ -93,7 +93,6 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj" />
-    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj" />
   </ItemGroup>
 

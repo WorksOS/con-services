@@ -203,5 +203,10 @@ namespace VSS.TRex.Common
     /// Rhe default capacity for memory streams created in a transient context, such as serialization
     /// </summary>
     public const int TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION = 32 * 1024; // override with TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION
+
+    /// <summary>
+    /// The maximum area allowed for surface export
+    /// </summary>
+    public const double MaxExportAreaM2 = 100000.0 * 100000.0; // 100km square
   }
 }
