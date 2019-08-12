@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Apache.Ignite.Core.Binary;
+using Apache.Ignite.Core.Common;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
@@ -85,7 +86,14 @@ namespace VSS.TRex.GridFabric
       if (string.IsNullOrEmpty(_role))
         throw new TRexException("Role name not defined when acquiring topology projection");
 
-      _ignite = _tRexGridFactory?.Grid(_gridName);
+      try
+      {
+        _ignite = _tRexGridFactory?.Grid(_gridName);
+      }
+      catch (IgniteException e)
+      {
+        throw new TRexException("Failed to find Grid due to Ignite Exception", e);
+      }
 
       if (_ignite == null)
         throw new TRexException("Ignite reference is null in AcquireIgniteTopologyProjections");
@@ -98,7 +106,14 @@ namespace VSS.TRex.GridFabric
       if ((_Group.GetNodes()?.Count ?? 0) == 0)
         throw new TRexException($"Group cluster topology is empty for role {_role} on grid {_gridName}");
 
-      _compute = _Group.GetCompute();
+      try
+      {
+        _compute = _Group.GetCompute();
+      }
+      catch (IgniteException e)
+      {
+        throw new TRexException("Failed to find Compute due to Ignite Exception", e);
+      }
 
       if (_compute == null)
         throw new TRexException($"Compute projection is null in AcquireIgniteTopologyProjections on grid {_gridName}");
