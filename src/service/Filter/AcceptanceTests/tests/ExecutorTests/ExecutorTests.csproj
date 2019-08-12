@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Proxy\VSS.Productivity3D.3DAssetMgmt.Proxy.csproj" />
     <ProjectReference Include="..\..\..\..\Project\src\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />

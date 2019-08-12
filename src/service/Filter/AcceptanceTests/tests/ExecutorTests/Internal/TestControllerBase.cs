@@ -47,11 +47,9 @@ namespace ExecutorTests.Internal
 
     public void SetupDI()
     {
-      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("ExecutorTests.log", null));
-
       ServiceProvider = new ServiceCollection()
         .AddLogging()
-        .AddSingleton(loggerFactory)
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Filter.ExecutorTests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()

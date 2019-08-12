@@ -16,7 +16,7 @@ using Xunit;
 using LiftDetectionType = VSS.Productivity3D.Models.Enums.LiftDetectionType;
 using LiftThicknessType = VSS.Productivity3D.Models.Enums.LiftThicknessType;
 using Point = VSS.MasterData.Models.Models.Point;
-using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
+using TargetPassCountRange = VSS.Productivity3D.Productivity3D.Models.Compaction;
 
 namespace VSS.TRex.Gateway.Tests.Controllers
 {
@@ -180,7 +180,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       double minTemp, double maxTemp, bool overrideTemp,
       ushort minSpeed, ushort maxSpeed, bool overrideSpeed)
     {
-      var pc = overridePassCount ? new TargetPassCountRange(minPassCount, maxPassCount) : null;
+      var pc = overridePassCount ? new TargetPassCountRange.TargetPassCountRange(minPassCount, maxPassCount) : null;
       var temp = overrideTemp ? new TemperatureSettings(maxTemp, minTemp, overrideTemp) : null;
       var speed = overrideSpeed ? new MachineSpeedTarget(minSpeed, maxSpeed) : null;
       var overrides = new OverridingTargets(ccv, overrideCCV, minCCV, maxCCV,

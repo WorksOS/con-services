@@ -1,16 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -51,8 +50,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -68,15 +67,15 @@ namespace WebApiTests.Executors
       (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        projectCustomerSubs: (new List<Subscription>
+                              {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         }),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -94,8 +93,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -111,15 +110,15 @@ namespace WebApiTests.Executors
       (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        projectCustomerSubs: (new List<Subscription>
+                              {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         }),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -137,8 +136,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -154,15 +153,15 @@ namespace WebApiTests.Executors
       (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.EC520, string.Empty, "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        projectCustomerSubs: (new List<Subscription>
+                              {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         }),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -192,10 +191,10 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -214,8 +213,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -233,15 +232,15 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        assetCustomerSubs: new List<Subscription>
+                           {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         },
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project> {projectOfInterest},
@@ -257,8 +256,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -276,10 +275,10 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -297,8 +296,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -316,17 +315,17 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = projectCustomerUid },
-        assetSubs: new List<Subscription>()
-        {
-          new Subscription()
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = projectCustomerUid },
+        assetSubs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             CustomerUID = projectCustomerUid
           }
         },
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -344,8 +343,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -363,17 +362,17 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>()
-        {
-          new Subscription()
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetSubs: new List<Subscription>
+                   {
+          new Subscription
           {
             ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
             CustomerUID = assetCustomerUid
           }
         },
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -391,8 +390,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -408,15 +407,15 @@ namespace WebApiTests.Executors
       (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        projectCustomerSubs: new List<Subscription>
+                             {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         },
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -434,8 +433,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -451,15 +450,15 @@ namespace WebApiTests.Executors
       (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        projectCustomerSubs: new List<Subscription>
+                             {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         },
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -477,8 +476,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -497,10 +496,10 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -520,8 +519,8 @@ namespace WebApiTests.Executors
 
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -540,10 +539,10 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -562,8 +561,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -579,15 +578,15 @@ namespace WebApiTests.Executors
       (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty,  91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        projectCustomerSubs: new List<Subscription>
+                             {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         },
         assetUid: assetUid,
         assetDevice: (AssetDeviceIds)null,
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -605,8 +604,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectCustomerUid,
@@ -622,9 +621,9 @@ namespace WebApiTests.Executors
       (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, String.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        projectCustomerSubs: new List<Subscription>
+                             {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         },
         assetUid: assetUid,
         assetDevice: (AssetDeviceIds)null,
@@ -652,8 +651,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.ProjectMonitoring,
         CustomerUID = projectCustomerUid,
@@ -671,10 +670,10 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -697,8 +696,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -718,10 +717,10 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -739,8 +738,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -760,10 +759,10 @@ namespace WebApiTests.Executors
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -781,8 +780,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -799,15 +798,15 @@ namespace WebApiTests.Executors
       (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        projectCustomerSubs: new List<Subscription>
+                             {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         },
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -825,8 +824,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -843,15 +842,15 @@ namespace WebApiTests.Executors
       (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>()
-        {
-          new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
+        projectCustomerSubs: new List<Subscription>
+                             {
+          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
         },
         assetUid: assetUid,
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>(),
         ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds() { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
         ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
@@ -871,8 +870,8 @@ namespace WebApiTests.Executors
 
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -916,8 +915,8 @@ namespace WebApiTests.Executors
 
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,
@@ -961,8 +960,8 @@ namespace WebApiTests.Executors
 
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project()
-      {
+      var projectOfInterest = new Project
+                              {
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill,
         CustomerUID = projectCustomerUid,

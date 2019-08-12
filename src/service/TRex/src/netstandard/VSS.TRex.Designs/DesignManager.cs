@@ -26,7 +26,7 @@ namespace VSS.TRex.Designs
     private readonly IStorageProxy WriteStorageProxy;
     private readonly IStorageProxy ReadStorageProxy;
 
-    private const string DESIGNS_STREAM_NAME = "Designs";
+    public const string DESIGNS_STREAM_NAME = "Designs";
 
     /// <summary>
     /// Default no-arg constructor that sets the grid and cache name to default values

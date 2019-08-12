@@ -24,8 +24,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.2" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
@@ -195,12 +193,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -209,10 +201,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="kestrelsettings.json">
+    <Content Update="appsettings.json;kestrelsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -225,19 +214,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\Large Sites Road_AlignmentCenterline%24.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Z15-Y12844-X5914.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Z16-Y41583-X64159.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Z18-Y102753-X47317.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ResourceFiles Include="./Resources/**" />
   </ItemGroup>
+
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutDir)/Resources" SkipUnchangedFiles="true" />
+  </Target>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>

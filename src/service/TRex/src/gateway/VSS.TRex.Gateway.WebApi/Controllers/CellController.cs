@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -52,7 +53,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get subgrid patches for project ID: {patchRequest.ProjectUid}"));
       }
 
-      return new FileStreamResult(new MemoryStream(patchResult?.PatchData), "application/octet-stream");
+      return new FileStreamResult(new MemoryStream(patchResult?.PatchData), ContentTypeConstants.ApplicationOctetStream);
     }
 
     /// <summary>

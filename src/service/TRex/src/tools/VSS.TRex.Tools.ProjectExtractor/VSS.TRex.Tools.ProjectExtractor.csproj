@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Apache.Ignite" Version="2.7.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Alignments\VSS.TRex.Alignments.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Designs\VSS.TRex.Designs.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

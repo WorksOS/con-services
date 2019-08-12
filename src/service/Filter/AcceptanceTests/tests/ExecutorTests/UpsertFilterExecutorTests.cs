@@ -12,7 +12,6 @@ using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
@@ -35,8 +34,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Transient_NoExisting()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = TestUtility.UIDs.JWT_USER_ID;
-      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      string userUid = UIDs.JWT_USER_ID;
+      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = string.Empty;
       const string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
 
@@ -103,8 +102,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Transient_DuplicateNamesShouldBeAllowed()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = TestUtility.UIDs.JWT_USER_ID;
-      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      string userUid = UIDs.JWT_USER_ID;
+      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = string.Empty;
       FilterType filterType = FilterType.Transient;
       string filterJson1 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
@@ -138,8 +137,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Transient_Existing_NoFilterUidProvided()
     {
       string custUid = Guid.NewGuid().ToString();
-      string userId = TestUtility.UIDs.JWT_USER_ID;
-      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      string userId = UIDs.JWT_USER_ID;
+      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = string.Empty;
       FilterType filterType = FilterType.Transient;
@@ -174,8 +173,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Persistent_NoExisting(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
-      string userUid = TestUtility.UIDs.JWT_USER_ID;
-      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      string userUid = UIDs.JWT_USER_ID;
+      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = "the Name";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
 
@@ -214,8 +213,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonIgnored(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
-      string userId = TestUtility.UIDs.JWT_USER_ID;
-      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      string userId = UIDs.JWT_USER_ID;
+      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
@@ -251,8 +250,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonAndName(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
-      string userId = TestUtility.UIDs.JWT_USER_ID;
-      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      string userId = UIDs.JWT_USER_ID;
+      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = "theName updated";
@@ -289,8 +288,8 @@ namespace ExecutorTests
     public async Task UpsertFilterExecutor_Persistent_ExistingName_AddNew_CaseInsensitive(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
-      string userId = TestUtility.UIDs.JWT_USER_ID;
-      string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      string userId = UIDs.JWT_USER_ID;
+      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = name.ToUpper();
