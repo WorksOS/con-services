@@ -70,6 +70,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     private double SinOfRotation;
     private double CenterX = Consts.NullDouble;
     private double CenterY = Consts.NullDouble;
+    public ILiftParameters LiftParams { get; set; } = new LiftParameters(); // Stage three todo
 
     /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
@@ -349,7 +350,8 @@ namespace VSS.TRex.QuantizedMesh.Executors
         requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
         requireSurveyedSurfaceInformation: false, //Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
         requestRequiresAccessToDesignFileExistenceMap: false,
-        overrideSpatialCellRestriction: CellExtents
+        overrideSpatialCellRestriction: CellExtents,
+        LiftParams
       );
 
       // Set the grid TRexTask parameters for progressive processing
