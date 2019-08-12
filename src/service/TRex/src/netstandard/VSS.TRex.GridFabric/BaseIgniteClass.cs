@@ -92,13 +92,20 @@ namespace VSS.TRex.GridFabric
       }
       catch (IgniteException e)
       {
-        throw new TRexException("Failed to find Grid due to Ignite Exception", e);
+        throw new TRexException($"Failed to find Grid {_gridName} due to Ignite Exception", e);
       }
 
       if (_ignite == null)
         throw new TRexException("Ignite reference is null in AcquireIgniteTopologyProjections");
 
-      _Group = _ignite?.GetCluster()?.ForAttribute(_roleAttribute, "True");
+      try
+      {
+        _Group = _ignite?.GetCluster()?.ForAttribute(_roleAttribute, "True");
+      }
+      catch (IgniteException e)
+      {
+        throw new TRexException($"Failed to find Node on Grid {_gridName} with Role {_roleAttribute} due to Ignite Exception", e);
+      }
 
       if (_Group == null)
         throw new TRexException($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {_role} on grid {_gridName}");
@@ -112,7 +119,7 @@ namespace VSS.TRex.GridFabric
       }
       catch (IgniteException e)
       {
-        throw new TRexException("Failed to find Compute due to Ignite Exception", e);
+        throw new TRexException($"Failed to find Compute for Grid {_gridName} due to Ignite Exception", e);
       }
 
       if (_compute == null)
