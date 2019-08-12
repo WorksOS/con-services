@@ -42,7 +42,7 @@ namespace LandfillDatasync.netcore
         noOfDaysVols = -Math.Abs(Convert.ToInt32(noOfDaysVolsVar));
       }
 
-      dataSync.RunUpdateVolumesFromRaptor(noOfDaysVols);
+      dataSync.RunUpdateVolumesFromProductivity3D(noOfDaysVols);
       logger.LogDebug("***** Finished Processing volumes ***** ");
 
       // *************  Process the CCA for the last nn days  *************** 
@@ -54,7 +54,7 @@ namespace LandfillDatasync.netcore
         ccaDaysBackFill = -Math.Abs(Convert.ToInt32(noOfDaysCca));
       }
 
-      dataSync.RunUpdateCcaFromRaptor(ccaDaysBackFill);
+      dataSync.RunUpdateCcaFromProductivity3D(ccaDaysBackFill);
       logger.LogDebug("***** Finished Processing CCA ******");
     }
   }

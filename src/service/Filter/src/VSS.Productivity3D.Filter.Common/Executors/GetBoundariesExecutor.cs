@@ -27,10 +27,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetBoundariesExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IFileImportProxy fileImportProxy, 
+      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy, 
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository,
       IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy)
-       : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, 
+       : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3DProxy, 
          fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
     {
     }

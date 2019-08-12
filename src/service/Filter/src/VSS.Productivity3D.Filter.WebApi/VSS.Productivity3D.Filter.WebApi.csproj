@@ -45,7 +45,6 @@
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\..\3DP\src\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
     <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
     <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />

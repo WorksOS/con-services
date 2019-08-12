@@ -5,6 +5,10 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0B4DA880-E91B-44E8-8B2E-FC0FA2A747B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Common", "src\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj", "{E86C3B32-7979-4E57-A260-1828E03B782C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2E9B9EC2-E746-4C3D-979C-F75971DF43D1} = {2E9B9EC2-E746-4C3D-979C-F75971DF43D1}
+		{AE6794FF-4F6F-43E4-8142-83080967D3F5} = {AE6794FF-4F6F-43E4-8142-83080967D3F5}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.WebApi", "src\VSS.Productivity3D.Filter.WebApi\VSS.Productivity3D.Filter.WebApi.csproj", "{83DB814B-A818-4E94-9C8F-9CE14608273A}"
 EndProject
@@ -64,7 +68,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{1ED51BDC-5ABE-4348-A22D-61600795C649}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{B4FE3007-25AB-4CB4-816C-BB8EAB4C7080}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Service", "Project Service", "{B4FE3007-25AB-4CB4-816C-BB8EAB4C7080}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Abstractions", "..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj", "{F37D95EF-09EB-4BA7-BB88-2E3C5FA0ACD5}"
 EndProject
@@ -97,11 +101,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{6CCBA238-36FF-48E0-A4C4-9522CB79331D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3DP Service", "3DP Service", "{147315AB-0CC3-462D-95CF-FC787B3251A9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Productivity3D Service", "Productivity3D Service", "{147315AB-0CC3-462D-95CF-FC787B3251A9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Abstractions", "..\3DP\src\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj", "{75D4FB77-E040-4D09-B696-B6B1ADA46B97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Abstractions", "..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj", "{AE6794FF-4F6F-43E4-8142-83080967D3F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Proxy", "..\3DP\src\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj", "{203B013F-8DF3-456C-AC62-8ECABEB4FD25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Models", "..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj", "{2E9B9EC2-E746-4C3D-979C-F75971DF43D1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Proxy", "..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj", "{894C6887-4B1C-4EBC-92E7-2007537FF26A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -249,14 +255,18 @@ Global
 		{6CCBA238-36FF-48E0-A4C4-9522CB79331D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CCBA238-36FF-48E0-A4C4-9522CB79331D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CCBA238-36FF-48E0-A4C4-9522CB79331D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{75D4FB77-E040-4D09-B696-B6B1ADA46B97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{75D4FB77-E040-4D09-B696-B6B1ADA46B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75D4FB77-E040-4D09-B696-B6B1ADA46B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{75D4FB77-E040-4D09-B696-B6B1ADA46B97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{203B013F-8DF3-456C-AC62-8ECABEB4FD25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{203B013F-8DF3-456C-AC62-8ECABEB4FD25}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{203B013F-8DF3-456C-AC62-8ECABEB4FD25}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{203B013F-8DF3-456C-AC62-8ECABEB4FD25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE6794FF-4F6F-43E4-8142-83080967D3F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE6794FF-4F6F-43E4-8142-83080967D3F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE6794FF-4F6F-43E4-8142-83080967D3F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE6794FF-4F6F-43E4-8142-83080967D3F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E9B9EC2-E746-4C3D-979C-F75971DF43D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E9B9EC2-E746-4C3D-979C-F75971DF43D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E9B9EC2-E746-4C3D-979C-F75971DF43D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E9B9EC2-E746-4C3D-979C-F75971DF43D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{894C6887-4B1C-4EBC-92E7-2007537FF26A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{894C6887-4B1C-4EBC-92E7-2007537FF26A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{894C6887-4B1C-4EBC-92E7-2007537FF26A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{894C6887-4B1C-4EBC-92E7-2007537FF26A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -305,8 +315,9 @@ Global
 		{A4D1680A-FB6D-4C8A-A78C-A3D46600FE34} = {1ED51BDC-5ABE-4348-A22D-61600795C649}
 		{6CCBA238-36FF-48E0-A4C4-9522CB79331D} = {1ED51BDC-5ABE-4348-A22D-61600795C649}
 		{147315AB-0CC3-462D-95CF-FC787B3251A9} = {33448EDF-8D57-47F8-B702-F21DEA204323}
-		{75D4FB77-E040-4D09-B696-B6B1ADA46B97} = {147315AB-0CC3-462D-95CF-FC787B3251A9}
-		{203B013F-8DF3-456C-AC62-8ECABEB4FD25} = {147315AB-0CC3-462D-95CF-FC787B3251A9}
+		{AE6794FF-4F6F-43E4-8142-83080967D3F5} = {147315AB-0CC3-462D-95CF-FC787B3251A9}
+		{2E9B9EC2-E746-4C3D-979C-F75971DF43D1} = {147315AB-0CC3-462D-95CF-FC787B3251A9}
+		{894C6887-4B1C-4EBC-92E7-2007537FF26A} = {147315AB-0CC3-462D-95CF-FC787B3251A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7D2BA766-D429-41F3-A2EA-489911F8D544}

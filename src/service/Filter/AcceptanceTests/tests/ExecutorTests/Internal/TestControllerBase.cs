@@ -36,7 +36,7 @@ namespace ExecutorTests.Internal
     protected IServiceExceptionHandler ServiceExceptionHandler;
     protected IProjectProxy ProjectProxy;
     protected IFileImportProxy FileImportProxy;
-    protected IRaptorProxy RaptorProxy;
+    protected IProductivity3dProxy Productivity3DProxy;
     protected IKafka Producer;
     protected string KafkaTopicName;
     protected FilterRepository FilterRepo;
@@ -60,7 +60,7 @@ namespace ExecutorTests.Internal
         .AddServiceDiscovery()
         .AddTransient<IAssetResolverProxy, AssetResolverProxy>()  
         .AddTransient<IWebRequest, GracefulWebRequest>()
-        .AddTransient<IRaptorProxy, RaptorProxy>()
+        .AddTransient<IProductivity3dProxy, Productivity3dProxy>()
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
         .AddMemoryCache()
@@ -80,7 +80,7 @@ namespace ExecutorTests.Internal
       GeofenceRepo = ServiceProvider.GetRequiredService<IRepository<IGeofenceEvent>>() as GeofenceRepository;
       ProjectProxy = ServiceProvider.GetRequiredService<IProjectProxy>();
       FileImportProxy = ServiceProvider.GetRequiredService<IFileImportProxy>();
-      RaptorProxy = ServiceProvider.GetRequiredService<IRaptorProxy>();
+      Productivity3DProxy = ServiceProvider.GetRequiredService<IProductivity3dProxy>();
       GeofenceProxy = ServiceProvider.GetRequiredService<IGeofenceProxy>();
       UnifiedProductivityProxy = ServiceProvider.GetRequiredService<IUnifiedProductivityProxy>();
 

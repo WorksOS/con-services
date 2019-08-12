@@ -427,8 +427,8 @@ namespace VSS.Productivity3D.Filter.Tests
       projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence>());
       projectRepo.As<IProjectRepository>().Setup(p => p.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
 
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3DProxy = new Mock<IProductivity3dProxy>();
+      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
 
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
@@ -444,7 +444,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor =
         RequestExecutorContainer.Build<UpsertBoundaryExecutor>(configStore, logger, serviceExceptionHandler,
-          geofenceRepo.Object, projectRepo.Object, null, raptorProxy.Object, producer.Object, kafkaTopicName);
+          geofenceRepo.Object, projectRepo.Object, null, productivity3DProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as GeofenceDataSingleResult;
 
       Assert.NotNull(result);
@@ -483,8 +483,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var projectGeofence = new ProjectGeofence { GeofenceUID = boundaryUid, ProjectUID = projectUid };
       projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence> { projectGeofence });
 
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3DProxy = new Mock<IProductivity3dProxy>();
+      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
 
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
@@ -500,7 +500,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor =
         RequestExecutorContainer.Build<DeleteBoundaryExecutor>(configStore, logger, serviceExceptionHandler,
-          geofenceRepo.Object, projectRepo.Object, null, raptorProxy.Object, producer.Object, kafkaTopicName);
+          geofenceRepo.Object, projectRepo.Object, null, productivity3DProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       Assert.NotNull(result);

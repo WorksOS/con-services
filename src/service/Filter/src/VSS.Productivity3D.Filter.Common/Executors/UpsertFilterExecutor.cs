@@ -29,9 +29,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// This constructor allows us to mock raptorClient
     /// </summary>
     public UpsertFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IFileImportProxy fileImportProxy,
+      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3DProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, null)
     {
     }
 
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         result = await ProcessPersistent(request);
       }
 
-      await FilterJsonHelper.ParseFilterJson(request.ProjectData, result.FilterDescriptor, raptorProxy, request.CustomHeaders);
+      await FilterJsonHelper.ParseFilterJson(request.ProjectData, result.FilterDescriptor, Productivity3DProxy, request.CustomHeaders);
 
       return result;
     }

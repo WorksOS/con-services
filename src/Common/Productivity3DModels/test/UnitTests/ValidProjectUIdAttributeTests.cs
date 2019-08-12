@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.Models.Validation;
+using VSS.Productivity3D.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Models.UnitTests
 {

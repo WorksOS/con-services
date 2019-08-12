@@ -11,18 +11,18 @@ using Microsoft.Extensions.Logging;
 using NodaTime;
 using NodaTime.TimeZones;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace Common.netstandard.ApiClients
 {
   /// <summary>
-  ///   This exception can be thrown when the Raptor API returns an unsuccessful response (which needs to be propagated to
+  ///   This exception can be thrown when the API returns an unsuccessful response (which needs to be propagated to
   ///   the client)
   /// </summary>
-  public class RaptorApiException : ApplicationException
+  public class ClientApiException : ApplicationException
   {
-    public RaptorApiException(HttpStatusCode c, string message) : base(message)
+    public ClientApiException(HttpStatusCode c, string message) : base(message)
     {
       code = c;
     }
@@ -31,33 +31,33 @@ namespace Common.netstandard.ApiClients
   }
 
   /// <summary>
-  ///   A wrapper around HttpClient to handle requests to the Raptor API
+  ///   A wrapper around HttpClient to handle requests to the Productivity and Filter services
   /// </summary>
-  public class RaptorApiClient :  IRaptorApiClient
+  public class Productivity3DApiClient :  IProductivity3DApiClient
   {
     private readonly IConfigurationStore config;
     private readonly ILogger Log;
     //private readonly string prodDataEndpoint;
-    private IRaptorProxy raptorProxy;
+    private IProductivity3dProxy productivity3DProxy;
     //private readonly string reportEndpoint;
     //private string baseAddress;
     public IDictionary<string, string> customHeaders;
     private IFileImportProxy fileImportProxy;
 
-    public RaptorApiClient(ILogger Log, IConfigurationStore config, IRaptorProxy proxy, IFileImportProxy fileImportProxy, IDictionary<string, string> customHeaders)
+    /// <summary>
+    /// Encapsulates the limited requirements from Productivity3D and Filter service 
+    /// </summary>
+    public Productivity3DApiClient(ILogger Log, IConfigurationStore config, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy, IDictionary<string, string> customHeaders)
     {
-      //baseAddress = config.GetValueString("RaptorApiUrl") ?? "/";
-      //reportEndpoint = config.GetValueString("RaptorReportEndpoint");
-      //prodDataEndpoint = config.GetValueString("RaptorProdDataEndpoint");
       this.Log = Log;
       this.config = config;
-      raptorProxy = proxy;
+      this.productivity3DProxy = productivity3DProxy;
       this.fileImportProxy = fileImportProxy;
       this.customHeaders=customHeaders;
     }
 
     /// <summary>
-    ///   Retrieves volume summary from Raptor and saves it to the landfill DB
+    ///   Retrieves volume summary from Productivity3D and saves it to the landfill DB
     /// </summary>
     /// <param name="userUid">User ID</param>
     /// <param name="project">Project</param>
@@ -78,7 +78,7 @@ namespace Common.netstandard.ApiClients
 
         LandfillDb.SaveVolume(project.projectUid, entry.geofenceUid, entry.date, res.Fill);
       }
-      catch (RaptorApiException e)
+      catch (ClientApiException e)
       {
         if (e.code == HttpStatusCode.BadRequest)
         {
@@ -86,7 +86,7 @@ namespace Common.netstandard.ApiClients
           // is outside project extents); the assumption is that's the only reason we will
           // receive a 400 Bad Request 
 
-          Log.LogWarning("RaptorApiException while retrieving volumes: " + e.Message);
+          Log.LogWarning("ClientApiException while retrieving volumes: " + e.Message);
           LandfillDb.MarkVolumeNotAvailable(project.projectUid, entry.geofenceUid, entry.date);
           LandfillDb.SaveVolume(project.projectUid, entry.geofenceUid, entry.date, 0);
 
@@ -96,7 +96,7 @@ namespace Common.netstandard.ApiClients
         }
         else
         {
-          Log.LogError(e, "RaptorApiException while retrieving volumes");
+          Log.LogError(e, "ClientApiException while retrieving volumes");
           LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
         }
       }
@@ -136,12 +136,12 @@ namespace Common.netstandard.ApiClients
           }
         }
       };
-      return await raptorProxy.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
+      return await productivity3DProxy.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
     }
 
     public async Task<List<DesignDescriptiorLegacy>> GetDesignID(string jwt, Project project,string customerUid)
     {
-      Console.WriteLine("Get a list of design files from 3d pm/raptor");
+      Console.WriteLine("Get a list of design files from Productivity3D");
       var allFiles = await fileImportProxy.GetFiles(project.projectUid, "", customHeaders);
       var listFiles = new List<DesignDescriptiorLegacy>();
       foreach (var file in allFiles)
@@ -176,7 +176,7 @@ namespace Common.netstandard.ApiClients
       Project project)
     {
       var statsParams = new StatisticsParams {projectId = project.id};
-      return await raptorProxy.ExecuteGenericV1Request<ProjectStatisticsResult>("/projects/statistics", statsParams, customHeaders);
+      return await productivity3DProxy.ExecuteGenericV1Request<ProjectStatisticsResult>("/projects/statistics", statsParams, customHeaders);
     }
 
 
@@ -200,7 +200,7 @@ namespace Common.netstandard.ApiClients
     }
 
     /// <summary>
-    ///   Retrieves CCA summary from Raptor and saves it to the landfill DB
+    ///   Retrieves CCA summary from Productivity3D and saves it to the landfill DB
     /// </summary>
     /// <param name="userUid">User ID</param>
     /// <param name="project">Project</param>
@@ -228,7 +228,7 @@ namespace Common.netstandard.ApiClients
         LandfillDb.SaveCCA(project.projectUid, geofenceUid, date, machineId, liftId, res.undercompletePercent,
           res.completePercent, res.overcompletePercent);
       }
-      catch (RaptorApiException e)
+      catch (ClientApiException e)
       {
         if (e.code == HttpStatusCode.BadRequest)
         {
@@ -236,12 +236,12 @@ namespace Common.netstandard.ApiClients
           // is outside project extents); the assumption is that's the only reason we will
           // receive a 400 Bad Request 
 
-          Log.LogWarning("RaptorApiException while retrieving CCA: " + e.Message);
+          Log.LogWarning("ClientApiException while retrieving CCA: " + e.Message);
           LandfillDb.MarkCCANotAvailable(project.projectUid, geofenceUid, date, machineId, liftId);
         }
         else
         {
-          Log.LogError(e, "RaptorApiException while retrieving CCA");
+          Log.LogError(e, "ClientApiException while retrieving CCA");
           LandfillDb.MarkCCANotRetrieved(project.projectUid, geofenceUid, date, machineId, liftId);
         }
       }
@@ -274,10 +274,10 @@ namespace Common.netstandard.ApiClients
         var result = await GetMachineLiftListAsync(userUid, project, startUtc1, endUtc2);
         return GetMachineLiftsInProjectTimeZone(project, endUtc2, result.MachineLiftDetails.ToList());
       }
-      catch (RaptorApiException e)
+      catch (ClientApiException e)
       {
         if (e.code == HttpStatusCode.BadRequest)
-          Log.LogWarning(e, "RaptorApiException while retrieving machines & lifts");
+          Log.LogWarning(e, "ClientApiException while retrieving machines & lifts");
       }
       catch (Exception e)
       {
@@ -330,7 +330,7 @@ namespace Common.netstandard.ApiClients
 
       //var logVolumeParams = JsonConvert.SerializeObject(volumeParams, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       //Console.WriteLine("VOLUMES=" + logVolumeParams);
-      var result = await raptorProxy.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
+      var result = await productivity3DProxy.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
       
       //Log.LogDebug("Volumes request for project {0}: {1} {2} Result : {3}", project.id, reportEndpoint,JsonConvert.SerializeObject(volumeParams), JsonConvert.SerializeObject(result));
       return result;
@@ -346,7 +346,7 @@ namespace Common.netstandard.ApiClients
         excludedSurveyedSurfaceIds = new int[0]
       };
 
-      return await raptorProxy.ExecuteGenericV1Request<ProjectExtentsResult>("/projects/statistics", volumeParams, customHeaders);
+      return await productivity3DProxy.ExecuteGenericV1Request<ProjectExtentsResult>("/projects/statistics", volumeParams, customHeaders);
     }
 
     private void ConvertToUtc(DateTime date, string timeZoneName, out DateTime startUtc, out DateTime endUtc)
@@ -384,7 +384,7 @@ namespace Common.netstandard.ApiClients
       Log.LogDebug("UTC time range in CCA request: {0} - {1}", startUtc, endUtc);
 
       //This is because we sometimes pass MachineLiftDetails and the serialization
-      //will do the derived class and RaptorServices complains about the extra properties.
+      //will do the derived class and Productivity3D Service complains about the extra properties.
       var details = new MachineDetails
       {
         assetId = machine.assetId,
@@ -407,7 +407,7 @@ namespace Common.netstandard.ApiClients
         }
       };
 
-      return await raptorProxy.ExecuteGenericV1Request<CCASummaryResult>("/compaction/cca/summary", ccaParams, customHeaders);
+      return await productivity3DProxy.ExecuteGenericV1Request<CCASummaryResult>("/compaction/cca/summary", ccaParams, customHeaders);
     }
 
     /// <summary>
@@ -423,19 +423,19 @@ namespace Common.netstandard.ApiClients
       var url = $"/projects/{project.id}/machinelifts";
       var query = $"?startUtc={FormatUtcDate(startUtc)}&endUtc={FormatUtcDate(endUtc)}";
       //Console.WriteLine("GetMachineLiftList: Url = {0} {1}", url,query);
-      return await raptorProxy.ExecuteGenericV1Request<MachineLayerIdsExecutionResult>(url, query, customHeaders);
+      return await productivity3DProxy.ExecuteGenericV1Request<MachineLayerIdsExecutionResult>(url, query, customHeaders);
 
     }
 
     /// <summary>
-    ///   Converts the list of machines and lifts from Raptor to the list for the Web API.
-    ///   Raptor can have multiple entries per day for a lift whereas the Web API only wants one.
-    ///   Also Raptor uses UTC while the Web API uses the project time zone.
-    ///   Finally Raptor lifts can continue past the end of the day while the Web API wants to stop at the end of the day.
+    ///   Converts the list of machines and lifts from Productivity3D to the list for the Web API.
+    ///   Productivity3D can have multiple entries per day for a lift whereas the Web API only wants one.
+    ///   Also Productivity3D uses UTC while the Web API uses the project time zone.
+    ///   Finally Productivity3D lifts can continue past the end of the day while the Web API wants to stop at the end of the day.
     /// </summary>
     /// <param name="project">The project for which the machine/lifts conversion is occurring.</param>
     /// <param name="endUtc">The start UTC for the machine/lifts</param>
-    /// <param name="machineList">The list of machines and lifts returned by Raptor</param>
+    /// <param name="machineList">The list of machines and lifts returned by Productivity3D</param>
     /// <returns>List of machines and lifts in project time zone.</returns>
     private List<MachineLifts> GetMachineLiftsInProjectTimeZone(Project project, DateTime endUtc,IEnumerable<MachineLiftDetails> machineList)
     {
@@ -471,7 +471,7 @@ namespace Common.netstandard.ApiClients
     }
 
     /// <summary>
-    ///   Formats UTC date in ISO 8601 format for Raptor Services Web API.
+    ///   Formats UTC date in ISO 8601 format for Productivity3D Services Web API.
     /// </summary>
     /// <param name="utcDate">The UTC date to format</param>
     /// <returns>ISO 8601 formatted date</returns>

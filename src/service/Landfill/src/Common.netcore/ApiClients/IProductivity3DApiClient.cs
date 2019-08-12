@@ -5,7 +5,7 @@ using LandfillService.Common.Models;
 
 namespace LandfillService.Common.ApiClients
 {
-  public interface IRaptorApiClient
+  public interface IProductivity3DApiClient
   {
     Task<SummaryVolumesResult> GetAirspaceVolumeAsync(string userUid, Project project,
       bool returnEarliest, int designId);

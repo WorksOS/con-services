@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Filter.Tests
                        .AddSingleton<IConfigurationStore, GenericConfiguration>()
                        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
                        .AddTransient<ICustomerProxy, CustomerProxy>()
-                       .AddTransient<IRaptorProxy, RaptorProxy>()
+                       .AddTransient<IProductivity3dProxy, Productivity3dProxy>()
                        .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
                        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
                        .AddServiceDiscovery()

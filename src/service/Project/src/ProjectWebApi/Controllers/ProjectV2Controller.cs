@@ -96,7 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // Read CoordSystem file from TCC as byte[]. 
       //    Filename and content are used: 
-      //      validated via raptorproxy
+      //      validated via productivity3dProxy
       //      created in Raptor via productivity3dProxy
       //      stored in CreateKafkaEvent
       //    Only Filename is stored in the VL database 

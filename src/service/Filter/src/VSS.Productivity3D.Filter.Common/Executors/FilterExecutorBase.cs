@@ -27,9 +27,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected FilterExecutorBase(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IFileImportProxy fileImportProxy,
+      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3DProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
     { }
 
     /// <summary>
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       try
       {
-        notificationResult = await raptorProxy.NotifyFilterChange(new Guid(filterRequest.FilterUid),
+        notificationResult = await Productivity3DProxy.NotifyFilterChange(new Guid(filterRequest.FilterUid),
           new Guid(filterRequest.ProjectUid), filterRequest.CustomHeaders);
       }
       catch (ServiceException se)
@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       catch (Exception e)
       {
         log.LogError(e, $"FilterExecutorBase: RaptorServices failed with exception. FilterUid:{filterRequest.FilterUid}.");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 30, "raptorProxy.NotifyFilterChange", e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 30, "productivity3dProxy.NotifyFilterChange", e.Message);
       }
 
       log.LogDebug(

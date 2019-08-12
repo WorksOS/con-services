@@ -212,8 +212,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var projectProxy = new Mock<IProjectProxy>();
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3DProxy = new Mock<IProductivity3dProxy>();
+      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
 
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
@@ -250,7 +250,7 @@ namespace VSS.Productivity3D.Filter.Tests
         );
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, projectProxy.Object, 
-        raptorProxy.Object, producer.Object, kafkaTopicName);
+        productivity3DProxy.Object, producer.Object, kafkaTopicName);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
       Assert.Contains("2016", ex.GetContent);
@@ -270,8 +270,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3DProxy = new Mock<IProductivity3dProxy>();
+      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
 
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
@@ -321,7 +321,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, null,
-        raptorProxy.Object, producer.Object, kafkaTopicName);
+        productivity3DProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
       
       Assert.NotNull(result);
@@ -353,8 +353,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3DProxy = new Mock<IProductivity3dProxy>();
+      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
 
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
@@ -404,7 +404,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, null, 
-        raptorProxy.Object, producer.Object, kafkaTopicName);
+        productivity3DProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.NotNull(result);
@@ -430,8 +430,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var projectProxy = new Mock<IProjectProxy>();
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3DProxy = new Mock<IProductivity3dProxy>();
+      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
 
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
@@ -457,7 +457,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var request =
         FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, null, projectProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
+        filterRepo.Object, null, projectProxy.Object, productivity3DProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       Assert.NotNull(result);

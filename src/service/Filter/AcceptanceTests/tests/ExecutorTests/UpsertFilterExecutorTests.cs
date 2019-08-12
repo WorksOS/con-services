@@ -28,7 +28,7 @@ namespace ExecutorTests
       Setup();
 
       executor = RequestExecutorContainer
-        .Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectProxy, RaptorProxy, Producer, KafkaTopicName, FileImportProxy);
+        .Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectProxy, Productivity3DProxy, Producer, KafkaTopicName, FileImportProxy);
     }
 
     [TestMethod]

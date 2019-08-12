@@ -24,9 +24,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IFileImportProxy fileImportProxy,
+      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3DProxy, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
     { }
 
     /// <summary>
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
 
-      await FilterJsonHelper.ParseFilterJson(request.ProjectData, filter, raptorProxy, request.CustomHeaders);
+      await FilterJsonHelper.ParseFilterJson(request.ProjectData, filter, Productivity3DProxy, request.CustomHeaders);
 
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
     }
