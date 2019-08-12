@@ -389,11 +389,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var excludedSs = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
       var excludedIds = excludedSs?.Select(e => e.Item1).ToList();
       var excludedUids = excludedSs?.Select(e => e.Item2).ToList();
-      bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
+      bool haveExcludedSs = excludedSs != null && excludedSs.Count > 0;
 
       if (!filterUid.HasValue)
       {
-        return haveExcludedIds
+        return haveExcludedSs
           ? FilterResult.CreateFilter(excludedIds, excludedUids)
           : null;
       }
@@ -425,7 +425,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUidGuid);
           }
 
-          if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
+          if (filterData.HasData() || haveExcludedSs || designDescriptor != null)
           {
             await ApplyDateRange(projectUid, filterData);
 
@@ -470,7 +470,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         throw;
       }
 
-      return haveExcludedIds ? FilterResult.CreateFilter(excludedIds, excludedUids) : null;
+      return haveExcludedSs ? FilterResult.CreateFilter(excludedIds, excludedUids) : null;
     }
 
     /// <summary>
