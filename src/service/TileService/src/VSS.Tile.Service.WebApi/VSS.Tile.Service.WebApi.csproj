@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj" />
