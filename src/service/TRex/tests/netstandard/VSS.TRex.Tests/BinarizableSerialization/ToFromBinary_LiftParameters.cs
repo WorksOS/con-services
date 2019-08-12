@@ -1,6 +1,7 @@
 ﻿using VSS.TRex.Common.Models;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
 using VSS.TRex.Types;
+using VSS.TRex.Types.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
@@ -30,9 +31,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         LiftThicknessType = LiftThicknessType.Uncompacted,
         TargetLiftThickness = 0.2,
         MDPSummarizeTopLayerOnly = false,
-        MDPSummaryTypes = 3,
+        MDPSummaryTypes = MDPSummaryTypes.Thickness,
         CCVSummarizeTopLayerOnly = false,
-        CCVSummaryTypes = 2,
+        CCVSummaryTypes = CCVSummaryTypes.WorkInProgress,
         IncludeSuperseded = true,
         FirstPassThickness = 1.0f,
         DeadBandUpperBoundary = 0.8,

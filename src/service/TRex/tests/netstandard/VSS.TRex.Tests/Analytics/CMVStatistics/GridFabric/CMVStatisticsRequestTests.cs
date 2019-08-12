@@ -218,9 +218,9 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     //    [InlineData(600, 80.0, 120.0, 73.449701423977956, 26.366559485530544, 0.18373909049150206)]
     [InlineData(0, 0.0, 0.0, 0.0, 0.27713625866050806, 99.7228637413395)]
     [InlineData(200, 90.0, 110.0, 0.27713625866050806, 0.0, 99.7228637413395)]
-    [InlineData(400, 70.0, 130.0, 0.27713625866050806, 91.131639722863738, 8.59122401847575)]
-    [InlineData(500, 80.0, 120.0, 17.136258660508084, 81.986143187066972, 0.87759815242494221)]
-    [InlineData(600, 80.0, 120.0, 73.441108545034638, 26.374133949191688, 0.18475750577367206)]
+    [InlineData(400, 70.0, 130.0, 0.27713625866050806, 91.005535055350549, 8.71771217712177)]
+    [InlineData(500, 80.0, 120.0, 17.112546125461257, 81.872693726937271, 1.014760147601476)]
+    [InlineData(600, 80.0, 120.0, 73.339483394833948, 26.476014760147603, 0.18475750577367206)]
     public async Task Test_SummaryCMVStatistics_SiteModelWithSingleTAGFile_FullExtents_WithCMVTargetOverrides
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
@@ -247,7 +247,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       cmvSummaryResult.BelowTargetPercent.Should().BeApproximately(percentBelow, 0.001);
       cmvSummaryResult.AboveTargetPercent.Should().BeApproximately(percentAbove, 0.001);
       cmvSummaryResult.WithinTargetPercent.Should().BeApproximately(percentWithin, 0.001);
-      cmvSummaryResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2165 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      cmvSummaryResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2168 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
     }
 
     [Theory]
@@ -273,17 +273,8 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       cmvDetailResult.Should().NotBeNull();
 
       // Checks counts and percentages
-      long[] expectedCounts = { 0, 2, 363, 1450, 325, 14, 5, 0, 0, 0, 0, 0, 0, 0, 0 };
-      long expectedCountsSum = 0;
-      for (int i = 0; i < expectedCounts.Length; i++)
-        expectedCountsSum += (i + 1) * expectedCounts[i];
-
-      // Is sum of counts the same?
-      long cmvDetailResultSum = 0;
-      for (int i = 0; i < cmvDetailResult.Counts.Length; i++)
-        cmvDetailResultSum += (i + 1) * cmvDetailResult.Counts[i];
-
-      cmvDetailResultSum.Should().Be(expectedCountsSum);
+      long[] expectedCounts = { 0, 2, 363, 1450, 325, 16, 6, 0, 0, 0, 0, 0, 0, 0, 0 };
+      cmvDetailResult.Counts.Should().BeEquivalentTo(expectedCounts);
 
       // Are all counts the same and do percentages match?
       long totalCount = cmvDetailResult.Counts.Sum();
@@ -299,7 +290,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       cmvDetailResult.BelowTargetPercent.Should().BeApproximately(percentBelow, 0.001);
       cmvDetailResult.AboveTargetPercent.Should().BeApproximately(percentAbove, 0.001);
       cmvDetailResult.WithinTargetPercent.Should().BeApproximately(percentWithin, 0.001);
-      cmvDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2165 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      cmvDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2168 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
       cmvDetailResult.ConstantTargetCMV.Should().Be(MACHINE_TARGET_CMV);
       cmvDetailResult.IsTargetCMVConstant.Should().BeTrue();
     }

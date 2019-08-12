@@ -44,7 +44,8 @@ namespace VSS.TRex.Analytics.CutFillStatistics
       Filters = argument.Filters,
       IncludeSurveyedSurfaces = true,
       RequestedGridDataType = GridDataType.CutFill,
-      CutFillDesign = argument.ReferenceDesign
+      CutFillDesign = argument.ReferenceDesign,
+      LiftParams = argument.LiftParams
     };
 
     /// <summary>

@@ -41,8 +41,6 @@ namespace VSS.TRex.Filters.Models
 
         public ILiftParameters LiftParams { get; set; }
 
-        // TODO     LiftBuildSettings: TICLiftBuildSettings;
-
         /// <summary>
         /// ProbePositions is used to store the real world positions used to probe into
         /// cells when computing floating type sieved bit masks during subgrid querying.
@@ -63,7 +61,6 @@ namespace VSS.TRex.Filters.Models
             LowestPassIdx = Common.Consts.NullLowestPassIdx;
             Overrides = new OverrideParameters();
             LiftParams = new LiftParameters();
-//          todo  LiftBuildSettings = Nil;
         }
     }
 }

@@ -320,10 +320,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Checks to see if compaction as measured by CCV/MDP or CCA has met or not the compaction metrics
     /// </summary>
-    /// <param name="layer"></param>
-    /// <param name="overrides"></param>
-    /// <param name="gridDataType"></param>
-    public void CheckLiftCompaction(ProfileLayer layer, /*todo const LiftBuildSettings :TICLiftBuildSettings; */
+    public void CheckLiftCompaction(ProfileLayer layer, 
       IOverrideParameters overrides,
       GridDataType gridDataType)
     {

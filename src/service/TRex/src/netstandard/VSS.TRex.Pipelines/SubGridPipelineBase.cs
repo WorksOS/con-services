@@ -83,7 +83,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public IFilterSet FilterSet { get; set; }
 
-        public int MaxNumberOfPassesToReturn = 0;
+        public int MaxNumberOfPassesToReturn { get; set; } = int.MaxValue;
 
         public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 
@@ -105,8 +105,9 @@ namespace VSS.TRex.Pipelines
             }
         }
 
-        // FLiftBuildSettings is a reference to a lift build settings object provided by the caller
-        //  property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
+        // LiftParams is a reference to a lift build settings object provided by the caller
+        public ILiftParameters LiftParams { get; set; } = new LiftParameters();
+
         //  property Terminated : Boolean read FTerminated;
       
         /// <summary>
