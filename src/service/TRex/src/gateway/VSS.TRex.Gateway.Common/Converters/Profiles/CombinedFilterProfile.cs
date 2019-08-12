@@ -153,8 +153,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           filter.PassTypeSet |= PassTypeSet.Wheel;
         }
 
-        //TODO: Need to pass through TRex ids (Guids) not Raptor ids (longs)
-        //filter.SurveyedSurfaceExclusionList = src.SurveyedSurfaceExclusionList;
+        if (src.ExcludedSurveyedSurfaceUids != null)
+          filter.SurveyedSurfaceExclusionList = src.ExcludedSurveyedSurfaceUids.ToArray();
 
         filter.ReturnEarliestFilteredCellPass = src.ReturnEarliest.HasValue && src.ReturnEarliest.Value;
 

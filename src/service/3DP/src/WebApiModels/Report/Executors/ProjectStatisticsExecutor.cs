@@ -29,14 +29,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #endif
       {
         var tRexRequest =
-          new ProjectStatisticsTRexRequest(request.ProjectUid.Value, request.ExcludedSurveyedSurfaceUids?.ToArray());
+          new ProjectStatisticsTRexRequest(request.ProjectUid.Value, request.ExcludedSurveyedSurfaceUids);
         return await trexCompactionDataProxy.SendDataPostRequest<ProjectStatisticsResult, ProjectStatisticsTRexRequest>(
           tRexRequest, $"/sitemodels/statistics", customHeaders);
       }
 #if RAPTOR
       bool success = raptorClient.GetDataModelStatistics(
         request.ProjectId,
-        RaptorConverters.convertSurveyedSurfaceExlusionList(request.ExcludedSurveyedSurfaceIds?.ToArray()),
+        RaptorConverters.convertSurveyedSurfaceExlusionList(request.ExcludedSurveyedSurfaceIds),
         out var statistics);
 
       if (success)

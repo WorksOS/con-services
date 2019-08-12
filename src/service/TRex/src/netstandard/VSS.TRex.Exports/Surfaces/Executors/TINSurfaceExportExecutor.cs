@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
@@ -175,12 +176,33 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           newGridNode.SetSubGrid(subGridIndexX, subGridIndexY, subGrid);
         }
 
+        var extents = DataStoreExtents(datastore);
+        // Make sure we don't export too large an area due to data way outside project extents
+        if (extents.Area > Consts.MaxExportAreaM2)
+        {
+          // First try and use project boundary extents as our data boundary
+          var canExport = SiteModel.SiteModelExtent.Area > 0 && SiteModel.SiteModelExtent.Area < Consts.MaxExportAreaM2;
+          if (canExport)
+          {
+            // still use min max height extents
+            Log.LogInformation($"Invalid Plan Extent. Data area too large {extents.Area}. Switching to project extents");
+            extents.MinX = SiteModel.SiteModelExtent.MinX;
+            extents.MinY = SiteModel.SiteModelExtent.MinY;
+            extents.MaxX = SiteModel.SiteModelExtent.MaxX;
+            extents.MaxY = SiteModel.SiteModelExtent.MaxY;
+          }
+          else
+          {
+            Log.LogError($"Invalid Plan Extent. Data area too large {extents.Area}.");
+            return false;
+          }
+        }
         // Decimate the elevations into a grid
         GridToTINDecimator decimator = new GridToTINDecimator(datastore)
         {
           Tolerance = Tolerance
         };
-        decimator.SetDecimationExtents(DataStoreExtents(datastore));
+        decimator.SetDecimationExtents(extents);
 
         if (!decimator.BuildMesh())
         {

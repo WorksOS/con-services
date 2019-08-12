@@ -386,20 +386,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return cachedFilter;
       }
 
-      var excludedIds = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
-      bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
-      DesignDescriptor designDescriptor = null;
-      DesignDescriptor alignmentDescriptor = null;
+      var excludedSs = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
+      var excludedIds = excludedSs?.Select(e => e.Item1).ToList();
+      var excludedUids = excludedSs?.Select(e => e.Item2).ToList();
+      bool haveExcludedSs = excludedSs != null && excludedSs.Count > 0;
 
       if (!filterUid.HasValue)
       {
-        return haveExcludedIds
-          ? FilterResult.CreateFilter(excludedIds)
+        return haveExcludedSs
+          ? FilterResult.CreateFilter(excludedIds, excludedUids)
           : null;
       }
 
       try
       {
+        DesignDescriptor designDescriptor = null;
+        DesignDescriptor alignmentDescriptor = null;
+
         var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
 
         if (filterMustExist && filterData == null)
@@ -422,7 +425,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUidGuid);
           }
 
-          if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
+          if (filterData.HasData() || haveExcludedSs || designDescriptor != null)
           {
             await ApplyDateRange(projectUid, filterData);
 
@@ -439,7 +442,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               returnEarliest = true;
             }
 
-            var raptorFilter = new FilterResult(filterUid, filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
+            var raptorFilter = new FilterResult(filterUid, filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, excludedUids, returnEarliest, designDescriptor);
 
             Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
 
@@ -467,7 +470,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         throw;
       }
 
-      return haveExcludedIds ? FilterResult.CreateFilter(excludedIds) : null;
+      return haveExcludedSs ? FilterResult.CreateFilter(excludedIds, excludedUids) : null;
     }
 
     /// <summary>
