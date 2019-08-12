@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RestSharp;
 using TagFileHarvester.Interfaces;
@@ -13,14 +13,14 @@ namespace TagFileHarvester.TaskQueues
 {
   public class WebApiTagFileProcessTask
   {
-    private readonly ILog log;
+    private readonly ILogger log;
     private readonly CancellationToken token;
     private readonly IUnityContainer unityContainer;
 
     public WebApiTagFileProcessTask(IUnityContainer unityContainer, CancellationToken token)
     {
       this.unityContainer = unityContainer;
-      log = unityContainer.Resolve<ILog>();
+      log = unityContainer.Resolve<ILogger>();
       this.token = token;
     }
 
@@ -30,12 +30,12 @@ namespace TagFileHarvester.TaskQueues
         return null;
       try
       {
-        log.DebugFormat("Processing file {0} for org {1}", tagFilename, org.shortName);
+        log.LogDebug("Processing file {0} for org {1}", tagFilename, org.shortName);
         var file = unityContainer.Resolve<IFileRepository>().GetFile(org, tagFilename);
         if (file == null) return null;
         if (token.IsCancellationRequested)
           return null;
-        log.DebugFormat("Submittting file {0} for org {1}", tagFilename, org.shortName);
+        log.LogDebug("Submittting file {0} for org {1}", tagFilename, org.shortName);
         var data = new byte[file.Length];
         using (var reader = new BinaryReader(file))
         {
@@ -53,7 +53,7 @@ namespace TagFileHarvester.TaskQueues
         request.RequestFormat = DataFormat.Json;
 
         IRestResponse<BaseDataResult> response = null;
-        BaseDataResult result = null;
+        BaseDataResult result;
         HttpStatusCode? code = null;
 
         try
@@ -87,12 +87,12 @@ namespace TagFileHarvester.TaskQueues
 
           NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileHarvester_Process", eventAttributes);
         }
-        log.InfoFormat($"File {tagFilename} for org {org.shortName} processed with code {code?.ToString()} message {result?.Message} processingCode {result?.Code.ToString()}");
+        log.LogInformation($"File {tagFilename} for org {org.shortName} processed with code {code?.ToString()} message {result?.Message} processingCode {result?.Code.ToString()}");
         switch (code)
         {
           case HttpStatusCode.OK:
           {
-            log.DebugFormat("Archiving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
+            log.LogDebug("Archiving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
               OrgsHandler.TCCSynchProductionDataArchivedFolder);
 
             if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchProductionDataArchivedFolder))
@@ -109,7 +109,7 @@ namespace TagFileHarvester.TaskQueues
               case 2014:
               case 2013:
               {
-                log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
+                log.LogDebug("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
                   OrgsHandler.TCCSynchProjectBoundaryIssueFolder);
 
                 if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchProjectBoundaryIssueFolder))
@@ -121,7 +121,7 @@ namespace TagFileHarvester.TaskQueues
               case 2006:
                 //SecondCondition
               {
-                log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
+                log.LogDebug("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
                   OrgsHandler.TCCSynchSubscriptionIssueFolder);
 
                 if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchSubscriptionIssueFolder))
@@ -131,12 +131,12 @@ namespace TagFileHarvester.TaskQueues
               }
               case 2021:
               {
-                log.ErrorFormat("TFA is likely down for {0} org {1}", tagFilename, org.shortName);
+                log.LogError("TFA is likely down for {0} org {1}", tagFilename, org.shortName);
                 break;
               }
               default:
               {
-                log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
+                log.LogDebug("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
                   OrgsHandler.TCCSynchProjectBoundaryIssueFolder);
 
                 if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchProjectBoundaryIssueFolder))
@@ -149,7 +149,7 @@ namespace TagFileHarvester.TaskQueues
           }
           default:
           {
-            log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
+            log.LogDebug("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
               OrgsHandler.TCCSynchOtherIssueFolder);
 
             //If any other error occured do NOT move this file anywhere so it can be picked up during the next epoch
@@ -165,7 +165,7 @@ namespace TagFileHarvester.TaskQueues
       }
       catch (Exception ex)
       {
-        log.ErrorFormat("Exception while processing file {0} occured {1} {2}", tagFilename, ex.Message, ex.StackTrace);
+        log.LogError("Exception while processing file {0} occured {1} {2}", tagFilename, ex.Message, ex.StackTrace);
       }
 
       return null;

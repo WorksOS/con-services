@@ -1,38 +1,37 @@
 ﻿using System;
-using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using log4net;
-using log4net.Config;
-using log4net.Repository.Hierarchy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Serilog;
+using Serilog.Extensions.Logging;
 using TagFileHarvester.Implementation;
 using TagFileHarvester.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.Nighthawk.ThreeDCommon.ThreeDAPIs.ProjectDataServer;
+using VSS.Serilog.Extensions;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace TagFileHarvester.netcore
 {
   public class Program
   {
-
     public class TimedHostedService : IHostedService, IDisposable
     {
+      private static readonly GenericConfiguration config = new GenericConfiguration(new NullLoggerFactory());
+      private static readonly ILogger Log = new SerilogLoggerProvider(SerilogExtensions.Configure("VSS.TagFileHarvesterService.log")).CreateLogger(nameof(TimedHostedService));
+      private static Timer SyncTimer;
+
       private Timer _timer;
 
       public TimedHostedService()
-      {
-      }
+      { }
 
       public Task StartAsync(CancellationToken cancellationToken)
       {
-      	XmlConfigurator.Configure(LogManager.GetRepository(Assembly.GetEntryAssembly()), new FileInfo("log4net.xml"));
-
-
         OrgsHandler.MaxThreadsToProcessTagFiles = config.GetValueInt("MaxThreadsToProcessTagFiles");
         OrgsHandler.tccSynchFilespaceShortName = config.GetValueString("TCCSynchFilespaceShortName");
         OrgsHandler.tccSynchMachineFolder = config.GetValueString("TCCSynchMachineControlFolder");
@@ -54,21 +53,24 @@ namespace TagFileHarvester.netcore
         OrgsHandler.ShortOrgName = config.GetValueString("ShortOrgName");
         OrgsHandler.TagFileEndpoint = config.GetValueString("TagFileEndpoint");
         OrgsHandler.newrelic = config.GetValueString("newrelic");
-
-
+        
         ServicePointManager.DefaultConnectionLimit = 8;
 
-        Log.Debug("TagFileHarvester.Start: Entered Start()");
+        Log.LogDebug("TagFileHarvester.Start: Entered Start()");
+        
+        var container = new UnityContainer().RegisterType<IFileRepository, FileRepository>()
+                            .RegisterInstance<IHarvesterTasks>(new LimitedConcurrencyHarvesterTasks())
+                            .RegisterInstance(Log);
+
         //register dependencies here
-        OrgsHandler.Initialize(new UnityContainer().RegisterType<IFileRepository, FileRepository>()
-          .RegisterInstance<IHarvesterTasks>(new LimitedConcurrencyHarvesterTasks())
-          .RegisterInstance(Log));
+        OrgsHandler.Initialize(container);
         FileRepository.Log = Log;
+
         //here we need to sync filespaces and tasks
         SyncTimer = new Timer(OrgsHandler.CheckAvailableOrgs);
         SyncTimer.Change(TimeSpan.FromSeconds(5), (TimeSpan)config.GetValueTimeSpan("RefreshOrgsDelay"));
 
-        Log.Info("TagFileHarvester.Started.");
+        Log.LogInformation("TagFileHarvester.Started.");
 
         return Task.CompletedTask;
       }
@@ -87,12 +89,7 @@ namespace TagFileHarvester.netcore
       }
     }
 
-    private static readonly GenericConfiguration config = new GenericConfiguration(new NullLoggerFactory());
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    private static Timer SyncTimer;
-
-
-    public static async Task Main(string[] args)
+    public static async Task Main()
     {
       var hostBuilder = new HostBuilder()
         // Add configuration, logging, ...
