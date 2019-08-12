@@ -69,6 +69,7 @@ export class ProjectComponent {
 
   public alignments: Alignment[] = [];
   public alignmentFileName: string = "";
+  public alignmentUid: string = "";
   public newAlignmentGuid: string = "";
 
   public designs: DesignSurface[] = [];
@@ -614,7 +615,8 @@ export class ProjectComponent {
 
   public addNewAlignment(): void {
     var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.alignmentFileName;
+      descriptor.fileName = this.alignmentFileName;
+      descriptor.designId = this.alignmentUid;
     this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
       uid => {
         this.newAlignmentGuid = uid.designId;

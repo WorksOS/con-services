@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -15,35 +16,26 @@ namespace RepositoryTests
   [TestClass]
   public class AssetRepositoryTests
   {
-    IServiceProvider serviceProvider = null;
-    DeviceRepository deviceContext = null;
-    AssetRepository assetContext = null;
-    IRepositoryFactory factory = null;
-    private readonly string loggerRepoName = "UnitTestLogTest";
+    IServiceProvider serviceProvider;
+    DeviceRepository deviceContext;
+    AssetRepository assetContext;
+    IRepositoryFactory factory;
 
     [TestInitialize]
     public virtual void InitTest()
     {
-      var serviceCollection = new ServiceCollection();
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory)
-          .AddSingleton<IConfigurationStore, GenericConfiguration>()
-          .AddSingleton<IRepositoryFactory, RepositoryFactory>()
-          .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
-          .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
-          .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
-          .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
-          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-          .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
-          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
+      serviceProvider = new ServiceCollection()
+                        .AddLogging()
+                        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.TagFileAuth.WepApiTests.log")))
+                        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+                        .AddSingleton<IRepositoryFactory, RepositoryFactory>()
+                        .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
+                        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+                        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>().AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
+                        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+                        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
+                        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+                        .BuildServiceProvider();
 
       factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
 
@@ -76,7 +68,7 @@ namespace RepositoryTests
     }
 
 
- 
+
 
 
     public bool CreateAssociation(Guid assetUID, long legacyAssetId, Guid owningCustomerUID, Guid deviceUID, string deviceSerialNumber, string deviceType)
@@ -119,4 +111,4 @@ namespace RepositoryTests
   }
 
 }
- 
+

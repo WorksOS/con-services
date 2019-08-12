@@ -112,6 +112,22 @@ namespace VSS.TRex.Webtools.Controllers
           cmvSummaryPalette.UseMachineTargetCMV = !overrides?.OverrideMachineCCV ?? true;
           cmvSummaryPalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
           break;
+        case DisplayMode.CMVChange:
+          convertedPalette = new CMVPercentChangePalette();
+
+          var cmvPercentChangePalette = ((CMVPercentChangePalette)convertedPalette);
+
+          cmvPercentChangePalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
+          cmvPercentChangePalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
+
+          cmvPercentChangePalette.UseAbsoluteValues = false;
+
+          cmvPercentChangePalette.UseMachineTargetCMV = !overrides?.OverrideMachineCCV ?? true;
+          cmvPercentChangePalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
+
+          cmvPercentChangePalette.TargetCCVColour = Color.Green;
+          cmvPercentChangePalette.DefaultDecoupledCMVColour = Color.Black;
+          break;
         case DisplayMode.CutFill:
           convertedPalette = new CutFillPalette();
           break;
@@ -198,6 +214,7 @@ namespace VSS.TRex.Webtools.Controllers
         (DisplayMode.Height, "Height"),
         (DisplayMode.CCV, "CCV"),
         (DisplayMode.CCVPercentSummary, "CCV Summary"),
+        (DisplayMode.CMVChange, "CCV Change"),
         (DisplayMode.PassCount, "Pass Count"),
         (DisplayMode.PassCountSummary, "Pass Count Summary"),
         (DisplayMode.MDPPercentSummary, "MDP Summary"),

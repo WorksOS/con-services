@@ -160,9 +160,6 @@
     <ProjectReference Include="..\..\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj">
       <Private>true</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj">
-      <Private>true</Private>
-    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

@@ -24,7 +24,7 @@ namespace VSS.TRex.SurveyedSurfaces
     private readonly IStorageProxy _writeStorageProxy;
     private readonly IStorageProxy _readStorageProxy;
 
-    private const string SURVEYED_SURFACE_STREAM_NAME = "SurveyedSurfaces";
+    public const string SURVEYED_SURFACE_STREAM_NAME = "SurveyedSurfaces";
 
     /// <summary>
     /// Constructs an instance using the supplied storage proxy

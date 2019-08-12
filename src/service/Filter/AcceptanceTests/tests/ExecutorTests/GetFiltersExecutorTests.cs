@@ -1,26 +1,19 @@
-﻿using ExecutorTests.Internal;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
+using ExecutorTests.Internal;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Filter.Common.Executors;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System.Linq;
-using System.Net;
-using VSS.Common.Cache.MemoryCache;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
+using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Proxy;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {

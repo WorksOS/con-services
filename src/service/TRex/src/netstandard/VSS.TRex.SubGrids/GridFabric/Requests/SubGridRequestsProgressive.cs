@@ -99,7 +99,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
             Task<ICollection<TSubGridRequestsResponse>> taskResult = null;
 
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
             try
             {
@@ -131,7 +131,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             PrepareForExecution();
 
             // Construct the function to be used
-            IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
+            var func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
 
             return Compute.BroadcastAsync(func, arg)
               .ContinueWith(result => result.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)))

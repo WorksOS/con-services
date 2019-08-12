@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using VSS.Common.Abstractions.Http;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 using Xunit;
@@ -254,7 +255,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       copyOfOrig.Read(byteArrayOfOriginal);
 
       // Graceful WebReq
-      var fileStream = new FileStreamResult(new MemoryStream(byteArrayOfOriginal), "application/octet-stream");
+      var fileStream = new FileStreamResult(new MemoryStream(byteArrayOfOriginal), ContentTypeConstants.ApplicationOctetStream);
       var memoryStream = (MemoryStream)fileStream.FileStream;
       var resultFromStream = new StationOffsetReportResult();
 

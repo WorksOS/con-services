@@ -198,6 +198,7 @@ namespace VSS.TRex.CellDatum.Executors
           success = cell.MachineSpeed != Consts.NullMachineSpeed;
           break;
         case DisplayMode.CCVPercentChange:
+        case DisplayMode.CMVChange:
           result.Value = cell.CCVChange;
           success = cell.CCVChange != CellPassConsts.NullCCV;
           break;
@@ -216,3 +217,4 @@ namespace VSS.TRex.CellDatum.Executors
     }
   }
 }
+
