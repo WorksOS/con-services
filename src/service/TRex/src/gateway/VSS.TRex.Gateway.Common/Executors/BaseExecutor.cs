@@ -61,9 +61,6 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<FilterResult, CombinedFilter>(filter);
       combinedFilter.AttributeFilter.SiteModel = siteModel;
-      bool includeSurveyedSurfaces = (filter.SurveyedSurfaceExclusionList?.Count ?? 0) == 0;
-      var excludedIds = siteModel.SurveyedSurfaces == null || !includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
-      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList = excludedIds;
       return combinedFilter;
     }
 
