@@ -43,7 +43,6 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
       writer.WriteInt(DisplayMode);
     }
 
-
     /// <summary>
     /// Serialises content from the writer
     /// </summary>

@@ -32,8 +32,6 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
     public QuantizedMeshResponse Invoke(QuantizedMeshRequestArgument arg)
     {
 
-      //DateTime startTime = DateTime.UtcNow;
-      
       Log.LogInformation("In QuantizedMeshRequestComputeFunc.Invoke()");
 
       try
@@ -51,18 +49,8 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 
         if (!request.ExecuteAsync().WaitAndUnwrapException())
           Log.LogError("Request execution failed");
-        /*
-                QuantizedMeshResponse result = new QuantizedMeshResponse();
-                using (var ms = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
-                {
-                  if (request.QMTileResponse != null)
-                  {
-                   // todo request.SurfaceSubGridsResponse.TIN.SaveToStream(Consts.DefaultCoordinateResolution, Consts.DefaultElevationResolution, false, ms);
-                    result.data = ms.ToArray();
-                  }
-                }
-                */
-        return request.QMTileResponse; //result;
+
+        return request.QMTileResponse; 
 
       }
       finally

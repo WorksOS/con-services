@@ -12,11 +12,11 @@ namespace VSS.TRex.QuantizedMesh.Models
     /// <summary>
     /// Tile elevations for each vertice
     /// </summary>
-    public float[] ElevGrid; 
+    public float[] ElevGrid;
     /// <summary>
     /// Earth Centered Earth Fixed coordinates used in tile header calculation
     /// </summary>
-    public Vector3[] EcefPoints; 
+    public Vector3[] EcefPoints;
     /// <summary>
     /// Square gridsize size to get number of vertices in a tile
     /// </summary>
@@ -55,17 +55,18 @@ namespace VSS.TRex.QuantizedMesh.Models
     public double HorizonOcclusionPointX;
     public double HorizonOcclusionPointY;
     public double HorizonOcclusionPointZ;
-
     public double West; // minX
     public double South;// minY
     public double East; // maxX
     public double North;// maxY
+    public float LowestElevation; // elevation for missing data
+    public bool HasData; // Has data flag
 
-    public float LowestElevation;
-
-    public bool HasData;
-
-
+    /// <summary>
+    /// Initialise container
+    /// </summary>
+    /// <param name="lowestElevation"></param>
+    /// <param name="gridSize"></param>
     public ElevationData(float lowestElevation, int gridSize)
     {
       ElevGrid = new float[gridSize * gridSize];
@@ -90,7 +91,6 @@ namespace VSS.TRex.QuantizedMesh.Models
       South = 0;
       LowestElevation = lowestElevation;
     }
-
 
     public void Clear()
     {
@@ -134,7 +134,6 @@ namespace VSS.TRex.QuantizedMesh.Models
         Array.Resize(ref EcefPoints, GridSize * GridSize);
       }
 
-
       var step = 20.0F / (GridSize - 1);
 
       var XStep = (boundary.East - boundary.West) / (GridSize - 1);
@@ -161,7 +160,7 @@ namespace VSS.TRex.QuantizedMesh.Models
           hgt = hgt + step;
 
           // ECEF
-          EcefPoints[pos] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(XPos), Y = MapUtils.Deg2Rad(YPos), Z = hgt});
+          EcefPoints[pos] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(XPos), Y = MapUtils.Deg2Rad(YPos), Z = hgt });
           XPos = XPos + XStep;
           pos++;
         }
@@ -169,13 +168,11 @@ namespace VSS.TRex.QuantizedMesh.Models
         YPos = YPos + YStep; // increase y
       }
 
-
       HasData = true;
       East = boundary.East;
       West = boundary.West;
       North = boundary.North;
       South = boundary.South;
     }
-
   }
 }

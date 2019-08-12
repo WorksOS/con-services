@@ -17,9 +17,6 @@ namespace VSS.TRex.QuantizedMesh.GridFabric
 
     public bool CompressTile = true; 
 
-    /// <summary>
-    /// Resulting quantized mesh tile
-    /// </summary>
     public byte[] QuantizedMeshTile = null;
 
     public ElevationData TileData;
@@ -35,7 +32,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric
 
 
     /// <summary>
-    /// 
+    /// Compute all header info
     /// </summary>
     /// <returns></returns>
     private void ComputeHeaderInfo()

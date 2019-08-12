@@ -15,8 +15,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
   {
     public uint triangleCount;
     public ushort[] indices;
-
-
     public IndexData16()
     {
     }
@@ -32,7 +30,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       {
         ushort code = reader.ReadUInt16();
         indices[i] = (ushort)(highest - code);
-
         if (code == 0)
           highest++;
       }
@@ -49,7 +46,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
 
   //Each triplet of indices specifies one triangle to be rendered, in counter-clockwise winding order.Following the triangle indices is four more lists of indices
   //These index lists enumerate the vertices that are on the edges of the tile. It is helpful to know which vertices are on the edges in order to add skirts to hide cracks between adjacent levels of detail.
-
   [StructLayout(LayoutKind.Sequential, Pack = 1)]
   public class EdgeIndices16
   {

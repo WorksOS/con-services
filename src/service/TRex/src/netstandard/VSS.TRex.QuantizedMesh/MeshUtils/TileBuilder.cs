@@ -16,32 +16,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
     public IndexData16 MeshIndexData16;
     public EdgeIndices16 MeshEdgeIndices16; // todo seperate out
 
-    /// <summary>
-    /// Temp class
-    /// </summary>
-    /// <param name="minElevation"></param>
-    /// <param name="maxElevation"></param>
-    private void MakeFakeHeader(float minElevation, float maxElevation)
-    {
-
-      // todo fill in all fields correctly
-      MeshHeader = new TerrainTileHeader()
-      {
-        CenterX = -4869750.60295,
-        CenterY = 517839.417383868,
-        CenterZ = -4005385.98852821,
-        MinimumHeight = minElevation,
-        MaximumHeight = maxElevation,
-        BoundingSphereCenterX = -4869750.60295,
-        BoundingSphereCenterY = 517839.417383868,
-        BoundingSphereCenterZ = -4005385.98852821,
-        BoundingSphereRadius = 832547.176047396,
-        HorizonOcclusionPointX = 0.5,
-        HorizonOcclusionPointY = 0.5,
-        HorizonOcclusionPointZ = 0.5
-      };
-
-    }
 
     private void MakeHeader(TerrainTileHeader headerRec)
     {
@@ -81,18 +55,10 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
         int m = 0;
         for (int y = 0; y < _GridSize - 1; y++) // bottom row to row just before top
         {
-          // var r = (y * _GridSize) + y;
           var r = y * _GridSize;
 
           for (int x = 0; x < _GridSize - 1; x++)
           {
-            /*            MeshIndexData16.indices[m]   = (ushort)(r);
-                        MeshIndexData16.indices[m+1] = (ushort)(r + _GridSize + 2);
-                        MeshIndexData16.indices[m+2] = (ushort)(r + _GridSize + 1); 
-                        MeshIndexData16.indices[m+3] = (ushort)(r);
-                        MeshIndexData16.indices[m+4] = (ushort)(r+1);
-                        MeshIndexData16.indices[m+5] = (ushort)(r + _GridSize + 2);
-                        */
             // triangle winding order is anti clockwise from SW, NE, NW, SW, SE, NE
             MeshIndexData16.indices[m] = (ushort)(r);
             MeshIndexData16.indices[m + 1] = (ushort)(r + _GridSize + 1);
@@ -100,7 +66,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
             MeshIndexData16.indices[m + 3] = (ushort)(r);
             MeshIndexData16.indices[m + 4] = (ushort)(r + 1);
             MeshIndexData16.indices[m + 5] = (ushort)(r + _GridSize + 1);
-
             m = m + 6;
             r++;
           }
@@ -127,12 +92,10 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
 
     private void MakeEdgeIndicesData()
     {
-      //todo work out edge vertices
       uint westCount = (uint)_GridSize;
       uint southCount = (uint)_GridSize;
       uint eastCount = (uint)_GridSize;
       uint northCount = (uint)_GridSize;
-
 
       MeshEdgeIndices16 = new EdgeIndices16()
       {
@@ -164,7 +127,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       }
 
       y = (ushort)((_GridSize - 1) * (_GridSize - 1) + _GridSize - 1);
-      // y = (ushort) (Math.Pow((_GridSize - 1), 2) + _GridSize - 1);
 
       for (uint i = 0; i < MeshEdgeIndices16.northVertexCount; i++)
         MeshEdgeIndices16.northIndices[i] = (ushort)(y + i);
@@ -226,7 +188,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       // We are now ready to assemble the tile into a byte array
       var ms = new MemoryStream();
       using (BinaryWriter writer = new BinaryWriter(ms))
-      //      using (BinaryWriter writer = new BinaryWriter(File.Open(outFile, FileMode.Create)))
       {
         // write header
         writer.Write(MeshHeader.CenterX);
@@ -282,34 +243,5 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       }
 
     }
-    /*
-
-    /// <summary>
-    /// Returns an existing terrain tile
-    /// </summary>
-    /// <param name="tileDir">Folder containing static tile </param>
-    /// <param name="x">Grid number for longitude</param>
-    /// <param name="y">Grid number for latitude</param>
-    /// <param name="z">Grid zoom level</param>
-    /// <returns></returns>
-    public async Task<byte[]> FetchTile(string tileDir, int x, int y, int z)
-    {
-      // todo go get precompiled tile from disk or cache
-
-      var fileInfo = new FileInfo(Path.Combine(tileDir, string.Format(@"{0}\{1}\{2}.terrain", z, x, y)));
-      if (fileInfo.Exists)
-      {
-        var buffer = new byte[fileInfo.Length];
-        using (var fileStream = fileInfo.OpenRead())
-        {
-          await fileStream.ReadAsync(buffer, 0, buffer.Length);
-          Console.WriteLine("Tile {0} sent", fileInfo);
-          return buffer.ToArray();
-        }
-      }
-      Console.WriteLine("*** Tile {0} was NOT sent ***", fileInfo);
-      return null;
-    }
-    */
   }
 }

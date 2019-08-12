@@ -9,12 +9,10 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
   public class LLBoundingBox
   {
     public Boolean InRadians = false;
-
     private MapPoint minPoint;
     private MapPoint maxPoint;
     public MapPoint MinPoint { get => minPoint; set => minPoint = value; }
     public MapPoint MaxPoint { get => maxPoint; set => maxPoint = value; }
-
     public Double West { get => minPoint.Longitude; set => minPoint.Longitude = value; }
     public Double East { get => maxPoint.Longitude; set => maxPoint.Longitude = value; }
     public Double South { get => minPoint.Latitude; set => minPoint.Latitude = value; }

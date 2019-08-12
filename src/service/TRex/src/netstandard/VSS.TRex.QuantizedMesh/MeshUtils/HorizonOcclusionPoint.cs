@@ -14,7 +14,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
     private static Double rY = 1.0 / radiusY;
     private static Double rZ = 1.0 / radiusZ;
 
-
     /*
     wgs84_a = radiusX               # Semi-major axis
       wgs84_b = radiusZ          # Semi-minor axis
@@ -48,19 +47,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       return 1.0 / (cosAlpha * cosBeta - sinAlpha * sinBeta);
 
     }
-    /*
-
-    public static Vector3[] ScaleDown(ref Vector3[] pts)
-    {
-      for (int i = 0; i < pts.Length; i++)
-      {
-        pts[i].X = pts[i].X * rX;
-        pts[i].Y = pts[i].X * rY;
-        pts[i].Z = pts[i].X * rZ;
-      }
-
-    }
-    */
 
     // from https://cesiumjs.org/2013/05/09/Computing-the-horizon-occlusion-point/
     public static Vector3 FromPoints(ref Vector3[] points, BBSphere boundingSphere)
@@ -78,18 +64,10 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
         points[i].Z = points[i].Z * rZ;
       }
 
-      // var scaledPoints = map(scaleDown, points).ToList();
-
-      //   var scaledSphereCenter = scaleDown(boundingSphere.center);
       boundingSphere.Center.X = boundingSphere.Center.X * rX;
       boundingSphere.Center.Y = boundingSphere.Center.Y * rY;
       boundingSphere.Center.Z = boundingSphere.Center.Z * rZ;
 
-      //      Func<object, object> magnitude = coord => {
-      //      return computeMagnitude(coord, scaledSphereCenter);
-      //   };
-
-      //  List<Double> magnitudes = new List<double>();
       Double maxMagnitude = double.NegativeInfinity;
       for (int i = 0; i < points.Length; i++)
       {
@@ -98,9 +76,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
         if (magnitude > maxMagnitude)
           maxMagnitude = magnitude;
       }
-
-
-      //  var magnitudes = map(magnitude, scaledPoints).ToList();
 
       return Cartesian3D.MultiplyByScalar(boundingSphere.Center, maxMagnitude);
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.QuantizedMesh.Models;
+﻿using VSS.TRex.QuantizedMesh.Models;
 
 namespace VSS.TRex.QuantizedMesh.MeshUtils
 {

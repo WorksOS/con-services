@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace VSS.TRex.QuantizedMesh.MeshUtils
 {
@@ -8,7 +6,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
   {
     public static LLBoundingBox world = new LLBoundingBox(-3.141592653589793, -1.5707963267948966,
                                                            3.141592653589793, 1.5707963267948966, true); // world boundary in radians 
-
 
     /// <summary>
     /// Get tile number from decimal degrees passed in 
@@ -66,7 +63,5 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       //return new LLBoundingBox(west, south, east, north);
       return new LLBoundingBox(MapUtils.Rad2Deg(west), MapUtils.Rad2Deg(south), MapUtils.Rad2Deg(east), MapUtils.Rad2Deg(north), false);
     }
-
-
   }
 }

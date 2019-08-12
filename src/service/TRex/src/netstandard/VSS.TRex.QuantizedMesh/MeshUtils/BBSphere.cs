@@ -28,7 +28,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
         throw new Exception("Your list of points must contain at least 2 points");
       }
 
-     // Vector3 pt;
       for (int i = 0; i < nbPositions; i++)
       {
         var point = points[i];
@@ -127,8 +126,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
         Center = naiveCenter;
       }
 
-
     }
-
   }
 }
