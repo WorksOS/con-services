@@ -87,7 +87,9 @@ namespace VSS.TRex.SubGrids
                            ITRexSpatialMemoryCacheContext subGridCacheContext,
                            ISurveyedSurfaces filteredSurveyedSurfaces,
                            ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
-                           ISurfaceElevationPatchArgument surfaceElevationPatchArgument)
+                           ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
+                           IOverrideParameters overrides,
+                           ILiftParameters liftParams)
     {
       SiteModel = siteModel;
       GridDataType = gridDataType;
@@ -107,7 +109,9 @@ namespace VSS.TRex.SubGrids
                                        maxNumberOfPassesToReturn,
                                        areaControlSet,
                                        populationControl,
-                                       PDExistenceMap);
+                                       PDExistenceMap,
+                                       overrides,
+                                       liftParams);
 
       ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
       AreaControlSet = areaControlSet;
@@ -196,7 +200,7 @@ namespace VSS.TRex.SubGrids
     /// // Note: There is an assumption you have already checked on a existence map that there is a sub grid for this address
     /// </summary>
     /// <returns></returns>
-    private ServerRequestResult PerformDataExtraction(IOverrideParameters overrides, ILiftParameters liftParams)
+    private ServerRequestResult PerformDataExtraction()
     {
       // Determine if there is a suitable pre-calculated result present in the general sub grid result cache.
       // If there is, then apply the filter mask to the cached data and copy it to the client grid
@@ -222,7 +226,7 @@ namespace VSS.TRex.SubGrids
         return ServerRequestResult.FailedToComputeDesignFilterPatch;
       }
 
-      ServerRequestResult Result = retriever.RetrieveSubGrid(/* LiftBuildSettings, */ overrides, liftParams, ClientGrid, CellOverrideMask);
+      ServerRequestResult Result = retriever.RetrieveSubGrid(ClientGrid, CellOverrideMask);
 
       // If a sub grid was retrieved and this is a supported data type in the cache then add it to the cache
       if (Result == ServerRequestResult.NoError && SubGridCacheContext != null)
@@ -415,9 +419,6 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     public async Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)> RequestSubGridInternal(
       SubGridCellAddress subGridAddress,
-      // LiftBuildSettings: TICLiftBuildSettings;
-      IOverrideParameters overrides,
-      ILiftParameters liftParams,
       bool prodDataRequested,
       bool surveyedSurfaceDataRequested)
     {
@@ -450,7 +451,7 @@ namespace VSS.TRex.SubGrids
 
       if (ProdDataRequested)
       {
-        if ((result.requestResult = PerformDataExtraction(overrides, liftParams)) != ServerRequestResult.NoError)
+        if ((result.requestResult = PerformDataExtraction()) != ServerRequestResult.NoError)
           return result;
       }
 

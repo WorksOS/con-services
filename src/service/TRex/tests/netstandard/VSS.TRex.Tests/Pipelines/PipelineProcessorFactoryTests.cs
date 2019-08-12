@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
@@ -30,18 +31,20 @@ namespace VSS.TRex.Tests.Pipelines
     {
       var factory = new PipelineProcessorFactory();
 
-      var processor = factory.NewInstanceNoBuild(requestDescriptor: Guid.NewGuid(), 
-        dataModelID: Guid.NewGuid(), 
-        gridDataType: GridDataType.Height,
-        response: new PatchRequestResponse(), 
-        filters: new FilterSet(new CombinedFilter()), 
-        cutFillDesign: new DesignOffset(), 
-        task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
-        pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-        requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-        requireSurveyedSurfaceInformation: false,
-        requestRequiresAccessToDesignFileExistenceMap: false,
-        overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
+      var processor = factory.NewInstanceNoBuild(
+        Guid.NewGuid(), 
+        Guid.NewGuid(), 
+        GridDataType.Height,
+        new PatchRequestResponse(), 
+        new FilterSet(new CombinedFilter()), 
+        new DesignOffset(), 
+        DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
+        DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+        DIContext.Obtain<IRequestAnalyser>(),
+        false,
+        false,
+        BoundingIntegerExtent2D.Inverted(),
+        new LiftParameters());
 
       processor.Should().NotBeNull();
     }
@@ -51,18 +54,20 @@ namespace VSS.TRex.Tests.Pipelines
     {
       var factory = new PipelineProcessorFactory();
 
-      var processor = await factory.NewInstance(requestDescriptor: Guid.NewGuid(),
-        dataModelID: Guid.NewGuid(),
-        gridDataType: GridDataType.Height,
-        response: new PatchRequestResponse(),
-        filters: new FilterSet(new CombinedFilter()),
-        cutFillDesign: new DesignOffset(), 
-        task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
-        pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-        requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-        requireSurveyedSurfaceInformation: false,
-        requestRequiresAccessToDesignFileExistenceMap: false,
-        overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
+      var processor = await factory.NewInstance(
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+        GridDataType.Height,
+        new PatchRequestResponse(),
+        new FilterSet(new CombinedFilter()),
+        new DesignOffset(), 
+        DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
+        DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+        DIContext.Obtain<IRequestAnalyser>(),
+        false,
+        false,
+        BoundingIntegerExtent2D.Inverted(),
+        new LiftParameters());
 
       processor.Should().BeNull("because there is no site model");
 

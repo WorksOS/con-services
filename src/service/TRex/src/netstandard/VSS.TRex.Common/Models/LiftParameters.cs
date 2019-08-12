@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
+using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.Common.Models
 {
@@ -14,10 +15,10 @@ namespace VSS.TRex.Common.Models
     public bool OverrideMachineThickness { get; set; }
     public LiftThicknessType LiftThicknessType { get; set; }
     public double OverridingLiftThickness { get; set; }
-    public byte CCVSummaryTypes { get; set; }
+    public CCVSummaryTypes CCVSummaryTypes { get; set; }
     public bool CCVSummarizeTopLayerOnly { get; set; }
     public float FirstPassThickness { get; set; }
-    public byte MDPSummaryTypes { get; set; }
+    public MDPSummaryTypes MDPSummaryTypes { get; set; }
     public bool MDPSummarizeTopLayerOnly { get; set; }
     public LiftDetectionType LiftDetectionType { get; set; }
     public bool IncludeSuperseded { get; set; }
@@ -34,10 +35,10 @@ namespace VSS.TRex.Common.Models
       OverrideMachineThickness = false;
       LiftThicknessType = LiftThicknessType.Compacted;
       OverridingLiftThickness = CellPassConsts.NullOverridingTargetLiftThicknessValue;
-      CCVSummaryTypes = 0;
+      CCVSummaryTypes = CCVSummaryTypes.None;
       CCVSummarizeTopLayerOnly = true;//match Raptor
       FirstPassThickness = 0.0f;
-      MDPSummaryTypes = 0;
+      MDPSummaryTypes = MDPSummaryTypes.None;
       MDPSummarizeTopLayerOnly = true;
       LiftDetectionType = LiftDetectionType.None;
       IncludeSuperseded = false;
@@ -59,10 +60,10 @@ namespace VSS.TRex.Common.Models
       writer.WriteBoolean(OverrideMachineThickness);
       writer.WriteInt((int)LiftThicknessType);
       writer.WriteDouble(OverridingLiftThickness);
-      writer.WriteByte(CCVSummaryTypes);
+      writer.WriteInt((int)CCVSummaryTypes);
       writer.WriteBoolean(CCVSummarizeTopLayerOnly);
       writer.WriteFloat(FirstPassThickness);
-      writer.WriteByte(MDPSummaryTypes);
+      writer.WriteInt((int)MDPSummaryTypes);
       writer.WriteBoolean(MDPSummarizeTopLayerOnly);
       writer.WriteInt((int)LiftDetectionType);
       writer.WriteBoolean(IncludeSuperseded);
@@ -84,10 +85,10 @@ namespace VSS.TRex.Common.Models
       OverrideMachineThickness = reader.ReadBoolean();
       LiftThicknessType = (LiftThicknessType) reader.ReadInt();
       OverridingLiftThickness = reader.ReadDouble();
-      CCVSummaryTypes = reader.ReadByte();
+      CCVSummaryTypes = (CCVSummaryTypes)reader.ReadInt();
       CCVSummarizeTopLayerOnly = reader.ReadBoolean();
       FirstPassThickness = reader.ReadFloat();
-      MDPSummaryTypes = reader.ReadByte();
+      MDPSummaryTypes = (MDPSummaryTypes)reader.ReadInt();
       MDPSummarizeTopLayerOnly = reader.ReadBoolean();
       LiftDetectionType = (LiftDetectionType)reader.ReadInt();
       IncludeSuperseded = reader.ReadBoolean();

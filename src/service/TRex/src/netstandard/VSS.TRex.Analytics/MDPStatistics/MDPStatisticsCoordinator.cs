@@ -22,7 +22,6 @@ namespace VSS.TRex.Analytics.MDPStatistics
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
-      //LiftBuildSettings := LiftBuildSettings;
       CellSize = SiteModel.CellSize,
       OverrideMachineMDP = argument.Overrides.OverrideMachineMDP,
       OverridingMachineMDP = argument.Overrides.OverridingMachineMDP,
@@ -37,14 +36,15 @@ namespace VSS.TRex.Analytics.MDPStatistics
     /// <param name="argument"></param>
     /// <param name="aggregator"></param>
     /// <returns></returns>
-    public override AnalyticsComputor ConstructComputor(MDPStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
+    public override AnalyticsComputor ConstructComputor(MDPStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor
     {
       RequestDescriptor = RequestDescriptor,
       SiteModel = SiteModel,
       Aggregator = aggregator,
       Filters = argument.Filters,
       IncludeSurveyedSurfaces = true,
-      RequestedGridDataType = GridDataType.MDP
+      RequestedGridDataType = GridDataType.MDP,
+      LiftParams = argument.LiftParams
     };
 
     /// <summary>

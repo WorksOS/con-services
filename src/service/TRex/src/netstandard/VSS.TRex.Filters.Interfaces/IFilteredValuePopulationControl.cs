@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Types;
+﻿using VSS.TRex.Common.Models;
+using VSS.TRex.Types;
 using VSS.TRex.Events.Models;
 
 namespace VSS.TRex.Filters.Interfaces
@@ -58,21 +59,16 @@ namespace VSS.TRex.Filters.Interfaces
     /// Prepares the set of event population control flags depending on the requested data type, filter, client grid
     /// and lift build related settings
     /// </summary>
-    /// <param name="profileTypeRequired"></param>
-    /// <param name="passFilter"></param>
-    /// <param name="eventPopulationFlags"></param>
     void PreparePopulationControl(GridDataType profileTypeRequired,
-      // todo const LiftBuildSettings: TICLiftBuildSettings;
+      ILiftParameters liftParams,
       ICellPassAttributeFilter passFilter,
       PopulationControlFlags eventPopulationFlags);
 
     /// <summary>
     /// Prepares the set of event population control flags depending on the requested data type and filter
     /// </summary>
-    /// <param name="profileTypeRequired"></param>
-    /// <param name="passFilter"></param>
     void PreparePopulationControl(GridDataType profileTypeRequired,
-      // todo const LiftBuildSettings: TICLiftBuildSettings;
+      ILiftParameters liftParams,
       ICellPassAttributeFilter passFilter);
   }
 }

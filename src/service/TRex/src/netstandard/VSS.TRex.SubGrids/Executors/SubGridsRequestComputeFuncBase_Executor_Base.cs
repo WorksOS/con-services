@@ -271,7 +271,7 @@ namespace VSS.TRex.SubGrids.Executors
       }
 
       // Reach into the sub grid request layer and retrieve an appropriate sub grid
-      var requestSubGridInternalResult = await requester.RequestSubGridInternal(address, Overrides, LiftParams, address.ProdDataRequested, address.SurveyedSurfaceDataRequested);
+      var requestSubGridInternalResult = await requester.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested);
       result.requestResult = requestSubGridInternalResult.requestResult;
       result.clientGrid = requestSubGridInternalResult.clientGrid;
 
@@ -346,7 +346,8 @@ namespace VSS.TRex.SubGrids.Executors
         return;
 
       // Construct the set of requester objects to be used for the filters present in the request
-      var requestors = DIContext.Obtain<IRequestorUtilities>().ConstructRequestors(siteModel, RequestorIntermediaries, localArg.AreaControlSet, ProdDataMask);
+      var requestors = DIContext.Obtain<IRequestorUtilities>().ConstructRequestors(
+        siteModel, localArg.Overrides, localArg.LiftParams, RequestorIntermediaries, localArg.AreaControlSet, ProdDataMask);
 
       //Log.LogInformation("Sending {0} sub grids to caller for processing", count);
       //Log.LogInformation($"Requester list contains {Requestors.Length} items");

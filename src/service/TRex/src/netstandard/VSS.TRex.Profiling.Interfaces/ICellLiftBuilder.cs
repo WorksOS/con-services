@@ -18,7 +18,6 @@ namespace VSS.TRex.Profiling.Interfaces
     int FilteredHalfCellPassCountOfTopMostLayer { get; set; }
 
     bool Build(IProfileCell cell,
-      // todo const LiftBuildSettings: TICLiftBuildSettings;
       ILiftParameters liftParameters,
       IClientLeafSubGrid ClientGrid,
       FilteredValueAssignmentContext AssignmentContext,

@@ -133,8 +133,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="context"></param>
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
-      void CalculateCMVChange(IProfileCell profileCell /*; Todo: Liftbuildsettings
-      LiftBuildSettings : TICLiftBuildSettings*/)
+      void CalculateCMVChange(IProfileCell profileCell)
       {
         profileCell.CellCCV = CellPassConsts.NullCCV;
         profileCell.CellTargetCCV = CellPassConsts.NullCCV;
@@ -244,7 +243,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].LastPassValidTemperature = LastPass.FilteredPass.MaterialTemperature; // Bug32323 show only last pass temp.  Passes.LastPassValidTemperature;
       Cells[cellX, cellY].Height = LastPass.FilteredPass.Height;
 
-      CalculateCMVChange(cellProfileFromContext /* todo: , context.LiftBuildSettings*/);
+      CalculateCMVChange(cellProfileFromContext);
       Cells[cellX, cellY].CCVChange = 0;
       short v2 = cellProfileFromContext.CellCCV;
       short v1 = cellProfileFromContext.CellPreviousMeasuredCCV;

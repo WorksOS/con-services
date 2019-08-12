@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Linq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -57,7 +55,9 @@ namespace VSS.TRex.SubGrids
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
-      ITRexSpatialMemoryCacheContext CacheContext)[] ConstructRequestorIntermediaries(ISiteModel siteModel,
+      ITRexSpatialMemoryCacheContext CacheContext)[] 
+      ConstructRequestorIntermediaries(
+        ISiteModel siteModel,
         IFilterSet filters,
         bool includeSurveyedSurfaceInformation,
         GridDataType gridDataType)
@@ -129,21 +129,21 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// Constructs the set of requestors, one per filter, required to query the data stacks
     /// </summary>
-    /// <returns></returns>
-    public ISubGridRequestor[] ConstructRequestors(ISiteModel siteModel,
+    public ISubGridRequestor[] ConstructRequestors(
+      ISiteModel siteModel,
+      IOverrideParameters overrides,
+      ILiftParameters liftParams,
       (GridDataType GridDataType,
         ICombinedFilter Filter,
         ISurveyedSurfaces FilteredSurveyedSurfaces,
         ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
         ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
-        ITRexSpatialMemoryCacheContext CacheContext)[] Intermediaries,
+        ITRexSpatialMemoryCacheContext CacheContext)[] intermediaries,
       AreaControlSet areaControlSet,
       ISubGridTreeBitMask prodDataMask)
     {
-      ISiteModels siteModels = DIContext.Obtain<ISiteModels>();
-
       // Construct the resulting requestors
-      return Intermediaries.Select(x =>
+      return intermediaries.Select(x =>
       {
         var requestor = SubGridRequestorFactory();
         requestor.Initialize(siteModel,
@@ -160,7 +160,9 @@ namespace VSS.TRex.SubGrids
           x.CacheContext,
           x.FilteredSurveyedSurfaces,
           x.surfaceElevationPatchRequest,
-          x.surfaceElevationPatchArgument);
+          x.surfaceElevationPatchArgument,
+          overrides,
+          liftParams);
 
         return requestor;
       }).ToArray();

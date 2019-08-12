@@ -53,8 +53,6 @@ namespace VSS.TRex.Profiling
     private readonly ICellLiftBuilder CellLiftBuilder;
 
     private ProfileCell ProfileCell;
-    private IOverrideParameters Overrides;
-    private ILiftParameters LiftParams;
 
     private CellProfileAnalyzer()
     {}
@@ -75,15 +73,13 @@ namespace VSS.TRex.Profiling
       ICellLiftBuilder cellLiftBuilder,
       IOverrideParameters overrides,
       ILiftParameters liftParams) 
-      : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
+      : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, overrides, liftParams)
     {
       CellLiftBuilder = cellLiftBuilder;
 
       PassFilter = filterSet.Filters[0].AttributeFilter;
       PassFilterAnnex = new CellPassAttributeFilterProcessingAnnex();
       CellFilter = filterSet.Filters[0].SpatialFilter;
-      Overrides = overrides;
-      LiftParams = liftParams;
     }
 
     /// <summary>
