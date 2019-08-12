@@ -518,40 +518,35 @@ namespace VSS.MasterData.Models.UnitTests
     [Fact]
     public void AsAtDateFilterFailure_MissingEndUtc()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, true);
+      var filter = new Filter(asAtDate:true);
       Assert.Throws<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
     }
 
     [Fact]
     public void AsAtDateFilterFailure_MissingStartUtc()
     {
-      var filter = new Filter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, false);
+      var filter = new Filter(endUtc:DateTime.UtcNow.AddDays(-1), asAtDate:false);
       Assert.Throws<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
     }
 
     [Fact]
     public void AutomaticsFilterSuccess()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, AutomaticsType.Manual);
+      var filter = new Filter(automaticsType:AutomaticsType.Manual);
       filter.Validate(_serviceExceptionHandler);
     }
 
     [Fact]
     public void TemperatureRangeFilterSuccess()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, 100.0, 120.5);
+      var filter = new Filter(temperatureRangeMin:100.0, temperatureRangeMax:120.5);
       filter.Validate(_serviceExceptionHandler);
     }
 
     [Fact]
     public void TemperatureRangeFilter_MissingMax()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, 100.0);
+      var filter = new Filter(temperatureRangeMin: 100.0);
       var ex = Assert.Throws<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
       Assert.True(ex.GetContent.Contains(":2072"), "wrong code for missing max temperature");
     }
@@ -559,8 +554,7 @@ namespace VSS.MasterData.Models.UnitTests
     [Fact]
     public void TemperatureRangeFilter_OutOfRange()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, -10.0, 320.0);
+      var filter = new Filter(temperatureRangeMin:-10.0, temperatureRangeMax:320.0);
       var ex = Assert.Throws<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
       Assert.True(ex.GetContent.Contains(":2076"), "wrong code for temperature out of range");
     }
@@ -568,8 +562,7 @@ namespace VSS.MasterData.Models.UnitTests
     [Fact]
     public void TemperatureRangeFilter_InvalidRange()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, 255.0, 127.5);
+      var filter = new Filter(temperatureRangeMin:255.0, temperatureRangeMax:127.5);
       var ex = Assert.Throws<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
       Assert.True(ex.GetContent.Contains(":2074"), "wrong code for invalid temperature range");
     }
@@ -577,8 +570,7 @@ namespace VSS.MasterData.Models.UnitTests
     [Fact]
     public void PassCountRangeFilterSuccess()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, 5, 10);
+      var filter = new Filter(passCountRangeMin:5, passCountRangeMax:10);
       filter.Validate(_serviceExceptionHandler);
 
     }
@@ -586,8 +578,7 @@ namespace VSS.MasterData.Models.UnitTests
     [Fact]
     public void PassCountRangeFilter_MissingMax()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, 5);
+      var filter = new Filter(passCountRangeMin:5);
       var ex = Assert.Throws<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
       Assert.True(ex.GetContent.Contains(":2073"), "wrong code for missing max pass count");
     }
@@ -595,8 +586,7 @@ namespace VSS.MasterData.Models.UnitTests
     [Fact]
     public void PassCountRangeFilter_OutOfRange()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, 900, 1100);
+      var filter = new Filter(passCountRangeMin:900, passCountRangeMax:1100);
       var ex = Assert.Throws<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
       Assert.True(ex.GetContent.Contains(":2077"), "wrong code for pass count out of range");
 
@@ -605,8 +595,7 @@ namespace VSS.MasterData.Models.UnitTests
     [Fact]
     public void PassCountRangeFilter_InvalidRange()
     {
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, 25, 15);
+      var filter = new Filter(passCountRangeMin:25, passCountRangeMax:15);
       var ex = Assert.Throws<ServiceException>(() => filter.Validate(_serviceExceptionHandler));
       Assert.True(ex.GetContent.Contains(":2075"), "wrong code for invalid pass count range");
     }

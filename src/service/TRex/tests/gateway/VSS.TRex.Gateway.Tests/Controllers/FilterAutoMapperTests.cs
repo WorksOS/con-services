@@ -28,7 +28,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         new WGSPoint(2, 2),
         new WGSPoint(3, 3)
       };
-      var filterResult = new FilterResult(null, new Filter(), polygonLonLat, null, null, null, null, true, null);
+      var filterResult = new FilterResult(polygonLL:polygonLonLat, returnEarliest:true);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -54,7 +54,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultNoPolygonToCombinedFilter()
     {
-      var filterResult = new FilterResult(null, new Filter(), null, null, null, null, null, true, null);
+      var filterResult = new FilterResult(returnEarliest:true);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -73,13 +73,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasNoFiltersToCombinedFilter()
     {
-      var filter = new Filter(null, null,
-        string.Empty, string.Empty,
-        new List<MachineDetails>(0), null, null,
-        null, null, null, null
-      );
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, null, null);
+      var filterResult = new FilterResult(filter:new Filter());
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -109,14 +103,10 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasTimeFilterToCombinedFilter()
     {
       var filter = new Filter(
-        DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
-        DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc),
-        null, null,
-        new List<MachineDetails>(0), null, null, 
-        null, null, null, null
+        startUtc:DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
+        endUtc:DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc)
       );
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      var filterResult = new FilterResult(filter:filter);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -135,12 +125,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Big yella 1", false, Guid.NewGuid()),
         new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Big yella 2", true, Guid.NewGuid())
       };
-      var filter = new Filter(
-        null, null, null, null,
-        contributingMachines, null, null, null, null, null, null
-      );
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      var filter = new Filter(contributingMachines:contributingMachines);
+      var filterResult = new FilterResult(filter:filter);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -162,12 +148,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Big yella 1", false, Guid.NewGuid()),
         new MachineDetails(Consts.NULL_LEGACY_ASSETID, "Big yella 2", true, Guid.NewGuid())
       };
-      var filter = new Filter(
-        null, null, null, null,
-        contributingMachines, null, null, null, null, null, null
-      );
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      var filter = new Filter(contributingMachines:contributingMachines);
+      var filterResult = new FilterResult(filter: filter);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -193,26 +175,17 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasMachineDirectionFilterToCombinedFilter()
     {
-      var filter = new Filter(
-        null, null, null, null,
-        new List<MachineDetails>(0), null, null, 
-        null, null, true, null
-      );
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      var filter = new Filter(forwardDirection:true);
+      var filterResult = new FilterResult(filter: filter, returnEarliest:true);
+
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.HasMachineDirectionFilter.Should().BeTrue();
       combinedFilter.AttributeFilter.MachineDirection.Should().Be(MachineDirection.Forward);
 
-      filter = new Filter(
-        null, null, null, null,
-        new List<MachineDetails>(0), null, null,
-        null, null, false, null
-      );
-      filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      filter = new Filter(forwardDirection:false);
+      filterResult = new FilterResult(filter: filter, returnEarliest: true);
       combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.HasMachineDirectionFilter.Should().BeTrue();
       combinedFilter.AttributeFilter.MachineDirection.Should().Be(MachineDirection.Reverse);
@@ -222,8 +195,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         new List<MachineDetails>(0), null, null,
         null, null, null, null
       );
-      filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      filterResult = new FilterResult(filter: filter, returnEarliest: true);
       combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.HasMachineDirectionFilter.Should().BeFalse();
       combinedFilter.AttributeFilter.MachineDirection.Should().Be(MachineDirection.Unknown);
@@ -233,13 +205,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasMachineDesignFilterToCombinedFilter()
     {
       var onMachineDesignId = 66;
-      var filter = new Filter(
-        null, null, null, null,
-        new List<MachineDetails>(0), onMachineDesignId, null, 
-        null, null, null, null
-      );
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      var filter = new Filter(onMachineDesignId: onMachineDesignId);
+      var filterResult = new FilterResult(filter: filter, returnEarliest: true);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -250,13 +217,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasVibeStateFilterToCombinedFilter()
     {
-      var filter = new Filter(
-        null, null, null, null,
-        new List<MachineDetails>(0), null, null,
-        true, null, null, null
-      );
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, null, null);
+      var filter = new Filter(vibeStateOn:true);
+      var filterResult = new FilterResult(filter: filter);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -267,22 +229,15 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasLayerStateFilterToCombinedFilter()
     {
       FilterLayerMethod? layerType = FilterLayerMethod.Automatic;
-      var filter = new Filter(
-        null, null, null, null,
-        new List<MachineDetails>(0), null, null,
-        null, null, null, null
-      );
-      var filterResult = new FilterResult(null, filter, null, null, 
-        layerType, null, null, true, null);
+      var filter = new Filter();
+      var filterResult = new FilterResult(filter: filter, layerType:layerType, returnEarliest: true);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.HasLayerStateFilter.Should().BeTrue();
       combinedFilter.AttributeFilter.LayerState.Should().Be(LayerState.On);
 
-      layerType = null;
-      filterResult = new FilterResult(null, filter, null, null, 
-        layerType, null, null, true, null);
+      filterResult = new FilterResult(filter: filter, returnEarliest: true);
       filterResult.Validate();
 
       combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -293,9 +248,9 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasElevationTypeFilterToCombinedFilter()
     {
-      var filter = new Filter(null, null, null, null, null, null, MasterData.Models.Models.ElevationType.First, null, null,null,null);
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      var filter = new Filter(elevationType:MasterData.Models.Models.ElevationType.First);
+      var filterResult = new FilterResult(filter: filter, returnEarliest: true);
+
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -309,13 +264,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasGCSGuidanceModeFilterToCombinedFilter()
     {
       var automaticsType = AutomaticsType.Automatics;
-      var filter = new Filter(
-        null, null, null, null,
-        new List<MachineDetails>(0), null, null,
-        null, null, null, null, automaticsType: automaticsType
-      );
-      var filterResult = new FilterResult(null, filter, null, null, null, 
-        null, null, true, null);
+      var filter = new Filter(automaticsType: automaticsType);
+      var filterResult = new FilterResult(filter: filter, returnEarliest: true);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -327,13 +277,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasLayerIdFilterToCombinedFilter()
     {
       var layerType = FilterLayerMethod.TagfileLayerNumber;
-      var filter = new Filter(
-        null, null, null, null,
-        new List<MachineDetails>(0), null, null,
-        null, null, null, 45
-      );
-      var filterResult = new FilterResult(null, filter, null, null,
-        layerType, null, null, true, null);
+      var filter = new Filter(layerNumber:45);
+      var filterResult = new FilterResult(filter: filter, layerType:layerType, returnEarliest: true);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -344,14 +289,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasTemperatureRangeFilterToCombinedFilter()
     {
-      var filter = new Filter(
-        null, null, null, null,
-        new List<MachineDetails>(0), null, null,
-        null, null, null, null,
-        temperatureRangeMin: 34, temperatureRangeMax: 89
-      );
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      var filter = new Filter(temperatureRangeMin: 34, temperatureRangeMax: 89);
+      var filterResult = new FilterResult(filter: filter, returnEarliest: true);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -363,14 +302,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapFilterResultHasPassCountRangeFilterToCombinedFilter()
     {
-      var filter = new Filter(
-        null, null, null, null,
-        new List<MachineDetails>(0), null, null,
-        null, null, null, null,
-        passCountRangeMin: 34, passCountRangeMax: 89
-      );
-      var filterResult = new FilterResult(null, filter, null, null, null,
-        null, null, true, null);
+      var filter = new Filter(passCountRangeMin: 34, passCountRangeMax: 89);
+      var filterResult = new FilterResult(filter: filter, returnEarliest: true);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
@@ -385,6 +318,21 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var id1 = Guid.NewGuid();
       var id2 = Guid.NewGuid();
       var excludedIds = new List<Guid> {id1, id2};
+      var filterResult = new FilterResult(excludedSurveyedSurfaceUids: excludedIds, returnEarliest: true);
+      filterResult.Validate();
+
+      var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Should().NotBeNull();
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Length.Should().Be(excludedIds.Count);
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList[0].Should().Be(id1);
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList[1].Should().Be(id2);
+    }
+
+    /*
+    [Fact]
+    public void MapFilterResultHasElevationRangeFilterToCombinedFilter()
+    {
+  
       var filterResult = new FilterResult(null, new Filter(), null, null, null,
         null, excludedIds, true, null);
       filterResult.Validate();
@@ -395,5 +343,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList[0].Should().Be(id1);
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList[1].Should().Be(id2);
     }
+    */
   }
 }
