@@ -5,6 +5,7 @@ metadata:
   name: {{ template "trex.deployname" . }}-reports
   labels:
     app: {{ template "trex.deployname" . }}
+    component: {{ template "trex.deployname" . }}-reports
     chart: {{ template "trex.chart" . }}
     immutable-cluster: "true"
     jmx-prometheus: "true"
@@ -18,6 +19,7 @@ spec:
         # ignite-service.yaml so that the Kubernetes Ignite lookup service
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.deployname" . }}
+        component: {{ template "trex.deployname" . }}-reports
         immutable-cluster: "true"
         jmx-prometheus: "true"
     spec:
