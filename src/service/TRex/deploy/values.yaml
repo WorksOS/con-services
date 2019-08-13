@@ -33,7 +33,7 @@ applicationServer:
       memory: 2Gi
   autoscaling:
     enabled: true
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 5
     memory:
       enabled: false
@@ -52,7 +52,7 @@ designElevation:
       memory: 2Gi
   autoscaling:
     enabled: true
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 3
     memory:
       enabled: false
@@ -132,7 +132,7 @@ reportServer:
       memory: 1280Mi
   autoscaling:
     enabled: true
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 3
     memory:
       enabled: false
@@ -170,7 +170,7 @@ tinExportServer:
       memory: 1536Mi
   autoscaling:
     enabled: true
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 3
     memory:
       enabled: false
