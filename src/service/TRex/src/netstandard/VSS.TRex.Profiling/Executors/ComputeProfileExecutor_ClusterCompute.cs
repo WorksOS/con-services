@@ -132,14 +132,13 @@ namespace VSS.TRex.Profiling.Executors
           var PopulationControl = new FilteredValuePopulationControl();
           PopulationControl.PreparePopulationControl(ProfileTypeRequired, LiftParams, Filters.Filters[0].AttributeFilter);
 
-          IDesign design = null;
+          IDesignWrapper designWrapper = null;
           if (Design != null && Design.DesignID != Guid.Empty)
           {
-
-            design = SiteModel.Designs.Locate(Design.DesignID);
-
+            var design = SiteModel.Designs.Locate(Design.DesignID);
             if (design == null)
               throw new ArgumentException($"Design {Design.DesignID} is unknown in project {SiteModel.ID}");
+            designWrapper = new DesignWrapper(Design, design);
           }
 
           Log.LogInformation("Creating IProfileBuilder");
@@ -151,8 +150,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, 
-            new DesignWrapper(Design, design),
-            /* todo elevation range design + offset: */null, PopulationControl, 
+            designWrapper, PopulationControl, 
             new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides, LiftParams);
 
           Log.LogInformation("Building cell profile");

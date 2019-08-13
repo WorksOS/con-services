@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Designs.Storage;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -104,7 +105,7 @@ namespace VSS.TRex.Profiling
 
     public static async Task<(bool executionResult, DesignProfilerRequestResult filterDesignErrorCode)> InitialiseFilterContext(ISiteModel siteModel, 
       ICellPassAttributeFilter passFilter, ICellPassAttributeFilterProcessingAnnex passFilterAnnex,
-      ProfileCell profileCell, IDesign design)
+      ProfileCell profileCell)
     {
       (bool executionResult, DesignProfilerRequestResult filterDesignErrorCode) result = (false, DesignProfilerRequestResult.UnknownError);
 
@@ -115,6 +116,7 @@ namespace VSS.TRex.Profiling
 
         if ((passFilter.ElevationRangeDesign?.DesignID ?? Guid.Empty) != Guid.Empty)
         {
+          var design = siteModel.Designs.Locate(passFilter.ElevationRangeDesign.DesignID);
           var getDesignHeightsResult = await design.GetDesignHeights(siteModel.ID, passFilter.ElevationRangeDesign.Offset, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY), siteModel.CellSize);
 
           result.filterDesignErrorCode = getDesignHeightsResult.errorCode;

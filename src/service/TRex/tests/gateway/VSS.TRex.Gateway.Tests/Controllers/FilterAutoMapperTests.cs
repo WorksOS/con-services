@@ -4,6 +4,7 @@ using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
@@ -328,21 +329,37 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList[1].Should().Be(id2);
     }
 
-    /*
+
     [Fact]
     public void MapFilterResultHasElevationRangeFilterToCombinedFilter()
     {
-  
-      var filterResult = new FilterResult(null, new Filter(), null, null, null,
-        null, excludedIds, true, null);
+      //Offset from bench
+      var filterResult = FilterResult.CreateFilterObsolete(layerType: FilterLayerMethod.OffsetFromBench, benchElevation: 1.25, layerNumber: 3, layerThickness: 0.4);
       filterResult.Validate();
 
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
-      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Should().NotBeNull();
-      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList.Length.Should().Be(excludedIds.Count);
-      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList[0].Should().Be(id1);
-      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList[1].Should().Be(id2);
+      combinedFilter.AttributeFilter.HasLayerStateFilter.Should().Be(true);
+      combinedFilter.AttributeFilter.LayerState.Should().Be(LayerState.On);
+      combinedFilter.AttributeFilter.HasElevationRangeFilter.Should().Be(true);
+      combinedFilter.AttributeFilter.ElevationRangeLevel.Should().Be(filterResult.BenchElevation);
+      combinedFilter.AttributeFilter.ElevationRangeOffset.Should().Be(filterResult.LayerNumber*filterResult.LayerThickness);
+      combinedFilter.AttributeFilter.ElevationRangeThickness.Should().Be(filterResult.LayerThickness);
+
+      //Offset from design
+      var designFile = new DesignDescriptor(-1, null, 0, Guid.NewGuid());
+      filterResult = FilterResult.CreateFilterObsolete(layerType: FilterLayerMethod.OffsetFromDesign, layerDesignOrAlignmentFile: designFile, layerNumber: -2, layerThickness: 0.3);
+      filterResult.Validate();
+
+      combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
+      combinedFilter.AttributeFilter.HasLayerStateFilter.Should().Be(true);
+      combinedFilter.AttributeFilter.LayerState.Should().Be(LayerState.On);
+      combinedFilter.AttributeFilter.HasElevationRangeFilter.Should().Be(true);
+      combinedFilter.AttributeFilter.ElevationRangeDesign.Should().NotBeNull();
+      combinedFilter.AttributeFilter.ElevationRangeDesign.DesignID.Should().Be(designFile.FileUid.Value);
+      combinedFilter.AttributeFilter.ElevationRangeDesign.Offset.Should().Be(designFile.Offset);
+      combinedFilter.AttributeFilter.ElevationRangeOffset.Should().Be((filterResult.LayerNumber+1) * filterResult.LayerThickness);
+      combinedFilter.AttributeFilter.ElevationRangeThickness.Should().Be(filterResult.LayerThickness);
     }
-    */
+
   }
 }

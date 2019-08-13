@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -60,7 +61,7 @@ namespace VSS.TRex.SubGrids
     private ITRexSpatialMemoryCache SubGridCache;
     private ITRexSpatialMemoryCacheContext SubGridCacheContext;
 
-    private IDesign ElevationRangeDesign;
+    private IDesignWrapper ElevationRangeDesign;
     private IDesign SurfaceDesignMaskDesign;
 
     private IClientHeightLeafSubGrid DesignElevations;
@@ -125,9 +126,10 @@ namespace VSS.TRex.SubGrids
 
       FilteredSurveyedSurfaces = filteredSurveyedSurfaces;
 
-      if (Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty)
-        ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesign.DesignID);
-
+      ElevationRangeDesign = Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty
+        ? new DesignWrapper(Filter.AttributeFilter.ElevationRangeDesign, SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesign.DesignID))
+        : null;
+      
       if (Filter.SpatialFilter.IsDesignMask)
         SurfaceDesignMaskDesign = SiteModel.Designs.Locate(Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
@@ -152,11 +154,11 @@ namespace VSS.TRex.SubGrids
         // If the elevation range filter uses a design then the design elevations
         // for the sub grid need to be calculated and supplied to the filter
 
-        if (Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty)
+        if (ElevationRangeDesign != null)
         {
           // Query the design get the patch of elevations calculated
-          getDesignHeightsResult = await ElevationRangeDesign.GetDesignHeights(SiteModel.ID, Filter.AttributeFilter.ElevationRangeDesign.Offset,
-            ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize);
+          getDesignHeightsResult = await ElevationRangeDesign.Design.GetDesignHeights(
+            SiteModel.ID, ElevationRangeDesign.Offset, ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize);
 
           if ((getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.OK && getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
               || DesignElevations == null)

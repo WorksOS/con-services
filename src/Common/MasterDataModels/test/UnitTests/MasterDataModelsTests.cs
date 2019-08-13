@@ -181,7 +181,7 @@ namespace VSS.MasterData.Models.UnitTests
     public void CanCreateFilterTest()
     {
       // Empty filter...
-      var filter = new Filter(null, null, null, null, null, null, null, null, null, null, null);
+      var filter = new Filter();
       Assert.True(_validator.TryValidate(filter, out _));
 
       // Complete filter...
