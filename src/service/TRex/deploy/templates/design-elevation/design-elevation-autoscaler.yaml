@@ -1,0 +1,34 @@
+{{- if .Values.designElevation.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "trex.deployname" . }}-des
+  labels:
+    app: {{ template "trex.deployname" . }}
+    chart: {{ template "trex.chart" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: {{ template "trex.deployname" . }}-des
+  minReplicas: {{ .Values.designElevation.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.designElevation.autoscaling.maxReplicas }}
+  metrics:
+{{- if .Values.designElevation.autoscaling.cpu.enabled }}
+{{- with .Values.designElevation.autoscaling.cpu.target }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ . }}
+{{- end }}
+{{- end }}
+
+{{- if .Values.designElevation.autoscaling.memory.enabled }}
+{{- with .Values.designElevation.autoscaling.memory.target }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ . }}
+{{- end }}
+{{- end }}
+{{- end }}

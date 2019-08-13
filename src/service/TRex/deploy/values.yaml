@@ -31,6 +31,16 @@ applicationServer:
     requests:
       cpu: 300m
       memory: 2Gi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: true
+      target: 100
 
 designElevation:
   replicaCount: 1
@@ -40,6 +50,16 @@ designElevation:
     requests:
       cpu: 300m
       memory: 2Gi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: true
+      target: 100
 
 gateway:
   replicaCount: 1
@@ -110,6 +130,16 @@ reportServer:
     requests:
       cpu: 300m
       memory: 1280Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: true
+      target: 100
 
 tileServer:
   replicaCount: 1
@@ -119,6 +149,16 @@ tileServer:
     requests:
       cpu: 300m
       memory: 1536Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: true
+      target: 100
 
 tinExportServer:
   replicaCount: 1
@@ -128,6 +168,16 @@ tinExportServer:
     requests:
       cpu: 300m
       memory: 1536Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: true
+      target: 100
 
 utilities:
   replicaCount: 0
