@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
@@ -13,6 +14,8 @@ using SVOICProfileCell;
 #endif
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
@@ -20,12 +23,21 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
 {
   public class CellPassesExecutor : RequestExecutorContainer
   {
-
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = CastRequestObjectTo<CellPassesRequest>(item);
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
 
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    {
+      var request = CastRequestObjectTo<CellPassesRequest>(item);
 #if RAPTOR
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_CELL_PASSES"))
+      {
+#endif
+        return await GetTRexCellPasses(request);
+#if RAPTOR
+      }
 
       bool isGridCoord = request.probePositionGrid != null;
       bool isLatLgCoord = request.probePositionLL != null;
@@ -44,14 +56,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
         raptorFilter,
         out var profile);
 
-
       if (code == 1)//TICServerRequestResult.icsrrNoError
         return ConvertResult(profile);
 
       return null;
-
-#else
-      throw new NotImplementedException();
 #endif
     }
 
@@ -227,6 +235,74 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
         ? Array.ConvertAll(passes.FilteredPassData, ConvertFilteredPassDataItem)
         : null;
     }
-    #endif
+#endif
+
+    private async Task<CellPassesResult> GetTRexCellPasses(CellPassesRequest request)
+    {
+      var overrides = AutoMapperUtility.Automapper.Map<OverridingTargets>(request.liftBuildSettings);
+      var liftSettings = AutoMapperUtility.Automapper.Map<LiftSettings>(request.liftBuildSettings);
+      CellPassesTRexRequest tRexRequest;
+      if (request.probePositionGrid != null)
+      {
+        tRexRequest = new CellPassesTRexRequest(request.ProjectUid.Value,
+          request.probePositionGrid,
+          request.filter,
+          overrides,
+          liftSettings);
+      }
+      else
+      {
+        tRexRequest = new CellPassesTRexRequest(request.ProjectUid.Value,
+          request.probePositionLL,
+          request.filter,
+          overrides,
+          liftSettings);
+      }
+
+      var trexResult = await trexCompactionDataProxy.SendDataPostRequest<CellPassesV2Result, CellPassesTRexRequest>(tRexRequest, "/cells/passes", customHeaders);
+
+      if (trexResult != null)
+        return ConvertTRexResult(trexResult);
+
+      return null;
+    }
+
+    private CellPassesResult ConvertTRexResult(CellPassesV2Result result)
+    {
+      return CellPassesResult.CreateCellPassesResult(
+        result.CellPassValue. cellCCV,
+        profile.CellCCVElev,
+        profile.CellFirstCompositeElev,
+        profile.CellFirstElev,
+        profile.CellHighestCompositeElev,
+        profile.CellHighestElev,
+        profile.CellLastCompositeElev,
+        profile.CellLastElev,
+        profile.CellLowestCompositeElev,
+        profile.CellLowestElev,
+        profile.CellMaterialTemperature,
+        profile.CellMaterialTemperatureElev,
+        profile.CellMaterialTemperatureWarnMax,
+        profile.CellMaterialTemperatureWarnMin,
+        profile.FilteredHalfPassCount,
+        profile.FilteredPassCount,
+        profile.CellMDP,
+        profile.CellMDPElev,
+        profile.CellTargetCCV,
+        profile.CellTargetMDP,
+        profile.CellTopLayerThickness,
+        profile.DesignElev,
+        profile.IncludesProductionData,
+        profile.InterceptLength,
+        profile.OTGCellX,
+        profile.OTGCellY,
+        profile.Station,
+        profile.TopLayerPassCount,
+        new TargetPassCountRange(profile.TopLayerPassCountTargetRangeMin, profile.TopLayerPassCountTargetRangeMax),
+        ConvertCellLayers(profile.Layers,
+          ConvertFilteredPassData(profile.Passes))
+      );
+
+    }
   }
 }
