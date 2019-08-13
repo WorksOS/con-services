@@ -62,7 +62,7 @@ designElevation:
       target: 100
 
 gateway:
-  replicaCount: 1
+  replicaCount: 2
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
   serviceDiscoveryName: trex-service-immutable
@@ -100,7 +100,7 @@ mutableData:
     tagfileArchiveFolder: ""
 
 mutableGateway:
-  replicaCount: 1
+  replicaCount: 2
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
   serviceDiscoveryName: trex-service-mutable
