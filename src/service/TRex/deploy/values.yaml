@@ -29,7 +29,7 @@ applicationServer:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 800m
+      cpu: 300m
       memory: 2Gi
   autoscaling:
     enabled: true
@@ -48,7 +48,7 @@ designElevation:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 800m
+      cpu: 300m
       memory: 2Gi
   autoscaling:
     enabled: true
@@ -68,7 +68,7 @@ gateway:
   serviceDiscoveryName: trex-service-immutable
   resources:
     requests:
-      cpu: 800m
+      cpu: 300m
       memory: 1280Mi
 
 immutableData:
@@ -77,7 +77,7 @@ immutableData:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 800m
+      cpu: 300m
       memory: 1536Mi
 
 mutableData:
@@ -86,7 +86,7 @@ mutableData:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 800m
+      cpu: 300m
       memory: 1536Mi
   storage:
     size: 10Gi
@@ -106,7 +106,7 @@ mutableGateway:
   serviceDiscoveryName: trex-service-mutable
   resources:
     requests:
-      cpu: 800m
+      cpu: 300m
       memory: 1Gi
 
 psnode:
@@ -128,7 +128,7 @@ reportServer:
   javaHeapInitialSizeMb: 768  
   resources:
     requests:
-      cpu: 800m
+      cpu: 300m
       memory: 1280Mi
   autoscaling:
     enabled: true
@@ -147,7 +147,7 @@ tileServer:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 800m
+      cpu: 300m
       memory: 1536Mi
   autoscaling:
     enabled: true
@@ -166,7 +166,7 @@ tinExportServer:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 800m
+      cpu: 300m
       memory: 1536Mi
   autoscaling:
     enabled: true
