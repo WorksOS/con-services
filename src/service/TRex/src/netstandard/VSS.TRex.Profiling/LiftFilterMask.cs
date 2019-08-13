@@ -117,6 +117,13 @@ namespace VSS.TRex.Profiling
         if ((passFilter.ElevationRangeDesign?.DesignID ?? Guid.Empty) != Guid.Empty)
         {
           var design = siteModel.Designs.Locate(passFilter.ElevationRangeDesign.DesignID);
+          if (design == null)
+          {
+            Log.LogError($"ElevationRangeDesign {passFilter.ElevationRangeDesign.DesignID} is unknown in project {siteModel.ID}");
+            result.filterDesignErrorCode = DesignProfilerRequestResult.DesignDoesNotExist;
+            return result;
+          }          
+          
           var getDesignHeightsResult = await design.GetDesignHeights(siteModel.ID, passFilter.ElevationRangeDesign.Offset, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY), siteModel.CellSize);
 
           result.filterDesignErrorCode = getDesignHeightsResult.errorCode;
