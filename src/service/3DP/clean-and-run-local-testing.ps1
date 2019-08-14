@@ -37,9 +37,6 @@ Write-Host "Done" -ForegroundColor Green
 
 & $PSScriptRoot/build471.ps1
 
-# Workaround to put appender-ref=RollingFile back so we have log files when running locally on Windows. See commit c86a567.
-Set-Location ./src/WebApi
-Copy-Item ./log4net.xml "$PSScriptRoot/artifacts/webapi"
 Set-Location $PSScriptRoot
 # End workaround.
 
