@@ -126,9 +126,15 @@ namespace VSS.TRex.SubGrids
 
       FilteredSurveyedSurfaces = filteredSurveyedSurfaces;
 
-      ElevationRangeDesign = Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty
-        ? new DesignWrapper(Filter.AttributeFilter.ElevationRangeDesign, SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesign.DesignID))
-        : null;
+      var elevRangeDesignFilter = Filter.AttributeFilter.ElevationRangeDesign;
+      if (elevRangeDesignFilter.DesignID != Guid.Empty)
+      {
+        var design = SiteModel.Designs.Locate(elevRangeDesignFilter.DesignID);
+        if (design == null)
+          Log.LogError($"ElevationRangeDesign {elevRangeDesignFilter.DesignID} is unknown in project {siteModel.ID}");
+        else
+          ElevationRangeDesign = new DesignWrapper(elevRangeDesignFilter, design);
+      }
       
       if (Filter.SpatialFilter.IsDesignMask)
         SurfaceDesignMaskDesign = SiteModel.Designs.Locate(Filter.SpatialFilter.SurfaceDesignMaskDesignUid);

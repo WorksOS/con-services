@@ -6,6 +6,8 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -17,7 +19,6 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling
 {
@@ -42,6 +43,7 @@ namespace VSS.TRex.Profiling
 
     private readonly ICellPassAttributeFilter PassFilter;
     private readonly ICellPassAttributeFilterProcessingAnnex PassFilterAnnex;
+    private readonly IDesignWrapper PassFilterElevationRangeDesign;
 
     private readonly ICellSpatialFilter CellFilter;
 
@@ -74,6 +76,14 @@ namespace VSS.TRex.Profiling
       CellLiftBuilder = cellLiftBuilder;
 
       PassFilter = filterSet.Filters[0].AttributeFilter;
+      if (PassFilter.HasElevationRangeFilter && PassFilter.ElevationRangeDesign.DesignID != Guid.Empty)
+      {
+        var design = siteModel.Designs.Locate(PassFilter.ElevationRangeDesign.DesignID);
+        if (design == null)
+          Log.LogError($"ElevationRangeDesign {PassFilter.ElevationRangeDesign.DesignID} is unknown in project {siteModel.ID}");
+        else
+          PassFilterElevationRangeDesign = new DesignWrapper(PassFilter.ElevationRangeDesign, design);
+      }
       PassFilterAnnex = new CellPassAttributeFilterProcessingAnnex();
       CellFilter = filterSet.Filters[0].SpatialFilter;
     }
@@ -477,7 +487,7 @@ namespace VSS.TRex.Profiling
             }
           }
 
-          var initialiseFilterContextResult = await LiftFilterMask<ProfileCell>.InitialiseFilterContext(SiteModel, PassFilter, PassFilterAnnex, ProfileCell);
+          var initialiseFilterContextResult = await LiftFilterMask<ProfileCell>.InitialiseFilterContext(SiteModel, PassFilter, PassFilterAnnex, ProfileCell, PassFilterElevationRangeDesign);
           if (!initialiseFilterContextResult.executionResult)
           {
             if (initialiseFilterContextResult.filterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
