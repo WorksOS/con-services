@@ -31,13 +31,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CompactionReportStationOffsetTRexRequest;
-      if (request == null)
-      {
-        ThrowRequestTypeCastException<CompactionReportStationOffsetTRexRequest>();
-        return null; // to keep compiler happy
-      }
-
+      var request = CastRequestObjectTo<CompactionReportStationOffsetTRexRequest>(item);
       var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
       

@@ -42,12 +42,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as DesignRequest;
-      if (request == null)
-      {
-        ThrowRequestTypeCastException<DesignRequest>();
-        return null; // to keep compiler happy
-      }
+      var request = CastRequestObjectTo<DesignRequest>(item);
 
       try
       {
@@ -86,7 +81,6 @@ namespace VSS.TRex.Gateway.Common.Executors
       return new ContractExecutionResult(); 
     }
 
-
     /// <summary>
     /// Processes the request asynchronously.
     /// </summary>
@@ -94,6 +88,5 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       throw new NotImplementedException();
     }
-
   }
 }

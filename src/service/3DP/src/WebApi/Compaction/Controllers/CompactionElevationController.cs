@@ -199,7 +199,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = await boundingBoxService.GetProductionDataExtents(projectUid, projectId, excludedIds, GetUserId(), CustomHeaders);
+        var result = await boundingBoxService.GetProductionDataExtents(projectUid, projectId, excludedIds?.Select(e => e.Item1), excludedIds?.Select(e => e.Item2), GetUserId(), CustomHeaders);
         return await FormatProjectExtentsResult(projectUid, result);
       }
       catch (ServiceException se)

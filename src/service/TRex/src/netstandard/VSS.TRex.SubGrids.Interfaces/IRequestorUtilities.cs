@@ -32,12 +32,14 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// </summary>
     /// <returns></returns>
     ISubGridRequestor[] ConstructRequestors(ISiteModel siteModel,
+      IOverrideParameters overrides,
+      ILiftParameters liftParams,
       (GridDataType GridDataType,
         ICombinedFilter Filter,
         ISurveyedSurfaces FilteredSurveyedSurfaces,
         ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
         ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
-        ITRexSpatialMemoryCacheContext CacheContext)[] Intermediaries,
+        ITRexSpatialMemoryCacheContext CacheContext)[] intermediaries,
       AreaControlSet areaControlSet,
       ISubGridTreeBitMask prodDataMask);
   }

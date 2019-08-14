@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.Types;
@@ -38,7 +37,7 @@ namespace VSS.TRex.Pipelines
         /// As each sub grid result is processed in the task, the task pings the pipeline to note another task has been 
         /// completed. Once this count reaches zero the pipeline is cleared to complete its processing.
         /// </summary>
-        private long subGridsRemainingToProcess = 0;
+        private long subGridsRemainingToProcess;
         public long SubGridsRemainingToProcess => subGridsRemainingToProcess;
 
         public ITRexTask PipelineTask { get; set; }
@@ -84,7 +83,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public IFilterSet FilterSet { get; set; }
 
-        public int MaxNumberOfPassesToReturn = 0;
+        public int MaxNumberOfPassesToReturn { get; set; } = int.MaxValue;
 
         public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 
@@ -106,8 +105,9 @@ namespace VSS.TRex.Pipelines
             }
         }
 
-        // FLiftBuildSettings is a reference to a lift build settings object provided by the caller
-        //  property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
+        // LiftParams is a reference to a lift build settings object provided by the caller
+        public ILiftParameters LiftParams { get; set; } = new LiftParameters();
+
         //  property Terminated : Boolean read FTerminated;
       
         /// <summary>

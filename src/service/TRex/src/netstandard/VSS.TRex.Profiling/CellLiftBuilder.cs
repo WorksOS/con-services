@@ -17,6 +17,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.Profiling
 {
@@ -208,7 +209,7 @@ namespace VSS.TRex.Profiling
       if (lift.CCV == CellPassConsts.NullCCV && lift.MDP == CellPassConsts.NullMDP && lift.CCA == CellPassConsts.NullCCA)
         return;
 
-      Cell.CheckLiftCompaction(lift, overrides, /* todo LiftBuildSettings,*/ ProfileTypeRequired);
+      Cell.CheckLiftCompaction(lift, overrides, ProfileTypeRequired);
     }
 
     /// <summary>
@@ -990,7 +991,6 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public bool Build(IProfileCell cell,
       ILiftParameters liftParameters,
-      // todo const LiftBuildSettings: TICLiftBuildSettings;
       IClientLeafSubGrid ClientGrid,
       FilteredValueAssignmentContext AssignmentContext, 
       ISubGridSegmentCellPassIterator cellPassIterator,
@@ -1006,7 +1006,7 @@ namespace VSS.TRex.Profiling
         AssignmentContext.LowestPassIdx = Consts.NullLowestPassIdx; // if LowestPassIdx ends up > -1 then lowestpass is used
 
       FilteredValuePopulationControl.CalculateFlags(ProfileTypeRequired,
-        // todo ... LiftBuildSettings,
+        liftParameters,
         out CompactionSummaryInLiftBuildSettings,
         out WorkInProgressSummaryInLiftBuildSettings,
         out ThicknessInProgressInLiftBuildSettings);
@@ -1332,10 +1332,10 @@ namespace VSS.TRex.Profiling
             if (LayerContainsAFilteredPass) // CCA not catered for here with settings
             {
               if ((ClientGrid.GridDataType == GridDataType.CCV && liftParameters.CCVSummarizeTopLayerOnly &&
-                   liftParameters.CCVSummaryTypes != 0)
+                   liftParameters.CCVSummaryTypes != CCVSummaryTypes.None)
                   ||
                   (ClientGrid.GridDataType == GridDataType.MDP && ProfileTypeRequired == GridDataType.MDP &&
-                   liftParameters.MDPSummarizeTopLayerOnly && liftParameters.MDPSummaryTypes != 0)
+                   liftParameters.MDPSummarizeTopLayerOnly && liftParameters.MDPSummaryTypes != MDPSummaryTypes.None)
                   ||
                   (ClientGrid.TopLayerOnly)
                   ||

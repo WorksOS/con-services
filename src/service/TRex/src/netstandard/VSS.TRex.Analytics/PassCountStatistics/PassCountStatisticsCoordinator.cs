@@ -37,14 +37,15 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     /// <param name="argument"></param>
     /// <param name="aggregator"></param>
     /// <returns></returns>
-    public override AnalyticsComputor ConstructComputor(PassCountStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
+    public override AnalyticsComputor ConstructComputor(PassCountStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor
     {
       RequestDescriptor = RequestDescriptor,
       SiteModel = SiteModel,
       Aggregator = aggregator,
       Filters = argument.Filters,
       IncludeSurveyedSurfaces = true,
-      RequestedGridDataType = GridDataType.PassCount
+      RequestedGridDataType = GridDataType.PassCount,
+      LiftParams = argument.LiftParams
     };
 
     /// <summary>

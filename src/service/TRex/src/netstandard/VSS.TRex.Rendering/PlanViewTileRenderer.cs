@@ -35,7 +35,6 @@ namespace VSS.TRex.Rendering
     // DisplayPalettes : TICDisplayPalettes;
     // Palette : TICDisplayPaletteBase;       
     // ICOptions : TSVOICOptions;
-    // LiftBuildSettings : TICLiftBuildSettings;
 
     // The rotation of tile in the grid coordinate space due to any defined
     // rotation on the coordinate system.
@@ -121,15 +120,11 @@ namespace VSS.TRex.Rendering
     //      property WorkingPalette : TICDisplayPaletteBase read GetWorkingPalette write SetWorkingPalette;
     //      property DisplayPalettes : TICDisplayPalettes read FDisplayPalettes write FDisplayPalettes;
     //      property ICOptions : TSVOICOptions read FICOptions write FICOptions;
-    //      property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
 
     /// <summary>
     /// Perform rendering activities to produce a bitmap tile
     /// </summary>
-    /// <param name="mode"></param>
-    /// <param name="processor"></param>
-    /// <returns></returns>
-    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters)
+    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters, ILiftParameters liftParams)
     {
       // Obtain the display responsible for rendering the thematic information for this mode
       Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
@@ -184,7 +179,7 @@ namespace VSS.TRex.Rendering
         Displayer.MapView.YPixelSize, 0, 0, 0);
 
       // todo PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
-      // todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
+      processor.Pipeline.LiftParams  = liftParams;
       // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
 
       // Perform the sub grid query and processing to render the tile

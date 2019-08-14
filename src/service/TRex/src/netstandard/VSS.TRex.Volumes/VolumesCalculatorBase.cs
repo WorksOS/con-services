@@ -21,6 +21,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using Consts = VSS.TRex.Common.Consts;
 
 
@@ -55,6 +56,11 @@ namespace VSS.TRex.Volumes
         /// The volume computation method to use when calculating volume information
         /// </summary>
         public VolumeComputationType VolumeType = VolumeComputationType.None;
+
+        /// <summary>
+        /// Parameters for lift analysis
+        /// </summary>
+        public ILiftParameters LiftParams { get; set; }
 
         /// <summary>
         ///  Default no-arg constructor
@@ -213,7 +219,7 @@ namespace VSS.TRex.Volumes
             PipeLine.RequestAnalyser.Pipeline = PipeLine;
             PipeLine.RequestAnalyser.WorldExtents.Assign(Extents);
 
-            // PipeLine.LiftBuildSettings := FLiftBuildSettings;
+            PipeLine.LiftParams = LiftParams;
 
             // Construct and assign the filter set into the pipeline
             IFilterSet FilterSet;

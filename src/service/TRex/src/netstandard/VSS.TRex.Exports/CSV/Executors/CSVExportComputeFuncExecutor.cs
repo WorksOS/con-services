@@ -53,18 +53,20 @@ namespace VSS.TRex.Exports.CSV.Executors
           ? GridDataType.CellProfile
           : GridDataType.CellPasses;
 
-        _processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
-          dataModelID: _CSVExportRequestArgument.ProjectID,
-          gridDataType: gridDataType,
-          response: new SubGridsPipelinedResponseBase(),
-          filters: _CSVExportRequestArgument.Filters,
-          cutFillDesign: new DesignOffset(), 
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.CSVExport),
-          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_CSVExportRequestArgument.Filters),
-          requestRequiresAccessToDesignFileExistenceMap: false,
-          overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
+        _processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+          requestDescriptor,
+          _CSVExportRequestArgument.ProjectID,
+          gridDataType,
+          new SubGridsPipelinedResponseBase(),
+          _CSVExportRequestArgument.Filters,
+          new DesignOffset(), 
+          DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.CSVExport),
+          DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+          DIContext.Obtain<IRequestAnalyser>(),
+          Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_CSVExportRequestArgument.Filters),
+          false,
+          BoundingIntegerExtent2D.Inverted(),
+          _CSVExportRequestArgument.LiftParams
         );
 
         // Set the grid TRexTask parameters for progressive processing

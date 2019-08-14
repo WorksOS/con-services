@@ -39,6 +39,8 @@ namespace VSS.TRex.Events.Interfaces
 
     DateTime FirstStateDate();
     DateTime LastStateDate();
+
+    string EventChangeListPersistantFileName();
   }
 
   public interface IProductionEvents<T> : IProductionEvents

@@ -26,7 +26,7 @@ namespace VSS.TRex.Alignments
     private readonly IStorageProxy _writeStorageProxy;
     private readonly IStorageProxy _readStorageProxy;
 
-    private const string ALIGNMENTS_STREAM_NAME = "Alignments";
+    public const string ALIGNMENTS_STREAM_NAME = "Alignments";
 
     /// <summary>
     /// Constructs an instance using the supplied storage proxy
