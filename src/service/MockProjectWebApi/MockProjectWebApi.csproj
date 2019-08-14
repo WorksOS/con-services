@@ -212,13 +212,15 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Bulk copy static runtime file dependencies. -->
   <ItemGroup>
     <ResourceFiles Include="./Resources/**" />
   </ItemGroup>
 
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutDir)/Resources" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/Resources/%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
+  <!-- End bulk copy. -->
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
