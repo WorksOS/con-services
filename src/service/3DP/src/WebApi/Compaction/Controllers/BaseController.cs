@@ -14,7 +14,6 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
@@ -32,6 +31,7 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Extensions;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
