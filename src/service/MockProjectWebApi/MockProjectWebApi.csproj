@@ -189,6 +189,7 @@
     <ProjectReference Include="..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
     <ProjectReference Include="..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
     <ProjectReference Include="..\Scheduler\src\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
+    <ProjectReference Include="..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -213,12 +214,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ResourceFiles Include="./Resources/**" />
+    <None Update="Resources\Large Sites Road_AlignmentCenterline%24.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Z15-Y12844-X5914.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Z16-Y41583-X64159.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Z18-Y102753-X47317.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-
-  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutDir)/Resources" SkipUnchangedFiles="true" />
-  </Target>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
