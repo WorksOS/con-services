@@ -6,6 +6,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -87,14 +88,15 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         return new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.NoSuchDataModel};
       }
 
-      IDesign cutFillDesign = null;
+      IDesignWrapper cutFillDesignWrapper = null;
       if (requestArgument.ReferenceDesign != null && requestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
-        cutFillDesign = siteModel.Designs.Locate(requestArgument.ReferenceDesign.DesignID);
+        var cutFillDesign = siteModel.Designs.Locate(requestArgument.ReferenceDesign.DesignID);
         if (cutFillDesign == null)
         {
           throw new ArgumentException($"Design {requestArgument.ReferenceDesign.DesignID} not a recognized design in project {requestArgument.ProjectID}");
         }
+        cutFillDesignWrapper = new DesignWrapper(requestArgument.ReferenceDesign, cutFillDesign);
       }
 
       var existenceMap = siteModel.ExistenceMap;
@@ -136,7 +138,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           continue;
         }
 
-        var hydratedPoint = await ExtractRequiredValues(cutFillDesign, point, requestSubGridInternalResult.clientGrid as ClientCellProfileLeafSubgrid, cellX, cellY);
+        var hydratedPoint = await ExtractRequiredValues(cutFillDesignWrapper, point, requestSubGridInternalResult.clientGrid as ClientCellProfileLeafSubgrid, cellX, cellY);
         result.StationOffsetRows.Add(hydratedPoint);
       }
 
@@ -145,7 +147,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     }
 
 
-    private async Task<StationOffsetRow> ExtractRequiredValues(IDesign cutFillDesign, StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, int cellX, int cellY)
+    private async Task<StationOffsetRow> ExtractRequiredValues(IDesignWrapper cutFillDesignWrapper, StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, int cellX, int cellY)
     {
       clientGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
       var cell = clientGrid.Cells[cellX, cellY];
@@ -156,7 +158,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
       if (requestArgument.ReferenceDesign != null && requestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
-        getDesignHeightsResult = await cutFillDesign.GetDesignHeights(requestArgument.ProjectID, requestArgument.ReferenceDesign.Offset, clientGrid.OriginAsCellAddress(), clientGrid.CellSize);
+        getDesignHeightsResult = await cutFillDesignWrapper.Design.GetDesignHeights(requestArgument.ProjectID, cutFillDesignWrapper.Offset, clientGrid.OriginAsCellAddress(), clientGrid.CellSize);
 
         if (getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK || getDesignHeightsResult.designHeights == null)
         {

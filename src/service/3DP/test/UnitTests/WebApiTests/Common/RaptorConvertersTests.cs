@@ -133,7 +133,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
         var mockRaptorClient = new Mock<IASNodeClient>();
         mockRaptorClient.Setup(prj => prj.GetOnMachineDesignEvents(It.IsAny<long>())).Returns(machineDesigns);
 
-        var filterResult = new FilterResult(null, CreateFilter(onMachineDesignId, onMachineDesignName: onMachineDesignName), null, null, null, null, null, null, null);
+        var filterResult = new FilterResult(filter:CreateFilter(onMachineDesignId, onMachineDesignName: onMachineDesignName));
         Assert.AreEqual(onMachineDesignId, filterResult.OnMachineDesignId);
 
         var raptorFilter = RaptorConverters.ConvertFilter(filterResult, 1, mockRaptorClient.Object);

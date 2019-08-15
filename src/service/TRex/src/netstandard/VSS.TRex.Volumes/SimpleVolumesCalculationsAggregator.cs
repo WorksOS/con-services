@@ -43,13 +43,10 @@ namespace VSS.TRex.Volumes
     // SubGridTreeBitMask FNoChangeMap = new SubGridTreeBitMask();
 
     /// <summary>
-    /// The design being used to compare heights derived from production data against to calculate per-cell volumes
+    /// The design being used to compare heights derived from production data against to calculate per-cell volumes.
+    /// Also contains the offset for a reference surface.
     /// </summary>
-    public IDesign ActiveDesign { get; set; }
-    /// <summary>
-    /// The offset if the design is a reference surface
-    /// </summary>
-    public double ActiveDesignOffset;
+    public IDesignWrapper ActiveDesign { get; set; }
 
     // References necessary for correct summarization of aggregated state
     public ILiftParameters LiftParams { get; set; } = new LiftParameters();
@@ -166,7 +163,7 @@ namespace VSS.TRex.Volumes
       // Query the patch of elevations from the surface model for this sub grid
       if (ActiveDesign != null)
       {
-        getDesignHeightsResult = await ActiveDesign.GetDesignHeights(SiteModelID, ActiveDesignOffset, BaseScanSubGrid.OriginAsCellAddress(), CellSize);
+        getDesignHeightsResult = await ActiveDesign.Design.GetDesignHeights(SiteModelID, ActiveDesign.Offset, BaseScanSubGrid.OriginAsCellAddress(), CellSize);
 
         if (getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.OK &&
             getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
