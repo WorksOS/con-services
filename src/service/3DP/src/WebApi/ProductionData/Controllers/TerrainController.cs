@@ -18,7 +18,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// <summary>
   /// TerrainController responsible for all quantized mesh tile requests
   /// </summary>
-  [Route("api/[controller]")]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class TerrainController : BaseController<TerrainController>, ITerrainContract
   {
@@ -42,20 +41,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Async call to make quantized mesh tile
     /// </summary>
-    /// <param name="projectUId"> project id</param>
-    /// <param name="filterUId">filter id</param>
+    /// <param name="projectUid"> project id</param>
+    /// <param name="filterUid">filter id</param>
     /// <param name="displayMode">DisplayMode</param>
     /// <param name="x">tile x coordinate</param>
     /// <param name="y">tile y coordinate</param>
     /// <param name="z">tile z coordinate</param>
     /// <returns></returns>
-    private async Task<byte[]> FetchTile(Guid projectUId, Guid filterUId, int displayMode, int x, int y, int z)
+    private async Task<byte[]> FetchTile(Guid projectUid, Guid filterUid, int displayMode, int x, int y, int z)
     {
 
-      var filter = await GetCompactionFilter(projectUId, filterUId);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
       var request = new QMTileRequest()
       {
-        ProjectUid = projectUId,
+        ProjectUid = projectUid,
         Filter = filter,
         DisplayMode = displayMode,
         X = x,
@@ -82,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="filterUId">Filter Id</param>
     /// <param name="displayMode">DisplayMode</param>/// 
     /// <returns></returns>
-    [HttpGet("v1/qmesh/{z}/{x}/{y}.{formatExtension}")]
+    [HttpGet("api/v1/qmesh/{z}/{x}/{y}.{formatExtension}")]
     public async Task<IActionResult> Get(int x, int y, int z, string formatExtension, [FromQuery] Guid projectUid, [FromQuery] Guid filterUId, [FromQuery] int displayMode)
     {
 
@@ -106,7 +105,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Returns layer.json that controls the layout of all future tile requets
     /// </summary>
     /// <returns></returns>
-    [HttpGet("v1/qmesh/layer.json")]
+    [HttpGet("api/v1/qmesh/layer.json")]
     public string GetTRexLayerFile()
     {
       return layer; 
