@@ -24,6 +24,7 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
@@ -317,14 +318,15 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostExportSummaryVolumes)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-#if RAPTOR
       return
-        RequestExecutorContainerFactory.Build<SummaryVolumesExecutor>(logger, raptorClient).Process(request) as
-          SummaryVolumesResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        RequestExecutorContainerFactory.Build<SummaryVolumesExecutor>(logger,
+#if RAPTOR
+            raptorClient,
 #endif
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(request) as
+          SummaryVolumesResult;
+
     }
 
     /// <summary>
