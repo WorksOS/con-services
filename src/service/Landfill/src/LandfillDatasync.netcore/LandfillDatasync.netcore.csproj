@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
     <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
     <ProjectReference Include="..\Common.netcore\Common.netstandard.csproj" />
   </ItemGroup>

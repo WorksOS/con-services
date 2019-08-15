@@ -2,7 +2,7 @@
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;

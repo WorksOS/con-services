@@ -6,18 +6,16 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -118,7 +116,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       /// </summary>
       public static async Task<bool> ValidateCoordSystemInRaptor(IProjectEvent project,
       IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
-      IRaptorProxy raptorProxy)
+      IProductivity3dProxy productivity3DProxy)
     {
       var csFileName = project is CreateProjectEvent
         ? ((CreateProjectEvent) project).CoordinateSystemFileName
@@ -132,13 +130,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
         try
         {
-          coordinateSystemSettingsResult = await raptorProxy
+          coordinateSystemSettingsResult = await productivity3DProxy
             .CoordinateSystemValidate(csFileContent, csFileName, customHeaders);
         }
         catch (Exception e)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-            "raptorProxy.CoordinateSystemValidate", e.Message);
+            "productivity3dProxy.CoordinateSystemValidate", e.Message);
         }
 
         if (coordinateSystemSettingsResult == null)
@@ -164,7 +162,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       byte[] coordinateSystemFileContent, bool isCreate,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
       IDictionary<string, string> customHeaders,
-      IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore,
+      IProjectRepository projectRepo, IProductivity3dProxy productivity3DProxy, IConfigurationStore configStore,
       IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
@@ -177,7 +175,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         try
         {
           //Pass coordinate system to Raptor
-          var coordinateSystemSettingsResult = await raptorProxy
+          var coordinateSystemSettingsResult = await productivity3DProxy
             .CoordinateSystemPost(legacyProjectId, coordinateSystemFileContent,
               coordinateSystemFileName, headers);
           var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
@@ -230,7 +228,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           //Don't hide exceptions thrown above
           if (e is ServiceException)
             throw;
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "productivity3dProxy.CoordinateSystemPost", e.Message);
         }
       }
     }

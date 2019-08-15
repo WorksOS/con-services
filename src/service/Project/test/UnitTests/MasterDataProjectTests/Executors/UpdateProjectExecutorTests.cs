@@ -11,13 +11,14 @@ using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
@@ -105,8 +106,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
 
         var subscriptionRepo = new Mock<ISubscriptionRepository>();
-        var raptorProxy = new Mock<IRaptorProxy>();
-        raptorProxy.Setup(rp =>
+        var productivity3dProxy = new Mock<IProductivity3dProxy>();
+        productivity3dProxy.Setup(rp =>
             rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
 
@@ -114,7 +115,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null, null, null, null,
+          productivity3dProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -159,8 +160,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
 
         var subscriptionRepo = new Mock<ISubscriptionRepository>();
-        var raptorProxy = new Mock<IRaptorProxy>();
-        raptorProxy.Setup(rp =>
+        var productivity3dProxy = new Mock<IProductivity3dProxy>();
+        productivity3dProxy.Setup(rp =>
             rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
 
@@ -168,7 +169,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null, null, null, null,
+          productivity3dProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -218,8 +219,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
 
         var subscriptionRepo = new Mock<ISubscriptionRepository>();
-        var raptorProxy = new Mock<IRaptorProxy>();
-        raptorProxy.Setup(rp =>
+        var productivity3dProxy = new Mock<IProductivity3dProxy>();
+        productivity3dProxy.Setup(rp =>
             rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
 
@@ -227,7 +228,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null, null, null, null,
+          productivity3dProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -291,8 +292,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         subscriptionRepo.Setup(sr =>
             sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
           .ReturnsAsync(availSubs);
-        var raptorProxy = new Mock<IRaptorProxy>();
-        raptorProxy.Setup(rp =>
+        var productivity3dProxy = new Mock<IProductivity3dProxy>();
+        productivity3dProxy.Setup(rp =>
             rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(),
               It.IsAny<Dictionary<string, string>>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
@@ -306,7 +307,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, subscriptionProxy.Object, null, null, null,
+          productivity3dProxy.Object, subscriptionProxy.Object, null, null, null,
           projectRepo.Object, subscriptionRepo.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -365,12 +366,12 @@ namespace VSS.MasterData.ProjectTests.Executors
         subscriptionRepo.Setup(sr =>
             sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
           .ReturnsAsync(availSubs);
-        var raptorProxy = new Mock<IRaptorProxy>();
-        raptorProxy.Setup(rp =>
+        var productivity3dProxy = new Mock<IProductivity3dProxy>();
+        productivity3dProxy.Setup(rp =>
             rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(),
               It.IsAny<Dictionary<string, string>>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
-        raptorProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+        productivity3dProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
             It.IsAny<Dictionary<string, string>>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
 
@@ -394,7 +395,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
         var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
         (_logger, _configStore, _serviceExceptionHandler, _customerUid, _userId, null, _customHeaders,
-          _producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
+          _producer.Object, KafkaTopicName, productivity3dProxy.Object, subscriptionProxy.Object, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, null, 
           dataOceanClient.Object, authn.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
@@ -440,8 +441,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
 
         var subscriptionRepo = new Mock<ISubscriptionRepository>();
-        var raptorProxy = new Mock<IRaptorProxy>();
-        raptorProxy.Setup(rp =>
+        var productivity3dProxy = new Mock<IProductivity3dProxy>();
+        productivity3dProxy.Setup(rp =>
             rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
 
@@ -449,7 +450,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null, null, null, null,
+          productivity3dProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object);
         var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -498,8 +499,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
 
         var subscriptionRepo = new Mock<ISubscriptionRepository>();
-        var raptorProxy = new Mock<IRaptorProxy>();
-        raptorProxy.Setup(rp =>
+        var productivity3dProxy = new Mock<IProductivity3dProxy>();
+        productivity3dProxy.Setup(rp =>
             rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
 
@@ -507,7 +508,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null, null, null, null,
+          productivity3dProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object);
         var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -559,11 +560,11 @@ namespace VSS.MasterData.ProjectTests.Executors
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(rp =>
+      var productivity3dProxy = new Mock<IProductivity3dProxy>();
+      productivity3dProxy.Setup(rp =>
           rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
-      raptorProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+      productivity3dProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
           It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
       var subscriptionProxy = new Mock<ISubscriptionProxy>();
@@ -586,7 +587,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createExecutor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (_logger, _configStore, _serviceExceptionHandler, _customerUid, _userId, null, _customHeaders,
-        _producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
+        _producer.Object, KafkaTopicName, productivity3dProxy.Object, subscriptionProxy.Object, null, null, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
         dataOceanClient.Object, authn.Object);
       await createExecutor.ProcessAsync(createProjectEvent);

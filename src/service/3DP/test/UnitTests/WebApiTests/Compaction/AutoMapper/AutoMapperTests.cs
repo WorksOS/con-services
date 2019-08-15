@@ -6,6 +6,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;

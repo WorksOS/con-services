@@ -9,18 +9,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.FileAccess.WebAPI.Models", "..\src\WebApiModels\VSS.Productivity3D.FileAccess.WebAPI.Models.csproj", "{E966873B-C006-4957-B1FC-3D88A69EE512}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EA615CE1-41FC-4663-8C38-945956C6F8AB}"
-	ProjectSection(SolutionItems) = preProject
-		Dockerfile = Dockerfile
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{9FC59450-BBD4-4959-ABB4-AD2FFD7FAAE6}"
-	ProjectSection(SolutionItems) = preProject
-		scripts\deploy_linux.sh = scripts\deploy_linux.sh
-		scripts\deploy_win.bat = scripts\deploy_win.bat
-		scripts\rm_cr.sh = scripts\rm_cr.sh
-		scripts\runtests.sh = scripts\runtests.sh
-		scripts\wait-for-it.sh = scripts\wait-for-it.sh
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{CB6042AB-C0F0-4990-9243-81827698C961}"
 EndProject
@@ -50,11 +38,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gate
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\..\TRex\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj", "{A06E08A1-DB3B-4898-8118-52659A69493C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models", "..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj", "{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{E3EDD694-93AA-4174-82D8-54FCA582B5C0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{82602081-34C7-4FE1-A318-30CA1967FD73}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{7C256B2D-5F51-4C24-94FC-C24800E59A19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -192,14 +178,6 @@ Global
 		{A06E08A1-DB3B-4898-8118-52659A69493C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A06E08A1-DB3B-4898-8118-52659A69493C}.Release|x64.ActiveCfg = Release|Any CPU
 		{A06E08A1-DB3B-4898-8118-52659A69493C}.Release|x64.Build.0 = Release|Any CPU
-		{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6}.Debug|x64.Build.0 = Debug|Any CPU
-		{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6}.Release|x64.ActiveCfg = Release|Any CPU
-		{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6}.Release|x64.Build.0 = Release|Any CPU
 		{E3EDD694-93AA-4174-82D8-54FCA582B5C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E3EDD694-93AA-4174-82D8-54FCA582B5C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3EDD694-93AA-4174-82D8-54FCA582B5C0}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -213,8 +191,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{9FC59450-BBD4-4959-ABB4-AD2FFD7FAAE6} = {EA615CE1-41FC-4663-8C38-945956C6F8AB}
-		{CB6042AB-C0F0-4990-9243-81827698C961} = {82602081-34C7-4FE1-A318-30CA1967FD73}
+		{CB6042AB-C0F0-4990-9243-81827698C961} = {7C256B2D-5F51-4C24-94FC-C24800E59A19}
 		{53A1DEBF-BE89-4F00-B8CD-4CAFFB1C965E} = {CB6042AB-C0F0-4990-9243-81827698C961}
 		{8D58C2FE-D2A0-4138-8CA7-E446DC54041A} = {CB6042AB-C0F0-4990-9243-81827698C961}
 		{55B1FE0F-13FA-4715-B030-B708F17FEF31} = {CB6042AB-C0F0-4990-9243-81827698C961}
@@ -226,10 +203,6 @@ Global
 		{DAF3C823-1617-4BBF-9C40-36AB2CBAA8E2} = {CB6042AB-C0F0-4990-9243-81827698C961}
 		{6654549D-9BE5-4268-8D64-4EEFD7BF291D} = {CB6042AB-C0F0-4990-9243-81827698C961}
 		{02884F6E-F299-481D-A3C6-51D81444A3CE} = {CB6042AB-C0F0-4990-9243-81827698C961}
-		{8D8D810B-0A17-47B7-B165-2D05A09D17ED} = {82602081-34C7-4FE1-A318-30CA1967FD73}
-		{A06E08A1-DB3B-4898-8118-52659A69493C} = {82602081-34C7-4FE1-A318-30CA1967FD73}
-		{3CC1344B-BF55-426E-AA13-DCC0C0C9C9B6} = {82602081-34C7-4FE1-A318-30CA1967FD73}
-		{E3EDD694-93AA-4174-82D8-54FCA582B5C0} = {82602081-34C7-4FE1-A318-30CA1967FD73}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB169E3F-0F9F-49DC-A5E2-858D844278E6}

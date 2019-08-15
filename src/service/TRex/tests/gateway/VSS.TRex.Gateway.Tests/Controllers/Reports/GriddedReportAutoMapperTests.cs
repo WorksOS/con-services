@@ -9,6 +9,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.ResultHandling;

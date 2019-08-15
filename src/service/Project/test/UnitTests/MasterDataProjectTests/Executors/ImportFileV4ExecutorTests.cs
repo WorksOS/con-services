@@ -16,11 +16,12 @@ using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Scheduler.Abstractions;
@@ -140,9 +141,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
-      var raptorProxy = new Mock<IRaptorProxy>();
+      var productivity3dProxy = new Mock<IProductivity3dProxy>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      raptorProxy.Setup(rp => rp.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
+      productivity3dProxy.Setup(rp => rp.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
         It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
@@ -158,7 +159,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
+          customHeaders, producer.Object, KafkaTopicName, productivity3dProxy.Object, null, null, null, null,
           projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
@@ -210,9 +211,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
-      var raptorProxy = new Mock<IRaptorProxy>();
+      var productivity3dProxy = new Mock<IProductivity3dProxy>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      raptorProxy.Setup(rp => rp.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
+      productivity3dProxy.Setup(rp => rp.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
         It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1);
@@ -225,7 +226,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
+          customHeaders, producer.Object, KafkaTopicName, productivity3dProxy.Object, null, null, null, null,
           projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
@@ -271,9 +272,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
-      var raptorProxy = new Mock<IRaptorProxy>();
+      var productivity3dProxy = new Mock<IProductivity3dProxy>();
       var raptorDeleteFileResult = new BaseDataResult { Code = 0 };
-      raptorProxy.Setup(rp => rp.DeleteFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(),
+      productivity3dProxy.Setup(rp => rp.DeleteFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(),
         It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<IDictionary<string, string>>()))
        .ReturnsAsync(raptorDeleteFileResult);
 
@@ -300,7 +301,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, filterServiceProxy.Object,
+          customHeaders, producer.Object, KafkaTopicName, productivity3dProxy.Object, null, null, filterServiceProxy.Object,
           null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }

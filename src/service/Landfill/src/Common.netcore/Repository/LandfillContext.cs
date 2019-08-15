@@ -387,7 +387,7 @@ namespace Common.Repository
 
 
     /// <summary>
-    ///   Marks an entry with "volume not available" to indicate that there is no volume information in Raptor for that date
+    ///   Marks an entry with "volume not available" to indicate that there is no volume information in Productivity3D for that date
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="geofenceUid">GeofenceResponse UID</param>
@@ -601,7 +601,7 @@ namespace Common.Repository
     }
 
     /// <summary>
-    ///   Marks an entry with "CCA not available" to indicate that there is no CCA information in Raptor for that date
+    ///   Marks an entry with "CCA not available" to indicate that there is no CCA information in Productivity3D for that date
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="geofenceUid">GeofenceResponse UID</param>
@@ -626,12 +626,12 @@ namespace Common.Repository
     /// <param name="incomplete">Incomplete %</param>
     /// <param name="complete">Complete %</param>
     /// <param name="overcomplete">Over complete %</param>
-    /// <param name="notRetrieved">Flag to indicate CCA not retrieved from Raptor</param>
-    /// <param name="notAvailable">Flag to indicate no CCA value available from Raptor</param>
+    /// <param name="notRetrieved">Flag to indicate CCA not retrieved from Productivity3D</param>
+    /// <param name="notAvailable">Flag to indicate no CCA value available from Productivity3D</param>
     private static void UpsertCCA(string projectUid, string geofenceUid, DateTime date, long machineId, int? liftId,
       double? incomplete, double? complete, double? overcomplete, bool notRetrieved, bool notAvailable)
     {
-      //Assume Raptor failure and if we have some data in the Database don't wipe them out
+      //Assume Productivity3D failure and if we have some data in the Database don't wipe them out
       var cca = GetCCA(GetProject(projectUid).First(), geofenceUid, date, date, machineId,
         liftId);
       if (cca.Any())

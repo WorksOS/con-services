@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 
 namespace VSS.Productivity3D.Common.Interfaces
 {

@@ -6,8 +6,8 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <summary>
     /// Gets the service's Raptor interface controller.
     /// </summary>
-    protected readonly IRaptorProxy RaptorProxy;
+    protected readonly IProductivity3dProxy Productivity3dProxy;
 
     /// <summary>
     /// Gets the service's configuration settings.
@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     protected BaseController(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IKafka producer, string eventType)
+      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IKafka producer, string eventType)
     {
       Logger = logger;
       Log = logger.CreateLogger<BaseController>();
@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       ConfigStore = configStore;
       ServiceExceptionHandler = serviceExceptionHandler;
       ProjectProxy = projectProxy;
-      RaptorProxy = raptorProxy;
+      Productivity3dProxy = productivity3DProxy;
       Producer = producer;
 
       if (!Producer.IsInitializedProducer)

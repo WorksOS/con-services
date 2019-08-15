@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models.Reports;
-using VSS.Productivity3D.Models.Validation;
+using VSS.Productivity3D.Productivity3D.Models.Validation;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Models

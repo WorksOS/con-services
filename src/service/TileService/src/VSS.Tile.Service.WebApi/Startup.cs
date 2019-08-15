@@ -11,6 +11,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
@@ -54,7 +56,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddScoped<IDxfTileService, DxfTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<IBoundingBoxHelper, BoundingBoxHelper>();
-      services.AddSingleton<IRaptorProxy, RaptorProxy>();
+      services.AddSingleton<IProductivity3dProxy, Productivity3dProxy>();
 
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();

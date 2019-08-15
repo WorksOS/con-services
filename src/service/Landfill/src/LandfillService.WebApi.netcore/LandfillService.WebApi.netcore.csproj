@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
     <ProjectReference Include="..\Common.netcore\Common.netstandard.csproj" />
   </ItemGroup>

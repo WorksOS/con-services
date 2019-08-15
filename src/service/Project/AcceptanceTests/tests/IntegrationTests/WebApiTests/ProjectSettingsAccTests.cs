@@ -3,7 +3,7 @@ using System.Net;
 using IntegrationTests.UtilityClasses;
 using Newtonsoft.Json;
 using TestUtility;
-using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
