@@ -6,6 +6,7 @@ using SVOICDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {

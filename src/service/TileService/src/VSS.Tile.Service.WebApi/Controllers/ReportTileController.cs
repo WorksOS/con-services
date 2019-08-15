@@ -11,6 +11,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Interfaces;
@@ -24,10 +25,10 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ReportTileController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
+    public ReportTileController(IProductivity3dProxy productivity3DProxy, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
       IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore,
       IBoundingBoxHelper boundingBoxHelper, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
-      : base(raptorProxy, prefProxy, fileImportProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
+      : base(productivity3DProxy, prefProxy, fileImportProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
     {
     }
 

@@ -124,32 +124,18 @@ namespace VSS.TRex.Volumes
         public IDesign RefOriginal { get; set; }
 
         /// <summary>
-        /// The offset for the RefOriginal design if it is a reference surface
-        /// </summary>
-        public double RefOriginalOffset { get; set; }
-
-        /// <summary>
         /// RefDesign references a subset that may be used in the volumes calculations
         /// process. If set, it takes the place of the 'top' filter.
         /// </summary>
         public IDesign RefDesign { get; set; }
 
         /// <summary>
-        /// The offset for the RefOriginal design if it is a reference surface
-        /// </summary>
-        public double RefDesignOffset { get; set; }
-
-        /// <summary>
         /// ActiveDesign is the design surface being used as the comparison surface in the
         /// surface to production data volume calculations. It is assigned from the FRefOriginal
         /// and FRefDesign surfaces depending on the volumes reporting type and configuration.
+        /// It also contains the offset for a reference surface.
         /// </summary>
-        public IDesign ActiveDesign { get; set; }
-
-        /// <summary>
-        /// The offset for the active design if it is a reference surface
-        /// </summary>
-        public double ActiveDesignOffset { get; set; }
+        public IDesignWrapper ActiveDesign { get; set; }
 
         /// <summary>
         /// FromSelectionType and ToSelectionType describe how we mix the two filters
@@ -273,13 +259,13 @@ namespace VSS.TRex.Volumes
                 {
                     if (ActiveDesign != null && (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter))
                     {
-                        if (ActiveDesign == null || ActiveDesign.DesignDescriptor.IsNull)
+                        if (ActiveDesign == null || ActiveDesign.Design.DesignDescriptor.IsNull)
                         {
                             Log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
                             return RequestErrorStatus.NoDesignProvided;
                         }
 
-                        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
+                        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.Design.ID);
 
                         if (DesignSubgridOverlayMap == null)
                             return RequestErrorStatus.NoDesignProvided;

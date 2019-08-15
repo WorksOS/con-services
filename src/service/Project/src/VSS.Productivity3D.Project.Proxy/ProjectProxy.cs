@@ -8,6 +8,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.Project.Proxy
 {

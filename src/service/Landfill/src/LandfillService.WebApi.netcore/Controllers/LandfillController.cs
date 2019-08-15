@@ -14,7 +14,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
@@ -29,14 +29,14 @@ namespace LandfillService.WebApi.netcore.Controllers
   {
     private readonly ILogger Log;
     private IConfigurationStore config;
-    private IRaptorProxy raptorProxy;
+    private IProductivity3dProxy productivity3DProxy;
     private IFileImportProxy files;
 
 
-    public ProjectsController(ILogger<ProjectsController> logger, IConfigurationStore config, IRaptorProxy raptorProxy, IFileImportProxy files )
+    public ProjectsController(ILogger<ProjectsController> logger, IConfigurationStore config, IProductivity3dProxy productivity3DProxy, IFileImportProxy files )
     {
       Log = logger;
-      this.raptorProxy = raptorProxy;
+      this.productivity3DProxy = productivity3DProxy;
       this.files = files;
       this.config = config;
     }
@@ -339,8 +339,8 @@ namespace LandfillService.WebApi.netcore.Controllers
         Log.LogDebug("Volumes month:" + monthVol);
 
         //Get designIds from ProjectMonitoring service
-        var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
-        var res = await raptorApiClient.GetDesignID(Request.Headers["X-Jwt-Assertion"], project, principal.CustomerUid);
+        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3DProxy, files, Request.Headers.GetCustomHeaders());
+        var res = await productivity3DApiClient.GetDesignID(Request.Headers["X-Jwt-Assertion"], project, principal.CustomerUid);
         var designId = res.Where(r => r.name == "TOW.ttm").Select(i => i.id).First();
         Log.LogDebug("Volumes designId for TOW.ttm:" + designId);
         var firstAirspaceVol = await GetAirspaceVolumeInBackground(principal.Identity.Name, project, true, designId);
@@ -404,7 +404,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     }
 
     /// <summary>
-    ///   Retrieves airspace volume summary from Raptor.
+    ///   Retrieves airspace volume summary from Productivity3D.
     /// </summary>
     /// <param name="userUid">User ID</param>
     /// <param name="project">Project</param>
@@ -417,14 +417,14 @@ namespace LandfillService.WebApi.netcore.Controllers
     {
       try
       {
-        var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
-        var res = await raptorApiClient.GetAirspaceVolumeAsync(userUid, project, returnEarliest, designId);
+        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3DProxy, files, Request.Headers.GetCustomHeaders());
+        var res = await productivity3DApiClient.GetAirspaceVolumeAsync(userUid, project, returnEarliest, designId);
         Log.LogDebug("Airspace Volume res:" + res);
         Log.LogDebug("Airspace Volume: " + res.Fill);
 
         return res.Fill;
       }
-      catch (RaptorApiException e)
+      catch (ClientApiException e)
       {
         if (e.code == HttpStatusCode.BadRequest)
           return null;
@@ -438,7 +438,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     }
 
     /// <summary>
-    ///   Retrieves project statistics from Raptor.
+    ///   Retrieves project statistics from Productivity3D.
     /// </summary>
     /// <param name="userUid">User ID</param>
     /// <param name="project">Project</param>
@@ -448,9 +448,9 @@ namespace LandfillService.WebApi.netcore.Controllers
     {
       try
       {
-        var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
+        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3DProxy, files, Request.Headers.GetCustomHeaders());
 
-        var res = await raptorApiClient.GetProjectStatisticsAsync(userUid, project);
+        var res = await productivity3DApiClient.GetProjectStatisticsAsync(userUid, project);
         Log.LogDebug("Statistics dates: " + res.startTime + " - " + res.endTime);
         return new List<DateTime> {res.startTime, res.endTime};
       }
@@ -597,7 +597,7 @@ namespace LandfillService.WebApi.netcore.Controllers
       uint? assetId = null, Guid? assetUid = null, string machineName = null, bool? isJohnDoe = null, int? liftId = null)
     {
       //NOTE: CCA summary is not cumulative. 
-      //If data for more than one day is required, client must call Raptor service directly
+      //If data for more than one day is required, client must call Productivity3D service directly
 
       var principal = HttpContext.User as TIDCustomPrincipal;
       //Secure with project list
@@ -685,8 +685,8 @@ namespace LandfillService.WebApi.netcore.Controllers
           endDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date; //today in project time zone
         if (!startDate.HasValue)
           startDate = endDate.Value.AddYears(-2);
-        var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
-        var task = await raptorApiClient.GetMachineLiftsInBackground(null, project, startDate.Value, endDate.Value);
+        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3DProxy, files, Request.Headers.GetCustomHeaders());
+        var task = await productivity3DApiClient.GetMachineLiftsInBackground(null, project, startDate.Value, endDate.Value);
         Log.LogDebug("machinelifts: " + project.name);
 
         return Ok(task);

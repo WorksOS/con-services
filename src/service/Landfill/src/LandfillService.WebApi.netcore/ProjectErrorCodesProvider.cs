@@ -52,13 +52,13 @@ namespace VSS.MasterData.Landfill.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("Legacy CustomerID must be provided.", 38);
       DynamicAddwithOffset("Missing CreateProjectRequest.", 39);
       DynamicAddwithOffset("Missing UpdateProjectRequest.", 40);
-      DynamicAddwithOffset("Unable to create/update CoordinateSystem in RaptorServices. returned: {0} {1}.", 41);
+      DynamicAddwithOffset("Unable to create/update CoordinateSystem in Productivity3DServices. returned: {0} {1}.", 41);
       DynamicAddwithOffset("LegacyProjectId has not been generated.", 42);
       DynamicAddwithOffset("Project boundary overlaps another project, for this customer and time span.", 43);
       DynamicAddwithOffset("Missing legacyProjectId.", 44);
       DynamicAddwithOffset("Landfill is missing its CoordinateSystem.", 45);
       DynamicAddwithOffset("Invalid CoordinateSystem.", 46);
-      DynamicAddwithOffset("Unable to validate CoordinateSystem in RaptorServices. returned: {0} {1}.", 47);
+      DynamicAddwithOffset("Unable to validate CoordinateSystem in Productivity3DServices. returned: {0} {1}.", 47);
       DynamicAddwithOffset("Unable to obtain TCC fileSpaceId.", 48);
       DynamicAddwithOffset("CreateImportedFileV4. Unable to store Imported File event to database.", 49);
       DynamicAddwithOffset("LegacyImportedFileId has not been generated.", 50);
@@ -78,11 +78,11 @@ namespace VSS.MasterData.Landfill.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("Unable to disassociate project from customer.", 64);
       DynamicAddwithOffset("Unable to store project-geofence associate in database.", 65);
       DynamicAddwithOffset("Unable to delete project.", 66);
-      DynamicAddwithOffset("FileImport AddFile in RaptorServices failed. Reason: {0} {1}.", 67);
+      DynamicAddwithOffset("FileImport AddFile in Productivity3DServices failed. Reason: {0} {1}.", 67);
       DynamicAddwithOffset("Invalid parameters.", 68);
       DynamicAddwithOffset("Unable to retrieve project settings from repository. Reason: {0} {1}.", 69);
-      DynamicAddwithOffset("Unable to validate project settings with raptor. Reason: {0} {1}.", 70);
-      DynamicAddwithOffset("Unable to update project settings with raptor. Reason: {0} {1}.", 71);
+      DynamicAddwithOffset("Unable to validate project settings with Productivity3D. Reason: {0} {1}.", 70);
+      DynamicAddwithOffset("Unable to update project settings with Productivity3D. Reason: {0} {1}.", 71);
       DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 72);
       DynamicAddwithOffset("Invalid geofence Types.", 73);
       DynamicAddwithOffset("Landfill projects are not supported.", 74);
@@ -123,7 +123,7 @@ namespace VSS.MasterData.Landfill.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("ProjectGeofenceAssociation: Geofence is assigned to a different project.", 105);
       DynamicAddwithOffset("ProjectGeofenceAssociation: Error accessing database. Exception: {0}", 106);
       DynamicAddwithOffset("ProjectGeofenceAssociation: Already associated geofence is missing from request.", 107);
-      DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 108);
+      DynamicAddwithOffset("FileImport DeleteFile in Productivity3D Services failed. Reason: {0} {1}.", 108);
       DynamicAddwithOffset("UpsertProject Not allowed duplicate, active projectnames: {0}.", 109);
       DynamicAddwithOffset("ProjectGeofenceAssociation: Duplicate GeofenceUids appear in the request body.", 110);
     }

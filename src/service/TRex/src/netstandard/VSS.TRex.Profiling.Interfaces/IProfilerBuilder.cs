@@ -37,7 +37,6 @@ namespace VSS.TRex.Profiling.Interfaces
       GridDataType gridDataType,
       IFilterSet filterSet,
       IDesignWrapper referenceDesignWrapper,
-      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
       VolumeComputationType VolumeType,

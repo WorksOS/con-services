@@ -55,13 +55,12 @@ namespace VSS.TRex.Profiling
     public SummaryVolumesCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
-      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
       VolumeComputationType volumeType,
       IOverrideParameters overrides,
       ILiftParameters liftParams) 
-      : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, overrides, liftParams)
+      : base(siteModel, pDExistenceMap, filterSet, overrides, liftParams)
     {
       svDesignWrapper = referenceDesignWrapper;
       VolumeType = volumeType;

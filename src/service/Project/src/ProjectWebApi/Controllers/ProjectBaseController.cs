@@ -2,13 +2,12 @@
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
@@ -44,11 +43,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public ProjectBaseController(IKafka producer, 
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore configStore, 
-      ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
+      ISubscriptionProxy subscriptionProxy, IProductivity3dProxy productivity3DProxy,
       ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,  
       IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
-      : base(loggerFactory, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
+      : base(loggerFactory, configStore, serviceExceptionHandler, producer, productivity3DProxy, projectRepo, 
         subscriptionRepo, fileRepo, dataOceanClient, authn)
     {
       this.subscriptionProxy = subscriptionProxy;

@@ -10,15 +10,15 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -51,12 +51,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     public FileImportBaseController(IKafka producer,
       IConfigurationStore configStore, ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,
-      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+      IProductivity3dProxy productivity3DProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
-      : base(loggerFactory, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo,
+      : base(loggerFactory, configStore, serviceExceptionHandler, producer, productivity3DProxy, projectRepo,
         subscriptionRepo, fileRepo, dataOceanClient, authn)
     {
       this.requestFactory = requestFactory;
@@ -100,7 +100,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected async Task NotifyRaptorUpdateFile(Guid projectUid, IEnumerable<Guid> updatedFileUids)
     {
-      var notificationResult = await raptorProxy.UpdateFiles(projectUid, updatedFileUids, Request.Headers.GetCustomHeaders());
+      var notificationResult = await Productivity3DProxy.UpdateFiles(projectUid, updatedFileUids, Request.Headers.GetCustomHeaders());
 
       logger.LogDebug(
         $"FileImport UpdateFiles in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
@@ -158,7 +158,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(loggerFactory, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, null, null, null, null,
+            Productivity3DProxy, null, null, null, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       ) as ProjectSettingsResult;

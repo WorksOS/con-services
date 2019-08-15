@@ -40,7 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       // if updating  type from Standard to Landfill, or creating Landfill, then must have a CoordSystem
       ProjectRequestHelper.ValidateCoordSystemFile(existing, updateProjectEvent, serviceExceptionHandler);
 
-      await ProjectRequestHelper.ValidateCoordSystemInRaptor(updateProjectEvent, serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
+      await ProjectRequestHelper.ValidateCoordSystemInRaptor(updateProjectEvent, serviceExceptionHandler, customHeaders, productivity3dProxy).ConfigureAwait(false);
 
       if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.GeometryWKT,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
@@ -74,7 +74,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           existing.LegacyProjectID,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
-          projectRepo, raptorProxy, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
+          projectRepo, productivity3dProxy, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
         log.LogDebug("UpdateProject: CreateCoordSystemInRaptorAndTcc succeeded");
       }
 

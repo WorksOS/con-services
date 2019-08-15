@@ -11,6 +11,8 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace MockProjectWebApi.Controllers
 {

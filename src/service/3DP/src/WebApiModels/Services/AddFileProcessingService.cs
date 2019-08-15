@@ -8,11 +8,11 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 #if RAPTOR
 using VSS.Productivity3D.WebApi.Models.Notification.Executors;

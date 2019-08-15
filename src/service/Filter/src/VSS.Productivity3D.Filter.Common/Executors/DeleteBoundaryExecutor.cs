@@ -9,11 +9,11 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -26,9 +26,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <inheritdoc />
     public DeleteBoundaryExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IFileImportProxy fileImportProxy,
+      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3DProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null, null)
     { }
 
     /// <summary>

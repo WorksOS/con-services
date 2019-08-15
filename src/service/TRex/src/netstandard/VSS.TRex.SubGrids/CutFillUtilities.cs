@@ -32,8 +32,6 @@ namespace VSS.TRex.SubGrids
         return result;
 
       var getDesignHeightsResult = await designWrapper.Design.GetDesignHeights(DataModelID, designWrapper.Offset, SubGrid.OriginAsCellAddress(), SubGrid.CellSize);
-      //designWrapper.Design.GetDesignHeights(ProjectUid, designWrapper.Offset, SubGrid.OriginAsCellAddress(), SubGrid.CellSize,
-      //  out IClientHeightLeafSubGrid DesignElevations, out ProfilerRequestResult);
 
       result.profilerRequestResult = getDesignHeightsResult.errorCode;
 
