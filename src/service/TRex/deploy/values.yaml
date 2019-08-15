@@ -39,7 +39,7 @@ applicationServer:
       enabled: false
       target: 0
     cpu:
-      enabled: true
+      enabled: false
       target: 100
 
 designElevation:
@@ -51,14 +51,14 @@ designElevation:
       cpu: 300m
       memory: 2Gi
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 2
     maxReplicas: 3
     memory:
       enabled: false
       target: 0
     cpu:
-      enabled: true
+      enabled: false
       target: 100
 
 gateway:
@@ -131,14 +131,14 @@ reportServer:
       cpu: 300m
       memory: 1280Mi
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 2
     maxReplicas: 3
     memory:
       enabled: false
       target: 0
     cpu:
-      enabled: true
+      enabled: false
       target: 100
 
 tileServer:
@@ -157,7 +157,7 @@ tileServer:
       enabled: false
       target: 0
     cpu:
-      enabled: true
+      enabled: false
       target: 100
 
 tinExportServer:
@@ -169,14 +169,14 @@ tinExportServer:
       cpu: 300m
       memory: 1536Mi
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 2
     maxReplicas: 3
     memory:
       enabled: false
       target: 0
     cpu:
-      enabled: true
+      enabled: false
       target: 100
 
 utilities:
@@ -198,8 +198,15 @@ webtools:
       memory: 1Gi
 
 
-nodeSelector: {}
+# kubectl label nodes <node> vss/application=trex
+nodeSelector: 
+  vss/application: trex
 
-tolerations: []
+# kubectl taint nodes <node> dedicated=trex:NoSchedule
+tolerations: 
+- key: "dedicated"
+  operator: "Equal" 
+  value: "trex"
+  effect: "NoSchedule"
 
 affinity: {}

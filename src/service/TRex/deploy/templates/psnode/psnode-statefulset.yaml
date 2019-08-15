@@ -82,6 +82,16 @@ spec:
         - mountPath: "/persist"
           name: trex-immutable-storage
 
+{{- with .Values.nodeSelector }}
+        nodeSelector:
+{{ toYaml . | indent 10 }}
+{{- end }}
+{{- with .Values.tolerations }}
+        tolerations:
+{{ toYaml . | indent 10 }}
+{{- end }}
+
+
   volumeClaimTemplates:
   - metadata:
       name: trex-immutable-storage

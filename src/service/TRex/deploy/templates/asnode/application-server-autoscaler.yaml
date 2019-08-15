@@ -5,6 +5,7 @@ metadata:
   name: {{ template "trex.deployname" . }}-as
   labels:
     app: {{ template "trex.deployname" . }}
+    component: {{ template "trex.deployname" . }}-as
     chart: {{ template "trex.chart" . }}
 spec:
   scaleTargetRef:

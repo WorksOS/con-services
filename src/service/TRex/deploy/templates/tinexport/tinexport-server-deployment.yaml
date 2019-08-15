@@ -55,6 +55,16 @@ spec:
         - containerPort: 10800 # SQL port number.
           name: sql
 
+{{- with .Values.nodeSelector }}
+        nodeSelector:
+{{ toYaml . | indent 10 }}
+{{- end }}
+{{- with .Values.tolerations }}
+        tolerations:
+{{ toYaml . | indent 10 }}
+{{- end }}
+
+
         env:
           - name: IGNITE_HOME
             value: "/trex/"
