@@ -1,51 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
-using Serilog;
 using VSS.Common.Abstractions.Cache.Interfaces;
-using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
-using VSS.Serilog.Extensions;
 using Xunit;
 
 namespace VSS.Productivity3D.Push.UnitTests
 {
-  public class NotificationCacheInvalidationFixture : IDisposable
-  {
-    public IServiceProvider ServiceProvider;
-    public Mock<IDataCache> MockCache;
-
-    public NotificationCacheInvalidationFixture()
-    {
-      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Push.UnitTests.log"));
-      var serviceCollection = new ServiceCollection();
-
-      serviceCollection.AddLogging()
-                       .AddSingleton(loggerFactory)
-                       .AddSingleton(new Mock<IConfigurationStore>().Object)
-                       .AddSingleton(new Mock<IServiceResolution>().Object)
-                       .AddTransient<INotificationHubClient, NotificationHubClient>();
-
-      // This is the main test object
-      MockCache = new Mock<IDataCache>();
-      serviceCollection.AddSingleton(MockCache.Object);
-
-      ServiceProvider = serviceCollection.BuildServiceProvider();
-    }
-
-    public void Dispose()
-    { }
-  }
-
   public class NotificationCacheInvalidationUnitTests : IClassFixture<NotificationCacheInvalidationFixture>
   {
     private readonly NotificationCacheInvalidationFixture TestFixture;
-    
+
     public NotificationCacheInvalidationUnitTests(NotificationCacheInvalidationFixture testFixture)
     {
       TestFixture = testFixture;

@@ -15,31 +15,33 @@ using Xunit;
 
 namespace WebApiTests.Executors
 {
-  public class RawFileAccessExecutorTests : ExecutorBaseTests
+  public class RawFileAccessExecutorTests : IClassFixture<ExecutorBaseTests>
   {
-    [Fact]
-    public void GetConfigurationStore()
+    private readonly ExecutorBaseTests _testFixture;
+    private IServiceProvider _serviceProvider => _testFixture.serviceProvider;
+    private IConfigurationStore _configStore => _testFixture.configStore;
+
+    public RawFileAccessExecutorTests(ExecutorBaseTests testFixture)
     {
-      Assert.NotNull(serviceProvider.GetRequiredService<IConfigurationStore>());
+      _testFixture = testFixture;
     }
 
     [Fact]
-    public void GetLogger()
-    {
-      Assert.NotNull(serviceProvider.GetRequiredService<ILoggerFactory>());
-    }
+    public void GetConfigurationStore() => Assert.NotNull(_serviceProvider.GetRequiredService<IConfigurationStore>());
+
+    [Fact]
+    public void GetLogger() => Assert.NotNull(_serviceProvider.GetRequiredService<ILoggerFactory>());
 
     [Fact]
     public void RawFileAccess_NoValidInput()
     {
-      string filespaceId = Guid.NewGuid().ToString();
-      string path = "/132465/55644";
-      string fileName = "file.ext";
+      var filespaceId = Guid.NewGuid().ToString();
+      var path = "/132465/55644";
+      var fileName = "file.ext";
       var request = FileDescriptor.CreateFileDescriptor(filespaceId, path, fileName);
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      _ = serviceProvider.GetRequiredService<IFileRepository>();
+      var logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, configStore, null);
+      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore);
       var ex = Assert.Throws<ServiceException>(() => executor.Process(request));
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
       Assert.NotEqual(-1, ex.GetContent.IndexOf("Failed to download file from TCC", StringComparison.Ordinal));
@@ -48,17 +50,17 @@ namespace WebApiTests.Executors
     [Fact]
     public void RawFileAccess_FileFound()
     {
-      string filespaceId = Guid.NewGuid().ToString();
-      string path = "/132465/55644";
-      string fileName = "file.ext";
+      var filespaceId = Guid.NewGuid().ToString();
+      var path = "/132465/55644";
+      var fileName = "file.ext";
       var request = FileDescriptor.CreateFileDescriptor(filespaceId, path, fileName);
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var fileRepo = new Mock<IFileRepository>();
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new MemoryStream(buffer));
 
-      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, configStore,
+      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore,
         fileRepo.Object);
       var result = executor.Process(request) as RawFileAccessResult;
 
@@ -70,16 +72,16 @@ namespace WebApiTests.Executors
     [Fact]
     public void RawFileAccess_NoFileFound()
     {
-      string filespaceId = Guid.NewGuid().ToString();
-      string path = "/132465/55644";
-      string fileName = "file.ext";
+      var filespaceId = Guid.NewGuid().ToString();
+      var path = "/132465/55644";
+      var fileName = "file.ext";
       var request = FileDescriptor.CreateFileDescriptor(filespaceId, path, fileName);
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var fileRepo = new Mock<IFileRepository>();
       fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((MemoryStream)null);
 
-      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, configStore,
+      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore,
         fileRepo.Object);
       var ex = Assert.Throws<ServiceException>(() => executor.Process(request));
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);

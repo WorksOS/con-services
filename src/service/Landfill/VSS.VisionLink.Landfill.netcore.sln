@@ -1,15 +1,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.705
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.netstandard", "src\Common.netcore\Common.netstandard.csproj", "{623E175A-51EE-4F17-85D1-A3C87416A32D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LandfillService.WebApi.netcore", "src\LandfillService.WebApi.netcore\LandfillService.WebApi.netcore.csproj", "{199FA402-0C5F-4AFF-9ACF-E34FF335B3AC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LandfillDatasync.netcore", "src\LandfillDatasync.netcore\LandfillDatasync.netcore.csproj", "{6FF906A5-D5AE-4606-BCE4-EF95C8FB43C1}"
-	ProjectSection(ProjectDependencies) = postProject
-		{F9D26D5E-D623-4B2D-96CF-C19D7D762A30} = {F9D26D5E-D623-4B2D-96CF-C19D7D762A30}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies", "..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj", "{962E9154-C35B-43AA-B925-DE32561F6668}"
 EndProject
@@ -65,8 +62,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TRex Service", "TRex Service", "{4789ABF3-5BB1-46C5-A7B4-52EC8B12A822}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Productivity3D Service", "Productivity3D Service", "{02DE9A8A-8E1A-4AA8-9AC2-E33616656C12}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{A73FB091-168C-4703-8F67-006C4259D3FE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Abstractions", "..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj", "{F9D26D5E-D623-4B2D-96CF-C19D7D762A30}"
 EndProject
@@ -170,10 +165,6 @@ Global
 		{523657DE-5576-4201-9804-FEFFCAB5055D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{523657DE-5576-4201-9804-FEFFCAB5055D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{523657DE-5576-4201-9804-FEFFCAB5055D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A73FB091-168C-4703-8F67-006C4259D3FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A73FB091-168C-4703-8F67-006C4259D3FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A73FB091-168C-4703-8F67-006C4259D3FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A73FB091-168C-4703-8F67-006C4259D3FE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F9D26D5E-D623-4B2D-96CF-C19D7D762A30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9D26D5E-D623-4B2D-96CF-C19D7D762A30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9D26D5E-D623-4B2D-96CF-C19D7D762A30}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -219,7 +210,6 @@ Global
 		{7ED786D8-0302-43E0-8425-56813A8A58C6} = {AC8576A0-2C9B-4E58-BAC5-9AC11DAC4C5A}
 		{4789ABF3-5BB1-46C5-A7B4-52EC8B12A822} = {AC8576A0-2C9B-4E58-BAC5-9AC11DAC4C5A}
 		{02DE9A8A-8E1A-4AA8-9AC2-E33616656C12} = {AC8576A0-2C9B-4E58-BAC5-9AC11DAC4C5A}
-		{A73FB091-168C-4703-8F67-006C4259D3FE} = {18AAB206-4E1B-487C-AC5E-4205C3A1CBB0}
 		{F9D26D5E-D623-4B2D-96CF-C19D7D762A30} = {02DE9A8A-8E1A-4AA8-9AC2-E33616656C12}
 		{FDF94778-A21C-4C10-B0B9-84843D7935D3} = {02DE9A8A-8E1A-4AA8-9AC2-E33616656C12}
 		{C68F9F80-14D0-45D8-A382-3F3CA4BEE16A} = {02DE9A8A-8E1A-4AA8-9AC2-E33616656C12}

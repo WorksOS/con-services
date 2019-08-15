@@ -24,7 +24,6 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		{
 			RequiresSerialisation = true,
 			SiteModelID = argument.ProjectID,
-			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.CellSize,
 			TargetMachineSpeed = argument.Overrides.TargetMachineSpeed
 		};
@@ -35,15 +34,16 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		/// <param name="argument"></param>
 		/// <param name="aggregator"></param>
 		/// <returns></returns>
-		public override AnalyticsComputor ConstructComputor(SpeedStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
+		public override AnalyticsComputor ConstructComputor(SpeedStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor
 		{
 			RequestDescriptor = RequestDescriptor,
 			SiteModel = SiteModel,
 			Aggregator = aggregator,
 			Filters = argument.Filters,
 			IncludeSurveyedSurfaces = true,
-			RequestedGridDataType = GridDataType.MachineSpeedTarget
-		};
+			RequestedGridDataType = GridDataType.MachineSpeedTarget,
+      LiftParams = argument.LiftParams
+    };
 
 		/// <summary>
 		/// Pull the required counts information from the internal Speed aggregator state

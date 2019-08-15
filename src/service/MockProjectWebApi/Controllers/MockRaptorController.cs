@@ -23,7 +23,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public FileResult GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid)
     {
-      var zipStream = new FileStream("Resources/Large Sites Road_AlignmentCenterline$.zip", FileMode.Open);
+      var zipStream = new FileStream("Resources/Large Sites Road_AlignmentCenterline$.zip", FileMode.Open, FileAccess.Read);
       return new FileStreamResult(zipStream, ContentTypeConstants.ApplicationZip);
     }
 

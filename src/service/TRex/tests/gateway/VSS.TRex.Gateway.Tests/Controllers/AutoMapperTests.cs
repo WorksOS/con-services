@@ -12,6 +12,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Types;
+using VSS.TRex.Types.Types;
 using Xunit;
 using LiftDetectionType = VSS.Productivity3D.Models.Enums.LiftDetectionType;
 using LiftThicknessType = VSS.Productivity3D.Models.Enums.LiftThicknessType;
@@ -214,8 +215,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var result = AutoMapperUtility.Automapper.Map<ILiftParameters>(liftSettings);
       Assert.Equal(liftSettings.CCVSummarizeTopLayerOnly, result.CCVSummarizeTopLayerOnly);
       Assert.Equal(liftSettings.MDPSummarizeTopLayerOnly, result.MDPSummarizeTopLayerOnly);
-      Assert.Equal((byte)liftSettings.CCVSummaryType, result.CCVSummaryTypes);
-      Assert.Equal((byte)liftSettings.MDPSummaryType, result.MDPSummaryTypes);
+      Assert.Equal(CCVSummaryTypes.Compaction, result.CCVSummaryTypes);
+      Assert.Equal(MDPSummaryTypes.Thickness, result.MDPSummaryTypes);
       Assert.Equal((Types.LiftDetectionType)liftSettings.LiftDetectionType, result.LiftDetectionType);
       Assert.Equal((Types.LiftThicknessType)liftSettings.LiftThicknessType, result.LiftThicknessType);
       Assert.Equal(liftSettings.LiftThicknessTarget.TargetLiftThickness, result.TargetLiftThickness);

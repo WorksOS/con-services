@@ -38,14 +38,15 @@ namespace VSS.TRex.Analytics.CMVStatistics
     /// <param name="argument"></param>
     /// <param name="aggregator"></param>
     /// <returns></returns>
-    public override AnalyticsComputor ConstructComputor(CMVStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
+    public override AnalyticsComputor ConstructComputor(CMVStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor
     {
       RequestDescriptor = RequestDescriptor,
       SiteModel = SiteModel,
       Aggregator = aggregator,
       Filters = argument.Filters,
       IncludeSurveyedSurfaces = true,
-      RequestedGridDataType = GridDataType.CCV
+      RequestedGridDataType = GridDataType.CCV,
+      LiftParams = argument.LiftParams
     };
 
     /// <summary>

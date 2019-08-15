@@ -21,16 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

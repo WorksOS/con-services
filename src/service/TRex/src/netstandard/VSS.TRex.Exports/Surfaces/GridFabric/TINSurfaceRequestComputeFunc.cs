@@ -39,7 +39,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
 
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
-        var request = new TINSurfaceExportExecutor(arg.ProjectID, arg.Filters, arg.Tolerance, arg.TRexNodeID);
+        var request = new TINSurfaceExportExecutor(arg.ProjectID, arg.Filters, arg.Tolerance, arg.TRexNodeID, arg.LiftParams);
 
         Log.LogInformation("Executing request.ExecuteAsync()");
 

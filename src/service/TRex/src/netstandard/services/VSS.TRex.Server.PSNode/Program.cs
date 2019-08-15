@@ -137,9 +137,9 @@ namespace VSS.TRex.Server.PSNode
             => new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder, overrides, liftParams)))
 
         // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
-        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
-          factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, cellLiftBuilder, volumeComputationType) 
-            =>  new SummaryVolumesCellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, cellLiftBuilder, volumeComputationType)))
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, cellLiftBuilder, volumeComputationType, overrides, liftParams) 
+            =>  new SummaryVolumesCellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, cellLiftBuilder, volumeComputationType, overrides, liftParams)))
 
         // Register the factory for surface elevation requests
         .Build()

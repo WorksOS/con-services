@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Clients\VSS.Productivity3D.Push.Clients\VSS.Productivity3D.Push.Clients.csproj" />
     <ProjectReference Include="..\..\..\Service\VSS.Productivity3D.Push.Hubs\VSS.Productivity3D.Push.Hubs.csproj" />

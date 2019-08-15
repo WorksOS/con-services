@@ -15,9 +15,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
         .ForMember(x => x.MDPSummarizeTopLayerOnly,
           opt => opt.MapFrom(lbs => lbs.MDPSummarizeTopLayerOnly))
         .ForMember(x => x.CCVSummaryType,
-          opt => opt.MapFrom(lbs => lbs.CCvSummaryType ?? CCVSummaryType.Compaction))
+          opt => opt.MapFrom(lbs => lbs.CCvSummaryType))
         .ForMember(x => x.MDPSummaryType,
-          opt => opt.MapFrom(x => SummaryType.Compaction))
+          opt => opt.MapFrom(x => (SummaryType?)null))
         .ForMember(x => x.FirstPassThickness,
           opt => opt.MapFrom(lbs => lbs.FirstPassThickness))
         .ForMember(x => x.LiftDetectionType,

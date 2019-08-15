@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using RestSharp;
@@ -26,7 +26,7 @@ namespace TagFileHarvester.Implementation
   public class FileRepository : IFileRepository
   {
     private static readonly GenericConfiguration config = new GenericConfiguration(new NullLoggerFactory());
-    public static ILog Log;
+    public static ILogger Log;
     private static string tccSynchFolder;
     private static readonly string tccBaseUrl = config.GetValueString("TCCBaseURL");
     private static readonly string tccUserName = config.GetValueString("TCCUserName");
@@ -43,8 +43,7 @@ namespace TagFileHarvester.Implementation
 
     public FileRepository()
     {
-      tccSynchFolder = string.Format("{0}/{1}", OrgsHandler.tccSynchMachineFolder,
-        OrgsHandler.TCCSynchProductionDataFolder);
+      tccSynchFolder = $"{OrgsHandler.tccSynchMachineFolder}/{OrgsHandler.TCCSynchProductionDataFolder}";
     }
 
     private string Ticket
@@ -77,22 +76,21 @@ namespace TagFileHarvester.Implementation
 
     public void CleanCache(Organization org)
     {
-      Log.DebugFormat("Cleaning cache for org {0}", org.shortName);
+      Log.LogDebug("Cleaning cache for org {0}", org.shortName);
       var keys = cache.Keys.Where(k => k.Contains(org.shortName)).ToList();
       foreach (var key in keys) cache[key].Clear();
     }
 
     public List<Organization> ListOrganizations()
     {
-      Log.Debug("ListOrganizations");
+      Log.LogDebug("ListOrganizations");
       List<Organization> orgs = null;
       try
       {
         var fileSpaceParams = new GetFileSpacesParams { filter = "otherorgs" };
         var result = ExecuteRequest(Ticket, Method.GET, "/tcc/GetFileSpaces", fileSpaceParams,
           typeof(GetFileSpacesResult));
-        var filespacesResult = result as GetFileSpacesResult;
-        if (filespacesResult != null)
+        if (result is GetFileSpacesResult filespacesResult)
         {
           if (filespacesResult.success)
           {
@@ -118,7 +116,7 @@ namespace TagFileHarvester.Implementation
             }
             else
             {
-              Log.Warn("No organizations returned from ListOrganizations");
+              Log.LogWarning("No organizations returned from ListOrganizations");
               orgs = new List<Organization>();
             }
           }
@@ -129,12 +127,12 @@ namespace TagFileHarvester.Implementation
         }
         else
         {
-          Log.Error("Null result from ListOrganizations");
+          Log.LogError("Null result from ListOrganizations");
         }
       }
       catch (Exception ex)
       {
-        Log.Error("Failed to get list of TCC organizations", ex);
+        Log.LogError("Failed to get list of TCC organizations", ex);
       }
 
       return orgs;
@@ -142,11 +140,11 @@ namespace TagFileHarvester.Implementation
 
     public List<string> ListFolders(Organization org, out bool fromCache)
     {
-      Log.DebugFormat("ListFolders: org={0} {1}", org.shortName, org.filespaceId);
+      Log.LogDebug("ListFolders: org={0} {1}", org.shortName, org.filespaceId);
       //Get top level list of folders from root
       if (IsAnythingInCahe(org))
       {
-        Log.DebugFormat("ListFolders: Found something in cache for org {0}, building folder list from it",
+        Log.LogDebug("ListFolders: Found something in cache for org {0}, building folder list from it",
           org.shortName);
         var keys = cache.Keys.Where(k => k.Contains(org.shortName + "$")).ToList();
         fromCache = true;
@@ -160,7 +158,7 @@ namespace TagFileHarvester.Implementation
 
     public void RemoveObsoleteFilesFromCache(Organization org, List<TagFile> files)
     {
-      Log.DebugFormat(
+      Log.LogDebug(
         "Removing obsolete {0} files from cache for org {1}", files.Count, org.shortName);
       var keys = cache.Keys.Where(k => k.Contains(org.shortName + "$")).ToList();
       foreach (var key in keys)
@@ -170,7 +168,7 @@ namespace TagFileHarvester.Implementation
 
     public List<TagFile> ListFiles(Organization org, string path)
     {
-      Log.DebugFormat("ListFiles: org={0} {1}, path={2}", org.shortName, org.filespaceId, path);
+      Log.LogDebug("ListFiles: org={0} {1}, path={2}", org.shortName, org.filespaceId, path);
 
       //The tag files are located in a directory structure of the form: /<machine name>/Machine Control Data/.Production-Data/<subfolder>/*.tag
       //If a machine is in a workgroup then folder structure is: /<workgroup name>/<machine name>/Machine Control Data/.Production-Data/<subfolder>/*.tag
@@ -179,7 +177,7 @@ namespace TagFileHarvester.Implementation
       //directly under the given folder if it is a machine folder or two levels down for work group.
       List<TagFile> files = null;
 
-      Log.DebugFormat("Called by {0}; Cache contens is {1}", org.shortName,
+      Log.LogDebug("Called by {0}; Cache contens is {1}", org.shortName,
         cache.Select(i => i.Key + " : " + i.Value.Count.ToString() + " ")
           .DefaultIfEmpty(" ")
           .Aggregate((prev, next) => prev + next));
@@ -189,7 +187,7 @@ namespace TagFileHarvester.Implementation
         if (cache[GetCacheKey(org, path)].Any())
         {
           var cachedFiles = cache[GetCacheKey(org, path)];
-          Log.DebugFormat("ListFiles: Found {0} number of files in cache. Sending them back", cachedFiles.Count());
+          Log.LogDebug("ListFiles: Found {0} number of files in cache. Sending them back", cachedFiles.Count);
           //Remove obsolete files
 
           return cachedFiles.OrderBy(f => f.createdUTC).ToList();
@@ -198,33 +196,33 @@ namespace TagFileHarvester.Implementation
       try
       {
         //First see if synch folder exists at machine level
-        var syncFolder = string.Format("{0}/{1}", path, tccSynchFolder);
+        var syncFolder = $"{path}/{tccSynchFolder}";
         if (FolderExists(org.filespaceId, syncFolder))
         {
           files = GetFiles(org, syncFolder);
         }
         else
         {
-          Log.DebugFormat("Folders {0} does not exists for org {1}, executing recursive search", syncFolder,
+          Log.LogDebug("Folders {0} does not exists for org {1}, executing recursive search", syncFolder,
             org.shortName);
           //Get next level of folders and repeat to see if it's a work group
           var folders = GetFolders(org, path);
           if (folders == null)
           {
-            Log.DebugFormat("No folders returned for org {0} path {1}", org.shortName, path);
+            Log.LogDebug("No folders returned for org {0} path {1}", org.shortName, path);
             return new List<TagFile>();
           }
 
           foreach (var folder in folders)
           {
-            syncFolder = string.Format("{0}{1}/{2}", path, folder, tccSynchFolder);
+            syncFolder = $"{path}{folder}/{tccSynchFolder}";
             if (FolderExists(org.filespaceId, syncFolder))
             {
               if (files == null)
                 files = GetFiles(org, syncFolder);
               else
                 files.AddRange(GetFiles(org, syncFolder));
-              Log.InfoFormat("Got files in folder {0} for org {1}. Total file number: {2}", syncFolder, org.shortName,
+              Log.LogInformation("Got files in folder {0} for org {1}. Total file number: {2}", syncFolder, org.shortName,
                 files.Count);
             }
           }
@@ -232,14 +230,14 @@ namespace TagFileHarvester.Implementation
       }
       catch (Exception ex)
       {
-        Log.ErrorFormat("Failed to get list of TCC tag files for path {0}: {1}", path, ex.Message);
+        Log.LogError("Failed to get list of TCC tag files for path {0}: {1}", path, ex.Message);
         return null;
       }
       //Order files by date and return a maximum of maxNumberFiles
 
       if (files == null)
       {
-        Log.DebugFormat("No files returned for org {0} path {1}", org.shortName, path);
+        Log.LogDebug("No files returned for org {0} path {1}", org.shortName, path);
         return new List<TagFile>();
       }
 
@@ -251,8 +249,8 @@ namespace TagFileHarvester.Implementation
 
 
         //Add files to cache
-        Log.DebugFormat(
-          "Adding new {0} files to cache", files.Count());
+        Log.LogDebug(
+          "Adding new {0} files to cache", files.Count);
         cache[GetCacheKey(org, path)].AddRange(files);
       }
 
@@ -263,7 +261,7 @@ namespace TagFileHarvester.Implementation
 
     public Stream GetFile(Organization org, string fullName)
     {
-      Log.DebugFormat("GetFile: org={0} {1}, fullName={2}", org.shortName, org.filespaceId, fullName);
+      Log.LogDebug("GetFile: org={0} {1}, fullName={2}", org.shortName, org.filespaceId, fullName);
       try
       {
         var getFileParams = new GetFileParams
@@ -282,12 +280,12 @@ namespace TagFileHarvester.Implementation
         }
         else
         {
-          Log.ErrorFormat("Null result from GetFile for org {0} file {1}", org.shortName, fullName);
+          Log.LogError("Null result from GetFile for org {0} file {1}", org.shortName, fullName);
         }
       }
       catch (Exception ex)
       {
-        Log.Error("Failed to get TCC file", ex);
+        Log.LogError("Failed to get TCC file", ex);
       }
 
       return null;
@@ -296,7 +294,7 @@ namespace TagFileHarvester.Implementation
     public bool MoveFile(Organization org, string srcFullName, string dstFullName)
     {
       const string FILE_CHECKED_OUT_ERROR_ID = "INVALID_OPERATION_FILE_IS_LOCKED";
-      Log.DebugFormat("MoveFile: org={0} {1}, srcFullName={2}, dstFullName={3}", org.shortName, org.filespaceId,
+      Log.LogDebug("MoveFile: org={0} {1}, srcFullName={2}, dstFullName={3}", org.shortName, org.filespaceId,
         srcFullName, dstFullName);
       try
       {
@@ -311,7 +309,7 @@ namespace TagFileHarvester.Implementation
           var resultCreate = ExecuteRequest(Ticket, Method.GET, "/tcc/MkDir", mkdirParams, typeof(RenResult));
           if (resultCreate == null)
           {
-            Log.ErrorFormat("Can not create folder for org {0} folder {1}", org.shortName,
+            Log.LogError("Can not create folder for org {0} folder {1}", org.shortName,
               dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/");
             return false;
           }
@@ -330,11 +328,11 @@ namespace TagFileHarvester.Implementation
         var renResult = result as RenResult;
         if (renResult != null && !renResult.success && renResult.errorid.Contains(FILE_CHECKED_OUT_ERROR_ID))
         {
-          Log.InfoFormat($"File {srcFullName} for org {org.shortName} is locked, attempting to cancel checkout");
+          Log.LogInformation($"File {srcFullName} for org {org.shortName} is locked, attempting to cancel checkout");
           var cancelled = CancelCheckout(org, srcFullName);
           if (cancelled)
           {
-            Log.InfoFormat($"Retrying MoveFile for {srcFullName} for org {org.shortName}");
+            Log.LogInformation($"Retrying MoveFile for {srcFullName} for org {org.shortName}");
             result = ExecuteRequest(Ticket, Method.GET, "/tcc/Ren", renParams, typeof(RenResult));
             renResult = result as RenResult;
           }
@@ -347,12 +345,12 @@ namespace TagFileHarvester.Implementation
         }
         else
         {
-          Log.ErrorFormat("Null result from MoveFile for org {0} file {1}", org.shortName, srcFullName);
+          Log.LogError("Null result from MoveFile for org {0} file {1}", org.shortName, srcFullName);
         }
       }
       catch (Exception ex)
       {
-        Log.ErrorFormat("Failed to move TCC file for org {0} file {1}: {2}", org.shortName, srcFullName, ex.Message);
+        Log.LogError("Failed to move TCC file for org {0} file {1}: {2}", org.shortName, srcFullName, ex.Message);
       }
 
       return false;
@@ -360,19 +358,18 @@ namespace TagFileHarvester.Implementation
 
     private bool CancelCheckout(Organization org, string fullName)
     {
-      Log.DebugFormat("CancelCheckout: org={0} {1}, fullName={2}", org.shortName, org.filespaceId, fullName);
+      Log.LogDebug("CancelCheckout: org={0} {1}, fullName={2}", org.shortName, org.filespaceId, fullName);
 
       try
       {
-        CancelCheckoutParams ccParams = new CancelCheckoutParams
+        var ccParams = new CancelCheckoutParams
         {
           filespaceid = org.filespaceId,
           path = fullName
         };
 
         var result = ExecuteRequest(Ticket, Method.GET, "/tcc/CancelCheckout", ccParams, typeof(CancelCheckoutResult));
-        CancelCheckoutResult ccResult = result as CancelCheckoutResult;
-        if (ccResult != null)
+        if (result is CancelCheckoutResult ccResult)
         {
           if (ccResult.success)
           {
@@ -382,26 +379,23 @@ namespace TagFileHarvester.Implementation
         }
         else
         {
-          Log.ErrorFormat("Null result from CancelCheckout for org {0} file {1}", org.shortName, fullName);
+          Log.LogError("Null result from CancelCheckout for org {0} file {1}", org.shortName, fullName);
         }
       }
 
       catch (Exception ex)
       {
-        Log.ErrorFormat("Failed to cancel checkout TCC file for org {0} file {1}: {2}", org.shortName, fullName,
+        Log.LogError("Failed to cancel checkout TCC file for org {0} file {1}: {2}", org.shortName, fullName,
           ex.Message);
       }
       return false;
     }
 
-    private string GetCacheKey(Organization org, string path)
-    {
-      return string.Format("{0}${1}", org.shortName, path);
-    }
+    private static string GetCacheKey(Organization org, string path) => $"{org.shortName}${path}";
 
     private List<string> GetFolders(Organization org, string path)
     {
-      Log.DebugFormat("GetFolders: org={0} {1}, path={2}", org.shortName, org.filespaceId, path);
+      Log.LogDebug("GetFolders: org={0} {1}, path={2}", org.shortName, org.filespaceId, path);
       List<string> folders = null;
       try
       {
@@ -415,8 +409,7 @@ namespace TagFileHarvester.Implementation
           filemasklist = "*.tag"
         };
         var result = ExecuteRequest(Ticket, Method.GET, "/tcc/Dir", dirParams, typeof(DirResult));
-        var dirResult = result as DirResult;
-        if (dirResult != null)
+        if (result is DirResult dirResult)
         {
           if (dirResult.success)
           {
@@ -430,25 +423,23 @@ namespace TagFileHarvester.Implementation
 
               foreach (var folderEntry in folderEntries)
               {
-                string lPath;
-                if (path == "/")
-                  lPath = string.Format("{0}{1}", path, folderEntry.entryName);
-                else
-                  lPath = string.Format("{0}/{1}", path, folderEntry.entryName);
+                var lPath = path == "/"
+                  ? $"{path}{folderEntry.entryName}"
+                  : $"{path}/{folderEntry.entryName}";
 
                 var lastChanged = GetLastChangedTime(org.filespaceId, lPath);
 
                 if (OrgsHandler.FilenameDumpEnabled)
-                  Log.DebugFormat("Dumping Dir {0} : {1} : {2}", org.filespaceId, lPath, lastChanged);
+                  Log.LogDebug("Dumping Dir {0} : {1} : {2}", org.filespaceId, lPath, lastChanged);
 
                 folders.Add($"/{folderEntry.entryName}");
               }
 
-              if (!folders.Any()) Log.WarnFormat("No folders found for org {0}", org.shortName);
+              if (!folders.Any()) Log.LogWarning("No folders found for org {0}", org.shortName);
             }
             else
             {
-              Log.WarnFormat("No folders returned from GetFolders for org {0}", org.shortName);
+              Log.LogWarning("No folders returned from GetFolders for org {0}", org.shortName);
               folders = new List<string>();
             }
           }
@@ -459,12 +450,12 @@ namespace TagFileHarvester.Implementation
         }
         else
         {
-          Log.ErrorFormat("Null result from GetFolders for org {0}", org.shortName);
+          Log.LogError("Null result from GetFolders for org {0}", org.shortName);
         }
       }
       catch (Exception ex)
       {
-        Log.ErrorFormat("Failed to get list of TCC folders: {0}", ex.Message);
+        Log.LogError("Failed to get list of TCC folders: {0}", ex.Message);
       }
 
       return folders;
@@ -484,7 +475,7 @@ namespace TagFileHarvester.Implementation
 
     private DateTime GetLastChangedTime(string filespaceId, string path)
     {
-      Log.DebugFormat("GetLastChangedTime: filespaceId={0}, path={1}", filespaceId, path);
+      Log.LogDebug("GetLastChangedTime: filespaceId={0}, path={1}", filespaceId, path);
 
       try
       {
@@ -496,20 +487,19 @@ namespace TagFileHarvester.Implementation
         };
         var result = ExecuteRequest(Ticket, Method.GET, "/tcc/LastDirChange", lastDirChangeParams,
           typeof(LastDirChangeResult));
-        var lastDirChangeResult = result as LastDirChangeResult;
-        if (lastDirChangeResult != null)
+        if (result is LastDirChangeResult lastDirChangeResult)
         {
           if (lastDirChangeResult.success) return lastDirChangeResult.lastUpdatedDateTime;
           CheckForInvalidTicket(lastDirChangeResult, "GetLastChangedTime");
         }
         else
         {
-          Log.ErrorFormat("Null result from GetLastChangedTime for filespaceId={0}, path={1}", filespaceId, path);
+          Log.LogError("Null result from GetLastChangedTime for filespaceId={0}, path={1}", filespaceId, path);
         }
       }
       catch (Exception ex)
       {
-        Log.ErrorFormat("Failed to get last time tag files added to folder: {0}", ex.Message);
+        Log.LogError("Failed to get last time tag files added to folder: {0}", ex.Message);
       }
 
       return DateTime.MinValue;
@@ -517,7 +507,7 @@ namespace TagFileHarvester.Implementation
 
     private List<TagFile> GetFiles(Organization org, string syncFolder)
     {
-      Log.DebugFormat("Found synch folder for {0}", syncFolder);
+      Log.LogDebug("Found synch folder for {0}", syncFolder);
 
       // Check whether the sync folder has any empty tag files folders and delete them 
       // if their life length exceeds the life span set in the configuration file.
@@ -532,8 +522,7 @@ namespace TagFileHarvester.Implementation
         filemasklist = "*.tag"
       };
       var result = ExecuteRequest(Ticket, Method.GET, "/tcc/Dir", dirParams, typeof(DirResult));
-      var dirResult = result as DirResult;
-      if (dirResult != null)
+      if (result is DirResult dirResult)
       {
         if (dirResult.success)
         {
@@ -546,7 +535,7 @@ namespace TagFileHarvester.Implementation
       }
       else
       {
-        Log.ErrorFormat("Null result from GetFiles for {0}", syncFolder);
+        Log.LogError("Null result from GetFiles for {0}", syncFolder);
       }
 
       return null;
@@ -554,7 +543,7 @@ namespace TagFileHarvester.Implementation
 
     private void CheckForEmptyTagFileFolders(Organization org, string path)
     {
-      Log.DebugFormat("CheckForEmptyTagFileFolders: org={0} {1}, rootFolder={2}", org.shortName, org.filespaceId, path);
+      Log.LogDebug("CheckForEmptyTagFileFolders: org={0} {1}, rootFolder={2}", org.shortName, org.filespaceId, path);
 
       List<string> folders = null;
 
@@ -570,9 +559,8 @@ namespace TagFileHarvester.Implementation
         };
 
         var result = ExecuteRequest(Ticket, Method.GET, "/tcc/Dir", dirParams, typeof(DirResult));
-        var dirResult = result as DirResult;
 
-        if (dirResult != null)
+        if (result is DirResult dirResult)
         {
           if (dirResult.success)
           {
@@ -587,11 +575,11 @@ namespace TagFileHarvester.Implementation
               foreach (var folderEntry in folderEntries) folders.Add($"/{folderEntry.entryName}");
 
               if (!folders.Any())
-                Log.WarnFormat("No tag file folders found for org {0}, root folder={1}", org.shortName, path);
+                Log.LogWarning("No tag file folders found for org {0}, root folder={1}", org.shortName, path);
             }
             else
             {
-              Log.WarnFormat(
+              Log.LogWarning(
                 "No tag file folders returned from CheckForEmptyTagFileFolders for org {0}, root folder={1}",
                 org.shortName, path);
               folders = new List<string>();
@@ -604,14 +592,14 @@ namespace TagFileHarvester.Implementation
         }
         else
         {
-          Log.ErrorFormat(
+          Log.LogError(
             "Null result from CheckForEmptyTagFileFolders on getting tag file folders for org {0}, root folder={1}",
             org.shortName, path);
         }
       }
       catch (Exception ex)
       {
-        Log.ErrorFormat("Failed to get list of TCC tag files folders: {0}, root folder={1}", ex.Message, path);
+        Log.LogError("Failed to get list of TCC tag files folders: {0}, root folder={1}", ex.Message, path);
       }
 
       if (folders == null)
@@ -623,13 +611,13 @@ namespace TagFileHarvester.Implementation
 
         var lastChanged = GetLastChangedTime(org.filespaceId, lPath);
 
-        Log.InfoFormat("Checking folder {0} for deletion. Last changed date={1}, today={2}, folder's age={3} days",
+        Log.LogInformation("Checking folder {0} for deletion. Last changed date={1}, today={2}, folder's age={3} days",
           lPath, lastChanged, DateTime.UtcNow, (DateTime.UtcNow - lastChanged).Days);
 
         if ((DateTime.UtcNow - lastChanged).Days >= OrgsHandler.TagFilesFolderLifeSpanInDays)
           if (ListFiles(org, lPath).ToList().Count == 0)
           {
-            Log.InfoFormat("Deleting folder {0}", lPath);
+            Log.LogInformation("Deleting folder {0}", lPath);
 
             var delResult = DeleteFolder(org, lPath);
             if (!delResult.success) CheckForInvalidTicket(delResult, "DeleteFolder");
@@ -639,7 +627,7 @@ namespace TagFileHarvester.Implementation
 
     private bool FolderExists(string filespaceId, string folder)
     {
-      Log.DebugFormat("Searching for folder {0}", folder);
+      Log.LogDebug("Searching for folder {0}", folder);
       try
       {
         var getFileAttrParams = new GetFileAttributesParams
@@ -649,8 +637,7 @@ namespace TagFileHarvester.Implementation
         };
         var result = ExecuteRequest(Ticket, Method.GET, "/tcc/GetFileAttributes", getFileAttrParams,
           typeof(GetFileAttributesResult));
-        var getFileAttrResult = result as GetFileAttributesResult;
-        if (getFileAttrResult != null)
+        if (result is GetFileAttributesResult getFileAttrResult)
         {
           if (getFileAttrResult.success) return true;
           CheckForInvalidTicket(getFileAttrResult, "FolderExists");
@@ -659,7 +646,7 @@ namespace TagFileHarvester.Implementation
       }
       catch (Exception ex)
       {
-        Log.ErrorFormat("Failed to get TCC file attributes: {0}", ex.Message);
+        Log.LogError("Failed to get TCC file attributes: {0}", ex.Message);
       }
 
       return false;
@@ -675,7 +662,7 @@ namespace TagFileHarvester.Implementation
       }
       else
       {
-        if (OrgsHandler.FilenameDumpEnabled) Log.DebugFormat("Dumping {0} : {1}", entry.entryName, entry.createTime);
+        if (OrgsHandler.FilenameDumpEnabled) Log.LogDebug("Dumping {0} : {1}", entry.entryName, entry.createTime);
 
         if (entry.leaf)
           files.Add(new TagFile
@@ -688,7 +675,7 @@ namespace TagFileHarvester.Implementation
 
     private void Login()
     {
-      Log.InfoFormat("Logging in to TCC: user={0}, org={1}", tccUserName, tccOrganization);
+      Log.LogInformation("Logging in to TCC: user={0}, org={1}", tccUserName, tccOrganization);
       try
       {
         var loginParams = new LoginParams
@@ -700,22 +687,21 @@ namespace TagFileHarvester.Implementation
           forcegmt = true
         };
         var result = ExecuteRequest(ticket, Method.POST, "/tcc/Login", loginParams, typeof(LoginResult));
-        var loginResult = result as LoginResult;
-        if (loginResult != null)
+        if (result is LoginResult loginResult)
         {
           if (loginResult.success)
             ticket = loginResult.ticket;
           else
-            Log.ErrorFormat("Failed to login to TCC: errorId={0}, reason={1}", loginResult.errorid, loginResult.reason);
+            Log.LogError("Failed to login to TCC: errorId={0}, reason={1}", loginResult.errorid, loginResult.reason);
         }
         else
         {
-          Log.Error("Null result from Login");
+          Log.LogError("Null result from Login");
         }
       }
       catch (Exception ex)
       {
-        Log.ErrorFormat("Failed to login to TCC: {0}", ex.Message);
+        Log.LogError("Failed to login to TCC: {0}", ex.Message);
       }
     }
 
@@ -727,7 +713,7 @@ namespace TagFileHarvester.Implementation
         if (result.errorid == INVALID_TICKET_ERRORID && result.message == INVALID_TICKET_MESSAGE)
           Ticket = null;
         else
-          Log.WarnFormat("{0} failed: errorid={1}, message={2}", what, result.errorid, result.message);
+          Log.LogWarning("{0} failed: errorid={1}, message={2}", what, result.errorid, result.message);
       }
     }
 
@@ -737,11 +723,8 @@ namespace TagFileHarvester.Implementation
       if (string.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
-      var client = new RestClient(tccBaseUrl);
-      client.Timeout = (int)OrgsHandler.TCCRequestTimeout.TotalMilliseconds;
-      client.ReadWriteTimeout = (int)OrgsHandler.TCCRequestTimeout.TotalMilliseconds;
-      var request = new RestRequest(contractPath, method);
-      request.RequestFormat = DataFormat.Json;
+      var client = new RestClient(tccBaseUrl) { Timeout = (int)OrgsHandler.TCCRequestTimeout.TotalMilliseconds, ReadWriteTimeout = (int)OrgsHandler.TCCRequestTimeout.TotalMilliseconds };
+      var request = new RestRequest(contractPath, method) { RequestFormat = DataFormat.Json };
       request.AddHeader("Accept", returnRaw ? "application/octet-stream" : "application/json");
       if (!string.IsNullOrEmpty(ticket))
         request.AddQueryParameter("Ticket", token);
@@ -755,13 +738,13 @@ namespace TagFileHarvester.Implementation
         else
           request.AddParameter(p.Name, p.Value, ParameterType.GetOrPost);
 
-      IRestResponse response = null;
+      IRestResponse response;
 
       var timestamp1 = DateTime.UtcNow;
       var reqTask = client.ExecuteTaskAsync(request);
       if (!reqTask.Wait(OrgsHandler.TCCRequestTimeout))
       {
-        Log.WarnFormat("TCC Request ran out of time for completion for request {0}", contractPath);
+        Log.LogWarning("TCC Request ran out of time for completion for request {0}", contractPath);
         return null;
       }
 
@@ -770,7 +753,7 @@ namespace TagFileHarvester.Implementation
 
       if (response.ResponseStatus == ResponseStatus.Completed)
       {
-        Log.DebugFormat("Response Status: StatusCode={0}, StatusDescription={1}, data size={2} at {3:0.00} KB/sec",
+        Log.LogDebug("Response Status: StatusCode={0}, StatusDescription={1}, data size={2} at {3:0.00} KB/sec",
           response.StatusCode, response.StatusDescription, response.Content.Length,
           response.Content.Length / 1024.0 / (timestamp2 - timestamp1).TotalMilliseconds * 1000.0);
 
@@ -778,11 +761,11 @@ namespace TagFileHarvester.Implementation
           return response.RawBytes;
         dynamic result = JsonConvert.DeserializeObject(response.Content, expectedResultType);
         if (result == null)
-          Log.WarnFormat("Can not execute request TCC response. Details: {0}", response.ErrorMessage);
+          Log.LogWarning("Can not execute request TCC response. Details: {0}", response.ErrorMessage);
         return result;
       }
 
-      Log.ErrorFormat(
+      Log.LogError(
         "Failed to get response from TCC: ResponseStatus={0}, StatusCode={1}, StatusDescription={2}, ErrorMessage={3}",
         response.ResponseStatus, response.StatusCode, response.StatusDescription, response.ErrorMessage);
       return null;
