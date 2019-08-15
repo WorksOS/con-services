@@ -114,7 +114,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
 
-    [Fact]
+    [Fact(Skip = "Missing test data. todo")]
     public void Execute_RootTile_Expected()
     {
       AddClusterComputeGridRouting();
@@ -127,7 +127,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
 
-    [Fact]
+    [Fact (Skip="Missing test data. Todo")]
     public void Execute_NotEmptySiteModel_Success()
     {
       AddClusterComputeGridRouting();
