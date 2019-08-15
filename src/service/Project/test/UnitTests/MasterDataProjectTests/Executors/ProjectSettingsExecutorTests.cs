@@ -297,7 +297,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var request = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, ProjectSettingsType.Targets);
       var json = JsonConvert.SerializeObject(request);
-      Assert.False(json.Contains("ProjectSettingsType"));
+      Assert.DoesNotContain("ProjectSettingsType", json);
     }
 
     [Fact]
@@ -308,7 +308,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var result = ProjectSettingsResult.CreateProjectSettingsResult(projectUid, JsonConvert.DeserializeObject<JObject>(settings), ProjectSettingsType.Targets);
       var json = JsonConvert.SerializeObject(result);
-      Assert.False(json.Contains("ProjectSettingsType"));
+      Assert.DoesNotContain("ProjectSettingsType", json);
     }
   }
 }
