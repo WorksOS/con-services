@@ -46,7 +46,7 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
     /// Populate result grid from processed subgrid
     /// </summary>
     /// <param name="subGrid"></param>
-    private void DummyExtractRequiredValues(ClientHeightLeafSubGrid subGrid)
+    private void ExtractRequiredValues(ClientHeightLeafSubGrid subGrid)
     {
       var cnt = 0.0;
       var cnt2 = 0.0;
@@ -134,7 +134,7 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
           foreach (var subGrid in subGridResponses)
           {
             if (subGrid is ClientHeightLeafSubGrid leafSubGrid)
-              DummyExtractRequiredValues(leafSubGrid);
+              ExtractRequiredValues(leafSubGrid);
           }
           result = true;
         }

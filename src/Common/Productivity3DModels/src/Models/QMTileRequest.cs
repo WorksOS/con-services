@@ -8,7 +8,6 @@ namespace VSS.Productivity3D.Models.Models
   /// </summary>
   public class QMTileRequest : TRexBaseRequest
   {
-    /// The base or earliest filter to be used.
 
     [JsonProperty(Required = Required.Always)]
     public int X { get; set; }

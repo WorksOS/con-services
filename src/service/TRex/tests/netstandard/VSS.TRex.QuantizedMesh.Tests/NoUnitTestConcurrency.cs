@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace VSS.TRex.QuantizedMesh.Tests
@@ -8,7 +8,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     [Fact]
     public void DummyTestForForceNoTestConcurrency()
     {
-      Assert.True(true);
+      Assert.True(true); //todo finish with Raymond
     }
   }
 }

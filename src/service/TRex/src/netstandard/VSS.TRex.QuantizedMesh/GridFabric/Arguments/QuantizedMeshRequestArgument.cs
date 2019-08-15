@@ -18,10 +18,10 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
     public QuantizedMeshRequestArgument()
     { }
 
-    public QuantizedMeshRequestArgument(Guid projectUId, int x, int y, int z, IFilterSet filters, int displayMode)
+    public QuantizedMeshRequestArgument(Guid projectUid, int x, int y, int z, IFilterSet filters, int displayMode)
     {
       // todo whats needed
-      ProjectID = projectUId;
+      ProjectID = projectUid;
       X = x;
       Y = y;
       Z = z;

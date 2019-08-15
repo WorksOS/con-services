@@ -233,7 +233,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// <summary>
     /// Setup GridSize for tile
     /// </summary>
-    private void Intialise()
+    private void Initialise()
     {
       QMTileResponse.ResultStatus = RequestErrorStatus.FailedToBuildQuantizedMeshTile;
       ResultStatus = RequestErrorStatus.FailedToBuildQuantizedMeshTile;
@@ -452,7 +452,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       // We will draw all missing data just below lowest elevation for site
       LowestElevation = (float)SiteModel.SiteModelExtent.MinZ - 1F;
 
-      Intialise(); // setup tile requirements
+      Initialise(); // setup tile requirements
 
       if (TileGridSize == QMConstants.FlatResolutionGridSize) // Too far out to see detail so return empty tile
         return BuildEmptyTile();

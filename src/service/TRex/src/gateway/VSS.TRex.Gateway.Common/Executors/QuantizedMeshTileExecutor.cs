@@ -40,8 +40,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
         ThrowRequestTypeCastException<QMTileRequest>();
 
-      var siteModel = GetSiteModel(request?.ProjectUid);
-      var filter = ConvertFilter(request?.Filter, siteModel);
+      var siteModel = GetSiteModel(request.ProjectUid);
+      var filter = ConvertFilter(request.Filter, siteModel);
       var qmRequest = new QuantizedMeshRequest();
 
       var response = qmRequest.Execute(new QuantizedMeshRequestArgument
