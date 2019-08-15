@@ -228,7 +228,14 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="cellExtent"></param>
         /// <returns></returns>
         void CalculateRegionGridCoverage(BoundingWorldExtent3D worldExtent, out BoundingIntegerExtent2D cellExtent);
-        
+
+        /// <summary>
+        /// CreateNewSubGrid creates a new sub grid relevant to the requested level
+        /// in the tree. This new sub grid is not added into the tree structure -
+        /// it is unattached until explicitly inserted.
+        /// </summary>
+        ISubGrid CreateNewSubGrid(byte level);
+
         byte[] ToBytes();
 
         void FromBytes(byte[] bytes);

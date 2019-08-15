@@ -655,7 +655,7 @@ namespace VSS.TRex.SubGrids
         throw new TRexSubGridProcessingException($"Grid data type of client leaf sub grid [{clientGrid.GridDataType}] is not compatible with the grid data type of retriever [{_gridDataType}]");
       }
 
-      ServerRequestResult Result = ServerRequestResult.UnknownError;
+      var Result = ServerRequestResult.UnknownError;
 
       //  SIGLogMessage.PublishNoODS(Nil, Format('In RetrieveSubGrid: Active pass filters = %s, Active cell filters = %s', [PassFilter.ActiveFiltersText, CellFilter.ActiveFiltersText]));
 

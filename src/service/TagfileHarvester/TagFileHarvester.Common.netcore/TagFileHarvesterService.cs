@@ -1,29 +1,30 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using log4net;
+using Microsoft.Extensions.Logging;
+using Serilog.Extensions.Logging;
 using TagFileHarvester;
 using TagFileHarvester.Implementation;
 using TagFileHarvester.Interfaces;
+using VSS.Serilog.Extensions;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.Nighthawk.ThreeDCommon.ThreeDAPIs.ProjectDataServer
 {
-  // Provides a task scheduler that ensures a maximum concurrency level while  
-  // running on top of the thread pool. 
-
-
+  /// <summary>
+  /// Provides a task scheduler that ensures a maximum concurrency level while running on top of the thread pool. 
+  /// </summary>
   public static class TagFileHarvesterService
   {
-    private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    private static readonly ILogger log = new SerilogLoggerProvider(SerilogExtensions.Configure("VSS.TagFileHarvesterService.log")).CreateLogger(nameof(TagFileHarvesterService));
 
     //This is the main list of orgs 
     private static Timer SyncTimer;
 
     public static void Start()
     {
-      log.Debug("TagFileHarvester.Start: Entered Start()");
+      log.LogDebug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here
       OrgsHandler.Initialize(new UnityContainer().RegisterType<IFileRepository, FileRepository>()
         .RegisterInstance<IHarvesterTasks>(new LimitedConcurrencyHarvesterTasks())
@@ -32,18 +33,18 @@ namespace VSS.Nighthawk.ThreeDCommon.ThreeDAPIs.ProjectDataServer
       //here we need to sync filespaces and tasks
       SyncTimer = new Timer(OrgsHandler.CheckAvailableOrgs);
       SyncTimer.Change(TimeSpan.FromMinutes(3), TimeSpan.FromMilliseconds(0));
-      log.DebugFormat("TagFileHarvester.Start: Running on multiple threads");
+      log.LogDebug("TagFileHarvester.Start: Running on multiple threads");
     }
 
 
     public static void Stop()
     {
-      log.Debug("TagFileHarvester.Stop: Entered Stop()");
+      log.LogDebug("TagFileHarvester.Stop: Entered Stop()");
       //Send everyone cancel message
       OrgsHandler.OrgProcessingTasks.ForEach(t => t.Value.Item2.Cancel());
       //Wait for them to stop and give 5 minutes timeout to stop
       Task.WaitAll(OrgsHandler.OrgProcessingTasks.Select(t => t.Key).ToArray(), TimeSpan.FromMinutes(5));
-      log.Debug("TagFileHarvester.Stop: Exiting Stop()");
+      log.LogDebug("TagFileHarvester.Stop: Exiting Stop()");
     }
   }
 

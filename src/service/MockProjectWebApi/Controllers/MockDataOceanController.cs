@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
-using VSS.ConfigurationStore;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -27,7 +26,6 @@ namespace MockProjectWebApi.Controllers
       }
     }
 
-
     [Route("/api/browse/directories")]
     [HttpGet]
     public dynamic BrowseDirectories([FromQuery]string name, [FromQuery]bool owner, [FromQuery]Guid? parent_id)
@@ -45,9 +43,8 @@ namespace MockProjectWebApi.Controllers
             parent_id = parent_id
           }
         }
-
-
       };
+
       Console.WriteLine($"{nameof(BrowseDirectories)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
     }
@@ -217,7 +214,7 @@ namespace MockProjectWebApi.Controllers
         //This is what DataOcean returns for a tile that doesn't exist
         return StatusCode((int)HttpStatusCode.Forbidden, "access denied");
       }
-      return new FileStreamResult(new FileStream(fileName, FileMode.Open), ContentTypeConstants.ImagePng);
+      return new FileStreamResult(new FileStream(fileName, FileMode.Open, FileAccess.Read), ContentTypeConstants.ImagePng);
     }
 
     //We need a copy of this model class from DataOcean as we can't use dynamic due to the hypenated property names
