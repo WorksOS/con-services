@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="filterUId">Filter Id</param>
     /// <param name="displayMode">DisplayMode</param>/// 
     /// <returns></returns>
-    [HttpGet("api/v1/qmesh/{z}/{x}/{y}.{formatExtension}")]
+    [HttpGet("api/v2/qmesh/{z}/{x}/{y}.{formatExtension}")]
     public async Task<IActionResult> Get(int x, int y, int z, string formatExtension, [FromQuery] Guid projectUid, [FromQuery] Guid filterUId, [FromQuery] int displayMode)
     {
 
@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Returns layer.json that controls the layout of all future tile requets
     /// </summary>
     /// <returns></returns>
-    [HttpGet("api/v1/qmesh/layer.json")]
+    [HttpGet("api/v2/qmesh/layer.json")]
     public string GetTRexLayerFile()
     {
       return layer; 
