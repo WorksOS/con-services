@@ -25,7 +25,7 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       nbPositions = points.Length;
       if (nbPositions < 2)
       {
-        throw new Exception("Your list of points must contain at least 2 points");
+        throw new ArgumentException("Your list of points must contain at least 2 points");
       }
 
       for (int i = 0; i < nbPositions; i++)

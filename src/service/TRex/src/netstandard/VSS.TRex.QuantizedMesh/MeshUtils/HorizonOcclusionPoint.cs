@@ -53,7 +53,7 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
     {
       if (points.Length < 1)
       {
-        throw new Exception("Your list of points must contain at least 2 points");
+        throw new ArgumentException("Your list of points must contain at least 2 points");
       }
 
       // Bring coordinates to ellipsoid scaled coordinates

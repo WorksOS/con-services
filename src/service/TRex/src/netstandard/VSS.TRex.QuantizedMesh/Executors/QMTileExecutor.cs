@@ -28,7 +28,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
 {
   public class QMTileExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<QMTileExecutor>();
     private string RequestingTRexNodeID { get; set; }
     private int TileGridSize;
     private Guid DataModelUid;
@@ -360,7 +360,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
       processor.Task.GridDataType = GridDataType.Height;
       // Setup new grid array for results 
       GriddedElevDataArray = new GriddedElevDataRow[TileGridSize, TileGridSize];
-      int k = 0;
       double px1, py1, px2, py2;
       // build up a data sample grid from SW to NE
       for (int y = 0; y < TileGridSize; y++)
@@ -373,7 +372,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
           GriddedElevDataArray[x, y].Easting = x1;
           GriddedElevDataArray[x, y].Northing = y1;
           GriddedElevDataArray[x, y].Elevation = CellPassConsts.NullHeight;
-          k++;
         }
 
       Log.LogDebug($"Tile.({TileX},{TileY}) Boundary grid coords:{string.Concat(NEECoords)}");
@@ -406,22 +404,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
       }
 
       return true;
-    }
-
-    /// <summary>
-    /// Statistics for development
-    /// </summary>
-    /// <returns></returns>
-    private double CalculateGridStats()
-    {
-      var cnt = 0.0;
-      for (int y = 0; y < TileGridSize; y++)
-        for (int x = 0; x < TileGridSize; x++)
-        {
-          if (GriddedElevDataArray[x, y].Elevation != CellPassConsts.NullHeight)
-            cnt++;
-        }
-      return (cnt / GriddedElevDataArray.Length) * 100;
     }
 
     /// <summary>
@@ -475,12 +457,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
         {
           Log.LogError($"Tile.({TileX},{TileY}) Unable to obtain data for gridded data. GriddedElevationRequestResponse: {GriddedElevationsResponse.ResultStatus.ToString()}");
           return BuildEmptyTile();
-        }
-
-        if (DisplayMode != QMConstants.DisplayModeStandard) // Development use
-        {
-          var percFull = CalculateGridStats();
-          Log.LogDebug($"Tile.({TileX},{TileY}) TotSampled:{task.TotalSampled}, Used:{task.TotalUsed}, GridResults: PercentFull:{Math.Round(percFull,1)}, MinElev:{task.MinElevation}, MaxElev:{task.MaxElevation}, FirstPos:{GriddedElevDataArray[0, 0].Easting},{GriddedElevDataArray[0, 0].Northing},{GriddedElevDataArray[0, 0].Elevation}");
         }
 
         ElevData.HasData = !float.IsPositiveInfinity(task.MinElevation); // check for data
