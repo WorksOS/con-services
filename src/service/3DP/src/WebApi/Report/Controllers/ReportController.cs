@@ -25,6 +25,7 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
@@ -313,19 +314,19 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/volumes/summary")]
     [HttpPost]
-    public SummaryVolumesResult PostExportSummaryVolumes([FromBody] SummaryVolumesRequest request)
+    public async Task<SummaryVolumesResult> PostExportSummaryVolumes([FromBody] SummaryVolumesRequest request)
     {
       log.LogDebug($"{nameof(PostExportSummaryVolumes)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
+      return await
+        RequestExecutorContainerFactory.Build<SummaryVolumesExecutor>(logger,
 #if RAPTOR
-      return
-        RequestExecutorContainerFactory.Build<SummaryVolumesExecutor>(logger, raptorClient).Process(request) as
-          SummaryVolumesResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+            raptorClient,
 #endif
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .ProcessAsync(request) as
+          SummaryVolumesResult;
     }
 
     /// <summary>
