@@ -32,7 +32,7 @@ namespace VSS.ConfigurationStore
     private static string kubernetesContext;
     private static KubernetesState kubernetesInitialized = KubernetesState.NotInitialized;
     private readonly object kubernetesInitLock = new object();
-    private static bool configListed = false;
+    private static bool configListed;
 
     public bool UseKubernetes
     {
@@ -62,7 +62,7 @@ namespace VSS.ConfigurationStore
       private set => kubernetesContext = value;
     }
 
-    public GenericConfiguration(ILoggerFactory logger)
+    public GenericConfiguration(ILoggerFactory logger, IConfigurationRoot configurationOverrides = null)
     {
       IConfigurationBuilder configBuilder;
       log = logger.CreateLogger<GenericConfiguration>();
@@ -76,15 +76,19 @@ namespace VSS.ConfigurationStore
       }
 
       var builder = configBuilder = new ConfigurationBuilder();
-      if (kubernetesConfig != null) builder.AddInMemoryCollection(kubernetesConfig);
+
+      if (kubernetesConfig != null) { builder.AddInMemoryCollection(kubernetesConfig); }
+
       builder.AddEnvironmentVariables();
 
+      // Support the inclusion of configuration file runtime overrides. Must come last.
+      if (configurationOverrides != null) { builder.AddConfiguration(configurationOverrides); }
 
       try
       {
         var pathToConfigFile = PathToConfigFile();
         if (log.IsTraceEnabled())
-            log.LogTrace($"Using configuration file: {pathToConfigFile}");
+          log.LogTrace($"Using configuration file: {pathToConfigFile}");
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
           .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: false);
@@ -105,7 +109,6 @@ namespace VSS.ConfigurationStore
         foreach (var keyValuePair in configuration.AsEnumerable())
         {
           log.LogInformation($"{keyValuePair.Key}={keyValuePair.Value}");
-
         }
       }
     }
@@ -174,7 +177,7 @@ namespace VSS.ConfigurationStore
           {
             if (log.IsTraceEnabled())
               log.LogTrace("Connecting to kubernetes cluster");
-            KubernetesClientConfiguration config = null;
+            KubernetesClientConfiguration config;
             if (string.IsNullOrWhiteSpace(KubernetesContext))
             {
               log.LogDebug("Using InCluster config");
@@ -196,7 +199,7 @@ namespace VSS.ConfigurationStore
           catch (Exception ex)
           {
             log.LogWarning(
-              $"Can not connect to Kubernetes cluster with error {ex.Message}. Kubernetes is disabled for this process. at {ex.StackTrace}" );
+              $"Can not connect to Kubernetes cluster with error {ex.Message}. Kubernetes is disabled for this process. at {ex.StackTrace}");
             kubernetesInitialized = KubernetesState.Disabled;
             UseKubernetes = false;
           }
@@ -238,13 +241,13 @@ namespace VSS.ConfigurationStore
         throw new InvalidOperationException(errorString);
       }
 
-        var connString =
-          "server=" + serverName +
-          ";port=" + serverPort +
-          ";database=" + serverDatabaseName +
-          ";userid=" + serverUserName +
-          ";password=" + serverPassword +
-          ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
+      var connString =
+        "server=" + serverName +
+        ";port=" + serverPort +
+        ";database=" + serverDatabaseName +
+        ";userid=" + serverUserName +
+        ";password=" + serverPassword +
+        ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
       if (log.IsTraceEnabled())
         log.LogTrace($"Served connection string {connString}");
 
@@ -303,7 +306,7 @@ namespace VSS.ConfigurationStore
 
     public bool? GetValueBool(string key)
     {
-      return GetValue< bool?> (key, (bool?)null);
+      return GetValue<bool?>(key, null);
     }
 
     public bool GetValueBool(string key, bool defaultValue)
@@ -313,7 +316,7 @@ namespace VSS.ConfigurationStore
 
     public TimeSpan? GetValueTimeSpan(string key)
     {
-      return GetValue<TimeSpan?>(key, (TimeSpan?)null);
+      return GetValue<TimeSpan?>(key, null);
     }
 
     public TimeSpan GetValueTimeSpan(string key, TimeSpan defaultValue)
@@ -343,7 +346,7 @@ namespace VSS.ConfigurationStore
 
     private T GetValue<T>(string key, T defaultValue)
     {
-      T value = defaultValue;
+      var value = defaultValue;
 
       if (configuration[key] == null)
       {
@@ -359,7 +362,7 @@ namespace VSS.ConfigurationStore
         {
           log.LogError(e, $"Invalid configuration for key {key}");
         }
-      }   
+      }
       if (log.IsTraceEnabled())
         log.LogTrace($"Served configuration value {key}:{value}");
       return value;
