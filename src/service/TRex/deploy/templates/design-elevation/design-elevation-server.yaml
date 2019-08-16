@@ -26,6 +26,14 @@ spec:
         jmx-prometheus: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
       containers:
         # Custom Ignite pod name.
       - name: ignite-node
@@ -80,12 +88,3 @@ spec:
             value: {{ .Values.designElevation.javaHeapMaxSizeMb | quote }}
           - name: TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB
             value: {{ .Values.designElevation.javaHeapInitialSizeMb | quote }}  
-            
-{{- with .Values.nodeSelector }}
-        nodeSelector:
-{{ toYaml . | indent 10 }}
-{{- end }}
-{{- with .Values.tolerations }}
-        tolerations:
-{{ toYaml . | indent 10 }}
-{{- end }}

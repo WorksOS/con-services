@@ -24,6 +24,14 @@ spec:
         jmx-prometheus: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
       containers:
         # Custom Ignite pod name.
       - name: ignite-node
@@ -54,17 +62,6 @@ spec:
           name: restapi
         - containerPort: 10800 # SQL port number.
           name: sql
-
-{{- with .Values.nodeSelector }}
-        nodeSelector:
-{{ toYaml . | indent 10 }}
-{{- end }}
-{{- with .Values.tolerations }}
-        tolerations:
-{{ toYaml . | indent 10 }}
-{{- end }}
-
-
         env:
           - name: IGNITE_HOME
             value: "/trex/"
