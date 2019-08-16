@@ -101,30 +101,37 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// <returns></returns>
     private bool ConvertGridToDEM(float minElev, float maxElev)
     {
-      Log.LogDebug($"Tile.({TileX},{TileY}) ConvertGridToDEM, MinElev:{minElev}, MaxElev:{maxElev}, FirstPos:{GriddedElevDataArray[0, 0].Easting},{GriddedElevDataArray[0, 0].Northing},{GriddedElevDataArray[0, 0].Elevation}");
-      ElevData.MaximumHeight = maxElev;
-      ElevData.MinimumHeight = minElev;
-      var defaultElev = LowestElevation;
-      var yRange = TileBoundaryLL.North - TileBoundaryLL.South;
-      var xRange = TileBoundaryLL.East - TileBoundaryLL.West;
-      var xStep = xRange / (TileGridSize - 1);
-      var yStep = yRange / (TileGridSize - 1);
-      var k = 0;
-      for (int y = 0; y < TileGridSize; y++)
-        for (int x = 0; x < TileGridSize; x++)
-        {
-          // calculate LL position
-          var lat = TileBoundaryLL.South + (y * yStep);
-          var lon = TileBoundaryLL.West + (x * xStep);
-          var elev = GriddedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight ? defaultElev : GriddedElevDataArray[x, y].Elevation;
-          if (elev < ElevData.MinimumHeight)
-            ElevData.MinimumHeight = elev; // reset to base
-          ElevData.EcefPoints[k] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(lon), Y = MapUtils.Deg2Rad(lat), Z = elev });
-          if (ElevData.ElevGrid[k] != elev)
-            ElevData.ElevGrid[k] = elev; // missing data set to lowest
-          k++;
-        }
-
+      try
+      {
+        Log.LogDebug($"Tile.({TileX},{TileY}) ConvertGridToDEM, MinElev:{minElev}, MaxElev:{maxElev}, FirstPos:{GriddedElevDataArray[0, 0].Easting},{GriddedElevDataArray[0, 0].Northing},{GriddedElevDataArray[0, 0].Elevation}");
+        ElevData.MaximumHeight = maxElev;
+        ElevData.MinimumHeight = minElev;
+        var defaultElev = LowestElevation;
+        var yRange = TileBoundaryLL.North - TileBoundaryLL.South;
+        var xRange = TileBoundaryLL.East - TileBoundaryLL.West;
+        var xStep = xRange / (TileGridSize - 1);
+        var yStep = yRange / (TileGridSize - 1);
+        var k = 0;
+        for (int y = 0; y < TileGridSize; y++)
+          for (int x = 0; x < TileGridSize; x++)
+          {
+            // calculate LL position
+            var lat = TileBoundaryLL.South + (y * yStep);
+            var lon = TileBoundaryLL.West + (x * xStep);
+            var elev = GriddedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight ? defaultElev : GriddedElevDataArray[x, y].Elevation;
+            if (elev < ElevData.MinimumHeight)
+              ElevData.MinimumHeight = elev; // reset to base
+            ElevData.EcefPoints[k] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(lon), Y = MapUtils.Deg2Rad(lat), Z = elev });
+            if (ElevData.ElevGrid[k] != elev)
+              ElevData.ElevGrid[k] = elev; // missing data set to lowest
+            k++;
+          }
+      }
+      catch (Exception ex)
+      {
+        Log.LogError(ex, $"Tile.({TileX},{TileY}). Exception in ConvertGridToDEM");
+        return false;
+      }
       return true;
     }
 
@@ -162,7 +169,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// These root tiles are static
     /// </summary>
     /// <returns></returns>
-    private bool MakeRootTile()
+    private void MakeRootTile()
     {
       Log.LogDebug($"#Tile.({TileX},{TileY}) Returning root tile");
       QMTileResponse.ResultStatus = RequestErrorStatus.OK;
@@ -171,7 +178,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
       else
         QMTileResponse.data = QMConstants.Terrain1;
       ResultStatus = RequestErrorStatus.OK;
-      return true;
     }
 
     /// <summary>
@@ -418,7 +424,10 @@ namespace VSS.TRex.QuantizedMesh.Executors
       Log.LogInformation($"#Tile.({TileX},{TileY}) Execute. (X:{TileX}, Y:{TileX},{TileY}, Z:{TileZ}). TileBoundary:{TileBoundaryLL.ToDisplay()}, DataModel:{DataModelUid}, Mode:{DisplayMode}");
 
       if (TileZ == 0) // Send back default root tile
-        return MakeRootTile();
+      {
+        MakeRootTile();
+        return true;
+      }
 
       SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelUid);
       if (SiteModel == null)
