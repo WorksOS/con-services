@@ -7,6 +7,7 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Events.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
@@ -210,6 +211,23 @@ namespace VSS.TRex.Events
     public IProductionEvents<short> RMVJumpThresholdEvents
     {
       get => (IProductionEvents<short>) GetEventList(ProductionEventType.MachineRMVJumpValueChange);
+    }
+
+    /// <summary>
+    /// Records the selected Layer ID overriding the id on the machine at the time measurements were being made
+    /// </summary>
+    public IProductionEvents<OverrideEvent<ushort>> LayerOverrideEvents
+    {
+      get => (IProductionEvents<OverrideEvent<ushort>>)GetEventList(ProductionEventType.LayerOverride);
+    }
+
+
+    /// <summary>
+    /// Records the selected Design overriding the design on the machine at the time measurements were being made
+    /// </summary>
+    public IProductionEvents<OverrideEvent<int>> DesignOverrideEvents
+    {
+      get => (IProductionEvents<OverrideEvent<int>>)GetEventList(ProductionEventType.DesignOverride);
     }
 
     /// <summary>
