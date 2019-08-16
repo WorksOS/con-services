@@ -16,8 +16,8 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Scheduler.Abstractions;
@@ -38,13 +38,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     public FileImportV2Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+      IProductivity3dProxy productivity3DProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
       : base(producer, store, logger, serviceExceptionHandler,
-        raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
+        productivity3DProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
         projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, authn)
     { }
 
@@ -149,7 +149,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<CreateImportedFileExecutor>(loggerFactory, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
-              raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
+              Productivity3DProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
               projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
@@ -178,7 +178,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<UpdateImportedFileExecutor>(loggerFactory, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
-              raptorProxy, null, null, null, tRexImportFileProxy,
+              Productivity3DProxy, null, null, null, tRexImportFileProxy,
               projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;

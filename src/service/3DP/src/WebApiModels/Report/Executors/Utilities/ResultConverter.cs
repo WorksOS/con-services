@@ -2,6 +2,7 @@
 using BoundingExtents;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors.Utilities
 {

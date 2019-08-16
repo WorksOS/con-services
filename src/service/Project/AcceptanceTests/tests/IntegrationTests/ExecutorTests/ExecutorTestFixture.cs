@@ -11,9 +11,9 @@ using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Repository;
@@ -32,7 +32,7 @@ namespace IntegrationTests.ExecutorTests
     public IServiceExceptionHandler serviceExceptionHandler;
     public ProjectRepository projectRepo;
     public CustomerRepository customerRepo;
-    public IRaptorProxy raptorProxy;
+    public IProductivity3dProxy productivity3dProxy;
     public IKafka producer;
     public string kafkaTopicName;
 
@@ -47,7 +47,7 @@ namespace IntegrationTests.ExecutorTests
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IRaptorProxy, RaptorProxy>()
+        .AddTransient<IProductivity3dProxy, Productivity3dProxy>()
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>()
         .AddMemoryCache();  
@@ -58,7 +58,7 @@ namespace IntegrationTests.ExecutorTests
       serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
-      raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
+      productivity3dProxy = serviceProvider.GetRequiredService<IProductivity3dProxy>();
       producer = serviceProvider.GetRequiredService<IKafka>();
 
       if (!producer.IsInitializedProducer)

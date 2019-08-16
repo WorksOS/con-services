@@ -50,11 +50,11 @@ namespace VSS.Productivity3D.Models.ResultHandling
     {
       startTime = DateTime.MinValue;
       endTime = DateTime.MinValue;
-      cellSize= Double.MinValue;
+      cellSize = Double.MinValue;
       indexOriginOffset = Int32.MinValue;
       extents = null;
     }
-    
+
     /// <summary>
     /// ToString override
     /// </summary>

@@ -62,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                                          updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
                                          updateImportedFile.FileDescriptor, updateImportedFile.ImportedFileId,
                                          Guid.Parse(updateImportedFile.ImportedFileUid.ToString()), false, log, customHeaders,
-                                         serviceExceptionHandler, raptorProxy,
+                                         serviceExceptionHandler, productivity3dProxy,
                                          projectRepo);
 
         var dxfFileName = updateImportedFile.DataOceanFileName;
@@ -70,7 +70,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           //Create DXF file for alignment center line
           dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
-            customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, raptorProxy, customHeaders, log,
+            customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, productivity3dProxy, customHeaders, log,
             serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.DataOceanFileName, updateImportedFile.DataOceanRootFolder);
         }
 

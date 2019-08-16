@@ -31,6 +31,7 @@ using VSS.Pegasus.Client;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -56,13 +57,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     public FileImportV4Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,
-      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+      IProductivity3dProxy productivity3DProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient)
       : base(producer, store, loggerFactory, serviceExceptionHandler,
-        raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
+        productivity3DProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
         projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, authn)
     {
       this.notificationHubClient = notificationHubClient;
@@ -404,7 +405,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<DeleteImportedFileExecutor>(
             loggerFactory, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
-            producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
+            producer, kafkaTopicName, Productivity3DProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
             projectRepo, null, fileRepo, null, null, dataOceanClient, authn, null, pegasusClient)
           .ProcessAsync(deleteImportedFile)
       );
@@ -556,7 +557,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           RequestExecutorContainerFactory
             .Build<CreateImportedFileExecutor>(
               loggerFactory, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
-              producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
+              producer, kafkaTopicName, Productivity3DProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
               projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
@@ -583,7 +584,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           RequestExecutorContainerFactory
             .Build<UpdateImportedFileExecutor>(
               loggerFactory, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
-              producer, kafkaTopicName, raptorProxy, null, null, null, tRexImportFileProxy,
+              producer, kafkaTopicName, Productivity3DProxy, null, null, null, tRexImportFileProxy,
               projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;

@@ -15,7 +15,7 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
@@ -67,7 +67,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets or sets the Raptor proxy.
     /// </summary>
-    protected readonly IRaptorProxy raptorProxy;
+    protected readonly IProductivity3dProxy Productivity3DProxy;
 
     /// <summary>
     /// Gets or sets the Project Repository. 
@@ -133,7 +133,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected BaseController(ILoggerFactory loggerFactory, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IRaptorProxy raptorProxy, IProjectRepository projectRepo, 
+      IProductivity3dProxy productivity3DProxy, IProjectRepository projectRepo, 
       ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null)
     {
@@ -155,7 +155,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.projectRepo = projectRepo;
       this.subscriptionRepo = subscriptionRepo;
       this.fileRepo = fileRepo;
-      this.raptorProxy = raptorProxy;
+      this.Productivity3DProxy = productivity3DProxy;
       this.dataOceanClient = dataOceanClient;
       this.authn = authn;
     }

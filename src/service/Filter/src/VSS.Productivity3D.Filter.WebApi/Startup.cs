@@ -17,6 +17,8 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
@@ -67,7 +69,7 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TDI auth for customer/user validation
-      services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
       services.AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>();
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();

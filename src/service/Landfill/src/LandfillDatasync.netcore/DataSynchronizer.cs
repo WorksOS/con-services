@@ -11,6 +11,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.WebApi.Common;
 
@@ -33,8 +34,6 @@ namespace LandfillDatasync.netcore
 
     public Guid? CustomerUid { get; set; }
 
-    //private RaptorApiClient raptorApiClient = new RaptorApiClient();
-
     private List<Project> GetListOfProjectsToRetrieve()
     {
       return CustomerUid.HasValue 
@@ -43,7 +42,7 @@ namespace LandfillDatasync.netcore
     }
 
     /// <summary>
-    /// Get list of volume entries from raptor 
+    /// Get list of volume entries from Productivity3D 
     /// </summary>
     /// <param name="noOfDaysVols"></param>
     /// <returns></returns>
@@ -59,9 +58,9 @@ namespace LandfillDatasync.netcore
         try
         {
           var startDate =
-            new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+            new Productivity3DApiClient(new NullLoggerFactory().CreateLogger(""),
                 new GenericConfiguration(new NullLoggerFactory()),
-                new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+                new Productivity3dProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
                 new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                     new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).GetProjectStatisticsAsync(userId, project).Result
               .startTime.Date;
@@ -93,7 +92,7 @@ namespace LandfillDatasync.netcore
       return geofences;
     }
 
-    public void RunUpdateVolumesFromRaptor(int noOfDaysVols)
+    public void RunUpdateVolumesFromProductivity3D(int noOfDaysVols)
     {
       Log.LogDebug("***** Start Processing volumes for the last {0} days",noOfDaysVols);
       var datesToUpdate = GetListOfEntriesToUpdate(noOfDaysVols);
@@ -103,14 +102,14 @@ namespace LandfillDatasync.netcore
         var geofenceUids = project.Value.Select(d => d.geofenceUid).Distinct().ToList();
         var geofences = GetGeofenceBoundaries(project.Key.id, geofenceUids);
         var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.GetApplicationBearerToken()}" } };
-        Log.LogDebug("RunUpdateVolumesFromRaptor Processing project {0} with {1} entries", project.Key.id, project.Value.Count());
+        Log.LogDebug("RunUpdateVolumesFromProductivity3D Processing project {0} with {1} entries", project.Key.id, project.Value.Count());
         foreach (var dateEntry in project.Value)
         {
           headers["X-VisionLink-CustomerUID"] = project.Key.customerUid;
           var geofence = geofences.ContainsKey(dateEntry.geofenceUid) ? geofences[dateEntry.geofenceUid] : null;
-          new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+          new Productivity3DApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
-              new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+              new Productivity3dProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
               new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                   new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers)
                     .GetVolumeInBackground(userId, project.Key, geofence, dateEntry).Wait();
@@ -119,10 +118,10 @@ namespace LandfillDatasync.netcore
     }
 
     /// <summary>
-    /// Call raptor every day to get CCA 
+    /// Call Productivity3D every day to get CCA 
     /// </summary>
     /// <param name="ccaDaysBackFill"></param>
-    public void RunUpdateCcaFromRaptor(int ccaDaysBackFill)
+    public void RunUpdateCcaFromProductivity3D(int ccaDaysBackFill)
     {
       //1. Do the scheduled date for each project (note: UTC date)
       //2. Do missing dates with no CCA for each project (note: these are project time zone)
@@ -149,17 +148,17 @@ namespace LandfillDatasync.netcore
           headers["X-VisionLink-CustomerUID"] = project.customerUid;
           //Process CCA for scheduled date
           //var hwZone =
-          //  new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+          //  new Productivity3DApiClient(new NullLoggerFactory().CreateLogger(""),
           //    new GenericConfiguration(new NullLoggerFactory()),
-          //    new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+          //    new Productivity3dProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
           //    new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
           //      new MemoryCache(new MemoryCacheOptions())), headers).GetTimeZoneInfoForTzdbId(project.timeZoneName);
           //var projDate = utcDate.Date.Add(hwZone.BaseUtcOffset);
           //var nowDate = DateTime.UtcNow.Date.Add(hwZone.BaseUtcOffset);
 
-          var offsetMinutes = new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+          var offsetMinutes = new Productivity3DApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
-              new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+              new Productivity3dProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
               new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                 new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).ConvertFromTimeZoneToMinutesOffset(project.timeZoneName);
           Log.LogInformation("UpdateCCA: Processing projectID {0} name {1} timezone {2} with minutes offset {3}", project.id, project.name, project.timeZoneName, offsetMinutes);
@@ -170,9 +169,9 @@ namespace LandfillDatasync.netcore
           while (projDate <= nowDate)
           {
             var machinesToProcess =
-              new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+              new Productivity3DApiClient(new NullLoggerFactory().CreateLogger(""),
                   new GenericConfiguration(new NullLoggerFactory()),
-                  new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+                  new Productivity3dProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
                   new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                       new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers)
                 .GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
@@ -214,9 +213,9 @@ namespace LandfillDatasync.netcore
           foreach (var lift in machine.lifts)
           {
            // Log.LogDebug("ProcessCCA machine lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",project.id, geofenceUid, machine, lift.layerId, machineIds[machine]);
-            new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+            new Productivity3DApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
-              new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+              new Productivity3dProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
               new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                 new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).GetCCAInBackground(
               userId, project, geofenceUid, geofence, date, machineIds[machine], machine, lift.layerId).Wait();
@@ -224,9 +223,9 @@ namespace LandfillDatasync.netcore
 
           //Also do the 'All Lifts'
           //Log.LogDebug("ProcessCCA all lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",project.id, geofenceUid, machine, "ALL", machineIds[machine]);
-          new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+          new Productivity3DApiClient(new NullLoggerFactory().CreateLogger(""),
             new GenericConfiguration(new NullLoggerFactory()),
-            new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+            new Productivity3dProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
             new FileImportProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
               new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).GetCCAInBackground(
             userId, project, geofenceUid, geofence, date, machineIds[machine], machine, null).Wait();

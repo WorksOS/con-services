@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Validation;
+using VSS.Productivity3D.Productivity3D.Models.Validation;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Models

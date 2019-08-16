@@ -11,7 +11,7 @@ using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
-using SummaryResult = VSS.Productivity3D.Models.ResultHandling.MDPSummaryResult;
+using SummaryResult = VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling.MDPSummaryResult;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {

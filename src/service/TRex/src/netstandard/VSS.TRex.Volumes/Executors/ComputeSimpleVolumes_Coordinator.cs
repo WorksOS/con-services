@@ -12,6 +12,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Volumes.Executors
@@ -126,20 +127,17 @@ namespace VSS.TRex.Volumes.Executors
 
             if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
             {
-              ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal;
-              ComputeVolumes.ActiveDesignOffset = ComputeVolumes.RefOriginalOffset;
+              ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal != null ? new DesignWrapper(BaseDesign, ComputeVolumes.RefOriginal) : null;
             }
             else
             {
-              ComputeVolumes.ActiveDesign = ComputeVolumes.ToSelectionType == ProdReportSelectionType.Surface
-                ? ComputeVolumes.RefDesign
+              ComputeVolumes.ActiveDesign = ComputeVolumes.ToSelectionType == ProdReportSelectionType.Surface && ComputeVolumes.RefDesign != null
+                ? new DesignWrapper(TopDesign, ComputeVolumes.RefDesign) 
                 : null;
-              ComputeVolumes.ActiveDesignOffset = ComputeVolumes.RefDesignOffset;
             }
 
             // Assign the active design into the aggregator for use
             Aggregator.ActiveDesign = ComputeVolumes.ActiveDesign;
-            Aggregator.ActiveDesignOffset = ComputeVolumes.ActiveDesignOffset;
         }
 
         /// <summary>

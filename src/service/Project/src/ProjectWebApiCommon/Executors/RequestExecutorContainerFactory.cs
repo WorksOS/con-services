@@ -10,6 +10,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
@@ -29,7 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
       string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
-      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
+      IProductivity3dProxy productivity3DProxy = null, ISubscriptionProxy subscriptionProxy = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null,
@@ -47,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       executor.Initialise(
         log, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, headers,
-        producer, kafkaTopicName, raptorProxy, subscriptionProxy, persistantTransferProxy, 
+        producer, kafkaTopicName, productivity3DProxy, subscriptionProxy, persistantTransferProxy, 
         filterServiceProxy, tRexImportFileProxy, projectRepo, subscriptionRepo, fileRepo, customerRepo, 
         httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient
         );

@@ -25,6 +25,8 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.SubGrids
@@ -687,8 +689,9 @@ namespace VSS.TRex.SubGrids
 
         _profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
+        //TODO: should referenceDesignWrapper be null here or be passed through from args?
         _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, new FilterSet(_filter),
-          null,null, _populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None, _overrides, _liftParams);
+          null,_populationControl, new CellPassFastEventLookerUpper(_siteModel), VolumeComputationType.None, _overrides, _liftParams);
 
         _cellProfile = new ProfileCell();
 

@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
@@ -180,7 +180,7 @@ namespace IntegrationTests.ExecutorTests
       (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
         customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),
         _fixture.producer, _fixture.kafkaTopicName,
-        _fixture.raptorProxy, null, null, null, null,
+        _fixture.productivity3dProxy, null, null, null, null,
         _fixture.projectRepo);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal));
@@ -207,7 +207,7 @@ namespace IntegrationTests.ExecutorTests
         (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
         customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
         _fixture.producer, _fixture.kafkaTopicName,
-        _fixture.raptorProxy, null, null, null, null,
+        _fixture.productivity3dProxy, null, null, null, null,
         _fixture.projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
@@ -260,7 +260,7 @@ namespace IntegrationTests.ExecutorTests
       (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
         customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
         _fixture.producer, _fixture.kafkaTopicName,
-        _fixture.raptorProxy, null, null, null, null,
+        _fixture.productivity3dProxy, null, null, null, null,
         _fixture.projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);

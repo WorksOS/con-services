@@ -4,12 +4,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -18,6 +16,7 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -40,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subscriptionRepo">The subscriptions repo.</param>
     /// <param name="store">The configStore.</param>
     /// <param name="subscriptionProxy">The subs proxy.</param>
-    /// <param name="raptorProxy">The raptorServices proxy.</param>
+    /// <param name="productivity3DProxy">The raptorServices proxy.</param>
     /// <param name="fileRepo"></param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
@@ -48,10 +47,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="authn"></param>
     public ProjectV3Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
-      IRaptorProxy raptorProxy, IFileRepository fileRepo, 
+      IProductivity3dProxy productivity3DProxy, IFileRepository fileRepo, 
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, 
       IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, productivity3DProxy,
           logger, serviceExceptionHandler, dataOceanClient, authn)
     { }
 
