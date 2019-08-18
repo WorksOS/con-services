@@ -31,6 +31,16 @@ applicationServer:
     requests:
       cpu: 300m
       memory: 2Gi
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: false
+      target: 100
 
 designElevation:
   replicaCount: 1
@@ -40,9 +50,19 @@ designElevation:
     requests:
       cpu: 300m
       memory: 2Gi
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 3
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: false
+      target: 100
 
 gateway:
-  replicaCount: 1
+  replicaCount: 2
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
   serviceDiscoveryName: trex-service-immutable
@@ -80,7 +100,7 @@ mutableData:
     tagfileArchiveFolder: ""
 
 mutableGateway:
-  replicaCount: 1
+  replicaCount: 2
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
   serviceDiscoveryName: trex-service-mutable
@@ -110,6 +130,16 @@ reportServer:
     requests:
       cpu: 300m
       memory: 1280Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 3
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: false
+      target: 100
 
 tileServer:
   replicaCount: 1
@@ -119,6 +149,16 @@ tileServer:
     requests:
       cpu: 300m
       memory: 1536Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: false
+      target: 100
 
 tinExportServer:
   replicaCount: 1
@@ -128,6 +168,16 @@ tinExportServer:
     requests:
       cpu: 300m
       memory: 1536Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 3
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: false
+      target: 100
 
 utilities:
   replicaCount: 0
@@ -135,7 +185,7 @@ utilities:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 200m
+      cpu: 500m
       memory: 1Gi
 
 webtools:
@@ -144,12 +194,19 @@ webtools:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 300m
+      cpu: 500m
       memory: 1Gi
 
 
-nodeSelector: {}
+# kubectl label nodes <node> vss/application=trex
+nodeSelector: 
+  vss/application: trex
 
-tolerations: []
+# kubectl taint nodes <node> dedicated=trex:NoSchedule
+tolerations: 
+- key: "dedicated"
+  operator: "Equal" 
+  value: "trex"
+  effect: "NoSchedule"
 
 affinity: {}
