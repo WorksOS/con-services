@@ -111,9 +111,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Update="TestData\Layer.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+
     <Content Update="web.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -126,10 +124,6 @@
     <Content Update="appsettings.localhost.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TestData\" />
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">

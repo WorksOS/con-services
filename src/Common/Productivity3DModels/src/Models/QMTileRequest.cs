@@ -8,6 +8,7 @@ namespace VSS.Productivity3D.Models.Models
   /// </summary>
   public class QMTileRequest : TRexBaseRequest
   {
+
     [JsonProperty(Required = Required.Always)]
     public int X { get; set; }
 
@@ -16,6 +17,9 @@ namespace VSS.Productivity3D.Models.Models
 
     [JsonProperty(Required = Required.Always)]
     public int Z { get; set; }
+
+    [JsonProperty(Required = Required.Always)]
+    public int DisplayMode{ get; set; }
 
     /// <summary>
     /// Default public constructor.
@@ -26,15 +30,18 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters. x,y,z are tile coordinates.
     /// </summary>
+    /// <param name="filter">Filter 1</param>
     public QMTileRequest(
       Guid projectUid,
       FilterResult filter,
+      int displayMode,
       int x,
       int y,
       int z)
     {
       ProjectUid = projectUid;
       Filter = filter;
+      DisplayMode = displayMode;
       X = x;
       Y = y;
       Z = z;

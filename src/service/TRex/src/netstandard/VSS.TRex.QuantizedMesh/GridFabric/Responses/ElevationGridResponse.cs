@@ -1,39 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.QuantizedMesh.GridFabric.Responses
 {
-  public class DummyQMResponse : QuantizedMeshResponse
+  public class ElevationGridResponse : SubGridsPipelinedResponseBase
   {
     private static byte VERSION_NUMBER = 1;
 
-    public byte[] TileQMData { get; set; }
+    public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
+    public ReportType ReportType;       // == TRaptorReportType
 
-    public override IQuantizedMeshResponse AggregateWith(IQuantizedMeshResponse other)
+    public ElevationGridResponse()
     {
-      return null;
+      Clear();
     }
 
-    public override void SetQMTile(byte[] qmTile)
+    public void Clear()
     {
-      TileQMData = qmTile;
+      ReturnCode = ReportReturnCode.NoError;
+      ReportType = ReportType.Gridded;
     }
 
     /// <summary>
-    /// Serializes content to the writer
+    /// Serialises content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
-
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
-
-      writer.WriteBoolean(TileQMData != null);
-      writer.WriteByteArray(TileQMData);
+      writer.WriteInt((int)ReturnCode);
+      writer.WriteInt((int)ReportType);
     }
 
     /// <summary>
@@ -43,11 +41,9 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Responses
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
-
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
-      if (reader.ReadBoolean())
-        TileQMData = reader.ReadByteArray();
+      ReturnCode = (ReportReturnCode)reader.ReadInt();
+      ReportType = (ReportType)reader.ReadInt();
     }
   }
 }
