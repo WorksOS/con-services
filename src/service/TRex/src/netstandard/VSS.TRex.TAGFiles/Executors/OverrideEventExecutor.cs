@@ -14,9 +14,9 @@ using VSS.TRex.TAGFiles.GridFabric.Responses;
 namespace VSS.TRex.TAGFiles.Executors
 {
   /// <summary>
-  /// Execute internal business logic to handle requests to override events
+  /// Execute internal business logic to handle requests to add override events
   /// </summary>
-  public class OverrideEventExecutor
+  public class OverrideEventExecutor : IOverrideEventExecutor
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<OverrideEventExecutor>();
 

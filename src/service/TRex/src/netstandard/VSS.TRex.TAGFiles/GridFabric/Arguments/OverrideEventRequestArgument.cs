@@ -10,6 +10,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
+    /// Determines if the overridden data is being added or removed.
+    /// </summary>
+    public bool Undo { get; set; } = false;
+    
+    /// <summary>
     /// The id of the project whose data is overridden.
     /// </summary>
     public Guid ProjectID { get; set; }
@@ -42,12 +47,31 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     {
     }
 
+    public OverrideEventRequestArgument(
+      bool undo,
+      Guid siteModelID,
+      Guid assetID,
+      DateTime startUTC,
+      DateTime endUTC,
+      string machineDesignName,
+      ushort? layerID)
+    {
+      Undo = undo;
+      ProjectID = siteModelID;
+      AssetID = assetID;
+      StartUTC = startUTC;
+      EndUTC = endUTC;
+      MachineDesignName = machineDesignName;
+      LayerID = layerID;
+    }
+
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
+      writer.WriteBoolean(Undo);
       writer.WriteGuid(ProjectID);
       writer.WriteGuid(AssetID);
       writer.WriteLong(StartUTC.ToBinary());
@@ -64,6 +88,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
+      Undo = reader.ReadBoolean();
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       AssetID = reader.ReadGuid() ?? Guid.Empty;
       StartUTC = DateTime.FromBinary(reader.ReadLong());

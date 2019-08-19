@@ -1,4 +1,6 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System;
+using Apache.Ignite.Core.Compute;
+using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.TAGFiles.Executors;
@@ -9,6 +11,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
 {
   public class OverrideEventComputeFunc : BaseComputeFunc, IComputeFunc<OverrideEventRequestArgument, OverrideEventResponse>
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<OverrideEventComputeFunc>();
+
     /// <summary>
     /// Default no-arg constructor that orients the request to the available TAG processing server nodes on the mutable grid projection
     /// </summary>
@@ -21,8 +25,28 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
     /// </summary>
     public OverrideEventResponse Invoke(OverrideEventRequestArgument arg)
     {
-      var executor = new OverrideEventExecutor();
-      return executor.ExecuteAsync(arg).WaitAndUnwrapException();
+      Log.LogInformation("In OverrideEventComputeFunc.Invoke()");
+
+      if (arg == null)
+        throw new ArgumentException("Argument for ComputeFunc must be provided");
+
+      try
+      {
+        IOverrideEventExecutor executor;
+        if (arg.Undo)
+          executor = new RemoveOverrideEventExecutor();
+        else
+          executor = new OverrideEventExecutor();
+
+        Log.LogInformation("Executing OverrideEventComputeFunc.ExecuteAsync()");
+
+        return executor.ExecuteAsync(arg).WaitAndUnwrapException();
+      }
+      finally
+      {
+        Log.LogInformation("Exiting OverrideEventComputeFunc.Invoke()");
+      }
+
     }
   }
 }

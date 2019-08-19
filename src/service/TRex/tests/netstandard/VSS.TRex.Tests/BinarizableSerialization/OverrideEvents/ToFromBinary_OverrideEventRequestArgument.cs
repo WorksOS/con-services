@@ -18,6 +18,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.OverrideEvents
     {
       var argument = new OverrideEventRequestArgument
       {
+        Undo = true,
         ProjectID = Guid.NewGuid(),
         AssetID = Guid.NewGuid(),
         StartUTC = DateTime.UtcNow.AddMinutes(-2),
