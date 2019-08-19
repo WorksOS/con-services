@@ -46,10 +46,11 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
     /// <param name="y"></param>
     /// <param name="level"></param>
     /// <returns></returns>
-    public static LLBoundingBox TileXYZToRectLL(int x, int y, int level)
+    public static LLBoundingBox TileXYZToRectLL(int x, int y, int level, out int yFlip)
     {
 
-      y = (int)Math.Pow(2, level) - y - 1; // Very important to flip the Y coord so it goes from bottom to top for our TMS server
+      yFlip = (int)Math.Pow(2, level) - y - 1; // Very important to flip the Y coord so it goes from bottom to top for our TMS server
+
       var xTiles = GetNumberOfXTilesAtLevel(level);
       var yTiles = GetNumberOfYTilesAtLevel(level);
 
@@ -58,9 +59,8 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       var east = (x + 1) * xTileWidth + world.West;
 
       var yTileHeight = (world.North - world.South) / yTiles;
-      var north = world.North - y * yTileHeight;
-      var south = world.North - (y + 1) * yTileHeight;
-      //return new LLBoundingBox(west, south, east, north);
+      var north = world.North - yFlip * yTileHeight;
+      var south = world.North - (yFlip + 1) * yTileHeight;
       return new LLBoundingBox(MapUtils.Rad2Deg(west), MapUtils.Rad2Deg(south), MapUtils.Rad2Deg(east), MapUtils.Rad2Deg(north), false);
     }
   }
