@@ -8,15 +8,12 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
 
-
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   [Route("api/v1/terrain")]
   [ApiController]
   public class TerrainController : BaseController
   {
-
-
     /// <summary>
     /// Constructor for production data image tile controller.
     /// </summary>
@@ -24,7 +21,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="exceptionHandler"></param>
     /// <param name="configStore"></param>
     public TerrainController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
-      IConfigurationStore configStore) : base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
+      IConfigurationStore configStore) : base(loggerFactory, loggerFactory.CreateLogger<TerrainController>(), exceptionHandler, configStore)
     {
     }
 
@@ -34,24 +31,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
-    public FileResult GetTile([FromBody] QMTileRequest request)
+    public IActionResult GetTile([FromBody] QMTileRequest request)
     {
       Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
 
       request.Validate();
- //     ValidateFilterMachines(nameof(GetTile), request.ProjectUid, request.Filter1);
 
       var tileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<QuantizedMeshTileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(request)) as QMTileResult;
 
+      if (tileResult == null || tileResult.TileData == null)
+      {
+        var msg = $"Failed to get Quantized Mesh tile for projectUid: {request.ProjectUid}";
+        Log.LogError(msg);
+        return NoContent();
+      }
 
-//      if (tileResult?.TileData == null)
-
-      return new FileStreamResult(new MemoryStream(tileResult?.TileData), ContentTypeConstants.ApplicationOctetStream);
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ApplicationOctetStream);
     }
-
-
   }
 }

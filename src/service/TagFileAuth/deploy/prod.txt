@@ -4,8 +4,4 @@ MYSQL_ROOT_PASSWORD: mRty94hER
 KAFKA_GROUP_NAME: TagFileAuth-Consumer-Prod
 KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.IProjectEvent.V2,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1,VSS.Interfaces.Events.MasterData.IAssetEvent.V1,VSS.Interfaces.Events.MasterData.IDeviceEvent.V1
 JAEGER_SERVICE_NAME: tagfileauth service
-NEW_RELIC_APP_NAME: eks-tagfileauth service
-NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7
-newrelic: "true"
-CORECLR_ENABLE_PROFILING: "1"
 ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "false"

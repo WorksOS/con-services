@@ -1,0 +1,75 @@
+# An example of a Kubernetes configuration for Ignite pods deployment.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "trex.deployname" . }}-gateway
+  labels:
+    app: {{ template "trex.deployname" . }}
+    chart: {{ template "trex.chart" . }}
+    mutable-cluster: "true"
+    immutable-cluster: "true"
+
+spec:
+  # A number of Ignite pods to be started by Kubernetes initially.
+  replicas: {{ .Values.gateway.replicaCount }}
+  template:
+    metadata:
+      labels:
+        # This label has to be added to the selector's section of 
+        # ignite-service.yaml so that the Kubernetes Ignite lookup service
+        # can easily track all Ignite pods available deployed so far.
+        app: {{ template "trex.deployname" . }}
+        component: {{ template "trex.deployname" . }}-gateway
+        mutable-cluster: "true"
+        immutable-cluster: "true"
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+      containers:
+        # Custom Ignite pod name.
+      - name: ignite-node
+        # Ignite Docker image. Kubernetes IP finder is supported starting from
+        # Apache Ignite 2.3.0
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.Gateway
+        
+        resources:
+{{ toYaml .Values.gateway.resources | indent 10 }}        
+
+        command: ["dotnet"]
+        args: ["VSS.TRex.Gateway.WebApi.dll"]
+
+        ports:
+        # Ports to open.
+        # Might be optional depending on your Kubernetes environment.
+        - containerPort: 80 # communication SPI port number.
+        - containerPort: 47100 # communication SPI port number.
+        - containerPort: 47500 # discovery SPI port number
+        - containerPort: 48100 # communication SPI port number.
+        - containerPort: 49112 # JMX port number.
+        - containerPort: 8080  # REST port number.
+        - containerPort: 10800 # SQL port number.
+
+        env:
+          - name: IGNITE_HOME
+            value: "/trex/"
+          - name: IS_KUBERNETES
+            value: "true"
+          - name: DEPLOYED_ENV
+            value: {{ .Values.environment }}
+          - name: AWS_DESIGNIMPORT_BUCKET_NAME
+            value: "vss-project3dp-stg" # for production this should be vss-project3dp-prod
+          - name: AWS_BUCKET_NAME
+            value: "vss-exports-stg" # for production this should be vss-exports-prod
+          - name: AWS_PRESIGNED_URL_EXPIRY
+            value: "7.00:00:00"        
+          - name: TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB
+            value: {{ .Values.gateway.javaHeapMaxSizeMb | quote }}  
+          - name: TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB
+            value: {{ .Values.gateway.javaHeapInitialSizeMb | quote }}  

@@ -97,6 +97,7 @@
         DesignImportUnableToUpdateDesign,
         DesignImportUnableToDeleteDesign,
         FailedToPrepareFilter,
-        FailedToGetCCAMinimumPassesValue
+        FailedToGetCCAMinimumPassesValue,
+        FailedToBuildQuantizedMeshTile
   }
 }

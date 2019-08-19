@@ -548,3 +548,7 @@ $RECYCLE.BIN/
 # Local History for Visual Studio
 
 # End of https://www.gitignore.io/api/linux,csharp,windows,visualstudio,visualstudiocode
+/src/service/3DP/src/WebApi/RunMe.bat
+/src/service/MockProjectWebApi/RunMe.bat
+/src/service/TRex/src/gateway/VSS.TRex.Gateway.WebApi/RunMe.bat
+/src/service/TRex/src/tools/VSS.TRex.Webtools/RunMe.bat
