@@ -328,7 +328,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       {
         ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
         Log.LogWarning($"Tile.({TileX},{TileY}) Site model extents {siteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
-        return BuildEmptyTile(); // No data to display
+        return false;
       }
 
       // Compute the override cell boundary to be used when processing cells in the sub grids
@@ -420,8 +420,9 @@ namespace VSS.TRex.QuantizedMesh.Executors
     {
 
       // Get the lat lon boundary from xyz tile request
-      TileBoundaryLL = MapGeo.TileXYZToRectLL(TileX, TileY, TileZ);
-      Log.LogInformation($"#Tile.({TileX},{TileY}) Execute. (X:{TileX}, Y:{TileX},{TileY}, Z:{TileZ}). TileBoundary:{TileBoundaryLL.ToDisplay()}, DataModel:{DataModelUid}, Mode:{DisplayMode}");
+
+      TileBoundaryLL = MapGeo.TileXYZToRectLL(TileX, TileY, TileZ, out var yFlip);
+      Log.LogInformation($"#Tile.({TileX},{TileY}) Execute. Zoom:{TileZ} YFlip{yFlip}). TileBoundary:{TileBoundaryLL.ToDisplay()}, DataModel:{DataModelUid}, Mode:{DisplayMode}");
 
       if (TileZ == 0) // Send back default root tile
       {
@@ -462,6 +463,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
         }
 
         processor.Process();
+
         if (GriddedElevationsResponse.ResultStatus != RequestErrorStatus.OK)
         {
           Log.LogError($"Tile.({TileX},{TileY}) Unable to obtain data for gridded data. GriddedElevationRequestResponse: {GriddedElevationsResponse.ResultStatus.ToString()}");

@@ -4,7 +4,7 @@
   {
     // Always make gridsize an odd number for best results
     public const int FlatResolutionGridSize = 5;    // Tile GridSize
-    public const int MidResolutionGridSize  = 65;   // Tile GridSize
+    public const int MidResolutionGridSize = 131; //65;   // Tile GridSize
     public const int HighResolutionGridSize = 33;   // Tile GridSize. Less triangles required 
     public const int DemoResolutionGridSize = 65;   // Tile GridSize
     public const int TileValueRange = 32768;        // 0 to 32767
