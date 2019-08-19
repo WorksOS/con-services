@@ -32,7 +32,7 @@ applicationServer:
       cpu: 300m
       memory: 2Gi
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 2
     maxReplicas: 5
     memory:
