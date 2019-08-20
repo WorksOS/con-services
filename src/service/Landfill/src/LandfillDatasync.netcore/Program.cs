@@ -17,7 +17,6 @@ namespace LandfillDatasync.netcore
   {
     protected static IServiceProvider ServiceProvider;
     protected static IConfigurationStore ConfigStore;
-    protected static IServiceExceptionHandler ServiceExceptionHandler;
     protected static ILoggerFactory Logger;
     protected static ILogger Log;
     private static void Main()
@@ -30,11 +29,9 @@ namespace LandfillDatasync.netcore
       provider.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       provider.AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>(); 
       ServiceProvider = provider.BuildServiceProvider();
-
       Logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       Log = Logger.CreateLogger<Program>();
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       Log.LogDebug("Landfill Data Sync starting");
       var dataSync = new DataSynchronizer(Log, ConfigStore);
