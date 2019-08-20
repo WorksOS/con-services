@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -27,8 +26,7 @@ namespace LandfillDatasync.netcore
           .AddLogging()
           .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure()))
           .AddSingleton<IConfigurationStore, GenericConfiguration>();
-      //.AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Landfill.DataSync.log")))
-      //.BuildServiceProvider();
+
       provider.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       provider.AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>(); 
       ServiceProvider = provider.BuildServiceProvider();
@@ -37,10 +35,6 @@ namespace LandfillDatasync.netcore
       Log = Logger.CreateLogger<Program>();
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
-
-      //var logger = provider.GetService<ILogger>();
-      //var configurationStore = new GenericConfiguration(new NullLoggerFactory());
 
       Log.LogDebug("Landfill Data Sync starting");
       var dataSync = new DataSynchronizer(Log, ConfigStore);
