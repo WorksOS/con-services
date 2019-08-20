@@ -19,4 +19,10 @@
     <ProjectReference Include="..\VSS.TRex.Tests\VSS.TRex.Tests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestData\Common\TestTAGFile-QMesh.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
