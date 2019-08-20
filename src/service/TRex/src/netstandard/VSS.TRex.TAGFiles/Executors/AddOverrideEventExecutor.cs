@@ -16,9 +16,9 @@ namespace VSS.TRex.TAGFiles.Executors
   /// <summary>
   /// Execute internal business logic to handle requests to add override events
   /// </summary>
-  public class OverrideEventExecutor : IOverrideEventExecutor
+  public class AddOverrideEventExecutor : IOverrideEventExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<OverrideEventExecutor>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<AddOverrideEventExecutor>();
 
     private readonly IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
@@ -113,14 +113,14 @@ namespace VSS.TRex.TAGFiles.Executors
             machineTargetValues.DesignOverrideEvents.PutValueAtDate(arg.StartUTC, new OverrideEvent<int>(arg.EndUTC, siteModelMachineDesign.Id));
           }
         }
-        //Raptor - SaveToFile
 
         //TODO Do we need this inside the designs lock
         machineTargetValues.SaveMachineEventsToPersistentStore(storageProxy_Mutable);
-        siteModel.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
+        //TODO: Do we need the following
+        //siteModel.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
 
         //Notify the site model details have changed
-        //TODO: ASk Raymond what's needed - see AggregatedDataIntegratorWorker
+        //TODO: Ask Raymond what's needed - see AggregatedDataIntegratorWorker
 
         result.Success = true;
       }
@@ -139,7 +139,6 @@ namespace VSS.TRex.TAGFiles.Executors
         return false;
 
       //Test if we override event within the range or we have overlapping overriding
-      //Test if we have previous override event which overlaps start date of the new one
       //Test if we have overlapping for the start date of the event
       var index = existingList.IndexOfClosestEventPriorToDate(arg.StartUTC);
       if (index > 0)

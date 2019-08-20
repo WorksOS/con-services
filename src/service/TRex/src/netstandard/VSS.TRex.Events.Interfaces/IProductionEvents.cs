@@ -60,6 +60,10 @@ namespace VSS.TRex.Events.Interfaces
 
     void PutValuesAtDates(IEnumerable<(DateTime, T)> events);
 
+    void RemoveValueAtDate(DateTime dateTime);
+
+    void Clear();
+
     /// <summary>
     /// Determines the index of the event whose date immediately precedes the given eventData
     /// </summary>

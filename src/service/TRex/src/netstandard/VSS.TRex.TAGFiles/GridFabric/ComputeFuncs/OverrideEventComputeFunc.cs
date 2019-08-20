@@ -36,7 +36,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
         if (arg.Undo)
           executor = new RemoveOverrideEventExecutor();
         else
-          executor = new OverrideEventExecutor();
+          executor = new AddOverrideEventExecutor();
 
         Log.LogInformation("Executing OverrideEventComputeFunc.ExecuteAsync()");
 

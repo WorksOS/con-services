@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.Executors
   /// </summary>
   public class RemoveOverrideEventExecutor : IOverrideEventExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<OverrideEventExecutor>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<AddOverrideEventExecutor>();
 
     private readonly IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
@@ -41,14 +41,13 @@ namespace VSS.TRex.TAGFiles.Executors
 
       lock (siteModel)
       {
+        bool changed = false;
         if (arg.AssetID == Guid.Empty)
         {
           //If AssetID not provided, remove all override events for project
           foreach (var machine in siteModel.Machines)
           {
-            result = RemoveOverrideEventsForMachine(siteModel, machine, arg);
-            if (!result.Success)
-              break;
+            changed = changed || RemoveOverrideEventsForMachine(siteModel, machine, arg);
           }
         }
         else
@@ -61,69 +60,61 @@ namespace VSS.TRex.TAGFiles.Executors
             return result;
           }
 
-          result = RemoveOverrideEventsForMachine(siteModel, machine, arg);        
+          changed = RemoveOverrideEventsForMachine(siteModel, machine, arg);        
         }
 
-        //Notify all PSNodes something has changed
-        //TODO
+        if (changed)
+        {
+          //Notify all PSNodes something has changed
+          //TODO
+        }
       }
+
+      result.Success = true;
       return result;
     }
 
     /// <summary>
     /// Remove requested machine design and layer override events for given machine
     /// </summary>
-    private OverrideEventResponse RemoveOverrideEventsForMachine(ISiteModel siteModel, IMachine machine, OverrideEventRequestArgument arg)
+    private bool RemoveOverrideEventsForMachine(ISiteModel siteModel, IMachine machine, OverrideEventRequestArgument arg)
     {
-      var result = new OverrideEventResponse{Success = true};
+      var changed = false;
       var machineTargetValues = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex];
       //Remove design overrides
       if (!string.IsNullOrEmpty(arg.MachineDesignName))
       {
         var overrideDesignEvents = machineTargetValues.DesignOverrideEvents;
-        result = RemoveOverrideEventsForMachine(machine, arg.StartUTC, arg.EndUTC, overrideDesignEvents, OverrideEvent<int>.Null());
+        if (RemoveOverrideEventsForMachine(arg.StartUTC, arg.EndUTC, overrideDesignEvents))
+          changed = true;
       }
       //Remove layer overrides
-      if (arg.LayerID.HasValue && result.Success)
+      if (arg.LayerID.HasValue)
       {
         var overrideLayerEvents = machineTargetValues.LayerOverrideEvents;
-        result = RemoveOverrideEventsForMachine(machine, arg.StartUTC, arg.EndUTC, overrideLayerEvents, OverrideEvent<ushort>.Null());
+        if (RemoveOverrideEventsForMachine(arg.StartUTC, arg.EndUTC, overrideLayerEvents))
+          changed = true;
       }
 
-      return result;
+      if (changed)
+        // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
+        machineTargetValues.SaveMachineEventsToPersistentStore(storageProxy_Mutable);
+
+      return changed;
     }
 
     /// <summary>
     /// Remove requested override events of required type for given machine
     /// </summary>
-    private OverrideEventResponse RemoveOverrideEventsForMachine<T>(IMachine machine, DateTime startUtc, DateTime endUtc, IProductionEvents<T> existingList, T nullValue)
+    private bool RemoveOverrideEventsForMachine<T>(DateTime startUtc, DateTime endUtc, IProductionEvents<T> existingList)
     {
-      var result = new OverrideEventResponse { Success = true };
       if (startUtc == Consts.MIN_DATETIME_AS_UTC && endUtc == Consts.MAX_DATETIME_AS_UTC)
-      {
         //No date range - remove all override events of required type for machine
-        //existingList.Clear();
-        //Raptor - SaveToFile
-      }
+        existingList.Clear();
       else
-      {
-        //Find the specific event to remove
-        var evt = existingList.GetValueAtDate(startUtc, out int index, nullValue);
-        if (evt.Equals(OverrideEvent<int>.Null()))
-        {
-          //We are not able to remove override event as there is no such event
-          result.Message = $"Failed to find override event to remove: AssetUid={machine.ID}, Date Range={startUtc}-{endUtc}";
-          result.Success = false;
-        }
-        else
-        {
-          //Remove specific event
-          //existingList.Remove(evt);
-          //Raptor - SaveToFile
-        }
-      }
-
-      return result;
+        //TODO: should the remove be more rigorous i.e. check start and end date match?
+        existingList.RemoveValueAtDate(startUtc);
+      return existingList.EventsChanged;
     }
   }
 }

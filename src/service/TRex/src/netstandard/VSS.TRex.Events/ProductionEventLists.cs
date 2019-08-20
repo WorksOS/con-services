@@ -130,7 +130,11 @@ namespace VSS.TRex.Events
     /// </summary>
     public IProductionEvents<ushort> LayerIDStateEvents
     {
-      get => (IProductionEvents<ushort>) GetEventList(ProductionEventType.LayerID);
+      get
+      {
+        var layerEvents = (IProductionEvents<ushort>)GetEventList(ProductionEventType.LayerID);
+        return MergeEventLists(layerEvents, LayerOverrideEvents, ProductionEventType.LayerID);
+      }
     }
 
     /// <summary>
@@ -138,7 +142,11 @@ namespace VSS.TRex.Events
     /// </summary>
     public IProductionEvents<int> MachineDesignNameIDStateEvents
     {
-      get => (IProductionEvents<int>)GetEventList(ProductionEventType.DesignChange);
+      get
+      {
+        var designEvents = (IProductionEvents<int>) GetEventList(ProductionEventType.DesignChange);
+        return MergeEventLists(designEvents, DesignOverrideEvents, ProductionEventType.DesignChange);
+      }
     }
 
     /// <summary>
@@ -326,5 +334,59 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <returns></returns>
     public IProductionEventPairs GetStartEndRecordedDataEvents() => StartEndRecordedDataEvents;
+
+    /// <summary>
+    /// Merges machine and override events into a single event list
+    /// </summary>
+    private IProductionEvents<T> MergeEventLists<T>(IProductionEvents<T> machineEvents, IProductionEvents<OverrideEvent<T>> overrideEvents, ProductionEventType eventType)
+    {
+      //TODO: Ask Raymond - do we want to store this merged list anywhere?
+
+      if (overrideEvents.Count() == 0)
+        return machineEvents;
+
+      var tempList = (IProductionEvents<T>)_ProductionEventsFactory.NewEventList(_internalSiteModelMachineIndex, SiteModel.ID, eventType);
+      tempList.CopyEventsFrom(machineEvents);
+      for (var i = 0; i < overrideEvents.Count(); i++)
+      {
+        overrideEvents.GetStateAtIndex(i, out var overrideStartDate, out var overrideState);
+        var overrideValue = overrideState.Value;
+        var overrideEndDate = overrideState.EndDate;
+        var j = tempList.IndexOfClosestEventPriorToDate(overrideEndDate.AddMilliseconds(-1));
+        if (j > -1)
+        {
+          //Remember and clone this last event
+          tempList.GetStateAtIndex(j, out _, out var machineValue);
+          //Remove all unused events in override interval
+          RemovePreviousEvent(tempList, overrideStartDate.AddMilliseconds(-1), overrideEndDate.AddMilliseconds(-1));
+          //Add override events and return
+          tempList.PutValueAtDate(overrideStartDate, overrideValue);
+          tempList.PutValueAtDate(overrideEndDate, machineValue);
+        }
+        else
+        {
+          //Add override events and return
+          tempList.PutValueAtDate(overrideStartDate,overrideValue);
+          tempList.PutValueAtDate(overrideEndDate, overrideValue);
+        }
+      }
+
+      return tempList;
+    }
+
+    /// <summary>
+    /// Recursive method to delete elements within the range
+    /// </summary>
+    private void RemovePreviousEvent<T>(IProductionEvents<T> list, DateTime limitEarliestTime, DateTime currentTime)
+    {
+      var index = list.IndexOfClosestEventPriorToDate(currentTime);
+      if (index < 0)
+        return;
+      list.GetStateAtIndex(index, out var dateTime, out _);
+      if (dateTime <= limitEarliestTime)
+        return;
+      list.RemoveValueAtDate(dateTime);
+      RemovePreviousEvent<T>(list, limitEarliestTime, dateTime);
+    }
   }
 }
