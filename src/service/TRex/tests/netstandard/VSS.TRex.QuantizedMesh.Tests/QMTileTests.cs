@@ -57,7 +57,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
     [Fact]
-    public void Cartesian3D_Tests()
+    public void Cartesian3D_Vector_Maths_Tests()
     {
       Vector3 v1 = new Vector3(1, 1, 1);
       Vector3 v2 = new Vector3(1, 4, 1);
@@ -94,11 +94,12 @@ namespace VSS.TRex.QuantizedMesh.Tests
 
       var res = tileBuilder.BuildQuantizedMeshTile();
       res.Should().Be(true);
-      tileBuilder.QuantizedMeshTile.Should().HaveCount(164);
+      tileBuilder.QuantizedMeshTile.Should().HaveCountGreaterOrEqualTo(162);
+      tileBuilder.QuantizedMeshTile.Should().HaveCountLessOrEqualTo(164);
     }
 
     [Fact]
-    public void MapGeo_Tests()
+    public void MapGeo_NumberOfTiles()
     {
       var tiles1 = MapGeo.GetNumberOfXTilesAtLevel(1);
       tiles1.Should().Be(4);
@@ -107,7 +108,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
     [Fact]
-    public void MapUtils_Tests()
+    public void MapUtils_MapCoordinate_Tests()
     {
       var flipedY = MapUtils.FlipY(78341,18);
       flipedY.Should().Be(183802);
@@ -123,7 +124,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
     [Fact]
-    public void MeshBuilder_Tests()
+    public void MeshBuilder_QuantizeHeight_Tests()
     {
       var min = MeshBuilder.QuantizeHeight(0, 100, 0);
       min.Should().Be(0);
@@ -134,7 +135,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
     [Fact]
-    public void VertextData_Tests()
+    public void VertextData_AddVertex_Test()
     {
       var vert = new VertexData(1,1);
       vert.AddVertex(0, 1, 1, 1);
@@ -250,7 +251,8 @@ namespace VSS.TRex.QuantizedMesh.Tests
       request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
-      QMTileResponse.data.Should().HaveCount(176); // Header info can differ on empty tiles
+      QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(172);
+      QMTileResponse.data.Should().HaveCountLessOrEqualTo(176);
     }
 
     [Fact]
@@ -262,7 +264,8 @@ namespace VSS.TRex.QuantizedMesh.Tests
       request.ExecuteAsync();
       request.ResultStatus.Should().Be(RequestErrorStatus.OK);
       var QMTileResponse = request.QMTileResponse;
-      QMTileResponse.data.Should().HaveCount(5189); // Note this value is effected by constant MidResolutionGridSize
+      QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(4265);
+      QMTileResponse.data.Should().HaveCountLessOrEqualTo(5189);
     }
 
     [Fact]
@@ -275,7 +278,8 @@ namespace VSS.TRex.QuantizedMesh.Tests
       request.ExecuteAsync();
       request.ResultStatus.Should().Be(RequestErrorStatus.OK); // Empty tile expected
       var QMTileResponse = request.QMTileResponse;
-      QMTileResponse.data.Should().HaveCount(176); // Empty tile expected
+      QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(172);
+      QMTileResponse.data.Should().HaveCountLessOrEqualTo(176);
     }
 
   }
