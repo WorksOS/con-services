@@ -29,7 +29,14 @@ spec:
     spec:
       terminationGracePeriodSeconds: 10
       serviceAccountName: {{ .Values.serviceAccountName }}
-      
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
       containers:
         # Custom Ignite pod name.
       - name: ignite-node
@@ -81,16 +88,6 @@ spec:
         # Mounting the persistant storage - currently this is in temp which will change when we sort config
         - mountPath: "/persist"
           name: trex-immutable-storage
-
-{{- with .Values.nodeSelector }}
-        nodeSelector:
-{{ toYaml . | indent 10 }}
-{{- end }}
-{{- with .Values.tolerations }}
-        tolerations:
-{{ toYaml . | indent 10 }}
-{{- end }}
-
 
   volumeClaimTemplates:
   - metadata:
