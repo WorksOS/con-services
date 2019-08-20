@@ -102,7 +102,7 @@ namespace LandfillDatasync.netcore
         var geofenceUids = project.Value.Select(d => d.geofenceUid).Distinct().ToList();
         var geofences = GetGeofenceBoundaries(project.Key.id, geofenceUids);
         var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.GetApplicationBearerToken()}" } };
-        Log.LogDebug("RunUpdateVolumesFromProductivity3D Processing project {0} with {1} entries", project.Key.id, project.Value.Count());
+        Log.LogDebug("Updating Volumes 3D PM for project {0} - {1} with {2} entries", project.Key.id, project.Key.name, project.Value.Count());
         foreach (var dateEntry in project.Value)
         {
           headers["X-VisionLink-CustomerUID"] = project.Key.customerUid;

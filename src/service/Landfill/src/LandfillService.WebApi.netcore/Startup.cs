@@ -15,6 +15,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.WebApi.Common;
 
 namespace LandfillService.WebApi.netcore
@@ -54,7 +55,7 @@ namespace LandfillService.WebApi.netcore
 
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddTransient<IProductivity3dProxy, IProductivity3dProxy>();
+      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
       services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
 
       services.AddServiceDiscovery();
