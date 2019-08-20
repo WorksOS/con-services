@@ -198,7 +198,6 @@ namespace VSS.TRex.Pipelines
           // First analyze the request to determine the set of sub grids that will need to be requested
           if (RequestAnalyser.Execute())
           {
-            result = true;
             subGridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
 
             Log.LogInformation($"Request analyzer counts {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids to be requested, compared to {OverallExistenceMap.CountBits()} sub grids in production existence map");
@@ -225,9 +224,14 @@ namespace VSS.TRex.Pipelines
                 var Response = requestor.Execute();
                 result = Response.ResponseCode == SubGridRequestsResponseResult.OK;
               }
+              
+              Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
             }
-
-            Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
+            else
+            {
+              Log.LogInformation("SKIPPED: Requested no sub grids to process.");
+              result = false;
+            }
           }
 
           return result;
