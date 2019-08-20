@@ -39,6 +39,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         private long subGridsRemainingToProcess;
         public long SubGridsRemainingToProcess => subGridsRemainingToProcess;
+        public long TotalSubGridsToProcess { get; private set; }
 
         public ITRexTask PipelineTask { get; set; }
 
@@ -190,11 +191,8 @@ namespace VSS.TRex.Pipelines
         /// <summary>
         /// Orchestrates sending sub grid requests to the compute cluster and handling the result
         /// </summary>
-        /// <returns></returns>
         public bool Initiate()
         {
-          bool result = false;
-
           // First analyze the request to determine the set of sub grids that will need to be requested
           if (RequestAnalyser.Execute())
           {
@@ -222,19 +220,27 @@ namespace VSS.TRex.Pipelines
               })
               {
                 var Response = requestor.Execute();
-                result = Response.ResponseCode == SubGridRequestsResponseResult.OK;
+                if (Response.ResponseCode != SubGridRequestsResponseResult.OK)
+                {
+                  Log.LogWarning($"Sub Grid Task failed with error {Response.ResponseCode}");
+                  return false;
+                }
+
+                Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
+                TotalSubGridsToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
+                return true;
               }
-              
-              Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
             }
             else
             {
               Log.LogInformation("SKIPPED: Requested no sub grids to process.");
-              result = false;
+              TotalSubGridsToProcess = 0;
+              return true;
             }
           }
 
-          return result;
+          Log.LogWarning($"RequestAnalyser failed execution - cannot process any sub grids (if any).");
+          return false;
         }
 
         /// <summary>
@@ -243,6 +249,10 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public Task<bool> WaitForCompletion()
         {
+          // If we have nothing to process, no point in waiting.
+          if (TotalSubGridsToProcess == 0)
+            return Task.FromResult(true); 
+
           // Todo: Make the 2 minute limit configurable
           return PipelineSignalEvent.WaitAsync(120000); // Don't wait for more than two minutes...
         }
