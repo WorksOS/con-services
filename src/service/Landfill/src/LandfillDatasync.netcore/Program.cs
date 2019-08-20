@@ -3,7 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Serilog;
+using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Serilog.Extensions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -11,30 +16,47 @@ namespace LandfillDatasync.netcore
 {
   internal class Program
   {
+    protected static IServiceProvider ServiceProvider;
+    protected static IConfigurationStore ConfigStore;
+    protected static IServiceExceptionHandler ServiceExceptionHandler;
+    protected static ILoggerFactory Logger;
+    protected static ILogger Log;
     private static void Main()
     {
       var provider = new ServiceCollection()
-                     .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Landfill.DataSync.log")))
-                     .BuildServiceProvider();
+          .AddLogging()
+          .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure()))
+          .AddSingleton<IConfigurationStore, GenericConfiguration>();
+      //.AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Landfill.DataSync.log")))
+      //.BuildServiceProvider();
+      provider.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      provider.AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>(); 
+      ServiceProvider = provider.BuildServiceProvider();
 
-      var logger = provider.GetService<ILogger>();
-      var configurationStore = new GenericConfiguration(new NullLoggerFactory());
+      Logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      Log = Logger.CreateLogger<Program>();
+      ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
-      logger.LogDebug("Landfill Data Sync starting");
-      var dataSync = new DataSynchronizer(logger, configurationStore);
+
+      //var logger = provider.GetService<ILogger>();
+      //var configurationStore = new GenericConfiguration(new NullLoggerFactory());
+
+      Log.LogDebug("Landfill Data Sync starting");
+      var dataSync = new DataSynchronizer(Log, ConfigStore);
 
       // Optionally specify a specific customer to process (this will be null if not specified)
       // If a specific customerUID is provided land fill data sync will only find projects for that customer
-      var customerUid = configurationStore.GetValueString("LANDFILL_CUSTOMER_UID", string.Empty);
+      var customerUid = ConfigStore.GetValueString("LANDFILL_CUSTOMER_UID", string.Empty);
 
       if (Guid.TryParse(customerUid, out var guid))
       {
         dataSync.CustomerUid = guid;
-        logger.LogDebug($"Processing CustomerUID: {guid}");
+        Log.LogDebug($"Processing CustomerUID: {guid}");
       }
 
       // *************  Process the volumes for the last nn days  *************** 
-      var noOfDaysVolsVar = configurationStore.GetValueString("NoOfDaysBackForVolumes", string.Empty);
+      var noOfDaysVolsVar = ConfigStore.GetValueString("NoOfDaysBackForVolumes", string.Empty);
       var noOfDaysVols = -30;
 
       if (!string.IsNullOrEmpty(noOfDaysVolsVar))
@@ -43,10 +65,10 @@ namespace LandfillDatasync.netcore
       }
 
       dataSync.RunUpdateVolumesFromProductivity3D(noOfDaysVols);
-      logger.LogDebug("***** Finished Processing volumes ***** ");
+      Log.LogDebug("***** Finished Processing volumes ***** ");
 
       // *************  Process the CCA for the last nn days  *************** 
-      var noOfDaysCca = configurationStore.GetValueString("NoOfDaysBackForCCA", string.Empty);
+      var noOfDaysCca = ConfigStore.GetValueString("NoOfDaysBackForCCA", string.Empty);
       var ccaDaysBackFill = -30;
 
       if (!string.IsNullOrEmpty(noOfDaysCca))
@@ -55,7 +77,7 @@ namespace LandfillDatasync.netcore
       }
 
       dataSync.RunUpdateCcaFromProductivity3D(ccaDaysBackFill);
-      logger.LogDebug("***** Finished Processing CCA ******");
+      Log.LogDebug("***** Finished Processing CCA ******");
     }
   }
 }

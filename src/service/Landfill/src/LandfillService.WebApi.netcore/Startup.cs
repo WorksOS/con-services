@@ -49,15 +49,14 @@ namespace LandfillService.WebApi.netcore
       services.AddMvc();
       // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
-
-
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
+      services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
       services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
-
+      services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
+      services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
+      services.AddSingleton<IWebRequest, GracefulWebRequest>();
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddServiceDiscovery();
 
       services.AddOpenTracing(builder =>
