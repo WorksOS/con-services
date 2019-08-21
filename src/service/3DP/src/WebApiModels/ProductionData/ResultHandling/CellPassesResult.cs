@@ -207,6 +207,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 
       /// <summary>
       /// The GCS machine control system is mapping minimum elevations; typically used by HEX (Hydraulic Excavator machines)
+      /// 0 - mmLatestElevation,
+      /// 1 - mmMinimumElevation,
+      /// 2 - mmMaximumElevation.
       /// </summary>
 #if RAPTOR
       public TICMinElevMappingState EventMinElevMapping;
