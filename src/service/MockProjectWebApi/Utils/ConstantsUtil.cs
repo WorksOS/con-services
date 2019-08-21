@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MockProjectWebApi.Utils
+﻿namespace MockProjectWebApi.Utils
 {
   public static class ConstantsUtil
   {

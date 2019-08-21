@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Json;
 using MockProjectWebApi.Services;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VSS.Productivity3D.Project.Abstractions;
-using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockProjectController
+  public class MockProjectController : BaseController
   {
     private readonly ProjectService projectService;
 
-    public MockProjectController(IProjectService projectService)
+    public MockProjectController(ILoggerFactory loggerFactory, IProjectService projectService)
+    : base(loggerFactory)
     {
-      this.projectService = (ProjectService) projectService;
+      this.projectService = (ProjectService)projectService;
     }
 
     /// <summary>
@@ -31,9 +31,9 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public ProjectDataResult GetMockProjects()
     {
-      Console.WriteLine($"{nameof(GetMockProjects)}");
+      Logger.LogInformation($"{nameof(GetMockProjects)}");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
+      //Logger.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
       return new ProjectDataResult { ProjectDescriptors = projectService.ProjectList };
     }
 
@@ -48,10 +48,10 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {
-      Console.WriteLine($"{nameof(GetMockProject)}: projectUid={projectUid}");
+      Logger.LogInformation($"{nameof(GetMockProject)}: projectUid={projectUid}");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
-      return new ProjectDataSingleResult() { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUid == projectUid.ToString()) };
+      //Logger.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUid == projectUid.ToString()) };
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public ProjectSettingsDataResult GetMockProjectSettingsTargets(string projectUid)
     {
-      Console.WriteLine($"{nameof(GetMockProjectSettingsTargets)}: projectUid={projectUid}");
+      Logger.LogInformation($"{nameof(GetMockProjectSettingsTargets)}: projectUid={projectUid}");
 
       JObject settings = null;
 
@@ -86,7 +86,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public ProjectSettingsDataResult GetMockProjectSettingsColors(string projectUid)
     {
-      Console.WriteLine($"{nameof(GetMockProjectSettingsColors)}: projectUid={projectUid}");
+      Logger.LogInformation($"{nameof(GetMockProjectSettingsColors)}: projectUid={projectUid}");
 
       JObject settings = null;
 

@@ -1,17 +1,20 @@
 ﻿using System;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Logging;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockTccController : Controller
+  public class MockTccController : BaseController
   {
+    public MockTccController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    { }
+
     [Route("tcc/PutFile")]
     [HttpPut]
     public dynamic PutFile([FromQuery] string ticket, [FromQuery]string filespaceid, [FromQuery]string path, [FromQuery]string filename, [FromQuery]bool replace, [FromQuery]bool commitUpload)
     {
-      Console.WriteLine($"PutFile: {Request.QueryString}");
+      Logger.LogInformation($"PutFile: {Request.QueryString}");
 
       //TODO: do we need [FromBody] Stream contents?
 
@@ -28,7 +31,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public Stream GetFile([FromQuery] string ticket, [FromQuery]string filespaceid, [FromQuery]string path)
     {
-      Console.WriteLine($"GetFile: {Request.QueryString}");
+      Logger.LogInformation($"GetFile: {Request.QueryString}");
 
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       return new MemoryStream(buffer);
@@ -38,12 +41,12 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic GetFileSpaces([FromQuery] string ticket)
     {
-      Console.WriteLine($"GetFileSpaces: {Request.QueryString}");
+      Logger.LogInformation($"GetFileSpaces: {Request.QueryString}");
 
       return new
       {
         success = true,
-        filespaces = new []
+        filespaces = new[]
         {
           new
           {
@@ -62,7 +65,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic Copy([FromQuery] string ticket, [FromQuery]string filespaceid, [FromQuery]string path, [FromQuery]string newfilespaceid, [FromQuery]string newpath, [FromQuery]bool merge, [FromQuery]bool replace)
     {
-      Console.WriteLine($"Copy: {Request.QueryString}");
+      Logger.LogInformation($"Copy: {Request.QueryString}");
 
       return new
       {
@@ -74,7 +77,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic GetFileAttributes([FromQuery] string ticket, [FromQuery]string filespaceid, [FromQuery]string path)
     {
-      Console.WriteLine($"GetFileAttributes: {Request.QueryString}");
+      Logger.LogInformation($"GetFileAttributes: {Request.QueryString}");
 
       return new
       {
@@ -88,7 +91,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic Del([FromQuery] string ticket, [FromQuery]string filespaceid, [FromQuery]string path, [FromQuery]bool recursive)
     {
-      Console.WriteLine($"Del: {Request.QueryString}");
+      Logger.LogInformation($"Del: {Request.QueryString}");
 
       return new
       {
@@ -101,7 +104,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic MkDir([FromQuery] string ticket, [FromQuery]string filespaceid, [FromQuery]string path, [FromQuery]bool force)
     {
-      Console.WriteLine($"MkDir: {Request.QueryString}");
+      Logger.LogInformation($"MkDir: {Request.QueryString}");
 
       return new
       {
@@ -115,7 +118,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic Dir([FromQuery] string ticket, [FromQuery]string filespaceid, [FromQuery]string path, [FromQuery]bool recursive, [FromQuery]bool filterfolders, [FromQuery]string filemasks)
     {
-      Console.WriteLine($"Dir: {Request.QueryString}");
+      Logger.LogInformation($"Dir: {Request.QueryString}");
 
       if (filespaceid == "u710e3466-1d47-45e3-87b8-81d1127ed4ed")//Mock TBC customer filespace
       {
@@ -141,27 +144,25 @@ namespace MockProjectWebApi.Controllers
           size = 16348
         };
       }
-      else //vldev filespace
+
+      return new
       {
-        return new
-        {
-          success = true,
-          createTime = DateTime.UtcNow,
-          entryName = filemasks,
-          entries = new[] { new { } },
-          isFolder = false,
-          leaf = true,
-          modifyTime = DateTime.UtcNow,
-          size = 7284
-        };
-      }
+        success = true,
+        createTime = DateTime.UtcNow,
+        entryName = filemasks,
+        entries = new[] { new { } },
+        isFolder = false,
+        leaf = true,
+        modifyTime = DateTime.UtcNow,
+        size = 7284
+      };
     }
 
     [Route("tcc/Login")]
     [HttpGet]
-    public dynamic Login([FromQuery]string username, [FromQuery]string orgname, [FromQuery]string  password, [FromQuery]string mode, [FromQuery]bool forcegmt)
+    public dynamic Login([FromQuery]string username, [FromQuery]string orgname, [FromQuery]string password, [FromQuery]string mode, [FromQuery]bool forcegmt)
     {
-      Console.WriteLine($"Login: {Request.QueryString}");
+      Logger.LogInformation($"Login: {Request.QueryString}");
 
       return new
       {
@@ -182,7 +183,5 @@ namespace MockProjectWebApi.Controllers
     {
       throw new NotImplementedException("Not implemented in mock web api");
     }
-
-
   }
 }

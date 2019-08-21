@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Services;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
@@ -9,11 +9,12 @@ using VSS.MasterData.Models.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockGeofenceController : Controller
+  public class MockGeofenceController : BaseController
   {
     private readonly GeofenceService geofenceService;
 
-    public MockGeofenceController(IGeofenceservice geofenceService)
+    public MockGeofenceController(ILoggerFactory loggerFactory, IGeofenceservice geofenceService)
+      : base(loggerFactory)
     {
       this.geofenceService = (GeofenceService)geofenceService;
     }
@@ -23,11 +24,13 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public GeofenceDataResult GetMockGeofences(long[] geofenceTypeIds)
     {
-      Console.WriteLine($"GetMockGeofences: {JsonConvert.SerializeObject(geofenceTypeIds)}");
+      Logger.LogInformation($"GetMockGeofences: {JsonConvert.SerializeObject(geofenceTypeIds)}");
+
       var allGeofences = new List<GeofenceData>();
       allGeofences.AddRange(geofenceService.Standard);
       allGeofences.AddRange(geofenceService.Favorites);
       allGeofences.AddRange(geofenceService.Associated);
+
       return new GeofenceDataResult { Geofences = allGeofences.Distinct().ToList() };
     }
 
@@ -36,7 +39,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public GeofenceDataResult GetMockFavoriteGeofences()
     {
-      Console.WriteLine("GetMockFavoriteGeofences");
+      Logger.LogInformation("GetMockFavoriteGeofences");
       return new GeofenceDataResult { Geofences = geofenceService.Favorites };
     }
 
@@ -45,9 +48,8 @@ namespace MockProjectWebApi.Controllers
     [HttpPost]
     public GeofenceCreateResult CreateMockGeofence([FromBody] GeofenceData geofenceData)
     {
-      Console.WriteLine("CreateMockGeofence");
-      //GeofenceData.Add(geofenceData);
-      return new GeofenceCreateResult() { geofenceUID = geofenceData.GeofenceUID.ToString() };
+      Logger.LogInformation("CreateMockGeofence");
+      return new GeofenceCreateResult { geofenceUID = geofenceData.GeofenceUID.ToString() };
     }
 
     [Route("api/v1/mock/geofences")]
@@ -55,9 +57,8 @@ namespace MockProjectWebApi.Controllers
     [HttpPut]
     public OkResult UdpateMockGeofence([FromBody] GeofenceData geofenceData)
     {
-      Console.WriteLine("UdpateMockGeofence");
-      //GeofenceData.Remove(GeofenceData.FirstOrDefault(g => g.GeofenceUID == geofenceData.GeofenceUID));
-      //GeofenceData.Add(geofenceData);
+      Logger.LogInformation("UdpateMockGeofence");
+
       return Ok();
     }
   }

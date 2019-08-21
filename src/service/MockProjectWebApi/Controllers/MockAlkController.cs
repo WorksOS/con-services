@@ -1,14 +1,17 @@
 ﻿using System;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Json;
 using VSS.Common.Abstractions.Http;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockAlkController : Controller
+  public class MockAlkController : BaseController
   {
+    public MockAlkController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    { }
+
     [Route("map")]
     [HttpGet]
     public FileResult GetMap(
@@ -27,9 +30,9 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] string imgOption)
     {
       //"http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc/map?AuthToken=97CC5BD1CA28934796791B229AE9C3FA&pt1=-115.026711,36.204698&pt2=-115.017269,36.210966&width=439&height=362&drawergroups=Cities,Labels,Roads,Commercial,Borders,Areas&style=default&srs=EPSG:900913&region=NA&dataset=PCM_NA&language=en&imgSrc=Sat1"
-      Console.WriteLine($"{nameof(GetMap)}: {Request.QueryString}");
+      Logger.LogInformation($"{nameof(GetMap)}: {Request.QueryString}");
 
-      byte[] tileData = null;
+      byte[] tileData;
 
       var resourceName = $"{MapTypePrefix(style, imgOption)}{width}x{height}";
 
@@ -100,7 +103,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public string GetRegion([FromQuery] string coords, [FromQuery] string AuthToken)
     {
-      Console.WriteLine($"{nameof(GetRegion)}: {Request.QueryString}");
+      Logger.LogInformation($"{nameof(GetRegion)}: {Request.QueryString}");
       /* 
      Example result
      [{"Address":{"StreetAddress":"Christchurch Southern Motorway","City":"Christchurch","State":"NZ","Zip":"8024","County":"Christchurch City","Country":"New Zealand","SPLC":null,"CountryPostalFilter":0,"AbbreviationFormat":0},"Coords":{"Lat":"-43.545639","Lon":"172.583091"},"Region":5,"Label":"","PlaceName":"","TimeZone":"+13:0","Errors":[]}]
