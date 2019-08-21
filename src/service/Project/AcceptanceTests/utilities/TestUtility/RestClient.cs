@@ -33,8 +33,6 @@ namespace TestUtility
       {
         ServiceBaseUrl = _testConfig.webApiUri;
       }
-
-      ServiceBaseUrl = "http://localhost:3001/";
     }
 
     public static async Task<string> SendHttpClientRequest(string route, HttpMethod method, string acceptHeader, string contentType, string customerUid = null, object payloadData = null, string jwtToken = null, HttpStatusCode expectedHttpCode = HttpStatusCode.OK)
