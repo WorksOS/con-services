@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using IntegrationTests.UtilityClasses;
 using TestUtility;
 using Xunit;
@@ -11,7 +12,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     [Theory]
     [InlineData("api/v4/importedfile")]
     [InlineData("api/v4/importedfile/direct")]
-    public void TestImportDxfFileUsSurveyFeet(string uriRoot)
+    public async Task TestImportDxfFileUsSurveyFeet(string uriRoot)
     {
       const string testName = "File Import 17";
       Msg.Title(testName, "Create standard project and customer then upload dxf file");
@@ -33,13 +34,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
       $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
       var importFilename = TestFileResolver.File(TestFile.TestDxFfile);
       var fullFilePath = TestFileResolver.GetFullPath(importFilename);
@@ -47,14 +48,14 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name           | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | DxfUnitsType | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fullFilePath} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 2            | 15           | 19           |"};
-      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
+      var filesResult = await importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [Theory]
     [InlineData("api/v4/importedfile")]
     [InlineData("api/v4/importedfile/direct")]
-    public void TestImportDxfFileImperial(string uriRoot)
+    public async Task TestImportDxfFileImperial(string uriRoot)
     {
       const string testName = "File Import 18";
       Msg.Title(testName, "Create standard project and customer then upload dxf file in imperial");
@@ -76,13 +77,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
       $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
       var importFilename = TestFileResolver.File(TestFile.TestDxFfile);
       var fullFilePath = TestFileResolver.GetFullPath(importFilename);
@@ -90,14 +91,14 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name           | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | DxfUnitsType | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fullFilePath} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 1            | 15           | 19           |"};
-      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
+      var filesResult = await importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [Theory]
     [InlineData("api/v4/importedfile")]
     [InlineData("api/v4/importedfile/direct")]
-    public void TestImportDxfFileMetric(string uriRoot)
+    public async Task TestImportDxfFileMetric(string uriRoot)
     {
       const string testName = "File Import 19";
       Msg.Title(testName, "Create standard project and customer then upload dxf file in metric");
@@ -119,13 +120,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
       $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
       var importFilename = TestFileResolver.File(TestFile.TestDxFfile);
       var fullFilePath = TestFileResolver.GetFullPath(importFilename);
@@ -133,7 +134,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name           | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | DxfUnitsType | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fullFilePath} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 0            | 15           | 19           |"};
-      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
+      var filesResult = await importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
   }

@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TestUtility.Model;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -51,9 +52,9 @@ namespace TestUtility
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
-    public T GetImportedFilesFromWebApi<T>(string uri, Guid customerUid, string jwt = null)
+    public async Task<T> GetImportedFilesFromWebApi<T>(string uri, Guid customerUid, string jwt = null)
     {
-      var response = CallWebApi(TestSupport.BaseUri + uri, HttpMethod.Get.ToString(), null, customerUid.ToString(), jwt);
+      var response = await RestClient.SendHttpClientRequest(uri, HttpMethod.Get, MediaTypes.JSON, MediaTypes.JSON, customerUid.ToString(), null, jwt);
 
       return JsonConvert.DeserializeObject<T>(response);
     }
@@ -61,11 +62,12 @@ namespace TestUtility
     /// <summary>
     /// Send request to the FileImportV4 controller
     /// </summary>
-    public ImportedFileDescriptorSingleResult SendRequestToFileImportV4(
+    public async Task<ImportedFileDescriptorSingleResult> SendRequestToFileImportV4(
       TestSupport ts,
       string[] importFileArray,
       int row,
-      ImportOptions importOptions = new ImportOptions())
+      ImportOptions importOptions = new ImportOptions(),
+      HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       var fileDescriptor = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
@@ -74,7 +76,7 @@ namespace TestUtility
       var createdDt = fileDescriptor.FileCreatedUtc.ToString(CultureInfo.InvariantCulture);
       var updatedDt = fileDescriptor.FileUpdatedUtc.ToString(CultureInfo.InvariantCulture);
 
-      var uri = $"{TestSupport.BaseUri}{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
+      var uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
 
       switch (fileDescriptor.ImportedFileTypeName)
       {
@@ -102,20 +104,18 @@ namespace TestUtility
 
       if (importOptions.HttpMethod == HttpMethod.Delete)
       {
-        uri = $"{TestSupport.BaseUri}api/v4/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
+        uri = $"api/v4/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
-
-      Console.WriteLine($"Request URI is: {uri}");
 
       string response;
 
       if (fileDescriptor.ImportedFileType == ImportedFileType.ReferenceSurface)
       {
-        response = DoHttpRequest(uri, importOptions.HttpMethod, (byte[])null, fileDescriptor.CustomerUid, "application/json");
+        response = await DoHttpRequest(uri, importOptions.HttpMethod, null, fileDescriptor.CustomerUid, MediaTypes.JSON, statusCode: statusCode);
       }
       else
       {
-        response = UploadFilesToWebApi(fileDescriptor.Name, uri, fileDescriptor.CustomerUid, importOptions.HttpMethod);
+        response = await UploadFilesToWebApi(fileDescriptor.Name, uri, fileDescriptor.CustomerUid, importOptions.HttpMethod, statusCode);
 
         if (fileDescriptor.ImportedFileType != ImportedFileType.ReferenceSurface)
           ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
@@ -131,9 +131,9 @@ namespace TestUtility
     /// <summary>
     /// Add a string array of data 
     /// </summary>
-    public string SendImportedFilesToWebApiV2(TestSupport ts, long projectId, string[] importFileArray, int row)
+    public Task<string> SendImportedFilesToWebApiV2(TestSupport ts, long projectId, string[] importFileArray, int row, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
-      var uri = $"{TestSupport.BaseUri}api/v2/projects/{projectId}/importedfiles";
+      var uri = $"api/v2/projects/{projectId}/importedfiles";
       var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
       var importedFileTbc = new ImportedFileTbc
@@ -153,17 +153,14 @@ namespace TestUtility
 
       var requestJson = JsonConvert.SerializeObject(importedFileTbc, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
-      var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, "PUT", requestJson, HttpStatusCode.OK, "application/json", ts.CustomerUid.ToString());
-
-      return response;
+      return RestClient.SendHttpClientRequest(uri, HttpMethod.Put, MediaTypes.JSON, MediaTypes.JSON, ts.CustomerUid.ToString(), requestJson, expectedHttpCode: statusCode);
     }
 
     /// <summary>
     /// Upload a single file to the web api 
     /// </summary>
     /// <returns>Response from web api as string</returns>
-    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
+    private async Task<string> UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod, HttpStatusCode statusCode)
     {
       //For reference surfaces no file to upload
       var fileInfo = new DirectoryInfo(fullFileName);
@@ -213,7 +210,8 @@ namespace TestUtility
         {
           FormatTheContentDisposition(flowFileUpload, currentBytes, filename,
             $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
-          result = DoHttpRequest(uri, httpMethod, content, customerUid, contentType);
+
+          result = await RestClient.SendHttpClientRequest(uri, httpMethod, MediaTypes.JSON, contentType, customerUid, content, expectedHttpCode: statusCode);
         }
       }
 
@@ -222,66 +220,11 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Send HTTP request for importing a file with json payload
-    /// </summary>
-    public string DoHttpRequest(string resourceUri, HttpMethod httpMethod, string payloadData, string customerUid, string contentType, string jwt = null)
-    {
-      var bytes = new UTF8Encoding().GetBytes(payloadData);
-      return DoHttpRequest(resourceUri, httpMethod, bytes, customerUid, contentType, jwt);
-    }
-
-    /// <summary>
-    /// Send HTTP request for importing a file with binary (file contents) payload
-    /// </summary>
-    public string DoHttpRequest(string resourceUri, HttpMethod httpMethod, MemoryStream payloadData, string customerUid, string contentType, string jwt = null)
-    {
-      var bytes = payloadData.ToArray();
-      return DoHttpRequest(resourceUri, httpMethod, bytes, customerUid, contentType, jwt);
-    }
-
-    /// <summary>
     /// Send HTTP request for importing a file
     /// </summary>
-    private static string DoHttpRequest(string resourceUri, HttpMethod httpMethod, byte[] payloadData, string customerUid, string contentType, string jwt = null)
+    private static Task<string> DoHttpRequest(string resourceUri, HttpMethod httpMethod, byte[] payloadData, string customerUid, string contentType, string jwt = null, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
-      if (!(WebRequest.Create(resourceUri) is HttpWebRequest request))
-      {
-        return string.Empty;
-      }
-
-      request.Method = httpMethod.Method;
-      request.Headers["X-JWT-Assertion"] = jwt ?? RestClientUtil.DEFAULT_JWT;
-      request.Headers["X-VisionLink-CustomerUid"] = customerUid; //"87bdf851-44c5-e311-aa77-00505688274d";
-      request.Headers["X-VisionLink-ClearCache"] = "true";
-
-      if (payloadData != null)
-      {
-        request.ContentType = contentType;
-        var writeStream = request.GetRequestStreamAsync().Result;
-        writeStream.Write(payloadData, 0, payloadData.Length);
-      }
-
-      try
-      {
-        string responseString;
-        using (var response = (HttpWebResponse)request.GetResponseAsync().Result)
-        {
-          responseString = GetStringFromResponseStream(response);
-        }
-        return responseString;
-      }
-      catch (AggregateException ex)
-      {
-        foreach (var e in ex.InnerExceptions)
-        {
-          if (!(e is WebException)) continue;
-          var webException = (WebException)e;
-          if (!(webException.Response is HttpWebResponse response)) continue;
-          var resp = GetStringFromResponseStream(response);
-          return resp;
-        }
-        return string.Empty;
-      }
+      return RestClient.SendHttpClientRequest(resourceUri, httpMethod, MediaTypes.JSON, contentType, customerUid, payloadData, jwt, expectedHttpCode: statusCode);
     }
 
     /// <summary>
@@ -328,32 +271,6 @@ namespace TestUtility
       sb.Append($"{NEWLINE}{boundary}{BOUNDARY_BLOCK_DELIMITER}{NEWLINE}");
       var tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
       resultingStream.Write(tail, 0, tail.Length);
-    }
-
-    /// <summary>
-    /// Get the HTTP Response from the response stream and store in a string variable
-    /// </summary>
-    private static string GetStringFromResponseStream(HttpWebResponse response)
-    {
-      var readStream = response.GetResponseStream();
-
-      if (readStream != null)
-      {
-        var reader = new StreamReader(readStream);
-        var responseString = reader.ReadToEnd();
-        reader.Dispose();
-        return Regex.Replace(responseString, "(?<!\r)\n", "\r\n");
-      }
-
-      return string.Empty;
-    }
-
-    /// <summary>
-    /// Call the web api for the imported files
-    /// </summary>
-    private static string CallWebApi(string uri, string method, string configJson, string customerUid = null, string jwt = null)
-    {
-      return new RestClientUtil().DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
     }
   }
 }

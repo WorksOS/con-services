@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
 using TestUtility.Model.WebApi;
@@ -54,8 +54,6 @@ namespace TestUtility
     private const char SEPARATOR = '|';
 
     private static readonly TestConfig _testConfig;
-    public static readonly string BaseUri;
-
     private static readonly object _legacyIdLock = new object();
 
     private static int _currentLegacyProjectId;
@@ -64,15 +62,6 @@ namespace TestUtility
     {
       _testConfig = new TestConfig(PROJECT_DB_SCHEMA_NAME);
 
-      if (Debugger.IsAttached || _testConfig.operatingSystem == "Windows_NT")
-      {
-        BaseUri = _testConfig.debugWebApiUri;
-      }
-      else
-      {
-        BaseUri = _testConfig.webApiUri;
-      }
-      
       const string query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
 
       var result = MySqlHelper.ExecuteRead(query);
@@ -142,7 +131,7 @@ namespace TestUtility
     /// <summary>
     /// Publish events to kafka from string array
     /// </summary>
-    public void PublishEventCollection(string[] eventArray)
+    public async Task PublishEventCollection(string[] eventArray, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       try
       {
@@ -173,11 +162,11 @@ namespace TestUtility
             var topicName = SetTheKafkaTopicFromTheEvent(dynEvt.EventType);
             if (IsPublishToWebApi)
             {
-              CallWebApiWithProject(jsonString, dynEvt.EventType, dynEvt.CustomerUID);
+              await CallWebApiWithProject(jsonString, dynEvt.EventType, dynEvt.CustomerUID, statusCode);
             }
             else
             {
-              RdKafkaDriver.SendKafkaMessage(topicName, jsonString);
+              await RdKafkaDriver.SendKafkaMessage(topicName, jsonString);
             }
           }
           else
@@ -197,7 +186,7 @@ namespace TestUtility
     /// <summary>
     /// Publish event to web api
     /// </summary>
-    public string PublishEventToWebApi(string[] eventArray)
+    public async Task<string> PublishEventToWebApi(string[] eventArray, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       try
       {
@@ -211,11 +200,11 @@ namespace TestUtility
         string response;
         try
         {
-          response = CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
+          response = await CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID, statusCode);
         }
         catch (RuntimeBinderException)
         {
-          response = CallWebApiWithProject(jsonString, eventObject.EventType, CustomerUid.ToString());
+          response = await CallWebApiWithProject(jsonString, eventObject.EventType, CustomerUid.ToString(), statusCode);
         }
         return response;
       }
@@ -240,7 +229,7 @@ namespace TestUtility
     /// <summary>
     /// Call the version 4 of the project master data
     /// </summary>
-    private string CallWebApiWithProject(string jsonString, string eventType, string customerUid)
+    private async Task<string> CallWebApiWithProject(string jsonString, string eventType, string customerUid, HttpStatusCode statusCode)
     {
       var response = string.Empty;
 
@@ -248,18 +237,17 @@ namespace TestUtility
       {
         case "CreateProjectEvent":
         case "CreateProjectRequest":
-          response = CallProjectWebApi("api/v4/project/", HttpMethod.Post.ToString(), jsonString, customerUid);
+          response = await CallProjectWebApi("api/v4/project/", HttpMethod.Post, jsonString, customerUid, statusCode: statusCode);
           break;
         case "UpdateProjectEvent":
         case "UpdateProjectRequest":
-          response = CallProjectWebApi("api/v4/project/", HttpMethod.Put.ToString(), jsonString, customerUid);
+          response = await CallProjectWebApi("api/v4/project/", HttpMethod.Put, jsonString, customerUid, statusCode: statusCode);
           break;
         case "DeleteProjectEvent":
-          response = CallProjectWebApi("api/v4/project/" + ProjectUid, HttpMethod.Delete.ToString(), string.Empty, customerUid);
+          response = await CallProjectWebApi("api/v4/project/" + ProjectUid, HttpMethod.Delete, string.Empty, customerUid, statusCode: statusCode);
           break;
       }
 
-      Console.WriteLine(response);
       var jsonResponse = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
 
       if (jsonResponse.Code == 0)
@@ -274,7 +262,7 @@ namespace TestUtility
     /// <summary>
     /// Create the project via the web api. 
     /// </summary>
-    public void CreateProjectViaWebApiV3(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
+    public async Task CreateProjectViaWebApiV3(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
     {
       CreateProjectEvt = new CreateProjectEvent
       {
@@ -288,13 +276,14 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApiV3(CreateProjectEvt, string.Empty, statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+      
+      await CallProjectWebApiV3(CreateProjectEvt, string.Empty, HttpMethod.Post, CustomerUid.ToString(), statusCode);
     }
 
     /// <summary>
     /// Update the project via the web api. 
     /// </summary>
-    public void UpdateProjectViaWebApiV3(Guid projectUid, string name, DateTime endDate, string timezone, DateTime actionUtc, HttpStatusCode statusCode, ProjectType projectType = ProjectType.Standard)
+    public async Task UpdateProjectViaWebApiV3(Guid projectUid, string name, DateTime endDate, string timezone, DateTime actionUtc, HttpStatusCode statusCode, ProjectType projectType = ProjectType.Standard)
     {
       UpdateProjectEvt = new UpdateProjectEvent
       {
@@ -305,21 +294,19 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApiV3(UpdateProjectEvt, string.Empty, statusCode, "Update", HttpMethod.Put.ToString(), CustomerUid.ToString());
+
+      await CallProjectWebApiV3(UpdateProjectEvt, string.Empty, HttpMethod.Put, CustomerUid.ToString(), statusCode);
     }
 
     /// <summary>
     /// Delete the project via the web api. 
     /// </summary>
-    public void DeleteProjectViaWebApiV3(Guid projectUid, HttpStatusCode statusCode)
-    {
-      CallProjectWebApiV3(null, projectUid.ToString(), statusCode, "Delete", HttpMethod.Delete.ToString(), CustomerUid.ToString());
-    }
+    public Task DeleteProjectViaWebApiV3(Guid projectUid, HttpStatusCode statusCode) => CallProjectWebApiV3(null, projectUid.ToString(), HttpMethod.Delete, CustomerUid.ToString(), statusCode);
 
     /// <summary>
     /// Associate a customer and project via the web api. 
     /// </summary>
-    public void AssociateCustomerProjectViaWebApiV3(Guid projectUid, Guid customerUid, int customerId, DateTime actionUtc, HttpStatusCode statusCode)
+    public Task AssociateCustomerProjectViaWebApiV3(Guid projectUid, Guid customerUid, int customerId, DateTime actionUtc, HttpStatusCode statusCode)
     {
       AssociateCustomerProjectEvt = new AssociateProjectCustomer
       {
@@ -329,13 +316,14 @@ namespace TestUtility
         RelationType = RelationType.Customer,
         ActionUTC = actionUtc
       };
-      CallProjectWebApiV3(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer", HttpMethod.Post.ToString(), customerUid.ToString());
+      
+      return CallProjectWebApiV3(AssociateCustomerProjectEvt, "AssociateCustomer", HttpMethod.Post, customerUid.ToString(), statusCode);
     }
 
     /// <summary>
     /// Associate a geofence and project via the web api. 
     /// </summary>
-    public void AssociateGeofenceProjectViaWebApiV3(Guid projectUid, Guid geofenceUid, DateTime actionUtc, HttpStatusCode statusCode)
+    public Task AssociateGeofenceProjectViaWebApiV3(Guid projectUid, Guid geofenceUid, DateTime actionUtc, HttpStatusCode statusCode)
     {
       AssociateProjectGeofenceEvt = new AssociateProjectGeofence
       {
@@ -343,13 +331,14 @@ namespace TestUtility
         GeofenceUID = geofenceUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApiV3(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence", HttpMethod.Post.ToString(), CustomerUid.ToString());
+
+      return CallProjectWebApiV3(AssociateProjectGeofenceEvt, "AssociateGeofence", HttpMethod.Post, CustomerUid.ToString(), statusCode);
     }
 
     /// <summary>
     /// Create the project via the web api. 
     /// </summary>
-    public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, List<TBCPoint> boundary, HttpStatusCode statusCode)
+    public Task<string> CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, List<TBCPoint> boundary)
     {
       var createProjectV2Request = CreateProjectV2Request.CreateACreateProjectV2Request(
       projectType, startDate, endDate, name, timezone, boundary,
@@ -360,13 +349,13 @@ namespace TestUtility
         ? null
         : JsonConvert.SerializeObject(createProjectV2Request, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
-      return CallProjectWebApi(string.Empty, HttpMethod.Post.ToString(), requestJson, CustomerUid.ToString(), endPoint: "api/v2/projects/");
+      return CallProjectWebApi("api/v2/projects/", HttpMethod.Post, requestJson, CustomerUid.ToString());
     }
 
     /// <summary>
     /// Validate the TBC orgShortName for this customer via the web api. 
     /// </summary>
-    public string ValidateTbcOrgIdApiV2(string orgShortName)
+    public Task<string> ValidateTbcOrgIdApiV2(string orgShortName)
     {
       var validateTccAuthorizationRequest = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest(orgShortName);
 
@@ -374,15 +363,15 @@ namespace TestUtility
         ? null
         : JsonConvert.SerializeObject(validateTccAuthorizationRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
-      return CallProjectWebApi(string.Empty, HttpMethod.Post.ToString(), requestJson, CustomerUid.ToString(), endPoint: "api/v2/preferences/tcc");
+      return CallProjectWebApi("api/v2/preferences/tcc", HttpMethod.Post, requestJson, CustomerUid.ToString());
     }
 
     /// <summary>
     /// Call web api version 3
     /// </summary>
-    public void GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
+    public async Task GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
     {
-      var response = CallProjectWebApiV3(null, string.Empty, statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
+      var response = await CallProjectWebApiV3(null, string.Empty, HttpMethod.Get, customerUid == Guid.Empty ? null : customerUid.ToString(), statusCode);
 
       if (statusCode == HttpStatusCode.OK)
       {
@@ -422,9 +411,9 @@ namespace TestUtility
     /// <summary>
     /// Call web api version 4 
     /// </summary>
-    public void GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
+    public async Task GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
     {
-      var response = CallProjectWebApi("api/v4/project/", HttpMethod.Get.ToString(), null, customerUid.ToString());
+      var response = await CallProjectWebApi("api/v4/project/", HttpMethod.Get, null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         if (expectedResultsArray.Length == 0)
@@ -448,9 +437,9 @@ namespace TestUtility
     /// <summary>
     /// Get project details for one project
     /// </summary>
-    public void GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
+    public async Task GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
     {
-      var response = CallProjectWebApi("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
+      var response = await CallProjectWebApi("api/v4/project/" + projectUid, HttpMethod.Get, null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
@@ -465,30 +454,23 @@ namespace TestUtility
     /// <summary>
     /// Get project details for one project
     /// </summary>
-    /// <param name="customerUid"></param>
-    /// <param name="projectUid"></param>
-    public ProjectV4Descriptor GetProjectDetailsViaWebApiV4(Guid customerUid, string projectUid)
+    public async Task<ProjectV4Descriptor> GetProjectDetailsViaWebApiV4(Guid customerUid, string projectUid, HttpStatusCode statusCode)
     {
-      var response = CallProjectWebApi("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
-      ProjectV4DescriptorsSingleResult projectDescriptorResult = null;
-      Console.WriteLine($"GetProjectDetailsViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
-
-      if (!string.IsNullOrEmpty(response))
+      var response = await CallProjectWebApi("api/v4/project/" + projectUid, HttpMethod.Get, null, customerUid.ToString(), statusCode: statusCode);
+      
+      if (string.IsNullOrEmpty(response))
       {
-        projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
-      }
-      else
-      {
-        Assert.True(true, " There should be one project");
+        throw new Exception("There should be one project");
       }
 
-      return projectDescriptorResult?.ProjectDescriptor;
+      return JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response)
+                        .ProjectDescriptor;
     }
 
-    public GeofenceV4DescriptorsListResult GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString)
+    public async Task<GeofenceV4DescriptorsListResult> GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       var routeSuffix = "api/v4/geofences" + geofenceTypeString + projectUidString;
-      var response = CallProjectWebApi(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
+      var response = await CallProjectWebApi(routeSuffix, HttpMethod.Get, null, customerUid, statusCode: statusCode);
       Console.WriteLine($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       return !string.IsNullOrEmpty(response)
@@ -496,19 +478,20 @@ namespace TestUtility
         : null;
     }
 
-    public ContractExecutionResult AssociateProjectGeofencesViaWebApiV4(string customerUid, string projectUid, List<GeofenceType> geofenceTypes, List<Guid> geofenceGuids)
+    public async Task<ContractExecutionResult> AssociateProjectGeofencesViaWebApiV4(string customerUid, string projectUid, List<GeofenceType> geofenceTypes, List<Guid> geofenceGuids)
     {
       var updateProjectGeofenceRequest =
         UpdateProjectGeofenceRequest.CreateUpdateProjectGeofenceRequest
             (ProjectUid = Guid.Parse(projectUid), geofenceTypes, geofenceGuids);
       var messagePayload = JsonConvert.SerializeObject(updateProjectGeofenceRequest);
-      var response = CallProjectWebApi("api/v4/geofences", HttpMethod.Put.ToString(), messagePayload, customerUid);
+      var response = await CallProjectWebApi("api/v4/geofences", HttpMethod.Put, messagePayload, customerUid);
       Console.WriteLine($"AssociateProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}");
 
       if (!string.IsNullOrEmpty(response))
       {
         return JsonConvert.DeserializeObject<ContractExecutionResult>(response);
       }
+
       return null;
     }
 
@@ -1594,38 +1577,15 @@ namespace TestUtility
       }
     }
 
-    /// <summary>
-    /// Call the project web api
-    /// </summary>
-    /// <param name="evt">THe project event containing the data</param>
-    /// <param name="routeSuffix">suffix to add to base uri if required</param>
-    /// <param name="statusCode">expected return code of the web api call</param>
-    /// <param name="what">name of the api being called for logging</param>
-    /// <param name="method">http method</param>
-    /// <param name="customerUid">Customer UID to add to http headers</param>
-    /// <returns>The web api response</returns>
-    private string CallProjectWebApiV3(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
+    private static Task<string> CallProjectWebApiV3(IProjectEvent evt, string routeSuffix, HttpMethod method, string customerUid = null, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       var configJson = evt == null
         ? null
         : JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
-      var response = new RestClientUtil().DoHttpRequest($"{BaseUri}api/v3/project/{routeSuffix}", method, configJson, statusCode, "application/json", customerUid);
-
-      if (response.Length > 0)
-      {
-        Console.WriteLine(what + " project response:" + response);
-      }
-
-      return response;
+      return RestClient.SendHttpClientRequest($"api/v3/project/{routeSuffix}", method, MediaTypes.JSON, MediaTypes.JSON, customerUid, configJson, expectedHttpCode: statusCode);
     }
 
-    /// <summary>
-    /// Call the version 4 of the web api
-    /// </summary>
-    public string CallProjectWebApi(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null, string endPoint = null)
-    {
-      return new RestClientUtil().DoHttpRequest($"{BaseUri}{endPoint}{routeSuffix}", method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
-    }
+    public Task<string> CallProjectWebApi(string routeSuffix, HttpMethod method, string configJson, string customerUid = null, string jwt = null, HttpStatusCode statusCode = HttpStatusCode.OK) => RestClient.SendHttpClientRequest($"{routeSuffix}", method, MediaTypes.JSON, MediaTypes.JSON, customerUid, configJson, jwt, expectedHttpCode: statusCode);
   }
 }

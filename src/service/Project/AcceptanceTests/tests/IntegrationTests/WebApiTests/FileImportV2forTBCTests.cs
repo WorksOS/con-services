@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using IntegrationTests.UtilityClasses;
 using Newtonsoft.Json;
 using TestUtility;
@@ -14,7 +15,7 @@ namespace IntegrationTests.WebApiTests
   public class FileImportV2forTBCTests : WebApiTestsBase
   {
     [Fact]
-    public void TestImportV2ForTbcSvlFile_AlignmentType_OK()
+    public async Task TestImportV2ForTbcSvlFile_AlignmentType_OK()
     {
       const string testName = "File Import 13";
       Msg.Title(testName, "Create standard project and customer then upload svl file via TBC V2 API");
@@ -36,15 +37,15 @@ namespace IntegrationTests.WebApiTests
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
       $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyCustomerId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
-      var project = ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid);
+      var project = await ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid, HttpStatusCode.OK);
       Assert.NotNull(project);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -52,13 +53,13 @@ namespace IntegrationTests.WebApiTests
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name             | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {importFilename} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var response = importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1);
+      var response = await importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1);
       var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
 
       Assert.Equal(HttpStatusCode.OK, importFileV2Result.Code);
       Assert.NotEqual(-1, importFileV2Result.Id);
 
-      var importFileList = importFile.GetImportedFilesFromWebApi<ImmutableList<DesignDetailV2Result>>($"api/v2/projects/{project.LegacyProjectId}/importedfiles", customerUid);
+      var importFileList = await importFile.GetImportedFilesFromWebApi<ImmutableList<DesignDetailV2Result>>($"api/v2/projects/{project.LegacyProjectId}/importedfiles", customerUid);
       Assert.True(importFileList.Count == 1, "Expected 1 imported files but got " + importFileList.Count);
       Assert.Equal(importFileV2Result.Id, importFileList[0].id);
       Assert.Equal(Path.GetFileName(importFilename), importFileList[0].name);
@@ -67,7 +68,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public void TestImportV2ForTbcSvlFile_MobileLineworkType_Ignore()
+    public async Task TestImportV2ForTbcSvlFile_MobileLineworkType_Ignore()
     {
       const string testName = "File Import 13";
       Msg.Title(testName, "Create standard project and customer then upload svl file via TBC V2 API");
@@ -89,15 +90,15 @@ namespace IntegrationTests.WebApiTests
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
       $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyCustomerId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
-      var project = ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid);
+      var project = await ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid, HttpStatusCode.OK);
       Assert.NotNull(project);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -105,7 +106,7 @@ namespace IntegrationTests.WebApiTests
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name             | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {importFilename} | 4                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var response = importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1);
+      var response = await importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1);
       var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
 
       Assert.Equal(HttpStatusCode.OK, importFileV2Result.Code);
@@ -113,7 +114,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public void TestImportV2ForTbcSvlFile_MasshaulType_Exception()
+    public async Task TestImportV2ForTbcSvlFile_MasshaulType_Exception()
     {
       const string testName = "File Import 13";
       Msg.Title(testName, "Create standard project and customer then upload svl file via TBC V2 API");
@@ -135,15 +136,15 @@ namespace IntegrationTests.WebApiTests
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
       $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyCustomerId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
-      var project = ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid);
+      var project = await ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid, HttpStatusCode.OK);
       Assert.NotNull(project);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -151,7 +152,7 @@ namespace IntegrationTests.WebApiTests
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name             | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {importFilename} | 7               | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var response = importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1);
+      var response = await importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1, HttpStatusCode.BadRequest);
       var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
 
       Assert.NotEqual(HttpStatusCode.OK, importFileV2Result.Code);

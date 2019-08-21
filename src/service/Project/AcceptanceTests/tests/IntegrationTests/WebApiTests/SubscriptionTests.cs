@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -9,7 +12,7 @@ namespace IntegrationTests.WebApiTests
   public class SubscriptionTests : WebApiTestsBase
   {
     [Fact]
-    public void Get2SubscriptionsForProjectMonitoring()
+    public async Task Get2SubscriptionsForProjectMonitoring()
     {
       Msg.Title("Project Subtest 1: Get 2 project monitoring subscriptions");
       var ts = new TestSupport();
@@ -28,15 +31,15 @@ namespace IntegrationTests.WebApiTests
         $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid1} | {customerUid}  | 20               | {startDate} | {endDate}      |               |          |                    |",
         $"| Subscription        | 0d+09:50:00 |               |           |                   | {subscriptionUid2} | {customerUid}  | 20               | {startDate} | {endDate}      |               |          |                    |",
       };
-      ts.PublishEventCollection(eventsArray);
-      var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
+      await ts.PublishEventCollection(eventsArray);
+      var response = await ts.CallProjectWebApi("api/v4/subscriptions", HttpMethod.Get, null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
       Assert.Equal(2, objresp.SubscriptionDescriptors.Count);
       Assert.Equal("success", objresp.Message);
     }
 
     [Fact]
-    public void Get4SubscriptionsForProjectMonitoringAndLandFill()
+    public async Task Get4SubscriptionsForProjectMonitoringAndLandFill()
     {
       Msg.Title("Project Subtest 2", "Get 2 project monitoring and 2 landfill subscriptions ");
       var ts = new TestSupport();
@@ -60,8 +63,8 @@ namespace IntegrationTests.WebApiTests
         $"| Subscription        | 0d+09:50:00 |               |           |                   | {subscriptionUid4} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
 
       };
-      ts.PublishEventCollection(eventsArray);
-      var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
+      await ts.PublishEventCollection(eventsArray);
+      var response = await ts.CallProjectWebApi("api/v4/subscriptions", HttpMethod.Get, null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
       Assert.Equal(4, objresp.SubscriptionDescriptors.Count);
       Assert.Equal("success", objresp.Message);
@@ -75,7 +78,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public void Create4SubscriptionsAndUse2ForProjects()
+    public async Task Create4SubscriptionsAndUse2ForProjects()
     {
       Msg.Title("Project Subtest 3", "Get 4 subscriptions and use two ");
       var ts = new TestSupport();
@@ -107,15 +110,15 @@ namespace IntegrationTests.WebApiTests
         $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                    |                |                  | {startDate} |                | {projectUid1} |          | {subscriptionUid1}  |",
         $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                    |                |                  | {startDate} |                | {projectUid2} |          | {subscriptionUid2}  |"
       };
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID    | ProjectID          | ProjectName     | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | {legacyProjectId1} | Project Sub 4-1 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 4-2 | ProjectMonitoring | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray, HttpStatusCode.BadRequest);
 
-      var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
+      var response = await ts.CallProjectWebApi("api/v4/subscriptions", HttpMethod.Get, null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
       Assert.Equal(2, objresp.SubscriptionDescriptors.Count);
       Assert.Equal("success", objresp.Message);
@@ -126,7 +129,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public void Create4SubscriptionsAndUse2ForLandfillProjects()
+    public async Task Create4SubscriptionsAndUse2ForLandfillProjects()
     {
       Msg.Title("Project Subtest 4", "Get 4 subscriptions and use two ");
       var ts = new TestSupport();
@@ -158,16 +161,16 @@ namespace IntegrationTests.WebApiTests
         $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                    |                |                  | {startDate} |                | {projectUid1} |          | {subscriptionUid3}  |",
         $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                    |                |                  | {startDate} |                | {projectUid2} |          | {subscriptionUid4}  |"
       };
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID    | ProjectID          | ProjectName     | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      |",
       $"| CreateProjectEvent | 0d+10:00:00 | {projectUid1} | {legacyProjectId1} | Project Sub 4-1 | LandFill          | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" ,
       $"| CreateProjectEvent | 0d+10:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 4-2 | LandFill          | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray, HttpStatusCode.BadRequest);
 
-      var response = ts.CallProjectWebApi("api/v4/subscriptions", "GET", null, customerUid.ToString());
+      var response = await ts.CallProjectWebApi("api/v4/subscriptions", HttpMethod.Get, null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
       Assert.Equal(2, objresp.SubscriptionDescriptors.Count);
       Assert.Equal("success", objresp.Message);
