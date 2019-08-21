@@ -39,6 +39,7 @@ node ('jenkinsslave-pod') {
 		"DesignElevation",
 		"MutableData",
 		"PSNode",
+		"QMesh",
 		"TileRendering",
 		"TINSurfaceExport",
 		"Reports",
