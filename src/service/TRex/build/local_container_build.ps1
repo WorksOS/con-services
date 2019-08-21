@@ -7,6 +7,7 @@ $trexComponents = (
     "DesignElevation",
     "MutableData",
     "PSNode",
+    "QMesh",
     "TileRendering",
     "TINSurfaceExport",
     "Reports",
