@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApiTests
     private static IServiceProvider serviceProvider;
 
     [ClassInitialize]
-    public static void ClassInit()
+    public static void ClassInit(TestContext context)
     {
       serviceProvider = new ServiceCollection()
         .AddLogging()

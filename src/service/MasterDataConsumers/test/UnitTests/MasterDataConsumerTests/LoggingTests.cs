@@ -51,8 +51,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       CreateCollection(false);
 
       var ex = Assert.ThrowsException<ArgumentNullException>(() => serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>());
-      Assert.AreEqual("Value cannot be null.\r\nParameter name: provider",
-                      ex.Message);
+      Assert.IsTrue(ex.Message.StartsWith("Value cannot be null"));
     }
 
     [TestMethod]
