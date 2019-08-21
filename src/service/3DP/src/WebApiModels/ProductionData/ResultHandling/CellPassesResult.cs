@@ -210,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 #if RAPTOR
       public TICMinElevMappingState EventMinElevMapping;
 #else
-      public bool EventMinElevMapping;
+      public byte EventMinElevMapping;
 #endif
     }
 
@@ -592,9 +592,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     public ProfileLayer[] layers;
 
     /// <summary>
-    /// Private constructor
+    /// Public constructor
     /// </summary>
-    private CellPassesResult()
+    public CellPassesResult()
     { }
 
     public static CellPassesResult CreateCellPassesResult(
