@@ -1,12 +1,15 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Json;
 using VSS.MasterData.Models.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockUserPreferenceController
+  public class MockUserPreferenceController : BaseController
   {
+    public MockUserPreferenceController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    { }
+
     /// <summary>
     /// Dummies the get user preferences. keyName always equals "global"
     /// </summary>
@@ -15,7 +18,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public UserPreferenceResult DummyGetUserPreferences([FromQuery] string keyName)
     {
-      Console.WriteLine($"{nameof(DummyGetUserPreferences)}");
+      Logger.LogInformation($"{nameof(DummyGetUserPreferences)}");
 
       return new UserPreferenceResult
       {

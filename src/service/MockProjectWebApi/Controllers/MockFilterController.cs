@@ -1,18 +1,18 @@
-﻿using System;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Services;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockFilterController
+  public class MockFilterController : BaseController
   {
     private readonly FiltersService filtersService;
 
-    public MockFilterController(IFiltersService filtersService)
+    public MockFilterController(ILoggerFactory loggerFactory, IFiltersService filtersService) : base(loggerFactory)
     {
-      this.filtersService = (FiltersService) filtersService;
+      this.filtersService = (FiltersService)filtersService;
     }
 
     /// <summary>
@@ -23,7 +23,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public FilterData GetMockFilter(string projectUid, [FromUri] string filterUid)
     {
-      Console.WriteLine($"{nameof(GetMockFilter)}: projectUid={projectUid}, filterUid={filterUid}");
+      Logger.LogInformation($"{nameof(GetMockFilter)}: projectUid={projectUid}, filterUid={filterUid}");
 
       return filtersService.GetFilter(projectUid, filterUid);
     }
@@ -36,7 +36,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public FilterListData GetMockFilters(string projectUid)
     {
-      Console.WriteLine($"{nameof(GetMockFilters)}: projectUid={projectUid}");
+      Logger.LogInformation($"{nameof(GetMockFilters)}: projectUid={projectUid}");
 
       return filtersService.GetFilters(projectUid);
     }

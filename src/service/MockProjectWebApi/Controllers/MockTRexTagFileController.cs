@@ -1,36 +1,32 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockTRexTagFileController : Controller
+  public class MockTRexTagFileController : BaseController
   {
-    /// <summary>
-    /// Mock for TRex gateways:   [Route("api/v2/tagfiles")]
-    /// </summary>
+    public MockTRexTagFileController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    { }
+
     [Route("api/v2/mocktrextagfile")]
     [Route("api/v2")]
     [HttpPost]
     public ContractExecutionResult SendTagFileNonDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)
     {
-      Console.WriteLine($"SendTagFileNonDirect: CompactionTagFileRequest {JsonConvert.SerializeObject(compactionTagFileRequest)}");
+      Logger.LogInformation($"SendTagFileNonDirect: CompactionTagFileRequest {JsonConvert.SerializeObject(compactionTagFileRequest)}");
       return new ContractExecutionResult();
     }
 
-    /// <summary>
-    /// Mock for TRex gateways:   [Route("api/v2/tagfiles/direct")]
-    /// </summary>
     [Route("api/v2/mocktrextagfile/direct")]
     [Route("api/v2/direct")]
     [HttpPost]
     public ContractExecutionResult SendTagFileDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)
     {
-      Console.WriteLine($"SendTagFileDirect: CompactionTagFileRequest {JsonConvert.SerializeObject(compactionTagFileRequest)}");
+      Logger.LogInformation($"SendTagFileDirect: CompactionTagFileRequest {JsonConvert.SerializeObject(compactionTagFileRequest)}");
       return new ContractExecutionResult();
     }
   }
-
 }

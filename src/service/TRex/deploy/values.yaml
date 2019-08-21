@@ -32,14 +32,14 @@ applicationServer:
       cpu: 300m
       memory: 2Gi
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 2
     maxReplicas: 5
     memory:
       enabled: false
       target: 0
     cpu:
-      enabled: false
+      enabled: true
       target: 100
 
 designElevation:
@@ -51,14 +51,14 @@ designElevation:
       cpu: 300m
       memory: 2Gi
   autoscaling:
-    enabled: false
-    minReplicas: 2
-    maxReplicas: 3
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
     memory:
       enabled: false
       target: 0
     cpu:
-      enabled: false
+      enabled: true
       target: 100
 
 gateway:
@@ -121,6 +121,25 @@ psnode:
     size: 10Gi
     className: efs
   
+qmeshServer:
+  replicaCount: 1
+  javaHeapMaxSizeMb: 1024
+  javaHeapInitialSizeMb: 768  
+  resources: 
+    requests:
+      cpu: 300m
+      memory: 1536Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: true
+      target: 100
+
 
 reportServer:
   replicaCount: 1
@@ -131,14 +150,14 @@ reportServer:
       cpu: 300m
       memory: 1280Mi
   autoscaling:
-    enabled: false
-    minReplicas: 2
-    maxReplicas: 3
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
     memory:
       enabled: false
       target: 0
     cpu:
-      enabled: false
+      enabled: true
       target: 100
 
 tileServer:
@@ -150,14 +169,14 @@ tileServer:
       cpu: 300m
       memory: 1536Mi
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 2
     maxReplicas: 5
     memory:
       enabled: false
       target: 0
     cpu:
-      enabled: false
+      enabled: true
       target: 100
 
 tinExportServer:
@@ -185,7 +204,7 @@ utilities:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 500m
+      cpu: 300m
       memory: 1Gi
 
 webtools:
@@ -194,7 +213,7 @@ webtools:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 500m
+      cpu: 300m
       memory: 1Gi
 
 

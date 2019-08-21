@@ -1,5 +1,4 @@
-﻿using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Filter.Abstractions.Models;
+﻿using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace MockProjectWebApi.Services
 {

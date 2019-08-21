@@ -18,6 +18,9 @@ using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.Tests;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.QuantizedMesh.MeshUtils;
+using VSS.TRex.QuantizedMesh.Models;
+using VSS.TRex.QuantizedMesh.GridFabric;
 
 namespace VSS.TRex.QuantizedMesh.Tests
 {
@@ -31,20 +34,131 @@ namespace VSS.TRex.QuantizedMesh.Tests
       var result = await request.ExecuteAsync();
       result.Should().BeFalse();
     }
+
+    [Fact]
+    public void BoundingSphere_CoordinateUtils_CalculateHeader()
+    {
+      var ecefPoints = new Vector3[4];
+      ecefPoints[0] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(1.00001), Y = MapUtils.Deg2Rad(1.00001), Z = 0 });
+      ecefPoints[1] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(1.00002), Y = MapUtils.Deg2Rad(1.00001), Z = 0 });
+      ecefPoints[2] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(1.00001), Y = MapUtils.Deg2Rad(1.00002), Z = 10 });
+      ecefPoints[3] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(1.00002), Y = MapUtils.Deg2Rad(1.00002), Z = 10 });
+      BBSphere sphere = new BBSphere();
+      sphere.FromPoints(ecefPoints);
+      var rad = Math.Round(sphere.Radius, 2);
+      rad.Should().Be(5.06);
+      var geo = CoordinateUtils.ecef_to_geo(sphere.Center);
+      var alt = Math.Round(geo.Z, 1);
+      alt.Should().Be(5.0);
+      var lon = Math.Round(MapUtils.Rad2Deg(geo.X), 6);
+      var lat = Math.Round(MapUtils.Rad2Deg(geo.Y), 6);
+      lon.Should().Be(1.000015);
+      lat.Should().Be(1.000015);
+    }
+
+    [Fact]
+    public void Cartesian3D_Vector_Maths_Tests()
+    {
+      Vector3 v1 = new Vector3(1, 1, 1);
+      Vector3 v2 = new Vector3(1, 4, 1);
+      Vector3 v3 = new Vector3(10, 0, 0);
+      Vector3 v4 = new Vector3(0, 3, 0);
+      Vector3 v5 = new Vector3(2, 5, 2);
+      Vector3 normal = new Vector3(1, 0, 0);
+      var sq = Cartesian3D.DistanceSquared(v1,v2);
+      sq.Should().Be(9);
+      var dst = Cartesian3D.Distance(v1, v2);
+      dst.Should().Be(3);
+      var nm = Cartesian3D.Normalize(v3);
+      nm.Should().Be(normal);
+      var mag = Cartesian3D.Magnitude(v3);
+      mag.Should().Be(10);
+      var sub = Cartesian3D.Subtract(v2, v1);
+      sub.Should().Be(v4);
+      var add = Cartesian3D.Add(v2, v1);
+      add.Should().Be(v5);
+
+    }
+
+    [Fact]
+    public void TileBuilder_BuildTile()
+    {
+      LLBoundingBox TileBoundaryLL = MapGeo.TileXYZToRectLL(0, 0, 20, out var yFlip);
+      ElevationData elevData = new ElevationData(0, 5);
+      elevData.MakeEmptyTile(TileBoundaryLL);
+      QMTileBuilder tileBuilder = new QMTileBuilder()
+      {
+        TileData = elevData,
+        GridSize = elevData.GridSize
+      };
+
+      var res = tileBuilder.BuildQuantizedMeshTile();
+      res.Should().Be(true);
+      tileBuilder.QuantizedMeshTile.Should().HaveCountGreaterOrEqualTo(162);
+      tileBuilder.QuantizedMeshTile.Should().HaveCountLessOrEqualTo(164);
+    }
+
+    [Fact]
+    public void MapGeo_NumberOfTiles()
+    {
+      var tiles1 = MapGeo.GetNumberOfXTilesAtLevel(1);
+      tiles1.Should().Be(4);
+      var tiles2 = MapGeo.GetNumberOfYTilesAtLevel(1);
+      tiles2.Should().Be(2);
+    }
+
+    [Fact]
+    public void MapUtils_MapCoordinate_Tests()
+    {
+      var flipedY = MapUtils.FlipY(78341,18);
+      flipedY.Should().Be(183802);
+      var ecef = MapUtils.LatLonToEcef(0,0,100);
+      ecef.X.Should().Be(6378237); // earth raduis + 100m
+      var ecef2 = MapUtils.LatLonToEcef(0,0,200);
+      ecef2.X.Should().Be(6378337);// earth raduis + 200m
+      var dist = Math.Round(MapUtils.GetDistance(1,1,2,1),2);
+      dist.Should().Be(111.27);
+      var mid = MapUtils.MidPointLL(1,1,2,1);
+      MapPoint mp = new MapPoint(1.5, 1);
+      mp.Should().Be(mp);
+    }
+
+    [Fact]
+    public void MeshBuilder_QuantizeHeight_Tests()
+    {
+      var min = MeshBuilder.QuantizeHeight(0, 100, 0);
+      min.Should().Be(0);
+      var mid = MeshBuilder.QuantizeHeight(0, 100, 50);
+      mid.Should().Be(16383);
+      var max = MeshBuilder.QuantizeHeight(0, 100, 100);
+      max.Should().Be(32767);
+    }
+
+    [Fact]
+    public void VertextData_AddVertex_Test()
+    {
+      var vert = new VertexData(1,1);
+      vert.AddVertex(0, 1, 1, 1);
+      vert.height[0].Should().Be(1);
+      vert.u[0].Should().Be(0); // zero based
+      vert.v[0].Should().Be(0); // zero based
+      vert.vertexCount.Should().Be(1);
+    }
+
   }
 
   public class QMTileTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-
     const int DECIMALS = 6;
     private ISiteModel siteModel;
     private FilterSet filter;
+    private int DisplayMode = 1;
 
     private void SetupTest()
     {
       var tagFiles = new[]
       {
-        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile-MDP.tag"),
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile-QMesh.tag"),
       };
 
       siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
@@ -96,7 +210,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     public void Creation()
     {
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(Guid.NewGuid(), filter, 0, 0, 0, 0, "1");
+      var request = new QMTileExecutor(Guid.NewGuid(), filter, 0, 0, 0, DisplayMode, "1");
       request.Should().NotBeNull();
     }
 
@@ -106,7 +220,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
   
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 19, 0, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 19, DisplayMode, "1");
       request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
@@ -116,30 +230,56 @@ namespace VSS.TRex.QuantizedMesh.Tests
       QMTileResponse.data.Should().HaveCountLessOrEqualTo(164);
     }
 
-
-    [Fact(Skip = "Missing test data. todo")]
+    [Fact]
     public void Execute_RootTile_Expected()
     {
       AddClusterComputeGridRouting();
       SetupTest();
-      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0, 0, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0, DisplayMode, "1");
       request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
       QMTileResponse.data.Should().HaveCount(845); // Should return a root tile
     }
 
-
-    [Fact (Skip="Missing test data. Todo")]
-    public void Execute_NotEmptySiteModel_Success()
+    [Fact]
+    public void Execute_TooFarOut_EmptyTile_Expected()
     {
       AddClusterComputeGridRouting();
       SetupTest();
-      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, 1, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 10, DisplayMode, "1");
+      request.ExecuteAsync();
+      request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
+      var QMTileResponse = request.QMTileResponse;
+      QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(172);
+      QMTileResponse.data.Should().HaveCountLessOrEqualTo(176);
+    }
+
+    [Fact]
+    public void Execute_ValidProductionTile_Expected()
+    {
+      AddClusterComputeGridRouting();
+      SetupTest();
+      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, DisplayMode, "1");
       request.ExecuteAsync();
       request.ResultStatus.Should().Be(RequestErrorStatus.OK);
       var QMTileResponse = request.QMTileResponse;
-      QMTileResponse.data.Should().HaveCount(1345); // Should return a valid tile
+      QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(4265);
+      QMTileResponse.data.Should().HaveCountLessOrEqualTo(5189);
+    }
+
+    [Fact]
+    public void Execute_FailPipeLineSetup_EmptyTile_Expected()
+    {
+      AddClusterComputeGridRouting();
+      SetupTest();
+      // Missing coordinate system
+      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, 0, "1");
+      request.ExecuteAsync();
+      request.ResultStatus.Should().Be(RequestErrorStatus.OK); // Empty tile expected
+      var QMTileResponse = request.QMTileResponse;
+      QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(172);
+      QMTileResponse.data.Should().HaveCountLessOrEqualTo(176);
     }
 
   }

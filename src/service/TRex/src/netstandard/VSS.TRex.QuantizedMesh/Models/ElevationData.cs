@@ -95,7 +95,7 @@ namespace VSS.TRex.QuantizedMesh.Models
     public void Clear()
     {
       for (int i = 0; i < ElevGrid.Length; i++)
-        ElevGrid[i] = LowestElevation;//QMConstants.SealLevelElev;
+        ElevGrid[i] = LowestElevation;
       for (int i = 0; i < EcefPoints.Length; i++)
         EcefPoints[i] = new Vector3();
     }
@@ -114,13 +114,12 @@ namespace VSS.TRex.QuantizedMesh.Models
       West = boundary.West;
       North = boundary.North;
       South = boundary.South;
-      MaximumHeight = LowestElevation;//QMConstants.SealLevelElev;
-      MinimumHeight = LowestElevation;//QMConstants.SealLevelElev;
+      MaximumHeight = LowestElevation;
+      MinimumHeight = LowestElevation;
       EcefPoints[0] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(East), Y = MapUtils.Deg2Rad(South), Z = LowestElevation });
       EcefPoints[1] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(West), Y = MapUtils.Deg2Rad(South), Z = LowestElevation });
       EcefPoints[2] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(East), Y = MapUtils.Deg2Rad(North), Z = LowestElevation });
       EcefPoints[3] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(West), Y = MapUtils.Deg2Rad(North), Z = LowestElevation });
-
     }
 
     public void MakeDemoTile(LLBoundingBox boundary)

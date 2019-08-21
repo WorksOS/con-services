@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog.Extensions.Logging;
@@ -24,14 +23,8 @@ namespace MockProjectWebApi
 
     public static void Main()
     {
-      var config = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-        .AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
-        .Build();
-
       var libuvConfigured = int.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out var libuvThreads);
       var host = new WebHostBuilder()
-        .UseConfiguration(config)
         .UseKestrel()
         .UseContentRoot(Directory.GetCurrentDirectory())
         .UseLibuv(opts =>
@@ -46,7 +39,7 @@ namespace MockProjectWebApi
         {
           loggingBuilder.AddProvider(
             p => new SerilogLoggerProvider(
-              SerilogExtensions.Configure("VSS.3DProductivity.MockWebAPI.log", config, p.GetService<IHttpContextAccessor>())));
+              SerilogExtensions.Configure("VSS.3DProductivity.MockWebAPI.log", httpContextAccessor: p.GetService<IHttpContextAccessor>())));
         })
         .UseUrls("http://0.0.0.0:5001")
         .Build();

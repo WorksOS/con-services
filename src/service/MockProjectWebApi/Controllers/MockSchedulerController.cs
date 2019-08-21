@@ -1,6 +1,6 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -9,19 +9,31 @@ using VSS.Productivity3D.Scheduler.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockSchedulerController : Controller
+  public class MockSchedulerController : BaseController
   {
+    public static readonly string SUCCESS_JOB_ID = "Test_Job_1";
+    public static readonly string FAILURE_JOB_ID = "Test_Job_2";
+    private readonly string IN_PROGRESS_JOB_ID = "Test_Job_3";
+    public static readonly string TIMEOUT_JOB_ID = "Test_Job_4";
+
+    private readonly string SUCCESS_STATUS = "SUCCEEDED";
+    private readonly string FAILURE_STATUS = "FAILED";
+    private readonly string IN_PROGRESS_STATUS = "PROCESSING";
+
+    public MockSchedulerController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    { }
+
     [Route("/internal/v1/mock/runjob")]
     [Route("/internal/v1/runjob")]
     [HttpPost]
     public ScheduleJobResult MockRunJob([FromBody] JobRequest request)
     {
-      Console.WriteLine($"{nameof(MockRunJob)}: {JsonConvert.SerializeObject(request)}");
+      Logger.LogInformation($"{nameof(MockRunJob)}: {JsonConvert.SerializeObject(request)}");
       return new ScheduleJobResult { JobId = "some job id" };
     }
 
     [Route("/internal/v1/mock/export")]
-    [Route("/internal/v1/export")] 
+    [Route("/internal/v1/export")]
     [HttpPost]
     public ScheduleJobResult StartMockExport([FromBody] ScheduleJobRequest request)
     {
@@ -45,7 +57,7 @@ namespace MockProjectWebApi.Controllers
       string downloadLink = null;
       FailureDetails details = null;
 
-      string status = IN_PROGRESS_STATUS;
+      var status = IN_PROGRESS_STATUS;
       if (jobId == SUCCESS_JOB_ID)
       {
         status = SUCCESS_STATUS;
@@ -54,25 +66,15 @@ namespace MockProjectWebApi.Controllers
       else if (jobId == FAILURE_JOB_ID)
       {
         status = FAILURE_STATUS;
-        details = new FailureDetails {Code = HttpStatusCode.BadRequest, Result = new ContractExecutionResult(2005, "Export limit reached") };
+        details = new FailureDetails { Code = HttpStatusCode.BadRequest, Result = new ContractExecutionResult(2005, "Export limit reached") };
       }
 
-      return new JobStatusResult { Key = GetS3Key(jobId, "dummy file"), Status = status, DownloadLink= downloadLink, FailureDetails = details };
+      return new JobStatusResult { Key = GetS3Key(jobId, "dummy file"), Status = status, DownloadLink = downloadLink, FailureDetails = details };
     }
 
     private string GetS3Key(string jobId, string filename)
     {
       return $"3dpm/{jobId}/{filename}.zip";
     }
-
-    public static readonly string SUCCESS_JOB_ID = "Test_Job_1";
-    public static readonly string FAILURE_JOB_ID = "Test_Job_2";
-    private readonly string IN_PROGRESS_JOB_ID = "Test_Job_3";
-    public static readonly string TIMEOUT_JOB_ID = "Test_Job_4";
-
-    private readonly string SUCCESS_STATUS = "SUCCEEDED";
-    private readonly string FAILURE_STATUS = "FAILED";
-    private readonly string IN_PROGRESS_STATUS = "PROCESSING";
-
   }
 }

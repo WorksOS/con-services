@@ -31,7 +31,14 @@ spec:
     spec:
       terminationGracePeriodSeconds: 10
       serviceAccountName: {{ .Values.serviceAccountName }}
-      
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
       containers:
         # Custom Ignite pod name.
       - name: ignite-node

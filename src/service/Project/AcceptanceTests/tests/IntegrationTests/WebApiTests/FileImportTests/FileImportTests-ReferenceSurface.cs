@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using IntegrationTests.UtilityClasses;
 using TestUtility;
@@ -15,7 +16,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     [Theory]
     [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
     [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
-    public void TestImportReferenceSurfaceFile(string uriRoot1, string uriRoot2)
+    public async Task TestImportReferenceSurfaceFile(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 20";
       Msg.Title(testName, "Create standard project and customer then upload reference surface file");
@@ -38,13 +39,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
         $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
         $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
         $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
       //Parent Design
       var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
@@ -53,7 +54,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
+      var filesResult = await importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Reference Surface
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
@@ -62,14 +63,14 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray2 = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid   | Offset   |",
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset} |"};
-      var filesResult2 = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
+      var filesResult2 = await importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [Theory]
     [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
     [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
-    public void TestImportReferenceSurfaceFileFromDeactivatedDesign(string uriRoot1, string uriRoot2)
+    public async Task TestImportReferenceSurfaceFileFromDeactivatedDesign(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 24";
       Msg.Title(testName, "Create standard project and customer then upload reference surface file");
@@ -92,13 +93,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
         $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
         $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
         $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
       //Parent Design
       var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
@@ -107,10 +108,10 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
+      var filesResult = await importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Deactivate the parent design
-      FileActivationTests.DoActivationRequest(customerUid, projectUid, filesResult.ImportedFileDescriptor.ImportedFileUid, false, (int)HttpStatusCode.OK, "Success");
+      await FileActivationTests.DoActivationRequest(customerUid, projectUid, filesResult.ImportedFileDescriptor.ImportedFileUid, false, HttpStatusCode.OK, 200, "Success");
 
       //Reference Surface
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
@@ -119,7 +120,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray2 = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid   | Offset   |",
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset} |"};
-      var filesResult2 = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
+      var filesResult2 = await importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
       //Expect the reference surface to be deactivated
       importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.IsActivated = false;
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
@@ -128,7 +129,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     [Theory]
     [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
     [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
-    public void TestImport2ReferenceSurfaceFiles(string uriRoot1, string uriRoot2)
+    public async Task TestImport2ReferenceSurfaceFiles(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 21";
       Msg.Title(testName, "Create standard project and customer then upload two Reference surface files");
@@ -151,13 +152,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
         $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
         $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
         $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
       //Parent Design
       var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
       var parentName = TestFileResolver.GetFullPath(importFilename);
@@ -165,7 +166,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult1 = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
+      var filesResult1 = await importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       var expectedResult1 = importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult1.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Reference Surfaces
@@ -179,15 +180,15 @@ namespace IntegrationTests.WebApiTests.FileImportTests
          "| EventType              | ProjectUid   | CustomerUid   | Name    | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid   | Offset    |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name1} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset1} |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name2} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset2} |"};
-      var filesResult2 = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name1)}" }));
+      var filesResult2 = await importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name1)}" }));
       var expectedResult2 = importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
-      var filesResult3 = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name2)}" }));
+      var filesResult3 = await importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name2)}" }));
       var expectedResult3 = importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult3.ImportedFileDescriptor, expectedResult3, true);
 
-      var importFileList = importFileParent.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = await importFileParent.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.True(importFileList.ImportedFileDescriptors.Count == 3, "Expected 3 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
@@ -196,7 +197,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
 
     [Theory]
     [InlineData("api/v4/importedfile/referencesurface")]
-    public void TestImportReferenceSurfaceFileWithoutParentShouldFail(string uriRoot)
+    public async Task TestImportReferenceSurfaceFileWithoutParentShouldFail(string uriRoot)
     {
       const string testName = "File Import 23";
       Msg.Title(testName, "Create standard project and customer then upload reference surface file without parent design uploaded");
@@ -218,13 +219,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
         $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
         $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
         $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
       //Reference Surface
       var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
       var parentName = TestFileResolver.GetFullPath(importFilename);
@@ -236,14 +237,14 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         "| EventType              | ProjectUid   | CustomerUid   | Name   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid   | Offset   |",
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset} |"};
 
-      var errorResultObj = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
+      var errorResultObj = await importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }), HttpStatusCode.BadRequest);
       Assert.Equal("Missing parent design for reference surface", errorResultObj.Message);
     }
 
     [Theory]
     [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
     [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
-    public void TestImportReferenceSurfaceThenDeleteTheParentDesignSurface(string uriRoot1, string uriRoot2)
+    public async Task TestImportReferenceSurfaceThenDeleteTheParentDesignSurface(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 14";
       Msg.Title(testName, "Create standard project then upload a new reference file. Then delete parent design surface file");
@@ -266,13 +267,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
         $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
         $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType           | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
         $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
       //Parent Design
       var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
@@ -281,7 +282,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
+      var filesResult = await importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Reference Surface
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
@@ -290,18 +291,18 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray2 = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid   | Offset   |",
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset} |"};
-      var filesResult2 = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
+      var filesResult2 = await importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Delete parent design
 
-      var errorResultObj = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete));
+      var errorResultObj = await importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete), HttpStatusCode.BadRequest);
       Assert.Equal("[{\"Key\":\"importedFileUid\",\"Value\":\"The value '' is invalid.\\r\\n\"}]", errorResultObj.Message);
     }
 
     [Theory]
     [InlineData("api/v4/importedfile", "api/v4/importedfile/referencesurface")]
     [InlineData("api/v4/importedfile/direct", "api/v4/importedfile/referencesurface")]
-    public void TestImportReferenceSurfaceFileTwice(string uriRoot1, string uriRoot2)
+    public async Task TestImportReferenceSurfaceFileTwice(string uriRoot1, string uriRoot2)
     {
       const string testName = "File Import 20";
       Msg.Title(testName, "Create standard project and customer then upload reference surface file");
@@ -324,13 +325,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
         $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
         $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
          "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
         $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffffK} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
       //Parent Design
       var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
       var parentName = TestFileResolver.GetFullPath(importFilename);
@@ -338,7 +339,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
+      var filesResult = await importFileParent.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFileParent.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Reference Surface
       var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
@@ -347,11 +348,11 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var importFileArray2 = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid   | Offset   |",
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset} |"};
-      var filesResult2 = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
+      var filesResult2 = await importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
 
       //Import again
-      var errorResultObj = importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
+      var errorResultObj = await importFileChild.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }), HttpStatusCode.BadRequest);
       Assert.Equal("Reference surface already exists", errorResultObj.Message);
     }
   }
