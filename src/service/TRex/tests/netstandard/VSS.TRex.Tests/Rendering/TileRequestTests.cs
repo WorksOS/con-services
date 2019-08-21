@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
@@ -271,6 +272,77 @@ namespace VSS.TRex.Tests.Rendering
       CheckSimpleRenderTileResponse(response, displayMode);
 
       //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+    }
+
+    [Theory]
+    [InlineData(DisplayMode.Height)]
+    [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCA)]
+    [InlineData(DisplayMode.CCASummary)]
+    [InlineData(DisplayMode.MDP)]
+    [InlineData(DisplayMode.MDPPercentSummary)]
+    [InlineData(DisplayMode.MachineSpeed)]
+    [InlineData(DisplayMode.TargetSpeedSummary)]
+    [InlineData(DisplayMode.TemperatureDetail)]
+    [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCount)]
+    [InlineData(DisplayMode.PassCountSummary)]
+    public async Task Test_TileRenderRequest_NoSubGridData_EmptyTile(DisplayMode displayMode)
+    {
+      // See BUG# 86870
+      // Test setup: Setup some production data in different sub grids
+      // Request a tile in a sub grid with no data
+      // Tile should return quickly, with an empty tile (previously it would sit for 2 minutes to timeout, and return null).
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var baseTime = DateTime.UtcNow;
+      var baseHeight = 1.0f;
+      byte baseCCA = 1;
+
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCAStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, 5);
+
+      var cellPasses = Enumerable.Range(0, 10).Select(x =>
+        new CellPass
+        {
+          InternalSiteModelMachineIndex = bulldozerMachineIndex,
+          Time = baseTime.AddMinutes(x),
+          Height = baseHeight + x * HEIGHT_INCREMENT_0_5,
+          CCA = (byte)(baseCCA + x),
+          PassType = PassType.Front
+        }).ToArray();
+
+      // And offset to make sure we span multiple sub grids (if the tile request is in the same sub grid, even if empty, the bug was not applicable)
+      const int offset = (2 * SubGridTreeConsts.CellsPerSubGrid) + 1;
+
+      // Create some cell passes in 4 corners, but in seperate sub grids 
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset + offset, SubGridTreeConsts.DefaultIndexOriginOffset + offset, cellPasses);
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset + offset, SubGridTreeConsts.DefaultIndexOriginOffset - offset, cellPasses);
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset - offset, SubGridTreeConsts.DefaultIndexOriginOffset - offset, cellPasses);
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset - offset, SubGridTreeConsts.DefaultIndexOriginOffset + offset, cellPasses);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      // Now if we get a single cell pass in the center, which has no data we should get an empty tile (not a null tile)
+      var tileExtents = siteModel.Grid.GetCellExtents(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
+
+      var request = new TileRenderRequest();
+      var arg =  new TileRenderRequestArgument(siteModel.ID, displayMode, null, tileExtents, true, 256, 256, new FilterSet(new CombinedFilter()), new DesignOffset());
+
+      var startTime = DateTime.UtcNow;
+      var response = await request.ExecuteAsync(arg);
+      var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
+
+      // 30 seconds should be ample time, even on a slow computer - but well under the 2 minute timeout which is enforced by the pipeline processor.
+      duration.Should().BeLessThan(30 * 1000, "Empty tile should return quickly - see BUG# 86870"); 
+
+      // And the tile should NOT be null
+      CheckSimpleRenderTileResponse(response, displayMode);
+
+//      File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }
 
     [Theory]

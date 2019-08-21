@@ -357,7 +357,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
         requireSurveyedSurfaceInformation: false, //Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
         requestRequiresAccessToDesignFileExistenceMap: false,
         overrideSpatialCellRestriction: CellExtents,
-        LiftParams
+        liftParams: LiftParams
       );
 
       // Set the grid TRexTask parameters for progressive processing
