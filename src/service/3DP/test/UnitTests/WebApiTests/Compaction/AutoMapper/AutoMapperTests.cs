@@ -6,9 +6,11 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
 {
@@ -460,6 +462,191 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(lbs.IncludeSupersededLifts, settings.IncludeSupersededLifts);
       Assert.AreEqual(lbs.DeadBandLowerBoundary, settings.DeadBandLowerBoundary);
       Assert.AreEqual(lbs.DeadBandUpperBoundary, settings.DeadBandUpperBoundary);
+    }
+
+    [TestMethod]
+    public void MapCellPassesResultProfileLayerToCellPassesV2ResultProfileLayer()
+    {
+      var filteredPass = new CellPassesV2Result.CellPassValue()
+      {
+        Amplitude = 120,
+        Ccv = 230,
+        Frequency = 25,
+        GpsModeStore = 3,
+        Height = 400,
+        MachineId = 1,
+        MachineSpeed = 15,
+        MaterialTemperature = 120,
+        Mdp = 210,
+        RadioLatency = 18,
+        Time = DateTime.UtcNow,
+        Rmv = 170
+      };
+
+      var eventsValue = new CellPassesV2Result.CellEventsValue()
+      {
+        EventMachineRmvThreshold = 200,
+        EventAutoVibrationState = AutoStateType.Auto,
+        EventDesignNameId = 456,
+        EventIcFlags = 5,
+        EventInAvoidZoneState = 3,
+        EventMachineAutomatics = GCSAutomaticsModeType.Automatic,
+        EventMachineGear = MachineGearType.Forward,
+        EventMinElevMapping = 0,
+        EventOnGroundState = OnGroundStateType.YesLegacy,
+        EventVibrationState = VibrationStateType.On,
+        LayerId = 1,
+        GpsAccuracy = GPSAccuracyType.Fine,
+        MapResetPriorDate = DateTime.UtcNow,
+        GpsTolerance = 3,
+        MapResetDesignNameId = 1,
+        PositioningTech = PositioningTechType.GPS
+      };
+
+      var targetsValue = new CellPassesV2Result.CellTargetsValue()
+      {
+        TargetThickness = 10,
+        TargetCcv = 250,
+        TargetPassCount = 10,
+        TempWarningLevelMin = 20,
+        TempWarningLevelMax = 150,
+        TargetMdp = 180
+      };
+
+      var passes = new []
+      {
+        new CellPassesV2Result.FilteredPassData()
+        {
+          FilteredPass = filteredPass,
+          EventsValue = eventsValue,
+          TargetsValue = targetsValue
+        }
+      };
+
+      var layers = new []
+      {
+        new CellPassesV2Result.ProfileLayer()
+        {
+          Amplitude = 100,
+          Ccv = 200,
+          CcvElev = 525,
+          CcvMachineId = 1,
+          CcvTime = DateTime.UtcNow,
+          FilteredHalfPassCount = 1,
+          FilteredPassCount = 1,
+          FirstPassHeight = 445,
+          Frequency = 123,
+          Height = 400,
+          LastLayerPassTime = DateTime.UtcNow,
+          LastPassHeight = 525,
+          MachineId = 1,
+          MaterialTemperature = 150,
+          MaterialTemperatureElev = 500,
+          MaterialTemperatureMachineId = 1,
+          MaterialTemperatureTime = DateTime.UtcNow,
+          MaximumPassHeight = 525,
+          MaxThickness = 1.5F,
+          Mdp = 250,
+          MdpElev = 525,
+          MdpMachineId = 1,
+          MdpTime = DateTime.UtcNow,
+          MinimumPassHeight = 445,
+          RadioLatency = 12,
+          Rmv = 120,
+          TargetCcv = 500,
+          TargetMdp = 300,
+          TargetPassCount = 7,
+          TargetThickness = 10,
+          Thickness = 15,
+          PassData = passes
+        }
+      };
+
+      var cpv2 = new CellPassesV2Result() { Layers = layers };
+
+      var pl = AutoMapperUtility.Automapper.Map<CellPassesResult.ProfileLayer>(cpv2.Layers[0]);
+
+      // Profile Layer...
+      Assert.AreEqual(cpv2.Layers.Length, 1);
+      Assert.AreEqual(pl.amplitude, cpv2.Layers[0].Amplitude);
+      Assert.AreEqual(pl.cCV, cpv2.Layers[0].Ccv);
+      Assert.AreEqual(pl.cCV_Elev, cpv2.Layers[0].CcvElev);
+      Assert.AreEqual(pl.cCV_MachineID, cpv2.Layers[0].CcvMachineId);
+      Assert.AreEqual(pl.cCV_Time, cpv2.Layers[0].CcvTime);
+      Assert.AreEqual(pl.filteredHalfPassCount, cpv2.Layers[0].FilteredHalfPassCount);
+      Assert.AreEqual(pl.filteredPassCount, cpv2.Layers[0].FilteredPassCount);
+      Assert.AreEqual(pl.firstPassHeight, cpv2.Layers[0].FirstPassHeight);
+      Assert.AreEqual(pl.frequency, cpv2.Layers[0].Frequency);
+      Assert.AreEqual(pl.height, cpv2.Layers[0].Height);
+      Assert.AreEqual(pl.lastLayerPassTime, cpv2.Layers[0].LastLayerPassTime);
+      Assert.AreEqual(pl.lastPassHeight, cpv2.Layers[0].LastPassHeight);
+      Assert.AreEqual(pl.machineID, cpv2.Layers[0].MachineId);
+      Assert.AreEqual(pl.materialTemperature, cpv2.Layers[0].MaterialTemperature);
+      Assert.AreEqual(pl.materialTemperature_Elev, cpv2.Layers[0].MaterialTemperatureElev);
+      Assert.AreEqual(pl.materialTemperature_MachineID, cpv2.Layers[0].MaterialTemperatureMachineId);
+      Assert.AreEqual(pl.materialTemperature_Time, cpv2.Layers[0].MaterialTemperatureTime);
+      Assert.AreEqual(pl.maximumPassHeight, cpv2.Layers[0].MaximumPassHeight);
+      Assert.AreEqual(pl.maxThickness, cpv2.Layers[0].MaxThickness);
+      Assert.AreEqual(pl.mDP, cpv2.Layers[0].Mdp);
+      Assert.AreEqual(pl.mDP_Elev, cpv2.Layers[0].MdpElev);
+      Assert.AreEqual(pl.mDP_MachineID, cpv2.Layers[0].MdpMachineId);
+      Assert.AreEqual(pl.mDP_Time, cpv2.Layers[0].MdpTime);
+      Assert.AreEqual(pl.minimumPassHeight, cpv2.Layers[0].MinimumPassHeight);
+      Assert.AreEqual(pl.radioLatency, cpv2.Layers[0].RadioLatency);
+      Assert.AreEqual(pl.rMV, cpv2.Layers[0].Rmv);
+      Assert.AreEqual(pl.targetCCV, cpv2.Layers[0].TargetCcv);
+      Assert.AreEqual(pl.targetMDP, cpv2.Layers[0].TargetMdp);
+      Assert.AreEqual(pl.targetPassCount, cpv2.Layers[0].TargetPassCount);
+      Assert.AreEqual(pl.targetThickness, cpv2.Layers[0].TargetThickness);
+      Assert.AreEqual(pl.thickness, cpv2.Layers[0].Thickness);
+      // Filtered Pass Data...
+      Assert.AreEqual(pl.filteredPassData.Length, cpv2.Layers[0].PassData.Length);
+      Assert.AreEqual(cpv2.Layers[0].PassData.Length, 1);
+      // ------ Filtered Pass -------
+      var fp = pl.filteredPassData[0].filteredPass;
+      var fp2 = cpv2.Layers[0].PassData[0].FilteredPass;
+
+      Assert.AreEqual(fp.amplitude, fp2.Amplitude);
+      Assert.AreEqual(fp.cCV, fp2.Ccv);
+      Assert.AreEqual(fp.frequency, fp2.Frequency);
+      Assert.AreEqual(fp.height, fp2.Height);
+      Assert.AreEqual(fp.machineID, fp2.MachineId);
+      Assert.AreEqual(fp.machineSpeed, fp2.MachineSpeed);
+      Assert.AreEqual(fp.materialTemperature, fp2.MaterialTemperature);
+      Assert.AreEqual(fp.mDP, fp2.Mdp);
+      Assert.AreEqual(fp.radioLatency, fp2.RadioLatency);
+      Assert.AreEqual(fp.rMV, fp2.Rmv);
+      Assert.AreEqual(fp.time, fp2.Time);
+      Assert.AreEqual(fp.gPSModeStore, fp2.GpsModeStore);
+      // ------ Event Values -------
+      var ev = pl.filteredPassData[0].eventsValue;
+      var ev2 = cpv2.Layers[0].PassData[0].EventsValue;
+
+      Assert.AreEqual(ev.eventAutoVibrationState, ev2.EventAutoVibrationState);
+      Assert.AreEqual(ev.eventDesignNameID, ev2.EventDesignNameId);
+      Assert.AreEqual(ev.eventICFlags, ev2.EventIcFlags);
+      Assert.AreEqual(ev.eventMachineAutomatics, ev2.EventMachineAutomatics);
+      Assert.AreEqual(ev.eventMachineGear, ev2.EventMachineGear);
+      Assert.AreEqual(ev.eventMachineRMVThreshold, ev2.EventMachineRmvThreshold);
+      Assert.AreEqual(ev.eventOnGroundState, ev2.EventOnGroundState);
+      Assert.AreEqual(ev.eventVibrationState, ev2.EventVibrationState);
+      Assert.AreEqual(ev.gPSAccuracy, ev2.GpsAccuracy);
+      Assert.AreEqual(ev.gPSTolerance, ev2.GpsTolerance);
+      Assert.AreEqual(ev.layerID, ev2.LayerId);
+      Assert.AreEqual(ev.mapReset_DesignNameID, ev2.MapResetDesignNameId);
+      Assert.AreEqual(ev.mapReset_PriorDate, ev2.MapResetPriorDate);
+      Assert.AreEqual(ev.positioningTech, ev2.PositioningTech);
+      Assert.AreEqual(ev.EventInAvoidZoneState, ev2.EventInAvoidZoneState);
+      Assert.AreEqual((byte)ev.EventMinElevMapping, ev2.EventMinElevMapping);
+      // ------ Target Values -------
+      var tv = pl.filteredPassData[0].targetsValue;
+      var tv2 = cpv2.Layers[0].PassData[0].TargetsValue;
+      Assert.AreEqual(tv.targetCCV, tv2.TargetCcv);
+      Assert.AreEqual(tv.targetMDP, tv2.TargetMdp);
+      Assert.AreEqual(tv.targetPassCount, tv2.TargetPassCount);
+      Assert.AreEqual(tv.targetThickness, tv2.TargetThickness);
+      Assert.AreEqual(tv.tempWarningLevelMin, tv2.TempWarningLevelMin);
+      Assert.AreEqual(tv.tempWarningLevelMax, tv2.TempWarningLevelMax);
     }
   }
 }

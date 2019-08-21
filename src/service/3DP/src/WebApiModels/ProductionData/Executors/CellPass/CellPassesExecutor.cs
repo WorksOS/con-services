@@ -64,7 +64,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
     }
 
 #if RAPTOR
-
     protected CellPassesResult ConvertResult(TICProfileCell profile)
     {
       return CellPassesResult.CreateCellPassesResult(
@@ -97,8 +96,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
                  profile.Station,
                  profile.TopLayerPassCount,
                  new TargetPassCountRange(profile.TopLayerPassCountTargetRangeMin, profile.TopLayerPassCountTargetRangeMax),
-                 ConvertCellLayers(profile.Layers,
-                 ConvertFilteredPassData(profile.Passes))
+                 ConvertCellLayers(profile.Layers, ConvertFilteredPassData(profile.Passes))
              );
     }
 
@@ -269,40 +267,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
 
     private CellPassesResult ConvertTRexResult(CellPassesV2Result result)
     {
-      return CellPassesResult.CreateCellPassesResult(
-        result.CellPassValue. cellCCV,
-        profile.CellCCVElev,
-        profile.CellFirstCompositeElev,
-        profile.CellFirstElev,
-        profile.CellHighestCompositeElev,
-        profile.CellHighestElev,
-        profile.CellLastCompositeElev,
-        profile.CellLastElev,
-        profile.CellLowestCompositeElev,
-        profile.CellLowestElev,
-        profile.CellMaterialTemperature,
-        profile.CellMaterialTemperatureElev,
-        profile.CellMaterialTemperatureWarnMax,
-        profile.CellMaterialTemperatureWarnMin,
-        profile.FilteredHalfPassCount,
-        profile.FilteredPassCount,
-        profile.CellMDP,
-        profile.CellMDPElev,
-        profile.CellTargetCCV,
-        profile.CellTargetMDP,
-        profile.CellTopLayerThickness,
-        profile.DesignElev,
-        profile.IncludesProductionData,
-        profile.InterceptLength,
-        profile.OTGCellX,
-        profile.OTGCellY,
-        profile.Station,
-        profile.TopLayerPassCount,
-        new TargetPassCountRange(profile.TopLayerPassCountTargetRangeMin, profile.TopLayerPassCountTargetRangeMax),
-        ConvertCellLayers(profile.Layers,
-          ConvertFilteredPassData(profile.Passes))
-      );
+      // Convert layers...
+      var layers = new CellPassesResult.ProfileLayer[result.Layers.Length];
 
+      for (var i = 0; i < result.Layers.Length; i++)
+        layers[i] = AutoMapperUtility.Automapper.Map<CellPassesResult.ProfileLayer>(result.Layers[i]);
+
+      return new CellPassesResult() {layers = layers};
     }
   }
 }
