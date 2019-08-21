@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,7 +13,6 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.Productivity3D.MasterDataConsumer.Tests
 {
@@ -24,52 +20,6 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
   public class LoggingTests
   {
     private IServiceProvider serviceProvider;
-    private string loggerRepoName = "UnitTestLogTest";
-
-    [TestMethod]
-    public void CanUseLog4net()
-    {
-      var logPath = Directory.GetCurrentDirectory();
-
-      var logFileFullPath = Path.Combine(logPath, loggerRepoName + ".log");
-      if (File.Exists(logFileFullPath))
-      {
-        File.WriteAllText(logFileFullPath, string.Empty);
-      }
-
-      // put logger into DI
-      serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddLogging()
-        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("MasterDataConsumerTests.log")))
-        .BuildServiceProvider();
-
-      // 1) this test is logger from outside of DI
-      var loggerPre = serviceProvider.GetService<ILogger>();
-      loggerPre.LogDebug("This test is outside of Container. Should reference LoggingTests.");
-      Assert.IsTrue(File.Exists(logFileFullPath));
-
-      // 2) this test is sourced from of DI
-      var retrievedloggerFactory = serviceProvider.GetService<ILoggerFactory>();
-      Assert.IsNotNull(retrievedloggerFactory);
-
-      ILogger loggerPost = retrievedloggerFactory.CreateLogger<MessageResolver>();
-      Assert.IsNotNull(retrievedloggerFactory);
-      loggerPost.LogDebug("This test is retrieved from Container. Should reference MessageResolver.");
-      var allLines = new List<string>();
-
-      using (var fs = new FileStream(logFileFullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-      using (var sr = new StreamReader(fs))
-      {
-
-        while (!sr.EndOfStream)
-          allLines.Add(sr.ReadLine());
-      }
-
-      Assert.AreEqual(2, allLines.Count);
-      Assert.AreEqual(2, Regex.Matches(allLines[0], "LoggingTests").Count);
-      Assert.AreEqual(2, Regex.Matches(allLines[1], "MessageResolver").Count);
-    }
 
     [TestMethod]
     public void CanConstructFromDI()
@@ -100,8 +50,9 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     {
       CreateCollection(false);
 
-      var ex = Assert.ThrowsException<InvalidOperationException>(() => serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>());
-      Assert.AreEqual(ex.Message, "Unable to resolve service for type \'Microsoft.Extensions.Logging.ILoggerFactory\' while attempting to activate \'VSS.ConfigurationStore.GenericConfiguration\'.");
+      var ex = Assert.ThrowsException<ArgumentNullException>(() => serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>());
+      Assert.AreEqual("Value cannot be null.\r\nParameter name: provider",
+                      ex.Message);
     }
 
     [TestMethod]

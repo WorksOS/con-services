@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     private static Dictionary<string, string> _customHeaders;
 
     [ClassInitialize]
-    public static void ClassInit()
+    public static void ClassInit(TestContext context)
     {
       serviceProvider = new ServiceCollection()
                         .AddLogging()
