@@ -15,10 +15,6 @@ namespace LandfillDatasync.netcore
 {
   internal class Program
   {
-    protected static IServiceProvider ServiceProvider;
-    protected static IConfigurationStore ConfigStore;
-    protected static ILoggerFactory Logger;
-    protected static ILogger Log;
     private static void Main()
     {
       var provider = new ServiceCollection()
@@ -28,26 +24,26 @@ namespace LandfillDatasync.netcore
 
       provider.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       provider.AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>(); 
-      ServiceProvider = provider.BuildServiceProvider();
-      Logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      Log = Logger.CreateLogger<Program>();
-      ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var serviceProvider = provider.BuildServiceProvider();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var log = logger.CreateLogger<Program>();
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
 
-      Log.LogDebug("Landfill Data Sync starting");
-      var dataSync = new DataSynchronizer(Log, ConfigStore);
+      log.LogDebug("Landfill Data Sync starting");
+      var dataSync = new DataSynchronizer(log, configStore);
 
       // Optionally specify a specific customer to process (this will be null if not specified)
       // If a specific customerUID is provided land fill data sync will only find projects for that customer
-      var customerUid = ConfigStore.GetValueString("LANDFILL_CUSTOMER_UID", string.Empty);
+      var customerUid = configStore.GetValueString("LANDFILL_CUSTOMER_UID", string.Empty);
 
       if (Guid.TryParse(customerUid, out var guid))
       {
         dataSync.CustomerUid = guid;
-        Log.LogDebug($"Processing CustomerUID: {guid}");
+        log.LogDebug($"Processing CustomerUID: {guid}");
       }
 
       // *************  Process the volumes for the last nn days  *************** 
-      var noOfDaysVolsVar = ConfigStore.GetValueString("NoOfDaysBackForVolumes", string.Empty);
+      var noOfDaysVolsVar = configStore.GetValueString("NoOfDaysBackForVolumes", string.Empty);
       var noOfDaysVols = -30;
 
       if (!string.IsNullOrEmpty(noOfDaysVolsVar))
@@ -56,10 +52,10 @@ namespace LandfillDatasync.netcore
       }
 
       dataSync.RunUpdateVolumesFromProductivity3D(noOfDaysVols);
-      Log.LogDebug("***** Finished Processing volumes ***** ");
+      log.LogDebug("***** Finished Processing volumes ***** ");
 
       // *************  Process the CCA for the last nn days  *************** 
-      var noOfDaysCca = ConfigStore.GetValueString("NoOfDaysBackForCCA", string.Empty);
+      var noOfDaysCca = configStore.GetValueString("NoOfDaysBackForCCA", string.Empty);
       var ccaDaysBackFill = -30;
 
       if (!string.IsNullOrEmpty(noOfDaysCca))
@@ -68,7 +64,7 @@ namespace LandfillDatasync.netcore
       }
 
       dataSync.RunUpdateCcaFromProductivity3D(ccaDaysBackFill);
-      Log.LogDebug("***** Finished Processing CCA ******");
+      log.LogDebug("***** Finished Processing CCA ******");
     }
   }
 }

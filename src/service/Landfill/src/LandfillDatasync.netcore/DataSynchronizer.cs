@@ -85,8 +85,7 @@ namespace LandfillDatasync.netcore
 
     private Dictionary<string, List<WGSPoint>> GetGeofenceBoundaries(uint id, List<string> geofenceUids)
     {
-      var geofences = geofenceUids.ToDictionary(g => g,
-        g => LandfillDb.GetGeofencePoints(g).ToList());
+      var geofences = geofenceUids.ToDictionary(g => g, g => LandfillDb.GetGeofencePoints(g).ToList());
       Log.LogDebug("Got {0} geofences to process for projectID {1}", geofenceUids.Count, id);
 
       return geofences;
