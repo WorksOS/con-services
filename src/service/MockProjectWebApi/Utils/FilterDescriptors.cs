@@ -1,5 +1,4 @@
 ﻿using MockProjectWebApi.Json;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -400,7 +399,7 @@ namespace MockProjectWebApi.Utils
         FilterUid = "8807198c-d7cd-48f5-9464-c157910dbcda",
         Name = "Filter CHCH Test",
         FilterType = FilterType.Persistent,
-        FilterJson = 
+        FilterJson =
           "{\"startUTC\":\"2017-11-05\",\"endUTC\":\"2017-11-06\",\"designUid\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"elevationType\":null,\"vibeStateOn\":null,\"polygonLL\":null,\"forwardDirection\":null,\"layerNumber\":null,\"layerType\":null}"
       };
     }
