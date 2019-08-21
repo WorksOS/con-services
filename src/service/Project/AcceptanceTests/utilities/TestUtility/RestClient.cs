@@ -53,7 +53,6 @@ namespace TestUtility
         }
       }
 
-  //    requestMessage.Headers.Remove("X-JWT-Assertion");
       requestMessage.Headers.Add("X-JWT-Assertion", string.IsNullOrEmpty(jwtToken)
                                              ? DEFAULT_JWT
                                              : jwtToken);
