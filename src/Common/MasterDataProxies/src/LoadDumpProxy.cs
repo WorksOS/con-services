@@ -30,7 +30,7 @@ namespace VSS.MasterData.Proxies
       //single asset
       //https://unifiedproductivity.myvisionlink.com/t/trimble.com/vss-unifiedproductivity/1.0/productivity/assets/4553dc81-da9d-11e7-80fe-06dbf546f101/cycles?endDate=2018-09-23&isCompleteCycle=true&startDate=2018-09-17
 
-      //Note: May not be able to use caching and GetContainedMasterDataList. Can always do directly like raptorProxy production data tile
+      //Note: May not be able to use caching and GetContainedMasterDataList. Can always do directly like productivity3dProxy production data tile
       const string urlKey = "LOADDUMP_API_URL";
       string url = configurationStore.GetValueString(urlKey);
       log.LogDebug($"{nameof(GetLoadDumpLocations)}: urlKey: {urlKey}  url: {url}");

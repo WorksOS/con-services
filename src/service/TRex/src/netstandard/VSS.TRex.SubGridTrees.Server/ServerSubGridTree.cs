@@ -35,6 +35,14 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public bool RecordSubGridFileReadingToLog { get; set; } = false;
 
+    /// <summary>
+    /// The caching strategy to be used for sub grids requested from this sub grid tree
+    /// </summary>
+    public ServerSubGridTreeCachingStrategy CachingStrategy { get; set; } = ServerSubGridTreeCachingStrategy.CacheSubGridsInTree;
+
+    /// <summary>
+    /// Record operations related to segments cloven during TAG file ingest into the log
+    /// </summary>
     private static readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
     
     public ServerSubGridTree(Guid siteModelID, StorageMutability mutability) :
@@ -50,6 +58,18 @@ namespace VSS.TRex.SubGridTrees.Server
       StorageMutability mutability) : base(numLevels, cellSize, subGridFactory)
     {
       IsMutable = mutability == StorageMutability.Mutable;
+
+      SetDefaultCachingStrategy();
+    }
+
+    /// <summary>
+    /// Default the caching strategy to be used based on the mutable versus immutable context
+    /// Mutable contexts require transient caching of processing sub grid information so default to caching sub grids within the tree
+    /// Immutable contexts represent 'PSNode' sub grid request processing contexts which rely on the underlying grid cache for caching support.
+    /// </summary>
+    private void SetDefaultCachingStrategy()
+    {
+      CachingStrategy = IsMutable ? ServerSubGridTreeCachingStrategy.CacheSubGridsInTree : ServerSubGridTreeCachingStrategy.CacheSubGridsInIgniteGridCache;
     }
 
     public override ISubGrid CreateNewSubGrid(byte level)
@@ -162,7 +182,9 @@ namespace VSS.TRex.SubGridTrees.Server
         // when there is already content in the segment directory are strictly forbidden and break immutability
         // rules for sub grids
         if (SubGrid.Dirty)
+        {
           throw new TRexSubGridIOException("Leaf sub grid directory loads may not be performed while the sub grid is dirty. The information should be taken from the cache instead.");
+        }
 
         // Load the cells into it from its file
         // Briefly lock this sub grid just for the period required to read its contents

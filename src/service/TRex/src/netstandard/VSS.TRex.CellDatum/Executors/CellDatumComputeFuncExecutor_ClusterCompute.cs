@@ -8,6 +8,7 @@ using VSS.TRex.CellDatum.GridFabric.Responses;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -48,14 +49,15 @@ namespace VSS.TRex.CellDatum.Executors
         return result;
       }
 
-      IDesign cutFillDesign = null;
+      IDesignWrapper cutFillDesign = null;
       if (arg.ReferenceDesign != null && arg.ReferenceDesign.DesignID != Guid.Empty)
       {
-        cutFillDesign = siteModel.Designs.Locate(arg.ReferenceDesign.DesignID);
-        if (cutFillDesign == null)
+        var design = siteModel.Designs.Locate(arg.ReferenceDesign.DesignID);
+        if (design == null)
         {
           throw new ArgumentException($"Design {arg.ReferenceDesign.DesignID} not a recognized design in project {arg.ProjectID}");
         }
+        cutFillDesign = new DesignWrapper(arg.ReferenceDesign, design);
       }
 
       await GetProductionData(siteModel, cutFillDesign, result, arg);
@@ -65,12 +67,12 @@ namespace VSS.TRex.CellDatum.Executors
     /// <summary>
     /// Gets the production data values for the requested cell
     /// </summary>
-    private async Task GetProductionData(ISiteModel siteModel, IDesign cutFillDesign, CellDatumResponse_ClusterCompute result, CellDatumRequestArgument_ClusterCompute arg)
+    private async Task GetProductionData(ISiteModel siteModel, IDesignWrapper cutFillDesign, CellDatumResponse_ClusterCompute result, CellDatumRequestArgument_ClusterCompute arg)
     {
       var existenceMap = siteModel.ExistenceMap;
 
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var requestors = utilities.ConstructRequestors(siteModel,
+      var requestors = utilities.ConstructRequestors(siteModel, arg.Overrides, arg.LiftParams,
         utilities.ConstructRequestorIntermediaries(siteModel, arg.Filters, true, GridDataType.CellProfile),
         AreaControlSet.CreateAreaControlSet(), existenceMap);
 
@@ -85,7 +87,7 @@ namespace VSS.TRex.CellDatum.Executors
 
       // using the cell address get the index of cell in clientGrid
       var thisSubGridOrigin = new SubGridCellAddress(arg.OTGCellX, arg.OTGCellY);
-      var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(thisSubGridOrigin, arg.Overrides, arg.LiftParams, true, true);
+      var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true);
       if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
       {
         if (requestSubGridInternalResult.requestResult == ServerRequestResult.SubGridNotFound)
@@ -106,7 +108,7 @@ namespace VSS.TRex.CellDatum.Executors
     /// <summary>
     /// Gets the required datum from the cell according to the requested display mode
     /// </summary>
-    private async Task ExtractRequiredValue(IDesign cutFillDesign, ClientCellProfileLeafSubgridRecord cell, CellDatumResponse_ClusterCompute result, CellDatumRequestArgument_ClusterCompute arg)
+    private async Task ExtractRequiredValue(IDesignWrapper cutFillDesign, ClientCellProfileLeafSubgridRecord cell, CellDatumResponse_ClusterCompute result, CellDatumRequestArgument_ClusterCompute arg)
     {
       var success = false;
       int intValue;
@@ -159,9 +161,9 @@ namespace VSS.TRex.CellDatum.Executors
           break;
         case DisplayMode.CutFill:
           result.Value = cell.Height;
-          if (arg.ReferenceDesign != null && arg.ReferenceDesign.DesignID != Guid.Empty)
+          if (cutFillDesign != null)
           {
-            var designSpotHeightResult = await cutFillDesign.GetDesignSpotHeight(arg.ProjectID, arg.ReferenceDesign.Offset, arg.NEECoords.X, arg.NEECoords.Y);
+            var designSpotHeightResult = await cutFillDesign.Design.GetDesignSpotHeight(arg.ProjectID, cutFillDesign.Offset, arg.NEECoords.X, arg.NEECoords.Y);
 
             if (designSpotHeightResult.errorCode == DesignProfilerRequestResult.OK && designSpotHeightResult.spotHeight != CellPassConsts.NullHeight)
             {

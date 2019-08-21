@@ -12,11 +12,12 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Types;
+using VSS.TRex.Types.Types;
 using Xunit;
 using LiftDetectionType = VSS.Productivity3D.Models.Enums.LiftDetectionType;
 using LiftThicknessType = VSS.Productivity3D.Models.Enums.LiftThicknessType;
 using Point = VSS.MasterData.Models.Models.Point;
-using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
+using TargetPassCountRange = VSS.Productivity3D.Productivity3D.Models.Compaction;
 
 namespace VSS.TRex.Gateway.Tests.Controllers
 {
@@ -180,7 +181,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       double minTemp, double maxTemp, bool overrideTemp,
       ushort minSpeed, ushort maxSpeed, bool overrideSpeed)
     {
-      var pc = overridePassCount ? new TargetPassCountRange(minPassCount, maxPassCount) : null;
+      var pc = overridePassCount ? new TargetPassCountRange.TargetPassCountRange(minPassCount, maxPassCount) : null;
       var temp = overrideTemp ? new TemperatureSettings(maxTemp, minTemp, overrideTemp) : null;
       var speed = overrideSpeed ? new MachineSpeedTarget(minSpeed, maxSpeed) : null;
       var overrides = new OverridingTargets(ccv, overrideCCV, minCCV, maxCCV,
@@ -214,8 +215,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var result = AutoMapperUtility.Automapper.Map<ILiftParameters>(liftSettings);
       Assert.Equal(liftSettings.CCVSummarizeTopLayerOnly, result.CCVSummarizeTopLayerOnly);
       Assert.Equal(liftSettings.MDPSummarizeTopLayerOnly, result.MDPSummarizeTopLayerOnly);
-      Assert.Equal((byte)liftSettings.CCVSummaryType, result.CCVSummaryTypes);
-      Assert.Equal((byte)liftSettings.MDPSummaryType, result.MDPSummaryTypes);
+      Assert.Equal(CCVSummaryTypes.Compaction, result.CCVSummaryTypes);
+      Assert.Equal(MDPSummaryTypes.Thickness, result.MDPSummaryTypes);
       Assert.Equal((Types.LiftDetectionType)liftSettings.LiftDetectionType, result.LiftDetectionType);
       Assert.Equal((Types.LiftThicknessType)liftSettings.LiftThicknessType, result.LiftThicknessType);
       Assert.Equal(liftSettings.LiftThicknessTarget.TargetLiftThickness, result.TargetLiftThickness);

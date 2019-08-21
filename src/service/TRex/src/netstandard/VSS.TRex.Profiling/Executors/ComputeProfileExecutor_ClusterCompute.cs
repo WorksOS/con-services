@@ -21,6 +21,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
+using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.Profiling.Executors
 {
@@ -42,7 +43,6 @@ namespace VSS.TRex.Profiling.Executors
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
-    // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
     private readonly DesignOffset Design;
@@ -56,7 +56,6 @@ namespace VSS.TRex.Profiling.Executors
     /// Constructs the profile analysis executor
     /// </summary>
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
-      // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
       DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, IOverrideParameters overrides, ILiftParameters liftParams)
     {
@@ -103,8 +102,8 @@ namespace VSS.TRex.Profiling.Executors
     /// </summary>
     public async Task<ProfileRequestResponse<T>> ExecuteAsync()
     {
-      // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
-      // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
+      LiftParams.CCVSummaryTypes |= CCVSummaryTypes.Compaction;
+      LiftParams.MDPSummaryTypes |= MDPSummaryTypes.Compaction;
 
       ProfileRequestResponse<T> Response = null;
       try
@@ -131,16 +130,15 @@ namespace VSS.TRex.Profiling.Executors
           var ProdDataExistenceMap = SiteModel.ExistenceMap;
 
           var PopulationControl = new FilteredValuePopulationControl();
-          PopulationControl.PreparePopulationControl(ProfileTypeRequired, Filters.Filters[0].AttributeFilter);
+          PopulationControl.PreparePopulationControl(ProfileTypeRequired, LiftParams, Filters.Filters[0].AttributeFilter);
 
-          IDesign design = null;
+          IDesignWrapper designWrapper = null;
           if (Design != null && Design.DesignID != Guid.Empty)
           {
-
-            design = SiteModel.Designs.Locate(Design.DesignID);
-
+            var design = SiteModel.Designs.Locate(Design.DesignID);
             if (design == null)
               throw new ArgumentException($"Design {Design.DesignID} is unknown in project {SiteModel.ID}");
+            designWrapper = new DesignWrapper(Design, design);
           }
 
           Log.LogInformation("Creating IProfileBuilder");
@@ -152,8 +150,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, 
-            new DesignWrapper(Design, design),
-            /* todo elevation range design + offset: */null, PopulationControl, 
+            designWrapper, PopulationControl, 
             new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides, LiftParams);
 
           Log.LogInformation("Building cell profile");

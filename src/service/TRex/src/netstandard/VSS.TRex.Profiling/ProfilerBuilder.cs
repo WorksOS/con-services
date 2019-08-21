@@ -49,7 +49,6 @@ namespace VSS.TRex.Profiling
       GridDataType gridDataType,
       IFilterSet filterSet,
       IDesignWrapper referenceDesignWrapper,
-      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
       VolumeComputationType volumeType, 
@@ -62,7 +61,7 @@ namespace VSS.TRex.Profiling
         CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, filterSet, referenceDesignWrapper, slicerToolUsed);
 
         CellProfileAnalyzer = factory.NewCellProfileAnalyzer(
-          profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, 
+          profileStyle, siteModel, productionDataExistenceMap, filterSet, 
           referenceDesignWrapper, CellLiftBuilder, volumeType, overrides, liftParams);
     }
   }

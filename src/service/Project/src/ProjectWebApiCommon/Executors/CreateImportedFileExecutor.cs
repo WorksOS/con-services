@@ -79,14 +79,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createimportedfile.ProjectUid,
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileDescriptor,
           createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
-          log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo);
+          log, customHeaders, serviceExceptionHandler, productivity3dProxy, projectRepo);
 
         var dxfFileName = createimportedfile.DataOceanFileName;
         if (createimportedfile.ImportedFileType == ImportedFileType.Alignment)
         {
           //Create DXF file for alignment center line
           dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
-            customerUid, createimportedfile.ProjectUid, createImportedFileEvent.ImportedFileUID, raptorProxy, customHeaders, log,
+            customerUid, createimportedfile.ProjectUid, createImportedFileEvent.ImportedFileUID, productivity3dProxy, customHeaders, log,
             serviceExceptionHandler, authn, dataOceanClient, configStore, createimportedfile.DataOceanFileName, createimportedfile.DataOceanRootFolder);
         }
 

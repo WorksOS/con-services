@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -20,17 +21,6 @@ namespace VSS.TRex.Pipelines.Factories
     /// Constructs the context of a pipelined processor based on the project, filters and other common criteria
     /// of pipelined requests
     /// </summary>
-    /// <param name="requestDescriptor"></param>
-    /// <param name="dataModelID"></param>
-    /// <param name="gridDataType"></param>
-    /// <param name="response"></param>
-    /// <param name="filters"></param>
-    /// <param name="cutFillDesign"></param>
-    /// <param name="task"></param>
-    /// <param name="pipeline"></param>
-    /// <param name="requestAnalyser"></param>
-    /// <param name="requireSurveyedSurfaceInformation"></param>
-    /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
     public async Task<IPipelineProcessor> NewInstance(Guid requestDescriptor,
       Guid dataModelID,
@@ -43,12 +33,13 @@ namespace VSS.TRex.Pipelines.Factories
       IRequestAnalyser requestAnalyser,
       bool requireSurveyedSurfaceInformation,
       bool requestRequiresAccessToDesignFileExistenceMap,
-      BoundingIntegerExtent2D overrideSpatialCellRestriction)
+      BoundingIntegerExtent2D overrideSpatialCellRestriction,
+      ILiftParameters liftParams)
     {
       var pipelineProcessor = NewInstanceNoBuild
         (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesign, 
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
-        overrideSpatialCellRestriction);
+        overrideSpatialCellRestriction, liftParams);
 
       if (!await pipelineProcessor.BuildAsync())
       {
@@ -63,17 +54,6 @@ namespace VSS.TRex.Pipelines.Factories
     /// Constructs the context of a pipelined processor based on the project, filters and other common criteria
     /// of pipelined requests, but does not perform the build action on the pipeline processor
     /// </summary>
-    /// <param name="requestDescriptor"></param>
-    /// <param name="dataModelID"></param>
-    /// <param name="gridDataType"></param>
-    /// <param name="response"></param>
-    /// <param name="filters"></param>
-    /// <param name="cutFillDesign"></param>
-    /// <param name="task"></param>
-    /// <param name="pipeline"></param>
-    /// <param name="requestAnalyser"></param>
-    /// <param name="requireSurveyedSurfaceInformation"></param>
-    /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
     public IPipelineProcessor NewInstanceNoBuild(Guid requestDescriptor,
       Guid dataModelID,
@@ -86,12 +66,13 @@ namespace VSS.TRex.Pipelines.Factories
       IRequestAnalyser requestAnalyser,
       bool requireSurveyedSurfaceInformation,
       bool requestRequiresAccessToDesignFileExistenceMap,
-      BoundingIntegerExtent2D overrideSpatialCellRestriction)
+      BoundingIntegerExtent2D overrideSpatialCellRestriction,
+      ILiftParameters liftParams)
     {
       return new PipelineProcessor
         (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesign,
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
-        overrideSpatialCellRestriction);
+        overrideSpatialCellRestriction, liftParams);
     }
   }
 }

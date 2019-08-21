@@ -4,19 +4,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity.Push.Models.Notifications.Changes;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -41,11 +40,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     public ProjectSettingsV4Controller(ILoggerFactory loggerFactory, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
+      IProductivity3dProxy productivity3DProxy, ISubscriptionProxy subscriptionProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IRequestFactory requestFactory, INotificationHubClient notificationHubClient
       )
-      : base(loggerFactory, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo)
+      : base(loggerFactory, configStore, serviceExceptionHandler, producer, productivity3DProxy, projectRepo)
     {
       this.requestFactory = requestFactory;
       this.notificationHubClient = notificationHubClient;
@@ -101,7 +100,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(loggerFactory, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, null, null, null, null,
+            Productivity3DProxy, null, null, null, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
@@ -137,7 +136,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(loggerFactory, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, null, null, null, null,
+            Productivity3DProxy, null, null, null, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;

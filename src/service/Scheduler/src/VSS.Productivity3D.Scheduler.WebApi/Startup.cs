@@ -33,6 +33,8 @@ using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.Productivity3D.Scheduler.WebApi.JobRunner;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
@@ -89,7 +91,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
       services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
       services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();
-      services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
       services.AddTransient<IAssetResolverProxy, AssetResolverProxy>();
 
       services.AddOpenTracing(builder =>

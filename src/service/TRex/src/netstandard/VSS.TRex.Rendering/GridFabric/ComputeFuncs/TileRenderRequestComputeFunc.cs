@@ -55,7 +55,8 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
              arg.ReferenceDesign,
              arg.Palette,
              Color.Black,
-             arg.TRexNodeID);
+             arg.TRexNodeID,
+             arg.LiftParams);
 
         Log.LogInformation("Executing render.ExecuteAsync()");
 

@@ -70,18 +70,20 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
       var task = DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.GriddedReport) as GriddedReportTask;
 
-      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
-        dataModelID: _griddedReportRequestArgument.ProjectID,
-        gridDataType: GridDataType.CellProfile,
-        response: GriddedReportRequestResponse,
-        filters: _griddedReportRequestArgument.Filters,
-        cutFillDesign: _griddedReportRequestArgument.ReferenceDesign,
-        task: task,
-        pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-        requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-        requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
-        requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesign != null && _griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty,
-        overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
+      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+        requestDescriptor,
+        _griddedReportRequestArgument.ProjectID,
+        GridDataType.CellProfile,
+        GriddedReportRequestResponse,
+        _griddedReportRequestArgument.Filters,
+        _griddedReportRequestArgument.ReferenceDesign,
+        task,
+        DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+        DIContext.Obtain<IRequestAnalyser>(),
+        Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
+        _griddedReportRequestArgument.ReferenceDesign != null && _griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty,
+        BoundingIntegerExtent2D.Inverted(),
+        _griddedReportRequestArgument.LiftParams
       );
 
       // Set the grid TRexTask parameters for progressive processing

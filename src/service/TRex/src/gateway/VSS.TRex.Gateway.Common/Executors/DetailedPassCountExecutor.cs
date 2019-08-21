@@ -14,7 +14,7 @@ using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
-using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
+using TargetPassCountRange = VSS.Productivity3D.Productivity3D.Models.Compaction.TargetPassCountRange;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {

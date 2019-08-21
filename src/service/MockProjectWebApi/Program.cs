@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Serilog.Extensions;
 
 namespace MockProjectWebApi
@@ -50,12 +51,14 @@ namespace MockProjectWebApi
         .UseUrls("http://0.0.0.0:5001")
         .Build();
 
+      var configuration = host.Services.GetRequiredService<IConfigurationStore>();
+
       var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
       log.LogInformation("Productivity3D service starting");
       log.LogInformation($"Num Libuv Threads = {(libuvConfigured ? libuvThreads.ToString() : "Default")}");
 
-      if (int.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out var maxWorkers) &&
-          int.TryParse(Environment.GetEnvironmentVariable(MAX_IO_THREADS), out var maxIo))
+      if (int.TryParse(configuration.GetValueString(MAX_WORKER_THREADS), out var maxWorkers) &&
+          int.TryParse(configuration.GetValueString(MAX_IO_THREADS), out var maxIo))
       {
         ThreadPool.SetMaxThreads(maxWorkers, maxIo);
         log.LogInformation($"Max Worker Threads = {maxWorkers}");
@@ -67,8 +70,8 @@ namespace MockProjectWebApi
         log.LogInformation("Max IO Threads = Default");
       }
 
-      if (int.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out var minWorkers) &&
-          int.TryParse(Environment.GetEnvironmentVariable(MIN_IO_THREADS), out var minIo))
+      if (int.TryParse(configuration.GetValueString(MIN_WORKER_THREADS), out var minWorkers) &&
+          int.TryParse(configuration.GetValueString(MIN_IO_THREADS), out var minIo))
       {
         ThreadPool.SetMinThreads(minWorkers, minIo);
         log.LogInformation($"Min Worker Threads = {minWorkers}");
@@ -80,7 +83,7 @@ namespace MockProjectWebApi
         log.LogInformation("Min IO Threads = Default");
       }
 
-      if (int.TryParse(Environment.GetEnvironmentVariable(DEFAULT_CONNECTION_LIMIT), out var connectionLimit))
+      if (int.TryParse(configuration.GetValueString(DEFAULT_CONNECTION_LIMIT), out var connectionLimit))
       {
         //Check how many requests we can execute
         ServicePointManager.DefaultConnectionLimit = connectionLimit;

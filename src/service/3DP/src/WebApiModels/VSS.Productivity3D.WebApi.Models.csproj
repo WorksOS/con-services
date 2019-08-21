@@ -42,6 +42,7 @@
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\Models\VSS.Productivity.Push.Models\VSS.Productivity.Push.Models.csproj" />
+    <ProjectReference Include="..\..\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
   </ItemGroup>
 
@@ -73,14 +74,7 @@
     <Compile Remove=".\Report\Executors\ConfigExecutor.cs" />
     <Compile Remove=".\Report\Executors\ExportGridCSVExecutor.cs" />
     <Compile Remove=".\Report\Executors\SummaryThicknessExecutor.cs" />
-    <Compile Remove=".\Report\Executors\SummaryVolumesExecutor.cs" />
     <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

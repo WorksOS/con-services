@@ -14,6 +14,7 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 
@@ -26,10 +27,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetBoundariesExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IFileImportProxy fileImportProxy, 
+      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy, 
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository,
       IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy)
-       : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, 
+       : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3DProxy, 
          fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
     {
     }

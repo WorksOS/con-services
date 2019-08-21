@@ -7,6 +7,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
@@ -424,8 +425,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       var settings = AutoMapperUtility.Automapper.Map<LiftSettings>(lbs);
       Assert.AreEqual(lbs.CCVSummarizeTopLayerOnly, settings.CCVSummarizeTopLayerOnly);
       Assert.AreEqual(lbs.MDPSummarizeTopLayerOnly, settings.MDPSummarizeTopLayerOnly);
-      Assert.AreEqual(SummaryType.Compaction, settings.CCVSummaryType);
-      Assert.AreEqual(SummaryType.Compaction, settings.MDPSummaryType);
+      Assert.IsNull(settings.CCVSummaryType);
+      Assert.IsNull(settings.MDPSummaryType);
       Assert.AreEqual(lbs.FirstPassThickness, settings.FirstPassThickness);
       Assert.AreEqual(lbs.LiftDetectionType, settings.LiftDetectionType);
       Assert.AreEqual(lbs.LiftThicknessType, settings.LiftThicknessType);
@@ -449,7 +450,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(lbs.CCVSummarizeTopLayerOnly, settings.CCVSummarizeTopLayerOnly);
       Assert.AreEqual(lbs.MDPSummarizeTopLayerOnly, settings.MDPSummarizeTopLayerOnly);
       Assert.AreEqual((SummaryType)lbs.CCvSummaryType, settings.CCVSummaryType);
-      Assert.AreEqual(SummaryType.Compaction, settings.MDPSummaryType);
+      Assert.IsNull(settings.MDPSummaryType);
       Assert.AreEqual(lbs.FirstPassThickness, settings.FirstPassThickness);
       Assert.AreEqual(lbs.LiftDetectionType, settings.LiftDetectionType);
       Assert.AreEqual(lbs.LiftThicknessType, settings.LiftThicknessType);

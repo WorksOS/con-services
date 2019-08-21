@@ -30,13 +30,13 @@ namespace VSS.Productivity3D.Models.Models
     /// Selects mode how to summarize CCV data across layers.
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    public SummaryType CCVSummaryType { get; private set; }
+    public SummaryType? CCVSummaryType { get; private set; }
 
     /// <summary>
     /// Selects mode how to summarize MDP data across layers.
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    public SummaryType MDPSummaryType { get; private set; }
+    public SummaryType? MDPSummaryType { get; private set; }
 
     /// <summary>
     /// The assumed thickness of material under the first pass of a machine over the ground in meters.
@@ -117,8 +117,8 @@ namespace VSS.Productivity3D.Models.Models
     public LiftSettings(
       bool ccvSummarizeTopLayerOnly,
       bool mdpSummarizeTopLayerOnly,
-      SummaryType ccvSummaryType,
-      SummaryType mdpSummaryType,
+      SummaryType? ccvSummaryType,
+      SummaryType? mdpSummaryType,
       float firstPassThickness,
       LiftDetectionType liftDetectionType,
       LiftThicknessType liftThicknessType,

@@ -10,6 +10,7 @@ using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {

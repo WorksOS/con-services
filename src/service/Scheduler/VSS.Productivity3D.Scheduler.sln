@@ -1,10 +1,15 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28922.388
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.705
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0B4DA880-E91B-44E8-8B2E-FC0FA2A747B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.WebApi", "src\VSS.Productivity3D.Scheduler.WebApi\VSS.Productivity3D.Scheduler.WebApi.csproj", "{83DB814B-A818-4E94-9C8F-9CE14608273A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2BFEDB20-E2A7-4AE3-8354-D9C93B8E06E5} = {2BFEDB20-E2A7-4AE3-8354-D9C93B8E06E5}
+		{6C209F72-4239-4633-8766-851DAFE4A307} = {6C209F72-4239-4633-8766-851DAFE4A307}
+		{6B638194-3E52-4BC6-8B96-D556534D4582} = {6B638194-3E52-4BC6-8B96-D556534D4582}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Tests", "test\UnitTests\VSS.Productivity3D.Scheduler.Tests\VSS.Productivity3D.Scheduler.Tests.csproj", "{258A2C3D-AE74-4284-9907-3F96E3ECBBD2}"
 EndProject
@@ -64,7 +69,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Schedule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob", "src\VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob\VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob.csproj", "{B0A36461-6AE5-4331-B763-8D754B9B00FA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TRex", "TRex", "{E5790FFB-C367-4525-97A5-4FD6DE7DA1E7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TRex Service", "TRex Service", "{E5790FFB-C367-4525-97A5-4FD6DE7DA1E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gateway.Abstractions", "..\TRex\src\interfaces\VSS.TRex.ConnectedSite.Gateway.Abstractions\VSS.TRex.ConnectedSite.Gateway.Abstractions.csproj", "{11D809A4-8A7E-4C78-B1DE-373A299FCD28}"
 EndProject
@@ -90,6 +95,20 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetMgmt.Abstractions", "..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj", "{76EAADE3-36C9-4E73-B2B6-605C13DBB4C6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{3D87C2E8-940A-4B3F-82D9-29CFA676ED80}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{ADD95034-49B3-44AD-B2C4-ACECB9FDBD6A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Productivity3D Service", "Productivity3D Service", "{0FF9EF2F-33E2-437F-B90A-84A08ABB2A0A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Abstractions", "..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj", "{6C209F72-4239-4633-8766-851DAFE4A307}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Models", "..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj", "{2BFEDB20-E2A7-4AE3-8354-D9C93B8E06E5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Proxy", "..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj", "{6B638194-3E52-4BC6-8B96-D556534D4582}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Service", "Project Service", "{5FEB4705-277E-4FFE-B729-00407BF385AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Abstractions", "..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj", "{666395D3-62BD-4986-953D-7BCE501762CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -237,6 +256,26 @@ Global
 		{3D87C2E8-940A-4B3F-82D9-29CFA676ED80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D87C2E8-940A-4B3F-82D9-29CFA676ED80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D87C2E8-940A-4B3F-82D9-29CFA676ED80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADD95034-49B3-44AD-B2C4-ACECB9FDBD6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADD95034-49B3-44AD-B2C4-ACECB9FDBD6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADD95034-49B3-44AD-B2C4-ACECB9FDBD6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADD95034-49B3-44AD-B2C4-ACECB9FDBD6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C209F72-4239-4633-8766-851DAFE4A307}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C209F72-4239-4633-8766-851DAFE4A307}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C209F72-4239-4633-8766-851DAFE4A307}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C209F72-4239-4633-8766-851DAFE4A307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BFEDB20-E2A7-4AE3-8354-D9C93B8E06E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BFEDB20-E2A7-4AE3-8354-D9C93B8E06E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BFEDB20-E2A7-4AE3-8354-D9C93B8E06E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BFEDB20-E2A7-4AE3-8354-D9C93B8E06E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B638194-3E52-4BC6-8B96-D556534D4582}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B638194-3E52-4BC6-8B96-D556534D4582}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B638194-3E52-4BC6-8B96-D556534D4582}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B638194-3E52-4BC6-8B96-D556534D4582}.Release|Any CPU.Build.0 = Release|Any CPU
+		{666395D3-62BD-4986-953D-7BCE501762CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{666395D3-62BD-4986-953D-7BCE501762CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{666395D3-62BD-4986-953D-7BCE501762CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{666395D3-62BD-4986-953D-7BCE501762CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -281,6 +320,13 @@ Global
 		{72B39F65-E6F4-4FEB-A7A1-533115E1668A} = {2AD31413-C593-46F0-B566-45E61360569D}
 		{76EAADE3-36C9-4E73-B2B6-605C13DBB4C6} = {2AD31413-C593-46F0-B566-45E61360569D}
 		{3D87C2E8-940A-4B3F-82D9-29CFA676ED80} = {83D87813-5EFD-4006-BC0C-D77D279EEAE3}
+		{ADD95034-49B3-44AD-B2C4-ACECB9FDBD6A} = {83D87813-5EFD-4006-BC0C-D77D279EEAE3}
+		{0FF9EF2F-33E2-437F-B90A-84A08ABB2A0A} = {07B2A0F4-2234-4EBB-8921-137B7056E395}
+		{6C209F72-4239-4633-8766-851DAFE4A307} = {0FF9EF2F-33E2-437F-B90A-84A08ABB2A0A}
+		{2BFEDB20-E2A7-4AE3-8354-D9C93B8E06E5} = {0FF9EF2F-33E2-437F-B90A-84A08ABB2A0A}
+		{6B638194-3E52-4BC6-8B96-D556534D4582} = {0FF9EF2F-33E2-437F-B90A-84A08ABB2A0A}
+		{5FEB4705-277E-4FFE-B729-00407BF385AB} = {07B2A0F4-2234-4EBB-8921-137B7056E395}
+		{666395D3-62BD-4986-953D-7BCE501762CB} = {5FEB4705-277E-4FFE-B729-00407BF385AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CC1F5C8-4B54-4A38-8EA5-D5DB089670E1}

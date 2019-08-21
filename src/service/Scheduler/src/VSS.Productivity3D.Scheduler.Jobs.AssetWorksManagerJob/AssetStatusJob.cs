@@ -12,6 +12,7 @@ using VSS.Productivity.Push.Models;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Scheduler.Abstractions;
 
@@ -26,20 +27,20 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
     private readonly IAssetStatusServerHubClient assetStatusServerHubClient;
     private readonly IFleetAssetDetailsProxy assetDetailsProxy;
     private readonly IFleetAssetSummaryProxy assetSummaryProxy;
-    private readonly IRaptorProxy raptorProxy;
+    private readonly IProductivity3dProxy productivity3DProxy;
     private readonly IAssetResolverProxy assetResolverProxy;
     private readonly ILogger log;
 
     private List<AssetUpdateSubscriptionModel> subscriptions;
 
     public AssetStatusJob(IAssetStatusServerHubClient assetStatusServerHubClient,
-      IFleetAssetDetailsProxy assetDetailsProxy, IFleetAssetSummaryProxy assetSummaryProxy, IRaptorProxy raptorProxy,
+      IFleetAssetDetailsProxy assetDetailsProxy, IFleetAssetSummaryProxy assetSummaryProxy, IProductivity3dProxy productivity3DProxy,
       IAssetResolverProxy assetResolverProxy, ILoggerFactory logger)
     {
       this.assetStatusServerHubClient = assetStatusServerHubClient;
       log = logger.CreateLogger<AssetStatusJob>();
       this.assetDetailsProxy = assetDetailsProxy;
-      this.raptorProxy = raptorProxy;
+      this.productivity3DProxy = productivity3DProxy;
       this.assetSummaryProxy = assetSummaryProxy;
       this.assetResolverProxy = assetResolverProxy;
     }
@@ -72,7 +73,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
         //Get machines
         //https://3dproductivity.myvisionlink.com/t/trimble.com/vss-3dproductivity/2.0/projects/a530371d-20a1-40cf-99ce-e11c54140be4/machines
         var route = $"/projects/{subscriptionModel.ProjectUid}/machines";
-        var machines = await raptorProxy.ExecuteGenericV2Request<Machine3DStatuses>(route,
+        var machines = await productivity3DProxy.ExecuteGenericV2Request<Machine3DStatuses>(route,
           HttpMethod.Get,
           null,
           subscriptionModel.Headers());

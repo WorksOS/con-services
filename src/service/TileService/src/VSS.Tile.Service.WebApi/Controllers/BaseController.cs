@@ -13,15 +13,16 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
-using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Serilog.Extensions;
 using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Models;
@@ -34,7 +35,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
   public class BaseController<T> : Controller where T : BaseController<T>
   {
     private readonly IPreferenceProxy prefProxy;
-    private readonly IRaptorProxy raptorProxy;
+    private readonly IProductivity3dProxy productivity3dProxy;
     protected readonly IFileImportProxy fileImportProxy;
     private readonly IMapTileGenerator tileGenerator;
     protected readonly IGeofenceProxy geofenceProxy;
@@ -66,11 +67,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy, 
-      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore, 
+    protected BaseController(IProductivity3dProxy productivity3DProxy, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy, 
+      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore,
       IBoundingBoxHelper boundingBoxHelper, ITPaaSApplicationAuthentication authn)
     {
-      this.raptorProxy = raptorProxy;
+      this.productivity3dProxy = productivity3DProxy;
       this.prefProxy = prefProxy;
       this.fileImportProxy = fileImportProxy;
       this.tileGenerator = tileGenerator;
@@ -157,7 +158,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Get the generated tile for the request
     /// </summary>
     protected async Task<FileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? baseUid, Guid? topUid, VolumeCalcType? volumeCalcType,
-      TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType, DisplayMode? mode, string language, bool adjustBoundingBox, bool explicitFilters=false)
+      TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType, DisplayMode? mode, string language, bool adjustBoundingBox, bool explicitFilters = false)
     {
       var overlayTypes = overlays.ToList();
       if (overlays.Contains(TileOverlayType.AllOverlays))
@@ -174,23 +175,23 @@ namespace VSS.Tile.Service.WebApi.Controllers
         : new List<FileData>();
       var haveFilter = filterUid.HasValue || baseUid.HasValue || topUid.HasValue;
       var customFilterBoundary = haveFilter && overlayTypes.Contains(TileOverlayType.FilterCustomBoundary)
-        ? (await raptorProxy.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Polygon, CustomHeaders)).PointsList
+        ? (await productivity3dProxy.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Polygon, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
       var designFilterBoundary = haveFilter && overlayTypes.Contains(TileOverlayType.FilterDesignBoundary)
-        ? (await raptorProxy.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Design, CustomHeaders)).PointsList
+        ? (await productivity3dProxy.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Design, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
       var alignmentFilterBoundary = haveFilter && overlayTypes.Contains(TileOverlayType.FilterAlignmentBoundary)
-        ? (await raptorProxy.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Alignment, CustomHeaders)).PointsList
+        ? (await productivity3dProxy.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Alignment, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
       var designUid = !volumeCalcType.HasValue || volumeCalcType == VolumeCalcType.None ||
                       volumeCalcType == VolumeCalcType.GroundToGround
         ? cutFillDesignUid
         : (volumeCalcType == VolumeCalcType.DesignToGround ? baseUid : topUid);
       var designBoundary = designUid.HasValue && overlayTypes.Contains(TileOverlayType.CutFillDesignBoundary)
-        ? (await raptorProxy.GetDesignBoundaryPoints(projectUid, designUid.Value, CustomHeaders)).PointsList
+        ? (await productivity3dProxy.GetDesignBoundaryPoints(projectUid, designUid.Value, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
       var alignmentPoints = overlayTypes.Contains(TileOverlayType.Alignments)
-        ? (await raptorProxy.GetAlignmentPointsList(projectUid, CustomHeaders)).PointsList
+        ? (await productivity3dProxy.GetAlignmentPointsList(projectUid, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
 
       language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
@@ -201,15 +202,15 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
       if (string.IsNullOrEmpty(bbox))
       {
-        bbox = await raptorProxy.GetBoundingBox(projectUid, overlays, filterUid, cutFillDesignUid, baseUid, topUid,
+        bbox = await productivity3dProxy.GetBoundingBox(projectUid, overlays, filterUid, cutFillDesignUid, baseUid, topUid,
           volumeCalcType, CustomHeaders);
       }
 
       var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.ProjectBoundary), adjustBoundingBox);
 
-      var request = TileGenerationRequest.CreateTileGenerationRequest(filterUid, baseUid, topUid, 
-        cutFillDesignUid, volumeCalcType, geofences, alignmentPoints, customFilterBoundary, 
-        designFilterBoundary, alignmentFilterBoundary, designBoundary, dxfFiles, overlayTypes, 
+      var request = TileGenerationRequest.CreateTileGenerationRequest(filterUid, baseUid, topUid,
+        cutFillDesignUid, volumeCalcType, geofences, alignmentPoints, customFilterBoundary,
+        designFilterBoundary, alignmentFilterBoundary, designBoundary, dxfFiles, overlayTypes,
         width, height, mapType, mode, language, project, mapParameters, CustomHeaders, null, explicitFilters);
 
       request.Validate();
@@ -225,9 +226,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Get the generated tile for the request. Used for geofence thumbnails.
     /// </summary>
     protected async Task<FileResult> GetGeneratedTile(GeofenceData geofence,
-      TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType, 
+      TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType,
       string language, bool adjustBoundingBox)
-    {   
+    {
       var byteResult = await tileCache.GetOrCreateAsync<byte[]>(geofence.GeofenceUID, async entry =>
       {
         entry.SlidingExpiration = tileCacheExpiration;
@@ -239,8 +240,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
         var geofences = new List<GeofenceData> { geofence };
         var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.GeofenceBoundary), adjustBoundingBox);
 
-        var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null, 
-          geofences, null, null, null, null, null, null, overlayTypes, width, height, mapType, null, 
+        var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null,
+          geofences, null, null, null, null, null, null, overlayTypes, width, height, mapType, null,
           language, null, mapParameters, CustomHeaders, null);
 
         request.Validate();
@@ -267,7 +268,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.GeofenceBoundary), adjustBoundingBox);
 
       var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null, null,
-        null, null, null, null, null, null, overlayTypes, width, height, mapType, null, language, null, 
+        null, null, null, null, null, null, overlayTypes, width, height, mapType, null, language, null,
         mapParameters, CustomHeaders, geofencePoints);
 
       request.Validate();
@@ -284,8 +285,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
     private TimeSpan GetCacheExpiration(IConfigurationStore configurationStore)
     {
       string cacheLife = configurationStore.GetValueString("TILE_CACHE_LIFE") ?? "00:15:00";
-      TimeSpan result;
-      if (!TimeSpan.TryParse(cacheLife, out result))
+
+      if (!TimeSpan.TryParse(cacheLife, out var result))
       {
         result = new TimeSpan(0, 15, 0);
       }
@@ -300,9 +301,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// </summary>
     private async Task<UserPreferenceData> GetShortCachedUserPreferences()
     {
-      using (await _lock.LockAsync(((TilePrincipal) User).UserEmail))
+      using (await _lock.LockAsync(((TilePrincipal)User).UserEmail))
       {
-        var userPreferences = await prefProxy.GetShortCachedUserPreferences(((TilePrincipal) User).UserEmail,
+        var userPreferences = await prefProxy.GetShortCachedUserPreferences(((TilePrincipal)User).UserEmail,
           TimeSpan.FromSeconds(10), CustomHeaders);
         if (userPreferences == null)
         {
@@ -349,7 +350,5 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Gets the customer uid from the context
     /// </summary>
     protected string GetCustomerUid => (User as TilePrincipal).CustomerUid;
-
   }
-
 }

@@ -11,6 +11,8 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
+using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Volumes.Executors
@@ -33,8 +35,6 @@ namespace VSS.TRex.Volumes.Executors
         /// The volume computation method to use when calculating volume information
         /// </summary>
         public VolumeComputationType VolumeType;
-
-        // FLiftBuildSettings : TICLiftBuildSettings;
 
         /// <summary>
         /// BaseFilter and TopFilter reference two sets of filter settings
@@ -90,6 +90,11 @@ namespace VSS.TRex.Volumes.Executors
         private ISiteModel siteModel;
 
         /// <summary>
+        /// Parameters for lift analysis
+        /// </summary>
+        private ILiftParameters LiftParams;
+
+        /// <summary>
         /// Performs functional initialization of ComputeVolumes state that is dependent on the initial state
         /// set via the constructor
         /// </summary>
@@ -122,37 +127,25 @@ namespace VSS.TRex.Volumes.Executors
 
             if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
             {
-              ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal;
-              ComputeVolumes.ActiveDesignOffset = ComputeVolumes.RefOriginalOffset;
+              ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal != null ? new DesignWrapper(BaseDesign, ComputeVolumes.RefOriginal) : null;
             }
             else
             {
-              ComputeVolumes.ActiveDesign = ComputeVolumes.ToSelectionType == ProdReportSelectionType.Surface
-                ? ComputeVolumes.RefDesign
+              ComputeVolumes.ActiveDesign = ComputeVolumes.ToSelectionType == ProdReportSelectionType.Surface && ComputeVolumes.RefDesign != null
+                ? new DesignWrapper(TopDesign, ComputeVolumes.RefDesign) 
                 : null;
-              ComputeVolumes.ActiveDesignOffset = ComputeVolumes.RefDesignOffset;
             }
 
             // Assign the active design into the aggregator for use
             Aggregator.ActiveDesign = ComputeVolumes.ActiveDesign;
-            Aggregator.ActiveDesignOffset = ComputeVolumes.ActiveDesignOffset;
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="siteModelID"></param>
-        /// <param name="volumeType"></param>
-        /// <param name="baseFilter"></param>
-        /// <param name="topFilter"></param>
-        /// <param name="baseDesignID"></param>
-        /// <param name="topDesignID"></param>
-        /// <param name="additionalSpatialFilter"></param>
-        /// <param name="cutTolerance"></param>
-        /// <param name="fillTolerance"></param>
         public ComputeSimpleVolumes_Coordinator(Guid siteModelID,
                                     //ExternalDescriptor : TASNodeRequestDescriptor;
-                                    //LiftBuildSettings : TICLiftBuildSettings;
+                                    ILiftParameters liftParams,
                                     VolumeComputationType volumeType,
                                     ICombinedFilter baseFilter,
                                     ICombinedFilter topFilter,
@@ -171,6 +164,7 @@ namespace VSS.TRex.Volumes.Executors
             AdditionalSpatialFilter = additionalSpatialFilter;
             CutTolerance = cutTolerance;
             FillTolerance = fillTolerance;
+            LiftParams = liftParams;
         }
 
         /// <summary>
@@ -232,7 +226,7 @@ namespace VSS.TRex.Volumes.Executors
                     {
                         RequiresSerialisation = true,
                         SiteModelID = SiteModelID,
-                        //LiftBuildSettings := LiftBuildSettings;
+                        LiftParams = LiftParams,
                         CellSize = siteModel.CellSize,
                         VolumeType = VolumeType,
                         CutTolerance = CutTolerance,
@@ -247,7 +241,8 @@ namespace VSS.TRex.Volumes.Executors
                         Aggregator = Aggregator,
                         BaseFilter = BaseFilter,
                         TopFilter = TopFilter,
-                        VolumeType = VolumeType
+                        VolumeType = VolumeType,
+                        LiftParams = LiftParams
                     };
 
                     InitialiseVolumesCalculator(computeVolumes);

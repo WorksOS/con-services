@@ -12,6 +12,8 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
@@ -48,7 +50,7 @@ namespace VSS.Productivity3D.Now3D
 
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
 

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
+using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
@@ -19,7 +19,6 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling
 {
@@ -44,6 +43,7 @@ namespace VSS.TRex.Profiling
 
     private readonly ICellPassAttributeFilter PassFilter;
     private readonly ICellPassAttributeFilterProcessingAnnex PassFilterAnnex;
+    private readonly IDesignWrapper PassFilterElevationRangeDesign;
 
     private readonly ICellSpatialFilter CellFilter;
 
@@ -53,8 +53,6 @@ namespace VSS.TRex.Profiling
     private readonly ICellLiftBuilder CellLiftBuilder;
 
     private ProfileCell ProfileCell;
-    private IOverrideParameters Overrides;
-    private ILiftParameters LiftParams;
 
     private CellProfileAnalyzer()
     {}
@@ -65,25 +63,29 @@ namespace VSS.TRex.Profiling
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <param name="overrides"></param>
     public CellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
-      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
       IOverrideParameters overrides,
       ILiftParameters liftParams) 
-      : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper)
+      : base(siteModel, pDExistenceMap, filterSet, overrides, liftParams)
     {
       CellLiftBuilder = cellLiftBuilder;
 
       PassFilter = filterSet.Filters[0].AttributeFilter;
+      if (PassFilter.HasElevationRangeFilter && PassFilter.ElevationRangeDesign.DesignID != Guid.Empty)
+      {
+        var design = siteModel.Designs.Locate(PassFilter.ElevationRangeDesign.DesignID);
+        if (design == null)
+          Log.LogError($"ElevationRangeDesign {PassFilter.ElevationRangeDesign.DesignID} is unknown in project {siteModel.ID}");
+        else
+          PassFilterElevationRangeDesign = new DesignWrapper(PassFilter.ElevationRangeDesign, design);
+      }
       PassFilterAnnex = new CellPassAttributeFilterProcessingAnnex();
       CellFilter = filterSet.Filters[0].SpatialFilter;
-      Overrides = overrides;
-      LiftParams = liftParams;
     }
 
     /// <summary>
@@ -485,7 +487,7 @@ namespace VSS.TRex.Profiling
             }
           }
 
-          var initialiseFilterContextResult = await LiftFilterMask<ProfileCell>.InitialiseFilterContext(SiteModel, PassFilter, PassFilterAnnex, ProfileCell, CellPassFilter_ElevationRangeDesignWrapper?.Design);
+          var initialiseFilterContextResult = await LiftFilterMask<ProfileCell>.InitialiseFilterContext(SiteModel, PassFilter, PassFilterAnnex, ProfileCell, PassFilterElevationRangeDesign);
           if (!initialiseFilterContextResult.executionResult)
           {
             if (initialiseFilterContextResult.filterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
@@ -519,7 +521,7 @@ namespace VSS.TRex.Profiling
             (byte) (profileCells[i].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
           PassFilterAnnex.InitializeFilteringForCell(PassFilter, cellPassIterator.CellX, cellPassIterator.CellY);
 
-          if (CellLiftBuilder.Build(ProfileCell, LiftParams,/*todo liftParams, */ null, null, cellPassIterator, false))
+          if (CellLiftBuilder.Build(ProfileCell, LiftParams, null, null, cellPassIterator, false))
           {
             TopMostLayerPassCount = CellLiftBuilder.FilteredPassCountOfTopMostLayer;
             TopMostLayerCompactionHalfPassCount = CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;

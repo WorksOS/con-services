@@ -38,5 +38,14 @@ namespace VSS.TRex.Tests.Rendering.Palettes
       palette.PaletteTransitions[4].Value.Should().Be(100);
       palette.PaletteTransitions[4].Color.Should().Be(ColorTranslator.FromHtml("#FF8080"));
     }
+
+    [Fact]
+    public void CanChooseMDPColor()
+    {
+      var palette = new MDPPalette();
+      var transitions = palette.PaletteTransitions;
+      var color = palette.ChooseColour(transitions[0].Value + 1);
+      Assert.Equal(transitions[0].Color, color);
+    }
   }
 }

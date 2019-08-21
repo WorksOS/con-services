@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -60,7 +61,7 @@ namespace VSS.TRex.SubGrids
     private ITRexSpatialMemoryCache SubGridCache;
     private ITRexSpatialMemoryCacheContext SubGridCacheContext;
 
-    private IDesign ElevationRangeDesign;
+    private IDesignWrapper ElevationRangeDesign;
     private IDesign SurfaceDesignMaskDesign;
 
     private IClientHeightLeafSubGrid DesignElevations;
@@ -87,7 +88,9 @@ namespace VSS.TRex.SubGrids
                            ITRexSpatialMemoryCacheContext subGridCacheContext,
                            ISurveyedSurfaces filteredSurveyedSurfaces,
                            ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
-                           ISurfaceElevationPatchArgument surfaceElevationPatchArgument)
+                           ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
+                           IOverrideParameters overrides,
+                           ILiftParameters liftParams)
     {
       SiteModel = siteModel;
       GridDataType = gridDataType;
@@ -107,7 +110,9 @@ namespace VSS.TRex.SubGrids
                                        maxNumberOfPassesToReturn,
                                        areaControlSet,
                                        populationControl,
-                                       PDExistenceMap);
+                                       PDExistenceMap,
+                                       overrides,
+                                       liftParams);
 
       ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
       AreaControlSet = areaControlSet;
@@ -121,9 +126,16 @@ namespace VSS.TRex.SubGrids
 
       FilteredSurveyedSurfaces = filteredSurveyedSurfaces;
 
-      if (Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty)
-        ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesign.DesignID);
-
+      var elevRangeDesignFilter = Filter.AttributeFilter.ElevationRangeDesign;
+      if (elevRangeDesignFilter.DesignID != Guid.Empty)
+      {
+        var design = SiteModel.Designs.Locate(elevRangeDesignFilter.DesignID);
+        if (design == null)
+          Log.LogError($"ElevationRangeDesign {elevRangeDesignFilter.DesignID} is unknown in project {siteModel.ID}");
+        else
+          ElevationRangeDesign = new DesignWrapper(elevRangeDesignFilter, design);
+      }
+      
       if (Filter.SpatialFilter.IsDesignMask)
         SurfaceDesignMaskDesign = SiteModel.Designs.Locate(Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
@@ -148,11 +160,11 @@ namespace VSS.TRex.SubGrids
         // If the elevation range filter uses a design then the design elevations
         // for the sub grid need to be calculated and supplied to the filter
 
-        if (Filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty)
+        if (ElevationRangeDesign != null)
         {
           // Query the design get the patch of elevations calculated
-          getDesignHeightsResult = await ElevationRangeDesign.GetDesignHeights(SiteModel.ID, Filter.AttributeFilter.ElevationRangeDesign.Offset,
-            ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize);
+          getDesignHeightsResult = await ElevationRangeDesign.Design.GetDesignHeights(
+            SiteModel.ID, ElevationRangeDesign.Offset, ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize);
 
           if ((getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.OK && getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
               || DesignElevations == null)
@@ -196,7 +208,7 @@ namespace VSS.TRex.SubGrids
     /// // Note: There is an assumption you have already checked on a existence map that there is a sub grid for this address
     /// </summary>
     /// <returns></returns>
-    private ServerRequestResult PerformDataExtraction(IOverrideParameters overrides, ILiftParameters liftParams)
+    private ServerRequestResult PerformDataExtraction()
     {
       // Determine if there is a suitable pre-calculated result present in the general sub grid result cache.
       // If there is, then apply the filter mask to the cached data and copy it to the client grid
@@ -222,7 +234,7 @@ namespace VSS.TRex.SubGrids
         return ServerRequestResult.FailedToComputeDesignFilterPatch;
       }
 
-      ServerRequestResult Result = retriever.RetrieveSubGrid(/* LiftBuildSettings, */ overrides, liftParams, ClientGrid, CellOverrideMask);
+      ServerRequestResult Result = retriever.RetrieveSubGrid(ClientGrid, CellOverrideMask);
 
       // If a sub grid was retrieved and this is a supported data type in the cache then add it to the cache
       if (Result == ServerRequestResult.NoError && SubGridCacheContext != null)
@@ -415,9 +427,6 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     public async Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)> RequestSubGridInternal(
       SubGridCellAddress subGridAddress,
-      // LiftBuildSettings: TICLiftBuildSettings;
-      IOverrideParameters overrides,
-      ILiftParameters liftParams,
       bool prodDataRequested,
       bool surveyedSurfaceDataRequested)
     {
@@ -450,7 +459,7 @@ namespace VSS.TRex.SubGrids
 
       if (ProdDataRequested)
       {
-        if ((result.requestResult = PerformDataExtraction(overrides, liftParams)) != ServerRequestResult.NoError)
+        if ((result.requestResult = PerformDataExtraction()) != ServerRequestResult.NoError)
           return result;
       }
 

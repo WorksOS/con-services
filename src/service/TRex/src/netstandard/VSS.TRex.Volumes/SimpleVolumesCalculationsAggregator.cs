@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -14,6 +15,7 @@ using VSS.TRex.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 
@@ -41,17 +43,13 @@ namespace VSS.TRex.Volumes
     // SubGridTreeBitMask FNoChangeMap = new SubGridTreeBitMask();
 
     /// <summary>
-    /// The design being used to compare heights derived from production data against to calculate per-cell volumes
+    /// The design being used to compare heights derived from production data against to calculate per-cell volumes.
+    /// Also contains the offset for a reference surface.
     /// </summary>
-    public IDesign ActiveDesign { get; set; }
-    /// <summary>
-    /// The offset if the design is a reference surface
-    /// </summary>
-    public double ActiveDesignOffset;
+    public IDesignWrapper ActiveDesign { get; set; }
 
     // References necessary for correct summarization of aggregated state
-
-    // public LiftBuildSettings        : TICLiftBuildSettings; = null;
+    public ILiftParameters LiftParams { get; set; } = new LiftParameters();
 
     public Guid SiteModelID { get; set; } = Guid.Empty;
 
@@ -165,7 +163,7 @@ namespace VSS.TRex.Volumes
       // Query the patch of elevations from the surface model for this sub grid
       if (ActiveDesign != null)
       {
-        getDesignHeightsResult = await ActiveDesign.GetDesignHeights(SiteModelID, ActiveDesignOffset, BaseScanSubGrid.OriginAsCellAddress(), CellSize);
+        getDesignHeightsResult = await ActiveDesign.Design.GetDesignHeights(SiteModelID, ActiveDesign.Offset, BaseScanSubGrid.OriginAsCellAddress(), CellSize);
 
         if (getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.OK &&
             getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
@@ -177,11 +175,10 @@ namespace VSS.TRex.Volumes
 
       var bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-      //const bool StandardVolumeProcessing = true; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness == Consts.NullHeight || LiftBuildSettings.TargetLiftThickness <= 0)
+      var StandardVolumeProcessing = LiftParams.TargetLiftThickness == Consts.NullHeight || LiftParams.TargetLiftThickness <= 0;
 
       // If we are interested in standard volume processing use this cycle
-      // Uncomment when StandardVolumeProcessing becomes... not constant
-      // if (StandardVolumeProcessing)
+      if (StandardVolumeProcessing)
       {
         CellsScanned += SubGridTreeConsts.SubGridTreeCellsPerSubGrid;
 
@@ -192,15 +189,13 @@ namespace VSS.TRex.Volumes
             float topZ;
             float baseZ = BaseScanSubGrid.Cells[i, j];
 
-            /* TODO - removed for Ignite POC until LiftBuildSettings is available
             // If the user has configured a first pass thickness, then we need to subtract this height
             // difference from the BaseZ retrieved from the current cell if this measured height was
             // the first pass made in the cell.
-            if (LiftBuildSettings.FirstPassThickness > 0)
+            if (LiftParams.FirstPassThickness > 0)
             {
-                BaseZ -= LiftBuildSettings.FirstPassThickness;
+                baseZ -= LiftParams.FirstPassThickness;
             }
-            */
 
             if (VolumeType == VolumeComputationType.BetweenFilterAndDesign ||
                 VolumeType == VolumeComputationType.BetweenDesignAndFilter)
@@ -305,43 +300,41 @@ namespace VSS.TRex.Volumes
         }
       }
 
-      // const bool TargetLiftThicknessCalculationsRequired = false; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness != Consts.NullHeight && LiftBuildSettings.TargetLiftThickness > 0)
+      var targetLiftThicknessCalculationsRequired = LiftParams.TargetLiftThickness != Consts.NullHeight && LiftParams.TargetLiftThickness > 0;
 
       //If we are interested in thickness calculations do them
-      /* todo Uncomment when the constant above becomes... not constant
-      if (TargetLiftThicknessCalculationsRequired)
+      if (targetLiftThicknessCalculationsRequired)
       {
-          double BelowToleranceToCheck = LiftBuildSettings.TargetLiftThickness - LiftBuildSettings.BelowToleranceLiftThickness;
-          double AboveToleranceToCheck = LiftBuildSettings.TargetLiftThickness + LiftBuildSettings.AboveToleranceLiftThickness;
+          double belowToleranceToCheck = LiftParams.TargetLiftThickness - LiftParams.BelowToleranceLiftThickness;
+          double aboveToleranceToCheck = LiftParams.TargetLiftThickness + LiftParams.AboveToleranceLiftThickness;
 
           SubGridUtilities.SubGridDimensionalIterator((I, J) =>
           {
-              BaseZ = BaseScanSubGrid.Cells[I, J];
-              TopZ = TopScanSubGrid.Cells[I, J];
+              var baseZ = BaseScanSubGrid.Cells[I, J];
+              var topZ = TopScanSubGrid.Cells[I, J];
 
-              if (BaseZ != Consts.NullHeight || TopZ != Consts.NullHeight)
+              if (baseZ != Consts.NullHeight || topZ != Consts.NullHeight)
                   CellsScanned++;
 
                   //Test if we don't have NULL values and carry on
-              if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
+              if (baseZ != Consts.NullHeight && topZ != Consts.NullHeight)
               {
-                  Bits.SetBit(I, J);
-                  double ElevationDiff = TopZ - BaseZ;
+                  bits.SetBit(I, J);
+                  double ElevationDiff = topZ - baseZ;
 
-                  if (ElevationDiff <= AboveToleranceToCheck && ElevationDiff >= BelowToleranceToCheck)
+                  if (ElevationDiff <= aboveToleranceToCheck && ElevationDiff >= belowToleranceToCheck)
                       CellsUsed++;
                   else
-                      if (ElevationDiff > AboveToleranceToCheck)
+                      if (ElevationDiff > aboveToleranceToCheck)
                           CellsUsedFill++;
                       else
-                          if (ElevationDiff < BelowToleranceToCheck)
+                          if (ElevationDiff < belowToleranceToCheck)
                               CellsUsedCut++;
               }
               else
                   CellsDiscarded++;
           });
       }
-      */
 
       // Record the bits for this sub grid in the coverage map by requesting the whole sub grid
       // of bits from the leaf level and setting it in one operation under an exclusive lock

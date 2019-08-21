@@ -38,6 +38,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
+using VSS.TRex.QuantizedMesh.Executors.Tasks;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -77,6 +78,8 @@ namespace VSS.TRex.Tests.TestFixtures
           return new PVMRenderingTask();
         case PipelineProcessorTaskStyle.CSVExport:
           return new CSVExportTask();
+        case PipelineProcessorTaskStyle.QuantizedMesh:
+          return new QuantizedMeshTask();
 
         default:
           return null;

@@ -22,7 +22,6 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		{
 			RequiresSerialisation = true,
 			SiteModelID = argument.ProjectID,
-			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.CellSize,
 			OverrideTemperatureWarningLevels = argument.Overrides.OverrideTemperatureWarningLevels,
 			OverridingTemperatureWarningLevels = argument.Overrides.OverridingTemperatureWarningLevels,
@@ -36,15 +35,16 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <param name="argument"></param>
 		/// <param name="aggregator"></param>
 		/// <returns></returns>
-		public override AnalyticsComputor ConstructComputor(TemperatureStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
+		public override AnalyticsComputor ConstructComputor(TemperatureStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor
 		{
 			RequestDescriptor = RequestDescriptor,
 			SiteModel = SiteModel,
 			Aggregator = aggregator,
 			Filters = argument.Filters,
 			IncludeSurveyedSurfaces = true,
-			RequestedGridDataType = GridDataType.Temperature
-		};
+			RequestedGridDataType = GridDataType.Temperature,
+      LiftParams = argument.LiftParams
+    };
 
 		/// <summary>
 		/// Pull the required counts information from the internal Temperature aggregator state

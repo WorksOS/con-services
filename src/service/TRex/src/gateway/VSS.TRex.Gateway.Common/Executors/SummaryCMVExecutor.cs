@@ -12,7 +12,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 using CMVStatisticsResult = VSS.TRex.Analytics.CMVStatistics.CMVStatisticsResult;
-using SummaryResult = VSS.Productivity3D.Models.ResultHandling.CMVSummaryResult;
+using SummaryResult = VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling.CMVSummaryResult;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {

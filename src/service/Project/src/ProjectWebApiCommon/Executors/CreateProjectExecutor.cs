@@ -35,7 +35,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ProjectRequestHelper.ValidateCoordSystemFile(null, createProjectEvent, serviceExceptionHandler);
 
       await ProjectRequestHelper.ValidateCoordSystemInRaptor(createProjectEvent,
-        serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
+        serviceExceptionHandler, customHeaders, productivity3dProxy).ConfigureAwait(false);
 
       log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
       await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(),
@@ -67,7 +67,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(
         createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
-        projectRepo, raptorProxy, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
+        projectRepo, productivity3dProxy, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
 
       subscriptionUidAssigned = await ProjectRequestHelper.AssociateProjectSubscriptionInSubscriptionService(createProjectEvent.ProjectUID.ToString(), createProjectEvent.ProjectType, customerUid,
