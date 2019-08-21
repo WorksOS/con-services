@@ -71,7 +71,7 @@ namespace IntegrationTests.ExecutorTests
     public IDictionary<string, string> CustomHeaders(string customerUid)
     {
       var headers = new Dictionary<string, string>();
-      headers.Add("X-JWT-Assertion", RestClientUtil.DEFAULT_JWT);
+      headers.Add("X-JWT-Assertion", RestClient.DEFAULT_JWT);
       headers.Add("X-VisionLink-CustomerUid", customerUid);
       headers.Add("X-VisionLink-ClearCache", "true");
       return headers;

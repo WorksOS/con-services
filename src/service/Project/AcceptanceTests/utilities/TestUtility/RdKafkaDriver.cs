@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TestUtility
 {
@@ -33,28 +34,25 @@ namespace TestUtility
     /// </summary>
     /// <param name="topicName">Kafka topic name e.g  VSS.VisionLink.Interfaces.Events.Telematics.Machine.SwitchStateEvent </param>
     /// <param name="message">Kafka Message</param>
-    public static void SendKafkaMessage(string topicName, string message)
+    public static async Task SendKafkaMessage(string topicName, string message)
     {
-     // lock (kafkaProducer)
+      try
       {
-        try
-        {
-          Console.WriteLine($"Publish: {topicName} Message: {message} ");
+        Console.WriteLine($"Publish: {topicName} Message: {message} ");
 
-          var data = Encoding.UTF8.GetBytes(message);
-          var key = Encoding.UTF8.GetBytes(message);
+        var data = Encoding.UTF8.GetBytes(message);
+        var key = Encoding.UTF8.GetBytes(message);
 
-          _ = kafkaProducer.ProduceAsync(topicName, new Message<byte[], byte[]> { Key = key, Value = data }).ContinueWith(task =>
-            {
-              Console.WriteLine(
-                $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {task.Status.ToString()}");
-              return 1;
-            }).Result;
-        }
-        catch (Exception ex)
-        {
-          Console.WriteLine(ex);
-        }
+        _ = await kafkaProducer.ProduceAsync(topicName, new Message<byte[], byte[]> { Key = key, Value = data }).ContinueWith(task =>
+          {
+            Console.WriteLine(
+              $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {task.Status.ToString()}");
+            return 1;
+          });
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex);
       }
     }
   }
