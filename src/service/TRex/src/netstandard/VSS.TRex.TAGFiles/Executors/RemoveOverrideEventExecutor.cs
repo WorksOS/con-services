@@ -23,11 +23,11 @@ namespace VSS.TRex.TAGFiles.Executors
     private readonly IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
     /// <summary>
-    /// Inserts the override event into the site model.
+    /// Removes the override event from the site model.
     /// </summary>
     public async Task<OverrideEventResponse> ExecuteAsync(OverrideEventRequestArgument arg)
     {
-      Log.LogInformation($"Override Event Executor: {arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
+      Log.LogInformation($"Remove Override Event Executor: {arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
 
       var result = new OverrideEventResponse {Success = false};
 

@@ -19,7 +19,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.QuantizedMesh.GridFabric.Responses;
 using VSS.TRex.QuantizedMesh.Executors.Tasks;
 using System.Threading.Tasks;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.QuantizedMesh.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Common;

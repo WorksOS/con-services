@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Cells
 {

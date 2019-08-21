@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Types;
 using VSS.TRex.Types.Types;
 

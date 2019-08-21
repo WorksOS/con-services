@@ -2,7 +2,7 @@
 using System;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;

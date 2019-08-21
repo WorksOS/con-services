@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.QuantizedMesh.Models;
 using VSS.TRex.SubGridTrees;

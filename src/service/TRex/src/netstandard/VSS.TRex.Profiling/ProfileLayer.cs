@@ -3,7 +3,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Filters.Models;

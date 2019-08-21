@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {

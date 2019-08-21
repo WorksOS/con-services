@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.TRex.Types;
+using VSS.TRex.Common;
 
-namespace VSS.TRex.Common.CellPasses
+namespace VSS.TRex.Types.CellPasses
 {
   public static class CellPassConsts
   {

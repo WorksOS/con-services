@@ -27,7 +27,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public async Task<OverrideEventResponse> ExecuteAsync(OverrideEventRequestArgument arg)
     {
-      Log.LogInformation($"Override Event Executor: {arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
+      Log.LogInformation($"Add Override Event Executor: {arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
 
       var result = new OverrideEventResponse {Success = false};
 
@@ -134,8 +134,9 @@ namespace VSS.TRex.TAGFiles.Executors
     private bool ValidateNewOverrideEventAgainstExistingOverridingEvents<T>(IProductionEvents<OverrideEvent<T>> existingList, OverrideEventRequestArgument arg, T defaultValue)
     {
       //Test if we have override event at the same date
-      var value = existingList.GetValueAtDate(arg.StartUTC, out _, OverrideEvent<T>.Null());
-      if (!value.Equals(defaultValue))
+      var nullValue = OverrideEvent<T>.Null(defaultValue);
+      var value = existingList.GetValueAtDate(arg.StartUTC, out _, nullValue);
+      if (!value.Equals(nullValue))
         return false;
 
       //Test if we override event within the range or we have overlapping overriding

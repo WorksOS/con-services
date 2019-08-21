@@ -1,7 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.MasterData.Models.Models;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Types;
 
