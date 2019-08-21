@@ -289,7 +289,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     {
       Guid? projectUid = string.IsNullOrEmpty(projectString) ? (Guid?) null : Guid.Parse(projectString);
       var designFile = string.IsNullOrEmpty(designFileString)
-        ? (DesignDescriptor) null
+        ? null
         : new DesignDescriptor(-1, null, -1, Guid.Parse(designFileString));
       var apiRequest = CompactionReportGridRequest.CreateCompactionReportGridRequest(
         projectId, projectUid,
@@ -328,12 +328,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       null, -1, null,
       true, false, false, false, false, false,
       null, "33e6bd66-54d8-4651-8907-88b15d81b2d7",
-      2.0, 100.0, 200.0, new double[] { -1.0, -0.5, 0.0, 1.5 })]
+      2.0, 100.0, 200.0, new[] { -1.0, -0.5, 0.0, 1.5 })]
     [DataRow(null, "87e6bd66-54d8-4651-8907-88b15d81b2d7",
       null, -1, null,
       true, false, false, false, true, true,
       "57e6bd66-54d8-4651-8907-88b15d81b2d7", "33e6bd66-54d8-4651-8907-88b15d81b2d7",
-      1.5, 50.0, 2000.0, new double[] { 0.0 })]
+      1.5, 50.0, 2000.0, new[] { 0.0 })]
     public void MapStationOffsetReportRequestToTRexRequest(
       long? projectId, string projectString,
       FilterResult filter, long filterId, LiftBuildSettings liftBuildSettings,
@@ -343,7 +343,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     {
       Guid? projectUid = string.IsNullOrEmpty(projectString) ? (Guid?)null : Guid.Parse(projectString);
       var cutFillDesignDescriptor = string.IsNullOrEmpty(designFileString)
-        ? (DesignDescriptor)null
+        ? null
         : new DesignDescriptor(-1, null, -1, Guid.Parse(designFileString));
 
       var alignmentDescriptor = new DesignDescriptor(-1, null, -1, Guid.Parse(alignmentFileString));

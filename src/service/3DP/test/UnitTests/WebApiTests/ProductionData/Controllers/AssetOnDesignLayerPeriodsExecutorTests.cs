@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
+      var assetMatches = new List<KeyValuePair<Guid, long>> { new KeyValuePair<Guid, long>(assetUid, assetId) };
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
@@ -119,8 +119,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       GetTRexMachineIdsMock(machines, projectIds.ProjectUid, configStore, true, false, tRexProxy);
       
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>>()
-      {
+      var assetMatches = new List<KeyValuePair<Guid, long>>
+                         {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
@@ -226,7 +226,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       (
         new List<AssetOnDesignLayerPeriod>(1)
         {
-          new AssetOnDesignLayerPeriod(assetId, designId, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40),null)
+          new AssetOnDesignLayerPeriod(assetId, designId, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40))
         }
       );
 
@@ -238,7 +238,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId,
           FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId,
           FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].StartDate,
-          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate
         }
       };
 
@@ -252,7 +252,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         projectIds.ProjectId, raptorClient);
 
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
+      var assetMatches = new List<KeyValuePair<Guid, long>> { new KeyValuePair<Guid, long>(assetUid, assetId) };
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(false);
@@ -299,12 +299,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       (
         new List<AssetOnDesignLayerPeriod>(1)
         {
-          new AssetOnDesignLayerPeriod(assetId1Good, designId, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-49), null),
-          new AssetOnDesignLayerPeriod(assetId2Invalid, designId, layerId, DateTime.UtcNow.AddDays(-48), DateTime.UtcNow.AddDays(-47), null),
-          new AssetOnDesignLayerPeriod(assetId3NotFound, designId, layerId, DateTime.UtcNow.AddDays(-46), DateTime.UtcNow.AddDays(-45), null),
-          new AssetOnDesignLayerPeriod(assetId1Good, designId, layerId, DateTime.UtcNow.AddDays(-44), DateTime.UtcNow.AddDays(-43), null),
-          new AssetOnDesignLayerPeriod(assetId2Invalid, designId, layerId, DateTime.UtcNow.AddDays(-42), DateTime.UtcNow.AddDays(-41), null),
-          new AssetOnDesignLayerPeriod(assetId3NotFound, designId, layerId, DateTime.UtcNow.AddDays(-40), DateTime.UtcNow.AddDays(-38), null)
+          new AssetOnDesignLayerPeriod(assetId1Good, designId, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-49)),
+          new AssetOnDesignLayerPeriod(assetId2Invalid, designId, layerId, DateTime.UtcNow.AddDays(-48), DateTime.UtcNow.AddDays(-47)),
+          new AssetOnDesignLayerPeriod(assetId3NotFound, designId, layerId, DateTime.UtcNow.AddDays(-46), DateTime.UtcNow.AddDays(-45)),
+          new AssetOnDesignLayerPeriod(assetId1Good, designId, layerId, DateTime.UtcNow.AddDays(-44), DateTime.UtcNow.AddDays(-43)),
+          new AssetOnDesignLayerPeriod(assetId2Invalid, designId, layerId, DateTime.UtcNow.AddDays(-42), DateTime.UtcNow.AddDays(-41)),
+          new AssetOnDesignLayerPeriod(assetId3NotFound, designId, layerId, DateTime.UtcNow.AddDays(-40), DateTime.UtcNow.AddDays(-38))
         }
       );
 
@@ -316,7 +316,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId,
           FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId,
           FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].StartDate,
-          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate
         },
         new TDesignLayer
         {
@@ -324,7 +324,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].OnMachineDesignId,
           FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].LayerId,
           FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].StartDate,
-          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].EndDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[1].EndDate
         },
         new TDesignLayer
         {
@@ -332,7 +332,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].OnMachineDesignId,
           FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].LayerId,
           FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].StartDate,
-          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].EndDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[2].EndDate
         },
         new TDesignLayer
         {
@@ -340,7 +340,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].OnMachineDesignId,
           FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].LayerId,
           FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].StartDate,
-          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].EndDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[3].EndDate
         },
         new TDesignLayer
         {
@@ -348,7 +348,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].OnMachineDesignId,
           FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].LayerId,
           FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].StartDate,
-          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].EndDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[4].EndDate
         },
         new TDesignLayer
         {
@@ -356,7 +356,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].OnMachineDesignId,
           FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].LayerId,
           FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].StartDate,
-          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].EndDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[5].EndDate
         }
       };
 
@@ -370,8 +370,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         projectIds.ProjectId, raptorClient);
 
       // for GetMachineIdsExecutor
-      var assets = new List<KeyValuePair<Guid, long>>()
-      {
+      var assets = new List<KeyValuePair<Guid, long>>
+                   {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
@@ -422,7 +422,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       (
         new List<AssetOnDesignLayerPeriod>(1)
         {
-          new AssetOnDesignLayerPeriod(assetId, designId, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40),null)
+          new AssetOnDesignLayerPeriod(assetId, designId, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40))
         }
       );
 
@@ -434,7 +434,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           FDesignID = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].OnMachineDesignId,
           FLayerID = (int) expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].LayerId,
           FStartTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].StartDate,
-          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate,
+          FEndTime = expectedAssetOnDesignLayerPeriodsExecutionResult.AssetOnDesignLayerPeriods[0].EndDate
         }
       };
 

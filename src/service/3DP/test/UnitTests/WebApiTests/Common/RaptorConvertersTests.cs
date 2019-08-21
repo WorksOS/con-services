@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       [TestMethod]
       public void Should_return_Default_filter_When_input_filter_is_null()
       {
-        var result = RaptorConverters.ConvertFilter(null, null, null);
+        var result = RaptorConverters.ConvertFilter(null);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(TFilterLayerMethod.flmAutoMapReset == result.LayerMethod);
@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       {
         long? onMachineDesignId = onMachineDesignIdInput; // DataRow doesn't like long? as parameter
         var machineDesigns = new []
-          {new TDesignName() {FID = expectedValue, FMachineID = 4, FName = onMachineDesignName}};
+          {new TDesignName {FID = expectedValue, FMachineID = 4, FName = onMachineDesignName}};
         var mockRaptorClient = new Mock<IASNodeClient>();
         mockRaptorClient.Setup(prj => prj.GetOnMachineDesignEvents(It.IsAny<long>())).Returns(machineDesigns);
 
@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
         long? onMachineDesignId = null;
         int expectedValue = 0;
         var machineDesigns = new[]
-        {new TDesignName() {FID = expectedValue, FMachineID = 4, FName = onMachineDesignName}};
+        {new TDesignName {FID = expectedValue, FMachineID = 4, FName = onMachineDesignName}};
         var mockRaptorClient = new Mock<IASNodeClient>();
         mockRaptorClient.Setup(prj => prj.GetOnMachineDesignEvents(It.IsAny<long>())).Returns(machineDesigns);
 

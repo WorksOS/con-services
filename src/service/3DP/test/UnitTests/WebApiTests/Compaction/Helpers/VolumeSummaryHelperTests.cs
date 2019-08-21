@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           0, null, "name", "desc", DateTime.Now, DateTime.Now, 1, "designName", null, false, false, ElevationType.Highest,
           new List<WGSPoint>(), new List<Point>(), false, null, 0, 0, 0, 0, 
           FilterLayerMethod.None, null, 0, 0, 0, new List<MachineDetails>(), new List<long>(),
-          true, GPSAccuracy.Coarse, false, false, false, false, null, null, null, null, null, null);
+          true, GPSAccuracy.Coarse, false, false, false, false);
       }
 
       [TestMethod]

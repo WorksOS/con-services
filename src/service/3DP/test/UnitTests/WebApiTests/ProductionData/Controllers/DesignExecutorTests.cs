@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
+using Serilog;
 #if RAPTOR
 using DesignProfiler.ComputeDesignBoundary.RPC;
 using DesignProfilerDecls;
@@ -27,6 +28,7 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
@@ -38,23 +40,20 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     private const double TOLERANCE = 1.2;
     private const int NUMBER_OF_COORDINATES = 7;
 
-    private string joString = "{\"type\": \"FeatureCollection\",\"features\": [{\"type\": \"Feature\",\"geometry\": {\"type\": \"Polygon\",\"coordinates\": [[[-115.020639,36.207504],[-115.020068,36.207317],[-115.0195,36.207209],[-115.019495,36.207203],[-115.01949,36.207198],[-115.020362,36.207487],[-115.020639,36.207504]]]},\"properties\": {\"name\": \"Large Sites Road - Trimble Road.TTM\"}}]}";
+    private const string joString = "{\"type\": \"FeatureCollection\",\"features\": [{\"type\": \"Feature\",\"geometry\": {\"type\": \"Polygon\",\"coordinates\": [[[-115.020639,36.207504],[-115.020068,36.207317],[-115.0195,36.207209],[-115.019495,36.207203],[-115.01949,36.207198],[-115.020362,36.207487],[-115.020639,36.207504]]]},\"properties\": {\"name\": \"Large Sites Road - Trimble Road.TTM\"}}]}";
 
     private static IServiceProvider serviceProvider;
     private static ILoggerFactory logger;
     private static Dictionary<string, string> _customHeaders;
 
     [ClassInitialize]
-    public static void ClassInit(TestContext context)
+    public static void ClassInit()
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
+      serviceProvider = new ServiceCollection()
+                        .AddLogging()
+                        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
+                        .BuildServiceProvider();
 
-      var serviceCollection = new ServiceCollection()
-        .AddLogging()
-        .AddSingleton(loggerFactory);
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       _customHeaders = new Dictionary<string, string>();
     }

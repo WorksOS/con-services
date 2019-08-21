@@ -1,6 +1,5 @@
 ﻿using ASNodeRaptorReports;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Models

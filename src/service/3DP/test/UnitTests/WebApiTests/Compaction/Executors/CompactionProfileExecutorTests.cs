@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ASNode.RequestProfile.RPC;
+using ASNode.RequestSummaryVolumesProfile.RPC;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using SVOICProfileCell;
 using SVOICSummaryVolumesProfileCell;
 using VLPDDecls;
@@ -20,13 +23,13 @@ using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -82,19 +85,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [TestInitialize]
     public void InitTest()
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, RaptorResult>()
-        .AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
- 
-      serviceProvider = serviceCollection.BuildServiceProvider();
+        .AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>()
+        .BuildServiceProvider();
     }
 
     [TestMethod]
@@ -108,7 +106,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
     
       raptorClient
-        .Setup(x => x.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()))
+        .Setup(x => x.GetProfile(It.IsAny<TASNodeServiceRPCVerb_RequestProfile_Args>()))
         .Returns((MemoryStream)null);
 
       var settingsManager = new CompactionSettingsManager();
@@ -928,7 +926,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         packager.WriteToStream(ms);
         ms.Position = 0;
         raptorClient
-          .Setup(x => x.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()))
+          .Setup(x => x.GetProfile(It.IsAny<TASNodeServiceRPCVerb_RequestProfile_Args>()))
           .Returns(ms);
 
         var settingsManager = new CompactionSettingsManager();
@@ -1092,7 +1090,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           new TICSummaryVolumesProfileCell(200F, 300F, 215F, 0, 0, 0.0, 0.5),
           //Gap here
           new TICSummaryVolumesProfileCell(290F, 390F, 267F, 0, 0, 1.0, 0.5),
-          new TICSummaryVolumesProfileCell(335F, 435F, 382F, 0, 0, 1.5, 0.5),
+          new TICSummaryVolumesProfileCell(335F, 435F, 382F, 0, 0, 1.5, 0.5)
         },
         GridDistanceBetweenProfilePoints = 1.234
       };
@@ -1197,7 +1195,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         packager.WriteToStream(ms);
         ms.Position = 0;
         raptorClient
-          .Setup(x => x.GetSummaryVolumesProfile(It.IsAny<ASNode.RequestSummaryVolumesProfile.RPC.TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args>()))
+          .Setup(x => x.GetSummaryVolumesProfile(It.IsAny<TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args>()))
           .Returns(ms);
 
         var settingsManager = new CompactionSettingsManager();
@@ -1401,13 +1399,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         pdPackager.WriteToStream(msProdData);
         msProdData.Position = 0;
         raptorClient
-          .Setup(x => x.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()))
+          .Setup(x => x.GetProfile(It.IsAny<TASNodeServiceRPCVerb_RequestProfile_Args>()))
           .Returns(msProdData);
 
         svPackager.WriteToStream(msSumVol);
         msSumVol.Position = 0;
         raptorClient
-          .Setup(x => x.GetSummaryVolumesProfile(It.IsAny<ASNode.RequestSummaryVolumesProfile.RPC.TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args>()))
+          .Setup(x => x.GetSummaryVolumesProfile(It.IsAny<TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args>()))
           .Returns(msSumVol);
 
         var settingsManager = new CompactionSettingsManager();

@@ -1,8 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using VSS.Velociraptor.PDSInterface;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 {
@@ -32,8 +30,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         InterceptLength = prevInterceptLength
       };
 
-      var currCell = new ProfileCellData()
-      {
+      var currCell = new ProfileCellData
+                     {
         Station = currStation
       };
 

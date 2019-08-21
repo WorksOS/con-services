@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 #if RAPTOR
 using ShineOn.Rtl;
@@ -24,6 +25,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
@@ -37,7 +39,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
     private static CompactionTagFileRequestExtended request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
     (
-      new CompactionTagFileRequest()
+      new CompactionTagFileRequest
       {
         ProjectId = 554,
         ProjectUid = Guid.NewGuid(),
@@ -51,20 +53,15 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection()
-        .AddLogging()
-        .AddSingleton(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+      _serviceProvider = new ServiceCollection()
+                         .AddLogging()
+                         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
+                         .AddSingleton<IConfigurationStore, GenericConfiguration>()
+                         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
 #if RAPTOR
         .AddTransient<IErrorCodesProvider, RaptorResult>()
 #endif
-  ;
-
-      _serviceProvider = serviceCollection.BuildServiceProvider();
+                         .BuildServiceProvider();
 
       _logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
       _customHeaders = new Dictionary<string, string>();

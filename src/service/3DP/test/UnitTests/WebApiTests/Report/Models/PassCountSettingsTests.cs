@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Models
@@ -15,14 +14,14 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     public void CanCreatePassCountSettingsTest()
     {
       var validator = new DataAnnotationsValidator();
-      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 3, 5, 10 });
+      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new[] { 1, 3, 5, 10 });
       Assert.IsTrue(validator.TryValidate(settings, out ICollection<ValidationResult> results));
     }
 
     [TestMethod]
     public void ValidateSuccessTest()
     {
-      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 3, 5, 10 });
+      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new[] { 1, 3, 5, 10 });
       settings.Validate();
     }
 
@@ -38,7 +37,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     public void ValidateFailFirstTest()
     {
       //doesn't start at 0
-      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 0, 5, 10 });
+      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new[] { 0, 5, 10 });
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
@@ -46,7 +45,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     public void ValidateFailOrderTest()
     {
       //pass counts out of order
-      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 10, 5, 12, 3 });
+      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new[] { 1, 10, 5, 12, 3 });
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
@@ -55,7 +54,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     public void ValidateFailRangeTest()
     {
       //pass count value > max
-      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 2, int.MaxValue });
+      PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new[] { 1, 2, int.MaxValue });
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Serilog;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -14,6 +15,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.WebApiTests
 {
@@ -23,21 +25,16 @@ namespace VSS.Productivity3D.WebApiTests
     private static IServiceProvider serviceProvider;
 
     [ClassInitialize]
-    public static void ClassInit(TestContext context)
+    public static void ClassInit()
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, RaptorResult>()
-        .AddTransient<ITransferProxy, TransferProxy>();
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
+        .AddTransient<ITransferProxy, TransferProxy>()
+        .BuildServiceProvider();
 
       var jobId = "Test_Job_1";
       s3Key = $"3dpm/{jobId}.zip";

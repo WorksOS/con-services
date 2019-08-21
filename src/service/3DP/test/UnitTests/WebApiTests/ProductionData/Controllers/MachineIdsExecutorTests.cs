@@ -161,8 +161,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       GetTRexMachineIdsMock(machines, projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // to assetMatch on VSS assets
-      var assetMatches = new List<KeyValuePair<Guid, long>>()
-      {
+      var assetMatches = new List<KeyValuePair<Guid, long>>
+                         {
         new KeyValuePair<Guid, long>(machines[2].AssetUid.Value, nonJohnDoeAssetId2) ,
         new KeyValuePair<Guid, long>(Guid.NewGuid(), 111)
       };
@@ -221,8 +221,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         };
       GetTRexMachineIdsMock(machines, projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
-      var assetMatches = new List<KeyValuePair<Guid, long>>()
-      {
+      var assetMatches = new List<KeyValuePair<Guid, long>>
+                         {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
@@ -262,7 +262,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       GetRaptorMachineIdsMock(new[] { new TMachineDetail { Name = machineName, ID = assetId, IsJohnDoeMachine = isJohnDoe } },
         projectIds.ProjectId, raptorClient);
 
-      var assetMatches = new List<KeyValuePair<Guid, long>>() { new KeyValuePair<Guid, long>(assetUid, assetId) };
+      var assetMatches = new List<KeyValuePair<Guid, long>> { new KeyValuePair<Guid, long>(assetUid, assetId) };
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
@@ -383,12 +383,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       {
         new TMachineDetail { Name = machineName1, ID = assetId1Good, IsJohnDoeMachine = false },
         new TMachineDetail { Name = machineName2, ID = assetId2Invalid, IsJohnDoeMachine = false },
-        new TMachineDetail { Name = machineName3, ID = assetId3Good, IsJohnDoeMachine = false },
+        new TMachineDetail { Name = machineName3, ID = assetId3Good, IsJohnDoeMachine = false }
       };
       GetRaptorMachineIdsMock(tMachines, projectIds.ProjectId, raptorClient);
 
-      var assetMatches = new List<KeyValuePair<Guid, long>>()
-      {
+      var assetMatches = new List<KeyValuePair<Guid, long>>
+                         {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid3Good, assetId3Good)
       };

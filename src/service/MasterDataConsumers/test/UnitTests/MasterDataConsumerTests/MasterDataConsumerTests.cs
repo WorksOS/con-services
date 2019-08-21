@@ -4,14 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer;
 using VSS.KafkaConsumer.Interfaces;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -27,14 +28,9 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     [TestInitialize]
     public void InitTest()
     {
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
       serviceProvider = new ServiceCollection()
+          .AddLogging()
+          .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("MasterDataConsumerTests.log")))
           .AddTransient<IKafka, RdKafkaDriver>()
 
           .AddTransient<IKafkaConsumer<IAssetEvent>, KafkaConsumer<IAssetEvent>>()
@@ -57,8 +53,6 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
           .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
 
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
-          .AddLogging()
-          .AddSingleton(loggerFactory)
           .BuildServiceProvider();
     }
 
@@ -143,7 +137,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       var converter = messageResolver.GetConverter<IAssetEvent>();
       Assert.IsNotNull(converter, "Unable to locate IAssetEvent converter");
 
-      var createAssetEvent = new CreateAssetEvent() { AssetUID = Guid.NewGuid() };
+      var createAssetEvent = new CreateAssetEvent { AssetUID = Guid.NewGuid() };
       var createAssetEventSer = JsonConvert.SerializeObject(new { CreateAssetEvent = createAssetEvent });
       var deserializedObject = JsonConvert.DeserializeObject<IAssetEvent>(createAssetEventSer, converter);
       Assert.IsNotNull(deserializedObject);
@@ -156,7 +150,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       var converter = messageResolver.GetConverter<ICustomerEvent>();
       Assert.IsNotNull(converter, "Unable to locate ICustomerEvent converter");
 
-      var associateCustomerUserEvent = new AssociateCustomerUserEvent() { CustomerUID = Guid.NewGuid() };
+      var associateCustomerUserEvent = new AssociateCustomerUserEvent { CustomerUID = Guid.NewGuid() };
       var associateCustomerUserEventSer = JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = associateCustomerUserEvent });
       var deserializedObject = JsonConvert.DeserializeObject<ICustomerEvent>(associateCustomerUserEventSer, converter);
       Assert.IsNotNull(deserializedObject);
@@ -169,7 +163,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       var converter = messageResolver.GetConverter<ICustomerEvent>();
       Assert.IsNotNull(converter, "Unable to locate ICustomerEvent converter");
 
-      var associateCustomerAssetEvent = new AssociateCustomerAssetEvent() { CustomerUID = Guid.NewGuid() };
+      var associateCustomerAssetEvent = new AssociateCustomerAssetEvent { CustomerUID = Guid.NewGuid() };
       var associateCustomerAssetEventSer = JsonConvert.SerializeObject(new { AssociateCustomerAssetEvent = associateCustomerAssetEvent });
       var deserializedObject = JsonConvert.DeserializeObject<ICustomerEvent>(associateCustomerAssetEventSer, converter);
       Assert.IsNull(deserializedObject);
@@ -182,7 +176,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       var converter = messageResolver.GetConverter<IGeofenceEvent>();
       Assert.IsNotNull(converter, "Unable to locate IGeofenceEvent converter");
 
-      var favoriteGeofenceEventEvent = new FavoriteGeofenceEvent() { CustomerUID = Guid.NewGuid(), GeofenceUID = Guid.NewGuid() };
+      var favoriteGeofenceEventEvent = new FavoriteGeofenceEvent { CustomerUID = Guid.NewGuid(), GeofenceUID = Guid.NewGuid() };
       var favoriteGeofenceEventEventSer = JsonConvert.SerializeObject(new { FavoriteGeofenceEventEvent = favoriteGeofenceEventEvent });
       var deserializedObject = JsonConvert.DeserializeObject<IGeofenceEvent>(favoriteGeofenceEventEventSer, converter);
       Assert.IsNull(deserializedObject, "unhandled event type should return null");

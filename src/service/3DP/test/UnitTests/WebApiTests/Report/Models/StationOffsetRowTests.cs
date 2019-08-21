@@ -1,6 +1,5 @@
 ﻿using ASNodeRaptorReports;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Models
@@ -38,7 +37,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
       Assert.AreEqual((double)stationOffset.CMV / 10, result.CMV);
       Assert.AreEqual((double)stationOffset.MDP / 10, result.MDP);
       Assert.AreEqual(stationOffset.PassCount, result.PassCount);
-      Assert.AreEqual((double)stationOffset.Temperature / 10, result.Temperature);
+      Assert.AreEqual(stationOffset.Temperature / 10, result.Temperature);
       Assert.AreEqual(stationOffset.Position, result.Offset);
       Assert.AreEqual(stationOffset.Station, result.Station);
 

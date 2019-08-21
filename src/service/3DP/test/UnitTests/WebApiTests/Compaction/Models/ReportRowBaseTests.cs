@@ -45,8 +45,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     }
 
     [TestMethod]
-    [DataRow(false, (short)VelociraptorConstants.NO_CCV, false)]
-    [DataRow(true, (short)VelociraptorConstants.NO_CCV, false)]
+    [DataRow(false, VelociraptorConstants.NO_CCV, false)]
+    [DataRow(true, VelociraptorConstants.NO_CCV, false)]
     [DataRow(false, (short)150, false)]
     [DataRow(true, (short)150, true)]
     public void ShouldSerializeCMV_returns_correct_result_When_CMV_is_set(bool reportCmv, short cmv, bool expectedResult)
@@ -62,8 +62,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     }
 
     [TestMethod]
-    [DataRow(false, (short)VelociraptorConstants.NO_MDP, false)]
-    [DataRow(true, (short)VelociraptorConstants.NO_MDP, false)]
+    [DataRow(false, VelociraptorConstants.NO_MDP, false)]
+    [DataRow(true, VelociraptorConstants.NO_MDP, false)]
     [DataRow(false, (short)150, false)]
     [DataRow(true, (short)150, true)]
     public void ShouldSerializeMDP_returns_correct_result_When_MDP_is_set(bool reportMdp, short mdp, bool expectedResult)
@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 
     [TestMethod]
     [DataRow((short)150, (double)15)]
-    [DataRow((short)456, (double)45.6)]
+    [DataRow((short)456, 45.6)]
     public void MDP_returns_original_value_divided_by_10(short mdp, double expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, false, true, false, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 
     [TestMethod]
     [DataRow((short)150, (double)15)]
-    [DataRow((short)456, (double)45.6)]
+    [DataRow((short)456, 45.6)]
     public void CMV_returns_original_value_divided_by_10(short cmv, double expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, true, false, false, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
@@ -144,7 +144,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 
     [TestMethod]
     [DataRow((short)150, (double)15)]
-    [DataRow((short)456, (double)45.6)]
+    [DataRow((short)456, 45.6)]
     public void Temperature_returns_original_value_divided_by_10(short temperature, double expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, false, false, true, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);

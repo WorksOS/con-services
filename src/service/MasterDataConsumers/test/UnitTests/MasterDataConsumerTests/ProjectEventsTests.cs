@@ -18,8 +18,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     [TestInitialize]   
     public void TestInitialize()
     {
-      project = new Project.Abstractions.Models.DatabaseModels.Project()
-      {
+      project = new Project.Abstractions.Models.DatabaseModels.Project
+                {
         ProjectUID = Guid.NewGuid().ToString(),
         LegacyProjectID = 12343,
         Name = "The Project Name",
@@ -52,8 +52,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       if (project.GeometryWKT.Contains(polygonStr))
         project.GeometryWKT = project.GeometryWKT.Replace(polygonStr + "((", "").Replace("))", "").Replace(',', ';').Replace(' ', ',') + ';';
 
-      return new CreateProjectEvent()
-      {
+      return new CreateProjectEvent
+             {
         ProjectUID = Guid.Parse(project.ProjectUID),
         ProjectID = project.LegacyProjectID,
         ProjectName = project.Name,
@@ -75,8 +75,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
         kafkaProjectEvent.ProjectBoundary = String.Concat(polygonStr + "((", kafkaProjectEvent.ProjectBoundary, "))");
       }
 
-      return new Project.Abstractions.Models.DatabaseModels.Project()
-      {
+      return new Project.Abstractions.Models.DatabaseModels.Project
+             {
         ProjectUID = kafkaProjectEvent.ProjectUID.ToString(),
         LegacyProjectID = kafkaProjectEvent.ProjectID,
         Name = kafkaProjectEvent.ProjectName,
