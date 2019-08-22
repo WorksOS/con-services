@@ -3,9 +3,6 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
-#if RAPTOR
-using SVOICDecls;
-#endif
 
 namespace VSS.Productivity3D.Models.ResultHandling
 {
@@ -216,12 +213,12 @@ public class CellPassesV2Result : ContractExecutionResult
 
       /// <summary>
       /// The GCS machine control system is mapping minimum elevations; typically used by HEX (Hydraulic Excavator machines)
+      /// 0 - mmLatestElevation,
+      /// 1 - mmMinimumElevation,
+      /// 2 - mmMaximumElevation.
       /// </summary>
-#if RAPTOR
-      public TICMinElevMappingState EventMinElevMapping { get; set; }
-#else
-      public bool EventMinElevMapping;
-#endif
+      /// 
+      public byte EventMinElevMapping;
     }
 
     /// <summary>
