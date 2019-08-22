@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using SVOICStatistics;
 using VLPDDecls;
 using VSS.Common.Abstractions.Configuration;
@@ -19,6 +20,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
@@ -31,14 +33,10 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     [TestInitialize]
     public void InitTest()
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure()))
+        .BuildServiceProvider();
     }
 
     [TestMethod]
@@ -53,9 +51,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(27, 27)
       };
 
-      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints);
-
+      var filterResult = FilterResult.CreateFilterObsolete(polygonLL: polygonPoints);
       var raptorClient = new Mock<IASNodeClient>();
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>()
@@ -83,12 +79,10 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(36.15.LatDegreesToRadians(), -115.74.LonDegreesToRadians()),
         new WGSPoint(36.10.LatDegreesToRadians(), -115.39.LonDegreesToRadians())
       };
-      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints, null, null, null, null, null, null, null, null,  null, null, null, null,
-        null, null, null, null, null, null, null, null, design);
+      var filterResult = FilterResult.CreateFilterObsolete(polygonLL: polygonPoints, designFile: design);
 
       var raptorClient = new Mock<IASNodeClient>();
-      
+
       TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
       using (var writer = new StreamWriter(ms))
@@ -121,10 +115,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public async Task GetBoundingBoxDesignBoundaryFilter()
     {
       var design = new DesignDescriptor(-1, null, 0);
-      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, design);
-
+      var filterResult = FilterResult.CreateFilterObsolete(designFile: design);
       var raptorClient = new Mock<IASNodeClient>();
 
       TDesignProfilerRequestResult designProfilerResult;
@@ -202,13 +193,10 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(27, 27)
       };
 
-      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints);
-
+      var filterResult = FilterResult.CreateFilterObsolete(polygonLL: polygonPoints);
       var design = new DesignDescriptor(-1, null, 0);
-
       var raptorClient = new Mock<IASNodeClient>();
-      
+
       TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
       using (var writer = new StreamWriter(ms))
@@ -240,8 +228,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public async Task GetBoundingBoxAlignmentFilter()
     {
       var alignment = new DesignDescriptor(-1, null, 0);
-      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, alignment, 0, 3, 0.5, 0.5);
+      var filterResult = FilterResult.CreateFilterObsolete(alignmentFile: alignment, startStation: 0, endStation: 3, leftOffset: 0.5, rightOffset: 0.5);
 
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -287,8 +274,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(27, 27)
       };
 
-      var baseFilterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints1);
+      var baseFilterResult = FilterResult.CreateFilterObsolete(polygonLL: polygonPoints1);
 
       var polygonPoints2 = new List<WGSPoint>
       {
@@ -299,8 +285,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(32, 16)
       };
 
-      var topFilterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null,
-        polygonPoints2);
+      var topFilterResult = FilterResult.CreateFilterObsolete(polygonLL: polygonPoints2);
 
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -345,7 +330,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         ReturnCode = TCoordReturnCode.nercNoError,
         Points = new TCoordContainer
         {
-          Coords = new []
+          Coords = new[]
           {
             new TCoordPoint {X = prodDataMinLng, Y = prodDataMinLat},
             new TCoordPoint {X = prodDataMaxLng, Y = prodDataMaxLat}
@@ -454,7 +439,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       raptorClient
         .Setup(x => x.GetDataModelStatistics(project.LegacyProjectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(false);
-      
+
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>()
 #if RAPTOR
         , raptorClient.Object
@@ -470,7 +455,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     }
 
 
-    private static List<Point> projectPoints = new List<Point>
+    private static readonly List<Point> projectPoints = new List<Point>
     {
       new Point {y = 36.208, x = -115.018},
       new Point {y = 36.145, x = -115.665},
@@ -478,17 +463,17 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       new Point {y = 36.103, x = -115.687}
     };
 
-    private static ProjectData project = new ProjectData
+    private static readonly ProjectData project = new ProjectData
     {
       ProjectUid = Guid.NewGuid().ToString(),
       LegacyProjectId = 1234,
       ProjectGeofenceWKT = TestUtils.GetWicketFromPoints(projectPoints)
     };
 
-    private static double projMinLatRadians = projectPoints.Min(p => p.Latitude).LatDegreesToRadians();
-    private static double projMinLngRadians = projectPoints.Min(p => p.Longitude).LonDegreesToRadians();
-    private static double projMaxLatRadians = projectPoints.Max(p => p.Latitude).LatDegreesToRadians();
-    private static double projMaxLngRadians = projectPoints.Max(p => p.Longitude).LonDegreesToRadians();
+    private static readonly double projMinLatRadians = projectPoints.Min(p => p.Latitude).LatDegreesToRadians();
+    private static readonly double projMinLngRadians = projectPoints.Min(p => p.Longitude).LonDegreesToRadians();
+    private static readonly double projMaxLatRadians = projectPoints.Max(p => p.Latitude).LatDegreesToRadians();
+    private static readonly double projMaxLngRadians = projectPoints.Max(p => p.Longitude).LonDegreesToRadians();
 
     private const string DESIGN_GEO_JSON = @"
       {
