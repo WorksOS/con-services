@@ -59,7 +59,6 @@
     <Compile Remove=".\Notification\Executors\AddFileExecutor.cs" />
     <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />
 
-    <!--<Compile Remove=".\ProductionData\Executors\CellPassesExecutor.cs" />-->
     <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\EditDataExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\GetEditDataExecutor.cs" />

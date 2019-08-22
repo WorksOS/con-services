@@ -67,76 +67,76 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
 #if RAPTOR
     protected CellPassesResult ConvertResult(TICProfileCell profile)
     {
-      return CellPassesResult.CreateCellPassesResult(
-                 profile.CellCCV,
-                 profile.CellCCVElev,
-                 profile.CellFirstCompositeElev,
-                 profile.CellFirstElev,
-                 profile.CellHighestCompositeElev,
-                 profile.CellHighestElev,
-                 profile.CellLastCompositeElev,
-                 profile.CellLastElev,
-                 profile.CellLowestCompositeElev,
-                 profile.CellLowestElev,
-                 profile.CellMaterialTemperature,
-                 profile.CellMaterialTemperatureElev,
-                 profile.CellMaterialTemperatureWarnMax,
-                 profile.CellMaterialTemperatureWarnMin,
-                 profile.FilteredHalfPassCount,
-                 profile.FilteredPassCount,
-                 profile.CellMDP,
-                 profile.CellMDPElev,
-                 profile.CellTargetCCV,
-                 profile.CellTargetMDP,
-                 profile.CellTopLayerThickness,
-                 profile.DesignElev,
-                 profile.IncludesProductionData,
-                 profile.InterceptLength,
-                 profile.OTGCellX,
-                 profile.OTGCellY,
-                 profile.Station,
-                 profile.TopLayerPassCount,
-                 new TargetPassCountRange(profile.TopLayerPassCountTargetRangeMin, profile.TopLayerPassCountTargetRangeMax),
-                 ConvertCellLayers(profile.Layers, ConvertFilteredPassData(profile.Passes))
-             );
+      return new CellPassesResult(
+        profile.CellCCV,
+        profile.CellCCVElev,
+        profile.CellFirstCompositeElev,
+        profile.CellFirstElev,
+        profile.CellHighestCompositeElev,
+        profile.CellHighestElev,
+        profile.CellLastCompositeElev,
+        profile.CellLastElev,
+        profile.CellLowestCompositeElev,
+        profile.CellLowestElev,
+        profile.CellMaterialTemperature,
+        profile.CellMaterialTemperatureElev,
+        profile.CellMaterialTemperatureWarnMax,
+        profile.CellMaterialTemperatureWarnMin,
+        profile.FilteredHalfPassCount,
+        profile.FilteredPassCount,
+        profile.CellMDP,
+        profile.CellMDPElev,
+        profile.CellTargetCCV,
+        profile.CellTargetMDP,
+        profile.CellTopLayerThickness,
+        profile.DesignElev,
+        profile.IncludesProductionData,
+        profile.InterceptLength,
+        profile.OTGCellX,
+        profile.OTGCellY,
+        profile.Station,
+        profile.TopLayerPassCount,
+        new TargetPassCountRange(profile.TopLayerPassCountTargetRangeMin, profile.TopLayerPassCountTargetRangeMax),
+        ConvertCellLayers(profile.Layers, ConvertFilteredPassData(profile.Passes))
+      );
     }
 
     private CellPassesResult.ProfileLayer ConvertCellLayerItem(TICProfileLayer layer, CellPassesResult.FilteredPassData[] layerPasses)
     {
       return new CellPassesResult.ProfileLayer
       {
-        amplitude = layer.Amplitude,
-        cCV = layer.CCV,
-        cCV_Elev = layer.CCV_Elev,
-        cCV_MachineID = layer.CCV_MachineID,
-        cCV_Time = layer.CCV_Time,
-        filteredHalfPassCount = layer.FilteredHalfPassCount,
-        filteredPassCount = layer.FilteredPassCount,
-        firstPassHeight = layer.FirstPassHeight,
-        frequency = layer.Frequency,
-        height = layer.Height,
-        lastLayerPassTime = layer.LastLayerPassTime,
-        lastPassHeight = layer.LastPassHeight,
-        machineID = layer.MachineID,
-        materialTemperature = layer.MaterialTemperature,
-        materialTemperature_Elev = layer.MaterialTemperature_Elev,
-        materialTemperature_MachineID = layer.MaterialTemperature_MachineID,
-        materialTemperature_Time = layer.MaterialTemperature_Time,
-        maximumPassHeight = layer.MaximumPassHeight,
-        maxThickness = layer.MaxThickness,
-        mDP = layer.MDP,
-        mDP_Elev = layer.MDP_Elev,
-        mDP_MachineID = layer.MDP_MachineID,
-        mDP_Time = layer.MDP_Time,
-        minimumPassHeight = layer.MinimumPassHeight,
-        radioLatency = layer.RadioLatency,
-        rMV = layer.RMV,
-        targetCCV = layer.TargetCCV,
-        targetMDP = layer.TargetMDP,
-        targetPassCount = layer.TargetPassCount,
-        targetThickness = layer.TargetThickness,
-        thickness = layer.Thickness,
-        filteredPassData = layerPasses
+        Amplitude = layer.Amplitude,
+        CCV = layer.CCV,
+        CCV_Elev = layer.CCV_Elev,
+        CCV_MachineID = layer.CCV_MachineID,
+        CCV_Time = layer.CCV_Time,
+        FilteredHalfPassCount = layer.FilteredHalfPassCount,
+        FilteredPassCount = layer.FilteredPassCount,
+        FirstPassHeight = layer.FirstPassHeight,
+        Frequency = layer.Frequency,
+        Height = layer.Height,
+        LastLayerPassTime = layer.LastLayerPassTime,
+        LastPassHeight = layer.LastPassHeight,
+        MachineID = layer.MachineID,
+        MaterialTemperature = layer.MaterialTemperature,
+        MaterialTemperature_Elev = layer.MaterialTemperature_Elev,
+        MaterialTemperature_MachineID = layer.MaterialTemperature_MachineID,
+        MaterialTemperature_Time = layer.MaterialTemperature_Time,
+        MaximumPassHeight = layer.MaximumPassHeight,
+        MaxThickness = layer.MaxThickness,
+        MDP = layer.MDP,
+        MDP_Elev = layer.MDP_Elev,
+        MDP_MachineID = layer.MDP_MachineID,
+        MDP_Time = layer.MDP_Time,
+        MinimumPassHeight = layer.MinimumPassHeight,
+        RadioLatency = layer.RadioLatency,
+        RMV = layer.RMV,
+        TargetCCV = layer.TargetCCV,
+        TargetMDP = layer.TargetMDP,
+        TargetPassCount = layer.TargetPassCount,
+        TargetThickness = layer.TargetThickness,
+        Thickness = layer.Thickness,
+        FilteredPassData = layerPasses
       };
     }
 
@@ -167,22 +167,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
     {
       return new CellPassesResult.CellEventsValue
       {
-        eventAutoVibrationState = RaptorConverters.convertAutoStateType(events.EventAutoVibrationState),
-        eventDesignNameID = events.EventDesignNameID,
-        eventICFlags = events.EventICFlags,
+        EventAutoVibrationState = RaptorConverters.convertAutoStateType(events.EventAutoVibrationState),
+        EventDesignNameID = events.EventDesignNameID,
+        EventICFlags = events.EventICFlags,
         EventInAvoidZoneState = events.EventInAvoidZoneState,
-        eventMachineAutomatics = RaptorConverters.convertGCSAutomaticsModeType(events.EventMachineAutomatics),
-        eventMachineGear = RaptorConverters.convertMachineGearType(events.EventMachineGear),
-        eventMachineRMVThreshold = events.EventMachineRMVThreshold,
+        EventMachineAutomatics = RaptorConverters.convertGCSAutomaticsModeType(events.EventMachineAutomatics),
+        EventMachineGear = RaptorConverters.convertMachineGearType(events.EventMachineGear),
+        EventMachineRMVThreshold = events.EventMachineRMVThreshold,
         EventMinElevMapping = events.EventMinElevMapping,
-        eventOnGroundState = RaptorConverters.convertOnGroundStateType(events.EventOnGroundState),
-        eventVibrationState = RaptorConverters.convertVibrationStateType(events.EventVibrationState),
-        gPSAccuracy = RaptorConverters.convertGPSAccuracyType(events.GPSAccuracy),
-        gPSTolerance = events.GPSTolerance,
-        layerID = events.LayerID,
-        mapReset_DesignNameID = events.MapReset_DesignNameID,
-        mapReset_PriorDate = events.MapReset_PriorDate,
-        positioningTech = RaptorConverters.convertPositioningTechType(events.PositioningTech)
+        EventOnGroundState = RaptorConverters.convertOnGroundStateType(events.EventOnGroundState),
+        EventVibrationState = RaptorConverters.convertVibrationStateType(events.EventVibrationState),
+        GPSAccuracy = RaptorConverters.convertGPSAccuracyType(events.GPSAccuracy),
+        GPSTolerance = events.GPSTolerance,
+        LayerID = events.LayerID,
+        MapReset_DesignNameID = events.MapReset_DesignNameID,
+        MapReset_PriorDate = events.MapReset_PriorDate,
+        PositioningTech = RaptorConverters.convertPositioningTechType(events.PositioningTech)
       };
     }
 
@@ -190,18 +190,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
     {
       return new CellPassesResult.CellPassValue
       {
-        amplitude = pass.Amplitude,
-        cCV = pass.CCV,
-        frequency = pass.Frequency,
-        gPSModeStore = pass.GPSModeStore,
-        height = pass.Height,
-        machineID = pass.MachineID,
-        machineSpeed = pass.MachineSpeed,
-        materialTemperature = pass.MaterialTemperature,
-        mDP = pass.MDP,
-        radioLatency = pass.RadioLatency,
-        rMV = pass.RMV,
-        time = pass.Time
+        Amplitude = pass.Amplitude,
+        CCV = pass.CCV,
+        Frequency = pass.Frequency,
+        GPSModeStore = pass.GPSModeStore,
+        Height = pass.Height,
+        MachineID = pass.MachineID,
+        MachineSpeed = pass.MachineSpeed,
+        MaterialTemperature = pass.MaterialTemperature,
+        MDP = pass.MDP,
+        RadioLatency = pass.RadioLatency,
+        RMV = pass.RMV,
+        Time = pass.Time
       };
     }
 
@@ -209,12 +209,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
     {
       return new CellPassesResult.CellTargetsValue
       {
-        targetCCV = targets.TargetCCV,
-        targetMDP = targets.TargetMDP,
-        targetPassCount = targets.TargetPassCount,
-        targetThickness = targets.TargetThickness,
-        tempWarningLevelMax = targets.TempWarningLevelMax,
-        tempWarningLevelMin = targets.TempWarningLevelMin
+        TargetCCV = targets.TargetCCV,
+        TargetMDP = targets.TargetMDP,
+        TargetPassCount = targets.TargetPassCount,
+        TargetThickness = targets.TargetThickness,
+        TempWarningLevelMax = targets.TempWarningLevelMax,
+        TempWarningLevelMin = targets.TempWarningLevelMin
       };
     }
 
@@ -222,9 +222,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
     {
       return new CellPassesResult.FilteredPassData
       {
-        eventsValue = ConvertCellPassEvents(pass.EventValues),
-        filteredPass = ConvertCellPass(pass.FilteredPass),
-        targetsValue = ConvertCellPassTargets(pass.TargetValues)
+        EventsValue = ConvertCellPassEvents(pass.EventValues),
+        FilteredPass = ConvertCellPass(pass.FilteredPass),
+        TargetsValue = ConvertCellPassTargets(pass.TargetValues)
       };
     }
 
@@ -274,7 +274,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       for (var i = 0; i < result.Layers.Length; i++)
         layers[i] = AutoMapperUtility.Automapper.Map<CellPassesResult.ProfileLayer>(result.Layers[i]);
 
-      return new CellPassesResult() {layers = layers};
+      return new CellPassesResult() {Layers = layers};
     }
   }
 }

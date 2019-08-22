@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper
           cfg.AddProfile<CompactionReportStationOffsetTRexRequestProfile>();
           cfg.AddProfile<OverridingTargetsProfile>();
           cfg.AddProfile<LiftSettingsProfile>();
-          cfg.AddProfile<ProfileLayerProfile>();
+          cfg.AddProfile<CellProfileLayerProfile>();
         }
       );
 
