@@ -121,7 +121,10 @@
 <br />
 <H3>Surveyed Surfaces [{{surveyedSurfaces.length}} in total]</H3>
 <p>Design File Name: <input [(ngModel)]="surveyedSurfaceFileName" type="text" value="" /> As At Date: <input [(ngModel)]="surveyedSurfaceAsAtDate" type="datetime" value="" /> </p>
-<p><button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button>   <button (click)="addADummySurveyedSurface()">Add a dummy!</button></p>
+<p>
+    <button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button> <button (click)="addADummySurveyedSurface()">Add a dummy!</button>
+    Surveyed Surface UID: <input [(ngModel)]="newSurveyedSurfaceGuid" size="37" type="text" value="" />
+</p>
 <p *ngFor="let surveyedSurface of surveyedSurfaces">
     <button (click)="deleteSurveyedSurface(surveyedSurface)">Delete</button>
     Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} from file {{surveyedSurface.designDescriptor.fileName}}
