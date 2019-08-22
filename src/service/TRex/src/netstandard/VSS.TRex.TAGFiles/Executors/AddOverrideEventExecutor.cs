@@ -61,18 +61,16 @@ namespace VSS.TRex.TAGFiles.Executors
         return result;
       }
 
-      //Test targets exist
+      //Test targets exist i.e. we have some machine events to override
       var machineTargetValues = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex];
-      //TODO: How do we check targets exist here? (Always returns list of event lists though may have nothing in it)
-      /*
-      if (xxx)
+      if (arg.LayerID.HasValue && machineTargetValues.LayerIDStateEvents.Count() == 0 ||
+          !string.IsNullOrEmpty(arg.MachineDesignName) && machineTargetValues.MachineDesignNameIDStateEvents.Count() == 0)
       {
         result.Message = $"No target values found to override";
         Log.LogError(result.Message);
         return result;
       }
-      */
-
+   
       // Now we should check there are no overlapping override events for a new event in this list
       if (arg.LayerID.HasValue && 
           !ValidateNewOverrideEventAgainstExistingOverridingEvents(machineTargetValues.LayerOverrideEvents, arg, CellEvents.NullLayerID))

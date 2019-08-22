@@ -352,6 +352,7 @@ namespace VSS.TRex.Events
         overrideEvents.GetStateAtIndex(i, out var overrideStartDate, out var overrideState);
         var overrideValue = overrideState.Value;
         var overrideEndDate = overrideState.EndDate;
+        //Here we will get index of the latest added event
         var j = tempList.IndexOfClosestEventPriorToDate(overrideEndDate.AddMilliseconds(-1));
         if (j > -1)
         {
