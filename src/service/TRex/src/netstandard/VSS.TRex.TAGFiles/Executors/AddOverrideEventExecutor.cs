@@ -67,7 +67,7 @@ namespace VSS.TRex.TAGFiles.Executors
         if (arg.LayerID.HasValue && machineTargetValues.LayerIDStateEvents.Count() == 0 ||
             !string.IsNullOrEmpty(arg.MachineDesignName) && machineTargetValues.MachineDesignNameIDStateEvents.Count() == 0)
         {
-          result.Message = $"No target values found to override";
+          result.Message = "No target values found to override";
           Log.LogError(result.Message);
           return result;
         }
@@ -151,7 +151,7 @@ namespace VSS.TRex.TAGFiles.Executors
         if (startDate <= arg.EndUTC)
           return false;
       }
-
+ 
       return true;
     }
 
