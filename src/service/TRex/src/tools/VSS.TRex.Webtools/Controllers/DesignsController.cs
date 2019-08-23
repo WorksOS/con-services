@@ -84,6 +84,39 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     /// <summary>
+    /// Upload a design to a site model
+    /// </summary>
+    /// <param name="siteModelUid"></param>
+    /// <param name="importedFileType"></param>
+    /// <param name="designUid"></param>
+    /// <returns></returns>
+    [HttpPost("{siteModelUid}/{importedFileType}/upload")]
+    public async Task<IActionResult> UploadDesignToSiteModel([FromRoute] string siteModelUid,
+      [FromRoute] string importedFileType,
+      [FromQuery] Guid designUid)
+    {
+      if (Request.Form.Files.Count != 1)
+        return BadRequest("Upload a single file only");
+
+      var uploadedFile = Request.Form.Files[0];
+      var tempFile = Path.GetTempFileName();
+      using (var tempFileStream = new FileStream(tempFile, FileMode.OpenOrCreate))
+      {
+        await uploadedFile.CopyToAsync(tempFileStream);
+      }
+
+      try
+      {
+        return await AddDesignToSiteModel(siteModelUid, importedFileType, tempFile, designUid);
+      }
+      finally
+      {
+          System.IO.File.Delete(tempFile);
+      }
+    }
+
+
+    /// <summary>
     /// Adds a new design to a sitemodel. 
     /// </summary>
     /// <param name="siteModelUid"></param>
