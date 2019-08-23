@@ -161,11 +161,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
         EventMachineAutomatics = RaptorConverters.convertGCSAutomaticsModeType(events.EventMachineAutomatics),
         EventMachineGear = RaptorConverters.convertMachineGearType(events.EventMachineGear),
         EventMachineRmvThreshold = events.EventMachineRMVThreshold,
-//#if RAPTOR
-//        EventMinElevMapping = events.EventMinElevMapping,
-//#else
-//        EventMinElevMapping = false;
-//#endif
+        EventMinElevMapping = (byte)events.EventMinElevMapping,
         EventOnGroundState = RaptorConverters.convertOnGroundStateType(events.EventOnGroundState),
         EventVibrationState = RaptorConverters.convertVibrationStateType(events.EventVibrationState),
         GpsAccuracy = RaptorConverters.convertGPSAccuracyType(events.GPSAccuracy),

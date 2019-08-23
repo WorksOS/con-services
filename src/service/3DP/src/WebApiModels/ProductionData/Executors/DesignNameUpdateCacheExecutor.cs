@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (result == TDesignProfilerRequestResult.dppiOK)
         return new ContractExecutionResult();
 
-      throw CreateServiceException<CellPassesExecutor>((int)result);
+      throw CreateServiceException<DesignNameUpdateCacheExecutor>((int)result);
 #else
       throw new NotImplementedException();
 #endif
