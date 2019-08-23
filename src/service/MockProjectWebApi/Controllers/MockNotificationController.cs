@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -8,8 +9,11 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockNotificationController : Controller
+  public class MockNotificationController : BaseController
   {
+    public MockNotificationController(ILoggerFactory loggerFactory)
+      : base(loggerFactory)
+    { }
 
     /// <summary>
     /// Dummies the add.
@@ -36,7 +40,8 @@ namespace MockProjectWebApi.Controllers
       };
       var message =
         $"DummyAddFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId} dXfUnitsType {dXfUnitsType}";
-      Console.WriteLine(message);
+
+      Logger.LogInformation(message);
       return res;
     }
 
@@ -55,7 +60,7 @@ namespace MockProjectWebApi.Controllers
       var res = new BaseDataResult();
       var message =
         $"DummyDeleteFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId}";
-      Console.WriteLine(message);
+      Logger.LogInformation(message);
       return res;
     }
 
@@ -70,7 +75,7 @@ namespace MockProjectWebApi.Controllers
     {
       var res = new BaseDataResult();
       var message = $"DummyUpdateFilesGet: res {res}. projectUid {projectUid} fileUids {fileUids}";
-      Console.WriteLine(message);
+      Logger.LogInformation(message);
       return res;
     }
 
@@ -85,7 +90,7 @@ namespace MockProjectWebApi.Controllers
     {
       var res = new BaseDataResult();
       var message = $"DummyNotifyImportedFileChange: res {res}. projectUid {projectUid} fileUid {fileUid}";
-      Console.WriteLine(message);
+      Logger.LogInformation(message);
       return res;
     }
 
@@ -101,7 +106,7 @@ namespace MockProjectWebApi.Controllers
     {
       var res = new BaseDataResult();
       var message = $"DummyNotifyFilterChangeGet: res {res}. filterUid {filterUid}";
-      Console.WriteLine(message);
+      Logger.LogInformation(message);
       return res;
     }
 
@@ -116,7 +121,7 @@ namespace MockProjectWebApi.Controllers
     {
       var res = new BaseDataResult();
       var message = $"DummyNotifyProjectChangeGet: res {res}. projectUid {projectUid}";
-      Console.WriteLine(message);
+      Logger.LogInformation(message);
       return res;
     }
 

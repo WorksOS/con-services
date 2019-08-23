@@ -63,16 +63,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/productiondata/cells/passes")]
     [HttpPost]
-    public CellPassesResult CellPasses([FromBody]CellPassesRequest request)
+    public async Task<CellPassesResult> CellPasses([FromBody]CellPassesRequest request)
     {
-#if RAPTOR
       request.Validate();
       
-      return RequestExecutorContainerFactory.Build<CellPassesExecutor>(logger, raptorClient).Process(request) as CellPassesResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+      return await RequestExecutorContainerFactory.Build<CellPassesExecutor>(logger,
+#if RAPTOR
+        raptorClient,
 #endif
+        configStore: ConfigStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellPassesResult;
     }
 
     /// <summary>

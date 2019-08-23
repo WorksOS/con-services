@@ -2,20 +2,23 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockRaptorTileController : Controller
+  public class MockRaptorTileController : BaseController
   {
+    public MockRaptorTileController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    { }
+
     [Route("api/v2/productiondatatiles/png")]
     [HttpGet]
     public FileResult GetMockProductionDataTileRaw(
@@ -39,9 +42,9 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] VolumeCalcType? volumeCalcType,
       [FromQuery] bool ExplicitFilters)
     {
-      Console.WriteLine($"GetMockProductionDataTileRaw: {Request.QueryString}");
+      Logger.LogInformation($"GetMockProductionDataTileRaw: {Request.QueryString}");
 
-      using (Image<Rgba32> bitmap = new Image<Rgba32>(width, height))
+      using (var bitmap = new Image<Rgba32>(width, height))
       {
         if (projectUid.ToString() == "ff91dd40-1569-4765-a2bc-014321f76ace")
         {
@@ -108,7 +111,7 @@ namespace MockProjectWebApi.Controllers
 
         var bitmapStream = new MemoryStream();
         bitmap.SaveAsPng(bitmapStream);
-        //Console.WriteLine($"GetMockProductionDataTileRaw result: MD5={CreateMD5(bitmapStream)}");
+        //Logger.LogInformation($"GetMockProductionDataTileRaw result: MD5={CreateMD5(bitmapStream)}");
         bitmapStream.Position = 0;
         return new FileStreamResult(bitmapStream, ContentTypeConstants.ImagePng);
       }
@@ -145,7 +148,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] Guid? topUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      Console.WriteLine($"GetMockBoundingBox: {Request.QueryString}");
+      Logger.LogInformation($"GetMockBoundingBox: {Request.QueryString}");
 
       if (projectUid.ToString() == "ff91dd40-1569-4765-a2bc-014321f76ace")
       {
@@ -191,7 +194,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid designUid)
     {
-      Console.WriteLine($"GetMockDesignBoundaryPoints: {Request.QueryString}");
+      Logger.LogInformation($"GetMockDesignBoundaryPoints: {Request.QueryString}");
 
       if (projectUid.ToString() == "ff91dd40-1569-4765-a2bc-014321f76ace")
       {
@@ -226,7 +229,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] Guid filterUid)
     {
       //Not used at present
-      Console.WriteLine($"GetMockFilterPoints: {Request.QueryString}");
+      Logger.LogInformation($"GetMockFilterPoints: {Request.QueryString}");
       return new PointsListResult { PointsList = null };
     }
 
@@ -239,7 +242,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] Guid? topUid,
       [FromQuery] FilterBoundaryType boundaryType)
     {
-      Console.WriteLine($"GetMockFilterPointsList: {Request.QueryString}");
+      Logger.LogInformation($"GetMockFilterPointsList: {Request.QueryString}");
 
       if (projectUid.ToString() == "ff91dd40-1569-4765-a2bc-014321f76ace")
       {
@@ -327,7 +330,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] Guid alignmentUid)
     {
       //Not used at present
-      Console.WriteLine($"GetMockAlignmentPoints: {Request.QueryString}");
+      Logger.LogInformation($"GetMockAlignmentPoints: {Request.QueryString}");
       return new AlignmentPointsResult { AlignmentPoints = null };
     }
 
@@ -336,7 +339,7 @@ namespace MockProjectWebApi.Controllers
     public PointsListResult GetMockAlignmentPointsList(
       [FromQuery] Guid projectUid)
     {
-      Console.WriteLine($"GetMockAlignmentPointsList: {Request.QueryString}");
+      Logger.LogInformation($"GetMockAlignmentPointsList: {Request.QueryString}");
 
       if (projectUid.ToString() == "ff91dd40-1569-4765-a2bc-014321f76ace")
       {

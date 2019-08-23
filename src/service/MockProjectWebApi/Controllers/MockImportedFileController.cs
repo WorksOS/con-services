@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Services;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
@@ -13,13 +14,14 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockImportedFileController
+  public class MockImportedFileController : BaseController
   {
-    private readonly ImportedFilesService importedFilesService;
+    private readonly ImportedFilesService ImportedFilesService;
 
-    public MockImportedFileController(IImportedFilesService importedFilesService)
+    public MockImportedFileController(ILoggerFactory loggerFactory, IImportedFilesService importedFilesService)
+      : base(loggerFactory)
     {
-      this.importedFilesService = (ImportedFilesService)importedFilesService;
+      ImportedFilesService = (ImportedFilesService)importedFilesService;
     }
 
     /// <summary>
@@ -32,9 +34,9 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid)
     {
-      Console.WriteLine($"{nameof(GetMockImportedFiles)}: projectUid={projectUid}");
+      Logger.LogInformation($"{nameof(GetMockImportedFiles)}: projectUid={projectUid}");
 
-      importedFilesService.ImportedFiles.TryGetValue(projectUid.ToString(), out var fileList);
+      ImportedFilesService.ImportedFiles.TryGetValue(projectUid.ToString(), out var fileList);
 
       return new FileDataResult
       {
@@ -69,7 +71,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc = null)
     {
-      Console.WriteLine(
+      Logger.LogInformation(
         $"CreateMockImportedFile. file: {file.flowFilename} path {file.path} projectUid {projectUid} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
@@ -77,7 +79,7 @@ namespace MockProjectWebApi.Controllers
       {
         return new FileDataSingleResult
         {
-          ImportedFileDescriptor = importedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
+          ImportedFileDescriptor = ImportedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
                                                        .SingleOrDefault(f => f.Name.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase))
         };
       }
@@ -93,7 +95,6 @@ namespace MockProjectWebApi.Controllers
     {
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
-
     public FileDataSingleResult UpdateMockImportedFile(
       FlowFile file,
       [FromQuery] Guid projectUid,
@@ -103,7 +104,7 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc = null)
     {
-      Console.WriteLine(
+      Logger.LogInformation(
         $"UpdateMockImportedFile. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
@@ -111,7 +112,7 @@ namespace MockProjectWebApi.Controllers
       {
         return new FileDataSingleResult
         {
-          ImportedFileDescriptor = importedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
+          ImportedFileDescriptor = ImportedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
                                                        .SingleOrDefault(f => f.Name == file.flowFilename)
         };
       }
@@ -128,7 +129,7 @@ namespace MockProjectWebApi.Controllers
     [HttpDelete]
     public BaseDataResult DeleteMockImportedFile([FromQuery] Guid projectUid, [FromQuery] Guid importedFileUid)
     {
-      Console.WriteLine($"DeleteMockImportedFile. projectUid {projectUid} importedFileUid: {importedFileUid}");
+      Logger.LogInformation($"DeleteMockImportedFile. projectUid {projectUid} importedFileUid: {importedFileUid}");
       return new BaseDataResult();
     }
   }

@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Utils;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockLoadDumpController : Controller
+  public class MockLoadDumpController : BaseController
   {
-    private static List<LoadDumpLocation> LoadDumpData = null;
+    private static List<LoadDumpLocation> LoadDumpData;
 
-    public MockLoadDumpController()
+    public MockLoadDumpController(ILoggerFactory loggerFactory) : base(loggerFactory)
     {
       if (LoadDumpData == null)
       {
@@ -26,11 +27,11 @@ namespace MockProjectWebApi.Controllers
           },
           new LoadDumpLocation
           {
-          loadLatitude = 36.206,
-          loadLongitude = -115.0235,
-          dumpLatitude = 36.208,
-          dumpLongitude = -115.0205
-        },
+            loadLatitude = 36.206,
+            loadLongitude = -115.0235,
+            dumpLatitude = 36.208,
+            dumpLongitude = -115.0205
+          },
           new LoadDumpLocation
           {
             loadLatitude = 36.206,
@@ -82,12 +83,11 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public LoadDumpResult GetMockLoadDumpLocations([FromQuery] Guid projectUid)
     {
-      Console.WriteLine($"GetMockLoadDumpLocations: projectUid={projectUid}");
+      Logger.LogInformation($"GetMockLoadDumpLocations: projectUid={projectUid}");
 
-      if (projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
-        return new LoadDumpResult {cycles = LoadDumpData };
-
-      return new LoadDumpResult();
+      return projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID
+        ? new LoadDumpResult { cycles = LoadDumpData }
+        : new LoadDumpResult();
     }
   }
 }

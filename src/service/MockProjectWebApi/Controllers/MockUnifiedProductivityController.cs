@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Services;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockUnifiedProductivityController : Controller
+  public class MockUnifiedProductivityController : BaseController
   {
-    private static List<GeofenceWithTargetsData> AssociatedGeofenceData = null;
-    private readonly GeofenceService geofenceService;
-
-
-    public MockUnifiedProductivityController(IGeofenceservice geofenceService)
+    private static List<GeofenceWithTargetsData> AssociatedGeofenceData;
+    private readonly GeofenceService GeofenceService;
+    
+    public MockUnifiedProductivityController(ILoggerFactory loggerFactory, IGeofenceservice geofenceService)
+    : base(loggerFactory)
     {
-      this.geofenceService = (GeofenceService)geofenceService;
+      GeofenceService = (GeofenceService)geofenceService;
       InitAssociatedGeofenceData();
     }
 
@@ -23,7 +24,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public GeofenceWithTargetsResult GetMockAssociatedGeofences([FromRoute] Guid projectUid)
     {
-      Console.WriteLine($"GetMockAssociatedGeofences: {projectUid}");
+      Logger.LogInformation($"GetMockAssociatedGeofences: {projectUid}");
       return new GeofenceWithTargetsResult { Results = AssociatedGeofenceData };
     }
 
@@ -32,12 +33,11 @@ namespace MockProjectWebApi.Controllers
       if (AssociatedGeofenceData == null)
       {
         AssociatedGeofenceData = new List<GeofenceWithTargetsData>();
-        foreach (var geofence in geofenceService.Associated)
+        foreach (var geofence in GeofenceService.Associated)
         {
           AssociatedGeofenceData.Add(new GeofenceWithTargetsData { Geofence = geofence });
         }
       }
     }
-
   }
 }

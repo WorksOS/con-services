@@ -1,32 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockTpaasOauthController : Controller
+  public class MockTpaasOauthController : BaseController
   {
+    public MockTpaasOauthController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    { }
+
     /// <summary>
     /// Dummies getting a new bearer token from TPaaS Oauth
     /// </summary>
     [Route("api/oauth2/token")]
     [HttpPost]
-    public TPaasOauthResult DummyGetBearerTokenPost(
-      [FromForm] string grantType)
+    public TPaasOauthResult DummyGetBearerTokenPost([FromForm] string grantType)
     {
-      var res = new TPaasOauthResult()
+      var res = new TPaasOauthResult
       {
         Code = 0,
-        tPaasOauthRawResult = new TPaasOauthRawResult()
+        tPaasOauthRawResult = new TPaasOauthRawResult
         {
           access_token = "sdfs98du9sdfdnfkj",
           expires_in = 50400,
           token_type = "Bearer"
         }
       };
-      var message = $"DummyGetBearerTokenPost: res {JsonConvert.SerializeObject(res)}. grantType {grantType}";
-      Console.WriteLine(message);
+      Logger.LogInformation($"DummyGetBearerTokenPost: res {JsonConvert.SerializeObject(res)}. grantType {grantType}");
       return res;
     }
 
@@ -35,15 +36,14 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     [Route("api/oauth2/revoke")]
     [HttpPost]
-    public BaseDataResult DummyREvokeBearerTokenPost(
-      [FromForm] string token)
+    public BaseDataResult DummyREvokeBearerTokenPost([FromForm] string token)
     {
-      var res = new BaseDataResult()
+      var res = new BaseDataResult
       {
         Code = 0
       };
-      var message = $"DummyRevokeBearerTokenPost: res {JsonConvert.SerializeObject(res)}. token {token}";
-      Console.WriteLine(message);
+
+      Logger.LogInformation($"DummyRevokeBearerTokenPost: res {JsonConvert.SerializeObject(res)}. token {token}");
       return res;
     }
   }

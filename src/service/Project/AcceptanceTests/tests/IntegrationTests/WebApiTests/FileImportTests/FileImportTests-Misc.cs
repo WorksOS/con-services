@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using IntegrationTests.UtilityClasses;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -12,7 +13,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     [Theory]
     [InlineData("api/v4/importedfile")]
     [InlineData("api/v4/importedfile/direct")]
-    public void TestNoFileUploads(string uriRoot)
+    public async Task TestNoFileUploads(string uriRoot)
     {
       const string testName = "File Import 1";
       Msg.Title(testName, "Create standard project and customer then get imported files - There should be none.");
@@ -32,17 +33,17 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
       $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       var projectsArray = new[] {
          "| TableName           | EventDate   | ProjectUID   | LegacyProjectID   | Name       | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone          | StartDate   | EndDate   | GeometryWKT   |",
         $"| Project             | 0d+09:10:00 | {projectUid} | {TestSupport.GenerateLegacyProjectId()} | {testName} | 0                | New Zealand Standard Time | New Zealand Standard Time | {startDate} | {endDate} | {Boundaries.Boundary1} |"};
       
-      ts.PublishEventCollection(projectsArray);
+      await ts.PublishEventCollection(projectsArray);
       
       var importFile = new ImportFile(uriRoot);
       var expectedResults = importFile.ExpectedImportFileDescriptorsListResult;
-      var filesResult = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var filesResult = await importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       
       Assert.True(filesResult.ImportedFileDescriptors.Count == expectedResults.ImportedFileDescriptors.Count, " Expected number of fields does not match actual");
       Assert.Equal(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
@@ -50,7 +51,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
 
     [Theory(Skip ="Cannot run until we have a a TRex system or mock.")]
     [InlineData("api/v4/importedfile")]
-    public void ManualTRexTest_CreateImportedFile(string uriRoot)
+    public async Task ManualTRexTest_CreateImportedFile(string uriRoot)
     {
       const string testName = "File Import 11";
       Msg.Title(testName, "Create standard project then upload a new design surface file.");
@@ -75,7 +76,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
         $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"
       };
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[]
@@ -83,7 +84,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
         $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"
       };
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
       var importFilename = TestFileResolver.File(TestFile.TestDesignSurface3_GoodContent);
       var fullFilePath = TestFileResolver.GetFullPath(importFilename);
@@ -93,13 +94,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         "| EventType              | ProjectUid   | CustomerUid   | Name           | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc              | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fullFilePath} | 1                | {startDateTime} | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |"
       };
-      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1,
+      var filesResult = await importFile.SendRequestToFileImportV4(ts, importFileArray, 1,
         new ImportOptions(HttpMethod.Post, new[] {"filename=TestDesignSurfaceTestDesignSurface3_GoodContent.TTM"}));
       Assert.NotNull(filesResult);
       Assert.Equal(0, filesResult.Code);
       Assert.Equal(projectUid, filesResult.ImportedFileDescriptor.ProjectUid);
 
-      var designsResult = trexService.GetDesignsFromTrex(customerUid.ToString(), projectUid);
+      var designsResult = await trexService.GetDesignsFromTrex(customerUid.ToString(), projectUid);
       Assert.Equal(0, designsResult.Code);
       Assert.Single(designsResult.DesignFileDescriptors);
       Assert.Equal(filesResult.ImportedFileDescriptor.ImportedFileUid, designsResult.DesignFileDescriptors[0].DesignUid);
@@ -112,7 +113,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     /// </summary>
     [Theory]
     [InlineData("api/v4/importedfile")]
-    public void TestImportANewFileThenUpdateTheFileThenDeleteTheFile(string uriRoot)
+    public async Task TestImportANewFileThenUpdateTheFileThenDeleteTheFile(string uriRoot)
     {
       const string testName = "File insert, upsert & delete";
       Msg.Title(testName, "Inset a new file, upsert a new version and then delete the file");
@@ -135,13 +136,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
        $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
        $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
        $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
 
       var importFilename = TestFileResolver.File(TestFile.TestDesignSurface1);
       var fullFilePath = TestFileResolver.GetFullPath(importFilename);
@@ -150,20 +151,20 @@ namespace IntegrationTests.WebApiTests.FileImportTests
        "| EventType              | ProjectUid   | CustomerUid   | Name           | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | SurveyedUtc     | IsActivated | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fullFilePath} | 2                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fullFilePath} | 2                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
-      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
+      var filesResult = await importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
-      _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={importFilename}" }));
+      _ = await importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={importFilename}" }));
       var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = await importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v4/importedfiles?projectUid={projectUid}", customerUid);
 
       Assert.True(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
 
       importFile.ImportedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
 
-      var deleteResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete));
+      var deleteResult = await importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete));
       Assert.Equal(0, deleteResult.Code);
       Assert.Equal("success", deleteResult.Message);
     }

@@ -72,8 +72,7 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       {
         geo[0] *= -1.0;     //Lat
       }
-      //      return new Vector3(geo[0], geo[1], geo[2]);    //Return Lat, Lon, Altitude in that order
-      return new Vector3(geo[1], geo[0], geo[2]);    //Return Lat, Lon, Altitude in that order
+      return new Vector3(geo[1], geo[0], geo[2]);    //Return Lon, Lat, Altitude in that order
     }
 
     //Convert Lat, Lon, Altitude to Earth-Centered-Earth-Fixed (ECEF)

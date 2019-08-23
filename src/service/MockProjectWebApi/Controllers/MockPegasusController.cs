@@ -2,20 +2,25 @@
 using System.Net;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockPegasusController : Controller
+  public class MockPegasusController : BaseController
   {
     private const string PROCEDURE_NAME = "dxf_to_raster_tiles";
     private const string PROCEDURE_ID = "b8431158-1917-4d18-9f2e-e26b255900b7";
+
+    public MockPegasusController(ILoggerFactory loggerFactory)
+      : base(loggerFactory)
+    { }
 
     [Route("/api/executions")]
     [HttpPost]
     public dynamic CreateExecution([FromBody]dynamic message)
     {
-      Console.WriteLine($"{nameof(CreateExecution)}: {JsonConvert.SerializeObject(message)}");
+      Logger.LogInformation($"{nameof(CreateExecution)}: {JsonConvert.SerializeObject(message)}");
 
       var result = new
       {
@@ -30,7 +35,7 @@ namespace MockProjectWebApi.Controllers
         }
       };
 
-      Console.WriteLine($"{nameof(CreateExecution)} returning: {JsonConvert.SerializeObject(result)}");
+      Logger.LogInformation($"{nameof(CreateExecution)} returning: {JsonConvert.SerializeObject(result)}");
       return new CreatedResult(Request.Path, result);
     }
 
@@ -38,7 +43,7 @@ namespace MockProjectWebApi.Controllers
     [HttpDelete]
     public HttpResponseMessage DeleteExecution([FromRoute]Guid id)
     {
-      Console.WriteLine($"{nameof(DeleteExecution)}: {id}");
+      Logger.LogInformation($"{nameof(DeleteExecution)}: {id}");
 
       return new HttpResponseMessage(HttpStatusCode.NoContent);
     }
@@ -47,7 +52,7 @@ namespace MockProjectWebApi.Controllers
     [HttpPost]
     public dynamic StartExecution([FromRoute]Guid id)
     {
-      Console.WriteLine($"{nameof(StartExecution)}: {id}");
+      Logger.LogInformation($"{nameof(StartExecution)}: {id}");
 
       var result = new
       {
@@ -57,7 +62,7 @@ namespace MockProjectWebApi.Controllers
           status = "EXECUTING"
         }
       };
-      Console.WriteLine($"{nameof(StartExecution)} returning: {JsonConvert.SerializeObject(result)}");
+      Logger.LogInformation($"{nameof(StartExecution)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -65,7 +70,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic GetExecutionStatus([FromRoute]Guid id)
     {
-      Console.WriteLine($"{nameof(GetExecutionStatus)}: {id}");
+      Logger.LogInformation($"{nameof(GetExecutionStatus)}: {id}");
 
       var result = new
       {
@@ -75,7 +80,7 @@ namespace MockProjectWebApi.Controllers
           status = "FINISHED",
         }
       };
-      Console.WriteLine($"{nameof(GetExecutionStatus)} returning: {JsonConvert.SerializeObject(result)}");
+      Logger.LogInformation($"{nameof(GetExecutionStatus)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -83,7 +88,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic GetExecution([FromRoute]Guid id)
     {
-      Console.WriteLine($"{nameof(GetExecution)}: {id}");
+      Logger.LogInformation($"{nameof(GetExecution)}: {id}");
 
       var result = new
       {
@@ -100,7 +105,7 @@ namespace MockProjectWebApi.Controllers
           }
         }
       };
-      Console.WriteLine($"{nameof(GetExecution)} returning: {JsonConvert.SerializeObject(result)}");
+      Logger.LogInformation($"{nameof(GetExecution)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
     }
   }
