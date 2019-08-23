@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -27,7 +29,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Constructor with injection
     /// </summary>
     public EditDataController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
-      : base(loggerFactory, loggerFactory.CreateLogger<DesignController>(), serviceExceptionHandler, configStore)
+      : base(loggerFactory, loggerFactory.CreateLogger<EditDataController>(), serviceExceptionHandler, configStore)
     {
     }
 
@@ -44,8 +46,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid);
       if (siteModel == null)
       {
-        Log.LogDebug($"Project {projectUid} does not exist");
-        return result;
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Project {projectUid} does not exist"));
       }
 
       if (assetUid.HasValue)
@@ -53,8 +56,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         var machine = siteModel.Machines.Locate(assetUid.Value);
         if (machine == null)
         {
-          Log.LogDebug($"Asset {assetUid} does not exist in project {projectUid}");
-          return result;
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"Asset {assetUid} does not exist in project {projectUid}"));
         }
         GetOverrideEvents(result, siteModel, machine);
       }
@@ -83,7 +87,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       {
         for (var i = 0; i < designOverrides.Count(); i++)
         {
-          designOverrides.GetStateAtIndex(0, out startDate, out OverrideEvent<int> evt);
+          designOverrides.GetStateAtIndex(i, out startDate, out OverrideEvent<int> evt);
           var design = siteModel.SiteModelMachineDesigns.Locate(evt.Value);
           result.DataEdits.Add(new TRexEditData(machine.ID, startDate, evt.EndDate, design.Name, null));
         }
@@ -93,7 +97,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       {
         for (var i = 0; i < layerOverrides.Count(); i++)
         {
-          layerOverrides.GetStateAtIndex(0, out startDate, out OverrideEvent<ushort> evt);
+          layerOverrides.GetStateAtIndex(i, out startDate, out OverrideEvent<ushort> evt);
           //Check for matching design override
           var match = result.DataEdits.FirstOrDefault(de => de.AssetUid == machine.ID && de.StartUtc == startDate && de.EndUtc == evt.EndDate);
           if (match != null)

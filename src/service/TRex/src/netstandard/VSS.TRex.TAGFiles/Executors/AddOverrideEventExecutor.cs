@@ -7,6 +7,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
@@ -27,15 +28,19 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public async Task<OverrideEventResponse> ExecuteAsync(OverrideEventRequestArgument arg)
     {
-      Log.LogInformation($"Add Override Event Executor: {arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
+      Log.LogInformation($"START Add Override Event Executor: Project={arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
 
       var result = new OverrideEventResponse {Success = false};
-
-      //TODO: Do we need the lock around everything?
 
       if (arg.StartUTC >= arg.EndUTC)
       {
         result.Message = $"Invalid date range. Start:{arg.StartUTC} End:{arg.EndUTC}";
+        return result;
+      }
+      if (string.IsNullOrEmpty(arg.MachineDesignName) && !arg.LayerID.HasValue)
+      {
+        result.Message = "Missing override values";
+        Log.LogError(result.Message);
         return result;
       }
 
@@ -46,50 +51,45 @@ namespace VSS.TRex.TAGFiles.Executors
         Log.LogError(result.Message);
         return result;
       }
-      var machine = siteModel.Machines.Locate(arg.AssetID);
-      if (machine == null)
-      {
-        result.Message = $"Failed to locate machine {arg.AssetID}";
-        Log.LogError(result.Message);
-        return result;
-      }
-
-      if (string.IsNullOrEmpty(arg.MachineDesignName) && !arg.LayerID.HasValue)
-      {
-        result.Message = "Missing override values";
-        Log.LogError(result.Message);
-        return result;
-      }
-
-      //Test targets exist i.e. we have some machine events to override
-      var machineTargetValues = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex];
-      if (arg.LayerID.HasValue && machineTargetValues.LayerIDStateEvents.Count() == 0 ||
-          !string.IsNullOrEmpty(arg.MachineDesignName) && machineTargetValues.MachineDesignNameIDStateEvents.Count() == 0)
-      {
-        result.Message = $"No target values found to override";
-        Log.LogError(result.Message);
-        return result;
-      }
-   
-      // Now we should check there are no overlapping override events for a new event in this list
-      if (arg.LayerID.HasValue && 
-          !ValidateNewOverrideEventAgainstExistingOverridingEvents(machineTargetValues.LayerOverrideEvents, arg, CellEvents.NullLayerID))
-      {
-        //We are not able to override event as there is already overridden event
-        result.Message = $"Layer override failed event date validation {arg.StartUTC}-{arg.EndUTC}";
-        Log.LogError(result.Message);
-        return result;
-      }
-      if (!string.IsNullOrEmpty(arg.MachineDesignName) && 
-          !ValidateNewOverrideEventAgainstExistingOverridingEvents(machineTargetValues.DesignOverrideEvents, arg, Consts.kNoDesignNameID))
-      {
-        result.Message = $"Design override failed event date validation {arg.StartUTC}-{arg.EndUTC}";
-        Log.LogError(result.Message);
-        return result;
-      }
 
       lock (siteModel)
       {
+        var machine = siteModel.Machines.Locate(arg.AssetID);
+        if (machine == null)
+        {
+          result.Message = $"Failed to locate machine {arg.AssetID}";
+          Log.LogError(result.Message);
+          return result;
+        }
+
+        //Test targets exist i.e. we have some machine events to override
+        var machineTargetValues = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex];
+        if (arg.LayerID.HasValue && machineTargetValues.LayerIDStateEvents.Count() == 0 ||
+            !string.IsNullOrEmpty(arg.MachineDesignName) && machineTargetValues.MachineDesignNameIDStateEvents.Count() == 0)
+        {
+          result.Message = $"No target values found to override";
+          Log.LogError(result.Message);
+          return result;
+        }
+     
+        // Now we should check there are no overlapping override events for a new event in this list
+        if (arg.LayerID.HasValue && 
+            !ValidateNewOverrideEventAgainstExistingOverridingEvents(machineTargetValues.LayerOverrideEvents, arg, CellEvents.NullLayerID))
+        {
+          //We are not able to override event as there is already overridden event
+          result.Message = $"Layer override failed event date validation {arg.StartUTC}-{arg.EndUTC}";
+          Log.LogError(result.Message);
+          return result;
+        }
+        if (!string.IsNullOrEmpty(arg.MachineDesignName) && 
+            !ValidateNewOverrideEventAgainstExistingOverridingEvents(machineTargetValues.DesignOverrideEvents, arg, Consts.kNoDesignNameID))
+        {
+          result.Message = $"Design override failed event date validation {arg.StartUTC}-{arg.EndUTC}";
+          Log.LogError(result.Message);
+          return result;
+        }
+
+        Log.LogDebug($"Override event passed validation checks, about to add to list: Project={arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
         //Override lift
         if (arg.LayerID.HasValue)
         {
@@ -98,31 +98,28 @@ namespace VSS.TRex.TAGFiles.Executors
         //Override machine design
         if (!string.IsNullOrEmpty(arg.MachineDesignName))
         {
-          //TODO: do we need to lock this as whole site model is locked.
-          lock (siteModel.SiteModelMachineDesigns)
+          //Try to find corresponding designId
+          var siteModelMachineDesign = siteModel.SiteModelMachineDesigns.Locate(arg.MachineDesignName);
+          if (siteModelMachineDesign == null)
           {
-            //Try to find corresponding designId
-            var siteModelMachineDesign = siteModel.SiteModelMachineDesigns.Locate(arg.MachineDesignName);
-            if (siteModelMachineDesign == null)
-            {
-              siteModelMachineDesign = siteModel.SiteModelMachineDesigns.CreateNew(arg.MachineDesignName);
-            }
-
-            machineTargetValues.DesignOverrideEvents.PutValueAtDate(arg.StartUTC, new OverrideEvent<int>(arg.EndUTC, siteModelMachineDesign.Id));
+            siteModelMachineDesign = siteModel.SiteModelMachineDesigns.CreateNew(arg.MachineDesignName);
           }
+          machineTargetValues.DesignOverrideEvents.PutValueAtDate(arg.StartUTC, new OverrideEvent<int>(arg.EndUTC, siteModelMachineDesign.Id));          
         }
 
-        //TODO Do we need this inside the designs lock
+        Log.LogDebug($"Saving override events: Project={arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
         machineTargetValues.SaveMachineEventsToPersistentStore(storageProxy_Mutable);
-        //TODO: Do we need the following
-        //siteModel.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
 
-        //Notify the site model details have changed
-        //TODO: Ask Raymond what's needed - see AggregatedDataIntegratorWorker
+        // Notify the immutable grid listeners that attributes of this site model have changed.
+        Log.LogDebug($"Notifying grid of changes to project {arg.ProjectID}");
+        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable,
+          siteModel.ID,
+          machineTargetValuesChanged: true);
 
         result.Success = true;
       }
-
+       Log.LogInformation($"END Add Override Event Executor: Project={arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
       return result;
     }
 

@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.TRex.TAGFiles.Executors
 {
@@ -27,7 +30,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public async Task<OverrideEventResponse> ExecuteAsync(OverrideEventRequestArgument arg)
     {
-      Log.LogInformation($"Remove Override Event Executor: {arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
+      Log.LogInformation($"START Remove Override Event Executor: Project={arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
 
       var result = new OverrideEventResponse {Success = false};
 
@@ -45,6 +48,7 @@ namespace VSS.TRex.TAGFiles.Executors
         if (arg.AssetID == Guid.Empty)
         {
           //If AssetID not provided, remove all override events for project
+          Log.LogDebug($"Removing override events for all assets in project {arg.ProjectID}");
           foreach (var machine in siteModel.Machines)
           {
             changed = changed || RemoveOverrideEventsForMachine(siteModel, machine, arg);
@@ -59,18 +63,24 @@ namespace VSS.TRex.TAGFiles.Executors
             Log.LogError(result.Message);
             return result;
           }
-
+          Log.LogDebug($"Removing override events for asset {arg.AssetID}");
           changed = RemoveOverrideEventsForMachine(siteModel, machine, arg);        
         }
 
         if (changed)
         {
-          //Notify all PSNodes something has changed
-          //TODO
+          Log.LogDebug($"Notifying grid of changes to project {arg.ProjectID}");
+          // Notify the immutable grid listeners that attributes of this site model have changed.
+          var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+          sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable,
+            siteModel.ID,
+            machineTargetValuesChanged: true);
         }
       }
 
       result.Success = true;
+      Log.LogInformation($"END Remove Override Event Executor: Project={arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
+
       return result;
     }
 
@@ -97,8 +107,11 @@ namespace VSS.TRex.TAGFiles.Executors
       }
 
       if (changed)
+      {
+        Log.LogDebug($"Saving override events: Project={arg.ProjectID}, Asset={machine.ID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
         // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
         machineTargetValues.SaveMachineEventsToPersistentStore(storageProxy_Mutable);
+      }
 
       return changed;
     }
@@ -112,7 +125,6 @@ namespace VSS.TRex.TAGFiles.Executors
         //No date range - remove all override events of required type for machine
         existingList.Clear();
       else
-        //TODO: should the remove be more rigorous i.e. check start and end date match?
         existingList.RemoveValueAtDate(startUtc);
       return existingList.EventsChanged;
     }
