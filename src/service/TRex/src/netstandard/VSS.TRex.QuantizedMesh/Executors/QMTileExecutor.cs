@@ -327,7 +327,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       if (!RotatedTileBoundingExtents.IsValidPlanExtent)
       {
         ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
-        Log.LogWarning($"Tile.({TileX},{TileY}) Site model extents {siteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
+        Log.LogInformation($"Tile.({TileX},{TileY}) Site model extents {siteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
         return false;
       }
 
@@ -458,7 +458,8 @@ namespace VSS.TRex.QuantizedMesh.Executors
         var setupResult = await SetupPipelineTask(SiteModel.SiteModelExtent, SiteModel.CellSize);
         if (!setupResult)
         {
-          Log.LogError($"Tile.({TileX},{TileY}) Unable to setup pipelinetask.");
+          if (ResultStatus != RequestErrorStatus.InvalidCoordinateRange)
+            Log.LogError($"Tile.({TileX},{TileY}) Unable to setup pipelinetask.");
           return BuildEmptyTile();
         }
 
