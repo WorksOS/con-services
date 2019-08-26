@@ -42,16 +42,17 @@ namespace VSS.TRex.TAGFiles.Executors
         return result;
       }
 
+      bool changed = false;
       lock (siteModel)
       {
-        bool changed = false;
         if (arg.AssetID == Guid.Empty)
         {
           //If AssetID not provided, remove all override events for project
           Log.LogDebug($"Removing override events for all assets in project {arg.ProjectID}");
           foreach (var machine in siteModel.Machines)
           {
-            changed = changed || RemoveOverrideEventsForMachine(siteModel, machine, arg);
+            if (RemoveOverrideEventsForMachine(siteModel, machine, arg))
+              changed = true;
           }
         }
         else
@@ -78,7 +79,10 @@ namespace VSS.TRex.TAGFiles.Executors
         }
       }
 
-      result.Success = true;
+      if (!changed)
+        result.Message = "No override event(s) found to remove";
+
+      result.Success = changed;
       Log.LogInformation($"END Remove Override Event Executor: Project={arg.ProjectID}, Asset={arg.AssetID}, Date Range={arg.StartUTC}-{arg.EndUTC}");
 
       return result;

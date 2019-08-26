@@ -74,7 +74,7 @@ namespace VSS.TRex.TAGFiles.Executors
      
         // Now we should check there are no overlapping override events for a new event in this list
         if (arg.LayerID.HasValue && 
-            !ValidateNewOverrideEventAgainstExistingOverridingEvents(machineTargetValues.LayerOverrideEvents, arg, CellEvents.NullLayerID))
+            !ValidateNewOverrideEventAgainstExistingOverridingEvents(machineTargetValues.LayerOverrideEvents, arg))
         {
           //We are not able to override event as there is already overridden event
           result.Message = $"Layer override failed event date validation {arg.StartUTC}-{arg.EndUTC}";
@@ -82,7 +82,7 @@ namespace VSS.TRex.TAGFiles.Executors
           return result;
         }
         if (!string.IsNullOrEmpty(arg.MachineDesignName) && 
-            !ValidateNewOverrideEventAgainstExistingOverridingEvents(machineTargetValues.DesignOverrideEvents, arg, Consts.kNoDesignNameID))
+            !ValidateNewOverrideEventAgainstExistingOverridingEvents(machineTargetValues.DesignOverrideEvents, arg))
         {
           result.Message = $"Design override failed event date validation {arg.StartUTC}-{arg.EndUTC}";
           Log.LogError(result.Message);
@@ -126,33 +126,28 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <summary>
     /// Checks the new override event has a valid date range. It cannot overlap existing override events.
     /// </summary>
-    private bool ValidateNewOverrideEventAgainstExistingOverridingEvents<T>(IProductionEvents<OverrideEvent<T>> existingList, OverrideEventRequestArgument arg, T defaultValue)
+    private bool ValidateNewOverrideEventAgainstExistingOverridingEvents<T>(IProductionEvents<OverrideEvent<T>> existingList, OverrideEventRequestArgument arg)
     {
-      //Test if we have override event at the same date
-      var nullValue = OverrideEvent<T>.Null(defaultValue);
-      var value = existingList.GetValueAtDate(arg.StartUTC, out _, nullValue);
-      if (!value.Equals(nullValue))
-        return false;
-
       //Test if we override event within the range or we have overlapping overriding
+      bool noOverlap = true;
       //Test if we have overlapping for the start date of the event
-      var index = existingList.IndexOfClosestEventPriorToDate(arg.StartUTC);
-      if (index > 0)
+      //Note closest prior and closest subsequent include event at date itself
+      var index = existingList.IndexOfClosestEventPriorToDate(arg.EndUTC);
+      if (index >= 0)
       {
-        existingList.GetStateAtIndex(index, out _, out OverrideEvent<T> evt);
-        if (evt.EndDate >= arg.StartUTC)
-          return false;
+        existingList.GetStateAtIndex(index, out var startDate, out var evt);        
+        if (startDate != arg.EndUTC) //Ignore exact event time matches
+          noOverlap = arg.StartUTC >= evt.EndDate;
       }
       //Test if we have overlapping for the end date of the event
-      index = existingList.IndexOfClosestEventSubsequentToDate(arg.EndUTC);
-      if (index > 0)
+      index = existingList.IndexOfClosestEventSubsequentToDate(arg.StartUTC);
+      if (index >= 0)
       {
-        existingList.GetStateAtIndex(index, out DateTime startDate, out _);
-        if (startDate <= arg.EndUTC)
-          return false;
-      }
- 
-      return true;
+        existingList.GetStateAtIndex(index, out var startDate, out _);
+        if (startDate != arg.StartUTC)
+          noOverlap = noOverlap && arg.EndUTC <= startDate;
+      } 
+      return noOverlap;
     }
 
 
