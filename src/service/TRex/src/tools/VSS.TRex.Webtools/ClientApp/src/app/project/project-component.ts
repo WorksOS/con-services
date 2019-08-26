@@ -541,7 +541,8 @@ export class ProjectComponent {
 
   public addNewSurveyedSurface(): void {
     var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.surveyedSurfaceFileName;
+      descriptor.fileName = this.surveyedSurfaceFileName;
+      descriptor.designId = this.newSurveyedSurfaceGuid;
     this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveyedSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
       uid => {
         this.newSurveyedSurfaceGuid = uid.designId;
