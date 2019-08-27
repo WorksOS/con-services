@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
@@ -9,7 +11,7 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// A representation of an edit applied to production data.
   /// </summary>
-  public class TRexEditData
+  public class TRexEditData : IMasterDataModel
   {
     /// <summary>
     /// The id of the machine whose data is overridden. 
@@ -86,5 +88,10 @@ namespace VSS.Productivity3D.Models.Models
                   "Nothing to edit"));
       }
     }
+
+    public List<string> GetIdentifiers() => new List<string>
+    {
+      AssetUid.ToString()
+    };
   }
 }

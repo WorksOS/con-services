@@ -76,6 +76,21 @@ namespace VSS.TRex.Gateway.Common.Proxy
     }
 
     /// <summary>
+    /// Sends a request to delete data to the TRex immutable/mutable database.
+    /// </summary>
+    public async Task<TResponse> SendDataDeleteRequest<TResponse, TRequest>(TRequest dataRequest, string route,
+      IDictionary<string, string> customHeaders = null, bool mutableGateway = false)
+      where TResponse : ContractExecutionResult
+    {
+      Gateway = mutableGateway ? GatewayType.Mutable : GatewayType.Immutable;
+      var jsonData = JsonConvert.SerializeObject(dataRequest);
+      log.LogDebug($"{nameof(SendDataDeleteRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
+
+      using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
+        return (TResponse)await MasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, payload: payload);
+    }
+
+    /// <summary>
     /// Sends a request to get site model data from the TRex immutable database.
     /// </summary>
     public async Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,

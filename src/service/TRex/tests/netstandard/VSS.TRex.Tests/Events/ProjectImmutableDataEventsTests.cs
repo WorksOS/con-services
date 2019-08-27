@@ -7,6 +7,8 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
@@ -178,52 +180,54 @@ namespace VSS.TRex.Tests.Events
     [InlineData(-45, -15)]
     [InlineData(-105, -15)]
     [InlineData(-80, -70)]
-    public void Test_ProjectImmutableDataEventsTests_MergingDesignOverrides(int startMins, int endMins)
+    public void Test_ProjectImmutableDataEventsTests_MergingOverrides(int startMins, int endMins)
     {
-      var siteModel = new SiteModel(Guid.Empty, false);
-      var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(); //Mutable context
+      var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+      var events = siteModel.MachinesTargetValues[bulldozerMachineIndex];
 
-      var ids = new[] { 1, 2, 3 };
-      var overrideId = 4;
+      var layerIds = new[] { (ushort)1, (ushort)2, (ushort)3 };
+      var layerOverrideId = (ushort)4;
+
+      var designIds = new[] { 1, 2, 3 };
+      var designOverrideId = 4;
 
       var referenceDate = DateTime.UtcNow;
       var dateTimes = new[] { referenceDate.AddMinutes(-90), referenceDate.AddMinutes(-60), referenceDate.AddMinutes(-30) };
       for (var i = 0; i < 3; i++)
-        events.MachineDesignNameIDStateEvents.PutValueAtDate(dateTimes[i], ids[i]);
+      {
+        events.MachineDesignNameIDStateEvents.PutValueAtDate(dateTimes[i], designIds[i]);
+        events.LayerIDStateEvents.PutValueAtDate(dateTimes[i], layerIds[i]);
+      }
 
       var overrideStartDate = referenceDate.AddMinutes(startMins);
       var overrideEndDate = referenceDate.AddMinutes(endMins);
-      events.DesignOverrideEvents.PutValueAtDate(overrideStartDate, new OverrideEvent<int>(overrideEndDate, overrideId));
+      events.DesignOverrideEvents.PutValueAtDate(overrideStartDate, new OverrideEvent<int>(overrideEndDate, designOverrideId));
+      events.LayerOverrideEvents.PutValueAtDate(overrideStartDate, new OverrideEvent<ushort>(overrideEndDate, layerOverrideId));
+      //Now save added events
+      events.SaveMachineEventsToPersistentStore(siteModel.PrimaryStorageProxy);
+      var evt = new SiteModelAttributesChangedEvent
+      {
+        SiteModelID = siteModel.ID,
+        AlignmentsModified = false,
+        CsibModified = false,
+        DesignsModified = false,
+        ExistenceMapModified = false,
+        MachineDesignsModified = false,
+        MachineTargetValuesModified = true,
+        MachinesModified = false,
+        ProofingRunsModified = false,
+        SurveyedSurfacesModified = false
+      };
+      var siteModels = DIContext.Obtain<ISiteModels>();
+      siteModels.SiteModelAttributesHaveChanged(evt);
+      //Re-get site model to get newly created one
+      siteModel = siteModels.GetSiteModel(siteModel.ID, false);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);//so that merge will occur
+      events = siteModel.MachinesTargetValues[bulldozerMachineIndex];
 
-      //Need to do the adding of events prior to CheckMergedList since getting events.MachineDesignNameIDStateEvents does the merge
-      CheckMergedList(startMins, endMins, events.MachineDesignNameIDStateEvents, overrideId, ids, dateTimes, overrideStartDate, overrideEndDate);
-    }
-
-    [Theory]
-    [InlineData(-105, -75)]
-    [InlineData(-75, -45)]
-    [InlineData(-45, -15)]
-    [InlineData(-105, -15)]
-    [InlineData(-80, -70)]
-    public void Test_ProjectImmutableDataEventsTests_MergingLayerOverrides(int startMins, int endMins)
-    {
-      var siteModel = new SiteModel(Guid.Empty, false);
-      var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-
-      var ids = new[] { (ushort)1, (ushort)2, (ushort)3 };
-      var overrideId = (ushort)4;
-
-      var referenceDate = DateTime.UtcNow;
-      var dateTimes = new[] { referenceDate.AddMinutes(-90), referenceDate.AddMinutes(-60), referenceDate.AddMinutes(-30) };
-      for (var i = 0; i < 3; i++)
-        events.LayerIDStateEvents.PutValueAtDate(dateTimes[i], ids[i]);
-
-      var overrideStartDate = referenceDate.AddMinutes(startMins);
-      var overrideEndDate = referenceDate.AddMinutes(endMins);
-      events.LayerOverrideEvents.PutValueAtDate(overrideStartDate, new OverrideEvent<ushort>(overrideEndDate, overrideId));
-
-      //Need to do the adding of events prior to CheckMergedList since getting events.LayerIDStateEvents does the merge
-      CheckMergedList(startMins, endMins, events.LayerIDStateEvents, overrideId, ids, dateTimes, overrideStartDate, overrideEndDate);
+      CheckMergedList(startMins, endMins, events.MachineDesignNameIDStateEvents, designOverrideId, designIds, dateTimes, overrideStartDate, overrideEndDate);
+      CheckMergedList(startMins, endMins, events.LayerIDStateEvents, layerOverrideId, layerIds, dateTimes, overrideStartDate, overrideEndDate);
     }
 
     private void CheckMergedList<T>(int startMins, int endMins, IProductionEvents<T> eventsList, T overrideId, T[] ids, DateTime[] dateTimes, DateTime startOverride, DateTime endOverride)
@@ -266,7 +270,7 @@ namespace VSS.TRex.Tests.Events
         Assert.Equal(expectedDates[i], eventList[i].Date);
         Assert.Equal(expectedIds[i], eventList[i].State);
       }
-
+ 
       var immutableStream = eventsList.GetImmutableStream();
       targetEventList = Deserialize(immutableStream);
       Assert.Equal(expectedDates.Length, targetEventList.Count());

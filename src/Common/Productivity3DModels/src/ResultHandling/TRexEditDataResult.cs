@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 
@@ -7,7 +9,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
   /// <summary>
   /// Result of request to get production data edits
   /// </summary>
-  public class TRexEditDataResult : ContractExecutionResult
+  public class TRexEditDataResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// The collection of data edits applied to the production data.
@@ -27,5 +29,11 @@ namespace VSS.Productivity3D.Models.ResultHandling
     {
       DataEdits = dataEdits;
     }
+
+    public List<string> GetIdentifiers() => DataEdits?
+                                              .SelectMany(d => d.GetIdentifiers())
+                                              .Distinct()
+                                              .ToList()
+                                            ?? new List<string>();
   }
 }

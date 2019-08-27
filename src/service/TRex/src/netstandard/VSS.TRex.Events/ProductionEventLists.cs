@@ -10,6 +10,7 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Events
@@ -130,11 +131,7 @@ namespace VSS.TRex.Events
     /// </summary>
     public IProductionEvents<ushort> LayerIDStateEvents
     {
-      get
-      {
-        var layerEvents = (IProductionEvents<ushort>)GetEventList(ProductionEventType.LayerID);
-        return MergeEventLists(layerEvents, LayerOverrideEvents, ProductionEventType.LayerID);
-      }
+      get => (IProductionEvents<ushort>) GetEventList(ProductionEventType.LayerID);
     }
 
     /// <summary>
@@ -142,11 +139,7 @@ namespace VSS.TRex.Events
     /// </summary>
     public IProductionEvents<int> MachineDesignNameIDStateEvents
     {
-      get
-      {
-        var designEvents = (IProductionEvents<int>) GetEventList(ProductionEventType.DesignChange);
-        return MergeEventLists(designEvents, DesignOverrideEvents, ProductionEventType.DesignChange);
-      }
+      get => (IProductionEvents<int>) GetEventList(ProductionEventType.DesignChange);
     }
 
     /// <summary>
@@ -260,7 +253,7 @@ namespace VSS.TRex.Events
             {
               if (!SiteModel.IsTransient)
               {
-                temp.LoadFromStore(SiteModel.PrimaryStorageProxy);
+                LoadFromStore(temp, eventType, SiteModel.PrimaryStorageProxy);
               }
 
               allEventsForMachine[(int) eventType] = temp;
@@ -323,10 +316,28 @@ namespace VSS.TRex.Events
       {
         Log.LogDebug($"Loading {evt} events for machine {_internalSiteModelMachineIndex} in project {SiteModel.ID}");
 
-        GetEventList(evt)?.LoadFromStore(storageProxy);
+        LoadFromStore(GetEventList(evt), evt, storageProxy);
       }
 
       return true;
+    }
+
+    /// <summary>
+    /// Loads events of a specified type for a machine. If loading machine design or layer events it then merges with any override events.
+    /// </summary>
+    private void LoadFromStore(IProductionEvents events, ProductionEventType eventType, IStorageProxy storageProxy)
+    {
+      events?.LoadFromStore(storageProxy);
+
+      //Only merge for Immutable lists
+      if (storageProxy.Mutability == StorageMutability.Immutable)
+      {
+        if (eventType == ProductionEventType.DesignChange)
+          MergeEventLists((IProductionEvents<int>) events, DesignOverrideEvents);
+
+        else if (eventType == ProductionEventType.LayerID)
+          MergeEventLists((IProductionEvents<ushort>) events, LayerOverrideEvents);
+      }
     }
 
     /// <summary>
@@ -338,41 +349,32 @@ namespace VSS.TRex.Events
     /// <summary>
     /// Merges machine and override events into a single event list
     /// </summary>
-    private IProductionEvents<T> MergeEventLists<T>(IProductionEvents<T> machineEvents, IProductionEvents<OverrideEvent<T>> overrideEvents, ProductionEventType eventType)
+    private void MergeEventLists<T>(IProductionEvents<T> machineEvents, IProductionEvents<OverrideEvent<T>> overrideEvents)
     {
-      //TODO: Ask Raymond - do we want to store this merged list anywhere?
-
-      if (overrideEvents.Count() == 0)
-        return machineEvents;
-
-      var tempList = (IProductionEvents<T>)_ProductionEventsFactory.NewEventList(_internalSiteModelMachineIndex, SiteModel.ID, eventType);
-      tempList.CopyEventsFrom(machineEvents);
       for (var i = 0; i < overrideEvents.Count(); i++)
       {
         overrideEvents.GetStateAtIndex(i, out var overrideStartDate, out var overrideState);
         var overrideValue = overrideState.Value;
         var overrideEndDate = overrideState.EndDate;
         //Here we will get index of the latest added event
-        var j = tempList.IndexOfClosestEventPriorToDate(overrideEndDate.AddMilliseconds(-1));
+        var j = machineEvents.IndexOfClosestEventPriorToDate(overrideEndDate.AddMilliseconds(-1));
         if (j > -1)
         {
           //Remember and clone this last event
-          tempList.GetStateAtIndex(j, out _, out var machineValue);
+          machineEvents.GetStateAtIndex(j, out _, out var machineValue);
           //Remove all unused events in override interval
-          RemovePreviousEvent(tempList, overrideStartDate.AddMilliseconds(-1), overrideEndDate.AddMilliseconds(-1));
+          RemovePreviousEvent(machineEvents, overrideStartDate.AddMilliseconds(-1), overrideEndDate.AddMilliseconds(-1));
           //Add override events and return
-          tempList.PutValueAtDate(overrideStartDate, overrideValue);
-          tempList.PutValueAtDate(overrideEndDate, machineValue);
+          machineEvents.PutValueAtDate(overrideStartDate, overrideValue);
+          machineEvents.PutValueAtDate(overrideEndDate, machineValue);
         }
         else
         {
           //Add override events and return
-          tempList.PutValueAtDate(overrideStartDate,overrideValue);
-          tempList.PutValueAtDate(overrideEndDate, overrideValue);
+          machineEvents.PutValueAtDate(overrideStartDate,overrideValue);
+          machineEvents.PutValueAtDate(overrideEndDate, overrideValue);
         }
       }
-
-      return tempList;
     }
 
     /// <summary>
