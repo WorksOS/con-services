@@ -1,5 +1,7 @@
-﻿using VSS.TRex.Common;
+﻿using System.Collections.Generic;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.ConnectedSite.Gateway.Abstractions;
 using VSS.TRex.ConnectedSite.Gateway.Models;
 
 using VSS.TRex.TAGFiles.Executors;
@@ -34,19 +36,28 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
         AppVersion = tagFilePrescan.ApplicationVersion,
         DesignName = tagFilePrescan.DesignName,
         AssetType = tagFilePrescan.MachineType.ToString(),
-        PlatformType = tagFilePrescan.PlatformType
+        PlatformType = tagFilePrescan.PlatformType,
+        Devices = string.IsNullOrWhiteSpace(tagFilePrescan.RadioSerial) ? null : 
+          new List<IStatusMessageDevice>
+          {
+            new StatusMessageDevice
+            {
+              Model = tagFilePrescan.RadioType,
+              SerialNumber = tagFilePrescan.RadioSerial
+            }
+          }
       };
     }
 
     private static double? ConvertLLValue(double? value)
-    {
-      if (value.HasValue && value.Value != Consts.NullDouble)
       {
-        return MathUtilities.RadiansToDegrees(value.Value);
+        if (value.HasValue && value.Value != Consts.NullDouble)
+        {
+          return MathUtilities.RadiansToDegrees(value.Value);
+        }
+        return null;
       }
-      return null;
     }
+
+
   }
-
-
-}
