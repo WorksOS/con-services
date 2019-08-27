@@ -29,11 +29,19 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 
     public static void Main(string[] args)
     {
-      EnsureAssemblyDependenciesAreLoaded();
+      try
+      {
+        EnsureAssemblyDependenciesAreLoaded();
 
-      var webHost = BuildWebHost(args);
+        var webHost = BuildWebHost(args);
 
-      webHost.Run();
+        webHost.Run();
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Unhandled exception: {e}");
+        Console.WriteLine($"Stack trace: {e.StackTrace}");
+      }
     }
 
     public static IWebHost BuildWebHost(string[] args)

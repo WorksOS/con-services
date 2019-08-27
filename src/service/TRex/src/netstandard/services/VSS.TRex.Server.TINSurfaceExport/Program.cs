@@ -143,26 +143,41 @@ namespace VSS.TRex.Server.TINSurfaceExport
 
     static async Task<int> Main(string[] args)
     {
-      EnsureAssemblyDependenciesAreLoaded();
-      DependencyInjection();
-
-      ILogger Log = Logging.Logger.CreateLogger<Program>();
-
-      Log.LogInformation("Creating service");
-      Log.LogDebug("Creating service");
-
-      var cancelTokenSource = new CancellationTokenSource();
-      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      try
       {
-        Console.WriteLine("Exiting");
-        DIContext.Obtain<ITRexGridFactory>().StopGrids();
-        cancelTokenSource.Cancel();
-      };
+        EnsureAssemblyDependenciesAreLoaded();
+        DependencyInjection();
 
-      DoServiceInitialisation();
+        var Log = Logging.Logger.CreateLogger<Program>();
 
-      await Task.Delay(-1, cancelTokenSource.Token);
-      return 0;
+        Log.LogInformation("Creating service");
+        Log.LogDebug("Creating service");
+
+        var cancelTokenSource = new CancellationTokenSource();
+        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        {
+          Console.WriteLine("Exiting");
+          DIContext.Obtain<ITRexGridFactory>().StopGrids();
+          cancelTokenSource.Cancel();
+        };
+
+        DoServiceInitialisation();
+
+        await Task.Delay(-1, cancelTokenSource.Token);
+        return 0;
+      }
+      catch (TaskCanceledException)
+      {
+        // Don't care as this is thrown by Task.Delay()
+        Console.WriteLine("Process exit via TaskCanceledException (SIGTERM)");
+        return 0;
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Unhandled exception: {e}");
+        Console.WriteLine($"Stack trace: {e.StackTrace}");
+        return -1;
+      }
     }
   }
 }

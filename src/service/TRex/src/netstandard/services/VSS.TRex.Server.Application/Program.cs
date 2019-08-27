@@ -10,7 +10,6 @@ using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems;
-using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
@@ -176,34 +175,43 @@ namespace VSS.TRex.Server.Application
 
     static async Task<int> Main()
     {
-      EnsureAssemblyDependenciesAreLoaded();
-      DependencyInjection();
-
-      ILogger Log = Logging.Logger.CreateLogger<Program>();
-
-      Log.LogInformation("Creating service");
-      Log.LogDebug("Creating service");
-
-      var server = new ApplicationServiceServer(new[]
+      try
       {
-        ApplicationServiceServer.DEFAULT_ROLE,
-        ServerRoles.ASNODE_PROFILER,
-        ServerRoles.PATCH_REQUEST_ROLE,
-        ServerRoles.ANALYTICS_NODE,
-      });
+        EnsureAssemblyDependenciesAreLoaded();
+        DependencyInjection();
 
-      var cancelTokenSource = new CancellationTokenSource();
-      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        var Log = Logging.Logger.CreateLogger<Program>();
+
+        Log.LogInformation("Creating service");
+        Log.LogDebug("Creating service");
+
+        var server = new ApplicationServiceServer(new[] {ApplicationServiceServer.DEFAULT_ROLE, ServerRoles.ASNODE_PROFILER, ServerRoles.PATCH_REQUEST_ROLE, ServerRoles.ANALYTICS_NODE,});
+
+        var cancelTokenSource = new CancellationTokenSource();
+        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        {
+          Console.WriteLine("Exiting");
+          DIContext.Obtain<ITRexGridFactory>().StopGrids();
+          cancelTokenSource.Cancel();
+        };
+
+        DoServiceInitialisation();
+
+        await Task.Delay(-1, cancelTokenSource.Token);
+        return 0;
+      }
+      catch (TaskCanceledException)
       {
-        Console.WriteLine("Exiting");
-        DIContext.Obtain<ITRexGridFactory>().StopGrids();
-        cancelTokenSource.Cancel();
-      };
-
-      DoServiceInitialisation();
-
-      await Task.Delay(-1, cancelTokenSource.Token);
-      return 0;
+        // Don't care as this is thrown by Task.Delay()
+        Console.WriteLine("Process exit via TaskCanceledException (SIGTERM)");
+        return 0;
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Unhandled exception: {e}");
+        Console.WriteLine($"Stack trace: {e.StackTrace}");
+        return -1;
+      }
     }
   }
 }
