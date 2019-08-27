@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace VSS.TRex.ConnectedSite.Gateway.Abstractions
@@ -26,6 +27,9 @@ namespace VSS.TRex.ConnectedSite.Gateway.Abstractions
     /// </summary>
     [JsonProperty("assetNickname")]
     string AssetNickname { get; set; }
+
+    [JsonProperty("devices", NullValueHandling = NullValueHandling.Ignore)]
+    List<IStatusMessageDevice> Devices { get; set; }
 
   }
 }

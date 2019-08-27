@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using VSS.TRex.ConnectedSite.Gateway.Abstractions;
+using VSS.TRex.ConnectedSite.Gateway.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.ConnectedSite.Gateway.Models
@@ -16,6 +18,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.Models
     public string AppVersion { get; set; }
     public string AppName => "GCS900";
     public string AssetNickname { get; set; }
+    public List<IStatusMessageDevice> Devices { get; set; }
 
     public L2ConnectedSiteMessage() { }
 
