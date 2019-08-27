@@ -34,10 +34,5 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       log.LogInformation($"{nameof(CallConnectedSiteEndpoint)}: result: {JsonConvert.SerializeObject(connectedSiteResult)}");
       return connectedSiteResult;
     }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
   }
 }

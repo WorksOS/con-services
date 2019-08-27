@@ -24,11 +24,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
 {
   public class CellPassesExecutor : RequestExecutorContainer
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
-
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<CellPassesRequest>(item);

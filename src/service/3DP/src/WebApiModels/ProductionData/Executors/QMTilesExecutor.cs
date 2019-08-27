@@ -50,10 +50,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     protected sealed override void ProcessErrorCodes()
     {
     }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new System.NotImplementedException("Use the asynchronous form of this method");
-    }
   }
 }
