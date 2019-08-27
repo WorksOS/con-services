@@ -84,6 +84,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         raptorClient,
         tagProcessor,
 #endif
+        configStore,
         assetResolverProxy: assetResolverProxy,
         trexCompactionDataProxy: tRexCompactionDataProxy
         ).ProcessAsync(request) as EditDataResult;
@@ -117,6 +118,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         raptorClient,
         tagProcessor,
 #endif
+        configStore,
         assetResolverProxy: assetResolverProxy,
         trexCompactionDataProxy: tRexCompactionDataProxy
         ).ProcessAsync(request);
