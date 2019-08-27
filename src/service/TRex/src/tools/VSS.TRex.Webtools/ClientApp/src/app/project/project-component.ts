@@ -61,6 +61,7 @@ export class ProjectComponent {
 
   public applyToViewOnly: boolean = false;
 
+  public surveyedSurfaceFile : File = null;
   public surveyedSurfaceFileName: string = "";
   public surveyedSurfaceAsAtDate: Date = new Date();
 
@@ -68,12 +69,12 @@ export class ProjectComponent {
   public surveyedSurfaces: SurveyedSurface[] = [];
 
   public alignments: Alignment[] = [];
-  public alignmentFileName: string = "";
+  public alignmentFile : File = null;
   public alignmentUid: string = "";
   public newAlignmentGuid: string = "";
 
   public designs: DesignSurface[] = [];
-  public designFileName: string = "";
+  public designFile : File = null;
   public designOffset: number = 0.0;
   public designUid: string = "";
 
@@ -529,21 +530,15 @@ export class ProjectComponent {
     this.projectService.testJSONParameter(filter).subscribe(x => x);
   }
 
-  public addADummySurveyedSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = "C:/temp/SomeFile.ttm";
-    this.projectService.addSurveyedSurface(this.projectUid, descriptor, new Date(), this.tileExtents).subscribe(
-      uid => {
-        this.newSurveyedSurfaceGuid = uid.designId;
-        this.getSurveyedSurfaces();
-      });
+
+  handleSurveyedSurfaceChange(files: FileList) {
+    this.surveyedSurfaceFile = files.item(0);
   }
 
-  public addNewSurveyedSurface(): void {
-    var descriptor = new DesignDescriptor();
-      descriptor.fileName = this.surveyedSurfaceFileName;
-      descriptor.designId = this.newSurveyedSurfaceGuid;
-    this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveyedSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
+  public addNewSurveyedSurface(): void { 
+      console.log("Surveyed Surface", this.surveyedSurfaceFile);
+
+    this.projectService.addSurveyedSurface(this.projectUid, this.surveyedSurfaceFile, this.newSurveyedSurfaceGuid, this.surveyedSurfaceAsAtDate).subscribe(
       uid => {
         this.newSurveyedSurfaceGuid = uid.designId;
         this.getSurveyedSurfaces();
@@ -564,21 +559,12 @@ export class ProjectComponent {
       uid => this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
   }
 
-  public addADummyDesignSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = "C:/temp/SomeFile.ttm";
-    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
-      uid => {
-        this.newDesignGuid = uid.designId;
-        this.getDesignSurfaces();
-      });
+  handleDesignFileChange(files: FileList) { 
+      this.designFile = files.item(0);
   }
 
   public addNewDesignSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.designFileName;
-    descriptor.designId = this.designUid;
-    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
+      this.projectService.addDesignSurface(this.projectUid, this.designFile, this.designUid).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
         this.getDesignSurfaces();
@@ -604,21 +590,12 @@ export class ProjectComponent {
     localStorage.setItem("designOffset", this.designOffset.toString());
   }
 
-  public addADummyAlignment(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = "C:/temp/SomeFile.svl";
-    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
-      uid => {
-        this.newAlignmentGuid = uid.designId;
-        this.getAlignments();
-      });
+  handleAlignmentFileChange(files: FileList) { 
+      this.alignmentFile = files.item(0);
   }
 
   public addNewAlignment(): void {
-    var descriptor = new DesignDescriptor();
-      descriptor.fileName = this.alignmentFileName;
-      descriptor.designId = this.alignmentUid;
-    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
+    this.projectService.addAlignment(this.projectUid, this.alignmentFile, this.alignmentUid).subscribe(
       uid => {
         this.newAlignmentGuid = uid.designId;
         this.getAlignments();
