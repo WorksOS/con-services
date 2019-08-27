@@ -84,6 +84,44 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     /// <summary>
+    /// Upload a design to a site model
+    /// </summary>
+    /// <param name="siteModelUid"></param>
+    /// <param name="importedFileType"></param>
+    /// <param name="designUid"></param>
+    /// <returns></returns>
+    [HttpPost("{siteModelUid}/{importedFileType}/upload")]
+    public async Task<IActionResult> UploadDesignToSiteModel([FromRoute] string siteModelUid,
+      [FromRoute] string importedFileType,
+      [FromQuery] string asAtDate,
+      [FromQuery] Guid designUid)
+    {
+      if (Request.Form.Files.Count != 1)
+        return BadRequest("Upload a single file only");
+
+      var uploadedFile = Request.Form.Files[0];
+      var tempFile = Path.Combine(Path.GetTempPath(), uploadedFile.FileName);
+
+      if (System.IO.File.Exists(tempFile))
+        System.IO.File.Delete(tempFile);
+
+      using (var tempFileStream = new FileStream(tempFile, FileMode.OpenOrCreate))
+      {
+        await uploadedFile.CopyToAsync(tempFileStream);
+      }
+
+      try
+      {
+        return await AddDesignToSiteModel(siteModelUid, importedFileType, tempFile, asAtDate, designUid);
+      }
+      finally
+      {
+          System.IO.File.Delete(tempFile);
+      }
+    }
+
+
+    /// <summary>
     /// Adds a new design to a sitemodel. 
     /// </summary>
     /// <param name="siteModelUid"></param>
@@ -118,28 +156,26 @@ namespace VSS.TRex.Webtools.Controllers
 
       var siteModelGuid = Guid.Parse(siteModelUid);
       
-      if (string.IsNullOrEmpty(designUid.ToString()))
+      if (designUid == Guid.Empty)
         designUid = Guid.NewGuid();
-
-      var fileNameOnly = Path.GetFileName(fileNameAndLocalPath);
 
       // copy local file to S3
       bool designFileLoadedOk;
       string s3FileName;
-
-      var tempDate = asAtDate.Remove(asAtDate.IndexOf(".", 0, StringComparison.Ordinal)).Replace(":", "");
-      var destinationFileName = Path.GetFileNameWithoutExtension(fileNameOnly) + $"_{tempDate}" + Path.GetExtension(fileNameOnly);
-
+      
+      var tempFileNameOnly = Path.GetFileName(fileNameAndLocalPath);
       if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
       {
-        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), fileNameOnly, destinationFileName);
+        var tempDate = asAtDate.Remove(asAtDate.IndexOf(".", 0, StringComparison.Ordinal)).Replace(":", "");
+        var destinationFileName = Path.GetFileNameWithoutExtension(tempFileNameOnly) + $"_{tempDate}" + Path.GetExtension(tempFileNameOnly);
+        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly, destinationFileName);
 
         s3FileName = destinationFileName;
       }
       else
       {
-        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), fileNameOnly);
-        s3FileName = fileNameOnly;
+        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly);
+        s3FileName = tempFileNameOnly;
       }
 
       if (!designFileLoadedOk)
@@ -153,19 +189,19 @@ namespace VSS.TRex.Webtools.Controllers
 
       if (importedFileTypeEnum == ImportedFileType.DesignSurface)
       {
-        AddTheDesignSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, fileNameOnly);
+        AddTheDesignSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName);
 
         // upload indices
-        var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+        var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
         if (!spatialUploadedOk)
-          throw new ArgumentException($"Unable to copy spatial index file to S3: {fileNameOnly + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
-        var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+          throw new ArgumentException($"Unable to copy spatial index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
+        var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
         if (!subgridUploadedOk)
-          throw new ArgumentException($"Unable to copy subgrid index file to S3: {fileNameOnly + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
+          throw new ArgumentException($"Unable to copy subgrid index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
         // upload boundary...
-        var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+        var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
         if (!boundaryUploadedOk)
-          throw new ArgumentException($"Unable to copy boundary file to S3: {fileNameOnly + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
+          throw new ArgumentException($"Unable to copy boundary file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
 
         return new JsonResult(DIContext.Obtain<IDesignManager>().List(siteModelGuid).Locate(designUid));
       }
@@ -173,26 +209,26 @@ namespace VSS.TRex.Webtools.Controllers
       if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
       {
         var surveyedUtc = DateTime.Parse(asAtDate).ToUniversalTime(); //DateTime.UtcNow; // unable to parse the date from UI DateTime.Parse(asAtDate);
-        AddTheSurveyedSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, fileNameOnly, surveyedUtc);
+        AddTheSurveyedSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName, surveyedUtc);
 
         // upload indices
-        var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+        var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
         if (!spatialUploadedOk)
-          throw new ArgumentException($"Unable to copy spatial index file to S3: {destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
-        var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+          throw new ArgumentException($"Unable to copy spatial index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
+        var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
         if (!subgridUploadedOk)
-          throw new ArgumentException($"Unable to copy subgrid index file to S3: {destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
+          throw new ArgumentException($"Unable to copy subgrid index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
         // upload boundary...
-        var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION, destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+        var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
         if (!boundaryUploadedOk)
-          throw new ArgumentException($"Unable to copy boundary file to S3: {destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
+          throw new ArgumentException($"Unable to copy boundary file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
 
         return new JsonResult(DIContext.Obtain<IDesignManager>().List(siteModelGuid).Locate(designUid));
       }
 
       if (importedFileTypeEnum == ImportedFileType.Alignment)
       {
-        AddTheAlignmentToSiteModel(siteModelGuid, designUid, downloadLocalPath, fileNameOnly);
+        AddTheAlignmentToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName);
         return new JsonResult(DIContext.Obtain<IAlignmentManager>().List(siteModelGuid).Locate(designUid));
       }
       throw new ArgumentException($"{nameof(AddDesignToSiteModel)} Unsupported ImportedFileType: {importedFileType}");

@@ -92,9 +92,12 @@ export class ProjectService {
     return this.executeRequest<CombinedFilter>('testJSONParameter', `sandbox/jsonparameter?param=${paramString}`);
   }
 
-  public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<DesignDescriptor> {
+  public addSurveyedSurface(projectUid: string, surface : File, designUid : string, asAtDate: Date): Observable<DesignDescriptor> {
+    const formData: FormData = new FormData();
+    formData.append('fileKey', surface, surface.name);
     return this.executePostRequest<DesignDescriptor>
-        ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface?fileNameAndLocalPath=${descriptor.fileName}&asAtDate=${asAtDate.toISOString()}&designUid=${descriptor.designId}`, null);
+        ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface/upload?asAtDate=${asAtDate.toISOString()}&designUid=${designUid}`, 
+        formData);
   }
 
   public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
@@ -105,9 +108,11 @@ export class ProjectService {
     return this.executeDeleteRequest<any>('deleteSurveyedSurface', `designs/${projectUid}/SurveyedSurface/${surveyedSurfaceId}`);
   }
 
-  public addDesignSurface(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
+  public addDesignSurface(projectUid: string, designFile : File, designUid : string, ): Observable<DesignDescriptor> {
+    const formData: FormData = new FormData();
+    formData.append('fileKey', designFile, designFile.name);
     return this.executePostRequest<DesignDescriptor>
-      ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileNameAndLocalPath=${descriptor.fileName}&designUid=${descriptor.designId}`, null);
+      ('addDesignSurface', `designs/${projectUid}/DesignSurface/upload?designUid=${designUid}`, formData);
   }
 
   public getDesignSurfaces(projectUid: string): Observable<DesignSurface[]> {
@@ -118,9 +123,11 @@ export class ProjectService {
     return this.executeDeleteRequest<any>('deleteDesignSurface', `designs/${projectUid}/DesignSurface/${designId}`);
   }
 
-  public addAlignment(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
+  public addAlignment(projectUid: string, alignmentFile : File, designUid : string, ): Observable<DesignDescriptor> {
+    const formData: FormData = new FormData();
+    formData.append('fileKey', alignmentFile, alignmentFile.name);
     return this.executePostRequest<DesignDescriptor>
-        ('addAlignment', `designs/${projectUid}/Alignment?fileNameAndLocalPath=${descriptor.fileName}&designUid=${descriptor.designId}`, null);
+        ('addAlignment', `designs/${projectUid}/Alignment/upload?designUid=${designUid}`, formData);
   }
 
   public getAlignments(projectUid: string): Observable<Alignment[]> {
