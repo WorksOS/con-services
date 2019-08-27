@@ -151,8 +151,7 @@
     Alignment File Name: <input type="file" value="" (change)="handleAlignmentFileChange($event.target.files)" />
 </p>
 <p>
- 
-    <button (click)="addADummyAlignment()">Add a dummy!</button>
+    <button (click)=addNewAlignment()>Add New Alignment</button>
     Alignment UID: <input [(ngModel)]="alignmentUid" size="37" type="text" value="" />
 </p>
 <p *ngFor="let alignment of alignments">
