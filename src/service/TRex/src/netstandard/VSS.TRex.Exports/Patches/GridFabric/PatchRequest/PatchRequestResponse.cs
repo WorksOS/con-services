@@ -5,7 +5,7 @@ using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Exports.Patches.GridFabric
+namespace VSS.TRex.Exports.Patches.GridFabric.PatchRequest
 {
   /// <summary>
   /// The response returned from the Patches request executor that contains the response code and the set of

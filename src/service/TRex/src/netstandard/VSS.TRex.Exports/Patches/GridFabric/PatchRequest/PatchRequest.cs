@@ -4,7 +4,7 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Requests;
 
-namespace VSS.TRex.Exports.Patches.GridFabric
+namespace VSS.TRex.Exports.Patches.GridFabric.PatchRequest
 {
   /// <summary>
   /// Sends a request to the grid for a patch of sub grids

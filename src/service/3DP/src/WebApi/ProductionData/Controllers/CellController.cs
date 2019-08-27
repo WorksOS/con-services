@@ -99,15 +99,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/productiondata/patches")]
     [HttpPost]
-    public ContractExecutionResult Post([FromBody]PatchRequest request)
+    public async Task<ContractExecutionResult> Post([FromBody]PatchRequest request)
     {
       request.Validate();
+      return await RequestExecutorContainerFactory.Build<PatchExecutor>(logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<PatchExecutor>(logger, raptorClient).Process(request);
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
 #endif
+        configStore: ConfigStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request);
     }
 
     /// <summary>

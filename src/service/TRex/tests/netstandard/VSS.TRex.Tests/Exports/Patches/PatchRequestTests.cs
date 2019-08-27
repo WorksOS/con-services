@@ -7,6 +7,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Exports.Patches.GridFabric;
+using VSS.TRex.Exports.Patches.GridFabric.PatchRequest;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;

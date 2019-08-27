@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using VSS.TRex.Exports.Patches.GridFabric;
+using VSS.TRex.Exports.Patches.GridFabric.PatchRequest;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Tests.TestFixtures;

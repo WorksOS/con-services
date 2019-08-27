@@ -7,7 +7,7 @@ using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
 
-namespace VSS.TRex.Exports.Patches.GridFabric
+namespace VSS.TRex.Exports.Patches.GridFabric.PatchRequest
 {
   /// <summary>
   /// The grid compute function responsible for coordinating subgrids comprising a patch a server compute node in response to 

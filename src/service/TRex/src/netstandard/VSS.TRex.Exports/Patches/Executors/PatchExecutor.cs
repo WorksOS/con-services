@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Models;
 using VSS.TRex.DI;
-using VSS.TRex.Exports.Patches.GridFabric;
+using VSS.TRex.Exports.Patches.GridFabric.PatchRequest;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;

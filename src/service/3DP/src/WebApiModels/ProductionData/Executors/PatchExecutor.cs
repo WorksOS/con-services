@@ -1,13 +1,18 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+#if RAPTOR
 using ASNodeDecls;
-using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
+#endif
+using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
@@ -23,50 +28,36 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       ProcessErrorCodes();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = CastRequestObjectTo<PatchRequest>(item);
-
-      // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
-      // in due course once the breaking modifications process is agreed with BC.
       try
       {
-        var filter1 = RaptorConverters.ConvertFilter(request.Filter1, request.ProjectId, raptorClient);
-        var filter2 = RaptorConverters.ConvertFilter(request.Filter2, request.ProjectId, raptorClient);
-        var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
+        var request = CastRequestObjectTo<PatchRequest>(item);
 
-        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+#if RAPTOR
+        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES") ?? false)
         {
-          RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
+#endif
+          var patchDataRequest = new PatchDataRequest(
+            request.ProjectUid.Value,
+            request.Filter1,
+            request.Filter2,
+            request.Mode,
+            request.PatchNumber,
+            request.PatchSize,
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
+
+          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders);
+
+          return fileResult.Length > 0
+            ? ConvertPatchResult(fileResult, true)
+            : CreateNullPatchReturnedResult();
+#if RAPTOR
         }
 
-        RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
-
-        var raptorResult = raptorClient.RequestDataPatchPage(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
-            TASNodeCancellationDescriptorType.cdtDataPatches),
-          RaptorConverters.convertDisplayMode(request.Mode),
-          RaptorConverters.convertColorPalettes(request.Palettes, request.Mode),
-          request.RenderColorValues,
-          filter1,
-          filter2,
-          RaptorConverters.convertOptions(null, request.LiftBuildSettings,
-                  request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
-          RaptorConverters.DesignDescriptor(request.DesignDescriptor),
-          volType,
-          request.PatchNumber,
-          request.PatchSize,
-          out var patch,
-          out _);
-
-        if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
-          return patch != null
-            ? ConvertPatchResult(patch.ToArray())
-            : new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
-        }
-
-        throw CreateServiceException<PatchExecutor>((int)raptorResult);
+        return ProcessWithRaptor(request);
+#endif
       }
       finally
       {
@@ -76,7 +67,52 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
+    }
+
+#if RAPTOR
+    private ContractExecutionResult ProcessWithRaptor(PatchRequest request)
+    {
+      // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
+      // in due course once the breaking modifications process is agreed with BC.
+      var filter1 = RaptorConverters.ConvertFilter(request.Filter1, request.ProjectId, raptorClient);
+      var filter2 = RaptorConverters.ConvertFilter(request.Filter2, request.ProjectId, raptorClient);
+      var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
+
+      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+      {
+        RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
+      }
+
+      RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
+
+      var raptorResult = raptorClient.RequestDataPatchPage(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
+          TASNodeCancellationDescriptorType.cdtDataPatches),
+        RaptorConverters.convertDisplayMode(request.Mode),
+        RaptorConverters.convertColorPalettes(request.Palettes, request.Mode),
+        request.RenderColorValues,
+        filter1,
+        filter2,
+        RaptorConverters.convertOptions(null, request.LiftBuildSettings,
+                request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
+        RaptorConverters.DesignDescriptor(request.DesignDescriptor),
+        volType,
+        request.PatchNumber,
+        request.PatchSize,
+        out var patch,
+        out _);
+
+      if (raptorResult == TASNodeErrorStatus.asneOK)
+      {
+        return patch != null
+          ? ConvertPatchResult(patch.ToArray())
+          : new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
+      }
+
+      throw CreateServiceException<PatchExecutor>((int)raptorResult);
     }
 
     private PatchResultRenderedColors ConvertPatchResult(byte[] patch)
@@ -131,6 +167,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         totalNumPatchesRequired,
         valuesRenderedToColors,
         subgrids);
+    }
+#endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

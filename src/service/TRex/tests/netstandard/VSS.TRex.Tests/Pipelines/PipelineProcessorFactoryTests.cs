@@ -5,6 +5,7 @@ using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
+using VSS.TRex.Exports.Patches.GridFabric.PatchRequest;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Factories;
