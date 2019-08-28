@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client.Interfaces;

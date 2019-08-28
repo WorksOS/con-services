@@ -39,7 +39,6 @@ to/from file if the kNFFElementHeaderHasStationing flag is set in their<headeerF
     protected virtual double GetVertexElevation(int VertexNum)
     {
       throw new TRexException("GetVertexElevation not implemented in base class");
-      return Consts.NullDouble;
     }
 
     protected virtual void SetVertexElevation(int VertexNum,
@@ -51,7 +50,6 @@ to/from file if the kNFFElementHeaderHasStationing flag is set in their<headeerF
     protected virtual double GetVertexStation(int VertexNum)
     {
       throw new TRexException("GetVertexStation not implemented in base class");
-      return Consts.NullDouble;
     }
 
     protected virtual void SetVertexStation(int VertexNum,
@@ -155,13 +153,11 @@ const Value: Double); Virtual;
     public virtual NFFLineworkPolyLineVertexEntity CreateVertexAtStation(double Chainage)
     {
       throw new TRexException("NFFStationedLineworkEntity.CreateVertexAtStation should be considered abstract");
-      return null;
     }
 
     public virtual NFFLineworkPolyLineVertexEntity CreateNewVertex()
     {
       throw new TRexException("NFFStationedLineworkEntity.CreateNewVertex should be considered abstract");
-      return null;
     }
   }
 }

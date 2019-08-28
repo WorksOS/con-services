@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using FluentAssertions;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;

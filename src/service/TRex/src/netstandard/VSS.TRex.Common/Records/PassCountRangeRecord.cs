@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Common.Records
 {

@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
       base.Dispose();
     }

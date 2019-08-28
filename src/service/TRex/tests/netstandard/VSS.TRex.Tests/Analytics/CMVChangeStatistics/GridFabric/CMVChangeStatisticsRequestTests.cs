@@ -6,7 +6,7 @@ using FluentAssertions;
 using VSS.TRex.Analytics.CMVChangeStatistics;
 using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
 using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;

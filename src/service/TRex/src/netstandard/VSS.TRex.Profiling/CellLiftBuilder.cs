@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
@@ -832,7 +832,6 @@ namespace VSS.TRex.Profiling
       int HalfPassCount = 0;
       int PrevIdx = 0;
       DateTime tme = DateTime.MinValue;
-      bool isMinElev;
       int lowPassIdx = Consts.NullLowestPassIdx;
       float lowestHeight = Consts.NullHeight; 
       float hgt;

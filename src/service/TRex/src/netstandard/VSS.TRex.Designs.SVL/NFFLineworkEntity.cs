@@ -257,7 +257,6 @@ namespace VSS.TRex.Designs.SVL
     public virtual NFFLineworkPolyLineVertexEntity GetVertex(int VertexNum)
     {
       throw new TRexException("NFFLineworkEntity.GetVertex not implemented for this entity type");
-      return null;
       // Base class does nothing
     }
 
@@ -344,7 +343,6 @@ namespace VSS.TRex.Designs.SVL
       int Index)
     {
       throw new TRexException("No UpdateHeight implementation in NFFLineWorkEntity");
-      return false;
     }
 
     public virtual int VertexCount() => 0;

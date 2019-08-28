@@ -2,6 +2,7 @@
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
+using VSS.TRex.Events.Models;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -30,7 +31,7 @@ namespace VSS.TRex.Tests.Events
     [Fact]
     public void Test_ProductionEventsFactory_ExpectedNumberOfCreatableEventTypes()
     {
-      const int expectedCount = 21;
+      const int expectedCount = 23;
       int actualCount = 0;
 
       ProductionEventsFactory factory = new ProductionEventsFactory();
@@ -61,6 +62,8 @@ namespace VSS.TRex.Tests.Events
     [InlineData(ProductionEventType.TempWarningLevelMaxChange, typeof(ProductionEvents<ushort>))]
     [InlineData(ProductionEventType.TargetMDP, typeof(ProductionEvents<short>))]
     [InlineData(ProductionEventType.LayerID, typeof(ProductionEvents<ushort>))]
+    [InlineData(ProductionEventType.DesignOverride, typeof(ProductionEvents<OverrideEvent<int>>))]
+    [InlineData(ProductionEventType.LayerOverride, typeof(ProductionEvents<OverrideEvent<ushort>>))]
     [InlineData(ProductionEventType.TargetCCA, typeof(ProductionEvents<byte>))]
     [InlineData(ProductionEventType.StartEndRecordedData, typeof(StartEndProductionEvents))]
     [InlineData(ProductionEventType.MachineStartupShutdown, typeof(StartEndProductionEvents))]
