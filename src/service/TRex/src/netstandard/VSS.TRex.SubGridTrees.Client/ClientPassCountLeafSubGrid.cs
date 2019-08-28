@@ -159,7 +159,7 @@ namespace VSS.TRex.SubGridTrees.Client
              SubGridTreeConsts.SubGridTreeCellsPerSubGrid * SubGridCellPassDataPassCountEntryRecord.IndicativeSizeInBytes();
     }
 
-    public void DumpToLog()
+    public override void DumpToLog()
     {
       base.DumpToLog();
     }

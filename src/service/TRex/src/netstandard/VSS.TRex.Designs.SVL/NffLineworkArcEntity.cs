@@ -41,83 +41,81 @@ namespace VSS.TRex.Designs.SVL
     // Used in IsSameAs
     private double OriginalEndPointsHash;
 
- // protected
- protected override double GetEndStation()
- {
-   double result = Consts.NullDouble;
+    protected override double GetEndStation()
+    {
+      double result = Consts.NullDouble;
 
-   if (StartStation != Consts.NullDouble)
-   {
-     // Work out the bits of geometry we need for the NFF arc
-     double relX = X1 - CX;
-     double relY = Y1 - CY;
-     double endX = X2 - CX;
-     double endY = Y2 - CY;
-     double radius = Math.Sqrt(relX * relX + relY * relY);
-     double start_angle = Math.Atan2(relY, relX);
-     double end_angle = Math.Atan2(endY, endX);
+      if (StartStation != Consts.NullDouble)
+      {
+        // Work out the bits of geometry we need for the NFF arc
+        double relX = X1 - CX;
+        double relY = Y1 - CY;
+        double endX = X2 - CX;
+        double endY = Y2 - CY;
+        double radius = Math.Sqrt(relX * relX + relY * relY);
+        double start_angle = Math.Atan2(relY, relX);
+        double end_angle = Math.Atan2(endY, endX);
 
-     result = StartStation + Math.Abs(NFFUtils.NormalizeDeflection(end_angle - start_angle) * radius);
-   }
-   return result;
- }
+        result = StartStation + Math.Abs(NFFUtils.NormalizeDeflection(end_angle - start_angle) * radius);
+      }
 
- protected override double GetVertexElevation(int VertexNum)
- {
-   if (VertexNum == 0)
-     return GetStartTransitPoint().Z;
+      return result;
+    }
 
-   if (VertexNum == 1)
-     return GetEndTransitPoint().Z;
+    protected override double GetVertexElevation(int VertexNum)
+    {
+      if (VertexNum == 0)
+        return GetStartTransitPoint().Z;
 
-   throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.GetVertexElevation");
-     return Consts.NullDouble;
- }
+      if (VertexNum == 1)
+        return GetEndTransitPoint().Z;
 
- protected override void SetVertexElevation(int VertexNum,
-   double Value)
- {
-   if (VertexNum == 0)
-   {
-     var Pt = GetStartTransitPoint();
-     Pt.Z = Value;
-     SetStartTransitPoint(Pt);
-   }
-   else
-   if (VertexNum == 1)
-   {
-     var Pt = GetEndTransitPoint();
-     Pt.Z = Value;
-     SetEndTransitPoint(Pt);
-   }
-   else
-   {
-     throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.SetVertexElevation");
-   }
- }
+      throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.GetVertexElevation");
+    }
 
- protected override double GetVertexStation(int VertexNum)
- {
-   if (VertexNum == 0)
-     return GetStartStation();
-   if (VertexNum == 1)
-     return GetEndStation();
+    protected override void SetVertexElevation(int VertexNum,
+      double Value)
+    {
+      if (VertexNum == 0)
+      {
+        var Pt = GetStartTransitPoint();
+        Pt.Z = Value;
+        SetStartTransitPoint(Pt);
+      }
+      else if (VertexNum == 1)
+      {
+        var Pt = GetEndTransitPoint();
+        Pt.Z = Value;
+        SetEndTransitPoint(Pt);
+      }
+      else
+      {
+        throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.SetVertexElevation");
+      }
+    }
 
-   throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.GetVertexStation");
-   return Consts.NullDouble;
- }
+    protected override double GetVertexStation(int VertexNum)
+    {
+      if (VertexNum == 0)
+        return GetStartStation();
+      if (VertexNum == 1)
+        return GetEndStation();
 
- protected override void SetVertexStation(int VertexNum, double Value)
- {
+      throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.GetVertexStation");
+    }
+
+    protected override void SetVertexStation(int VertexNum, double Value)
+    {
       if (VertexNum == 0)
         SetStartStation(Value);
       else if (VertexNum == 1)
-      { } // Ignore it - end stationing controlled by element geometry
+      {
+      } // Ignore it - end stationing controlled by element geometry
       else
       {
         throw new TRexException("Invalid vertex index in NFFLineworkArcEntity.setVertexStation");
       }
- }
+    }
 
     /*
        function GetVertexLeftCrossSlope(VertexNum: Integer): Double; Override;
@@ -157,14 +155,14 @@ namespace VSS.TRex.Designs.SVL
     {
       Colour = AColour;
 
-      X1= AX1;
-      Y1= AY1;
-      Z1= AZ1;
-      X2= AX2;
-      Y2= AY2;
-      Z2= AZ2;
-      CX= ACX;
-      CY= ACY;
+      X1 = AX1;
+      Y1 = AY1;
+      Z1 = AZ1;
+      X2 = AX2;
+      Y2 = AY2;
+      Z2 = AZ2;
+      CX = ACX;
+      CY = ACY;
       //  CZ = ACZ;
 
       if (!AClockwise)
@@ -174,13 +172,13 @@ namespace VSS.TRex.Designs.SVL
         MinMax.Swap(ref Z1, ref Z2);
       }
 
-      WasClockWise= AClockwise;
-      SingleArcEdgePoint= ASingleArcEdgePoint;
+      WasClockWise = AClockwise;
+      SingleArcEdgePoint = ASingleArcEdgePoint;
 
       if (AClockwise)
-      TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
+        TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
       else
-      TransitDirection = NFFLineworkArcTransitDirection.atdEndToStart;
+        TransitDirection = NFFLineworkArcTransitDirection.atdEndToStart;
 
       OriginalEndPointsHash = X1 + (Y1 * 2) + (X2 * 4) + (Y2 * 8) + (CX * 16) + (CY * 32);
     }
@@ -191,23 +189,23 @@ namespace VSS.TRex.Designs.SVL
 
       var ArcEty = Entity as NFFLineworkArcEntity;
 
-      X1= ArcEty.X1;
-      Y1= ArcEty.Y1;
-      Z1= ArcEty.Z1;
-      X2= ArcEty.X2;
-      Y2= ArcEty.Y2;
-      Z2= ArcEty.Z2;
-      CX= ArcEty.CX;
-      CY= ArcEty.CY;
+      X1 = ArcEty.X1;
+      Y1 = ArcEty.Y1;
+      Z1 = ArcEty.Z1;
+      X2 = ArcEty.X2;
+      Y2 = ArcEty.Y2;
+      Z2 = ArcEty.Z2;
+      CX = ArcEty.CX;
+      CY = ArcEty.CY;
       //  CZ                   = ArcEty.CZ;
-      WasClockWise= ArcEty.WasClockWise;
-      SingleArcEdgePoint= ArcEty.SingleArcEdgePoint;
-      StartLeftCrossSlope= ArcEty.StartLeftCrossSlope;
-      StartRightCrossSlope= ArcEty.StartRightCrossSlope;
-      EndLeftCrossSlope= ArcEty.EndLeftCrossSlope;
-      EndRightCrossSlope= ArcEty.EndRightCrossSlope;
+      WasClockWise = ArcEty.WasClockWise;
+      SingleArcEdgePoint = ArcEty.SingleArcEdgePoint;
+      StartLeftCrossSlope = ArcEty.StartLeftCrossSlope;
+      StartRightCrossSlope = ArcEty.StartRightCrossSlope;
+      EndLeftCrossSlope = ArcEty.EndLeftCrossSlope;
+      EndRightCrossSlope = ArcEty.EndRightCrossSlope;
 
-      TransitDirection= ArcEty.TransitDirection;
+      TransitDirection = ArcEty.TransitDirection;
     }
 
     // Procedure SaveToStream(Stream : TStream); Override;
@@ -289,7 +287,7 @@ namespace VSS.TRex.Designs.SVL
         Z2 = Consts.NullDouble;
 
       if ((HeaderFlags & NFFConsts.kNFFElementHeaderHasCrossSlope) != 0)
-      NFFUtils.ReadCrossSlopeInformationFromStream(reader, out EndLeftCrossSlope, out EndRightCrossSlope);
+        NFFUtils.ReadCrossSlopeInformationFromStream(reader, out EndLeftCrossSlope, out EndRightCrossSlope);
       else
       {
         EndLeftCrossSlope = Consts.NullDouble;
@@ -311,8 +309,8 @@ namespace VSS.TRex.Designs.SVL
         // Within SVD/ SVL no record is kept of whether arc was initially described as
         //   CW or CCW, Stationing is stored with convention that arc is CW.When
         //   creating / reading a arc entity from stream, we need to figure out and restore
-       //      <WasClockWise> value in order for any subsequent write to stream to write
-       
+        //      <WasClockWise> value in order for any subsequent write to stream to write
+
         //     Stationing around the right way 
         if (StartStation > TempEndStation)
         {
@@ -341,12 +339,12 @@ namespace VSS.TRex.Designs.SVL
         radius);
     }
 
-    public override BoundingWorldExtent3D BoundingBox() => ArcUtils.ArcBoundingRectangle(X1, Y1, X2, Y2, CX, CY, true, true);// ###Check??? ClockwiseCoordSystem : Boolean;
+    public override BoundingWorldExtent3D BoundingBox() => ArcUtils.ArcBoundingRectangle(X1, Y1, X2, Y2, CX, CY, true, true); // ###Check??? ClockwiseCoordSystem : Boolean;
 
     public override bool HasValidHeight()
     {
       return ControlFlag_NullHeightAllowed ||
-      ((Z1 != Consts.NullDouble) && (Z2 != Consts.NullDouble))/* && (CZ != Consts.NullDouble))*/;
+             ((Z1 != Consts.NullDouble) && (Z2 != Consts.NullDouble)) /* && (CZ != Consts.NullDouble))*/;
     }
 
     public override XYZ GetStartPoint() => new XYZ(X1, Y1, Z1);
@@ -458,12 +456,13 @@ namespace VSS.TRex.Designs.SVL
 
       switch (TransitDirection)
       {
-        case NFFLineworkArcTransitDirection.atdUnknown: 
+        case NFFLineworkArcTransitDirection.atdUnknown:
         case NFFLineworkArcTransitDirection.atdStartToEnd:
           // It's a clockwise turning arc
           break;
         case NFFLineworkArcTransitDirection.atdEndToStart:
-          Result = -Result;TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
+          Result = -Result;
+          TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
           break;
       }
 
@@ -484,7 +483,6 @@ namespace VSS.TRex.Designs.SVL
           return false;
         default:
           throw new TRexException("Unknown transit direction");
-          return false;
       }
     }
 
@@ -579,7 +577,6 @@ namespace VSS.TRex.Designs.SVL
           return ArcUtils.CalcIncludedAngle(X2, Y2, X1, Y1, CX, CY, false);
         default:
           throw new TRexException("Unknown transit direction");
-          return 0;
       }
     }
 

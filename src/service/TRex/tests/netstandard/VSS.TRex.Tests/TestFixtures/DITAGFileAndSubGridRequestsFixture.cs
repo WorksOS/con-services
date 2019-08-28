@@ -313,6 +313,11 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
     }
 
+    /// <summary>
+    /// Adds the provided coordinate system expressed as a CSIB to the site model
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="csib"></param>
     public static void AddCSIBToSiteModel(ref ISiteModel siteModel, string csib)
     {
       var executor = new AddCoordinateSystemExecutor();
