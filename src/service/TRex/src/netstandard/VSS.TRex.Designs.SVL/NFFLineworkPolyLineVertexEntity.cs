@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
@@ -76,7 +75,7 @@ namespace VSS.TRex.Designs.SVL
     public bool HasValidHeight() => Parent.ControlFlag_NullHeightAllowed || (Z != Consts.NullDouble);
 
 //  Procedure SaveToStream(Stream : TStream);
-    public void LoadFromStream(BinaryReader reader)
+    public virtual void LoadFromStream(BinaryReader reader)
     {
       NFFUtils.ReadXYZFromStream(reader, out X, out Y, out Z);
       Chainage = reader.ReadDouble();

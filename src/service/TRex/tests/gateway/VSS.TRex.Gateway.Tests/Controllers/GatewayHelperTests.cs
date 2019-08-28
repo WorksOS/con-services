@@ -131,8 +131,10 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       GatewayHelper.ValidateMachines(contributingMachines, siteModel);
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
+      base.Dispose();
+      
       DIBuilder.Eject();
     }
   }

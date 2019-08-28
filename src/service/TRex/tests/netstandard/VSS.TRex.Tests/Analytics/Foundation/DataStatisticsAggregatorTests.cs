@@ -7,7 +7,7 @@ namespace VSS.TRex.Tests.Analytics.Foundation
 {
   public class TestDataStatisticsAggregator : DataStatisticsAggregator
   {
-    public void IncrementCountOfTransition(double value) => base.IncrementCountOfTransition(value);
+    public new void IncrementCountOfTransition(double value) => base.IncrementCountOfTransition(value);
 
     public long GetMaximumValue() => base.GetMaximumValue();
   }

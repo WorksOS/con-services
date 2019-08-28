@@ -16,8 +16,6 @@ namespace VSS.TRex.Designs.SVL.Comparers
         const double DitchAlignmentOffset = 1E9;
         const double HingeAlignmentOffset = 1E8;
 
-        double Result = 0.0;
-
         // Return a modified Offset value for a NamedGuidanceID, fudged for NamedGuidanceIDs
         // that are flagged as being Hinge, Ditch or Batter.
         switch (NamedGuidanceID.GuidanceAlignmentType)
@@ -33,7 +31,6 @@ namespace VSS.TRex.Designs.SVL.Comparers
             return BatterAlignmentOffset * Math.Sign(NamedGuidanceID.StartOffset);
           default:
             throw new TRexException("Unknown guidance alignment type");
-            return Consts.NullDouble;
         }
       }
 

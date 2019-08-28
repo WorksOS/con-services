@@ -289,7 +289,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public int CacheOriginY => originY;
 
-    public void DumpToLog()
+    public virtual void DumpToLog()
     {
     }
   }

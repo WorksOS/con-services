@@ -60,7 +60,7 @@ namespace VSS.TRex.Rendering.Palettes
       ElevationPerBand = (MaxElevation - MinElevation) / (ElevationPalette.Length - 1);
     }
 
-    public Color ChooseColour(double value)
+    public new Color ChooseColour(double value)
     {
       var color = UndefinedColor;
 

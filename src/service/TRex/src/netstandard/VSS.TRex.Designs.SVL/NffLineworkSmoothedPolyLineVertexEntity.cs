@@ -28,7 +28,7 @@ namespace VSS.TRex.Designs.SVL
       TrailingAzimuth = ATrailingAzimuth;
     }
 
-    public NFFLineworkSmoothedPolyLineVertexEntity Clone() 
+    public new NFFLineworkSmoothedPolyLineVertexEntity Clone() 
     {
       var Result = new NFFLineworkSmoothedPolyLineVertexEntity();
       Result.Assign(this);
@@ -47,7 +47,7 @@ namespace VSS.TRex.Designs.SVL
     // SaveToNFFStream/LoadFromNFFStream implement GENERIC save/load functionality
     // NOT NFF save/load functionality
   //  procedure SaveToStream(Stream : TStream);
-  public void LoadFromStream(BinaryReader reader)
+  public override void LoadFromStream(BinaryReader reader)
   {
     base.LoadFromStream(reader);
 

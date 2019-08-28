@@ -334,18 +334,7 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       return ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref siteModel, elevation, asAtDate, 0, 0);
     }
-	
-    /// <summary>
-    /// Adds the provided coordinate system expressed as a CSIB to the site model
-    /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="csib"></param>
-	 public static void AddCSIBToSiteModel(ref ISiteModel siteModel, string csib)
-    {
-      var executor = new AddCoordinateSystemExecutor();
-      executor.Execute(siteModel.ID, csib);
-    }
-
+    
     public new void Dispose()
     {
       base.Dispose();
