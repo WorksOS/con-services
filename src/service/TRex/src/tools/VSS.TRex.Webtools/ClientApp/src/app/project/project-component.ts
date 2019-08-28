@@ -1005,7 +1005,7 @@ export class ProjectComponent {
 
     this.profileValue = "";
     this.profileValue2 = "";
-    if (this.profilePoints.length > 0 && this.profilePoints[0].hasOwnProperty("value")) {
+      if (this.profilePoints && this.profilePoints.length > 0 && this.profilePoints[0].hasOwnProperty("value")) {
       let ratio = (this.mouseProfileWorldStation - this.profileExtents.minX) / this.profileExtents.sizeX();
       let index = Math.round(this.profilePoints.length * ratio) - 1;
       this.profileValue = this.profilePoints[index].value.toFixed(this.mode === 4 || this.mode === 14 ? 0 : 3);
