@@ -120,9 +120,12 @@
 
 <br />
 <H3>Surveyed Surfaces [{{surveyedSurfaces.length}} in total]</H3>
-<p>Design File Name: <input [(ngModel)]="surveyedSurfaceFileName" type="text" value="" /> As At Date: <input [(ngModel)]="surveyedSurfaceAsAtDate" type="datetime" value="" /> </p>
 <p>
-    <button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button> <button (click)="addADummySurveyedSurface()">Add a dummy!</button>
+    Design File Name: <input  type="file" value="" (change)="handleSurveyedSurfaceChange($event.target.files)"/>
+    As At Date: <input [(ngModel)]="surveyedSurfaceAsAtDate" type="datetime" value=""/>
+</p>
+<p>
+    <button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button>
     Surveyed Surface UID: <input [(ngModel)]="newSurveyedSurfaceGuid" size="37" type="text" value="" />
 </p>
 <p *ngFor="let surveyedSurface of surveyedSurfaces">
@@ -131,9 +134,11 @@
 </p>
 <br />
 <H3>Design Surface [{{designs.length}} in total]</H3>
-<p>Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /></p>
 <p>
-    <button (click)=addNewDesignSurface()>Add New Design Surface</button>   <button (click)="addADummyDesignSurface()">Add a dummy!</button>
+    Design File Name: <input type="file" value="" (change)="handleDesignFileChange($event.target.files)" />
+</p>
+<p>
+    <button (click)=addNewDesignSurface()>Add New Design Surface</button>  
     Design UID: <input [(ngModel)]="designUid" size="37" type="text" value="" /> Offset: <input [(ngModel)]="designOffset" type="number" value="" />
     <button (click)="selectDesign()">Select</button>
 </p>
@@ -142,9 +147,11 @@
     Design: {{ design.id }} from file {{design.designDescriptor.fileName}}
 </p>
 <H3>Alignment [{{alignments.length}} in total]</H3>
-<p>Alignment File Name: <input [(ngModel)]="alignmentFileName" type="text" value="" /></p>
 <p>
-    <button (click)=addNewAlignment()>Add New Alignment</button>   <button (click)="addADummyAlignment()">Add a dummy!</button>
+    Alignment File Name: <input type="file" value="" (change)="handleAlignmentFileChange($event.target.files)" />
+</p>
+<p>
+    <button (click)=addNewAlignment()>Add New Alignment</button>
     Alignment UID: <input [(ngModel)]="alignmentUid" size="37" type="text" value="" />
 </p>
 <p *ngFor="let alignment of alignments">

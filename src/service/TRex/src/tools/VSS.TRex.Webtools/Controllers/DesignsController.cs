@@ -84,6 +84,44 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     /// <summary>
+    /// Upload a design to a site model
+    /// </summary>
+    /// <param name="siteModelUid"></param>
+    /// <param name="importedFileType"></param>
+    /// <param name="designUid"></param>
+    /// <returns></returns>
+    [HttpPost("{siteModelUid}/{importedFileType}/upload")]
+    public async Task<IActionResult> UploadDesignToSiteModel([FromRoute] string siteModelUid,
+      [FromRoute] string importedFileType,
+      [FromQuery] string asAtDate,
+      [FromQuery] Guid designUid)
+    {
+      if (Request.Form.Files.Count != 1)
+        return BadRequest("Upload a single file only");
+
+      var uploadedFile = Request.Form.Files[0];
+      var tempFile = Path.Combine(Path.GetTempPath(), uploadedFile.FileName);
+
+      if (System.IO.File.Exists(tempFile))
+        System.IO.File.Delete(tempFile);
+
+      using (var tempFileStream = new FileStream(tempFile, FileMode.OpenOrCreate))
+      {
+        await uploadedFile.CopyToAsync(tempFileStream);
+      }
+
+      try
+      {
+        return await AddDesignToSiteModel(siteModelUid, importedFileType, tempFile, asAtDate, designUid);
+      }
+      finally
+      {
+          System.IO.File.Delete(tempFile);
+      }
+    }
+
+
+    /// <summary>
     /// Adds a new design to a sitemodel. 
     /// </summary>
     /// <param name="siteModelUid"></param>
@@ -118,29 +156,29 @@ namespace VSS.TRex.Webtools.Controllers
 
       var siteModelGuid = Guid.Parse(siteModelUid);
       
-      if (string.IsNullOrEmpty(designUid.ToString()))
+      if (designUid == Guid.Empty)
         designUid = Guid.NewGuid();
-
-      var fileNameOnly = Path.GetFileName(fileNameAndLocalPath);
 
       // copy local file to S3
       bool designFileLoadedOk;
       string s3FileName;
       string destinationFileName = string.Empty;
 
-      if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
+	  var tempFileNameOnly = Path.GetFileName(fileNameAndLocalPath);
+
+     if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
       {
         var tempDate = asAtDate.Remove(asAtDate.IndexOf(".", 0, StringComparison.Ordinal)).Replace(":", "");
-        destinationFileName = Path.GetFileNameWithoutExtension(fileNameOnly) + $"_{tempDate}" + Path.GetExtension(fileNameOnly);
+		var destinationFileName = Path.GetFileNameWithoutExtension(tempFileNameOnly) + $"_{tempDate}" + Path.GetExtension(tempFileNameOnly);
 
-        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), fileNameOnly, destinationFileName);
+        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly, destinationFileName);
 
         s3FileName = destinationFileName;
       }
       else
       {
-        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), fileNameOnly);
-        s3FileName = fileNameOnly;
+        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly);
+        s3FileName = tempFileNameOnly;
       }
 
       if (!designFileLoadedOk)

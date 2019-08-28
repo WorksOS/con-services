@@ -30,10 +30,6 @@ connectedSiteGateway:
     requests:
       cpu: 300m
       memory: 512Mi
-  environment:
-    tpaasAppToken: "NUhDd0VIOXZGT2RDclRrSlRRWTF6SGlNZnFzYTpmTWd5bklJVWdfRHdyaWJfamZEWVd1VUY4Tm9h"
-    tpaasAuthUrl: "https://identity.trimble.com/i/oauth2/token"
-    connectedSiteUrl: "https://api.trimble.com/t/trimble.com/cws-devicegateway/2.0/"
 
 nodeSelector: {}
 
