@@ -162,12 +162,15 @@ namespace VSS.TRex.Webtools.Controllers
       // copy local file to S3
       bool designFileLoadedOk;
       string s3FileName;
-      
-      var tempFileNameOnly = Path.GetFileName(fileNameAndLocalPath);
-      if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
+      string destinationFileName = string.Empty;
+
+	    var tempFileNameOnly = Path.GetFileName(fileNameAndLocalPath);
+
+     if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
       {
         var tempDate = asAtDate.Remove(asAtDate.IndexOf(".", 0, StringComparison.Ordinal)).Replace(":", "");
-        var destinationFileName = Path.GetFileNameWithoutExtension(tempFileNameOnly) + $"_{tempDate}" + Path.GetExtension(tempFileNameOnly);
+		    destinationFileName = Path.GetFileNameWithoutExtension(tempFileNameOnly) + $"_{tempDate}" + Path.GetExtension(tempFileNameOnly);
+
         designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly, destinationFileName);
 
         s3FileName = destinationFileName;
@@ -223,7 +226,8 @@ namespace VSS.TRex.Webtools.Controllers
         if (!boundaryUploadedOk)
           throw new ArgumentException($"Unable to copy boundary file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
 
-        return new JsonResult(DIContext.Obtain<IDesignManager>().List(siteModelGuid).Locate(designUid));
+        
+        return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().List(siteModelGuid).Locate(designUid));
       }
 
       if (importedFileTypeEnum == ImportedFileType.Alignment)
