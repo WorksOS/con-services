@@ -164,12 +164,12 @@ namespace VSS.TRex.Webtools.Controllers
       string s3FileName;
       string destinationFileName = string.Empty;
 
-	  var tempFileNameOnly = Path.GetFileName(fileNameAndLocalPath);
+	    var tempFileNameOnly = Path.GetFileName(fileNameAndLocalPath);
 
      if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
       {
         var tempDate = asAtDate.Remove(asAtDate.IndexOf(".", 0, StringComparison.Ordinal)).Replace(":", "");
-		var destinationFileName = Path.GetFileNameWithoutExtension(tempFileNameOnly) + $"_{tempDate}" + Path.GetExtension(tempFileNameOnly);
+		    destinationFileName = Path.GetFileNameWithoutExtension(tempFileNameOnly) + $"_{tempDate}" + Path.GetExtension(tempFileNameOnly);
 
         designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly, destinationFileName);
 
