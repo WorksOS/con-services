@@ -215,16 +215,16 @@ namespace VSS.TRex.Webtools.Controllers
         AddTheSurveyedSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName, surveyedUtc);
 
         // upload indices
-        var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+        var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
         if (!spatialUploadedOk)
-          throw new ArgumentException($"Unable to copy spatial index file to S3: {destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
-        var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+          throw new ArgumentException($"Unable to copy spatial index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
+        var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
         if (!subgridUploadedOk)
-          throw new ArgumentException($"Unable to copy subgrid index file to S3: {destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
+          throw new ArgumentException($"Unable to copy subgrid index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
         // upload boundary...
-        var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION, destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+        var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
         if (!boundaryUploadedOk)
-          throw new ArgumentException($"Unable to copy boundary file to S3: {destinationFileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
+          throw new ArgumentException($"Unable to copy boundary file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
 
         
         return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().List(siteModelGuid).Locate(designUid));
