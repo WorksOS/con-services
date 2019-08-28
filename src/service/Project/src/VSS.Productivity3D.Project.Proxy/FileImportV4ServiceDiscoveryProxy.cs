@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.Project.Proxy
       {
         var result = await GetMasterDataItemServiceDiscovery<FileDataResult>
         ("/importedfiles", projectUid, userId, customHeaders,
-          new Dictionary<string, string> { { "projectUid", projectUid } });
+          new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("projectUid", projectUid) });
 
         if (result.Code == 0)
           return result.ImportedFileDescriptors;

@@ -81,7 +81,7 @@ namespace VSS.MasterData.Proxies
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
     protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
-        IDictionary<string, string> queryParameters = null) 
+      IList<KeyValuePair<string, string>> queryParameters = null) 
       where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
@@ -93,7 +93,7 @@ namespace VSS.MasterData.Proxies
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
     protected Task<T> PostMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
-      IDictionary<string, string> queryParameters = null, Stream payload = null)
+      IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
       where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
@@ -101,27 +101,27 @@ namespace VSS.MasterData.Proxies
     }
 
     protected Task<T> GetMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
-      IDictionary<string, string> queryParameters = null) 
+      IList<KeyValuePair<string, string>> queryParameters = null) 
       where T : class, IMasterDataModel
     {
         return RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters);
     }
 
     protected Task<Stream> GetMasterDataStreamItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
-     HttpMethod method, IDictionary<string, string> queryParameters = null, string payload = null)
+     HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null)
     {
       return RequestAndReturnDataStream(customHeaders, method, route, queryParameters, payload);
     }
 
     protected Task<T> PostMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
-      IDictionary<string, string> queryParameters = null, Stream payload = null)
+      IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
       where T : class, IMasterDataModel
     {
       return RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload);
     }
 
     protected Task<T> PutMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
-      IDictionary<string, string> queryParameters = null, Stream payload = null)
+      IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
       where T : class, IMasterDataModel
     {
       return RequestAndReturnData<T>(customHeaders, HttpMethod.Put, route, queryParameters, payload);
@@ -132,7 +132,7 @@ namespace VSS.MasterData.Proxies
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
     protected Task<ContractExecutionResult> MasterDataItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
-      HttpMethod method, IDictionary<string, string> queryParameters = null, Stream payload = null)
+      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
     {
       return RequestAndReturnResult(customHeaders, method, route, queryParameters, payload);
     }
@@ -144,7 +144,8 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// TRex uses its own resolver in BaseTRexServiceDiscoveryProxy
     /// </summary>
-    protected virtual Task<string> GetUrl(string route = null, IDictionary<string, string> queryParameters = null)
+    //protected virtual Task<string> GetUrl(string route = null, IDictionary<string, string> queryParameters = null)
+    protected virtual Task<string> GetUrl(string route = null, IList<KeyValuePair<string, string>> queryParameters = null)
     {
       if (IsInsideAuthBoundary && InternalServiceType == ApiService.None)
         throw new ArgumentException($"{nameof(InternalServiceType)} has not been defined, it is required for Services Inside our Authentication Boundary");
@@ -158,7 +159,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<Stream> RequestAndReturnDataStream(IDictionary<string, string> customHeaders,
-     HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, string payload = null)  
+     HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null)  
     {
       var url = await GetUrl(route, queryParameters);
 
@@ -174,7 +175,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<TResult> RequestAndReturnData<TResult>(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, System.IO.Stream payload = null) where TResult : class, IMasterDataModel
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null) where TResult : class, IMasterDataModel
     {
       var url = await GetUrl(route, queryParameters);
 
@@ -188,7 +189,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<ContractExecutionResult> RequestAndReturnResult(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, System.IO.Stream payload = null) 
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null) 
     {
       var url = await GetUrl(route, queryParameters);
 
