@@ -2,7 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;

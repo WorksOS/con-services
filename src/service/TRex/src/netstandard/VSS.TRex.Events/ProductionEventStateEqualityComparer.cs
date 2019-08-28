@@ -1,5 +1,6 @@
 ﻿using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Events.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Events
@@ -22,5 +23,7 @@ namespace VSS.TRex.Events
     public static bool Equals(PositioningTech x, PositioningTech y) => x == y;
     public static bool Equals(ProductionEventType x, ProductionEventType y) => x == y;
     public static bool Equals_ProductionEventType(ProductionEventType x, ProductionEventType y) => x == y;
+    public static bool Equals(OverrideEvent<int> x, OverrideEvent<int> y) => x.EndDate == y.EndDate && x.Value == y.Value;
+    public static bool Equals(OverrideEvent<ushort> x, OverrideEvent<ushort> y) => x.EndDate == y.EndDate && x.Value == y.Value;
   }
 }

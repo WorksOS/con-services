@@ -2,7 +2,7 @@
 using System.Globalization;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Types;

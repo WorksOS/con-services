@@ -2,6 +2,7 @@
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Events.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Events
@@ -46,8 +47,16 @@ namespace VSS.TRex.Events
         case ProductionEventType.TargetMDP: return new ProductionEvents<short>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadInt16(), ProductionEventStateEqualityComparer.Equals);
         case ProductionEventType.LayerID: return new ProductionEvents<ushort>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadUInt16(), ProductionEventStateEqualityComparer.Equals);
 
-        case ProductionEventType.DesignOverride: return null; //throw new NotImplementedException("ProductionEventType.DesignOverride not implemented");
-        case ProductionEventType.LayerOverride: return null; // throw new NotImplementedException("ProductionEventType.LayerOverride not implemented");
+        case ProductionEventType.DesignOverride:
+          return new ProductionEvents<OverrideEvent<int>>(machineID, siteModelID, eventType,
+            (w, s) => { w.Write(s.EndDate.ToBinary()); w.Write(s.Value); },
+            r => new OverrideEvent<int>(DateTime.FromBinary(r.ReadInt64()), r.ReadInt32()),
+            ProductionEventStateEqualityComparer.Equals);
+        case ProductionEventType.LayerOverride:
+          return new ProductionEvents<OverrideEvent<ushort>>(machineID, siteModelID, eventType,
+            (w, s) => { w.Write(s.EndDate.ToBinary()); w.Write(s.Value); },
+            r => new OverrideEvent<ushort>(DateTime.FromBinary(r.ReadInt64()), r.ReadUInt16()),
+            ProductionEventStateEqualityComparer.Equals);
 
         case ProductionEventType.TargetCCA: return new ProductionEvents<byte>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadByte(), ProductionEventStateEqualityComparer.Equals);
         case ProductionEventType.StartEndRecordedData: return new StartEndProductionEvents(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (ProductionEventType)r.ReadByte());
