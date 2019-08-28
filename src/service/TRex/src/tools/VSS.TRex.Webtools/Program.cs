@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Serilog.Extensions.Logging;
 using VSS.Serilog.Extensions;
@@ -9,7 +10,15 @@ namespace VSS.TRex.Webtools
     {
     public static void Main(string[] args)
     {
-      BuildWebHost(args).Run();
+      try
+      {
+        BuildWebHost(args).Run();
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Unhandled exception: {e}");
+        Console.WriteLine($"Stack trace: {e.StackTrace}");
+      }
     }
 
     public static IWebHost BuildWebHost(string[] args)

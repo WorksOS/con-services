@@ -32,7 +32,7 @@ namespace VSS.TRex.Rendering.Palettes
     {
     }
 
-    public Color ChooseColour(SubGridCellPassDataCMVEntryRecord cmvData)
+    public new Color ChooseColour(SubGridCellPassDataCMVEntryRecord cmvData)
     {
       if (CMVCellValueToDisplay(cmvData, out var cmvPercentValue))
       {

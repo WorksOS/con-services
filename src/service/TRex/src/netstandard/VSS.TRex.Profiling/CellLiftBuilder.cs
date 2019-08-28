@@ -832,7 +832,6 @@ namespace VSS.TRex.Profiling
       int HalfPassCount = 0;
       int PrevIdx = 0;
       DateTime tme = DateTime.MinValue;
-      bool isMinElev;
       int lowPassIdx = Consts.NullLowestPassIdx;
       float lowestHeight = Consts.NullHeight; 
       float hgt;

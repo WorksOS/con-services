@@ -20,7 +20,7 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// PassCount keeps track of the actual number of passes in the list
     /// </summary>
-    public int PassCount { get; set; }
+    public int PassCount;
 
     private FilteredPassData[] filteredPassData;
 

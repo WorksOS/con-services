@@ -126,7 +126,7 @@ namespace VSS.TRex.SiteModels
         }
       }
 
-      siteModel.Dispose();
+      siteModel?.Dispose();
     }
 
     /// <summary>

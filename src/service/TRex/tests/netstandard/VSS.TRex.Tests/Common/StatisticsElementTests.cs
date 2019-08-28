@@ -9,7 +9,8 @@ namespace VSS.TRex.Tests.Common
     [Fact]
     public void Creation()
     {
-      var _ = new StatisticsElement();
+      var elem = new StatisticsElement();
+      elem.Should().NotBeNull();
     }
 
     [Fact]

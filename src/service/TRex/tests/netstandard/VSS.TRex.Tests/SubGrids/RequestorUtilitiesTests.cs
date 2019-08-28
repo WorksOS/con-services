@@ -65,8 +65,10 @@ namespace VSS.TRex.Tests.SubGrids
         .Complete();
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
+      base.Dispose();
+
       SurfaceElevationPatchRequest = null;
       TRexSpatialMemoryCacheContext = null;
     }

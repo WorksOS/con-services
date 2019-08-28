@@ -18,8 +18,9 @@ namespace VSS.TRex.Tests.CoordinateSystem
         .Complete();
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
+      base.Dispose();
       DIBuilder.Eject();
     }
   }

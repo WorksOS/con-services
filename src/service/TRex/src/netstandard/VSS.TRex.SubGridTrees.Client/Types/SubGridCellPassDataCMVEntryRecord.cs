@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Utilities;
 
@@ -83,22 +82,22 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// <summary>
     /// Measured CMV value.
     /// </summary>
-    public short MeasuredCMV { get; set; }
+    public short MeasuredCMV;
 
     /// <summary>
     /// Target CMV value.
     /// </summary>
-    public short TargetCMV { get; set; }
+    public short TargetCMV;
 
     /// <summary>
     /// Previous measured CMV value.
     /// </summary>
-    public short PreviousMeasuredCMV { get; set; }
+    public short PreviousMeasuredCMV;
 
     /// <summary>
     /// Previous target CMV value.
     /// </summary>
-    public short PreviousTargetCMV { get; set; }
+    public short PreviousTargetCMV;
 
     public static int IndicativeSizeInBytes() => SHORT_TYPES_COUNT * sizeof(short) + sizeof(byte); // 4 shorts and a flags byte
 
