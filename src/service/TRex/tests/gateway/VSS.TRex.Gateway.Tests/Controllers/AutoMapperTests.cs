@@ -5,7 +5,7 @@ using Castle.Core.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;

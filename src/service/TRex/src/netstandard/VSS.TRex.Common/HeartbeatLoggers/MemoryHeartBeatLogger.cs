@@ -13,7 +13,7 @@ namespace VSS.TRex.Common
       Log.LogInformation("Heartbeat: " + ToString());
     }
 
-    public string ToString()
+    public override string ToString()
     {
       return $"Total managed memory use: {(1.0 * GC.GetTotalMemory(false)) / 1e6:F3}Mb";
     }

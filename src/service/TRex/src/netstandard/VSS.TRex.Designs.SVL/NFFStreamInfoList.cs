@@ -47,7 +47,7 @@ namespace VSS.TRex.Designs.SVL
       Sort();
     }
 
-    protected void Sort()
+    protected new void Sort()
     {
       // Sort all the elements in the list on the basis of the stream name
       Sort(new NFFStreamListComparer());

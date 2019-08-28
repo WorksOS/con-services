@@ -2,7 +2,7 @@
 using System.Drawing;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.SubGridTrees.Client.Types;
 
@@ -32,7 +32,7 @@ namespace VSS.TRex.Rendering.Palettes
     {
     }
 
-    public Color ChooseColour(SubGridCellPassDataCMVEntryRecord cmvData)
+    public new Color ChooseColour(SubGridCellPassDataCMVEntryRecord cmvData)
     {
       if (CMVCellValueToDisplay(cmvData, out var cmvPercentValue))
       {

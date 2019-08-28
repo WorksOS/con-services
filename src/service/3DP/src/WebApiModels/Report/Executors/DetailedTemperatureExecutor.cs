@@ -62,9 +62,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       throw CreateServiceException<DetailedTemperatureExecutor>((int)raptorResult);
 #endif
     }
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
+
   }
 }

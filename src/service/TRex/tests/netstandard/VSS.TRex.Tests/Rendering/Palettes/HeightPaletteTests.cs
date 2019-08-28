@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using FluentAssertions;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using Xunit;
 

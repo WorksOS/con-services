@@ -2,7 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;

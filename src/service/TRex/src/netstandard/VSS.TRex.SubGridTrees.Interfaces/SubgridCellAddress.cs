@@ -67,12 +67,14 @@ namespace VSS.TRex.SubGridTrees
     /// <param name="other"></param>
     /// <returns></returns>
     public bool Equals(SubGridCellAddress other) => X == other.X && Y == other.Y;
-  
+
+#pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
     /// <summary>
     /// Constructs a single long quantity that encodes both the X & Y elements of the subgrid address.
     /// X occupies the high 32 bits, Y the lower 32 bits
     /// </summary>
-    public long ToNormalisedInt64 => ((long) X << 32) | Y;
+    public long ToNormalisedInt64 => ((long)X << 32) | Y;
+#pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand
 
     /// <summary>
     /// Construct a 'normalised' Int64 descriptor for the cell address in terms of the

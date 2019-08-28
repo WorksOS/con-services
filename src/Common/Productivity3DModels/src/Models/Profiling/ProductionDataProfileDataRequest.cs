@@ -9,11 +9,6 @@ namespace VSS.Productivity3D.Models.Models.Profiling
   public class ProductionDataProfileDataRequest : BaseProfileDataRequest
   {
     /// <summary>
-    /// The filter to be used.
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
-    /// <summary>
     /// The flag indicates whether to return all passes and layers.
     /// </summary>
     [JsonProperty(Required = Required.Default)]

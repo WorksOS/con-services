@@ -4,7 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Tests.BinarizableSerialization;
 using VSS.TRex.Tests.TestFixtures;

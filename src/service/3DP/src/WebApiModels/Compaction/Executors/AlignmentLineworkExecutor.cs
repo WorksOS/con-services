@@ -92,12 +92,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
  
       return new AlignmentLineworkResult(memoryStream);
     }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
-
     protected sealed override void ProcessErrorCodes()
     {
 #if RAPTOR

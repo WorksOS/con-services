@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using FluentAssertions;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.SubGridTrees.Client.Types;
 using Xunit;
 

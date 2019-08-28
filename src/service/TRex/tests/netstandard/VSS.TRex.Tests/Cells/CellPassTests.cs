@@ -4,7 +4,7 @@ using System.Text;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Tests.BinarizableSerialization;
 using VSS.TRex.Types;
 using Xunit;

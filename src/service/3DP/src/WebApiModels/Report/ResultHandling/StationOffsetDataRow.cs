@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {

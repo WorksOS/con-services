@@ -122,7 +122,10 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     /// <typeparam name="T">>Generic type which should be</typeparam>
     /// <param name="item">>The item.</param>
-    protected abstract ContractExecutionResult ProcessEx<T>(T item);
+    protected virtual ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Missing synchronous executor process method override or Use the asynchronous form of this method");
+    }
 
     /// <summary>
     /// 

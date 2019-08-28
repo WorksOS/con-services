@@ -4,7 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Rendering;
