@@ -159,8 +159,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private async Task ValidateDates(long projectId, Guid projectUid, ProductionDataEdit dataEdit)
     {
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy
 #if RAPTOR
-      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy, raptorClient);
+        , raptorClient
+#endif
+        );
       var stats = await projectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(
         projectUid, projectId, ((RaptorPrincipal)User).Identity.Name, Request.Headers.GetCustomHeaders());
       if (stats == null)
@@ -173,10 +176,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 string.Format("Data edit outside production data date range: {0}-{1}", stats.startTime, stats.endTime)));
       }
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
   }
 }

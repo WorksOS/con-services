@@ -60,7 +60,6 @@
     <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />
 
     <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\PatchExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorDelete.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorGet.cs" />
