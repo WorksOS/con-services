@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, DesignSurface, Alignment, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun, XYZS } from './project-model';
-import { ProjectService } from './project-service';
-import { DisplayMode } from './project-displaymode-model';
-import { VolumeResult } from '../project/project-volume-model';
-import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint } from '../project/project-filter-model';
-import { CellDatumResult } from "./project-model";
-import { SummaryType } from './project-summarytype-model';
-import { DisplayModeType, OverrideParameters, OverrideRange } from '../fetch-data/fetch-data-model';
+import { DisplayModeType, OverrideParameters } from '../fetch-data/fetch-data-model';
 import { FetchDataService } from '../fetch-data/fetch-data.service';
+import { AttributeFilter, CombinedFilter, FencePoint, SpatialFilter } from '../project/project-filter-model';
+import { VolumeResult } from '../project/project-volume-model';
+import { DisplayMode } from './project-displaymode-model';
+import { Alignment, DesignSurface, ISiteModelMetadata, Machine, MachineDesign, MachineEventType, ProjectExtents, SiteProofingRun, SurveyedSurface } from './project-model';
+import { ProjectService } from './project-service';
+import { SummaryType } from './project-summarytype-model';
 
 @Component({
   selector: 'project',
@@ -63,7 +62,8 @@ export class ProjectComponent {
 
   public surveyedSurfaceFile : File = null;
   public surveyedSurfaceFileName: string = "";
-  public surveyedSurfaceAsAtDate: Date = new Date();
+  public surveyedSurfaceDate: string = this.getDatePart(new Date());
+  public surveyedSurfaceTime: string = this.getTimePart(new Date());
 
   public newSurveyedSurfaceGuid: string = "";
   public surveyedSurfaces: SurveyedSurface[] = [];
@@ -127,8 +127,12 @@ export class ProjectComponent {
   public allProjectsMetadata: ISiteModelMetadata[] = [];
 
   public machineEvents: string[] = [];
-  public machineEventsStartDate: Date = new Date(1980, 1, 1, 0, 0, 0, 0);
-  public machineEventsEndDate: Date = new Date(2100, 1, 1, 0, 0, 0, 0);
+  public machineEventsStartDate: string = this.getDatePart(new Date(1980, 1, 1, 0, 0, 0, 0));
+  public machineEventsStartTime: string = this.getTimePart(new Date(1980, 1, 1, 0, 0, 0, 0));
+
+  public machineEventsEndDate: string = this.getDatePart(new Date(2100, 1, 1, 0, 0, 0, 0));
+  public machineEventsEndTime: string = this.getTimePart(new Date(2100, 1, 1, 0, 0, 0, 0));
+
   public maxMachineEventsToReturn: number = 100;
 
   public profilePath: string = "M0 0 L200 500 L400 0 L600 500 L800 0 L1000 500";
@@ -205,6 +209,14 @@ export class ProjectComponent {
 
   public cellDatum: string = "";
   private showCellDatum: boolean = false;
+
+  private getDatePart(date: Date): string {
+    return date.toISOString().substring(0, 10);
+  }
+
+  private getTimePart(date: Date): string {
+    return date.toISOString().substring(11, 19);
+  }
 
   constructor(
     private projectService: ProjectService,
@@ -535,14 +547,38 @@ export class ProjectComponent {
     this.surveyedSurfaceFile = files.item(0);
   }
 
-  public addNewSurveyedSurface(): void { 
-      console.log("Surveyed Surface", this.surveyedSurfaceFile);
+  public canAddSurveyedSurfaceFile(): boolean {
+      return this.surveyedSurfaceFile != null && this.newSurveyedSurfaceGuid !== "";
+  }
 
-    this.projectService.addSurveyedSurface(this.projectUid, this.surveyedSurfaceFile, this.newSurveyedSurfaceGuid, this.surveyedSurfaceAsAtDate).subscribe(
-      uid => {
-        this.newSurveyedSurfaceGuid = uid.designId;
-        this.getSurveyedSurfaces();
-      });
+  public canAddDesignSurfaceFile(): boolean {
+    return this.designFile != null && this.designUid !== "";
+  }
+
+  public canAddAlignmentFile(): boolean {
+    return this.alignmentFile != null && this.alignmentUid !== "";
+  }
+
+  public addNewSurveyedSurface(): void { 
+  console.log("Surveyed Surface", this.surveyedSurfaceFile);
+
+  this.projectService.addSurveyedSurface(this.projectUid, this.surveyedSurfaceFile, this.newSurveyedSurfaceGuid, this.combineDateAndTime(this.surveyedSurfaceDate, this.surveyedSurfaceTime)).subscribe(
+    uid => {
+      this.newSurveyedSurfaceGuid = uid.designId;
+      this.getSurveyedSurfaces();
+    });
+  }
+
+  private combineDateAndTime(date: string, time: string): Date {
+    let dateParts: any = date.split("-");
+    let timeParts: any = time.split(":");
+
+    if (dateParts && timeParts) {
+      dateParts[1] -= 1;
+      return new Date(Date.UTC.apply(undefined, dateParts.concat(timeParts)));
+    }
+
+    return null;
   }
 
   public getSurveyedSurfaces(): void {
@@ -687,14 +723,14 @@ export class ProjectComponent {
 
   public updateDisplayedMachineEvents() {
     // Request the first 100 events of the selected event type from the selected site model and machine
-    var result: string[] = [];
+    let result: string[] = [];
 
-    var startDate: Date = this.machineEventsStartDate;
+    let startDate: Date = this.combineDateAndTime(this.machineEventsStartDate, this.machineEventsStartTime);
     if (startDate === undefined) {
       startDate = new Date(1980, 1, 1, 0, 0, 0, 0);
     }
 
-    var endDate: Date = this.machineEventsEndDate;
+      let endDate: Date = this.combineDateAndTime(this.machineEventsEndDate, this.machineEventsEndTime);
     if (endDate === undefined) {
       endDate = new Date(2100, 1, 1, 0, 0, 0, 0);
     }

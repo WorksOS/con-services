@@ -81,9 +81,11 @@ namespace VSS.TRex.Gateway.Common.Proxy
         IDictionary<string, string> customHeaders = null)
     {
       Gateway = GatewayType.Immutable;
-      var queryParams = new Dictionary<string, string>();
-      queryParams.Add("projectUid", projectUid.ToString());
-      queryParams.Add("importedFileType", importedFileType.ToString());
+      var queryParams = new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("projectUid", projectUid.ToString()),
+        new KeyValuePair<string, string>("importedFileType", importedFileType.ToString())
+      };
       return await GetMasterDataItemServiceDiscovery<DesignListResult>
         ($"/design/get", projectUid.ToString(), null, customHeaders, queryParams);
     }
