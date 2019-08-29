@@ -2,12 +2,21 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.Project.Proxy;
 using VSS.Serilog.Extensions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -23,14 +32,26 @@ namespace LandfillDatasync.netcore
           .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
       provider.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      provider.AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>(); 
+      provider.AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
+      
+      // for serviceDiscovery
+      provider.AddServiceDiscovery()
+        .AddTransient<IWebRequest, GracefulWebRequest>()
+        .AddMemoryCache()
+        .AddSingleton<IDataCache, InMemoryDataCache>()
+        .AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>()
+        .AddTransient<IFileImportProxy, FileImportV4Proxy>();
+
       var serviceProvider = provider.BuildServiceProvider();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var log = logger.CreateLogger<Program>();
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
 
       log.LogDebug("Landfill Data Sync starting");
-      var dataSync = new DataSynchronizer(log, configStore);
+      var dataSync = new DataSynchronizer(log, logger, configStore, 
+        serviceProvider.GetRequiredService<IProductivity3dV1ProxyCoord>(),
+        serviceProvider.GetRequiredService<IFileImportProxy>()
+        );
 
       // Optionally specify a specific customer to process (this will be null if not specified)
       // If a specific customerUID is provided land fill data sync will only find projects for that customer

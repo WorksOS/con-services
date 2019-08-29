@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
@@ -48,24 +50,23 @@ namespace LandfillService.WebApi.netcore
     {
       services.AddMvc();
       // Add framework services.
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
-      services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
-      services.AddSingleton<IWebRequest, GracefulWebRequest>();
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddServiceDiscovery();
+      services
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddTransient<ICustomerProxy, CustomerProxy>()
+        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>()
+        .AddSingleton<IWebRequest, GracefulWebRequest>()
+        .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-      services.AddOpenTracing(builder =>
-      {
-        builder.ConfigureAspNetCore(options =>
-        {
-          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-        });
-      });
+      // for serviceDiscovery
+      services.AddServiceDiscovery()
+        .AddTransient<IWebRequest, GracefulWebRequest>()
+        .AddMemoryCache()
+        .AddSingleton<IDataCache, InMemoryDataCache>()
+        .AddTransient<IFileImportProxy, FileImportV4Proxy>()
+        .AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>();
 
+      services.AddOpenTracing(builder => { builder.ConfigureAspNetCore(options => { options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping"); }); });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

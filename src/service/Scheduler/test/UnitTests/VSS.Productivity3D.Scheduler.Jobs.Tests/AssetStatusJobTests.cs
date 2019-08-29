@@ -19,6 +19,7 @@ using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob;
@@ -41,7 +42,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     private Mock<IAssetStatusServerHubClient> mockAssetStatusServerHubClient = new Mock<IAssetStatusServerHubClient>();
     private Mock<IFleetAssetDetailsProxy> mockFleetAssetDetails = new Mock<IFleetAssetDetailsProxy>();
     private Mock<IFleetAssetSummaryProxy> mockAssetSummaryProxy = new Mock<IFleetAssetSummaryProxy>();
-    private Mock<IProductivity3dProxy> mockProductivity3DProxy = new Mock<IProductivity3dProxy>();
+    private Mock<IProductivity3dV2ProxyNotification> mockProductivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
     private Mock<IAssetResolverProxy> mockAssetResolverProxy = new Mock<IAssetResolverProxy>();
 
     [TestInitialize]
@@ -55,7 +56,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
                        .AddSingleton(mockAssetStatusServerHubClient.Object)
                        .AddSingleton(mockFleetAssetDetails.Object)
                        .AddSingleton(mockAssetSummaryProxy.Object)
-                       .AddSingleton(mockProductivity3DProxy.Object)
+                       .AddSingleton(mockProductivity3dV2ProxyNotification.Object)
                        .AddSingleton(mockAssetResolverProxy.Object)
                        .AddTransient<IJob, AssetStatusJob>() // This is the class we are testing
                        .BuildServiceProvider();
@@ -63,7 +64,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       mockAssetStatusServerHubClient.Reset();
       mockFleetAssetDetails.Reset();
       mockAssetSummaryProxy.Reset();
-      mockProductivity3DProxy.Reset();
+      mockProductivity3dV2ProxyNotification.Reset();
       mockAssetResolverProxy.Reset();
 
       loggerFactory = serviceProvider.GetService<ILoggerFactory>();
@@ -147,7 +148,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       mockAssetStatusServerHubClient.Setup(m => m.GetSubscriptions()).Returns(Task.FromResult(subscriptions));
 
       // The first step is to call out to 3dp for each subscription, ensure we do this (with the correct headers)
-      mockProductivity3DProxy.Setup(m =>
+      mockProductivity3dV2ProxyNotification.Setup(m =>
         m.ExecuteGenericV2Request<Machine3DStatuses>(
           It.IsAny<string>(),
           It.IsAny<HttpMethod>(),
@@ -166,7 +167,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       var subscription1Route = string.Format(EXPECTED_RAPTOR_MACHINE_ROUTE_FORMAT, subscription1.ProjectUid);
 
-      mockProductivity3DProxy.Verify(m => m.ExecuteGenericV2Request<Machine3DStatuses>(
+      mockProductivity3dV2ProxyNotification.Verify(m => m.ExecuteGenericV2Request<Machine3DStatuses>(
           It.Is<string>(s => s == subscription1Route),
           It.IsAny<HttpMethod>(),
           It.IsAny<Stream>(),
@@ -177,7 +178,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       var subscription2Headers = GetExpectedHeaders(subscription2.CustomerUid, subscription2.AuthorizationHeader, subscription2.JWTAssertion);
       var subscription2Route = string.Format(EXPECTED_RAPTOR_MACHINE_ROUTE_FORMAT, subscription2.ProjectUid);
 
-      mockProductivity3DProxy.Verify(m => m.ExecuteGenericV2Request<Machine3DStatuses>(
+      mockProductivity3dV2ProxyNotification.Verify(m => m.ExecuteGenericV2Request<Machine3DStatuses>(
           It.Is<string>(s => s == subscription2Route),
           It.IsAny<HttpMethod>(),
           It.IsAny<Stream>(),
@@ -185,7 +186,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         Times.Once);
 
       // And confirm there are no other calls to the request
-      mockProductivity3DProxy.Verify(m => m.ExecuteGenericV2Request<Machine3DStatuses>(
+      mockProductivity3dV2ProxyNotification.Verify(m => m.ExecuteGenericV2Request<Machine3DStatuses>(
           It.IsAny<string>(),
           It.IsAny<HttpMethod>(),
           It.IsAny<Stream>(),
@@ -248,7 +249,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         .Setup(m => m.GetSubscriptions())
         .Returns(Task.FromResult(new List<AssetUpdateSubscriptionModel>{subscription}));
 
-      mockProductivity3DProxy.Setup(m =>
+      mockProductivity3dV2ProxyNotification.Setup(m =>
           m.ExecuteGenericV2Request<Machine3DStatuses>(
             It.IsAny<string>(),
             It.IsAny<HttpMethod>(),
@@ -360,7 +361,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         .Setup(m => m.GetSubscriptions())
         .Returns(Task.FromResult(new List<AssetUpdateSubscriptionModel>{subscription}));
 
-      mockProductivity3DProxy.Setup(m =>
+      mockProductivity3dV2ProxyNotification.Setup(m =>
           m.ExecuteGenericV2Request<Machine3DStatuses>(
             It.IsAny<string>(),
             It.IsAny<HttpMethod>(),

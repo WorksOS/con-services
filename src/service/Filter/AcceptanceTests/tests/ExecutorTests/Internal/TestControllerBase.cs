@@ -36,7 +36,8 @@ namespace ExecutorTests.Internal
     protected IServiceExceptionHandler ServiceExceptionHandler;
     protected IProjectProxy ProjectProxy;
     protected IFileImportProxy FileImportProxy;
-    protected IProductivity3dProxy Productivity3DProxy;
+    protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
+    protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
     protected IKafka Producer;
     protected string KafkaTopicName;
     protected FilterRepository FilterRepo;
@@ -55,19 +56,24 @@ namespace ExecutorTests.Internal
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+
+        // for serviceDiscovery
         .AddServiceDiscovery()
-        .AddTransient<IAssetResolverProxy, AssetResolverProxy>()  
         .AddTransient<IWebRequest, GracefulWebRequest>()
-        .AddTransient<IProductivity3dProxy, Productivity3dProxy>()
-        .AddSingleton<IKafka, RdKafkaDriver>()
-        .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
         .AddMemoryCache()
         .AddSingleton<IDataCache, InMemoryDataCache>()
+
+        .AddTransient<IAssetResolverProxy, AssetResolverProxy>()  
+        .AddTransient<IWebRequest, GracefulWebRequest>()
+        .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
+        .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
+        .AddSingleton<IKafka, RdKafkaDriver>()
+        .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
+        .AddSingleton<IDataCache, InMemoryDataCache>()
         .AddSingleton<IGeofenceProxy, GeofenceProxy>()
-        .AddServiceDiscovery()
-        .AddSingleton<IProjectProxy, ProjectV4ServiceDiscoveryProxy>()
+        .AddSingleton<IProjectProxy, ProjectV4Proxy>()
         .AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>()       
-        .AddSingleton<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>()
+        .AddSingleton<IFileImportProxy, FileImportV4Proxy>()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -78,7 +84,8 @@ namespace ExecutorTests.Internal
       GeofenceRepo = ServiceProvider.GetRequiredService<IRepository<IGeofenceEvent>>() as GeofenceRepository;
       ProjectProxy = ServiceProvider.GetRequiredService<IProjectProxy>();
       FileImportProxy = ServiceProvider.GetRequiredService<IFileImportProxy>();
-      Productivity3DProxy = ServiceProvider.GetRequiredService<IProductivity3dProxy>();
+      Productivity3dV2ProxyNotification = ServiceProvider.GetRequiredService<IProductivity3dV2ProxyNotification>();
+      Productivity3dV2ProxyCompaction = ServiceProvider.GetRequiredService<IProductivity3dV2ProxyCompaction>();
       GeofenceProxy = ServiceProvider.GetRequiredService<IGeofenceProxy>();
       UnifiedProductivityProxy = ServiceProvider.GetRequiredService<IUnifiedProductivityProxy>();
 

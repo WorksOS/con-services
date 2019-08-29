@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
       services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
       services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();
-      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
+      services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IAssetResolverProxy, AssetResolverProxy>();
 
       services.AddOpenTracing(builder =>

@@ -27,10 +27,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetBoundariesExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy, 
+      IProjectProxy projectProxy,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
+      IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository,
       IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy)
-       : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3DProxy, 
+       : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction,
          fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
     {
     }
@@ -55,7 +57,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       if (request == null) return null;
 
       var boundaries = new List<GeofenceData>();
-      var projectRepo = (IProjectRepository) auxRepository;
+      var projectRepo = (IProjectRepository)auxRepository;
 
       Task<GeofenceDataListResult> boundariesTask = null;
       Task<List<GeofenceData>> favoritesTask = null;
@@ -64,13 +66,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         //a) Custom boundaries 
         boundariesTask = BoundaryHelper.GetProjectBoundaries(
-        log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository) Repository);
+        log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository)Repository);
         //b) favorite geofences that overlap project 
         favoritesTask =
           GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
         //c) unified productivity associated geofences
         associatedTask = UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid, request.CustomHeaders);
- 
+
         await Task.WhenAll(boundariesTask, favoritesTask, associatedTask);
       }
       catch (Exception e)

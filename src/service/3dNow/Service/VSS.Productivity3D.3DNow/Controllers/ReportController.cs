@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Now3D.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
@@ -23,19 +25,20 @@ namespace VSS.Productivity3D.Now3D.Controllers
     private readonly IProjectProxy projectProxy;
     private readonly IFileImportProxy fileImportProxy;
     private readonly IFilterServiceProxy filterServiceProxy;
-    private readonly IProductivity3dProxy productivity3dProxy;
+    private readonly IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction;
 
     public ReportController(ILoggerFactory loggerFactory, 
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy,
       IFileImportProxy fileImportProxy, 
       IFilterServiceProxy filterServiceProxy,
-      IProductivity3dProxy productivity3DProxy) : base(loggerFactory, serviceExceptionHandler)
+      IProductivity3dV2ProxyNotification roductivity3dV2ProxyNotification) 
+      : base(loggerFactory, serviceExceptionHandler)
     {
       this.projectProxy = projectProxy;
       this.fileImportProxy = fileImportProxy;
       this.filterServiceProxy = filterServiceProxy;
-      this.productivity3dProxy = productivity3DProxy;
+      this.productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
     }
 
     /// <summary>
@@ -109,7 +112,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
       // Base UID needs to be filter
       // Top UID needs to be design
       var route = $"/volumes/summary?projectUid={filter.ProjectUid}&baseUid={filterUid}&topUid={filter.DesignFileUid}";
-      var result = await productivity3dProxy.ExecuteGenericV2Request<CompactionVolumesSummaryResult>(route, HttpMethod.Get, null, CustomHeaders);
+      var result = await productivity3dV2ProxyCompaction.ExecuteGenericV2Request<CompactionVolumesSummaryResult>(route, HttpMethod.Get, null, CustomHeaders);
 
       if (result != null)
         return Json(result);
@@ -146,7 +149,8 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <summary>
     /// Helper method to execute a request against 3dp and throw a service exception if the request fails
     /// </summary>
-    private async Task<T> ExecuteRequest<T>(string baseEndPoint, Guid projectUid, Guid filterUid, Dictionary<string, string> additionalParams = null) where T : class
+    private async Task<T> ExecuteRequest<T>(string baseEndPoint, Guid projectUid, Guid filterUid, Dictionary<string, string> additionalParams = null)
+      where T : class, IMasterDataModel
     {
       var route = $"{baseEndPoint}?projectUid={projectUid}&filterUid={filterUid}";
 
@@ -158,7 +162,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
         }
       }
 
-      var result = await productivity3dProxy.ExecuteGenericV2Request<T>(route, HttpMethod.Get, null, CustomHeaders);
+      var result = await productivity3dV2ProxyCompaction.ExecuteGenericV2Request<T>(route, HttpMethod.Get, null, CustomHeaders);
 
       if (result != null)
         return result;

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
@@ -6,7 +8,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
   /// <summary>
   /// Represents result returned by Pass Count Summary request for compaction
   /// </summary>
-  public class CompactionPassCountSummaryResult : ContractExecutionResult
+  public class CompactionPassCountSummaryResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// The Pass Count summary data results
@@ -42,5 +44,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
         };
       }
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 }

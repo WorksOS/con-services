@@ -25,28 +25,11 @@ data:
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
 #Service references
   ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/associateprojectsubscription
-  CONNECTED_SITE_GATEWAY_URL: http://connectedsite.alpha.eks.vspengg.com/api/position
-  COORDSYSPOST_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem
-  COORDSYSVALIDATE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem/validation
   CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
   DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/dissociateprojectsubscription
-  FILTER_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3Dfilter/1.0
-  GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/
-  IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfile
-  IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
-  PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
-  PROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project
-  PROJECT_INTERNAL_BASE_URL: http://project.dev.eks.vspengg.com
-  PROJECT_SETTINGS_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
-  RAPTOR_3DPM_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
-  RAPTOR_NOTIFICATION_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/notification
-  RAPTOR_PROJECT_SETTINGS_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
-  SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.dev.eks.vspengg.com/internal/v1/background
-  SCHEDULER_INTERNAL_BASE_URL: http://scheduler.dev.eks.vspengg.com/internal/v1
-  SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.dev.eks.vspengg.com/internal/v1/export
+  GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/  
+  PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0 
   TILE_INTERNAL_BASE_URL: http://tile.dev.eks.vspengg.com/internal/v1
-  TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.dev.eks.vspengg.com/api/v1/design
-  TREX_TAGFILE_API_URL: http://trex.mutable.dev.eks.vspengg.com/api/v2/tagfiles
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
 #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0

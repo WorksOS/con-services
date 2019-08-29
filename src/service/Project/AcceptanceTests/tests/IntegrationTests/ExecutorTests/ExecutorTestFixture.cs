@@ -5,12 +5,17 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
 using TestUtility;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
@@ -26,46 +31,59 @@ namespace IntegrationTests.ExecutorTests
 {
   public class ExecutorTestFixture : IDisposable
   {
-    public IServiceProvider serviceProvider;
-    public IConfigurationStore configStore;
-    public ILoggerFactory logger;
-    public IServiceExceptionHandler serviceExceptionHandler;
-    public ProjectRepository projectRepo;
-    public CustomerRepository customerRepo;
-    public IProductivity3dProxy productivity3dProxy;
-    public IKafka producer;
-    public string kafkaTopicName;
+    private readonly IServiceProvider _serviceProvider;
+    public readonly IConfigurationStore ConfigStore;
+    public readonly ILoggerFactory Logger;
+    public readonly IServiceExceptionHandler ServiceExceptionHandler;
+    public readonly ProjectRepository ProjectRepo;
+    public readonly CustomerRepository CustomerRepo;
+    public readonly IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord;
+    public readonly IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
+    public readonly IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
+    public readonly IKafka Producer;
+    public readonly string KafkaTopicName;
 
     public ExecutorTestFixture()
     {
       var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("IntegrationTests.ExecutorTests.log", null));
       var serviceCollection = new ServiceCollection();
       
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory)
+      serviceCollection.AddLogging()
+        .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IProductivity3dProxy, Productivity3dProxy>()
+
+        // for serviceDiscovery
+        .AddServiceDiscovery()
+        .AddTransient<IWebRequest, GracefulWebRequest>()
+        .AddMemoryCache()
+        .AddSingleton<IDataCache, InMemoryDataCache>()
+
+        .AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>()
+        .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
+        .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>()
         .AddMemoryCache();  
 
-      serviceProvider = serviceCollection.BuildServiceProvider();
-      configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
-      projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
-      customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
-      productivity3dProxy = serviceProvider.GetRequiredService<IProductivity3dProxy>();
-      producer = serviceProvider.GetRequiredService<IKafka>();
+      _serviceProvider = serviceCollection.BuildServiceProvider();
+      ConfigStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
+      Logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
+      ServiceExceptionHandler = _serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      ProjectRepo = _serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
+      CustomerRepo = _serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
+      Productivity3dV1ProxyCoord = _serviceProvider.GetRequiredService<IProductivity3dV1ProxyCoord>();
+      Productivity3dV2ProxyNotification = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyNotification>();
+      Productivity3dV2ProxyCompaction = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyCompaction>();
+      Producer = _serviceProvider.GetRequiredService<IKafka>();
 
-      if (!producer.IsInitializedProducer)
-        producer.InitProducer(configStore);
+      if (!Producer.IsInitializedProducer)
+        Producer.InitProducer(ConfigStore);
 
-      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      KafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+                       ConfigStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
     public IDictionary<string, string> CustomHeaders(string customerUid)
@@ -116,10 +134,10 @@ namespace IntegrationTests.ExecutorTests
         ActionUTC = actionUtc
       };
 
-      projectRepo.StoreEvent(createProjectEvent).Wait();
-      customerRepo.StoreEvent(createCustomerEvent).Wait();
-      projectRepo.StoreEvent(associateCustomerProjectEvent).Wait();
-      var g = projectRepo.GetProject(projectUid); g.Wait();
+      ProjectRepo.StoreEvent(createProjectEvent).Wait();
+      CustomerRepo.StoreEvent(createCustomerEvent).Wait();
+      ProjectRepo.StoreEvent(associateCustomerProjectEvent).Wait();
+      var g = ProjectRepo.GetProject(projectUid); g.Wait();
       return (g.Result != null ? true : false);
     }
 
@@ -152,8 +170,8 @@ namespace IntegrationTests.ExecutorTests
       
       Console.WriteLine(
         $"projectSettings after cast/convert ={JsonConvert.SerializeObject(projectSettings)}))')");
-      projectRepo.StoreEvent(createProjectSettingsEvent).Wait();
-      var g = projectRepo.GetProjectSettings(projectUid, userId, settingsType); g.Wait();
+      ProjectRepo.StoreEvent(createProjectSettingsEvent).Wait();
+      var g = ProjectRepo.GetProjectSettings(projectUid, userId, settingsType); g.Wait();
       return (g.Result != null ? true : false);
     }
 

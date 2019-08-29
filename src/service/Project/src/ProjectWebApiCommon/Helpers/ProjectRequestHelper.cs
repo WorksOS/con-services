@@ -21,7 +21,7 @@ using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -91,7 +91,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       //    must have CS in existing, or one added in the update
       if (project is CreateProjectEvent)
       {
-        var projectEvent = (CreateProjectEvent) project;
+        var projectEvent = (CreateProjectEvent)project;
         if (projectEvent.ProjectType == ProjectType.LandFill
             && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName)
                 || projectEvent.CoordinateSystemFileContent == null)
@@ -101,7 +101,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
       if (project is UpdateProjectEvent)
       {
-        var projectEvent = (UpdateProjectEvent) project;
+        var projectEvent = (UpdateProjectEvent)project;
         if (projectEvent.ProjectType == ProjectType.LandFill
             && (string.IsNullOrEmpty(existing.CoordinateSystemFileName)
                 && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName) || projectEvent.CoordinateSystemFileContent == null))
@@ -112,31 +112,31 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-      /// validate CordinateSystem if provided
-      /// </summary>
-      public static async Task<bool> ValidateCoordSystemInRaptor(IProjectEvent project,
-      IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
-      IProductivity3dProxy productivity3DProxy)
+    /// validate CoordinateSystem if provided
+    /// </summary>
+    public static async Task<bool> ValidateCoordSystemInProductivity3D(IProjectEvent project,
+    IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
+    IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord)
     {
       var csFileName = project is CreateProjectEvent
-        ? ((CreateProjectEvent) project).CoordinateSystemFileName
-        : ((UpdateProjectEvent) project).CoordinateSystemFileName;
+        ? ((CreateProjectEvent)project).CoordinateSystemFileName
+        : ((UpdateProjectEvent)project).CoordinateSystemFileName;
       var csFileContent = project is CreateProjectEvent
-        ? ((CreateProjectEvent) project).CoordinateSystemFileContent
-        : ((UpdateProjectEvent) project).CoordinateSystemFileContent;
+        ? ((CreateProjectEvent)project).CoordinateSystemFileContent
+        : ((UpdateProjectEvent)project).CoordinateSystemFileContent;
       if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
       {
         ProjectDataValidator.ValidateFileName(csFileName);
         CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
         try
         {
-          coordinateSystemSettingsResult = await productivity3DProxy
+          coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
             .CoordinateSystemValidate(csFileContent, csFileName, customHeaders);
         }
         catch (Exception e)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-            "productivity3dProxy.CoordinateSystemValidate", e.Message);
+            "productivity3dV1ProxyCoord.CoordinateSystemValidate", e.Message);
         }
 
         if (coordinateSystemSettingsResult == null)
@@ -157,12 +157,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
     /// </summary>
-    public static async Task CreateCoordSystemInRaptorAndTcc(Guid projectUid, int legacyProjectId,
+    public static async Task CreateCoordSystemInProductivity3dAndTcc(Guid projectUid, int legacyProjectId,
       string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
       IDictionary<string, string> customHeaders,
-      IProjectRepository projectRepo, IProductivity3dProxy productivity3DProxy, IConfigurationStore configStore,
+      IProjectRepository projectRepo, IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
       IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
@@ -175,7 +175,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         try
         {
           //Pass coordinate system to Raptor
-          var coordinateSystemSettingsResult = await productivity3DProxy
+          var coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
             .CoordinateSystemPost(legacyProjectId, coordinateSystemFileContent,
               coordinateSystemFileName, headers);
           var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
@@ -215,7 +215,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             await DataOceanHelper.WriteFileToDataOcean(
-              ms, rootFolder, customerUid, projectUid.ToString(), 
+              ms, rootFolder, customerUid, projectUid.ToString(),
               DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
               false, null, log, serviceExceptionHandler, dataOceanClient, authn, projectUid);
           }
@@ -228,14 +228,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           //Don't hide exceptions thrown above
           if (e is ServiceException)
             throw;
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "productivity3dProxy.CoordinateSystemPost", e.Message);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "productivity3dV1ProxyCoord.CoordinateSystemPost", e.Message);
         }
       }
     }
 
     #endregion coordSystem
 
-   
+
     #region S3
     /// <summary>
     /// Writes the importedFile to S3
@@ -246,7 +246,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static FileDescriptor WriteFileToS3Repository(
       Stream fileContents, string projectUid, string filename,
       bool isSurveyedSurface, DateTime? surveyedUtc,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, 
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
       ITransferProxy persistantTransferProxy)
     {
       string finalFilename = filename;

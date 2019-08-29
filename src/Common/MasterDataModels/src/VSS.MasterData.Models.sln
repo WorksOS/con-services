@@ -1,14 +1,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29025.244
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.705
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "VSS.MasterData.Models.csproj", "{38849182-743F-46F6-96FB-9DE158368503}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.UnitTests", "..\test\UnitTests\VSS.MasterData.Models.UnitTests.csproj", "{2D15648F-4D22-493D-BDE3-FB62940D5096}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{47F4364F-5368-4932-8900-3387AC04AFB1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\..\..\service\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9996D264-C001-4F01-A4E3-43A130DF42C9}"
 	ProjectSection(SolutionItems) = preProject
@@ -24,6 +22,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{2B6D1217-52B9-4EA5-ADC3-5356402AC623}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories", "..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj", "{635607FA-236B-4008-BC17-D34C7968841B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{9F834981-6331-4C51-A4B4-E68FF2F3435B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filter Service", "Filter Service", "{29BB7408-35FF-4874-948A-8D1E430CC9F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\..\..\service\Filter\Clients\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{1371D85A-073C-41D1-BE80-2DE8174AC23E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\ITask\src\VSS.ITask.csproj", "{6C0A9ACE-F667-44D5-BAEA-499BB54E2C3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +49,6 @@ Global
 		{47F4364F-5368-4932-8900-3387AC04AFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47F4364F-5368-4932-8900-3387AC04AFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47F4364F-5368-4932-8900-3387AC04AFB1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0043DC74-2739-49DA-967C-AE17A0BFDAC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0043DC74-2739-49DA-967C-AE17A0BFDAC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0043DC74-2739-49DA-967C-AE17A0BFDAC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,17 +61,32 @@ Global
 		{635607FA-236B-4008-BC17-D34C7968841B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{635607FA-236B-4008-BC17-D34C7968841B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{635607FA-236B-4008-BC17-D34C7968841B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F834981-6331-4C51-A4B4-E68FF2F3435B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F834981-6331-4C51-A4B4-E68FF2F3435B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F834981-6331-4C51-A4B4-E68FF2F3435B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F834981-6331-4C51-A4B4-E68FF2F3435B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1371D85A-073C-41D1-BE80-2DE8174AC23E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1371D85A-073C-41D1-BE80-2DE8174AC23E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1371D85A-073C-41D1-BE80-2DE8174AC23E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1371D85A-073C-41D1-BE80-2DE8174AC23E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C0A9ACE-F667-44D5-BAEA-499BB54E2C3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C0A9ACE-F667-44D5-BAEA-499BB54E2C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C0A9ACE-F667-44D5-BAEA-499BB54E2C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C0A9ACE-F667-44D5-BAEA-499BB54E2C3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{47F4364F-5368-4932-8900-3387AC04AFB1} = {DCC36C0D-38F3-47B1-A556-69D3210A775A}
-		{E5579F54-70DE-40B6-88F2-8CF05B1E0C47} = {56AD5A54-DCFA-4175-8ED3-F2C826044518}
 		{DCC36C0D-38F3-47B1-A556-69D3210A775A} = {56AD5A54-DCFA-4175-8ED3-F2C826044518}
 		{0043DC74-2739-49DA-967C-AE17A0BFDAC8} = {DCC36C0D-38F3-47B1-A556-69D3210A775A}
 		{2B6D1217-52B9-4EA5-ADC3-5356402AC623} = {DCC36C0D-38F3-47B1-A556-69D3210A775A}
 		{635607FA-236B-4008-BC17-D34C7968841B} = {DCC36C0D-38F3-47B1-A556-69D3210A775A}
+		{9F834981-6331-4C51-A4B4-E68FF2F3435B} = {DCC36C0D-38F3-47B1-A556-69D3210A775A}
+		{29BB7408-35FF-4874-948A-8D1E430CC9F0} = {56AD5A54-DCFA-4175-8ED3-F2C826044518}
+		{1371D85A-073C-41D1-BE80-2DE8174AC23E} = {29BB7408-35FF-4874-948A-8D1E430CC9F0}
+		{6C0A9ACE-F667-44D5-BAEA-499BB54E2C3E} = {DCC36C0D-38F3-47B1-A556-69D3210A775A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BAF1CB36-1789-4E9F-B645-67D9B5DF3327}

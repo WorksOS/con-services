@@ -38,7 +38,7 @@ namespace Common.netstandard.ApiClients
     private readonly IConfigurationStore config;
     private readonly ILogger Log;
     //private readonly string prodDataEndpoint;
-    private IProductivity3dProxy productivity3DProxy;
+    private IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord;
     //private readonly string reportEndpoint;
     //private string baseAddress;
     public IDictionary<string, string> customHeaders;
@@ -47,11 +47,11 @@ namespace Common.netstandard.ApiClients
     /// <summary>
     /// Encapsulates the limited requirements from Productivity3D and Filter service 
     /// </summary>
-    public Productivity3DApiClient(ILogger Log, IConfigurationStore config, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy, IDictionary<string, string> customHeaders)
+    public Productivity3DApiClient(ILogger Log, IConfigurationStore config, IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IFileImportProxy fileImportProxy, IDictionary<string, string> customHeaders)
     {
       this.Log = Log;
       this.config = config;
-      this.productivity3DProxy = productivity3DProxy;
+      this.productivity3dV1ProxyCoord = productivity3dV1ProxyCoord;
       this.fileImportProxy = fileImportProxy;
       this.customHeaders=customHeaders;
     }
@@ -136,7 +136,7 @@ namespace Common.netstandard.ApiClients
           }
         }
       };
-      return await productivity3DProxy.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
+      return await productivity3dV1ProxyCoord.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
     }
 
     public async Task<List<DesignDescriptiorLegacy>> GetDesignID(string jwt, Project project,string customerUid)
@@ -176,7 +176,7 @@ namespace Common.netstandard.ApiClients
       Project project)
     {
       var statsParams = new StatisticsParams {projectId = project.id};
-      return await productivity3DProxy.ExecuteGenericV1Request<ProjectStatisticsResult>("/projects/statistics", statsParams, customHeaders);
+      return await productivity3dV1ProxyCoord.ExecuteGenericV1Request<ProjectStatisticsResult>("/projects/statistics", statsParams, customHeaders);
     }
 
 
@@ -330,7 +330,7 @@ namespace Common.netstandard.ApiClients
 
       //var logVolumeParams = JsonConvert.SerializeObject(volumeParams, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       //Console.WriteLine("VOLUMES=" + logVolumeParams);
-      var result = await productivity3DProxy.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
+      var result = await productivity3dV1ProxyCoord.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
       
       //Log.LogDebug("Volumes request for project {0}: {1} {2} Result : {3}", project.id, reportEndpoint,JsonConvert.SerializeObject(volumeParams), JsonConvert.SerializeObject(result));
       return result;
@@ -346,7 +346,7 @@ namespace Common.netstandard.ApiClients
         excludedSurveyedSurfaceIds = new int[0]
       };
 
-      return await productivity3DProxy.ExecuteGenericV1Request<ProjectExtentsResult>("/projects/statistics", volumeParams, customHeaders);
+      return await productivity3dV1ProxyCoord.ExecuteGenericV1Request<ProjectExtentsResult>("/projects/statistics", volumeParams, customHeaders);
     }
 
     private void ConvertToUtc(DateTime date, string timeZoneName, out DateTime startUtc, out DateTime endUtc)
@@ -407,7 +407,7 @@ namespace Common.netstandard.ApiClients
         }
       };
 
-      return await productivity3DProxy.ExecuteGenericV1Request<CCASummaryResult>("/compaction/cca/summary", ccaParams, customHeaders);
+      return await productivity3dV1ProxyCoord.ExecuteGenericV1Request<CCASummaryResult>("/compaction/cca/summary", ccaParams, customHeaders);
     }
 
     /// <summary>
@@ -423,7 +423,7 @@ namespace Common.netstandard.ApiClients
       var url = $"/projects/{project.id}/machinelifts";
       var query = $"?startUtc={FormatUtcDate(startUtc)}&endUtc={FormatUtcDate(endUtc)}";
       //Console.WriteLine("GetMachineLiftList: Url = {0} {1}", url,query);
-      return await productivity3DProxy.ExecuteGenericV1Request<MachineLayerIdsExecutionResult>(url, query, customHeaders);
+      return await productivity3dV1ProxyCoord.ExecuteGenericV1Request<MachineLayerIdsExecutionResult>(url, query, customHeaders);
 
     }
 

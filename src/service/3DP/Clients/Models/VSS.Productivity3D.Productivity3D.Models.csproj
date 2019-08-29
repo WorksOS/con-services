@@ -6,18 +6,19 @@
 
   <ItemGroup>
     <Compile Remove="Models\**" />
-    <Compile Remove="ProductionData\**" />
     <Compile Remove="Report\**" />
     <EmbeddedResource Remove="Models\**" />
-    <EmbeddedResource Remove="ProductionData\**" />
     <EmbeddedResource Remove="Report\**" />
     <None Remove="Models\**" />
-    <None Remove="ProductionData\**" />
     <None Remove="Report\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ProductionData\ResultHandling\" />
   </ItemGroup>
 
 </Project>

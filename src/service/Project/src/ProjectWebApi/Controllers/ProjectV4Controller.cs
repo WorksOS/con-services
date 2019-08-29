@@ -4,14 +4,12 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.DataOcean.Client;
+using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
@@ -23,14 +21,10 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity.Push.Models.Notifications.Changes;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
-using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -49,15 +43,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
-      ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
-      IConfigurationStore store,
-      ISubscriptionProxy subscriptionProxy, IProductivity3dProxy productivity3DProxy,
-      ILoggerFactory loggerFactory,
-      IServiceExceptionHandler serviceExceptionHandler,
-      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient, INotificationHubClient notificationHubClient,ITPaaSApplicationAuthentication authn)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, productivity3DProxy,
-        loggerFactory, serviceExceptionHandler, dataOceanClient, authn)
+    public ProjectV4Controller(IKafka producer, IConfigurationStore configStore, ISubscriptionProxy subscriptionProxy, IHttpContextAccessor httpContextAccessor, INotificationHubClient notificationHubClient)
+      : base(producer, configStore, subscriptionProxy)
     {
       this.HttpContextAccessor = httpContextAccessor;
       this.notificationHubClient = notificationHubClient;
@@ -89,7 +76,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ProjectV4DescriptorsListResult> GetAllProjectsV4()
     {
-      logger.LogInformation("GetAllProjectsV4");
+      Logger.LogInformation("GetAllProjectsV4");
 
       var projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
 
@@ -109,9 +96,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4(string projectUid)
     {
-      logger.LogInformation("GetProjectV4");
-
-      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
+      Logger.LogInformation("GetProjectV4");
+     
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
       return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project));
     }
 
@@ -131,39 +118,40 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (projectRequest == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
 
-      logger.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
+      Logger.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(customerUid);
       if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid();
 
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ReceivedUTC = createProjectEvent.ActionUTC = DateTime.UtcNow;
-      ProjectDataValidator.Validate(createProjectEvent, projectRepo, serviceExceptionHandler);
+      ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
       if (createProjectEvent.CustomerUID.ToString() != customerUid)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
       }
-      await ProjectDataValidator.ValidateProjectName(customerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), logger, serviceExceptionHandler, projectRepo);
+      await ProjectDataValidator.ValidateProjectName(customerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<CreateProjectExecutor>(loggerFactory, configStore, serviceExceptionHandler,
-            customerUid, userId, null, customHeaders, producer, kafkaTopicName, Productivity3DProxy, 
-            subscriptionProxy, null, null, null, projectRepo, subscriptionRepo, fileRepo, 
-            null, HttpContextAccessor, dataOceanClient, authn)
+          .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            customerUid, userId, null, customHeaders, Producer, KafkaTopicName,
+            productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
+            subscriptionProxy: subscriptionProxy, projectRepo: ProjectRepo, subscriptionRepo: SubscriptionRepo, fileRepo: FileRepo,
+            httpContextAccessor: HttpContextAccessor, dataOceanClient: DataOceanClient, authn: Authorization)
           .ProcessAsync(createProjectEvent)
       );
 
       var result = new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
       await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
-      logger.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
+      Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return result;
     }
 
@@ -179,11 +167,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (projectRequest == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
-
-      var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
-      var callbackUrl = $"{baseUrl}/internal/v4/project";
+      
+      var baseUrl = Request.Host.ToUriComponent(); 
+      var callbackUrl = $"{baseUrl}/internal/v4/project";  
+      Logger.LogInformation($"nameof(RequestCreateProjectBackgroundJob): baseUrl {callbackUrl}");
 
       var request = new ScheduleJobRequest
       {
@@ -217,38 +206,35 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (projectRequest == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
 
-      logger.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
+      Logger.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
-      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
-      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), logger, serviceExceptionHandler, projectRepo);
+      ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
+      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpdateProjectExecutor>(loggerFactory, configStore, serviceExceptionHandler,
+          .Build<UpdateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             customerUid, userId, null, customHeaders,
-            producer, kafkaTopicName,
-            Productivity3DProxy, subscriptionProxy, null, null, null,
-            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, 
-            dataOceanClient, authn)
+            Producer, KafkaTopicName,
+            productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
+            subscriptionProxy: subscriptionProxy, projectRepo: ProjectRepo, subscriptionRepo: SubscriptionRepo, fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor,
+            dataOceanClient: DataOceanClient, authn: Authorization)
           .ProcessAsync(project)
       );
 
-      //invalidate cache in Raptor
-      logger.LogInformation("UpdateProjectV4. Invalidating 3D PM cache");
-      var notificationTask = notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
-      var raptorTask = Productivity3DProxy.InvalidateCache(projectRequest.ProjectUid.ToString(), customHeaders);
+      //invalidate cache in TRex/Raptor
+      Logger.LogInformation("UpdateProjectV4. Invalidating 3D PM cache");
+      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
 
-      await Task.WhenAll(notificationTask, raptorTask);
-
-      logger.LogInformation("UpdateProjectV4. Completed successfully");
+      Logger.LogInformation("UpdateProjectV4. Completed successfully");
       return new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
     }
 
@@ -264,18 +250,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (projectRequest == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
 
       // do a quick validation to make sure the project acctually exists (this will also be run in the background task, but a quick response to the UI will be better if the project can't be updated)
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
       // validation includes check that project must exist - otherwise there will be a null legacyID.
-      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
-      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), logger, serviceExceptionHandler, projectRepo);
+      ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
+      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
-      var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
+      var baseUrl = Request.Host.ToUriComponent();
       var callbackUrl = $"{baseUrl}/internal/v4/project";
+      Logger.LogInformation($"nameof(RequestUpdateProjectBackgroundJob): baseUrl {callbackUrl}");
+
       var request = new ScheduleJobRequest
       {
         Filename = projectRequest.ProjectName + Guid.NewGuid(), // Make sure the filename is unique, it's not important what it's called as the scheduled job keeps a reference
@@ -313,25 +301,25 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
-      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
+      ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
-      var isDeleted = await projectRepo.StoreEvent(project).ConfigureAwait(false);
+      var isDeleted = await ProjectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
 
-      producer.Send(kafkaTopicName,
+      Producer.Send(KafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });
 
-      if(Guid.TryParse(customerUid, out var c))
+      if (Guid.TryParse(customerUid, out var c))
         await notificationHubClient.Notify(new CustomerChangedNotification(c));
 
-      logger.LogInformation("DeleteProjectV4. Completed succesfully");
+      Logger.LogInformation("DeleteProjectV4. Completed succesfully");
       return new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
     }
@@ -384,15 +372,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<GeofenceV4DescriptorsListResult> GetAssociatedGeofencesV4([FromQuery] List<GeofenceType> geofenceType, [FromQuery] Guid? projectUid = null)
     {
-      logger.LogInformation("GetAssociatedGeofencesV4");
+      Logger.LogInformation("GetAssociatedGeofencesV4");
 
       if (projectUid != null)
       {
         var project = await ProjectRequestHelper
-          .GetProject(projectUid.ToString(), customerUid, logger, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
+          .GetProject(projectUid.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
         if (project.ProjectType != ProjectType.LandFill)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 102);
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 102);
         }
         ProjectDataValidator.ValidateGeofenceTypes(geofenceType, project.ProjectType);
       }
@@ -402,7 +390,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       var geofences =
-        (await ProjectRequestHelper.GetGeofenceList(customerUid, projectUid != null ? projectUid.ToString() : string.Empty, geofenceType, logger, projectRepo));
+        (await ProjectRequestHelper.GetGeofenceList(customerUid, projectUid != null ? projectUid.ToString() : string.Empty, geofenceType, Logger, ProjectRepo));
       return new GeofenceV4DescriptorsListResult
       {
         GeofenceDescriptors = geofences.Select(geofence =>
@@ -421,22 +409,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ContractExecutionResult> UpdateProjectGeofencesV4(
       [FromBody] UpdateProjectGeofenceRequest updateProjectGeofenceRequest)
     {
-      logger.LogInformation("UpdateProjectGeofencesV4");
+      Logger.LogInformation("UpdateProjectGeofencesV4");
 
       updateProjectGeofenceRequest.Validate();
-      logger.LogInformation($"UpdateProjectGeofencesV4 validation passed: {updateProjectGeofenceRequest}");
+      Logger.LogInformation($"UpdateProjectGeofencesV4 validation passed: {updateProjectGeofenceRequest}");
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpdateProjectGeofenceExecutor>(loggerFactory, configStore, serviceExceptionHandler,
+          .Build<UpdateProjectGeofenceExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             customerUid, userId, null, customHeaders,
-            producer, kafkaTopicName,
-            Productivity3DProxy, subscriptionProxy, null, null, null,
-            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
+            Producer, KafkaTopicName,
+            subscriptionProxy: subscriptionProxy, projectRepo: ProjectRepo, subscriptionRepo: SubscriptionRepo, fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor)
           .ProcessAsync(updateProjectGeofenceRequest)
       );
 
-      logger.LogInformation("UpdateProjectGeofencesV4. Completed successfully");
+      Logger.LogInformation("UpdateProjectGeofencesV4. Completed successfully");
       return new ContractExecutionResult();
     }
 

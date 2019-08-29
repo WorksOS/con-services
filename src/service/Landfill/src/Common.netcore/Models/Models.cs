@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace LandfillService.Common.Models
 {
@@ -347,7 +348,7 @@ namespace LandfillService.Common.Models
   /// <summary>
   ///   Volume summary entry returned from the Productivity3D API
   /// </summary>
-  public class SummaryVolumesResult
+  public class SummaryVolumesResult : IMasterDataModel
   {
     /// <summary>
     ///   Zone boundaries
@@ -387,22 +388,25 @@ namespace LandfillService.Common.Models
     {
       return string.Format("cut:{0}, fill:{1}", Cut, Fill);
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 
 
   /// <summary>
   ///   Project extents entry returned from the Productivity3D API
   /// </summary>
-  public class ProjectExtentsResult
+  public class ProjectExtentsResult : IMasterDataModel
   {
     public DateTime startTime { get; set; }
     public DateTime endTime { get; set; }
+    public List<string> GetIdentifiers() => new List<string>();
   }
 
   /// <summary>
   ///   A representation of a set of spatial and temporal stastics for the project as a whole
   /// </summary>
-  public class ProjectStatisticsResult
+  public class ProjectStatisticsResult : IMasterDataModel
   {
     /// <summary>
     ///   Size of spatial data cells in the project (the default value is 34cm)
@@ -440,6 +444,8 @@ namespace LandfillService.Common.Models
       return string.Format("Start time:{0}, end time:{1}, cellsize:{2}, indexOriginOffset:{3}, extents:{4}",
         startTime, endTime, cellSize, indexOriginOffset, extents);
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 
   /// <summary>
@@ -516,7 +522,7 @@ namespace LandfillService.Common.Models
   /// <summary>
   ///   CCA summary entry returned from the Productivity3D API
   /// </summary>
-  public class CCASummaryResult
+  public class CCASummaryResult : IMasterDataModel
   {
     /// <summary>
     ///   The percentage of the cells that are incomplete
@@ -552,14 +558,18 @@ namespace LandfillService.Common.Models
       return string.Format("under:{0}, complete:{1}, over:{2}",
         undercompletePercent, completePercent, overcompletePercent);
     }
+
+    public List<string> GetIdentifiers()=> new List<string>();
   }
 
   /// <summary>
   ///   List of machines and lifts returned from the Productivity3D API
   /// </summary>
-  public class MachineLayerIdsExecutionResult
+  public class MachineLayerIdsExecutionResult : IMasterDataModel
   {
     public MachineLiftDetails[] MachineLiftDetails { get; set; }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 
   /// <summary>

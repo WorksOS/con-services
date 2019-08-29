@@ -12,7 +12,7 @@ namespace MockProjectWebApi.Controllers
     public MockCustomerController(ILoggerFactory loggerFactory) : base(loggerFactory)
     { }
 
-    [Route("api/v1/mock/getcustomersforme")]
+    [Route("api/v1/mock/getcustomersforme")] // can remove this when 85920 merged.
     [Route("api/v1/Customers/me")]
     [HttpGet]
     public CustomerDataResult DummyGetCustomersForMe()

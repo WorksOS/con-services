@@ -1,13 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using CmvSummaryData = VSS.Productivity3D.Productivity3D.Models.Compaction.CmvSummaryData;
 
 namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by CMV Summary request for compaction
   /// </summary>
-  public class CompactionCmvSummaryResult : ContractExecutionResult
+  public class CompactionCmvSummaryResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// The CMV summary data results
@@ -46,5 +47,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
         };
       }
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 }

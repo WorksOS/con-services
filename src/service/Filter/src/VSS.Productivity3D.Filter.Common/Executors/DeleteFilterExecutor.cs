@@ -22,9 +22,11 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// This constructor allows us to mock raptorClient
     /// </summary>
     public DeleteFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy,
+      IProjectProxy projectProxy,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
+      IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3DProxy, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
     { }
 
     /// <summary>
@@ -54,7 +56,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
       log.LogDebug($"DeleteFilter retrieved filter {JsonConvert.SerializeObject(filter)}");
 
-      var deleteEvent = await StoreFilterAndNotifyRaptor<DeleteFilterEvent>(request, new [] { 12, 13 });
+      var deleteEvent = await StoreFilterAndNotifyRaptor<DeleteFilterEvent>(request, new[] { 12, 13 });
 
       //Only write to kafka for persistent filters
       if (request.SendKafkaMessages && deleteEvent != null && filter.FilterType != FilterType.Transient)
@@ -62,7 +64,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         var payload = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteEvent });
         SendToKafka(deleteEvent.FilterUID.ToString(), payload, 14);
       }
- 
+
       return new ContractExecutionResult();
     }
   }

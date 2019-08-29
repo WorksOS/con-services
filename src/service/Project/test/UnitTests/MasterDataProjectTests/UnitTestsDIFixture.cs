@@ -23,7 +23,7 @@ namespace VSS.MasterData.ProjectTests
   {
     public IServiceProvider ServiceProvider;
     public string KafkaTopicName;
-    
+
     protected IErrorCodesProvider ProjectErrorCodesProvider;
     protected IServiceExceptionHandler ServiceExceptionHandler;
     public ILogger Log;
@@ -41,7 +41,9 @@ namespace VSS.MasterData.ProjectTests
         .AddTransient<IProjectRepository, ProjectRepository>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IProductivity3dProxy, Productivity3dProxy>()
+        .AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>()
+        .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
+        .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
@@ -50,7 +52,7 @@ namespace VSS.MasterData.ProjectTests
                        ServiceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       ProjectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
+
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<T>();
     }
 

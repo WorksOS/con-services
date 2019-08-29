@@ -60,7 +60,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
         .Build()
         .Add(x => x.AddServiceDiscovery())
-        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV2ServiceDiscoveryProxy>())
+        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV2Proxy>())
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))

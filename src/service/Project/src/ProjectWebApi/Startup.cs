@@ -65,7 +65,6 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
-      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<IRequestFactory, RequestFactory>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
@@ -83,9 +82,12 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
 
-      services.AddScoped<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
-      services.AddTransient<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
-      services.AddTransient<ITRexImportFileProxy, TRexImportFileV1ServiceDiscoveryProxy>();
+      services.AddScoped<IFilterServiceProxy, FilterV1Proxy>();
+      services.AddTransient<ISchedulerProxy, SchedulerV1Proxy>();
+      services.AddTransient<ITRexImportFileProxy, TRexImportFileV1Proxy>();
+      services.AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>();
+      services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
+      services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
       services.AddOpenTracing(builder =>
       {

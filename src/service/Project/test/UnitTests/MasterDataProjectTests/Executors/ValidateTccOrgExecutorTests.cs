@@ -84,9 +84,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
            .Build<ValidateTccOrgExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, null, null, customHeaders,
-            null, null,
-            null, null, null, null, null,
-            null, null, fileRepo.Object, customerRepo.Object);
+            fileRepo: fileRepo.Object, customerRepo: customerRepo.Object);
 
       await executor.ProcessAsync(request);
     }

@@ -45,9 +45,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected IFileImportProxy fileImportProxy;
 
     /// <summary>
-    /// Implementation of the proxy interface for <see cref="IProductivity3dProxy"/>.
+    /// Implementation of the proxy interface for Productivity3D
     /// </summary>
-    protected IProductivity3dProxy Productivity3DProxy;
+    protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
+    protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
 
     /// <summary>
     /// Main DB repo for filters/boundaries used in ProcessEx
@@ -151,7 +152,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected RequestExecutorContainer(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy, RepositoryBase repository,
+      IProjectProxy projectProxy,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
+      IFileImportProxy fileImportProxy, RepositoryBase repository,
       IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy) : this()
     {
       this.configStore = configStore;
@@ -159,7 +162,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         log = logger.CreateLogger<RequestExecutorContainer>();
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.projectProxy = projectProxy;
-      Productivity3DProxy = productivity3DProxy;
+      Productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
+      Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
       Repository = repository;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
@@ -186,7 +190,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       Build<TExecutor>(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       RepositoryBase repository, RepositoryBase auxRepository,
-      IProjectProxy projectProxy = null, IProductivity3dProxy productivity3DProxy = null, 
+      IProjectProxy projectProxy = null,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       IKafka producer = null, string kafkaTopicName = null, IFileImportProxy fileImportProxy = null, IGeofenceProxy geofenceProxy = null,
       IUnifiedProductivityProxy unifiedProductivityProxy = null)
       where TExecutor : RequestExecutorContainer, new()
@@ -197,7 +202,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         log = logger.CreateLogger<TExecutor>(),
         serviceExceptionHandler = serviceExceptionHandler,
         projectProxy = projectProxy,
-        Productivity3DProxy = productivity3DProxy,
+        Productivity3dV2ProxyNotification = productivity3dV2ProxyNotification,
+        Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction,
         fileImportProxy = fileImportProxy,
         Repository = repository,
         producer = producer,

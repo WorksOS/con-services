@@ -26,7 +26,6 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [Route("api/v4/mockproject")]
     [Route("api/v4")]
     [HttpGet]
     public ProjectDataResult GetMockProjects()
@@ -42,7 +41,6 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [Route("api/v4/mockproject/{projectUid}")]
     [Route("api/v4/{projectUid}")]
     [Route("api/v4/project/{projectUid}")]
     [HttpGet]
@@ -59,7 +57,6 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The mocked settings</returns>
-    [Route("api/v4/mock/projectsettings/{projectUid}")]
     [Route("api/v4/projectsettings/{projectUid}")]
     [HttpGet]
     public ProjectSettingsDataResult GetMockProjectSettingsTargets(string projectUid)
@@ -81,7 +78,6 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The mocked settings</returns>
-    [Route("api/v4/mock/projectcolors/{projectUid}")]
     [Route("api/v4/projectcolors/{projectUid}")]
     [HttpGet]
     public ProjectSettingsDataResult GetMockProjectSettingsColors(string projectUid)

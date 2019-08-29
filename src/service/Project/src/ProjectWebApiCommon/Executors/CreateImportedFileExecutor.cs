@@ -79,14 +79,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createimportedfile.ProjectUid,
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileDescriptor,
           createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
-          log, customHeaders, serviceExceptionHandler, productivity3dProxy, projectRepo);
+          log, customHeaders, serviceExceptionHandler, productivity3dV2ProxyNotification, projectRepo);
 
         var dxfFileName = createimportedfile.DataOceanFileName;
         if (createimportedfile.ImportedFileType == ImportedFileType.Alignment)
         {
           //Create DXF file for alignment center line
           dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
-            customerUid, createimportedfile.ProjectUid, createImportedFileEvent.ImportedFileUID, productivity3dProxy, customHeaders, log,
+            customerUid, createimportedfile.ProjectUid, createImportedFileEvent.ImportedFileUID, productivity3dV2ProxyCompaction, customHeaders, log,
             serviceExceptionHandler, authn, dataOceanClient, configStore, createimportedfile.DataOceanFileName, createimportedfile.DataOceanRootFolder);
         }
 
@@ -98,13 +98,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           //Generate raster tiles
           var jobRequest = TileGenerationRequestHelper.CreateRequest(
-            createimportedfile.ImportedFileType, 
-            customerUid, 
+            createimportedfile.ImportedFileType,
+            customerUid,
             createimportedfile.ProjectUid.ToString(),
-            existing.ImportedFileUid, 
-            createimportedfile.DataOceanRootFolder, 
+            existing.ImportedFileUid,
+            createimportedfile.DataOceanRootFolder,
             dxfFileName,
-            DataOceanFileUtil.DataOceanFileName(project.CoordinateSystemFileName, false, Guid.Parse(project.ProjectUID), null), 
+            DataOceanFileUtil.DataOceanFileName(project.CoordinateSystemFileName, false, Guid.Parse(project.ProjectUID), null),
             createimportedfile.DxfUnitsType,
             createimportedfile.SurveyedUtc);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
@@ -132,7 +132,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
       }
 
-      var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
+      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {

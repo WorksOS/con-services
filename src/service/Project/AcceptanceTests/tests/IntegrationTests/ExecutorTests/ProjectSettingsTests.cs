@@ -51,11 +51,9 @@ namespace IntegrationTests.ExecutorTests
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
-        (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+        (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
           customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),
-          null, null, 
-          null, null, null, null, null,
-          _fixture.projectRepo);
+          projectRepo: _fixture.ProjectRepo);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal));
@@ -79,13 +77,11 @@ namespace IntegrationTests.ExecutorTests
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
-          ( _fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+          (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
             customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-            null, null, 
-            null, null, null, null, null,
-            _fixture.projectRepo);
+            projectRepo: _fixture.ProjectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
-      
+
       Assert.NotNull(result);
       Assert.Equal(projectUid, result.projectUid);
       Assert.Null(result.settings);
@@ -113,11 +109,9 @@ namespace IntegrationTests.ExecutorTests
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
-        (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+        (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
           customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-          null, null, 
-          null, null, null, null, null,
-          _fixture.projectRepo);
+          projectRepo: _fixture.ProjectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
       Assert.Equal(projectUid, result.projectUid);
@@ -177,11 +171,10 @@ namespace IntegrationTests.ExecutorTests
         ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
-      (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+      (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
         customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),
-        _fixture.producer, _fixture.kafkaTopicName,
-        _fixture.productivity3dProxy, null, null, null, null,
-        _fixture.projectRepo);
+        _fixture.Producer, _fixture.KafkaTopicName,
+        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal));
@@ -202,13 +195,12 @@ namespace IntegrationTests.ExecutorTests
 
       var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid.ToString());
       Assert.True(isCreatedOk, "unable to create project for Customer");
-      
+
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
-        (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+        (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
         customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-        _fixture.producer, _fixture.kafkaTopicName,
-        _fixture.productivity3dProxy, null, null, null, null,
-        _fixture.projectRepo);
+        _fixture.Producer, _fixture.KafkaTopicName,
+        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
       Assert.Equal(projectUid.ToString(), result.projectUid);
@@ -257,11 +249,10 @@ namespace IntegrationTests.ExecutorTests
         ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
-      (_fixture.logger, _fixture.configStore, _fixture.serviceExceptionHandler,
+      (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
         customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-        _fixture.producer, _fixture.kafkaTopicName,
-        _fixture.productivity3dProxy, null, null, null, null,
-        _fixture.projectRepo);
+        _fixture.Producer, _fixture.KafkaTopicName,
+        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
       Assert.Equal(projectUid.ToString(), result.projectUid);

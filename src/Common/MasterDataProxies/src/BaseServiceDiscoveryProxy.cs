@@ -113,18 +113,11 @@ namespace VSS.MasterData.Proxies
       return RequestAndReturnDataStream(customHeaders, method, route, queryParameters, payload);
     }
 
-    protected Task<T> PostMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
-      IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
+    protected Task<T> SendMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
+      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
       where T : class, IMasterDataModel
     {
-      return RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload);
-    }
-
-    protected Task<T> PutMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
-      IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
-      where T : class, IMasterDataModel
-    {
-      return RequestAndReturnData<T>(customHeaders, HttpMethod.Put, route, queryParameters, payload);
+      return RequestAndReturnData<T>(customHeaders, method, route, queryParameters, payload);
     }
 
     /// <summary>
@@ -136,7 +129,7 @@ namespace VSS.MasterData.Proxies
     {
       return RequestAndReturnResult(customHeaders, method, route, queryParameters, payload);
     }
-
+    
     #endregion
 
     #region Private Methods
@@ -169,8 +162,6 @@ namespace VSS.MasterData.Proxies
       var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
       var result = await (await webRequest.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
       BaseProxyHealthCheck.SetStatus(true, this.GetType());
-
-      log.LogDebug($"{nameof(RequestAndReturnDataStream)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
       return result;
     }
 
