@@ -121,11 +121,13 @@
 <br />
 <H3>Surveyed Surfaces [{{surveyedSurfaces.length}} in total]</H3>
 <p>
-    Design File Name: <input  type="file" value="" (change)="handleSurveyedSurfaceChange($event.target.files)"/>
-    As At Date: <input [(ngModel)]="surveyedSurfaceAsAtDate" type="datetime" value=""/>
+    Design File Name: <input type="file" accept=".ttm" value="" (change)="handleSurveyedSurfaceChange($event.target.files)" />
+    As At Date:
+    <input name="surveyedSurfaceDate" [(ngModel)]="surveyedSurfaceDate" type="date" value="" />
+    <input name="surveyedSurfaceTime" [(ngModel)]="surveyedSurfaceTime" type="time" value="" />
 </p>
 <p>
-    <button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button>
+    <button (click)=addNewSurveyedSurface() [disabled]="!canAddSurveyedSurfaceFile()">Add New Surveyed Surface</button>
     Surveyed Surface UID: <input [(ngModel)]="newSurveyedSurfaceGuid" size="37" type="text" value="" />
 </p>
 <p *ngFor="let surveyedSurface of surveyedSurfaces">
@@ -135,10 +137,10 @@
 <br />
 <H3>Design Surface [{{designs.length}} in total]</H3>
 <p>
-    Design File Name: <input type="file" value="" (change)="handleDesignFileChange($event.target.files)" />
+    Design File Name: <input type="file" accept=".ttm" value="" (change)="handleDesignFileChange($event.target.files)" />
 </p>
 <p>
-    <button (click)=addNewDesignSurface()>Add New Design Surface</button>  
+    <button (click)=addNewDesignSurface() [disabled]="!canAddDesignSurfaceFile()">Add New Design Surface</button>  
     Design UID: <input [(ngModel)]="designUid" size="37" type="text" value="" /> Offset: <input [(ngModel)]="designOffset" type="number" value="" />
     <button (click)="selectDesign()">Select</button>
 </p>
@@ -148,10 +150,10 @@
 </p>
 <H3>Alignment [{{alignments.length}} in total]</H3>
 <p>
-    Alignment File Name: <input type="file" value="" (change)="handleAlignmentFileChange($event.target.files)" />
+    Alignment File Name: <input type="file" accept=".svl" value="" (change)="handleAlignmentFileChange($event.target.files)" />
 </p>
 <p>
-    <button (click)=addNewAlignment()>Add New Alignment</button>
+    <button (click)=addNewAlignment() [disabled]="!canAddAlignmentFile()">Add New Alignment</button>
     Alignment UID: <input [(ngModel)]="alignmentUid" size="37" type="text" value="" />
 </p>
 <p *ngFor="let alignment of alignments">
@@ -175,8 +177,12 @@
     </select>
 </p>
 <p>
-    Start Date:<input [(ngModel)]="machineEventsStartDate" type="datetime" value="" />
-    End Date:<input [(ngModel)]="machineEventsEndDate" type="datetime" value="" />
+    Start Date:
+    <input name="machineEventsStartDate" [(ngModel)]="machineEventsStartDate" type="date" value="" />
+    <input name="machineEventsStartTime" [(ngModel)]="machineEventsStartTime" type="time" value="" />
+    End Date:
+    <input name="machineEventsEndDate" [(ngModel)]="machineEventsEndDate" type="date" value="" />
+    <input name="machineEventsEndTime" [(ngModel)]="machineEventsEndTime" type="time" value="" />
     Max Events<input [(ngModel)]="maxMachineEventsToReturn" type="number" value="" />
     <button (click)=updateMachineEvents()>Update</button>
 </p>
