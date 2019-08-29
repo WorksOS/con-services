@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29102.190
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.705
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "src\VSS.Common.ServiceDiscovery.csproj", "{95AFD2F2-1BE2-40C9-96FB-D7E85754DE8A}"
 EndProject
@@ -18,6 +18,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{19CC40C5-A1BD-455D-A0F3-2FB4EE3AFADA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{19258A9A-07E4-49FC-A5A4-D0803B064227}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..\MasterDataModels\src\VSS.MasterData.Models.csproj", "{5077BDD0-543C-4882-A463-9C70CF7C1512}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{5DE9AE61-5C43-4509-BE83-FF62C11139F3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{264A0C35-1D9A-4293-9012-FD914F9534F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +55,18 @@ Global
 		{19258A9A-07E4-49FC-A5A4-D0803B064227}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19258A9A-07E4-49FC-A5A4-D0803B064227}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19258A9A-07E4-49FC-A5A4-D0803B064227}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5077BDD0-543C-4882-A463-9C70CF7C1512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5077BDD0-543C-4882-A463-9C70CF7C1512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5077BDD0-543C-4882-A463-9C70CF7C1512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5077BDD0-543C-4882-A463-9C70CF7C1512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DE9AE61-5C43-4509-BE83-FF62C11139F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DE9AE61-5C43-4509-BE83-FF62C11139F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DE9AE61-5C43-4509-BE83-FF62C11139F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DE9AE61-5C43-4509-BE83-FF62C11139F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{264A0C35-1D9A-4293-9012-FD914F9534F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{264A0C35-1D9A-4293-9012-FD914F9534F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{264A0C35-1D9A-4293-9012-FD914F9534F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{264A0C35-1D9A-4293-9012-FD914F9534F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +77,9 @@ Global
 		{B02D3E49-7D01-4203-A621-F5150855B109} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
 		{19CC40C5-A1BD-455D-A0F3-2FB4EE3AFADA} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
 		{19258A9A-07E4-49FC-A5A4-D0803B064227} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
+		{5077BDD0-543C-4882-A463-9C70CF7C1512} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
+		{5DE9AE61-5C43-4509-BE83-FF62C11139F3} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
+		{264A0C35-1D9A-4293-9012-FD914F9534F0} = {AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B83DCA93-4B23-4F6E-BDEC-2F0BA5D56633}
