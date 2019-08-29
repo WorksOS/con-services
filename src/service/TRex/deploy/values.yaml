@@ -86,8 +86,8 @@ mutableData:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 300m
-      memory: 1536Mi
+      cpu: 900m
+      memory: 2048Mi
   storage:
     size: 10Gi
     className: efs
@@ -115,8 +115,8 @@ psnode:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 500m
-      memory: 6.0Gi
+      cpu: 900m
+      memory: 7.0Gi
   storage:
     size: 10Gi
     className: efs
@@ -219,13 +219,26 @@ webtools:
 
 # kubectl label nodes <node> vss/application=trex
 nodeSelector: 
-  vss/application: trex
+  highMemory:
+    vss/application: trexbigmem
+  generalPurpose:
+    vss/application: trexgp
+  none: {}
+
 
 # kubectl taint nodes <node> dedicated=trex:NoSchedule
 tolerations: 
-- key: "dedicated"
-  operator: "Equal" 
-  value: "trex"
-  effect: "NoSchedule"
+  highMemory:
+  - key: "dedicated"
+    operator: "Equal" 
+    value: "trexbigmem"
+    effect: "NoSchedule"
+  generalPurpose:
+  - key: "dedicated"
+    operator: "Equal" 
+    value: "trexgp"
+    effect: "NoSchedule"
+  none: []
+
 
 affinity: {}
