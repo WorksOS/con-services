@@ -67,7 +67,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
       log.LogDebug($"{nameof(SendDataPostRequestWithStreamResponse)}: Sending the request: {payload.Truncate(logMaxChar)}");
 
       var result = await GetMasterDataStreamItemServiceDiscoveryNoCache
-        (route, customHeaders, method: HttpMethod.Put, payload: payload);
+        (route, customHeaders, method: HttpMethod.Post, payload: payload);
       if (result != null)
         return result;
 
