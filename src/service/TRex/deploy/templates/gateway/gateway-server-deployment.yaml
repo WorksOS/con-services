@@ -24,11 +24,11 @@ spec:
         immutable-cluster: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
-{{- with .Values.nodeSelector }}
+{{- with .Values.nodeSelector.none }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
 {{- end }}
-{{- with .Values.tolerations }}
+{{- with .Values.tolerations.none }}
       tolerations:
 {{ toYaml . | indent 8 }}
 {{- end }}
