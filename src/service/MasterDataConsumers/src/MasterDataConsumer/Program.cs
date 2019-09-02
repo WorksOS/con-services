@@ -117,7 +117,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
         .BuildServiceProvider();
 
-      _log = serviceProvider.GetService<ILogger>();
+      _log = serviceProvider.GetService<ILoggerFactory>().CreateLogger(GetType());
       var configStore = serviceProvider.GetService<IConfigurationStore>();
       var kafkaTopics = configStore
         .GetValueString("KAFKA_TOPICS")

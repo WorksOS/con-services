@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests.Internal;
-using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.ExtendedModels;
 
 namespace RepositoryTests.ProjectRepositoryTests
