@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Exports.Patches.GridFabric.PatchRequest;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;

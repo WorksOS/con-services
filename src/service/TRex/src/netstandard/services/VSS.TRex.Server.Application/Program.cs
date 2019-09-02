@@ -129,6 +129,7 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.Analytics.MDPStatistics.MDPStatisticsAggregator),
         typeof(VSS.TRex.Geometry.BoundingIntegerExtent2D),
         typeof(VSS.TRex.Exports.Patches.PatchResult),
+        typeof(VSS.TRex.Exports.Patches.PatchResultWithColors),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Common.SubGridsPipelinedResponseBase),
         typeof(VSS.TRex.Logging.Logger),

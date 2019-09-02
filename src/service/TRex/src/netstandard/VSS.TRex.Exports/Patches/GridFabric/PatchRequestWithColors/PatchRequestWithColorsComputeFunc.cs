@@ -1,32 +1,32 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System.Reflection;
+using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Exports.Patches.Executors;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
 
-namespace VSS.TRex.Exports.Patches.GridFabric.PatchRequest
+namespace VSS.TRex.Exports.Patches.GridFabric.PatchRequestWithColors
 {
   /// <summary>
   /// The grid compute function responsible for coordinating subgrids comprising a patch a server compute node in response to 
   /// a client server instance requesting it.
   /// </summary>
-  public class PatchRequestComputeFunc : BaseComputeFunc, IComputeFunc<PatchRequestArgument, PatchRequestResponse>
+  public class PatchRequestWithColorsComputeFunc : BaseComputeFunc, IComputeFunc<PatchRequestWithColorsArgument, PatchRequestWithColorsResponse>
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
     /// </summary>
-    public PatchRequestComputeFunc()
+    public PatchRequestWithColorsComputeFunc()
     {
     }
 
-    public PatchRequestResponse Invoke(PatchRequestArgument arg)
+    public PatchRequestWithColorsResponse Invoke(PatchRequestWithColorsArgument arg)
     {
-      Log.LogInformation("In PatchRequestComputeFunc.Invoke()");
+      Log.LogInformation("In PatchRequestWithColorsComputeFunc.Invoke()");
 
       try
       {
@@ -36,8 +36,8 @@ namespace VSS.TRex.Exports.Patches.GridFabric.PatchRequest
 
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
-        var request = new PatchExecutor(arg.ProjectID, arg.Mode, arg.Filters, arg.ReferenceDesign,
-          arg.TRexNodeID, arg.DataPatchNumber, arg.DataPatchSize, arg.LiftParams);
+        var request = new PatchWithColorsExecutor(/*arg.ProjectID, arg.Mode, arg.Filters, arg.ReferenceDesign,
+          arg.TRexNodeID, arg.DataPatchNumber, arg.DataPatchSize, arg.LiftParams*/);
 
         Log.LogInformation("Executing request.ExecuteAsync()");
 
@@ -48,7 +48,7 @@ namespace VSS.TRex.Exports.Patches.GridFabric.PatchRequest
       }
       finally
       {
-        Log.LogInformation("Exiting PatchRequestComputeFunc.Invoke()");
+        Log.LogInformation("Exiting PatchRequestWithColorsComputeFunc.Invoke()");
       }
     }
   }

@@ -6,7 +6,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Exports.Patches.GridFabric.PatchRequest;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
@@ -33,7 +32,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as PatchDataRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException<PatchRequest>();
+        ThrowRequestTypeCastException<PatchDataRequest>();
 
       var siteModel = GetSiteModel(request?.ProjectUid);
 

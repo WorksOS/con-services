@@ -22,9 +22,6 @@ namespace VSS.TRex.Exports.Patches
     private const byte TIME_MINIMUM_VALUE = 0;
     private const uint TIME_MAXIMUM_VALUE = 0xffffffff;
 
-    private const short ELEVATION_OFFSET_FACTOR = 1000;
-    private const double ELEVATION_OFFSET_TOLERANCE = 0.0005;
-
     /// <summary>
     /// The elevation offset size in bytes.
     /// </summary>
@@ -36,18 +33,14 @@ namespace VSS.TRex.Exports.Patches
     public byte TimeOffsetSize { get; set; }
 
     /// <summary>
-    /// The elevation of the lowest cell elevation in the elevation sub grid result, expressed in grid coordinates (meters)
-    /// </summary>
-    public float ElevationOrigin { get; set; }
-
-    /// <summary>
     /// The time, which elevation of the lowest cell elevation in the elevation sub grid result was reported at, expressed in seconds
     /// </summary>
     public uint TimeOrigin { get; set; }
+    
     /// <summary>
     /// Contains the elevation and time values for cells in the grid. This array is the same dimensions as a sub grid
     /// (currently 32x32) and contains positive elevation offsets from the ElevationOrigin member, expressed in integer millimeters as well
-    /// as offsets from the TimeOrigin member, expressed in seconds.
+    /// as offsets from the TimeOffset member, expressed in seconds.
     /// </summary>
     public PatchOffsetsRecord[,] Data { get; set; }
 
@@ -63,7 +56,7 @@ namespace VSS.TRex.Exports.Patches
 
       base.Populate(subGrid);
 
-      ClientHeightAndTimeLeafSubGrid elevSubGrid = (ClientHeightAndTimeLeafSubGrid)subGrid;
+      var elevSubGrid = (ClientHeightAndTimeLeafSubGrid)subGrid;
       var elevations = elevSubGrid.Cells;
       var times = elevSubGrid.Times;
       IsNull = true;
@@ -117,9 +110,7 @@ namespace VSS.TRex.Exports.Patches
             var valueTime = (uint) times[x, y];
 
             if (Math.Abs(valueHeight - CellPassConsts.NullHeight) < Consts.TOLERANCE_DIMENSION)
-            {
               Data[x, y] = new PatchOffsetsRecord(uint.MaxValue, uint.MaxValue);
-            }
             else
             {
               Data[x, y] = new PatchOffsetsRecord((uint) Math.Floor((valueHeight - minElevation) * ELEVATION_OFFSET_FACTOR + ELEVATION_OFFSET_TOLERANCE),
