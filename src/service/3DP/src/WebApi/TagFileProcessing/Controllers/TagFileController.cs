@@ -80,6 +80,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
       _log.LogDebug($"{nameof(PostTagFileNonDirectSubmission)}: request {serializedRequest}");
 
+      //First submit tag file to connected site gateway
       // Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
 #pragma warning disable 4014
       RequestExecutorContainerFactory
@@ -98,6 +99,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         }, TaskContinuationOptions.OnlyOnFaulted);
 #pragma warning restore 4014
 
+      //Now submit tag file to Raptor and/or TRex
       ProjectData projectData = null;
 
       if (request.ProjectId != null)

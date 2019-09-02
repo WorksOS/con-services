@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;

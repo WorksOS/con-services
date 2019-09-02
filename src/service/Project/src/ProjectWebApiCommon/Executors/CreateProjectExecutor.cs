@@ -34,8 +34,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       ProjectRequestHelper.ValidateCoordSystemFile(null, createProjectEvent, serviceExceptionHandler);
 
-      await ProjectRequestHelper.ValidateCoordSystemInRaptor(createProjectEvent,
-        serviceExceptionHandler, customHeaders, productivity3dProxy).ConfigureAwait(false);
+      await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(createProjectEvent,
+        serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
 
       log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
       await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(),
@@ -64,10 +64,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //    if CreateCoordSystem fails then project is deleted
       //    if AssociateProjectSubscription fails ditto
       createProjectEvent = await CreateProjectInDb(createProjectEvent, customerProject).ConfigureAwait(false);
-      await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(
+      await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(
         createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
-        projectRepo, productivity3dProxy, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
+        projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
 
       subscriptionUidAssigned = await ProjectRequestHelper.AssociateProjectSubscriptionInSubscriptionService(createProjectEvent.ProjectUID.ToString(), createProjectEvent.ProjectType, customerUid,

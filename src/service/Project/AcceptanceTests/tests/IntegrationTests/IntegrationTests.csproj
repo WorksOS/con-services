@@ -31,8 +31,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
     <ProjectReference Include="..\..\..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\Clients\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
     <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
     <ProjectReference Include="..\..\utilities\TestUtility\TestUtility.csproj" />
   </ItemGroup>
 

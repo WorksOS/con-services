@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 
 namespace VSS.TRex.Gateway.WebApi.ActionServices
 {

@@ -8,7 +8,7 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;

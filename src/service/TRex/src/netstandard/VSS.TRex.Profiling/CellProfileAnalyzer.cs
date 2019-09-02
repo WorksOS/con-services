@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs;

@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -159,7 +159,7 @@ namespace VSS.TRex.SubGridTrees.Client
              SubGridTreeConsts.SubGridTreeCellsPerSubGrid * SubGridCellPassDataPassCountEntryRecord.IndicativeSizeInBytes();
     }
 
-    public void DumpToLog()
+    public override void DumpToLog()
     {
       base.DumpToLog();
     }

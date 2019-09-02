@@ -16,7 +16,7 @@ Scenario Outline: Get Heightmap with no design filter for all modes
   | Height Mode Request    | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 0    | 0    | 7          | 200      |
   | CMV Mode Request       | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 1    | 0    | 6          | 200      |
   | PassCount Mode Request | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 4    | 0    | 7          | 200      |
-  | Amplitude Mode Request | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 7    | 0    | 6          | 200      |
+  | Amplitude Mode Request | HeightMapNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 7    | 0    | 7          | 200      |
 
 Scenario Outline: Get textures
   Given the service route "/api/v2/map3d" and result repo "Map3dGetDataTilesResponse.json"

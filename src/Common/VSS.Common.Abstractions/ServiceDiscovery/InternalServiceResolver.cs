@@ -97,7 +97,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         case ApiService.Filter:
           return Constants.ServiceNameConstants.FILTER_SERVICE;
         case ApiService.Productivity3D:
-          return Constants.ServiceNameConstants.PRODUCTIVITY_3D_SERVICE;
+          return Constants.ServiceNameConstants.PRODUCTIVITY3D_SERVICE;
         case ApiService.Scheduler:
           return Constants.ServiceNameConstants.SCHEDULER_SERVICE;
         case ApiService.AssetMgmt3D:
@@ -143,14 +143,14 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
 
     /// <inheritdoc />
     public Task<string> ResolveLocalServiceEndpoint(ApiService service, ApiType apiType, ApiVersion version, string route = null,
-      IDictionary<string, string> queryParameters = null)
+      IList<KeyValuePair<string, string>> queryParameters = null)
     {
       var serviceName = GetServiceName(service);
       return ResolveRemoteServiceEndpoint(serviceName, apiType, version, route, queryParameters);
     }
 
     public Task<string> ResolveLocalServiceEndpoint(string serviceName, ApiType apiType, ApiVersion version, string route = null,
-      IDictionary<string, string> queryParameters = null)
+      IList<KeyValuePair<string, string>> queryParameters = null)
     {
       return ResolveRemoteServiceEndpoint(serviceName, apiType, version, route, queryParameters);
     }
@@ -158,7 +158,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     /// <inheritdoc />
     public async Task<string> ResolveRemoteServiceEndpoint(string serviceName, ApiType apiType, ApiVersion version,
       string route = null,
-      IDictionary<string, string> queryParameters = null)
+      IList<KeyValuePair<string, string>> queryParameters = null)
     {
       // Cache the service endpoint for a given service name
       var cacheKey = $"{nameof(InternalServiceResolver)}-{GetServiceConfigurationName(serviceName, apiType, version)}";

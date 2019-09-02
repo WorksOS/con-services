@@ -88,34 +88,34 @@ namespace VSS.TRex.Designs.SVL
     // way arcs are stored in clockwise direction only in SVL files, and do
     // not retain the original sense of direction from the arc that was originally
     // used to define it.
-   // procedure NormaliseArcs;
+    // procedure NormaliseArcs;
 
-      //      procedure Assign(Entity: NFFLineworkEntity); override;
-      //      property Entities : NFFGuidableAlignmentOwnedEntitiesList read FEntities;
+    //      procedure Assign(Entity: NFFLineworkEntity); override;
+    //      property Entities : NFFGuidableAlignmentOwnedEntitiesList read FEntities;
 
-      //      procedure DumpToText(Stream: TTextDumpStream; const OriginX, OriginY : Double); override;
-      //      Procedure SaveToNFFStream(Stream : TStream;
-      //  const OriginX, OriginY : Double;
-      //                                FileVersion : NFFFileVersion); override;
+    //      procedure DumpToText(Stream: TTextDumpStream; const OriginX, OriginY : Double); override;
+    //      Procedure SaveToNFFStream(Stream : TStream;
+    //  const OriginX, OriginY : Double;
+    //                                FileVersion : NFFFileVersion); override;
 
-      public override void LoadFromNFFStream(BinaryReader reader,
-        double OriginX, double OriginY,
-        bool HasGuidanceID,
-        NFFFileVersion FileVersion)
+    public override void LoadFromNFFStream(BinaryReader reader,
+      double OriginX, double OriginY,
+      bool HasGuidanceID,
+      NFFFileVersion FileVersion)
     {
       NFFLineWorkElementType EntityType;
 
       // The file version passed into here is ignored in favour of the file version contained in the header information
 
-      Debug.Assert(FileVersion ==NFFFileVersion.Version_Undefined,
-         "Specific file version sent to NFFGuidableAlignmentEntity.LoadFromNFFStream");
+      Debug.Assert(FileVersion == NFFFileVersion.Version_Undefined,
+        "Specific file version sent to NFFGuidableAlignmentEntity.LoadFromNFFStream");
 
       var Header = new NFFLineworkGridFileHeader();
 
       var b = reader.ReadBytes(Marshal.SizeOf(Header));
 
       var handle = GCHandle.Alloc(b, GCHandleType.Pinned);
-      Header = (NFFLineworkGridFileHeader)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(NFFLineworkGridFileHeader));
+      Header = (NFFLineworkGridFileHeader) Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(NFFLineworkGridFileHeader));
 
       if (NFFUtils.MagicNumberToANSIString(Header.MagicNumber) != NFFConsts.kNFFLineworkFileMagicNumber)
         throw new IOException($"Expected {NFFConsts.kNFFLineworkFileMagicNumber} as the magic number, not: {Header.MagicNumber}");
@@ -237,21 +237,21 @@ namespace VSS.TRex.Designs.SVL
       //  finally
       //fSuppressAssertions:= False;
       //end;
-      }
+    }
 
     //  Procedure Sort;
 
-    public bool HasValidHeight()
-  {
-    if (ControlFlag_NullHeightAllowed)
+    public override bool HasValidHeight()
+    {
+      if (ControlFlag_NullHeightAllowed)
+        return true;
+
+      foreach (var entity in Entities)
+        if (!entity.HasValidHeight())
+          return false;
+
       return true;
-
-    foreach (var entity in Entities)
-      if (!entity.HasValidHeight())
-        return false;
-
-    return true;
-  }
+    }
     //      Function HasCrossSlopes : Boolean; Override;
 
     public bool IsMasterAlignment() => ((HeaderFlags & NFFConsts.kNFFElementHeaderHasStationing) != 0x00);

@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;

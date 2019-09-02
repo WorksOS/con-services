@@ -6,7 +6,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling
   /// Coordinate system settings result object.
   /// </summary>
   ///    
-  public class CoordinateSystemSettingsResult : BaseDataResult
+  public class CoordinateSystemSettingsResult : BaseMasterDataResult
   {
     /// <summary>
     /// The coordinate system file name.

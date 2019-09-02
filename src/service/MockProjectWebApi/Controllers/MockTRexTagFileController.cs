@@ -11,7 +11,6 @@ namespace MockProjectWebApi.Controllers
     public MockTRexTagFileController(ILoggerFactory loggerFactory) : base(loggerFactory)
     { }
 
-    [Route("api/v2/mocktrextagfile")]
     [Route("api/v2")]
     [HttpPost]
     public ContractExecutionResult SendTagFileNonDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)
@@ -20,7 +19,6 @@ namespace MockProjectWebApi.Controllers
       return new ContractExecutionResult();
     }
 
-    [Route("api/v2/mocktrextagfile/direct")]
     [Route("api/v2/direct")]
     [HttpPost]
     public ContractExecutionResult SendTagFileDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)

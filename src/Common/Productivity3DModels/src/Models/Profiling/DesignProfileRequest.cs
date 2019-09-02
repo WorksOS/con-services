@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using VSS.Productivity3D.Productivity3D.Models;
 
 namespace VSS.Productivity3D.Models.Models.Profiling
 {

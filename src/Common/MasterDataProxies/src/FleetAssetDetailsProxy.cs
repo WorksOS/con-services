@@ -35,7 +35,7 @@ namespace VSS.MasterData.Proxies
     public Task<AssetDetails> GetAssetDetails(string assetUid, IDictionary<string, string> customHeaders = null)
     {
       return GetMasterDataItemServiceDiscovery<AssetDetails>("UnifiedFleet/AssetDetails/v1", assetUid, null,
-        customHeaders, new Dictionary<string, string> {{"assetUID", assetUid}});
+        customHeaders, new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>("assetUID", assetUid)});
     }
   }
 }

@@ -4,7 +4,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Types;
@@ -20,7 +20,7 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// PassCount keeps track of the actual number of passes in the list
     /// </summary>
-    public int PassCount { get; set; }
+    public int PassCount;
 
     private FilteredPassData[] filteredPassData;
 

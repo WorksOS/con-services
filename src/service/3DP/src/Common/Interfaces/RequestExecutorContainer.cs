@@ -9,6 +9,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -122,7 +123,10 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     /// <typeparam name="T">>Generic type which should be</typeparam>
     /// <param name="item">>The item.</param>
-    protected abstract ContractExecutionResult ProcessEx<T>(T item);
+    protected virtual ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Missing synchronous executor process method override or Use the asynchronous form of this method");
+    }
 
     /// <summary>
     /// 

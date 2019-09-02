@@ -5,20 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.TCCFileAccess;
-using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -44,16 +38,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV2Controller(IKafka producer,
-      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, ICustomerRepository customerRepo,
-      IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
-      IProductivity3dProxy productivity3DProxy,
-      ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,
-      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient,
-      ITPaaSApplicationAuthentication authn)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, productivity3DProxy,
-        loggerFactory, serviceExceptionHandler, dataOceanClient, authn)
+    public ProjectV2Controller(IKafka producer, IConfigurationStore configStore, ICustomerRepository customerRepo, ISubscriptionProxy subscriptionProxy, IHttpContextAccessor httpContextAccessor)
+      : base(producer, configStore, subscriptionProxy)
     {
       this.customerRepo = customerRepo;
       this.httpContextAccessor = httpContextAccessor;
@@ -82,15 +68,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (projectRequest == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 81);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 81);
       }
 
-      logger.LogInformation($"CreateProjectV2. projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
+      Logger.LogInformation($"CreateProjectV2. projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
 
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(projectRequest, customerUid);
 
-      ProjectDataValidator.Validate(createProjectEvent, projectRepo, serviceExceptionHandler);
-    
+      ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
+
       projectRequest.CoordinateSystem =
         ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
@@ -100,21 +86,22 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //      created in Raptor via productivity3dProxy
       //      stored in CreateKafkaEvent
       //    Only Filename is stored in the VL database 
-      createProjectEvent.CoordinateSystemFileContent = 
+      createProjectEvent.CoordinateSystemFileContent =
         await TccHelper
         .GetFileContentFromTcc(projectRequest.CoordinateSystem,
-          logger, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
+          Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<CreateProjectExecutor>(loggerFactory, configStore, serviceExceptionHandler,
-            customerUid, userId, null, customHeaders, producer, kafkaTopicName,
-            Productivity3DProxy, subscriptionProxy, null, null, null, projectRepo, 
-            subscriptionRepo, fileRepo, null, httpContextAccessor, dataOceanClient, authn)
+          .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            customerUid, userId, null, customHeaders, Producer, KafkaTopicName,
+            productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
+            subscriptionProxy: subscriptionProxy, projectRepo: ProjectRepo,
+            subscriptionRepo: SubscriptionRepo, fileRepo: FileRepo, httpContextAccessor: httpContextAccessor, dataOceanClient: DataOceanClient, authn: Authorization)
           .ProcessAsync(createProjectEvent)
       );
 
-      logger.LogDebug("CreateProjectV2. completed succesfully");
+      Logger.LogDebug("CreateProjectV2. completed successfully");
       return ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.Created, createProjectEvent.ProjectID);
     }
 
@@ -147,27 +134,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (tccAuthorizationRequest == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
       }
 
       //Note: This is a very old legacy code that validates subs against TCC. This is not needed anymore as we allow project creation regardless of TCC subscription to support Earthworks machines.
 
-       /* logger.LogInformation(
-        $"ValidateTCCAuthorization. tccAuthorizationRequest: {JsonConvert.SerializeObject(tccAuthorizationRequest)}");
+      /* Logger.LogInformation(
+       $"ValidateTCCAuthorization. tccAuthorizationRequest: {JsonConvert.SerializeObject(tccAuthorizationRequest)}");
 
-      tccAuthorizationRequest.Validate();
+     tccAuthorizationRequest.Validate();
 
-      await WithServiceExceptionTryExecuteAsync(() =>
-        RequestExecutorContainerFactory
-          .Build<ValidateTccOrgExecutor>(logger, configStore, serviceExceptionHandler,
-            customerUid, null, null, customHeaders,
-            null, null,
-            null, null, null,
-            null, fileRepo, customerRepo)
-          .ProcessAsync(tccAuthorizationRequest)
-      );*/
+     await WithServiceExceptionTryExecuteAsync(() =>
+       RequestExecutorContainerFactory
+         .Build<ValidateTccOrgExecutor>(Logger, ConfigStore, ServiceExceptionHandler,
+           customerUid, null, null, customHeaders,
+           null, null,
+           null, null, null,
+           null, FileRepo, customerRepo)
+         .ProcessAsync(tccAuthorizationRequest)
+     );*/
 
-      logger.LogInformation("ValidateTccAuthorization. completed succesfully");
+      Logger.LogInformation("ValidateTccAuthorization. completed succesfully");
       return ReturnSuccessV2Result.CreateReturnSuccessV2Result(HttpStatusCode.OK, true);
     }
 

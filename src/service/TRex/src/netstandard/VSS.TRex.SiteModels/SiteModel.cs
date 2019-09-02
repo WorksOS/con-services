@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
@@ -28,6 +27,7 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.SiteModels
 {

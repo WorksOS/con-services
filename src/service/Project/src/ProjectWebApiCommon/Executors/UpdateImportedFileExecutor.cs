@@ -62,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                                          updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
                                          updateImportedFile.FileDescriptor, updateImportedFile.ImportedFileId,
                                          Guid.Parse(updateImportedFile.ImportedFileUid.ToString()), false, log, customHeaders,
-                                         serviceExceptionHandler, productivity3dProxy,
+                                         serviceExceptionHandler, productivity3dV2ProxyNotification,
                                          projectRepo);
 
         var dxfFileName = updateImportedFile.DataOceanFileName;
@@ -70,7 +70,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           //Create DXF file for alignment center line
           dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
-            customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, productivity3dProxy, customHeaders, log,
+            customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, productivity3dV2ProxyCompaction, customHeaders, log,
             serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.DataOceanFileName, updateImportedFile.DataOceanRootFolder);
         }
 
@@ -81,11 +81,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           var projectTask = await ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
           var jobRequest = TileGenerationRequestHelper.CreateRequest(
-            updateImportedFile.ImportedFileType, 
-            customerUid, 
+            updateImportedFile.ImportedFileType,
+            customerUid,
             updateImportedFile.ProjectUid.ToString(),
-            existingImportedFile.ImportedFileUid, 
-            updateImportedFile.DataOceanRootFolder, 
+            existingImportedFile.ImportedFileUid,
+            updateImportedFile.DataOceanRootFolder,
             dxfFileName,
             DataOceanFileUtil.DataOceanFileName(projectTask.CoordinateSystemFileName, false, Guid.Parse(projectTask.ProjectUID), null),
             updateImportedFile.DxfUnitsTypeId,
@@ -103,7 +103,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           customerUid,
           updateImportedFile.ProjectUid.ToString(),
           existingImportedFile.ImportedFileUid,
-          updateImportedFile.DataOceanRootFolder, 
+          updateImportedFile.DataOceanRootFolder,
           updateImportedFile.DataOceanFileName,
           null,
           updateImportedFile.DxfUnitsTypeId,

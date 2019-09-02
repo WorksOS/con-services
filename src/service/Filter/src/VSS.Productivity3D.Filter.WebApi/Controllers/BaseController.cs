@@ -23,9 +23,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     protected readonly IProjectProxy ProjectProxy;
 
     /// <summary>
-    /// Gets the service's Raptor interface controller.
+    /// Gets the service's TRex/Raptor interface controller.
     /// </summary>
-    protected readonly IProductivity3dProxy Productivity3dProxy;
+    protected readonly IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
+    protected readonly IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
 
     /// <summary>
     /// Gets the service's configuration settings.
@@ -76,12 +77,12 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Gets the project data for the specified project
     /// </summary>
     protected Task<ProjectData> GetProject(string projectUid) => (User as FilterPrincipal)?.GetProject(projectUid);
- 
+
     /// <summary>
     /// Default constructor.
     /// </summary>
     protected BaseController(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IKafka producer, string eventType)
+      IProjectProxy projectProxy, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction, IKafka producer, string eventType)
     {
       Logger = logger;
       Log = logger.CreateLogger<BaseController>();
@@ -89,7 +90,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       ConfigStore = configStore;
       ServiceExceptionHandler = serviceExceptionHandler;
       ProjectProxy = projectProxy;
-      Productivity3dProxy = productivity3DProxy;
+      Productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
+      Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
       Producer = producer;
 
       if (!Producer.IsInitializedProducer)

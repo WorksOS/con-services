@@ -20,7 +20,7 @@ namespace VSS.TRex.IO
     /// <summary>
     /// The high water mark allocations within this page has reached
     /// </summary>
-    private int _highWaterMark = 0;
+    //private int _highWaterMark = 0;
 
     public RollingExactSlabAllocatedPoolPage(int poolSize, int arraySize)
     {

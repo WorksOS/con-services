@@ -2,11 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;

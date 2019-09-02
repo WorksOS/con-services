@@ -4,8 +4,11 @@ using System.Text;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Events.Models;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
@@ -140,7 +143,146 @@ namespace VSS.TRex.Tests.Events
       resultantEvents.LoadFromStore(storageProxy);
       Assert.Equal(3, resultantEvents.Count());
     }
-    
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_OverrideEvents()
+    {
+      var siteModel = new SiteModel(Guid.Empty, false);
+      var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
+
+      var referenceDate = DateTime.UtcNow;
+
+      events.DesignOverrideEvents.PutValueAtDate(referenceDate.AddMinutes(-60), new OverrideEvent<int>(referenceDate.AddMinutes(-50), 0));
+      events.DesignOverrideEvents.PutValueAtDate(referenceDate.AddMinutes(-30), new OverrideEvent<int>(referenceDate.AddMinutes(-15), 1));
+      Assert.True(2 == events.DesignOverrideEvents.Count(), $"List contains {events.DesignOverrideEvents.Count()} DesignOverride events, instead of 2");
+
+      var mutableStream = events.DesignOverrideEvents.GetMutableStream();
+      var targetEventList = Deserialize(mutableStream);
+      Assert.Equal(2, targetEventList.Count());
+      var evt = ((ProductionEvents<OverrideEvent<int>>)targetEventList).Events[0];
+
+      events.DesignOverrideEvents.GetStateAtIndex(0, out var dateTime, out var state);
+      Assert.Equal(state, evt.State);
+      Assert.Equal(dateTime, evt.Date);
+
+      var immutableStream = events.DesignOverrideEvents.GetImmutableStream();
+      targetEventList = Deserialize(immutableStream);
+      Assert.Equal(2, targetEventList.Count());
+
+      events.DesignOverrideEvents.GetStateAtIndex(0, out dateTime, out state);
+      Assert.Equal(state, evt.State);
+      Assert.Equal(dateTime, evt.Date);
+     }
+
+    [Theory]
+    [InlineData(-105, -75)]
+    [InlineData(-75, -45)]
+    [InlineData(-45, -15)]
+    [InlineData(-105, -15)]
+    [InlineData(-80, -70)]
+    public void Test_ProjectImmutableDataEventsTests_MergingOverrides(int startMins, int endMins)
+    {
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(); //Mutable context
+      var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+      var events = siteModel.MachinesTargetValues[bulldozerMachineIndex];
+
+      var layerIds = new[] { (ushort)1, (ushort)2, (ushort)3 };
+      var layerOverrideId = (ushort)4;
+
+      var designIds = new[] { 1, 2, 3 };
+      var designOverrideId = 4;
+
+      var referenceDate = DateTime.UtcNow;
+      var dateTimes = new[] { referenceDate.AddMinutes(-90), referenceDate.AddMinutes(-60), referenceDate.AddMinutes(-30) };
+      for (var i = 0; i < 3; i++)
+      {
+        events.MachineDesignNameIDStateEvents.PutValueAtDate(dateTimes[i], designIds[i]);
+        events.LayerIDStateEvents.PutValueAtDate(dateTimes[i], layerIds[i]);
+      }
+
+      var overrideStartDate = referenceDate.AddMinutes(startMins);
+      var overrideEndDate = referenceDate.AddMinutes(endMins);
+      events.DesignOverrideEvents.PutValueAtDate(overrideStartDate, new OverrideEvent<int>(overrideEndDate, designOverrideId));
+      events.LayerOverrideEvents.PutValueAtDate(overrideStartDate, new OverrideEvent<ushort>(overrideEndDate, layerOverrideId));
+      //Now save added events
+      events.SaveMachineEventsToPersistentStore(siteModel.PrimaryStorageProxy);
+      var evt = new SiteModelAttributesChangedEvent
+      {
+        SiteModelID = siteModel.ID,
+        AlignmentsModified = false,
+        CsibModified = false,
+        DesignsModified = false,
+        ExistenceMapModified = false,
+        MachineDesignsModified = false,
+        MachineTargetValuesModified = true,
+        MachinesModified = false,
+        ProofingRunsModified = false,
+        SurveyedSurfacesModified = false
+      };
+      var siteModels = DIContext.Obtain<ISiteModels>();
+      siteModels.SiteModelAttributesHaveChanged(evt);
+      //Re-get site model to get newly created one
+      siteModel = siteModels.GetSiteModel(siteModel.ID, false);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);//so that merge will occur
+      events = siteModel.MachinesTargetValues[bulldozerMachineIndex];
+
+      CheckMergedList(startMins, endMins, events.MachineDesignNameIDStateEvents, designOverrideId, designIds, dateTimes, overrideStartDate, overrideEndDate);
+      CheckMergedList(startMins, endMins, events.LayerIDStateEvents, layerOverrideId, layerIds, dateTimes, overrideStartDate, overrideEndDate);
+    }
+
+    private void CheckMergedList<T>(int startMins, int endMins, IProductionEvents<T> eventsList, T overrideId, T[] ids, DateTime[] dateTimes, DateTime startOverride, DateTime endOverride)
+    {
+      DateTime[] expectedDates;
+      T[] expectedIds;
+      if (startMins == -105 && endMins == -75) //override spanning start
+      {
+        expectedDates = new[] { startOverride, endOverride, dateTimes[1], dateTimes[2] };
+        expectedIds = new[] { overrideId, ids[0], ids[1], ids[2] };
+      }
+      else if (startMins == -75 && endMins == -45) //override the middle
+      {
+        expectedDates = new[] { dateTimes[0], startOverride, endOverride, dateTimes[2] };
+        expectedIds = new[] { ids[0], overrideId, ids[1], ids[2] };
+      }
+      else if (startMins == -45 && endMins == -15) //override spanning end
+      {
+        expectedDates = new[] { dateTimes[0], dateTimes[1], startOverride, endOverride };
+        expectedIds = new[] { ids[0], ids[1], overrideId, ids[2] };
+      }
+      else if (startMins == -105 && endMins == -15)  //override whole range
+      {
+        expectedDates = new[] { startOverride, endOverride };
+        expectedIds = new[] { overrideId, ids[2] };
+      }
+      else //startMins == -80 && endMins == -70 //override within machine events
+      {
+        expectedDates = new[] { dateTimes[0], startOverride, endOverride, dateTimes[1], dateTimes[2] };
+        expectedIds = new[] { ids[0], overrideId, ids[0], ids[1], ids[2] };
+      }
+
+      var mutableStream = eventsList.GetMutableStream();
+      var targetEventList = Deserialize(mutableStream);
+      Assert.Equal(expectedDates.Length, targetEventList.Count());
+
+      var eventList = ((ProductionEvents<T>)targetEventList).Events;
+      for (var i = 0; i < eventList.Count; i++)
+      {
+        Assert.Equal(expectedDates[i], eventList[i].Date);
+        Assert.Equal(expectedIds[i], eventList[i].State);
+      }
+ 
+      var immutableStream = eventsList.GetImmutableStream();
+      targetEventList = Deserialize(immutableStream);
+      Assert.Equal(expectedDates.Length, targetEventList.Count());
+
+      eventList = ((ProductionEvents<T>)targetEventList).Events;
+      for (var i = 0; i < eventList.Count; i++)
+      {
+        Assert.Equal(expectedDates[i], eventList[i].Date);
+        Assert.Equal(expectedIds[i], eventList[i].State);
+      }
+    }
+
     private IProductionEvents Deserialize(MemoryStream stream)
     {
       IProductionEvents events;

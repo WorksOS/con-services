@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Geometry;

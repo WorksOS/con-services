@@ -35,7 +35,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
   public class BaseController<T> : Controller where T : BaseController<T>
   {
     private readonly IPreferenceProxy prefProxy;
-    private readonly IProductivity3dProxy productivity3dProxy;
+    private readonly IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile;
     protected readonly IFileImportProxy fileImportProxy;
     private readonly IMapTileGenerator tileGenerator;
     protected readonly IGeofenceProxy geofenceProxy;
@@ -67,11 +67,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(IProductivity3dProxy productivity3DProxy, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy, 
+    protected BaseController(IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy, 
       IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore,
       IBoundingBoxHelper boundingBoxHelper, ITPaaSApplicationAuthentication authn)
     {
-      this.productivity3dProxy = productivity3DProxy;
+      this.productivity3DProxyCompactionTile = productivity3DProxyCompactionTile;
       this.prefProxy = prefProxy;
       this.fileImportProxy = fileImportProxy;
       this.tileGenerator = tileGenerator;
@@ -175,23 +175,23 @@ namespace VSS.Tile.Service.WebApi.Controllers
         : new List<FileData>();
       var haveFilter = filterUid.HasValue || baseUid.HasValue || topUid.HasValue;
       var customFilterBoundary = haveFilter && overlayTypes.Contains(TileOverlayType.FilterCustomBoundary)
-        ? (await productivity3dProxy.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Polygon, CustomHeaders)).PointsList
+        ? (await productivity3DProxyCompactionTile.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Polygon, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
       var designFilterBoundary = haveFilter && overlayTypes.Contains(TileOverlayType.FilterDesignBoundary)
-        ? (await productivity3dProxy.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Design, CustomHeaders)).PointsList
+        ? (await productivity3DProxyCompactionTile.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Design, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
       var alignmentFilterBoundary = haveFilter && overlayTypes.Contains(TileOverlayType.FilterAlignmentBoundary)
-        ? (await productivity3dProxy.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Alignment, CustomHeaders)).PointsList
+        ? (await productivity3DProxyCompactionTile.GetFilterPointsList(projectUid, filterUid, baseUid, topUid, FilterBoundaryType.Alignment, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
       var designUid = !volumeCalcType.HasValue || volumeCalcType == VolumeCalcType.None ||
                       volumeCalcType == VolumeCalcType.GroundToGround
         ? cutFillDesignUid
         : (volumeCalcType == VolumeCalcType.DesignToGround ? baseUid : topUid);
       var designBoundary = designUid.HasValue && overlayTypes.Contains(TileOverlayType.CutFillDesignBoundary)
-        ? (await productivity3dProxy.GetDesignBoundaryPoints(projectUid, designUid.Value, CustomHeaders)).PointsList
+        ? (await productivity3DProxyCompactionTile.GetDesignBoundaryPoints(projectUid, designUid.Value, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
       var alignmentPoints = overlayTypes.Contains(TileOverlayType.Alignments)
-        ? (await productivity3dProxy.GetAlignmentPointsList(projectUid, CustomHeaders)).PointsList
+        ? (await productivity3DProxyCompactionTile.GetAlignmentPointsList(projectUid, CustomHeaders)).PointsList
         : new List<List<WGSPoint>>();
 
       language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
@@ -202,7 +202,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
       if (string.IsNullOrEmpty(bbox))
       {
-        bbox = await productivity3dProxy.GetBoundingBox(projectUid, overlays, filterUid, cutFillDesignUid, baseUid, topUid,
+        bbox = await productivity3DProxyCompactionTile.GetBoundingBox(projectUid, overlays, filterUid, cutFillDesignUid, baseUid, topUid,
           volumeCalcType, CustomHeaders);
       }
 

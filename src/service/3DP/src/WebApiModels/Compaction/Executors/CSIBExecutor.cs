@@ -10,6 +10,7 @@ using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.Productivity3D.Productivity3D.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -55,9 +56,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #endif
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
   }
 }

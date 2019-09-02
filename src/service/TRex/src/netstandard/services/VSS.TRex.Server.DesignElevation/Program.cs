@@ -88,21 +88,36 @@ namespace VSS.TRex.Server.DesignElevation
 
     static async Task<int> Main(string[] args)
     {
-      EnsureAssemblyDependenciesAreLoaded();
-      DependencyInjection();
-
-      var cancelTokenSource = new CancellationTokenSource();
-      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      try
       {
-        Console.WriteLine("Exiting");
-        DIContext.Obtain<ITRexGridFactory>().StopGrids();
-        cancelTokenSource.Cancel();
-      };
+        EnsureAssemblyDependenciesAreLoaded();
+        DependencyInjection();
 
-      DoServiceInitialisation();
+        var cancelTokenSource = new CancellationTokenSource();
+        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        {
+          Console.WriteLine("Exiting");
+          DIContext.Obtain<ITRexGridFactory>().StopGrids();
+          cancelTokenSource.Cancel();
+        };
 
-      await Task.Delay(-1, cancelTokenSource.Token);
-      return 0;
+        DoServiceInitialisation();
+
+        await Task.Delay(-1, cancelTokenSource.Token);
+        return 0;
+      }
+      catch (TaskCanceledException)
+      {
+        // Don't care as this is thrown by Task.Delay()
+        Console.WriteLine("Process exit via TaskCanceledException (SIGTERM)");
+        return 0;
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Unhandled exception: {e}");
+        Console.WriteLine($"Stack trace: {e.StackTrace}");
+        return -1;
+      }
     }
   }
 }

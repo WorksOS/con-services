@@ -2,7 +2,7 @@
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.Interfaces;
 

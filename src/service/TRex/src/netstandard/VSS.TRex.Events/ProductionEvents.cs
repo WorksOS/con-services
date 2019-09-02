@@ -238,6 +238,30 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
+    /// Removes the event with the given datetime from the list if it exists.
+    /// </summary>
+    public void RemoveValueAtDate(DateTime dateTime)
+    {
+      if (Find(dateTime, out int index))
+      {
+        Events.RemoveAt(index);
+        EventsChanged = true;
+      }
+    }
+
+    /// <summary>
+    /// Clears all events from the list
+    /// </summary>
+    public void Clear()
+    {
+      if (Events.Count > 0)
+      {
+        Events.Clear();
+        EventsChanged = true;
+      }
+    }
+
+    /// <summary>
     /// Creates an array of string representations for the events in the list bounded by the
     /// supplied date range and the maximum number of events to return
     /// </summary>

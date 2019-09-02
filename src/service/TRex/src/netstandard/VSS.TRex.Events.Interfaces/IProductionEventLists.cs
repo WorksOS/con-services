@@ -1,5 +1,6 @@
 ﻿using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Events.Models;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 
@@ -115,6 +116,16 @@ namespace VSS.TRex.Events.Interfaces
     /// Records the Resonance Meter Value jump threshold configured on the machine control system
     /// </summary>
     IProductionEvents<short> RMVJumpThresholdEvents { get; }
+
+    /// <summary>
+    /// Records the selected Layer ID overriding the id on the machine at the time measurements were being made
+    /// </summary>
+    IProductionEvents<OverrideEvent<ushort>> LayerOverrideEvents { get; }
+
+    /// <summary>
+    /// Records the selected Design overriding the design on the machine at the time measurements were being made
+    /// </summary>
+    IProductionEvents<OverrideEvent<int>> DesignOverrideEvents { get; }
 
     /// <summary>
     /// Returns an array containing all the event lists for a machine

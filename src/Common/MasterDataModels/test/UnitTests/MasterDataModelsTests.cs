@@ -6,9 +6,9 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.UnitTests.ResultsHandling;
+using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 using VSS.MasterData.Repositories.DBModels;
 using Xunit;
-using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 
 namespace VSS.MasterData.Models.UnitTests
 {

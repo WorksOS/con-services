@@ -6,7 +6,7 @@ using FluentAssertions;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;

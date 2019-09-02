@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
-    <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
     <ProjectReference Include="..\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
   </ItemGroup>
 

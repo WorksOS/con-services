@@ -5,7 +5,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Common.Models;

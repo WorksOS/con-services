@@ -6,8 +6,11 @@
 
   <ItemGroup>
     <Compile Remove="Models\**" />
+    <Compile Remove="Report\**" />
     <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Report\**" />
     <None Remove="Models\**" />
+    <None Remove="Report\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,8 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ProductionData\" />
-    <Folder Include="Report\ResultHandling\" />
+    <Folder Include="ProductionData\ResultHandling\" />
   </ItemGroup>
 
 </Project>

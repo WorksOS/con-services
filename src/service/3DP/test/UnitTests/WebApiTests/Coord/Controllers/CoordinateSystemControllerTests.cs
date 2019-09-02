@@ -13,6 +13,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 
 namespace VSS.Productivity3D.WebApiTests.Coord.Controllers

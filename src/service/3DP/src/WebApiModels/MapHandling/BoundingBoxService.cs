@@ -27,8 +27,8 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.TRex.Gateway.Common.Abstractions;
 

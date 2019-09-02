@@ -205,10 +205,10 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
       const ApiVersion apiVersion = ApiVersion.V2;
       const ApiType apiType = ApiType.Private;
 
-      var parameters = new Dictionary<string, string>
+      var queryParams = new List<KeyValuePair<string, string>>
       {
-        { "test1", "%#$%^%" },
-        { "parameter2", "just-a-normal-value" }
+        new KeyValuePair<string, string>("test1", "%#$%^%"),
+        new KeyValuePair<string, string>("parameter2", "just-a-normal-value")
       };
 
       const string expectedUrl = "http://localhost:5000/internal/v2/my-route?test1=%25%23%24%25%5E%25&parameter2=just-a-normal-value";
@@ -222,7 +222,44 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
       Assert.NotNull(resolver);
 
 
-      var url = resolver.ResolveRemoteServiceEndpoint(serviceName, apiType, apiVersion, route, parameters).Result;
+      var url = resolver.ResolveRemoteServiceEndpoint(serviceName, apiType, apiVersion, route, queryParams).Result;
+
+      Assert.Equal(expectedUrl, url);
+    }
+
+    [Fact]
+    public void TestUrlResolutionWithQueryParameterArray()
+    {
+      // Test we can get an endpoint from a single resolver correctly when the service exists, and when it doesn't
+      const string serviceName = "test-service-for-url";
+      const string serviceEndpoint = "http://localhost:5000/"; // note the final slash, this should be removed
+      const string route = "/my-route";
+      const ApiVersion apiVersion = ApiVersion.V2;
+      const ApiType apiType = ApiType.Private;
+
+      var uid1 = Guid.NewGuid().ToString();
+      var uid2 = Guid.NewGuid().ToString();
+      var uid3 = Guid.NewGuid().ToString();
+
+      var queryParams = new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("test1", "the test name"),
+        new KeyValuePair<string, string>("fileUid", uid1),
+        new KeyValuePair<string, string>("fileUid", uid2),
+        new KeyValuePair<string, string>("fileUid", uid3)
+      };
+
+      var expectedUrl = $@"http://localhost:5000/internal/v2/my-route?test1=the+test+name&fileUid={uid1}&fileUid={uid2}&fileUid={uid3}";
+
+      var mockServiceResolver = new MockServiceResolver(ServiceResultType.Configuration, 0);
+      // Register our service
+      mockServiceResolver.ServiceMap[serviceName] = serviceEndpoint;
+
+      serviceCollection.AddSingleton<IServiceResolver>(mockServiceResolver);
+      var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolution>();
+      Assert.NotNull(resolver);
+
+      var url = resolver.ResolveRemoteServiceEndpoint(serviceName, apiType, apiVersion, route, queryParams).Result;
 
       Assert.Equal(expectedUrl, url);
     }

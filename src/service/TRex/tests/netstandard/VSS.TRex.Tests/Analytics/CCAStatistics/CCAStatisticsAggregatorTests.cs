@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Analytics.CCAStatistics;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;

@@ -5,9 +5,9 @@ metadata:
 data:
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_PRESIGNED_URL_EXPIRY: "7.00:00:00"
-  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
+  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/Customers/me
   DOWNLOAD_FOLDER: "C:/temp/"
-  IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfile
+  project_service_public_v4: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
   LOG_MAX_CHAR: "1000"
   MAX_FILE_SIZE: "100000000"
   MYSQL_DATABASE_NAME: VSS-Productivity3D-Scheduler
@@ -20,6 +20,6 @@ data:
   MYSQL_USERNAME_BUILD: root
   SCHEDULER_ENABLE_DXF_TILE_GENERATION: "true"
   SCHEDULER_WEBAPI_STARTUP_WAIT_MS: "45000"
-  VETA_EXPORT_URL: http://localhost:5001/api/v2/mock/export/veta
-  WEBAPI_DEBUG_URI: http://localhost/
-  WEBAPI_URI: http://localhost/
+  VETA_EXPORT_URL: http://localhost:5001/api/v2/export/veta
+  WEBAPI_DEBUG_URI: http://localhost:80/
+  WEBAPI_URI: http://localhost:80/

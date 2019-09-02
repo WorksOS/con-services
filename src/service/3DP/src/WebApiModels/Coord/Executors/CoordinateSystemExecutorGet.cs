@@ -6,6 +6,7 @@ using ASNodeDecls;
 #endif
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.Productivity3D.Productivity3D.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 {

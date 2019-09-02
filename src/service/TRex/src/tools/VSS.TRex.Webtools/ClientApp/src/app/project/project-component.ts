@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, DesignSurface, Alignment, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun, XYZS } from './project-model';
-import { ProjectService } from './project-service';
-import { DisplayMode } from './project-displaymode-model';
-import { VolumeResult } from '../project/project-volume-model';
-import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint } from '../project/project-filter-model';
-import { CellDatumResult } from "./project-model";
-import { SummaryType } from './project-summarytype-model';
-import { DisplayModeType, OverrideParameters, OverrideRange } from '../fetch-data/fetch-data-model';
+import { DisplayModeType, OverrideParameters } from '../fetch-data/fetch-data-model';
 import { FetchDataService } from '../fetch-data/fetch-data.service';
+import { AttributeFilter, CombinedFilter, FencePoint, SpatialFilter } from '../project/project-filter-model';
+import { VolumeResult } from '../project/project-volume-model';
+import { DisplayMode } from './project-displaymode-model';
+import { Alignment, DesignSurface, ISiteModelMetadata, Machine, MachineDesign, MachineEventType, ProjectExtents, SiteProofingRun, SurveyedSurface } from './project-model';
+import { ProjectService } from './project-service';
+import { SummaryType } from './project-summarytype-model';
 
 @Component({
   selector: 'project',
@@ -61,19 +60,21 @@ export class ProjectComponent {
 
   public applyToViewOnly: boolean = false;
 
+  public surveyedSurfaceFile : File = null;
   public surveyedSurfaceFileName: string = "";
-  public surveyedSurfaceAsAtDate: Date = new Date();
+  public surveyedSurfaceDate: string = this.getDatePart(new Date());
+  public surveyedSurfaceTime: string = this.getTimePart(new Date());
 
   public newSurveyedSurfaceGuid: string = "";
   public surveyedSurfaces: SurveyedSurface[] = [];
 
   public alignments: Alignment[] = [];
-  public alignmentFileName: string = "";
+  public alignmentFile : File = null;
   public alignmentUid: string = "";
   public newAlignmentGuid: string = "";
 
   public designs: DesignSurface[] = [];
-  public designFileName: string = "";
+  public designFile : File = null;
   public designOffset: number = 0.0;
   public designUid: string = "";
 
@@ -126,8 +127,12 @@ export class ProjectComponent {
   public allProjectsMetadata: ISiteModelMetadata[] = [];
 
   public machineEvents: string[] = [];
-  public machineEventsStartDate: Date = new Date(1980, 1, 1, 0, 0, 0, 0);
-  public machineEventsEndDate: Date = new Date(2100, 1, 1, 0, 0, 0, 0);
+  public machineEventsStartDate: string = this.getDatePart(new Date(1980, 1, 1, 0, 0, 0, 0));
+  public machineEventsStartTime: string = this.getTimePart(new Date(1980, 1, 1, 0, 0, 0, 0));
+
+  public machineEventsEndDate: string = this.getDatePart(new Date(2100, 1, 1, 0, 0, 0, 0));
+  public machineEventsEndTime: string = this.getTimePart(new Date(2100, 1, 1, 0, 0, 0, 0));
+
   public maxMachineEventsToReturn: number = 100;
 
   public profilePath: string = "M0 0 L200 500 L400 0 L600 500 L800 0 L1000 500";
@@ -204,6 +209,14 @@ export class ProjectComponent {
 
   public cellDatum: string = "";
   private showCellDatum: boolean = false;
+
+  private getDatePart(date: Date): string {
+    return date.toISOString().substring(0, 10);
+  }
+
+  private getTimePart(date: Date): string {
+    return date.toISOString().substring(11, 19);
+  }
 
   constructor(
     private projectService: ProjectService,
@@ -529,24 +542,43 @@ export class ProjectComponent {
     this.projectService.testJSONParameter(filter).subscribe(x => x);
   }
 
-  public addADummySurveyedSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = "C:/temp/SomeFile.ttm";
-    this.projectService.addSurveyedSurface(this.projectUid, descriptor, new Date(), this.tileExtents).subscribe(
-      uid => {
-        this.newSurveyedSurfaceGuid = uid.designId;
-        this.getSurveyedSurfaces();
-      });
+
+  handleSurveyedSurfaceChange(files: FileList) {
+    this.surveyedSurfaceFile = files.item(0);
   }
 
-  public addNewSurveyedSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.surveyedSurfaceFileName;
-    this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveyedSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
-      uid => {
-        this.newSurveyedSurfaceGuid = uid.designId;
-        this.getSurveyedSurfaces();
-      });
+  public canAddSurveyedSurfaceFile(): boolean {
+      return this.surveyedSurfaceFile != null && this.newSurveyedSurfaceGuid !== "";
+  }
+
+  public canAddDesignSurfaceFile(): boolean {
+    return this.designFile != null && this.designUid !== "";
+  }
+
+  public canAddAlignmentFile(): boolean {
+    return this.alignmentFile != null && this.alignmentUid !== "";
+  }
+
+  public addNewSurveyedSurface(): void { 
+  console.log("Surveyed Surface", this.surveyedSurfaceFile);
+
+  this.projectService.addSurveyedSurface(this.projectUid, this.surveyedSurfaceFile, this.newSurveyedSurfaceGuid, this.combineDateAndTime(this.surveyedSurfaceDate, this.surveyedSurfaceTime)).subscribe(
+    uid => {
+      this.newSurveyedSurfaceGuid = uid.designId;
+      this.getSurveyedSurfaces();
+    });
+  }
+
+  private combineDateAndTime(date: string, time: string): Date {
+    let dateParts: any = date.split("-");
+    let timeParts: any = time.split(":");
+
+    if (dateParts && timeParts) {
+      dateParts[1] -= 1;
+      return new Date(Date.UTC.apply(undefined, dateParts.concat(timeParts)));
+    }
+
+    return null;
   }
 
   public getSurveyedSurfaces(): void {
@@ -563,21 +595,12 @@ export class ProjectComponent {
       uid => this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
   }
 
-  public addADummyDesignSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = "C:/temp/SomeFile.ttm";
-    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
-      uid => {
-        this.newDesignGuid = uid.designId;
-        this.getDesignSurfaces();
-      });
+  handleDesignFileChange(files: FileList) { 
+      this.designFile = files.item(0);
   }
 
   public addNewDesignSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.designFileName;
-    descriptor.designId = this.designUid;
-    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
+      this.projectService.addDesignSurface(this.projectUid, this.designFile, this.designUid).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
         this.getDesignSurfaces();
@@ -603,21 +626,12 @@ export class ProjectComponent {
     localStorage.setItem("designOffset", this.designOffset.toString());
   }
 
-  public addADummyAlignment(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = "C:/temp/SomeFile.svl";
-    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
-      uid => {
-        this.newAlignmentGuid = uid.designId;
-        this.getAlignments();
-      });
+  handleAlignmentFileChange(files: FileList) { 
+      this.alignmentFile = files.item(0);
   }
 
   public addNewAlignment(): void {
-    var descriptor = new DesignDescriptor();
-      descriptor.fileName = this.alignmentFileName;
-      descriptor.designId = this.alignmentUid;
-    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
+    this.projectService.addAlignment(this.projectUid, this.alignmentFile, this.alignmentUid).subscribe(
       uid => {
         this.newAlignmentGuid = uid.designId;
         this.getAlignments();
@@ -709,14 +723,14 @@ export class ProjectComponent {
 
   public updateDisplayedMachineEvents() {
     // Request the first 100 events of the selected event type from the selected site model and machine
-    var result: string[] = [];
+    let result: string[] = [];
 
-    var startDate: Date = this.machineEventsStartDate;
+    let startDate: Date = this.combineDateAndTime(this.machineEventsStartDate, this.machineEventsStartTime);
     if (startDate === undefined) {
       startDate = new Date(1980, 1, 1, 0, 0, 0, 0);
     }
 
-    var endDate: Date = this.machineEventsEndDate;
+      let endDate: Date = this.combineDateAndTime(this.machineEventsEndDate, this.machineEventsEndTime);
     if (endDate === undefined) {
       endDate = new Date(2100, 1, 1, 0, 0, 0, 0);
     }
@@ -1004,7 +1018,7 @@ export class ProjectComponent {
 
     this.profileValue = "";
     this.profileValue2 = "";
-    if (this.profilePoints.length > 0 && this.profilePoints[0].hasOwnProperty("value")) {
+      if (this.profilePoints && this.profilePoints.length > 0 && this.profilePoints[0].hasOwnProperty("value")) {
       let ratio = (this.mouseProfileWorldStation - this.profileExtents.minX) / this.profileExtents.sizeX();
       let index = Math.round(this.profilePoints.length * ratio) - 1;
       this.profileValue = this.profilePoints[index].value.toFixed(this.mode === 4 || this.mode === 14 ? 0 : 3);
