@@ -34,7 +34,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
     /// Test endpoint for connected site gateway
     /// </summary>
     // [PostRequestVerifier]
-    [Route("api/connectedsite")]
+    [Route("api/v1/connectedsite")] 
     [HttpGet]
     public string Get()
     {
@@ -47,7 +47,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
     /// connected site
     /// </summary>
     // [PostRequestVerifier]
-    [Route("api/position")]
+    [Route("api/v1/position")]
     [HttpPost]
     public Task<ContractExecutionResult> PostPosition([FromBody]CompactionTagFileRequest request)
     {
@@ -63,7 +63,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
     /// connected site
     /// </summary>
     // [PostRequestVerifier]
-    [Route("api/status")]
+    [Route("api/v1/status")]
     [HttpPost]
     public Task<ContractExecutionResult> PostStatus([FromBody]CompactionTagFileRequest request)
     {

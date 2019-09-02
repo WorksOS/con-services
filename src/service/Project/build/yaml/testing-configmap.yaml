@@ -6,9 +6,8 @@ data:
   ASSOCIATESUBSPROJECT_API_URL: http://localhost:5001/dummy/
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-stg
-  COORDSYSPOST_API_URL: http://localhost:5001/api/v1/mock/coordsystem
   CREATEGEOFENCE_API_URL: http://localhost:5001/dummy/
-  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
+  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/Customers/me
   DATA_OCEAN_ROOT_FOLDER: dev
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "1"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
@@ -18,7 +17,7 @@ data:
   ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
   filter_service: http://localhost:5001
   FILTER_CACHE_LIFE: "00:15:00"
-  GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences/
+  GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
   KAFKA_ADVERTISED_PORT: "9092"
   KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
   KAFKA_CAP_GROUP_NAME: Project-CAP
@@ -45,10 +44,8 @@ data:
   PEGASUS_EXECUTION_TIMEOUT_MINS: "1"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "1000"
   PEGASUS_URL: http://localhost:5001
+  productivity3d_service: http://localhost:5001
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
-  RAPTOR_3DPM_API_URL: http://localhost:5001/api/v2/mock
-  RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
-  RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
   scheduler_service: http://localhost:5001
   TCCBASEURL: http://localhost:5001
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01

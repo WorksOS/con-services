@@ -64,7 +64,6 @@
     <ProjectReference Include="..\..\..\Push\WebAPI\VSS.Productivity3D.Push.WebAPI\VSS.Productivity3D.Push.WebAPI.csproj" />
     <ProjectReference Include="..\VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob\VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob.csproj" />
     <ProjectReference Include="..\VSS.Productivity3D.Scheduler.Jobs.TileGenJob\VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.csproj" />
-    <ProjectReference Include="..\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

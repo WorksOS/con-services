@@ -17,7 +17,7 @@ namespace TestUtility
     public string dbSchema;
     public string kafkaTopicSuffix = Environment.GetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX");
     public string webApiUri = Environment.GetEnvironmentVariable("WEBAPI_URI");
-    public string debugWebApiUri = Environment.GetEnvironmentVariable("WEBAPI_DEBUG_URI");
+    public string debugWebApiUri = "http://localhost:5000/"; // Environment.GetEnvironmentVariable("WEBAPI_DEBUG_URI");
     public string operatingSystem = Environment.GetEnvironmentVariable("OS");
     public string coordinateSystem = "00TMSC V10-70       0   11/01/2012 11:25133111" +
                                      "10TMUntitled Job    122212" + "78TM11" + "D5TM                                                                                                " +

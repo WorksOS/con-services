@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(assetUids))))
       {
-        var result = await PostMasterDataItemServiceDiscoveryNoCache<AssetDisplayModel>("/assets/assetuids", customHeaders, payload: ms);
+        var result = await SendMasterDataItemServiceDiscoveryNoCache<AssetDisplayModel>("/assets/assetuids", customHeaders, HttpMethod.Post, payload: ms);
         if (result.Code == 0)
           return result.assetIdentifiers;
 
@@ -70,7 +71,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(assetIds))))
       {
-        var result = await PostMasterDataItemServiceDiscoveryNoCache<AssetDisplayModel>("/assets/assetids", customHeaders, payload: ms);
+        var result = await SendMasterDataItemServiceDiscoveryNoCache<AssetDisplayModel>("/assets/assetids", customHeaders, HttpMethod.Post, payload: ms);
         if (result.Code == 0)
           return result.assetIdentifiers;
 

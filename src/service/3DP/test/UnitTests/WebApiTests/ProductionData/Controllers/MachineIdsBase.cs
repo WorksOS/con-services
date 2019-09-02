@@ -9,8 +9,8 @@ using VLPDDecls;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers

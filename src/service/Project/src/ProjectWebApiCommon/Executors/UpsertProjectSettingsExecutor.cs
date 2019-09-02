@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -97,10 +97,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
     private async Task RaptorValidateProjectSettings(ProjectSettingsRequest request)
     {
-      BaseDataResult result = null;
+      BaseMasterDataResult result = null;
       try
       {
-        result = await productivity3dProxy
+        result = await productivity3dV2ProxyCompaction
           .ValidateProjectSettings(request, customHeaders)
           .ConfigureAwait(false);
       }
@@ -108,7 +108,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         log.LogError(e, $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{request.projectUid} settings:{request.Settings}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 70,
-          "productivity3dProxy.ValidateProjectSettings", e.Message);
+          "productivity3dV2ProxyCompaction.ValidateProjectSettings", e.Message);
       }
 
       log.LogDebug(

@@ -69,7 +69,6 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TDI auth for customer/user validation
-      services.AddTransient<IProductivity3dProxy, Productivity3dProxy>();
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
       services.AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>();
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
@@ -78,9 +77,10 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>();
 
-      services.AddServiceDiscovery();
-      services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
-      services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
+      services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
+      services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
+      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
+      services.AddTransient<IFileImportProxy, FileImportV4Proxy>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();

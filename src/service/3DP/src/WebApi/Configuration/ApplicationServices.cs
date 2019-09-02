@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,7 +19,6 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Scheduler.Abstractions;
@@ -77,7 +75,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
-      services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>) provider.GetServices<IHostedService>()
         .First(service => service.GetType() == typeof(AddFileProcessingService)));
@@ -87,24 +84,14 @@ namespace VSS.Productivity3D.WebApi
       // Action services
       services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();
 
-      services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
-      services.AddSingleton<IProjectProxy, ProjectProxy>();
-      services.AddSingleton<IFileImportProxy, FileImportProxy>();
-      services.AddScoped<IFilterServiceProxy, FilterServiceProxy>();
-      services.AddScoped<ISchedulerProxy, SchedulerProxy>();
-      services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
-      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
-
-      /* todo
-      // service discovery
-      services.AddTransient<IProjectSettingsProxy, ProjectSettingsV4ServiceDiscoveryProxy>();
-      services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
-      services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
-      services.AddTransient<IFilterServiceProxy, FilterV1ServiceDiscoveryProxy>();
-      services.AddTransient<ISchedulerProxy, SchedulerV1ServiceDiscoveryProxy>();
-      services.AddTransient<ITRexTagFileProxy, TRexTagFileV1ServiceDiscoveryProxy>();
-      services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1ServiceDiscoveryProxy>();
-      */
+      services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
+      services.AddTransient<IProjectSettingsProxy, ProjectSettingsV4Proxy>();
+      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
+      services.AddTransient<IFileImportProxy, FileImportV4Proxy>();
+      services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
+      services.AddTransient<ISchedulerProxy, SchedulerV1Proxy>();
+      services.AddTransient<ITRexTagFileProxy, TRexTagFileV1Proxy>();
+      services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1Proxy>();
       
       //Disable CAP for now #76666
       /*

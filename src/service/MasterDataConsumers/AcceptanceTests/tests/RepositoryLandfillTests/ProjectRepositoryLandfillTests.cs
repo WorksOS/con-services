@@ -5,7 +5,6 @@ using RepositoryLandfillTests;
 using System;
 using System.Linq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Repository;

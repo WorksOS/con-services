@@ -13,6 +13,7 @@ using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Scheduler.Abstractions;
 
@@ -24,40 +25,40 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
 
     public Guid VSSJobUid => VSSJOB_UID;
 
-    private readonly IAssetStatusServerHubClient assetStatusServerHubClient;
-    private readonly IFleetAssetDetailsProxy assetDetailsProxy;
-    private readonly IFleetAssetSummaryProxy assetSummaryProxy;
-    private readonly IProductivity3dProxy productivity3DProxy;
-    private readonly IAssetResolverProxy assetResolverProxy;
-    private readonly ILogger log;
+    private readonly IAssetStatusServerHubClient _assetStatusServerHubClient;
+    private readonly IFleetAssetDetailsProxy _assetDetailsProxy;
+    private readonly IFleetAssetSummaryProxy _assetSummaryProxy;
+    private readonly IProductivity3dV2ProxyNotification _productivity3dV2ProxyNotification;
+    private readonly IAssetResolverProxy _assetResolverProxy;
+    private readonly ILogger _log;
 
-    private List<AssetUpdateSubscriptionModel> subscriptions;
+    private List<AssetUpdateSubscriptionModel> _subscriptions;
 
     public AssetStatusJob(IAssetStatusServerHubClient assetStatusServerHubClient,
-      IFleetAssetDetailsProxy assetDetailsProxy, IFleetAssetSummaryProxy assetSummaryProxy, IProductivity3dProxy productivity3DProxy,
+      IFleetAssetDetailsProxy assetDetailsProxy, IFleetAssetSummaryProxy assetSummaryProxy, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification,
       IAssetResolverProxy assetResolverProxy, ILoggerFactory logger)
     {
-      this.assetStatusServerHubClient = assetStatusServerHubClient;
-      log = logger.CreateLogger<AssetStatusJob>();
-      this.assetDetailsProxy = assetDetailsProxy;
-      this.productivity3DProxy = productivity3DProxy;
-      this.assetSummaryProxy = assetSummaryProxy;
-      this.assetResolverProxy = assetResolverProxy;
+      this._assetStatusServerHubClient = assetStatusServerHubClient;
+      _log = logger.CreateLogger<AssetStatusJob>();
+      this._assetDetailsProxy = assetDetailsProxy;
+      this._productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
+      this._assetSummaryProxy = assetSummaryProxy;
+      this._assetResolverProxy = assetResolverProxy;
     }
 
     public Task Setup(object o)
     {
-      if (assetStatusServerHubClient.IsConnecting || assetStatusServerHubClient.Connected)
+      if (_assetStatusServerHubClient.IsConnecting || _assetStatusServerHubClient.Connected)
         return Task.CompletedTask;
-      log.LogInformation("Asset Status Hub Client not connected, starting a connection.");
-      return assetStatusServerHubClient.Connect();
+      _log.LogInformation("Asset Status Hub Client not connected, starting a connection.");
+      return _assetStatusServerHubClient.Connect();
     }
 
     public async Task Run(object o)
     {
-      subscriptions = await assetStatusServerHubClient.GetSubscriptions();
-      log.LogInformation($"Found {subscriptions.Count} subscriptions to process");
-      var tasks = subscriptions.Select(ProcessSubscription).ToList();
+      _subscriptions = await _assetStatusServerHubClient.GetSubscriptions();
+      _log.LogInformation($"Found {_subscriptions.Count} subscriptions to process");
+      var tasks = _subscriptions.Select(ProcessSubscription).ToList();
       await Task.WhenAll(tasks);
     }
 
@@ -73,7 +74,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
         //Get machines
         //https://3dproductivity.myvisionlink.com/t/trimble.com/vss-3dproductivity/2.0/projects/a530371d-20a1-40cf-99ce-e11c54140be4/machines
         var route = $"/projects/{subscriptionModel.ProjectUid}/machines";
-        var machines = await productivity3DProxy.ExecuteGenericV2Request<Machine3DStatuses>(route,
+        var machines = await _productivity3dV2ProxyNotification.ExecuteGenericV2Request<Machine3DStatuses>(route,
           HttpMethod.Get,
           null,
           subscriptionModel.Headers());
@@ -95,7 +96,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       }
       catch (Exception e)
       {
-        log.LogError(e, $"Exception when running subscription {JsonConvert.SerializeObject(subscriptionModel)}");
+        _log.LogError(e, $"Exception when running subscription {JsonConvert.SerializeObject(subscriptionModel)}");
       }
     }
 
@@ -104,8 +105,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
     /// </summary>
     private async Task<(AssetDetails details, AssetSummary summary)> GetAssetData(string assetUid, IDictionary<string, string> headers)
     {
-      var assetDetailsTask = assetDetailsProxy.GetAssetDetails(assetUid, headers);
-      var assetSummaryTask = assetSummaryProxy.GetAssetSummary(assetUid, headers);
+      var assetDetailsTask = _assetDetailsProxy.GetAssetDetails(assetUid, headers);
+      var assetSummaryTask = _assetSummaryProxy.GetAssetSummary(assetUid, headers);
 
       await Task.WhenAll(assetDetailsTask, assetSummaryTask);
 
@@ -117,7 +118,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
     {
 
       AssetAggregateStatus statusEvent = null;
-      var assets = await assetResolverProxy.GetMatchingAssets(new List<long>
+      var assets = await _assetResolverProxy.GetMatchingAssets(new List<long>
       {
         machine.AssetId,
       }, headers);
@@ -126,7 +127,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       var assetList = assets?.ToList();
       if (assetList != null && assetList.Any())
       {
-        var matchingAsset = await assetResolverProxy.GetMatching3D2DAssets(new MatchingAssetsDisplayModel() {AssetUID3D = assetList.First().Key.ToString()}, headers);
+        var matchingAsset = await _assetResolverProxy.GetMatching3D2DAssets(new MatchingAssetsDisplayModel() {AssetUID3D = assetList.First().Key.ToString()}, headers);
         //Change that for the actual matched asset. Since we supplied 3d asset get data for the matching 2d asset.
         //if there is no 2d asset we should try using SNM asset
 
@@ -149,7 +150,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       }
 
       if(statusEvent != null)
-        await assetStatusServerHubClient.UpdateAssetLocationsForClient(statusEvent);
+        await _assetStatusServerHubClient.UpdateAssetLocationsForClient(statusEvent);
     }
 
     /// <summary>
@@ -205,7 +206,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       // Clear the values if we don't have everything
       if (lastLocationTimeUtc == null || result.Latitude == null || result.Longitude == null)
       {
-        log.LogWarning($"Clearing event information due to missing data. Lat: {result.Latitude}, Lon: {result.Longitude}, Time: {result.LocationLastUpdatedUtc}");
+        _log.LogWarning($"Clearing event information due to missing data. Lat: {result.Latitude}, Lon: {result.Longitude}, Time: {result.LocationLastUpdatedUtc}");
         result.LocationLastUpdatedUtc = null;
         result.Latitude = null;
         result.Longitude = null;

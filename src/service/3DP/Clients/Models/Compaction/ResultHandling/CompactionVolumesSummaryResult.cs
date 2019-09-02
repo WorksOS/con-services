@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
@@ -6,7 +8,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
   /// <summary>
   /// Represents result returned by Summary Volumes request
   /// </summary>
-  public class CompactionVolumesSummaryResult : ContractExecutionResult
+  public class CompactionVolumesSummaryResult : ContractExecutionResult, IMasterDataModel
   {
     [JsonProperty(PropertyName = "volumeSummaryData")]
     public VolumesSummaryData SummaryVolumeData { get; private set; }
@@ -73,5 +75,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
         Message = result.Message
       };
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 }

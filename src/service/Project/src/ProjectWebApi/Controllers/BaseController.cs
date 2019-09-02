@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -27,72 +28,71 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// <summary>
   /// Base for all Project v4 controllers
   /// </summary>
-  public abstract class BaseController : Controller
+  public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
-    /// <summary>
-    /// base message number for ProjectService
-    /// </summary>
+    /// <summary> base message number for ProjectService </summary>
     protected readonly int customErrorMessageOffset = 2000;
 
-    /// <summary>
-    /// Gets or sets the local logger provider.
-    /// </summary>
-    protected readonly ILogger logger;
+    /// <summary> Gets or sets the Kafka topic. </summary>
+    protected readonly string KafkaTopicName;
 
-    /// <summary>
-    /// Gets or sets the injected logger factory.
-    /// </summary>
-    protected readonly ILoggerFactory loggerFactory;
 
-    /// <summary>
-    /// Gets or sets the Service exception handler.
-    /// </summary>
-    protected readonly IServiceExceptionHandler serviceExceptionHandler;
+    private ILogger<T> _logger;
+    private ILoggerFactory _loggerFactory;
+    private IServiceExceptionHandler _serviceExceptionHandler;
 
-    /// <summary>
-    /// Gets or sets the Configuration Store. 
-    /// </summary>
-    protected readonly IConfigurationStore configStore;
+    private IProductivity3dV1ProxyCoord _productivity3dV1ProxyCoord;
+    private IProductivity3dV2ProxyNotification _productivity3dV2ProxyNotification;
+    private IProductivity3dV2ProxyCompaction _productivity3dV2ProxyCompaction;
+    private IProjectRepository _projectRepo;
+    private ISubscriptionRepository _subscriptionRepo;
+    private IFileRepository _fileRepo;
+    private IDataOceanClient _dataOceanClient;
+    private ITPaaSApplicationAuthentication _authorization;
 
-    /// <summary>
-    /// Gets or sets the Kafak consumer.
-    /// </summary>
-    protected readonly IKafka producer;
 
-    /// <summary>
-    /// Gets or sets the Kafka topic.
-    /// </summary>
-    protected readonly string kafkaTopicName;
+    /// <summary> Gets the application logging interface. </summary>
+    protected ILogger<T> Logger => _logger ?? (_logger = HttpContext.RequestServices.GetService<ILogger<T>>());
 
-    /// <summary>
-    /// Gets or sets the Raptor proxy.
-    /// </summary>
-    protected readonly IProductivity3dProxy Productivity3DProxy;
+    /// <summary> Gets the type used to configure the logging system and create instances of ILogger from the registered ILoggerProviders. </summary>
+    protected ILoggerFactory LoggerFactory => _loggerFactory ?? (_loggerFactory = HttpContext.RequestServices.GetService<ILoggerFactory>());
 
-    /// <summary>
-    /// Gets or sets the Project Repository. 
-    /// </summary>
-    protected readonly IProjectRepository projectRepo;
+    /// <summary> Gets the service exception handler. </summary>
+    protected IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ?? (_serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
 
-    /// <summary>
-    /// Gets or sets the Subscription Repository.
-    /// </summary>
-    protected readonly ISubscriptionRepository subscriptionRepo;
+    /// <summary> Gets the config store. </summary>
+    protected readonly IConfigurationStore ConfigStore;
 
-    /// <summary>
-    /// Gets or sets the TCC File Repository.
-    /// </summary>
-    protected readonly IFileRepository fileRepo;
+    /// <summary> Gets the kafka producer </summary>
+    protected readonly IKafka Producer;
+
+
+    /// <summary> Gets or sets the Productivity3d Coord proxy. </summary>
+    protected IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord => _productivity3dV1ProxyCoord ?? (_productivity3dV1ProxyCoord = HttpContext.RequestServices.GetService<IProductivity3dV1ProxyCoord>());
+
+    /// <summary> Gets or sets the Productivity3d Notifications proxy. </summary>
+    protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification => _productivity3dV2ProxyNotification ?? (_productivity3dV2ProxyNotification = HttpContext.RequestServices.GetService<IProductivity3dV2ProxyNotification>());
+
+    /// <summary> Gets or sets the Productivity3d Compaction proxy. </summary>
+    protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction => _productivity3dV2ProxyCompaction ?? (_productivity3dV2ProxyCompaction = HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>());
+
+
+    /// <summary> Gets or sets the Project Repository.  </summary>
+    protected IProjectRepository ProjectRepo => _projectRepo ?? (_projectRepo = HttpContext.RequestServices.GetService<IProjectRepository>());
+
+    /// <summary> Gets or sets the Subscription Repository. </summary>
+    protected ISubscriptionRepository SubscriptionRepo => _subscriptionRepo ?? (_subscriptionRepo = HttpContext.RequestServices.GetService<ISubscriptionRepository>());
+
+    /// <summary> Gets or sets the TCC File Repository. </summary>
+    protected IFileRepository FileRepo => _fileRepo ?? (_fileRepo = HttpContext.RequestServices.GetService<IFileRepository>());
 
     /// <summary>
     /// Gets or sets the Data Ocean client agent.
     /// </summary>
-    protected readonly IDataOceanClient dataOceanClient;
+    protected IDataOceanClient DataOceanClient => _dataOceanClient ?? (_dataOceanClient = HttpContext.RequestServices.GetService<IDataOceanClient>());
 
-    /// <summary>
-    /// Gets or sets the TPaaS application authentication helper.
-    /// </summary>
-    protected readonly ITPaaSApplicationAuthentication authn;
+    /// <summary> Gets or sets the TPaaS application authentication helper. </summary>
+    protected ITPaaSApplicationAuthentication Authorization => _authorization ?? (_authorization = HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>());
 
     /// <summary>
     /// Gets the custom customHeaders for the request.
@@ -107,57 +107,32 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets the customer uid from the current context
     /// </summary>
-    /// <value>
-    /// The customer uid.
-    /// </value>
     protected string customerUid => GetCustomerUid();
 
     /// <summary>
     /// Gets the user id from the current context
     /// </summary>
-    /// <value>
-    /// The user uid or applicationID as a string.
-    /// </value>
     protected string userId => GetUserId();
 
     /// <summary>
     /// Gets the userEmailAddress from the current context
     /// </summary>
-    /// <value>
-    /// The userEmailAddress.
-    /// </value>
     protected string userEmailAddress => GetUserEmailAddress();
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IProductivity3dProxy productivity3DProxy, IProjectRepository projectRepo, 
-      ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
-      IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null)
+    protected BaseController(IKafka producer, IConfigurationStore configStore)
     {
-      this.loggerFactory = loggerFactory;
-      this.logger = loggerFactory.CreateLogger(GetType());
-
-      this.configStore = configStore;
-      this.serviceExceptionHandler = serviceExceptionHandler;
-      this.producer = producer;
-
-      if (!this.producer.IsInitializedProducer)
+      Producer = producer;
+      ConfigStore = configStore;
+      if (!Producer.IsInitializedProducer)
       {
-        this.producer.InitProducer(configStore);
+        Producer.InitProducer(ConfigStore);
       }
 
-      kafkaTopicName = (configStore.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
-                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
-
-      this.projectRepo = projectRepo;
-      this.subscriptionRepo = subscriptionRepo;
-      this.fileRepo = fileRepo;
-      this.Productivity3DProxy = productivity3DProxy;
-      this.dataOceanClient = dataOceanClient;
-      this.authn = authn;
+      KafkaTopicName = (ConfigStore.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
+                        ConfigStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
     }
 
     /// <summary>
@@ -170,26 +145,26 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       <Task<TResult>> action)
       where TResult : ContractExecutionResult
     {
-      TResult result = default(TResult);
+      var result = default(TResult);
       try
       {
         result = await action.Invoke().ConfigureAwait(false);
-        if (logger.IsTraceEnabled())
-          logger.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
+        if (Logger.IsTraceEnabled())
+          Logger.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
       }
       catch (ServiceException se)
       {
-        logger.LogError(se, $"Execution failed for: {action.GetMethodInfo().Name}. ");
+        Logger.LogError(se, $"Execution failed for: {action.GetMethodInfo().Name}. ");
         throw;
       }
       catch (Exception ex)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-          ContractExecutionStatesEnum.InternalProcessingError - customErrorMessageOffset, ex.Message, innerException: ex );
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+          ContractExecutionStatesEnum.InternalProcessingError - customErrorMessageOffset, ex.Message, innerException: ex);
       }
       finally
       {
-        logger.LogInformation($"Executed {action.GetMethodInfo().Name} with the result {result?.Code}");
+        Logger.LogInformation($"Executed {action.GetMethodInfo().Name} with the result {result?.Code}");
       }
 
       return result;
@@ -200,7 +175,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <returns></returns>
     /// <exception cref="ArgumentException">Incorrect customer uid value.</exception>
-    protected string GetCustomerUid()
+    private string GetCustomerUid()
     {
       if (User is TIDCustomPrincipal principal)
       {
@@ -248,16 +223,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       var customerUid = LogCustomerDetails("GetProject by legacyProjectId", legacyProjectId);
       var project =
-        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+        (await ProjectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => p.LegacyProjectID == legacyProjectId);
 
       if (project == null)
       {
-        logger.LogWarning($"User doesn't have access to legacyProjectId: {legacyProjectId}");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+        Logger.LogWarning($"User doesn't have access to legacyProjectId: {legacyProjectId}");
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
       }
 
-      logger.LogInformation($"Project legacyProjectId: {legacyProjectId} retrieved");
+      Logger.LogInformation($"Project legacyProjectId: {legacyProjectId} retrieved");
       return project;
     }
 
@@ -269,7 +244,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>Returns <see cref="TIDCustomPrincipal.CustomerUid"/></returns>
     protected string LogCustomerDetails(string functionName, string projectUid = "")
     {
-      logger.LogInformation(
+      Logger.LogInformation(
         $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and projectUid={projectUid}");
 
       return customerUid;
@@ -283,7 +258,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>Returns <see cref="TIDCustomPrincipal.CustomerUid"/></returns>
     protected string LogCustomerDetails(string functionName, long legacyProjectId = 0)
     {
-      logger.LogInformation(
+      Logger.LogInformation(
         $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and legacyProjectId={legacyProjectId}");
 
       return customerUid;

@@ -16,6 +16,7 @@ using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Repository;
@@ -53,8 +54,8 @@ namespace VSS.Productivity3D.Filter.Tests
       geofenceRepo.As<IGeofenceRepository>().Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
 
       var projectRepo = new Mock<ProjectRepository>(configStore, logger);
-      var projectGeofence = new ProjectGeofence {GeofenceUID = boundaryUid, ProjectUID = projectUid};
-      projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence> {projectGeofence});
+      var projectGeofence = new ProjectGeofence { GeofenceUID = boundaryUid, ProjectUID = projectUid };
+      projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence> { projectGeofence });
 
       var geofenceToTest = new GeofenceDataSingleResult(AutoMapperUtility.Automapper.Map<GeofenceData>(geofence));
 
@@ -108,7 +109,7 @@ namespace VSS.Productivity3D.Filter.Tests
         GeofenceType = GeofenceType.Filter,
         LastActionedUTC = DateTime.UtcNow
       };
-      geofenceRepo.As<IGeofenceRepository>().Setup(g => g.GetGeofences(It.IsAny<IEnumerable<string>>())).ReturnsAsync(new List<Geofence>{geofenceBoundary});
+      geofenceRepo.As<IGeofenceRepository>().Setup(g => g.GetGeofences(It.IsAny<IEnumerable<string>>())).ReturnsAsync(new List<Geofence> { geofenceBoundary });
 
       var favoriteGeofenceInside = new GeofenceData
       {
@@ -126,7 +127,7 @@ namespace VSS.Productivity3D.Filter.Tests
         GeofenceType = GeofenceType.Generic.ToString(),
         CustomerUID = Guid.Parse(custUid)
       };
-      var favorites = new List<GeofenceData>{favoriteGeofenceInside, favoriteGeofenceOutside};
+      var favorites = new List<GeofenceData> { favoriteGeofenceInside, favoriteGeofenceOutside };
       var geofenceProxy = new Mock<IGeofenceProxy>();
       geofenceProxy.Setup(g => g.GetFavoriteGeofences(custUid, userUid, null)).ReturnsAsync(favorites);
 
@@ -151,7 +152,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor =
         RequestExecutorContainer.Build<GetBoundariesExecutor>(configStore, logger, serviceExceptionHandler,
-          geofenceRepo.Object, projectRepo.Object, geofenceProxy: geofenceProxy.Object, 
+          geofenceRepo.Object, projectRepo.Object, geofenceProxy: geofenceProxy.Object,
           unifiedProductivityProxy: upProxy.Object);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
@@ -198,7 +199,7 @@ namespace VSS.Productivity3D.Filter.Tests
         LastActionedUTC = DateTime.UtcNow
       };
       geofenceRepo.As<IGeofenceRepository>().Setup(g => g.GetGeofences(It.IsAny<IEnumerable<string>>())).ReturnsAsync(new List<Geofence> { geofenceBoundary });
-   
+
       var geofenceProxy = new Mock<IGeofenceProxy>();
       geofenceProxy.Setup(g => g.GetFavoriteGeofences(custUid, userUid, null)).ReturnsAsync(new List<GeofenceData>());
 
@@ -211,7 +212,7 @@ namespace VSS.Productivity3D.Filter.Tests
         CustomerUID = Guid.Parse(custUid)
       };
       var upProxy = new Mock<IUnifiedProductivityProxy>();
-      upProxy.Setup(u => u.GetAssociatedGeofences(projectUid, null)).ReturnsAsync(new List<GeofenceData>{associatedGeofence});
+      upProxy.Setup(u => u.GetAssociatedGeofences(projectUid, null)).ReturnsAsync(new List<GeofenceData> { associatedGeofence });
 
       var projectRepo = new Mock<ProjectRepository>(configStore, logger);
       var projectGeofence = new ProjectGeofence { GeofenceUID = boundaryUid, ProjectUID = projectUid };
@@ -424,8 +425,8 @@ namespace VSS.Productivity3D.Filter.Tests
       projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence>());
       projectRepo.As<IProjectRepository>().Setup(p => p.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
 
-      var productivity3DProxy = new Mock<IProductivity3dProxy>();
-      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
@@ -436,12 +437,12 @@ namespace VSS.Productivity3D.Filter.Tests
         false,
         new ProjectData { ProjectUid = projectUid },
         userUid,
-        new BoundaryRequest {BoundaryUid = null, Name = name, BoundaryPolygonWKT = geometryWKT}
+        new BoundaryRequest { BoundaryUid = null, Name = name, BoundaryPolygonWKT = geometryWKT }
       );
 
       var executor =
         RequestExecutorContainer.Build<UpsertBoundaryExecutor>(configStore, logger, serviceExceptionHandler,
-          geofenceRepo.Object, projectRepo.Object, null, productivity3DProxy.Object, producer.Object, kafkaTopicName);
+          geofenceRepo.Object, projectRepo.Object, producer: producer.Object, kafkaTopicName: kafkaTopicName);
       var result = await executor.ProcessAsync(request) as GeofenceDataSingleResult;
 
       Assert.NotNull(result);
@@ -480,8 +481,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var projectGeofence = new ProjectGeofence { GeofenceUID = boundaryUid, ProjectUID = projectUid };
       projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence> { projectGeofence });
 
-      var productivity3DProxy = new Mock<IProductivity3dProxy>();
-      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var producer = new Mock<IKafka>();
       string kafkaTopicName = "whatever";
@@ -497,7 +498,8 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor =
         RequestExecutorContainer.Build<DeleteBoundaryExecutor>(configStore, logger, serviceExceptionHandler,
-          geofenceRepo.Object, projectRepo.Object, null, productivity3DProxy.Object, producer.Object, kafkaTopicName);
+          geofenceRepo.Object, projectRepo.Object,
+          productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, producer: producer.Object, kafkaTopicName: kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       Assert.NotNull(result);

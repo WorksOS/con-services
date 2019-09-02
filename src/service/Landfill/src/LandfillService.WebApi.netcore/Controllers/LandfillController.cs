@@ -29,14 +29,14 @@ namespace LandfillService.WebApi.netcore.Controllers
   {
     private readonly ILogger Log;
     private IConfigurationStore config;
-    private IProductivity3dProxy productivity3DProxy;
+    private IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord;
     private IFileImportProxy files;
 
 
-    public ProjectsController(ILogger<ProjectsController> logger, IConfigurationStore config, IProductivity3dProxy productivity3DProxy, IFileImportProxy files )
+    public ProjectsController(ILogger<ProjectsController> logger, IConfigurationStore config, IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IFileImportProxy files )
     {
       Log = logger;
-      this.productivity3DProxy = productivity3DProxy;
+      this.productivity3dV1ProxyCoord = productivity3dV1ProxyCoord;
       this.files = files;
       this.config = config;
     }
@@ -339,7 +339,7 @@ namespace LandfillService.WebApi.netcore.Controllers
         Log.LogDebug("Volumes month:" + monthVol);
 
         //Get designIds from ProjectMonitoring service
-        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3DProxy, files, Request.Headers.GetCustomHeaders());
+        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3dV1ProxyCoord, files, Request.Headers.GetCustomHeaders());
         var res = await productivity3DApiClient.GetDesignID(Request.Headers["X-Jwt-Assertion"], project, principal.CustomerUid);
         var designId = res.Where(r => r.name == "TOW.ttm").Select(i => i.id).First();
         Log.LogDebug("Volumes designId for TOW.ttm:" + designId);
@@ -417,7 +417,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     {
       try
       {
-        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3DProxy, files, Request.Headers.GetCustomHeaders());
+        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3dV1ProxyCoord, files, Request.Headers.GetCustomHeaders());
         var res = await productivity3DApiClient.GetAirspaceVolumeAsync(userUid, project, returnEarliest, designId);
         Log.LogDebug("Airspace Volume res:" + res);
         Log.LogDebug("Airspace Volume: " + res.Fill);
@@ -448,7 +448,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     {
       try
       {
-        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3DProxy, files, Request.Headers.GetCustomHeaders());
+        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3dV1ProxyCoord, files, Request.Headers.GetCustomHeaders());
 
         var res = await productivity3DApiClient.GetProjectStatisticsAsync(userUid, project);
         Log.LogDebug("Statistics dates: " + res.startTime + " - " + res.endTime);
@@ -685,7 +685,7 @@ namespace LandfillService.WebApi.netcore.Controllers
           endDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date; //today in project time zone
         if (!startDate.HasValue)
           startDate = endDate.Value.AddYears(-2);
-        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3DProxy, files, Request.Headers.GetCustomHeaders());
+        var productivity3DApiClient = new Productivity3DApiClient(Log, config, productivity3dV1ProxyCoord, files, Request.Headers.GetCustomHeaders());
         var task = await productivity3DApiClient.GetMachineLiftsInBackground(null, project, startDate.Value, endDate.Value);
         Log.LogDebug("machinelifts: " + project.name);
 

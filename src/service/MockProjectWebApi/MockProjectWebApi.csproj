@@ -206,10 +206,9 @@
     <ProjectReference Include="..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
     <ProjectReference Include="..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj" />
     <ProjectReference Include="..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
-    <ProjectReference Include="..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
-    <ProjectReference Include="..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
-    <ProjectReference Include="..\Scheduler\src\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
     <ProjectReference Include="..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
+    <ProjectReference Include="..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

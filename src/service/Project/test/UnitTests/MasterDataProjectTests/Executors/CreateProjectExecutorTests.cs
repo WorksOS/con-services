@@ -26,7 +26,7 @@ using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using Xunit;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
@@ -52,7 +52,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       _checkBoundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
 
       _businessCenterFile = new BusinessCenterFile
-                            {
+      {
         FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01",
         Path = "/BC Data/Sites/Chch Test Site",
         Name = "CTCTSITECAL.dc",
@@ -70,7 +70,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var fileRepo = new Mock<IFileRepository>();
 
       fileRepo.Setup(fr => fr.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-      byte[] buffer = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
+      byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new MemoryStream(buffer));
 
       var coordinateSystemFileContent = await TccHelper.GetFileContentFromTcc(_businessCenterFile, Log, serviceExceptionHandler, fileRepo.Object);
@@ -103,7 +103,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateProjectEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel { LegacyProjectID = 999 });
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -116,14 +116,14 @@ namespace VSS.MasterData.ProjectTests.Executors
           new Subscription {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
         });
 
-      var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
+      var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v2/projects");
 
-      var productivity3dProxy = new Mock<IProductivity3dProxy>();
-      productivity3dProxy.Setup(rp =>
-          rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+      var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
+      productivity3dV1ProxyCoord.Setup(p =>
+          p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
-      productivity3dProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+      productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
           It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
       var subscriptionProxy = new Mock<ISubscriptionProxy>();
@@ -138,7 +138,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var dataOceanClient = new Mock<IDataOceanClient>();
       dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(), 
+      dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
@@ -146,9 +146,11 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, customHeaders,
-        producer.Object, KafkaTopicName, productivity3dProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
-        dataOceanClient.Object, authn.Object);
+        producer.Object, KafkaTopicName,
+        productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
+        subscriptionProxy: subscriptionProxy.Object,
+        projectRepo: projectRepo.Object, subscriptionRepo: subscriptionRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
+        dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
 
@@ -179,7 +181,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel { LegacyProjectID = 999 });
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -192,14 +194,14 @@ namespace VSS.MasterData.ProjectTests.Executors
           new Subscription {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
         });
 
-      var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
+      var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var productivity3dProxy = new Mock<IProductivity3dProxy>();
-      productivity3dProxy.Setup(rp =>
-          rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+      var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
+      productivity3dV1ProxyCoord.Setup(p =>
+          p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
-      productivity3dProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+      productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
           It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
       var subscriptionProxy = new Mock<ISubscriptionProxy>();
@@ -221,11 +223,12 @@ namespace VSS.MasterData.ProjectTests.Executors
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, 
-        customHeaders, producer.Object, KafkaTopicName, productivity3dProxy.Object, 
-        subscriptionProxy.Object, null, null, null, projectRepo.Object, 
-        subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor,
-        dataOceanClient.Object, authn.Object);
+      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null,
+        customHeaders, producer.Object, KafkaTopicName,
+        productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
+        subscriptionProxy: subscriptionProxy.Object, projectRepo: projectRepo.Object,
+        subscriptionRepo: subscriptionRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
+        dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
 
@@ -256,7 +259,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel { LegacyProjectID = 999 });
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -269,14 +272,14 @@ namespace VSS.MasterData.ProjectTests.Executors
           new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Landfill, SubscriptionUID = Guid.NewGuid().ToString()},
         });
 
-      var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
+      var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var productivity3dProxy = new Mock<IProductivity3dProxy>();
-      productivity3dProxy.Setup(rp =>
-          rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+      var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
+      productivity3dV1ProxyCoord.Setup(p =>
+          p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
-      productivity3dProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+      productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
           It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
       var subscriptionProxy = new Mock<ISubscriptionProxy>();
@@ -298,11 +301,12 @@ namespace VSS.MasterData.ProjectTests.Executors
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, 
-        customHeaders, producer.Object, KafkaTopicName, productivity3dProxy.Object,
-        subscriptionProxy.Object, null, null, null, projectRepo.Object, 
-        subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
-        dataOceanClient.Object, authn.Object);
+      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null,
+        customHeaders, producer.Object, KafkaTopicName,
+        productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
+        subscriptionProxy: subscriptionProxy.Object, projectRepo: projectRepo.Object,
+        subscriptionRepo: subscriptionRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
+        dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
 
@@ -315,7 +319,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
-      byte[] coordSystemFileContent = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
+      byte[] coordSystemFileContent = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
 
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid(), Guid.NewGuid(),
@@ -338,7 +342,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel { LegacyProjectID = 999 });
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -351,14 +355,14 @@ namespace VSS.MasterData.ProjectTests.Executors
           new Subscription {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()},
         });
 
-      var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
+      var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var productivity3dProxy = new Mock<IProductivity3dProxy>();
-      productivity3dProxy.Setup(rp =>
-          rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+      var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
+      productivity3dV1ProxyCoord.Setup(p =>
+          p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
-      productivity3dProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+      productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
           It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
       var subscriptionProxy = new Mock<ISubscriptionProxy>();
@@ -380,11 +384,12 @@ namespace VSS.MasterData.ProjectTests.Executors
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, 
-        customHeaders, producer.Object, KafkaTopicName, productivity3dProxy.Object, 
-        subscriptionProxy.Object, null, null, null, projectRepo.Object, 
-        subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor,
-        dataOceanClient.Object, authn.Object);
+      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null,
+        customHeaders, producer.Object, KafkaTopicName,
+        productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
+        subscriptionProxy: subscriptionProxy.Object, projectRepo: projectRepo.Object,
+        subscriptionRepo: subscriptionRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
+        dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
 
@@ -397,7 +402,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
       var coordSystemName = "coordsystem.dc";
-      byte[] coordSystemFileContent = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
+      byte[] coordSystemFileContent = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
 
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid(), Guid.NewGuid(),
@@ -420,7 +425,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new ProjectDatabaseModel {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel { LegacyProjectID = 999 });
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -433,14 +438,14 @@ namespace VSS.MasterData.ProjectTests.Executors
           new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Landfill, SubscriptionUID = Guid.NewGuid().ToString()},
         });
 
-      var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
+      var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var productivity3dProxy = new Mock<IProductivity3dProxy>();
-      productivity3dProxy.Setup(rp =>
-          rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+      var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
+      productivity3dV1ProxyCoord.Setup(p =>
+          p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
-      productivity3dProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+      productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
           It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
       var subscriptionProxy = new Mock<ISubscriptionProxy>();
@@ -463,9 +468,10 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, customHeaders,
-        producer.Object, KafkaTopicName, productivity3dProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
-        dataOceanClient.Object, authn.Object);
+        producer.Object, KafkaTopicName,
+        productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object, subscriptionProxy: subscriptionProxy.Object,
+        projectRepo: projectRepo.Object, subscriptionRepo: subscriptionRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
+        dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
   }

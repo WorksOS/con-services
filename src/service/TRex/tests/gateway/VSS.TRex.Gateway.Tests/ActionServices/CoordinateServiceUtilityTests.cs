@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.WebApi.ActionServices;

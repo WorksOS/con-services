@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers

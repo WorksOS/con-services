@@ -3,15 +3,9 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.TCCFileAccess;
-using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -19,7 +13,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// <summary>
   /// Project Base for all Project controllers
   /// </summary>
-  public class ProjectBaseController : BaseController
+  public class ProjectBaseController : BaseController<ProjectBaseController>
   {
     /// <summary>
     /// Gets or sets the subscription proxy.
@@ -40,15 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectBaseController"/> class.
     /// </summary>
-    public ProjectBaseController(IKafka producer, 
-      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
-      IConfigurationStore configStore, 
-      ISubscriptionProxy subscriptionProxy, IProductivity3dProxy productivity3DProxy,
-      ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,  
-      IDataOceanClient dataOceanClient,
-      ITPaaSApplicationAuthentication authn)
-      : base(loggerFactory, configStore, serviceExceptionHandler, producer, productivity3DProxy, projectRepo, 
-        subscriptionRepo, fileRepo, dataOceanClient, authn)
+    public ProjectBaseController(IKafka producer, IConfigurationStore configStore, ISubscriptionProxy subscriptionProxy) : base (producer, configStore)
     {
       this.subscriptionProxy = subscriptionProxy;
     }
@@ -60,9 +46,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected async Task<ImmutableList<ProjectDatabaseModel>> GetProjectList()
     {
       var customerUid = LogCustomerDetails("GetProjectList", "");
-      var projects = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
+      var projects = (await ProjectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
-      logger.LogInformation($"Project list contains {projects.Count} projects");
+      Logger.LogInformation($"Project list contains {projects.Count} projects");
       return projects;
     }
 
@@ -74,7 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid)
     {
       return
-      (await subscriptionRepo.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
+      (await SubscriptionRepo.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
         .ConfigureAwait(false)).ToImmutableList();
     }
   }

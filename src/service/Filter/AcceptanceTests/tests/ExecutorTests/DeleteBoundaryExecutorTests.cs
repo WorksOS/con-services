@@ -29,7 +29,7 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid());
 
       var executor =
-        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy, Productivity3DProxy, Producer, KafkaTopicName);
+        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy, producer:Producer, kafkaTopicName:KafkaTopicName);
 
       var serviceException = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
       Assert.IsTrue(serviceException.GetContent.Contains("2049"));
@@ -67,7 +67,7 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(custUid, projectUid, userId, boundaryUid);
 
       var executor =
-        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy, Productivity3DProxy, Producer, KafkaTopicName);
+        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy,producer:Producer, kafkaTopicName:KafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -107,7 +107,7 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(custUid, projectUid2, userId, boundaryUid);
 
       var executor =
-        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy, Productivity3DProxy, Producer, KafkaTopicName);
+        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy, producer:Producer, kafkaTopicName:KafkaTopicName);
 
       var serviceException = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
       Assert.IsTrue(serviceException.GetContent.Contains("2049"));

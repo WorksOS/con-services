@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Models;
 
 namespace VSS.Productivity3D.Models.Models
 {

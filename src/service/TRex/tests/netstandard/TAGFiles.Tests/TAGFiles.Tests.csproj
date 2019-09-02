@@ -34,7 +34,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
-    <ProjectReference Include="..\..\..\..\TagFileAuth\src\Abstractions\VSS.Productivity3D.TagFileAuth.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common.Exceptions\VSS.TRex.Common.Exceptions.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events\VSS.TRex.Events.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />

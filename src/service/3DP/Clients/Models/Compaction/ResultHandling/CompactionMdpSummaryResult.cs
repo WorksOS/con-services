@@ -1,13 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using MdpSummaryData = VSS.Productivity3D.Productivity3D.Models.Compaction.MdpSummaryData;
 
 namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by MDP Summary request for compaction
   /// </summary>
-  public class CompactionMdpSummaryResult : ContractExecutionResult
+  public class CompactionMdpSummaryResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// The MDP summary data results
@@ -46,5 +47,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
         };
       }
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 }

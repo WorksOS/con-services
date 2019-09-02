@@ -28,9 +28,11 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetBoundaryExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IProductivity3dProxy productivity3DProxy, IFileImportProxy fileImportProxy,
+      IProjectProxy projectProxy,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
+      IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3DProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null, null)
     { }
 
     /// <summary>
@@ -58,7 +60,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         //Check it belongs to the project
         associations =
-          await ((IProjectRepository) auxRepository).GetAssociatedGeofences(request.ProjectUid)
+          await ((IProjectRepository)auxRepository).GetAssociatedGeofences(request.ProjectUid)
             .ConfigureAwait(false);
       }
       catch (Exception e)

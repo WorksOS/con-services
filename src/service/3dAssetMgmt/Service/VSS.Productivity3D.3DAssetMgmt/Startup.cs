@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.AssetMgmt3D
 
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
+      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();

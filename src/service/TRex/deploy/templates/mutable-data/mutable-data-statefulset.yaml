@@ -31,11 +31,11 @@ spec:
     spec:
       terminationGracePeriodSeconds: 10
       serviceAccountName: {{ .Values.serviceAccountName }}
-{{- with .Values.nodeSelector }}
+{{- with .Values.nodeSelector.generalPurpose }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
 {{- end }}
-{{- with .Values.tolerations }}
+{{- with .Values.tolerations.generalPurpose }}
       tolerations:
 {{ toYaml . | indent 8 }}
 {{- end }}

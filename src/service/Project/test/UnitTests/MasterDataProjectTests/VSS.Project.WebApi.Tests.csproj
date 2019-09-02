@@ -36,9 +36,8 @@
     <ProjectReference Include="..\..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj" />
     <ProjectReference Include="..\..\..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
-    <ProjectReference Include="..\..\..\..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
     <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>

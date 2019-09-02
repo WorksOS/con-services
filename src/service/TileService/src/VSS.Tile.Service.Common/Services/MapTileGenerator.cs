@@ -30,10 +30,10 @@ namespace VSS.Tile.Service.Common.Services
     private readonly IDxfTileService dxfTileService;
     private readonly IBoundingBoxHelper boundingBoxHelper;
     private readonly IBoundingBoxService boundingBoxService;
-    private readonly IProductivity3dProxy productivity3DProxy;
+    private readonly IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile;
     private readonly ILoadDumpProxy loadDumpProxy;
 
-    public MapTileGenerator(ILoggerFactory logger, IBoundingBoxService bboxService, IProductivity3dProxy productivity3DProxy,
+    public MapTileGenerator(ILoggerFactory logger, IBoundingBoxService bboxService, IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile,
       IMapTileService mapTileService, IProjectTileService projectTileService, IGeofenceTileService geofenceTileService,
       IAlignmentTileService alignmentTileService, IDxfTileService dxfTileService, IBoundingBoxHelper boundingBoxHelper,
       ILoadDumpTileService loadDumpTileService, ILoadDumpProxy loadDumpProxy)
@@ -46,7 +46,7 @@ namespace VSS.Tile.Service.Common.Services
       this.dxfTileService = dxfTileService;
       this.boundingBoxHelper = boundingBoxHelper;
       boundingBoxService = bboxService;
-      this.productivity3DProxy = productivity3DProxy;
+      this.productivity3DProxyCompactionTile = productivity3DProxyCompactionTile;
       this.loadDumpTileService = loadDumpTileService;
       this.loadDumpProxy = loadDumpProxy;
     }
@@ -128,7 +128,7 @@ namespace VSS.Tile.Service.Common.Services
         case TileOverlayType.ProductionData:
           var bbox =
             $"{request.mapParameters.bbox.minLatDegrees},{request.mapParameters.bbox.minLngDegrees},{request.mapParameters.bbox.maxLatDegrees},{request.mapParameters.bbox.maxLngDegrees}";
-          bitmap = await productivity3DProxy.GetProductionDataTile(Guid.Parse(request.project.ProjectUid), request.filterUid,
+          bitmap = await productivity3DProxyCompactionTile.GetProductionDataTile(Guid.Parse(request.project.ProjectUid), request.filterUid,
             request.cutFillDesignUid, (ushort) request.mapParameters.mapWidth, (ushort) request.mapParameters.mapHeight,
             bbox, request.mode.Value, request.baseUid, request.topUid, request.volCalcType, request.customHeaders, request.ExplicitFilters);
           break;

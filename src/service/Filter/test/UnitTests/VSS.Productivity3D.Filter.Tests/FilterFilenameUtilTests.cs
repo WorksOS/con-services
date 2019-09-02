@@ -17,9 +17,10 @@ using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -41,11 +42,11 @@ namespace VSS.Productivity3D.Filter.Tests
     private static Mock<IKafka> Producer => new Mock<IKafka>();
 
     public FilterFilenameUtilTests(ExecutorBaseTests classFixture)
-    { 
+    {
       _classFixture = classFixture;
     }
 
-    
+
 
     [Fact]
     public async Task Should_return_when_DesignUid_and_AlignmentUid_arent_provided()
@@ -53,11 +54,12 @@ namespace VSS.Productivity3D.Filter.Tests
       var name = Guid.NewGuid().ToString();
       const string filterJson = "{\"startUtc\":\"2012-10-30T00:12:09.109\",\"endUtc\":\"2018-06-14T11:58:13.662\",\"dateRangeType\":7,\"contributingMachines\":[{\"assetID\":\"751877972662699\",\"machineName\":\"KOMATSU PC210\",\"isJohnDoe\":false}],\"onMachineDesignId\":\"1\",\"startStation\":0.0,\"endStation\":197.7762153912619,\"leftOffset\":0.0,\"rightOffset\":197.776}";
 
-      var productivity3DProxy = new Mock<IProductivity3dProxy>();
-      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
-      var getMachinesExecutionResult = new MachineExecutionResult (new List<MachineStatus>(0));
-      productivity3DProxy.Setup(x =>
+      var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
+      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dV2ProxyCompaction.Setup(x =>
           x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
@@ -91,7 +93,9 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, productivity3DProxy.Object, Producer.Object, KafkaTopicName);
+        filterRepo.Object, geofenceRepo.Object,
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
+        producer: Producer.Object, kafkaTopicName: KafkaTopicName);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -110,11 +114,12 @@ namespace VSS.Productivity3D.Filter.Tests
       var name = Guid.NewGuid().ToString();
       const string filterJson = "{\"startUtc\":\"2012-10-30T00:12:09.109\",\"endUtc\":\"2018-06-14T11:58:13.662\",\"dateRangeType\":7,\"contributingMachines\":[{\"assetID\":\"751877972662699\",\"machineName\":\"KOMATSU PC210\",\"isJohnDoe\":false}],\"onMachineDesignId\":\"1\",\"startStation\":0.0,\"endStation\":197.7762153912619,\"leftOffset\":0.0,\"rightOffset\":197.776,\"alignmentUid\":\"6ece671b-7959-4a14-86fa-6bfe6ef4dd62\"}";
 
-      var productivity3DProxy = new Mock<IProductivity3dProxy>();
-      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
-      productivity3DProxy.Setup(x =>
+      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dV2ProxyCompaction.Setup(x =>
           x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
@@ -151,7 +156,9 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, productivity3DProxy.Object, Producer.Object, KafkaTopicName, fileImportProxy.Object);
+        filterRepo.Object, geofenceRepo.Object,
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
+        producer: Producer.Object, kafkaTopicName: KafkaTopicName, fileImportProxy: fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -170,11 +177,12 @@ namespace VSS.Productivity3D.Filter.Tests
       var name = Guid.NewGuid().ToString();
       const string filterJson = "{\"startUtc\":\"2012-10-30T00:12:09.109\",\"endUtc\":\"2018-06-14T11:58:13.662\",\"dateRangeType\":7,\"contributingMachines\":[{\"assetID\":\"751877972662699\",\"machineName\":\"KOMATSU PC210\",\"isJohnDoe\":false}],\"onMachineDesignId\":\"1\",\"startStation\":0.0,\"endStation\":197.7762153912619,\"leftOffset\":0.0,\"rightOffset\":197.776,\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"}";
 
-      var productivity3DProxy = new Mock<IProductivity3dProxy>();
-      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
-      productivity3DProxy.Setup(x =>
+      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dV2ProxyCompaction.Setup(x =>
           x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
@@ -195,7 +203,7 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.As<IFilterRepository>().Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), true)).ReturnsAsync(new List<FilterModel>());
       filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<UpdateFilterEvent>())).ReturnsAsync(1);
       filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<CreateFilterEvent>())).ReturnsAsync(1);
-      
+
       var fileData = new List<FileData>
       {
         new FileData
@@ -225,7 +233,9 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, productivity3DProxy.Object, Producer.Object, KafkaTopicName, fileImportProxy.Object);
+        filterRepo.Object, geofenceRepo.Object,
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
+        producer: Producer.Object, kafkaTopicName: KafkaTopicName, fileImportProxy: fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -244,11 +254,12 @@ namespace VSS.Productivity3D.Filter.Tests
       var name = Guid.NewGuid().ToString();
       const string filterJson = "{\"startUtc\":\"2012-10-30T00:12:09.109\",\"endUtc\":\"2018-06-14T11:58:13.662\",\"dateRangeType\":7,\"contributingMachines\":[{\"assetID\":\"751877972662699\",\"machineName\":\"KOMATSU PC210\",\"isJohnDoe\":false}],\"onMachineDesignId\":\"1\",\"startStation\":0.0,\"endStation\":197.7762153912619,\"leftOffset\":0.0,\"rightOffset\":197.776,\"alignmentUid\":\"6ece671b-7959-4a14-86fa-6bfe6ef4dd62\"}";
 
-      var productivity3DProxy = new Mock<IProductivity3dProxy>();
-      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
-      productivity3DProxy.Setup(x =>
+      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dV2ProxyCompaction.Setup(x =>
           x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
@@ -300,7 +311,9 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, productivity3DProxy.Object, Producer.Object, KafkaTopicName, fileImportProxy.Object);
+        filterRepo.Object, geofenceRepo.Object,
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
+        producer: Producer.Object, kafkaTopicName: KafkaTopicName, fileImportProxy: fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -319,11 +332,12 @@ namespace VSS.Productivity3D.Filter.Tests
       var name = Guid.NewGuid().ToString();
       const string filterJson = "{\"startUtc\":\"2012-10-30T00:12:09.109\",\"endUtc\":\"2018-06-14T11:58:13.662\",\"dateRangeType\":7,\"contributingMachines\":[{\"assetID\":\"751877972662699\",\"machineName\":\"KOMATSU PC210\",\"isJohnDoe\":false}],\"onMachineDesignId\":\"1\",\"startStation\":0.0,\"endStation\":197.7762153912619,\"leftOffset\":0.0,\"rightOffset\":197.776,\"alignmentUid\":\"6ece671b-7959-4a14-86fa-6bfe6ef4dd62\",\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"}";
 
-      var productivity3DProxy = new Mock<IProductivity3dProxy>();
-      productivity3DProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
-      productivity3DProxy.Setup(x =>
+      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dV2ProxyCompaction.Setup(x =>
           x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
@@ -385,7 +399,9 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, productivity3DProxy.Object, Producer.Object, KafkaTopicName, fileImportProxy.Object);
+        filterRepo.Object, geofenceRepo.Object,
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
+        producer: Producer.Object, kafkaTopicName: KafkaTopicName, fileImportProxy: fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
