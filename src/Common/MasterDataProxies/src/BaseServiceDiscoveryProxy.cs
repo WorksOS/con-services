@@ -124,10 +124,10 @@ namespace VSS.MasterData.Proxies
     /// Execute a Post/Put/Delete to an endpoint, do not cache the result, and return a ContractExecutionResult
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
-    protected Task<ContractExecutionResult> MasterDataItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
-      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
+    protected Task<T> MasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
+      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null) where T : ContractExecutionResult
     {
-      return RequestAndReturnResult(customHeaders, method, route, queryParameters, payload);
+      return RequestAndReturnResult<T>(customHeaders, method, route, queryParameters, payload);
     }
     
     #endregion
@@ -179,15 +179,15 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
-    private async Task<ContractExecutionResult> RequestAndReturnResult(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null) 
+    private async Task<T> RequestAndReturnResult<T>(IDictionary<string, string> customHeaders,
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null) where T : ContractExecutionResult
     {
       var url = await GetUrl(route, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
       customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      var result = await webRequest.ExecuteRequest<ContractExecutionResult>(url, payload: payload, customHeaders: customHeaders, method: method);
+      var result = await webRequest.ExecuteRequest<T>(url, payload: payload, customHeaders: customHeaders, method: method);
       log.LogDebug($"{nameof(RequestAndReturnResult)} Result: {JsonConvert.SerializeObject(result)}");
 
       return result;
