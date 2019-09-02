@@ -74,7 +74,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     {
       var jsonData = JsonConvert.SerializeObject(compactionTagFileRequest);
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-        return await MasterDataItemServiceDiscoveryNoCache(route, customHeaders, method, payload: payload);
+        return await MasterDataItemServiceDiscoveryNoCache<ContractExecutionResult>(route, customHeaders, method, payload: payload);
     }
   }
 }

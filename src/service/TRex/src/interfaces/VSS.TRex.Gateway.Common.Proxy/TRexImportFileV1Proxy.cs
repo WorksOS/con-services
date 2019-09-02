@@ -97,7 +97,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
         // Need to await this, as we need the stream (if we return the task, the stream is disposed)
-        return await MasterDataItemServiceDiscoveryNoCache("design", customHeaders, method, payload: payload);
+        return await MasterDataItemServiceDiscoveryNoCache<ContractExecutionResult>("design", customHeaders, method, payload: payload);
       }
     }
   }

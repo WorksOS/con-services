@@ -53,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
       log.LogDebug($"{nameof(SendDataPostRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
 
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-        return (TResponse) await MasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, payload: payload);
+        return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Post, payload: payload);
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
       log.LogDebug($"{nameof(SendDataDeleteRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
 
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-        return (TResponse)await MasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, payload: payload);
+        return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Delete, payload: payload);
     }
 
     /// <summary>
