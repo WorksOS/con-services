@@ -12,7 +12,6 @@ namespace RepositoryLandfillTests
   public class TestControllerBase
   {
     protected IServiceProvider ServiceProvider;
-    
 
     public void SetupLogging()
     {
