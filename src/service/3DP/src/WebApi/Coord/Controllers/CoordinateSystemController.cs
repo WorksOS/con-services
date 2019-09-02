@@ -61,8 +61,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public async Task<CoordinateSystemSettings> Post([FromBody] CoordinateSystemFile request)
     {
       request.Validate();
-      var serializedRequest = JsonConvert.SerializeObject(request);
-      _log.LogDebug($"POST api/v1/coordsystem: request {serializedRequest}");
+
       return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
 #if RAPTOR
         raptorClient,
