@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Productivity3D.Models;
@@ -27,6 +27,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
 #if RAPTOR
     private readonly IASNodeClient raptorClient;
 #endif
+    private readonly ILogger _log;
     private readonly ILoggerFactory logger;
     private readonly IConfigurationStore configStore;
     private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
@@ -46,6 +47,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
       this.raptorClient = raptorClient;
 #endif
       this.logger = logger;
+      _log = logger.CreateLogger<CoordinateSystemController>();
       this.configStore = configStore;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
     }
@@ -59,7 +61,8 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public async Task<CoordinateSystemSettings> Post([FromBody] CoordinateSystemFile request)
     {
       request.Validate();
-
+      var serializedRequest = JsonConvert.SerializeObject(request);
+      _log.LogDebug($"POST api/v1/coordsystem: request {serializedRequest}");
       return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
 #if RAPTOR
         raptorClient,
@@ -75,6 +78,9 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [HttpPost]
     public async Task<CoordinateSystemSettings> PostValidate([FromBody] CoordinateSystemFileValidationRequest request)
     {
+      var serializedRequest = JsonConvert.SerializeObject(request);
+      _log.LogDebug($"POST api/v1/coordsystem/validation: request {serializedRequest}");
+
       request.Validate();
 
       return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
