@@ -68,6 +68,7 @@ namespace VSS.TRex.Server.DesignElevation
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),
+        typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurfaces),
         typeof(VSS.TRex.ExistenceMaps.ExistenceMaps),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
